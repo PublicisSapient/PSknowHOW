@@ -1,0 +1,235 @@
+{
+  "values": [
+    [{
+      "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+      "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+      "prSizeGrade": 9.8,
+      "prLinesChanged": 113.0,
+      "repositories": [{
+        "name": "PSknowHOW",
+        "prSizeGrade": 9.8,
+        "mergeRequests": 5,
+        "linesChanged": 113.0,
+        "branches": [{
+          "name": "master",
+          "prSizeGrade": 9.8,
+          "mergeRequests": 5,
+          "lines_change": 113.0
+        }]
+      }],
+      "date_label": "2023-06-18"
+    },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 8.333333333333334,
+        "prLinesChanged": 178.5,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 8.333333333333334,
+          "mergeRequests": 6,
+          "linesChanged": 178.5,
+          "branches": [{
+            "name": "DTS-25745_DRE_Logic_Change",
+            "prSizeGrade": 10.0,
+            "mergeRequests": 1,
+            "lines_change": 18.0
+          },
+            {
+              "name": "master",
+              "prSizeGrade": 8.0,
+              "mergeRequests": 5,
+              "lines_change": 210.6
+            }
+          ]
+        }],
+        "date_label": "2023-06-25"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 7.5,
+        "prLinesChanged": 310.4166666666667,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 7.5,
+          "mergeRequests": 12,
+          "linesChanged": 310.4166666666667,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 7.5,
+            "mergeRequests": 12,
+            "lines_change": 310.4166666666667
+          }]
+        }],
+        "date_label": "2023-07-02"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 8.714285714285714,
+        "prLinesChanged": 226.23809523809524,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 8.714285714285714,
+          "mergeRequests": 21,
+          "linesChanged": 226.23809523809524,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 8.714285714285714,
+            "mergeRequests": 21,
+            "lines_change": 226.23809523809524
+          }]
+        }],
+        "date_label": "2023-07-09"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 6.818181818181818,
+        "prLinesChanged": 1600.1818181818182,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 6.818181818181818,
+          "mergeRequests": 11,
+          "linesChanged": 1600.1818181818182,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 6.818181818181818,
+            "mergeRequests": 11,
+            "lines_change": 1600.1818181818182
+          }]
+        }],
+        "date_label": "2023-07-16"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 6.75,
+        "prLinesChanged": 1869.75,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 6.75,
+          "mergeRequests": 16,
+          "linesChanged": 1869.75,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 6.75,
+            "mergeRequests": 16,
+            "lines_change": 1869.75
+          }]
+        }],
+        "date_label": "2023-07-23"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 9.285714285714286,
+        "prLinesChanged": 109.14285714285714,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 9.285714285714286,
+          "mergeRequests": 14,
+          "linesChanged": 109.14285714285714,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 9.285714285714286,
+            "mergeRequests": 14,
+            "lines_change": 109.14285714285714
+          }]
+        }],
+        "date_label": "2023-07-30"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 7.6,
+        "prLinesChanged": 1273.3333333333333,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 7.6,
+          "mergeRequests": 15,
+          "linesChanged": 1273.3333333333333,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 7.6,
+            "mergeRequests": 15,
+            "lines_change": 1273.3333333333333
+          }]
+        }],
+        "date_label": "2023-08-06"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 9.090909090909092,
+        "prLinesChanged": 397.72727272727275,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 9.090909090909092,
+          "mergeRequests": 11,
+          "linesChanged": 397.72727272727275,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 9.0,
+            "mergeRequests": 10,
+            "lines_change": 426.1
+          },
+            {
+              "name": "DTS-25720-PI-Predictability",
+              "prSizeGrade": 10.0,
+              "mergeRequests": 1,
+              "lines_change": 114.0
+            }
+          ]
+        }],
+        "date_label": "2023-08-13"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 5.3076923076923075,
+        "prLinesChanged": 2349.846153846154,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 5.3076923076923075,
+          "mergeRequests": 13,
+          "linesChanged": 2349.846153846154,
+          "branches": [{
+            "name": "master",
+            "prSizeGrade": 5.3076923076923075,
+            "mergeRequests": 13,
+            "lines_change": 2349.846153846154
+          }]
+        }],
+        "date_label": "2023-08-20"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "prSizeGrade": 6.54054054054054,
+        "prLinesChanged": 4058.891891891892,
+        "repositories": [{
+          "name": "PSknowHOW",
+          "prSizeGrade": 6.54054054054054,
+          "mergeRequests": 37,
+          "linesChanged": 4058.891891891892,
+          "branches": [{
+            "name": "engineering-summit-demo",
+            "prSizeGrade": 7.72,
+            "mergeRequests": 25,
+            "lines_change": 1459.56
+          },
+            {
+              "name": "master",
+              "prSizeGrade": 4.083333333333333,
+              "mergeRequests": 12,
+              "lines_change": 9474.166666666666
+            }
+          ]
+        }],
+        "date_label": "2023-08-27"
+      }
+    ]
+  ]
+}

@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
@@ -39,6 +40,7 @@ import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -254,12 +256,23 @@ public class RepoToolsConfigServiceImpl {
 		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode, startDate, endDate,
 				frequency);
 		try {
-			String url = String.format(repoToolUrl, startDate, endDate, frequency);
-			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
-					repoToolApiKey, repoToolKpiRequestBody);
-			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
-					.collect(Collectors.toList());
-		} catch (HttpClientErrorException ex) {
+			if(!customApiConfig.getFetchFromJson()) {
+				String url = String.format(repoToolUrl, startDate, endDate, frequency);
+				RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,
+						repoToolApiKey, repoToolKpiRequestBody);
+				repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
+						.collect(Collectors.toList());
+			} else {
+				ObjectMapper objectMapper = new ObjectMapper();
+				objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = objectMapper.readValue(TypeReference.class.getResourceAsStream(repoToolKpi),
+						new TypeReference<RepoToolKpiBulkMetricResponse>() {
+						});
+				repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
+						.collect(Collectors.toList());
+
+			}
+		} catch (Exception ex) {
 			log.error("Get KPI data {}", projectCode, ex);
 		}
 		return repoToolKpiMetricRespons;
@@ -321,5 +334,6 @@ public class RepoToolsConfigServiceImpl {
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		return processorExecutionTraceLog;
 	}
+
 
 }

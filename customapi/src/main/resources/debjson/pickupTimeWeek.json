@@ -1,0 +1,2791 @@
+{
+  "values": [
+    [
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/2": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/6": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/3": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/4": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/5": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/2": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/6": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/3": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/4": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/5": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-06-18"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/19": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/14": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/16": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/13": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/7": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/11": null
+            },
+            "branches": [
+              {
+                "name": "DTS-25745_DRE_Logic_Change",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/13": null
+                }
+              },
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/19": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/14": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/16": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/7": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/11": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-06-25"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/10": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/25": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/27": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/8": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/12": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/30": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/24": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/20": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/22": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/31": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/28": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/26": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/10": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/25": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/27": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/8": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/12": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/30": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/24": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/20": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/22": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/31": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/28": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/26": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-07-02"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/51": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/47": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/44": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/50": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/38": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/34": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/40": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/39": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/49": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/45": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/43": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/41": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/17": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/15": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/32": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/48": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/18": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/36": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/37": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/21": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/35": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/51": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/47": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/44": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/50": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/38": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/34": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/40": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/39": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/49": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/45": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/43": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/41": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/17": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/15": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/32": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/48": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/18": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/36": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/37": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/21": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/35": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-07-09"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/59": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/56": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/33": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/23": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/55": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/42": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/29": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/53": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/57": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/46": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/54": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/59": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/56": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/33": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/23": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/55": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/42": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/29": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/53": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/57": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/46": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/54": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-07-16"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/73": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/69": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/66": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/65": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/72": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/68": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/62": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/61": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/58": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/63": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/60": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/52": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/9": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/71": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/67": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/64": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/73": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/69": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/66": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/65": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/72": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/68": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/62": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/61": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/58": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/63": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/60": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/52": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/9": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/71": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/67": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/64": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-07-23"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/78": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/89": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/88": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/75": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/91": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/87": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/86": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/83": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/77": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/79": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/74": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/84": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/76": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/70": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/78": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/89": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/88": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/75": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/91": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/87": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/86": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/83": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/77": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/79": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/74": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/84": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/76": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/70": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-07-30"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/93": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/105": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/102": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/94": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/101": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/100": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/90": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/99": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/92": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/96": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/85": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/81": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/82": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/95": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/80": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/93": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/105": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/102": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/94": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/101": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/100": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/90": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/99": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/92": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/96": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/85": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/81": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/82": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/95": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/80": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-08-06"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/109": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/110": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/107": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/106": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/98": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/108": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/103": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/113": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/111": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/112": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/118": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/109": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/110": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/107": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/106": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/98": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/108": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/103": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/113": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/111": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/112": null
+                }
+              },
+              {
+                "name": "DTS-25720-PI-Predictability",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/118": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-08-13"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 0.0,
+        "projectHours": 0.0,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 0,
+            "pickupTimeRepoHours": 0.0,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/114": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/97": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/104": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/127": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/115": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/116": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/126": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/124": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/122": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/125": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/123": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/121": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/117": null
+            },
+            "branches": [
+              {
+                "name": "master",
+                "grade": 0,
+                "hours": 0.0,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/114": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/97": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/104": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/127": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/115": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/116": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/126": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/124": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/122": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/125": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/123": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/121": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/117": null
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-08-20"
+      },
+      {
+        "project_name": "ATestProj_64de1eb67178c5694e6b858e",
+        "project_code": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "projectHours": 11.080885885885886,
+        "repositories": [
+          {
+            "name": "PSknowHOW",
+            "pickupTimeRepoGrade": 10,
+            "pickupTimeRepoHours": 11.080885885885886,
+            "mergeRequestsPT": {
+              "https://github.com/PublicisSapient/PSknowHOW/pull/119": 196.3972222222222,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/128": 0.12416666666666666,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/120": 194.3538888888889,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/129": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/161": 0.0022222222222222222,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/130": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/139": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/162": 0.008888888888888889,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/160": 0.0019444444444444444,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/159": 0.0033333333333333335,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/133": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/148": 0.3397222222222222,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/147": 0.002777777777777778,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/146": 0.002777777777777778,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/145": 0.0030555555555555557,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/144": 0.0044444444444444444,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/143": 0.029722222222222223,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/138": 0.11722222222222223,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/140": 0.07611111111111112,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/137": 1.6925,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/136": 0.005277777777777778,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/135": 0.013888888888888888,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/134": 3.2247222222222223,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/132": 1.4602777777777778,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/131": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/158": 0.005555555555555556,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/142": null,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/149": 0.0025,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/141": 1.1105555555555555,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/156": 0.9808333333333333,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/154": 6.182222222222222,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/153": 0.6813888888888889,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/151": 0.14166666666666666,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/157": 0.13416666666666666,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/155": 2.815,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/152": 0.029444444444444443,
+              "https://github.com/PublicisSapient/PSknowHOW/pull/150": 0.04527777777777778
+            },
+            "branches": [
+              {
+                "name": "engineering-summit-demo",
+                "grade": 10,
+                "hours": 0.5754888888888889,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/161": 0.0022222222222222222,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/162": 0.008888888888888889,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/160": 0.0019444444444444444,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/159": 0.0033333333333333335,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/148": 0.3397222222222222,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/147": 0.002777777777777778,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/146": 0.002777777777777778,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/145": 0.0030555555555555557,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/144": 0.0044444444444444444,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/143": 0.029722222222222223,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/138": 0.11722222222222223,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/140": 0.07611111111111112,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/137": 1.6925,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/136": 0.005277777777777778,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/135": 0.013888888888888888,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/158": 0.005555555555555556,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/149": 0.0025,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/141": 1.1105555555555555,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/156": 0.9808333333333333,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/154": 6.182222222222222,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/153": 0.6813888888888889,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/151": 0.14166666666666666,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/157": 0.13416666666666666,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/155": 2.815,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/152": 0.029444444444444443
+                }
+              },
+              {
+                "name": "master",
+                "grade": 0.3,
+                "hours": 32.96712962962963,
+                "mergeRequestsPT": {
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/119": 196.3972222222222,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/128": 0.12416666666666666,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/120": 194.3538888888889,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/129": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/130": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/139": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/133": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/134": 3.2247222222222223,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/132": 1.4602777777777778,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/131": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/142": null,
+                  "https://github.com/PublicisSapient/PSknowHOW/pull/150": 0.04527777777777778
+                }
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "email": "kunal.kamble@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "noreply@github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "66426118+manoj-srivastava@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "manoj.srivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hirbabar@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shivani1@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "99163630+hirbabar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "bhashett1@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hinshah@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "110445752+BhagyashreeShettigar@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "86220296+HinPublicis@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "74697698+rapkalya@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "rapkalya",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "harsh.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akhil.tomar@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "raparthi.kalyan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "shubh.narayan@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "akshat.shrivastav@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112613617+aksshriv1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "eswbogol@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122771508+shunaray@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "98313533+Chittauri@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "hargupta15@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76935084+gipathak@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122776852+hargupta15@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mansriva0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "67466180+pankumar8@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "risshukl0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "112464724+eswbogol@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "76675650+risshukl0@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "kunkambl@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "44412993+brahmanand1@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pangaria@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "purushottam.gupta@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "sanchay.shrivastava@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "pramod.gautam@publicissapient.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "122698497+purushottam08@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "mayrasto0@publicisgroupe.net",
+            "grade": 0,
+            "hours": null
+          },
+          {
+            "email": "37798065+mayank-rastogi@users.noreply.github.com",
+            "grade": 0,
+            "hours": null
+          }
+        ],
+        "date_label": "2023-08-27"
+      }
+    ]
+  ]
+}

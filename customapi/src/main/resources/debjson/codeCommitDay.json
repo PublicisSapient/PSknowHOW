@@ -1,0 +1,3186 @@
+{
+  "values": [
+    [
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 35,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 35,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 10,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 10,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 35,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 30,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 10,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 10,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-08-21"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 29,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 29,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 7,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 8,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 3,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 29,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 23,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 7,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 8,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 3,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-08-22"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 28,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 28,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 7,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 8,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 3,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 28,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 26,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 7,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 8,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 3,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-08-23"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 31,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 31,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 5,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 8,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 9,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 31,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 24,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 5,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 8,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 9,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-08-24"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 17,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 17,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 2,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 17,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 9,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 2,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-08-25"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": null,
+        "commit_count": 0,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 0,
+            "repoGrade": null,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": null
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": null
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": null
+          }
+        ],
+        "date_label": "2023-08-26"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": null,
+        "commit_count": 1,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 1,
+            "repoGrade": 0.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 1,
+                "grade": null
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": null
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 1,
+                "grade": null
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": null
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": null
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 1,
+            "grade": null
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 0,
+            "grade": null
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": null
+          }
+        ],
+        "date_label": "2023-08-27"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 11,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 11,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 11,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": 0.0
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          }
+        ],
+        "date_label": "2023-08-28"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 16,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 16,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 16,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 7,
+                "grade": 10
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          }
+        ],
+        "date_label": "2023-08-29"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 4,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 4,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": 0.0
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          }
+        ],
+        "date_label": "2023-08-30"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 46,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 46,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 3,
+                "grade": 10
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 9,
+                "grade": 10
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 11,
+                "grade": 10
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 11,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 2,
+                "grade": 10
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 7,
+                "grade": 10
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 46,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": 0.0
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 3,
+            "grade": 10
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 9,
+            "grade": 10
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 11,
+            "grade": 10
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 11,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 2,
+            "grade": 10
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 7,
+            "grade": 10
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          }
+        ],
+        "date_label": "2023-08-31"
+      },
+      {
+        "projectName": "ATestProj_64de1eb67178c5694e6b858e",
+        "projectGrade": 10.0,
+        "commit_count": 32,
+        "projectRepositories": [
+          {
+            "repository": "PSknowHOW",
+            "commit_count": 32,
+            "repoGrade": 10.0,
+            "individualCommitsCount": [
+              {
+                "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akhil.tomar@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "akshat.shrivastav@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "bhashett1@publicisgroupe.net",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "eswbogol@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hargupta15@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "harsh.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "hinshah@publicisgroupe.net",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "hirbabar@publicisgroupe.net",
+                "count": 4,
+                "grade": 10
+              },
+              {
+                "committer__email": "kunkambl@publicisgroupe.net",
+                "count": 11,
+                "grade": 10
+              },
+              {
+                "committer__email": "manoj.srivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mansriva0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "mayrasto0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "noreply@github.com",
+                "count": 7,
+                "grade": 10
+              },
+              {
+                "committer__email": "pangaria@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "pramod.gautam@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "purushottam.gupta@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "raparthi.kalyan@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "rapkalya",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "risshukl0@publicisgroupe.net",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "sanchay.shrivastava@publicissapient.com",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "committer__email": "shivani1@publicissapient.com",
+                "count": 1,
+                "grade": 10.0
+              },
+              {
+                "committer__email": "shubh.narayan@publicissapient.com",
+                "count": 4,
+                "grade": 10
+              }
+            ],
+            "filteredBranch": null,
+            "branchesCommitsCount": [
+              {
+                "branch__name": "debbie_integration",
+                "count": 32,
+                "grade": 10
+              },
+              {
+                "branch__name": "DTS-26342_daily_scrum_view",
+                "count": 0,
+                "grade": 0.0
+              },
+              {
+                "branch__name": "master",
+                "count": 0,
+                "grade": 0.0
+              }
+            ]
+          }
+        ],
+        "users": [
+          {
+            "committer__email": "44412993+brahmanand1@users.noreply.github.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akhil.tomar@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "akshat.shrivastav@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "bhashett1@publicisgroupe.net",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "eswbogol@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hargupta15@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "harsh.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "hinshah@publicisgroupe.net",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "hirbabar@publicisgroupe.net",
+            "count": 4,
+            "grade": 10
+          },
+          {
+            "committer__email": "kunkambl@publicisgroupe.net",
+            "count": 11,
+            "grade": 10
+          },
+          {
+            "committer__email": "manoj.srivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mansriva0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "mayrasto0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "noreply@github.com",
+            "count": 7,
+            "grade": 10
+          },
+          {
+            "committer__email": "pangaria@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "pramod.gautam@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "purushottam.gupta@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "raparthi.kalyan@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "rapkalya",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "risshukl0@publicisgroupe.net",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "sanchay.shrivastava@publicissapient.com",
+            "count": 0,
+            "grade": 0.0
+          },
+          {
+            "committer__email": "shivani1@publicissapient.com",
+            "count": 1,
+            "grade": 10.0
+          },
+          {
+            "committer__email": "shubh.narayan@publicissapient.com",
+            "count": 4,
+            "grade": 10
+          }
+        ],
+        "date_label": "2023-09-01"
+      }
+    ]
+  ]
+}
