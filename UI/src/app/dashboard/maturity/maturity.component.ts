@@ -150,7 +150,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.selectedtype = this.service.getSelectedType();
             this.subscription.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
                 this.configGlobalData = globalConfig;
-                this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration');
+                this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' && board?.boardName.toLowerCase() !== 'developer');
                 this.selectedTabKpis = this.tabs[0].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled);
             }));
             this.subscription.push(this.service.noProjectsObs.subscribe((res) => {
@@ -421,7 +421,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
         this.maturityValue = {};
         if(!(this.tabs.length > 0 && this.selectedTabKpis.length >0)){
             this.configGlobalData = this.service.getDashConfigData();
-            this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration');
+            this.tabs = this.configGlobalData[this.selectedtype.toLowerCase()].filter(board => board?.boardName.toLowerCase() !== 'iteration' &&  board?.boardName.toLowerCase() !== 'developer');
         }
         this.selectedTabKpis = this.tabs[index].kpis.filter(kpi => kpi.kpiDetail.calculateMaturity && kpi.shown && kpi.isEnabled).map(kpi => kpi.kpiId);
         const allCategoriesKpis = [this.jiraKpiData, this.jenkinsKpiData, this.sonarKpiData, this.zypherKpiData, this.bitBucketKpiData];
