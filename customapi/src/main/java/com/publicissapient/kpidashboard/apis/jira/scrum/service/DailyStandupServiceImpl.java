@@ -697,7 +697,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				Set<String> childSet = parentChild.getValue();
 				String parentKey = parentChild.getKey();
 
-				if (!issueIdToModalValueMap.containsKey(parentKey)) {
+				if (!issueIdToModalValueMap.containsKey(parentKey) && ObjectUtils.isNotEmpty(mapOfModalObject.get(parentKey))) {
 					parentModalValue = mapOfModalObject.get(parentKey);
 					String actualCompletionDate = parentModalValue.getActualCompletionDateInTime();
 
