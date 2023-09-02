@@ -28,8 +28,6 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (!this.isDrilledDown)
-        this.data = require('../../../test/resource/horizontalDistributionChart.json');;
       if (!this.isDrilledDown) {
         this.data = this.data[0]['value'];
         this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
@@ -44,7 +42,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     const elem = this.elem;
     let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ? document.getElementById('chart')?.offsetWidth : 485);
     chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
-    const chart = d3.select('#chart');
+    const chart = d3.select(elem).select('#chart');
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
     const margin = { top: 10, right: 22, bottom: 20, left: 100 };
@@ -65,13 +63,15 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // let subgroups = Object.keys(data[0]['value']);
     const groups = this.isDrilledDown ? ['(' + selectedNode['data']['kpiGroup'] + ')', data.map(d => d.kpiGroup)[0]] : data.map(d => d.kpiGroup);
     let subgroups = [];
-    data[0]['value'].forEach((element) => {
-      for (var property in element) {
-        if (property !== 'distribution') {
-          subgroups.push(property);
-        }
-      }
-    });
+    if (!this.isDrilledDown) {
+      data[0]['value'].forEach((element) => {
+        subgroups.push(element['subFilter']);
+      });
+    } else {
+      data[0].forEach((element) => {
+        subgroups.push(element['subFilter']);
+      });
+    }
 
     const y = d3.scaleBand()
       .domain(groups)
@@ -126,11 +126,15 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         let tot = 0;
         for (const i in subgroups) {
           const name = subgroups[i];
-          tot += +d['value'].filter((x) => x.hasOwnProperty(name))[0][name];
+          tot += +d['value'].filter((x) => x.subFilter === name)[0]['value'];
         }
         for (const i in subgroups) {
           const name = subgroups[i];
-          d[name] = d['value'].filter((x) => x.hasOwnProperty(name))[0][name] / tot * 100;
+          if (tot > 0) {
+            d[name] = d['value'].filter((x) => x.subFilter === name)[0]['value'] / tot * 100;
+          } else {
+            d[name] = 0;
+          }
         }
       });
     } else {
@@ -138,11 +142,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         let tot = 0;
         for (const i in subgroups) {
           const name = subgroups[i];
-          tot += +d['value'].filter((x) => x.hasOwnProperty(name))[0][name];
+          tot += +d.filter((x) => x.subFilter === name)[0]['value'];
         }
         for (const i in subgroups) {
           const name = subgroups[i];
-          d[name] = d['value'].filter((x) => x.hasOwnProperty(name))[0][name] / tot * 100;
+          d[name] = d.filter((x) => x.subFilter === name)[0]['value'] / tot * 100;
         }
       });
     }
@@ -167,8 +171,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           let key = d['key'];
           let kpiGroup = event.target.__data__.data.kpiGroup;
           let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
-          // self.showDistributionChartOnTooltip(event, d[0].data.value.filter((val) => val.hasOwnProperty(key))[0].distribution);
-          data = [selectedNode.data.value.filter((val) => val.hasOwnProperty(key))[0].distribution];
+          data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
           this.draw(data, selectedNode);
           d3.select(elem).select('#back_icon').style('display', 'block')
             .on('click', (event, d) => {
@@ -241,7 +244,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     } else {
       subgroups.forEach((d, i) => {
         htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-size: 10px; font-weight:bold;">: ${d} 
-        (${data[0].value.filter((val) => val.hasOwnProperty(d))[0][d]} | <span style="font-weight:bold">${data[0][d].toFixed(2).replace(/\.00$/, '')}%</span>)
+        (${data[0].filter((val) => val.subFilter === d)[0]['value']} | <span style="font-weight:bold">${data[0][d].toFixed(2).replace(/\.00$/, '')}%</span>)
         </span></div>`;
       });
     }
@@ -272,7 +275,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
                       </div>
                       <span class="p-m-1" style="font-weight:bold">: ${d}</span>
                     </div>
-                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'].filter((x) => x.hasOwnProperty(d))[0][d]}</span></div>
+                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'].filter((x) => x.subFilter === d)[0]['value']}</span></div>
                     <div style="font-size: 0.75rem;">Percentage: <span style="color:${color(d)} ; font-weight:bold">${tooltipData[d].toFixed(2).replace(/\.00$/, '')}%</span></div>
                     </div>`;
     });
