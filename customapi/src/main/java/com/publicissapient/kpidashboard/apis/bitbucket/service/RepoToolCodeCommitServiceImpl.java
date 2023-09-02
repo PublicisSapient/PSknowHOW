@@ -200,19 +200,19 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 					Map<String, Long> excelDataLoader = new HashMap<>();
 					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
 					List<DataCount> dayWiseCount = new ArrayList<>();
-					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseMergeList)
-							|| CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
-						Map<String, Long> dateWiseCommitList = new HashMap<>();
-						Map<String, Long> dateWiseMRList = new HashMap<>();
-						Collections.reverse(repoToolKpiMetricResponseCommitList);
-						Collections.reverse(repoToolKpiMetricResponseMergeList);
-						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
-								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
-						aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
-								dateWiseMRList);
-						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList, excelDataLoader,
-								projectName, mergeRequestExcelDataLoader, duration, dataPoints);
-					}
+					Map<String, Long> dateWiseCommitList = new HashMap<>();
+					Map<String, Long> dateWiseMRList = new HashMap<>();
+					Collections.reverse(repoToolKpiMetricResponseCommitList);
+					Collections.reverse(repoToolKpiMetricResponseMergeList);
+					createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repo.getRepositoryName(),
+							repo.getBranch(), dateWiseCommitList);
+					createDateLabelWiseMapForMR(repoToolKpiMetricResponseMergeList, repo.getRepositoryName(),
+							repo.getBranch(), dateWiseMRList);
+					aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
+							dateWiseMRList);
+					dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList, excelDataLoader,
+							projectName, mergeRequestExcelDataLoader, duration, dataPoints);
+
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
@@ -298,16 +298,18 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			DataCount dataCount = new DataCount();
 			Map<String, Object> hoverValues = new HashMap<>();
-				Long commitForDay = (Boolean.TRUE.equals(customApiConfig.getFetchFromJson())) ? commitCountForRepo.getOrDefault(String.valueOf(i), 0l)
-						: commitCountForRepo.getOrDefault(dateRange.getStartDate().toString(), 0l);
-				excelDataLoader.put(getDateRange(dateRange, duration), commitForDay);
-				dataCount.setValue(commitForDay);
-				hoverValues.put(NO_CHECKIN, commitForDay.intValue());
-				Long mergeForDay = (Boolean.TRUE.equals(customApiConfig.getFetchFromJson())) ? mergeCountForRepo.getOrDefault(String.valueOf(i), 0l)
-						: mergeCountForRepo.getOrDefault(dateRange.getStartDate().toString(), 0l);
-				mergeRequestExcelDataLoader.put(getDateRange(dateRange, duration), mergeForDay);
-				dataCount.setLineValue(mergeForDay);
-				hoverValues.put(NO_MERGE, mergeForDay.intValue());
+			Long commitForDay = (Boolean.TRUE.equals(customApiConfig.getFetchFromJson()))
+					? commitCountForRepo.getOrDefault(String.valueOf(i), 0l)
+					: commitCountForRepo.getOrDefault(dateRange.getStartDate().toString(), 0l);
+			excelDataLoader.put(getDateRange(dateRange, duration), commitForDay);
+			dataCount.setValue(commitForDay);
+			hoverValues.put(NO_CHECKIN, commitForDay.intValue());
+			Long mergeForDay = (Boolean.TRUE.equals(customApiConfig.getFetchFromJson()))
+					? mergeCountForRepo.getOrDefault(String.valueOf(i), 0l)
+					: mergeCountForRepo.getOrDefault(dateRange.getStartDate().toString(), 0l);
+			mergeRequestExcelDataLoader.put(getDateRange(dateRange, duration), mergeForDay);
+			dataCount.setLineValue(mergeForDay);
+			hoverValues.put(NO_MERGE, mergeForDay.intValue());
 
 			dataCount.setDate(getDateRange(dateRange, duration));
 			dataCount.setHoverValue(hoverValues);
@@ -393,8 +395,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	}
 
 	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
-			List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesMR, String repoName, String branchName,
-			Map<String, Long> dateWiseCommitRepoTools, Map<String, Long> dateWiseMRRepoTools) {
+			String repoName, String branchName, Map<String, Long> dateWiseCommitRepoTools) {
 		int i = 0;
 		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesCommit) {
 			if (response.getProjectRepositories() != null) {
@@ -403,13 +404,18 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 						.flatMap(repository -> repository.getBranchesCommitsCount().stream())
 						.filter(branch -> branch.getBranchName().equals(branchName)).findFirst();
 				Long commitValue = matchingBranch.map(Branches::getCount).orElse(0L);
-				if ((Boolean.TRUE.equals(customApiConfig.getFetchFromJson())))
+				if (Boolean.TRUE.equals(customApiConfig.getFetchFromJson()))
 					dateWiseCommitRepoTools.put(String.valueOf(i), commitValue);
 				else
 					dateWiseCommitRepoTools.put(response.getDateLabel(), commitValue);
+				i++;
 			}
 		}
+	}
 
+	private void createDateLabelWiseMapForMR(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesMR,
+			String repoName, String branchName, Map<String, Long> dateWiseMRRepoTools) {
+		int i = 0;
 		for (RepoToolKpiMetricResponse response : repoToolKpiMetricResponsesMR) {
 			if (response.getRepositories() != null) {
 				Optional<Branches> matchingBranch = response.getRepositories().stream()
