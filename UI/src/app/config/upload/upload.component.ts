@@ -926,7 +926,7 @@ export class UploadComponent implements OnInit {
             if (response && response?.success && response?.data) {
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
-                    this.isAddtionalTestField = (this.testExecutionKanbanData[0].automatedTestCases === -1 || this.testExecutionKanbanData[0].automatedTestCases === undefined) ? false : true;
+                    this.isAddtionalTestField = this.testExecutionKanbanData[0]['uploadEnable'];
                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }else{
@@ -945,8 +945,8 @@ export class UploadComponent implements OnInit {
                     }
                 } else {
                     this.testExecutionScrumData = response?.data;
-                    this.isAddtionalTestField = (this.testExecutionScrumData[0].automatedTestCases === -1 || this.testExecutionScrumData[0].automatedTestCases === undefined) ? false : true;
-                    if(!this.isAddtionalTestField){
+                    this.isAddtionalTestField = this.testExecutionScrumData[0]['uploadEnable'];
+                     if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {
