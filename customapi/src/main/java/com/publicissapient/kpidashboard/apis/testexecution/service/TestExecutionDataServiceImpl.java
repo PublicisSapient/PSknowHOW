@@ -102,6 +102,7 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 					.orElse(null);
 			TestExecutionData testExecutionData = new TestExecutionData();
 
+			boolean isUploadEnable = fieldMapping.isUploadDataKPI42() || fieldMapping.isUploadDataKPI16();
 			if (savedTestExecution != null) {
 				testExecutionData.setExecutedTestCase(savedTestExecution.getExecutedTestCase());
 				testExecutionData.setPassedTestCase(savedTestExecution.getPassedTestCase());
@@ -110,22 +111,17 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 				testExecutionData.setAutomatableTestCases(savedTestExecution.getAutomatableTestCases());
 				testExecutionData.setAutomatedRegressionTestCases(savedTestExecution.getAutomatedRegressionTestCases());
 				testExecutionData.setTotalRegressionTestCases(savedTestExecution.getTotalRegressionTestCases());
+				testExecutionData.setUploadEnable(isUploadEnable);
+
 			} else {
 				testExecutionData.setExecutedTestCase(0);
 				testExecutionData.setPassedTestCase(0);
 				testExecutionData.setTotalTestCases(0);
-				// sending -1 for proj if upload data is disabled for that proj
-				if (fieldMapping.isUploadDataKPI42() || fieldMapping.isUploadDataKPI16()) {
-					testExecutionData.setAutomatedTestCases(0);
-					testExecutionData.setAutomatableTestCases(0);
-					testExecutionData.setAutomatedRegressionTestCases(0);
-					testExecutionData.setTotalRegressionTestCases(0);
-				} else {
-					testExecutionData.setAutomatedTestCases(-1);
-					testExecutionData.setAutomatableTestCases(-1);
-					testExecutionData.setAutomatedRegressionTestCases(-1);
-					testExecutionData.setTotalRegressionTestCases(-1);
-				}
+				testExecutionData.setAutomatedTestCases(0);
+				testExecutionData.setAutomatableTestCases(0);
+				testExecutionData.setAutomatedRegressionTestCases(0);
+				testExecutionData.setTotalRegressionTestCases(0);
+				testExecutionData.setUploadEnable(isUploadEnable);
 			}
 
 			testExecutionData.setSprintName(sprint.getSprintName());

@@ -55,5 +55,5 @@ public class TestExecutionData {
 	private String executionDate;
 	private String basicProjectConfigId;
 	private boolean kanban;
-
+	private boolean uploadEnable;
 }
