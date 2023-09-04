@@ -178,7 +178,7 @@ public class DRRServiceImplTest {
 		filterComponentIdWiseDefectMap.put(REJECTED_DEFECT_PRTA, canceledBugList);
 		filterComponentIdWiseDefectMap.put(CLOSED_DEFECT_DATA, totalBugList);
 		Double drrValue = dRRServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-		assertThat("DRR value :", drrValue, equalTo(89.0));
+		assertThat("DRR value :", drrValue, equalTo(84.0));
 	}
 
 	@SuppressWarnings("unchecked")

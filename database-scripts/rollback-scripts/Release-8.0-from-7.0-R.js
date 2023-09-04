@@ -472,3 +472,14 @@ db.kpi_category_mapping.insertMany([
 db.field_mapping_structure.deleteMany({
     "fieldName": "jiraSubTaskDefectType"
 });
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+ //DTS-26123 start
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: [ "jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"]}
+});
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi155" }
+);
+//DTS-26123 end

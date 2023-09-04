@@ -3703,7 +3703,82 @@ db.getCollection('field_mapping_structure').insertMany([
                 "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
             }
     }
-])
+]);
+
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+ //DTS-26123 start
+ db.getCollection('field_mapping_structure').insertMany([
+ {
+        "fieldName" : "jiraDefectRejectionStatusKPI155",
+        	"fieldLabel" : "Ticket Rejected/Dropped Status",
+        	"fieldType" : "text",
+        	"fieldCategory" : "workflow",
+        	"section" : "WorkFlow Status Mapping",
+        	"tooltip" : {
+        		"definition" : "Status from workflow on which ticket is considered as Rejected/Dropped."
+        	}
+ },
+ {
+        "fieldName": "jiraDodKPI155",
+        "fieldLabel": "DOD Status",
+        "fieldType": "chips",
+         "fieldCategory": "workflow",
+         "section": "WorkFlow Status Mapping",
+         "tooltip": {
+             "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+         }
+ },
+ {
+        "fieldName": "jiraLiveStatusKPI155",
+         "fieldLabel": "Status to identify Live status",
+         "fieldType": "text",
+         "fieldCategory": "workflow",
+         "section": "WorkFlow Status Mapping",
+         "tooltip": {
+             "definition": "Provide any status from workflow on which Live is considered."
+         }
+ }
+ ]);
+
+ const fieldMappings = db.field_mapping.find({});
+ fieldMappings.forEach(function(fm) {
+ 	db.field_mapping.updateOne({
+             "_id": fm._id
+         }, {
+              $set: {
+ 			  "jiraDefectRejectionStatusKPI155": fm.jiraDefectRejectionStatus,
+ 			  "jiraDodKPI155": fm.jiraDod,
+ 			  "jiraLiveStatusKPI155": fm.jiraLiveStatus
+ 			  }
+         });
+ });
+
+db.getCollection('kpi_master').insertOne(
+{
+  "kpiId": "kpi155",
+  "kpiName": "Defect Count By Type",
+  "kpiUnit": "Count",
+  "isDeleted": "False",
+  "defaultOrder": 11,
+  "kpiCategory": "Backlog",
+  "kpiSource": "Jira",
+  "groupId": 11,
+  "thresholdValue": "",
+  "kanban": false,
+  "chartType": "pieChart",
+  "kpiInfo": {
+    "definition": "Total count of issues in the backlog with a breakup by defect type."
+  },
+  "xAxisLabel": "",
+  "yAxisLabel": "",
+  "isPositiveTrend": true,
+  "showTrend": false,
+  "isAdditionalFilterSupport": false,
+  "kpiFilter": "dropdown",
+  "boxType": "chart",
+  "calculateMaturity": false
+});
+  //DTS-26123 end
 
 
 
