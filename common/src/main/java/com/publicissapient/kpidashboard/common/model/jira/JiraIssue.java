@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.common.model.jira;//NOPMD
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -227,8 +226,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 
 	private String originalType;
 	private String epicLinked;
-	//to find the linkage of subTasks with parentStory
-	private Set<String> parentStoryId;
 
 	public boolean isDefectRaisedByQA() {
 		return defectRaisedByQA;
@@ -242,20 +239,4 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		JiraIssue jiraIssue = (JiraIssue) o;
-		return Objects.equals(number, jiraIssue.number);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(number);
-	}
-
 }

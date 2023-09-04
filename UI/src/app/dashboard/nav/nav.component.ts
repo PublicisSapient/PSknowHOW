@@ -45,7 +45,7 @@ export class NavComponent implements OnInit {
   boardNameArr: any[] = [];
   boardId = 1;
   ssoLogin= environment.SSO_LOGIN;
-  visibleSidebar;
+  visibleSidebar = true;
   kanban = false;
   
   constructor(
@@ -71,9 +71,6 @@ export class NavComponent implements OnInit {
 
 
   ngOnInit() {
-    this.service.visibleSideBarObs.subscribe(value =>{
-      this.visibleSidebar = value;
-    });
     this.service.setSideNav(true);
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
@@ -242,10 +239,6 @@ export class NavComponent implements OnInit {
 
   closeEditModal() {
     this.displayEditModal = false;
-  }
-
-  setVisibleSideBar(val){
-    this.service.setVisibleSideBar(val);
   }
 
 }

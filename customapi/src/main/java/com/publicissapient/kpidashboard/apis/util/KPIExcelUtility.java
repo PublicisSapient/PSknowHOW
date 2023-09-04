@@ -34,10 +34,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -975,7 +973,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populatePRSizeExcelData(String projectName, List<Map<String, Long>> repoWiseMRList,
-			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+												   List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
 			for (int i = 0; i < repoWiseMRList.size(); i++) {
@@ -1358,15 +1356,8 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
-
-		if (modalValues!=null && overAllModalValues!=null){
-			modalValues.add(jiraIssueModalObject);
-			overAllModalValues.add(jiraIssueModalObject);
-		}
-		else{
-			modalObjectMap.computeIfPresent(jiraIssue.getNumber(),(k,v)->jiraIssueModalObject);
-		}
-
+		modalValues.add(jiraIssueModalObject);
+		overAllModalValues.add(jiraIssueModalObject);
 	}
 
 	/**

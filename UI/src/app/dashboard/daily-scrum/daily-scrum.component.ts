@@ -12,10 +12,9 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
   @Input() assigneeList = [];
   @Input() columns =[];
   @Input() displayModal=false;
-  @Input() showLess = false;
+  @Input() showLess = true;
   @Input() selectedUser = 'Overall';
   @Input() filters ={};
-  @Input() issueData=[];
 
   @Output() onExpandOrCollapse = new EventEmitter<boolean>();
   @Output() onShowLessOrMore = new EventEmitter<boolean>();
@@ -24,8 +23,6 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
 
   totals ={};
   allAssignee = [];
-  selectedUserInfo;
-  currentAssigneeissueData= [];
 
   constructor() { }
 
@@ -46,15 +43,11 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
           }
         }
       }
-      this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === this.selectedUser);
       this.calculateTotal();
-      this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
   }
 
-  setSelectedUser(assigneeId,assigneeName){
-    this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === assigneeId);
+  setSelectedUser(assigneeId){
     this.onSelectedUserChange.emit(assigneeId);
-    this.getCurrentAssigneeIssueData(assigneeName);
   }
 
   setShowLess(){
@@ -98,11 +91,11 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
 
    this.columns?.forEach(col =>{
     if(this.totals[col]?.unit === 'day'){
-      this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value,this.totals[col].unit);
+      this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value,this.totals[col].unit)
     }
 
     if(this.totals[col]?.unit1 === 'day'){
-      this.totals[col].value1 = this.convertToHoursIfTime(this.totals[col].value1,this.totals[col].unit1);
+      this.totals[col].value1 = this.convertToHoursIfTime(this.totals[col].value1,this.totals[col].unit1)
     }
 
    });
@@ -160,25 +153,5 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
     }
   }
 
-  getNameInitials(name){
-    const initials = name.split(' ').map(d => d[0]);
-    if(initials.length > 2){
-     return  initials.map(d => d[0]).slice(0,2).join('').toUpperCase();
-    }
-    return initials.join('').toUpperCase();
-}
 
-getCurrentAssigneeIssueData(assigneeName){
-  this.currentAssigneeissueData = this.issueData.filter(issue => issue['Assignee'] === assigneeName);
-  this.currentAssigneeissueData.forEach(issue => {
-    if('subTask' in issue && typeof issue['subTask'][0] === 'string'){
-      issue['subTask'] = this.getSubTaskIssueDetails(issue['subTask']);
-    }
-  });
-  // console.log(this.currentAssigneeissueData);
-}
-
-getSubTaskIssueDetails(subTaskList){
-  return this.issueData.filter(issue => subTaskList.includes(issue['Issue Id']));
-}
 }

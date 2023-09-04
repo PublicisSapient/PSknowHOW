@@ -88,8 +88,6 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
-  visibleSideBarSubject = new BehaviorSubject(true);
-  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -156,10 +154,6 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
-  }
-
-  setVisibleSideBar(value){
-    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {

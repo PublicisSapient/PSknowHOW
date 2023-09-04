@@ -382,13 +382,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// Set project specific details
 				setProjectSpecificDetails(projectConfig, azureIssue);
-				setSubTaskLinkage(azureIssue,issue,fieldMapping,projectConfig);
 
 				// Set additional filters
 				setAdditionalFilters(azureIssue, issue, projectConfig);
 
 				// Links stories/Defects with other Stories defect
-				setStoryLinkWithDefect(issue, azureIssue,fieldMapping, projectConfig);
+				setStoryLinkWithDefect(issue, azureIssue, projectConfig);
 
 				// ADD QA identification field to feature
 				setQADefectIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
@@ -852,12 +851,13 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	/**
 	 * Sets Story Link with Defect
-	 *  @param issue
+	 *
+	 * @param issue
 	 *            Atlassian Issue
 	 * @param azureIssue
-	 * @param fieldMapping
+	 *            Jira Issue
 	 */
-	private void setStoryLinkWithDefect(Value issue, JiraIssue azureIssue, FieldMapping fieldMapping, ProjectConfFieldMapping projectConfig) {
+	private void setStoryLinkWithDefect(Value issue, JiraIssue azureIssue, ProjectConfFieldMapping projectConfig) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
 
@@ -868,19 +868,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				setDefectStorySet(defectStorySet, relations, projectConfig);
 			}
 			azureIssue.setDefectStoryID(defectStorySet);
-		}
-	}
-
-	private void setSubTaskLinkage(JiraIssue jiraIssue, Value issue, FieldMapping fieldMapping,
-			ProjectConfFieldMapping projectConfig) {
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
-				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
-			Set<String> mainStorySet = new HashSet<>();
-			List<Relation> relations = issue.getRelations();
-			if (relations != null) {
-				setDefectStorySet(mainStorySet, relations, projectConfig);
-			}
-			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 

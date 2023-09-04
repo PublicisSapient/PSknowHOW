@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -57,11 +58,11 @@ public class CalculatePCDHelper {
 	 *
 	 * @param sprintDetails
 	 * @param allIssues
-	 * @param inProgressStatus
+	 * @param fieldMapping
 	 * @return
 	 */
 	public static List<IterationPotentialDelay> calculatePotentialDelay(SprintDetails sprintDetails,
-																		List<JiraIssue> allIssues, List<String> inProgressStatus) {
+			List<JiraIssue> allIssues, FieldMapping fieldMapping) {
 		List<IterationPotentialDelay> iterationPotentialDelayList = new ArrayList<>();
 		Map<String, List<JiraIssue>> assigneeWiseJiraIssue = assigneeWiseJiraIssue(allIssues);
 
@@ -69,18 +70,18 @@ public class CalculatePCDHelper {
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				arrangeJiraIssueList(inProgressStatus, jiraIssues, inProgressIssues,
+				arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI119(), jiraIssues, inProgressIssues,
 						openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
 		}
 
-		if (CollectionUtils.isNotEmpty(inProgressStatus)) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119())) {
 			List<JiraIssue> inProgressIssues = allIssues.stream()
 					.filter(jiraIssue -> (jiraIssue.getAssigneeId() == null)
 							&& StringUtils.isNotEmpty(jiraIssue.getDueDate())
-							&& (inProgressStatus.contains(jiraIssue.getStatus())))
+							&& (fieldMapping.getJiraStatusForInProgressKPI119().contains(jiraIssue.getStatus())))
 					.collect(Collectors.toList());
 
 			List<JiraIssue> openIssues = new ArrayList<>();
@@ -242,21 +243,21 @@ public class CalculatePCDHelper {
 	/**
 	 * setting in progress and open issues
 	 *
-	 * @param inProgressStatus
+	 * @param fieldMapping
 	 * @param allIssues
 	 * @param inProgressIssues
 	 * @param openIssues
 	 * @return
 	 */
-	public static void arrangeJiraIssueList(List<String> inProgressStatus, List<JiraIssue> allIssues,
+	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
 			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
 		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
 				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (CollectionUtils.isNotEmpty(inProgressStatus)) {
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
 			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> inProgressStatus.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
+					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !inProgressStatus.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
+					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
 		} else {
 			openIssues.addAll(jiraIssuesWithDueDate);
 		}
@@ -264,12 +265,12 @@ public class CalculatePCDHelper {
 	}
 
 	public static LinkedHashMap<String, IterationPotentialDelay> checkMaxDelayAssigneeWise(
-			List<IterationPotentialDelay> issueWiseDelay, List<String> inProgressStatus) {
+			List<IterationPotentialDelay> issueWiseDelay, FieldMapping fieldMapping) {
 		Map<String, List<IterationPotentialDelay>> assigneeWiseDelay = issueWiseDelay.stream()
 				.collect(Collectors.groupingBy(IterationPotentialDelay::getAssigneeId));
 		List<IterationPotentialDelay> maxDelayList = new ArrayList<>();
-		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(inProgressStatus)
-				? inProgressStatus
+		List<String> jiraStatusInProgress = CollectionUtils.isNotEmpty(fieldMapping.getJiraStatusForInProgressKPI119())
+				? fieldMapping.getJiraStatusForInProgressKPI119()
 				: new ArrayList<>();
 		assigneeWiseDelay.entrySet().forEach((assignee) -> maxDelayList.add(assignee.getValue().stream()
 				.filter(iterationPotentialDelay -> jiraStatusInProgress.contains(iterationPotentialDelay.getStatus()))

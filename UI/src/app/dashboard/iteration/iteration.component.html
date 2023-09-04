@@ -173,7 +173,6 @@
                                   <div class="p-pl-3 p-pr-3 w-100 position-relative"
                                     [ngSwitch]="kpi?.kpiDetail?.chartType"
                                     *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
-        
                                     <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
@@ -244,8 +243,7 @@
                   <app-daily-scrum-tab 
                     [assigneeList]="kpiChartData['kpi154']" 
                     [columns]="jiraKpiData['kpi154']?.modalHeads"
-                    [filterData]="jiraKpiData['kpi154']?.filterData"
-                    [issueData]="jiraKpiData['kpi154']?.issueData">
+                    [filterData]="jiraKpiData['kpi154']?.filterData">
                   </app-daily-scrum-tab>
                 </ng-container>
               </p-tabPanel>

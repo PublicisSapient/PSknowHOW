@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
 import org.joda.time.DateTime;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * @author vijkumar18
@@ -27,7 +26,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
  */
 public class ReleaseVersion {
 	/** The release name. */
-	@Indexed
 	private String releaseName;
 
 	/** The release date. */
