@@ -3083,7 +3083,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiName": "Defect Count By Type",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 9,
+    "defaultOrder": 11,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 11,

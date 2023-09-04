@@ -3753,16 +3753,13 @@ db.getCollection('field_mapping_structure').insertMany([
          });
  });
 
-const kpiIdsToCheck = ["kpi155"];
-var kpiData = db.getCollection('kpi_master').find( {kpiId: { $in: kpiIdsToCheck }}).toArray();
-if (kpiData.length === 0) {
 db.getCollection('kpi_master').insertOne(
 {
   "kpiId": "kpi155",
   "kpiName": "Defect Count By Type",
   "kpiUnit": "Count",
   "isDeleted": "False",
-  "defaultOrder": 9,
+  "defaultOrder": 11,
   "kpiCategory": "Backlog",
   "kpiSource": "Jira",
   "groupId": 11,
@@ -3781,9 +3778,6 @@ db.getCollection('kpi_master').insertOne(
   "boxType": "chart",
   "calculateMaturity": false
 });
-} else {
-     print("KPI are already present in Kpi master");
- }
   //DTS-26123 end
 
 

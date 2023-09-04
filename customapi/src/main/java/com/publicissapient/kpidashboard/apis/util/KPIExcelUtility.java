@@ -1545,14 +1545,14 @@ public class KPIExcelUtility {
 								: "-");
 				String date = Constant.EMPTY_STRING;
 				if (jiraIssue.getCreatedDate() != null) {
-					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setCreatedDate(date);
 				String updateDate = Constant.EMPTY_STRING;
 				if (jiraIssue.getUpdateDate() != null) {
 					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
-							DATE_FORMAT_PRODUCTION_DEFECT_AGEING, DateUtil.DISPLAY_DATE_FORMAT);
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setUpdatedDate(updateDate);
 				kpiExcelData.add(excelData);

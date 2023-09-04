@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -70,6 +71,9 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 	@Autowired
 	JiraIssueRepository jiraIssueRepository;
 
+	/**
+	 * Method to get the data for the KPI
+	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -99,8 +103,9 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 			jiraIssues = getJiraIssueListAfterDefectsWithStatusExcluded(jiraIssues, excludeStatuses);
 			Map<String, List<JiraIssue>> statusWiseIssuesList = new HashMap<>(
 					CollectionUtils.isNotEmpty(jiraIssues)
-							? jiraIssues.stream().filter(
-									jiraIssue -> fieldMapping.getJiradefecttype().contains(jiraIssue.getOriginalType()))
+							? jiraIssues.stream()
+									.filter(jiraIssue -> StringUtils.isNotEmpty(jiraIssue.getOriginalType())
+											&& fieldMapping.getJiradefecttype().contains(jiraIssue.getOriginalType()))
 									.collect(Collectors.groupingBy(JiraIssue::getOriginalType))
 							: new HashMap<>());
 			log.info("Defect Count By Type -> request id : {} total jira Issues : {}", requestTrackerId,
@@ -116,6 +121,9 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 		}
 	}
 
+	/**
+	 * Fetches the defects data from the backlog using the original types
+	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
