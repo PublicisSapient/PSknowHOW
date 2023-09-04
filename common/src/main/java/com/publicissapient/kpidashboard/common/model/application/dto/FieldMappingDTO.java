@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -52,8 +51,6 @@ public class FieldMappingDTO extends BasicModel {
 	private String atmQueryEndpoint;
 	private String sprintName;
 	private String epicName;
-	public static final String DONE = "Done";
-	public static final String CLOSED = "Closed";
 	private List<String> jiradefecttype;
 	private String epicLink;
 	private List<String> jiraSubTaskDefectType;
@@ -378,12 +375,9 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
-	//DTS-26123 start
 	private String jiraDefectRejectionStatusKPI155;
-	@Builder.Default
-	private List<String> jiraDodKPI155 = Arrays.asList(DONE, CLOSED);
+	private List<String> jiraDodKPI155;
 	private String jiraLiveStatusKPI155;
-	//DTS-26123 end
 
 	@Builder.Default
 	private String notificationEnabler="On";

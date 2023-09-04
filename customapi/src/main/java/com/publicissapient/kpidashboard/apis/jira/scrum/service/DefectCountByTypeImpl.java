@@ -72,7 +72,12 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 	JiraIssueRepository jiraIssueRepository;
 
 	/**
-	 * Method to get the data for the KPI
+	 *
+	 * @param kpiRequest kpiRequest with request details
+	 * @param kpiElement basic details of KPI
+	 * @param treeAggregatorDetail details of project nodes
+	 * @return KpiElement with data
+	 * @throws ApplicationException exception while processing request
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -122,7 +127,12 @@ public class DefectCountByTypeImpl extends JiraKPIService<Integer, List<Object>,
 	}
 
 	/**
-	 * Fetches the defects data from the backlog using the original types
+	 *
+	 * @param leafNodeList project node details
+	 * @param startDate startDate
+	 * @param endDate endDate
+	 * @param kpiRequest kpiRequest with request details
+	 * @return JiraIssues with Original Types
 	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
