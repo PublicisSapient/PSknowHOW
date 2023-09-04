@@ -33,7 +33,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
       }
       this.draw(this.data);
-      d3.select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
+      d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
   }
 
