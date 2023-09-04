@@ -3692,6 +3692,7 @@ db.getCollection('kpi_category_mapping').insertOne( {
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
 // ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
+// ---- New FieldMapping Upload Enable for In-sprint & Regression Percentage Kpi
 db.getCollection('field_mapping_structure').insertMany([
     {
             "fieldName": "jiraSubTaskDefectType",
