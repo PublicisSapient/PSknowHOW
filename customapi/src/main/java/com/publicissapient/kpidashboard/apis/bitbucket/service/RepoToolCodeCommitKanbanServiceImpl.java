@@ -171,9 +171,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repo.getRepositoryName(),
 								repo.getBranch(), dateWiseCommitList);
-						if (MapUtils.isNotEmpty(dateWiseCommitList)) {
-							aggCommitCountForRepo.putAll(dateWiseCommitList);
-						}
+						aggCommitCountForRepo.putAll(dateWiseCommitList);
 						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, excelDataLoader, projectName,
 								kpiRequest);
 					}
@@ -292,7 +290,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return null;
+		return new HashMap<>();
 	}
 
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
