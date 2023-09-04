@@ -935,7 +935,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     /** to prepare table data */
     getTableData(kpiId, idx, enabledKpi){
         let trendValueList = [];
-        if(idx){
+        if(idx >= 0){
             trendValueList = this.allKpiArray[idx]?.trendValueList;
         }else{
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
@@ -982,7 +982,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     if(item){
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
-                        let val = item?.lineValue ? item?.lineValue : item?.value;
+                        let val = item?.lineValue >=0 ? item?.lineValue : item?.value;
                         obj[i+1] = val > 0 ? 
                         (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
                         : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';

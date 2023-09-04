@@ -17,6 +17,7 @@ export class KpiTableComponent implements OnInit {
   left:string = '';
   top: string = '';
   nodeColors:object = {};
+  loader:boolean=false;
 
   constructor() { }
 
