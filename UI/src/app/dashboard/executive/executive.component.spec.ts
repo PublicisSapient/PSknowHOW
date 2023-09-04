@@ -6220,15 +6220,133 @@ expect(result[1]).toEqual('-ve');
         "trendValueList": [
             {
                 "filter": "Overall",
+                "value":[
+                  {
+                      "data": "KnowHOW",
+                      "value": [
+                          {
+                              "data": "4",
+                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                              "value": 4,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "1",
+                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                              "value": 1,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "6",
+                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                              "value": 6,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "19",
+                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                              "value": 19,
+                              "hoverValue": {
+                                  "P1": 1,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "3",
+                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                              "value": 3,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          }
+                      ]
+                  }
+                ]
             },
             {
                 "filter": "P1",
-            },
-            {
-                "filter": "P2",
-            },
-            {
-              "filter": "P3",
+                "value":[
+                  {
+                      "data": "KnowHOW",
+                      "value": [
+                          {
+                              "data": "4",
+                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                              "value": 4,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "1",
+                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                              "value": 1,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "6",
+                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                              "value": 6,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "19",
+                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                              "value": 19,
+                              "hoverValue": {
+                                  "P1": 1,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "3",
+                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                              "value": 3,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          }
+                      ]
+                  }
+                ]
             },
         ],
     }};
