@@ -25,7 +25,7 @@
     </div>
 
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
-        <p-chips styleClass="p-w-100" inputId="fieldConfig?.fieldName"
+        <p-chips styleClass="p-w-100" [disabled]="fieldConfig?.readOnly" inputId="fieldConfig?.fieldName"
             placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
         </p-chips>
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
