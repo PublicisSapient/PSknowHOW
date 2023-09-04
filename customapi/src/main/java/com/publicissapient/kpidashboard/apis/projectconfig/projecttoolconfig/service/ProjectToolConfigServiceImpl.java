@@ -224,11 +224,11 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 
 		if (CollectionUtils.isNotEmpty(projectToolConfig.getBoards())
-				&& CollectionUtils.isNotEmpty(projectTool.getBoards())) {
-			if (!compareTwoListOfObjects(projectTool.getBoards(), projectToolConfig.getBoards())) {
-				cleanData(projectTool);
-			}
+				&& CollectionUtils.isNotEmpty(projectTool.getBoards())
+				&& !compareTwoListOfObjects(projectTool.getBoards(), projectToolConfig.getBoards())) {
+			cleanData(projectTool);
 		}
+
 
 		projectTool.setToolName(projectToolConfig.getToolName());
 		projectTool.setBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
