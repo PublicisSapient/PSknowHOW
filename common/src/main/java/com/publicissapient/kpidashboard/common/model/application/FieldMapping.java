@@ -375,6 +375,9 @@ public class FieldMapping extends BasicModel {
 	private boolean uploadDataKPI42;
 	private boolean uploadDataKPI16;
 	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
 	private String notificationEnabler="On";

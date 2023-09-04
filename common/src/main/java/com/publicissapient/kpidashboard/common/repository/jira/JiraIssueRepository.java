@@ -173,4 +173,15 @@ public interface JiraIssueRepository
 
 	Set<JiraIssue> findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(String basicProjectConfigID,
 			Set<String> storyIDs, List<String> originalType);
+
+	/*
+	 * Find documents for given types and basicProjectConfigId.
+	 *
+	 *
+	 * @param basicProjectConfigId
+	 * @param typeName
+	 *
+	 * @return JiraIssue
+	 */
+	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 }
