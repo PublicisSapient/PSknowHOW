@@ -425,6 +425,13 @@ public enum KPICode {
      *
      */
     DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+    //DTS-26123 start
+    /**
+     *Defect count by Type for backlog
+     */
+    DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
+    //DTS-26123 end
+
     /**
      * Mean Time To Merge
      */
@@ -445,6 +452,7 @@ public enum KPICode {
      * PR Size
      */
     PR_SIZE("kpi162", KPISource.BITBUCKET.name());
+
 
     // @formatter:on
 

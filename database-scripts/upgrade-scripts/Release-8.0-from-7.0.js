@@ -3692,18 +3692,675 @@ db.getCollection('kpi_category_mapping').insertOne( {
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
 // ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
-db.getCollection('field_mapping_structure').insertMany([
+// ---- New FieldMapping Upload Enable for In-sprint & Regression Percentage Kpi
+// ---- //DTS-26123 new FieldMapping structures
+db.getCollection('field_mapping_structure').insertMany([{
+	"fieldName": "jiraSubTaskDefectType",
+	"fieldLabel": "Issue type for sub-task defect",
+	"fieldType": "chips",
+	"fieldCategory": "Issue_Type",
+	"section": "Issue Types Mapping",
+	"tooltip": {
+		"definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+	}
+}, {
+	"fieldName": "uploadDataKPI42",
+	"fieldLabel": "KPI calculation logic",
+	"fieldType": "toggle",
+	"toggleLabel": "Upload Data",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi from data on Upload data screen)"
+	}
+}, {
+	"fieldName": "uploadDataKPI16",
+	"fieldLabel": "KPI calculation logic",
+	"fieldType": "toggle",
+	"toggleLabel": "Upload Data",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi from data on Upload data screen)"
+	}
+}, {
+	"fieldName": "jiraDefectRejectionStatusKPI155",
+	"fieldLabel": "Ticket Rejected/Dropped Status",
+	"fieldType": "text",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
+	}
+}, {
+	"fieldName": "jiraDodKPI155",
+	"fieldLabel": "DOD Status",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+	}
+}, {
+	"fieldName": "jiraLiveStatusKPI155",
+	"fieldLabel": "Status to identify Live status",
+	"fieldType": "text",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Provide any status from workflow on which Live is considered."
+	}
+}]);
+
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+	db.field_mapping.updateOne({
+		"_id": fm._id
+	}, {
+		$set: {
+			"jiraDefectRejectionStatusKPI155": fm.jiraDefectRejectionStatus,
+			"jiraDodKPI155": fm.jiraDod,
+			"jiraLiveStatusKPI155": fm.jiraLiveStatus
+		}
+	});
+});
+//DTS-26123
+db.getCollection('kpi_master').insertOne({
+	"kpiId": "kpi155",
+	"kpiName": "Defect Count By Type",
+	"kpiUnit": "Count",
+	"isDeleted": "False",
+	"defaultOrder": 11,
+	"kpiCategory": "Backlog",
+	"kpiSource": "Jira",
+	"groupId": 11,
+	"thresholdValue": "",
+	"kanban": false,
+	"chartType": "pieChart",
+	"kpiInfo": {
+		"definition": "Total count of issues in the backlog with a breakup by defect type."
+	},
+	"xAxisLabel": "",
+	"yAxisLabel": "",
+	"isPositiveTrend": true,
+	"showTrend": false,
+	"isAdditionalFilterSupport": false,
+	"kpiFilter": "dropdown",
+	"boxType": "chart",
+	"calculateMaturity": false
+});
+
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+
+// RepoTool
+// added new repo tools kpi for developer tab
+const kpiIdsToCheck = ["kpi157", "kpi158", "kpi159", "kpi160"];
+var kpiData = db
+  .getCollection("kpi_master")
+  .find({ kpiId: { $in: kpiIdsToCheck } })
+  .toArray();
+var kpiColumnData = db
+  .getCollection("kpi_column_configs")
+  .find({ kpiId: { $in: kpiIdsToCheck } })
+  .toArray();
+
+if (kpiData.length === 0) {
+    db.getCollection("kpi_master").insertMany([
+      {
+        kpiId: "kpi157",
+        kpiName: "Check-Ins & Merge Requests",
+        maxValue: "10",
+        kpiUnit: "MRs",
+        isDeleted: "False",
+        defaultOrder: 1,
+        kpiSource: "BitBucket",
+        groupId: 1,
+        thresholdValue: "55",
+        kanban: false,
+        chartType: "grouped_column_plus_line",
+        kpiInfo: {
+          definition:
+            "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated as a Count. Higher the count better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: "> 16",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "8-16",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "4-8",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "2-4",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: "0-2",
+            },
+          ],
+        },
+        xAxisLabel: "Days",
+        yAxisLabel: "Count",
+        lineLegend: "Merge Requests",
+        barLegend: "Commits",
+        isPositiveTrend: true,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi158",
+        kpiName: "Mean Time To Merge",
+        maxValue: "10",
+        kpiUnit: "Hours",
+        isDeleted: "False",
+        defaultOrder: 2,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "55",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: "<4 Hours",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "4-8 Hours",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "8-16 Hours",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "16-48 Hours",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: ">48 Hours",
+            },
+          ],
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(Hours)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi159",
+        kpiName: "Number of Check-ins",
+        maxValue: "10",
+        kpiUnit: "check-ins",
+        isDeleted: "False",
+        defaultOrder: 1,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "55",
+        kanban: true,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated as a Count. Higher the count better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive.",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the latest value",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: ">16",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "8-16",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "4-8",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "2-4",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: "0-2",
+            },
+          ],
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count",
+        isPositiveTrend: true,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "sum",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi160",
+        kpiName: "Pickup Time",
+        maxValue: "10",
+        kpiUnit: "Hours",
+        isDeleted: "False",
+        defaultOrder: 3,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "20",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Pickup Time in last 2 weeks. A downward trend is considered positive",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: "<4 Hours",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "4-8 Hours",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "8-16 Hours",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "16-48 Hours",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: ">48 Hours",
+            },
+          ],
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(Hours)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi162",
+        kpiName: "PR Size",
+        maxValue: "10",
+        kpiUnit: "Lines",
+        isDeleted: "False",
+        defaultOrder: 4,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(No. of Lines)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+    ]);
+} else {
+  print("KPI are already present in Kpi master");
+}
+
+if (kpiColumnData.length === 0) {
+  db.getCollection("kpi_column_configs").insertMany([
     {
-            "fieldName": "jiraSubTaskDefectType",
-            "fieldLabel": "Issue type for sub-task defect",
-            "fieldType": "chips",
-            "fieldCategory": "Issue_Type",
-            "section": "Issue Types Mapping",
-            "tooltip": {
-                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
-            }
-    }
+      basicProjectConfigId: null,
+      kpiId: "kpi157",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Day",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. Of Commit",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. of Merge",
+          order: 5,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi158",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Mean Time To Merge (In Hours)",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi159",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Days",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "No. Of Commit",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi160",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Pickup Time (In Hours)",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+    {
+      basicProjectConfigId: null,
+      kpiId: "kpi162",
+      kpiColumnDetails: [
+        {
+          columnName: "Project Name",
+          order: 0,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Repository Url	",
+          order: 1,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Branch",
+          order: 2,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "Weeks",
+          order: 3,
+          isShown: true,
+          isDefault: true,
+        },
+        {
+          columnName: "PR Size",
+          order: 4,
+          isShown: true,
+          isDefault: true,
+        },
+      ],
+    },
+  ]);
+} else {
+  print("KPI Column Config data is already present");
+}
+
+var kpiIdsToUpdate = ["kpi84", "kpi11", "kpi65"];
+var developerTabFields = {
+  isRepoToolKpi: false,
+  kpiCategory: "Developer",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: developerTabFields }
+);
+
+db.createCollection("repo_tools_provider")
+
+db.repo_tools_provider.insertMany([
+  {
+    "toolName": "bitbucket",
+    "debbieProvider": "bitbucket_oauth2",
+    "testApiUrl": "https://api.bitbucket.org/2.0/repositories/",
+    "repoToolProvider": "bitbucket_oauth2"
+  },
+  {
+    "toolName": "gitlab",
+    "debbieProvider": "gitlab",
+    "testApiUrl": "https://gitlab.com/api/v4/projects/"
+  },
+  {
+    "toolName": "github",
+    "debbieProvider": "github",
+    "testApiUrl": "https://api.github.com/users/",
+    "repoToolProvider": "github"
+  }
 ])
 
-
-
+db.processor.insertOne(
+  {
+    "processorName": "RepoTool",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "isLastSuccess": false,
+  }
+)

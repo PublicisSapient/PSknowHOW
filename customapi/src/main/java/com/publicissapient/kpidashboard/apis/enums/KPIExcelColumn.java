@@ -262,10 +262,16 @@ public enum KPIExcelColumn {
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
 
-	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
-	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "Pickup Time (In Hours)")), PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "PR Size (No. of lines)"));;
+	DAILY_STANDUP_VIEW("kpi154",
+			Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")), PICKUP_TIME("kpi160",
+					Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+							"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+									Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+											"PR Size (No. of lines)")),
+	// DTS-26123 start
+	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Issue Status",
+			"Sprint Name", "Priority", "Created Date", "Updated Date", "Assignee"));
+	// DTS-26123 end
 
 	// @formatter:on
 
