@@ -534,7 +534,7 @@ if(!(this.maxYValue >=5)){
   formatData() {
     if (this.data?.length > 0) {
 
-      // console.log(this.data);
+      console.log(this.data);
       // this.data = this.padData(this.data);
       let prevsum = 0; let currentSum = 0; let max = 0;
       const targetList = [];

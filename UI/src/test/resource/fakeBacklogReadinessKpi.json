@@ -1,0 +1,70 @@
+{
+    "kpiId": "kpi138",
+    "kpiName": "Backlog Readiness",
+    "unit": "Count",
+    "maxValue": "",
+    "chartType": "",
+    "kpiInfo": {
+        "details": [
+            {
+                "type": "paragraph",
+                "value": "Ready Backlog: No. of issues which are refined in the backlog. This is identified through a status configured in KnowHOW."
+            },
+            {
+                "type": "paragraph",
+                "value": "Backlog Strength: Total size of 'Refined' issues in the backlog / Average velocity of last 5 sprints. It is calculated in terms of no. of sprints. Recommended strength is 2 sprints."
+            },
+            {
+                "type": "paragraph",
+                "value": "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+            }
+        ]
+    },
+    "id": "64f540467bfd20ed99eb9353",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "kpiUnit": "Count",
+    "kanban": false,
+    "kpiSource": "Jira",
+    "trendValueList": {
+        "value": [
+            {
+                "SprintName": "Sprint1",
+                "data": 12,
+                "value": {
+                    "To Do": {
+                        "Count": 2,
+                        "size": 5.0
+                    },
+                    "In Progress": {
+                        "Count": 5,
+                        "size": 20
+                    },
+                    "Done": {
+                        "Count": 5,
+                        "size": 20
+                    }
+                }
+            },
+            {
+                "SprintName": "Sprint2",
+                "data": 11,
+                "value": {
+                    "To Do": {
+                        "Count": 2,
+                        "size": 6.0
+                    },
+                    "In Progress": {
+                        "Count": 5,
+                        "size": 10
+                    },
+                    "Done": {
+                        "Count": 4,
+                        "size": 10
+                    }
+                }
+            }
+        ]
+    },
+    "groupId": 11
+}

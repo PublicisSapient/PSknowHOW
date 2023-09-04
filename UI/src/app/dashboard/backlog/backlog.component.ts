@@ -233,7 +233,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
                     });
                 });
             }
-        }
+          }
+          if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
+            this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
+          }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -342,10 +345,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
     } else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
-      } else {
+      } else if(trendValueList?.hasOwnProperty('value')){
+        this.kpiChartData[kpiId] = [...trendValueList?.value];
+      }else{
         this.kpiChartData[kpiId] = [];
       }
+      
     }
+    console.log(kpiId, this.kpiChartData[kpiId]);
 
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
@@ -606,7 +613,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
         });
 
         kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
-        console.log(kpi3preAggregatedValues);
         
         kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
         this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
