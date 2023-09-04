@@ -356,4 +356,24 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getReleaseList();
 	}
 
+	public List<JiraIssue> getFilteredReleaseJiraDefectIssuesFromBaseClass(FieldMapping fieldMapping) {
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		List<String> defectType = new ArrayList<>();
+		List<JiraIssue> jiraIssuesForCurrentRelease = jiraService.getJiraIssuesForSelectedRelease();
+		Set<JiraIssue> defectsList = jiraService.getSubTaskDefects();
+		if (CollectionUtils.isNotEmpty(defectsList)) {
+			List<JiraIssue> subtaskDefects = new ArrayList<>(defectsList);
+			subtaskDefects.removeIf(jiraIssuesForCurrentRelease::contains);
+			filteredJiraIssue = subtaskDefects;
+		}
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
+				&& CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
+			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
+			defectType.addAll(fieldMapping.getJiradefecttype());
+			filteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
+					.filter(jiraIssue -> defectType.contains(jiraIssue.getOriginalType())).collect(Collectors.toList()));
+		}
+		return filteredJiraIssue;
+	}
+
 }

@@ -424,7 +424,13 @@ public enum KPICode {
     /**
      *
      */
-    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name());
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+    //DTS-26123 start
+    /**
+     *Defect count by Type for backlog
+     */
+    DEFECT_BY_TESTING_PHASE("kpi163", KPISource.JIRA.name());
+    //DTS-26123 end
 
 
     // @formatter:on
