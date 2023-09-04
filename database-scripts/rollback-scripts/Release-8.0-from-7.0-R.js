@@ -473,6 +473,18 @@ db.field_mapping_structure.deleteMany({
     "fieldName": "jiraSubTaskDefectType"
 });
 
+//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
+ //DTS-26123 start
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: [ "jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"]}
+});
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi155" }
+);
+//DTS-26123 end
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 //DTS-26150 start
 db.field_mapping_structure.deleteOne({
     "fieldName": "testingPhaseDefectsIdentifier"

@@ -264,6 +264,11 @@ public enum KPIExcelColumn {
 
 	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
 
+	//DTS-26123 start
+	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
+	//DTS-26123 end
+
 	DEFECT_BY_TESTING_PHASE("kpi163",
 			Arrays.asList("Issue ID", "Issue Type", "Issue Description","Size(story point/hours)", "Priority", "Assignee",
 					"Issue Status"));

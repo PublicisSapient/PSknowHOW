@@ -305,6 +305,7 @@ public final class CommonConstant {
 	public static final String EPICJOBSIZE="epicJobSize";
 	public static final String SPRINTNAME="sprintName";
 	public static final String JIRATECHDEBTISSUETYPE="jiraTechDebtIssueType";
+	public static final String ACTIVE = "ACTIVE";
 
 	private CommonConstant() {
 
