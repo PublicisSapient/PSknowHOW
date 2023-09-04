@@ -470,10 +470,12 @@ db.kpi_category_mapping.insertMany([
 // delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------
 
 db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: ["uploadDataKPI42", "uploadDataKPI16", "jiraSubTaskDefectType", "jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"]}
+    "fieldName": {
+        $in: ["uploadDataKPI42", "uploadDataKPI16", "jiraSubTaskDefectType", "jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"]
+    }
 });
 
-//DTS-26123 end
+//DTS-26123
 db.getCollection('kpi_master').deleteOne(
   { "kpiId": "kpi155" }
 );
