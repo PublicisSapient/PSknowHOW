@@ -128,11 +128,14 @@
                                     </div>
                                     <p class="text-data">
                                       <span
-                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'}">{{x?.value
+                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk'
+                                         || kpi?.kpiId == 'kpi123' && x?.label?.toLowerCase() === 'story point'}">{{x?.value
                                         != -99 ?
                                         convertToHoursIfTime(x?.value,x?.unit) : '-'}}</span>
                                       <span
-                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit == '%'}"
+                                        [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                        || x?.label?.toLowerCase() === 'issues at risk'
+                                        || kpi?.kpiId == 'kpi123' && x?.label?.toLowerCase() === 'story point', 'noSpace':x?.unit == '%'}"
                                         *ngIf="x?.value != -99 && x?.unit && x?.unit?.toLowerCase() !== 'hours' && x?.unit?.toLowerCase() !== 'day'">
                                         {{ x?.value != -99 ? x?.unit: ''}}
                                       </span>
