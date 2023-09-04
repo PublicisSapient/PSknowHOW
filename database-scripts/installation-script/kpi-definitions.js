@@ -8168,6 +8168,8 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraStatusForInProgressKPI154",
         "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "chips",
         "readOnly": true,
         "tooltip": {
             "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
