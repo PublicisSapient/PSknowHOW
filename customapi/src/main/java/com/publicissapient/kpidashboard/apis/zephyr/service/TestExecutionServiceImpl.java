@@ -168,13 +168,11 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
 			List<DataCount> resultList = new ArrayList<>();
-			String validationKey = node.getSprintFilter().getName();
 			String sprintId = node.getSprintFilter().getId();
 			String trendLineName = node.getProjectFilter().getName();
 
 			if (null != sprintWiseDataMap.get(sprintId)) {
-				setSprintNodeValue(sprintWiseDataMap.get(sprintId), resultList, trendLineName, node, validationKey,
-						excelData);
+				setSprintNodeValue(sprintWiseDataMap.get(sprintId), resultList, trendLineName, node, excelData);
 			} else {
 				DataCount dataCount = new DataCount();
 				dataCount.setSubFilter(Constant.EMPTY_STRING);
@@ -205,7 +203,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	 * @param excelData
 	 */
 	private void setSprintNodeValue(TestExecution executionDetail, List<DataCount> trendValueList, String trendLineName,
-			Node node, String validationKey, List<KPIExcelData> excelData) {
+			Node node, List<KPIExcelData> excelData) {
 
 		// aggregated value of all sub-filters of a project for given sprint
 		double executionPerc = Math
@@ -244,6 +242,19 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		aggData.put(PASSED, detail.getPassedTestCase());
 
 		return aggData;
+	}
+
+	/**
+	 * * Checking if data exist in that sprint & grouping it by sprint
+	 *
+	 * @param resultList
+	 * @return
+	 */
+	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
+		return resultList.stream()
+				.filter(testExecution -> testExecution.getExecutedTestCase() != null
+						&& testExecution.getTotalTestCases() != null && testExecution.getPassedTestCase() != null)
+				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 
 	@Override

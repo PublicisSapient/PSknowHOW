@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -373,7 +374,8 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	}
 
 	/**
-	 *  populating from uploaded data
+	 * populating from uploaded data
+	 * 
 	 * @param mapTmp
 	 * @param trendValueList
 	 * @param node
@@ -485,6 +487,19 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		trendValueList.add(dataCount);
 
+	}
+
+	/**
+	 * * Checking if data exist in that sprint & grouping it by sprint
+	 *
+	 * @param resultList
+	 * @return
+	 */
+	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
+		return resultList.stream()
+				.filter(testExecution -> testExecution.getAutomatedTestCases() != null
+						&& testExecution.getAutomatableTestCases() != null)
+				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 
 	@Override

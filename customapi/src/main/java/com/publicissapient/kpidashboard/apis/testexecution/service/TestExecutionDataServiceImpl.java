@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -250,17 +251,28 @@ public class TestExecutionDataServiceImpl implements TestExecutionService {
 	private boolean processScrumTestExecutionData(TestExecutionData testExecutionData) {
 		boolean processed = false;
 		if (testExecutionIdNullCheck(testExecutionData)) {
-			TestExecution testExecutiondata = testExecutionRepository.findBySprintId(testExecutionData.getSprintId());
+			TestExecution existingTestExecutionData = testExecutionRepository
+					.findBySprintId(testExecutionData.getSprintId());
 			TestExecution testExecution = null;
-			if (testExecutiondata != null) {
-				testExecution = testExecutiondata;
-				testExecution.setTotalTestCases(testExecutionData.getTotalTestCases());
-				testExecution.setExecutedTestCase(testExecutionData.getExecutedTestCase());
-				testExecution.setPassedTestCase(testExecutionData.getPassedTestCase());
-				testExecution.setAutomatedTestCases(testExecutionData.getAutomatedTestCases());
-				testExecution.setAutomatableTestCases(testExecutionData.getAutomatableTestCases());
-				testExecution.setAutomatedRegressionTestCases(testExecutionData.getAutomatedRegressionTestCases());
-				testExecution.setTotalRegressionTestCases(testExecutionData.getTotalRegressionTestCases());
+			if (existingTestExecutionData != null) {
+				testExecution = existingTestExecutionData;
+				testExecution.setTotalTestCases(ObjectUtils.defaultIfNull(testExecutionData.getTotalTestCases(),
+						existingTestExecutionData.getTotalTestCases()));
+				testExecution.setExecutedTestCase(ObjectUtils.defaultIfNull(testExecutionData.getExecutedTestCase(),
+						existingTestExecutionData.getExecutedTestCase()));
+				testExecution.setPassedTestCase(ObjectUtils.defaultIfNull(testExecutionData.getPassedTestCase(),
+						existingTestExecutionData.getPassedTestCase()));
+				testExecution.setAutomatedTestCases(ObjectUtils.defaultIfNull(testExecutionData.getAutomatedTestCases(),
+						existingTestExecutionData.getAutomatedTestCases()));
+				testExecution
+						.setAutomatableTestCases(ObjectUtils.defaultIfNull(testExecutionData.getAutomatableTestCases(),
+								existingTestExecutionData.getAutomatableTestCases()));
+				testExecution.setAutomatedRegressionTestCases(
+						ObjectUtils.defaultIfNull(testExecutionData.getAutomatedRegressionTestCases(),
+								existingTestExecutionData.getAutomatedRegressionTestCases()));
+				testExecution.setTotalRegressionTestCases(
+						ObjectUtils.defaultIfNull(testExecutionData.getTotalRegressionTestCases(),
+								existingTestExecutionData.getTotalRegressionTestCases()));
 			} else {
 				testExecution = createScrumTestExecutionData(testExecutionData);
 			}

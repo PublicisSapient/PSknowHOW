@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -241,7 +242,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	}
 
 	/**
-	 *  populate by tool configured
+	 * populate by tool configured
+	 * 
 	 * @param mapTmp
 	 * @param trendValueList
 	 * @param node
@@ -301,7 +303,8 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	}
 
 	/**
-	 *  populate by uploaded data
+	 * populate by uploaded data
+	 * 
 	 * @param mapTmp
 	 * @param trendValueList
 	 * @param node
@@ -350,4 +353,16 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		trendValueList.add(dataCount);
 	}
 
+	/**
+	 * * Checking if data exist in that sprint & grouping it by sprint
+	 *
+	 * @param resultList
+	 * @return
+	 */
+	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
+		return resultList.stream()
+				.filter(testExecution -> testExecution.getAutomatedRegressionTestCases() != null
+						&& testExecution.getTotalRegressionTestCases() != null)
+				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
+	}
 }

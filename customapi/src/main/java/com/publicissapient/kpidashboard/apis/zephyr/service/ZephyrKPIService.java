@@ -24,10 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -391,13 +389,4 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 		return resultListMap;
 	}
 
-	/**
-	 * * Group list of data by sprint
-	 *
-	 * @param resultList
-	 * @return
-	 */
-	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
-		return resultList.stream().collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
-	}
 }
