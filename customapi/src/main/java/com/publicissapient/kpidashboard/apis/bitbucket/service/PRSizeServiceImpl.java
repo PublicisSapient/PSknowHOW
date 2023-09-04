@@ -190,7 +190,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 	private void aggPickupTime(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
 			Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
 		if (MapUtils.isNotEmpty(prSizeForRepo)) {
-            prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
+			prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
 		}
 		if (MapUtils.isNotEmpty(mrCount)) {
 			mrCount.forEach((key, value) -> aggMRCount.merge(key, value, Long::sum));

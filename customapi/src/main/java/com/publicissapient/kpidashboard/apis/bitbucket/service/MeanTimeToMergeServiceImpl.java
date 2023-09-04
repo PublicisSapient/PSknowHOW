@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -19,7 +18,6 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -132,7 +130,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
-		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(projectLeafNodeList, localStartDate.toString(), localEndDate.toString(), null);
+		List<MergeRequests> mergeRequestsList = fetchKPIDataFromDb(projectLeafNodeList, localStartDate.toString(),
+				localEndDate.toString(), null);
 
 		// converting to map with keys collectorItemId
 		Map<ObjectId, List<MergeRequests>> mergeRequestsListItemId = mergeRequestsList.stream()
@@ -168,8 +167,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 						aggMergeRequests.addAll(mergeReqList);
 
 						String branchName = getBranchSubFilter(repo, projectName);
-						setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader, branchName, projectName,
-								aggDataMap, duration, dataPoints);
+						setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader, branchName, projectName, aggDataMap,
+								duration, dataPoints);
 						repoWiseMRList.add(excelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
@@ -185,8 +184,9 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
 	}
 
-	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, Map<String, Double> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
+	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, Map<String, Double> excelDataLoader,
+			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, String duration,
+			Integer dataPoints) {
 		List<Double> valueForCurrentLeafList = new ArrayList<>();
 		Map<String, Double> weekRange = new TreeMap<>();
 		LocalDate currentDate = LocalDate.now();
@@ -196,7 +196,8 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			for (MergeRequests mergeReq : mergeReqList) {
 				LocalDate closedDate = Instant.ofEpochMilli(mergeReq.getClosedDate()).atZone(ZoneId.systemDefault())
 						.toLocalDate();
-				if (closedDate.compareTo(dateRange.getStartDate()) >= 0 && closedDate.compareTo(dateRange.getEndDate()) <= 0) {
+				if (closedDate.compareTo(dateRange.getStartDate()) >= 0
+						&& closedDate.compareTo(dateRange.getEndDate()) <= 0) {
 					double mergeDuration = (double) (mergeReq.getClosedDate()) - mergeReq.getCreatedDate();
 					durationList.add(mergeDuration);
 				}
@@ -223,7 +224,7 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			range = DateUtil.dateTimeConverter(dateRange.getStartDate().toString(), DateUtil.DATE_FORMAT,
 					DateUtil.DISPLAY_DATE_FORMAT) + " to "
 					+ DateUtil.dateTimeConverter(dateRange.getEndDate().toString(), DateUtil.DATE_FORMAT,
-					DateUtil.DISPLAY_DATE_FORMAT);
+							DateUtil.DISPLAY_DATE_FORMAT);
 		} else {
 			range = dateRange.getStartDate().toString();
 		}

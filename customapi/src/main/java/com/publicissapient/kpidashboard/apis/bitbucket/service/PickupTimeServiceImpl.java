@@ -308,7 +308,7 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
 					startDate = startDate.minusDays(1);
 				}
 			}
-			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK)?WEEK_FREQUENCY:DAY_FREQUENCY;
+			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
 					PICKUP_TIME_KPI, startDate.toString(), endDate.toString(), debbieDuration);
 		}

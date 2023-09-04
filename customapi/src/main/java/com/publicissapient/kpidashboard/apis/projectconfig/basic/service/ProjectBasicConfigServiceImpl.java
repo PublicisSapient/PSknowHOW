@@ -133,9 +133,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	private TestExecutionService testExecutionService;
 
 	@Autowired
-	private ProjectToolConfigService projectToolConfigService;
-
-	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 
 	/**

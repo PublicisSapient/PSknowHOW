@@ -235,7 +235,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
-				isValid = testConnectionForRepoTools(apiUrl, connection.getUsername(), password, toolName);
+				isValid = testConnectionForRepoTools(apiUrl, password, connection);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
 		else {
@@ -247,26 +247,14 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return statusCode;
 	}
 
-	private boolean testConnectionForRepoTools(String apiUrl, String username, String password, String toolname) {
+	private boolean testConnectionForRepoTools(String apiUrl, String password, Connection connection) {
 
-		try {
-			HttpHeaders httpHeaders = createHeadersWithAuthentication(username, password, false);
-			HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
-			ResponseEntity<String> response = restTemplate.exchange(URI.create(apiUrl),
-					HttpMethod.GET, requestEntity, String.class);
-			if (response.getStatusCode().is2xxSuccessful() && toolname.equalsIgnoreCase(Constant.TOOL_GITHUB)) {
-				HttpHeaders headers = response.getHeaders();
-				List<String> rateLimits = headers.get("X-RateLimit-Limit");
-				return CollectionUtils.isNotEmpty(rateLimits)
-						&& Integer.valueOf(rateLimits.get(0)) > GITHUB_RATE_LIMIT_PER_HOUR;
-			} else {
-				return response.getStatusCode() == HttpStatus.OK;
-			}
-		} catch (HttpClientErrorException e) {
-			log.error(INVALID_MSG);
-			return e.getStatusCode().is5xxServerError();
-		}
-
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
+			return testConnectionForGitHub(apiUrl, connection.getUsername(), password);
+		else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
+			return testConnection(connection, Constant.TOOL_BITBUCKET, apiUrl, password, false);
+		else
+			return testConnectionForTools(apiUrl, password);
 	}
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {

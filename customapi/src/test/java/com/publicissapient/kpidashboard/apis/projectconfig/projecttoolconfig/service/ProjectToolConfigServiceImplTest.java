@@ -72,7 +72,6 @@ public class ProjectToolConfigServiceImplTest {
 	Connection connection = new Connection();
 	String testId;
 	String toolName;
-	String toolType;
 	@InjectMocks
 	private ProjectToolConfigServiceImpl projectToolServiceImpl;
 	@Mock

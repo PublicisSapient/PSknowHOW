@@ -136,7 +136,8 @@ public class RepoToolsConfigServiceImpl {
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} catch (Exception ex) {
-			log.error("Exception occcured while enrolling project {}", projectToolConfig.getBasicProjectConfigId().toString(), ex);
+			log.error("Exception occcured while enrolling project {}",
+					projectToolConfig.getBasicProjectConfigId().toString(), ex);
 		}
 		return httpStatus;
 	}
@@ -260,7 +261,7 @@ public class RepoToolsConfigServiceImpl {
 			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
 					.collect(Collectors.toList());
 		} catch (HttpClientErrorException ex) {
-			log.error("Get KPI data {}", projectCode, ex);
+			log.error("Exception while fetching KPI data {}", projectCode, ex);
 		}
 		return repoToolKpiMetricRespons;
 	}
@@ -299,9 +300,16 @@ public class RepoToolsConfigServiceImpl {
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
 		String deleteUrl = customApiConfig.getRepoToolURL() + String.format(DELETE_REPO,
 				projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
-		repoToolsClient = createRepoToolsClient();
-		return repoToolsClient.deleteProject(deleteUrl,
-				restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+		int httpStatus = HttpStatus.NOT_FOUND.value();
+		try {
+			repoToolsClient = createRepoToolsClient();
+			httpStatus = repoToolsClient.deleteProject(deleteUrl,
+					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+		} catch (Exception ex) {
+			log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
+
+		}
+		return httpStatus;
 	}
 
 	/**

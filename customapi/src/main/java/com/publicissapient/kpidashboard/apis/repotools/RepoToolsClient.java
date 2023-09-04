@@ -48,9 +48,9 @@ public class RepoToolsClient {
 	private static final String X_API_KEY = "X_API_KEY";
 	private HttpHeaders httpHeaders;
 
-
 	/**
 	 * enroll project
+	 * 
 	 * @param repoToolConfig
 	 * @param repoToolsUrl
 	 * @param apiKey
@@ -70,6 +70,7 @@ public class RepoToolsClient {
 
 	/**
 	 * scann a project
+	 * 
 	 * @param projectKey
 	 * @param repoToolsUrl
 	 * @param apiKey
@@ -77,7 +78,7 @@ public class RepoToolsClient {
 	 */
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
-		String triggerScanUrl = String.format(repoToolsUrl+REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
+		String triggerScanUrl = String.format(repoToolsUrl + REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
@@ -86,6 +87,7 @@ public class RepoToolsClient {
 
 	/**
 	 * get kpi data of a project
+	 * 
 	 * @param repoToolsUrl
 	 * @param apiKey
 	 * @param repoToolKpiRequestBody
@@ -98,13 +100,14 @@ public class RepoToolsClient {
 		String payload = gson.toJson(repoToolKpiRequestBody);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
-				HttpMethod.GET, entity, RepoToolKpiBulkMetricResponse.class);
+				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
 		return response.getBody();
 
 	}
 
 	/**
 	 * delete a project
+	 * 
 	 * @param repoToolsUrl
 	 * @param apiKey
 	 * @return http status
@@ -119,6 +122,7 @@ public class RepoToolsClient {
 
 	/**
 	 * delete repository of the project
+	 * 
 	 * @param deleteRepoUrl
 	 * @param apiKey
 	 * @return http status
@@ -134,6 +138,7 @@ public class RepoToolsClient {
 
 	/**
 	 * set headers for api call
+	 * 
 	 * @param apiKey
 	 */
 	public void setHttpHeaders(String apiKey) {

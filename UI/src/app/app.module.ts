@@ -184,7 +184,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DailyScrumComponent,
         DailyScrumTabComponent,
         MultilineStyleComponent,
-        DoraComponent
+        DoraComponent,
         FeedbackComponent,
         DeveloperComponent
     ],
