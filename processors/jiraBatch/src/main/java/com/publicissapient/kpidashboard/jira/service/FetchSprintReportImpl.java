@@ -494,8 +494,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		return sd;
 	}
 
-	private List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
-			KerberosClient krb5Client) {
+	@Override
+	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
+										  KerberosClient krb5Client) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		psLogData.setBoardId(boardId);
 		psLogData.setAction(CommonConstant.SPRINT_DATA);

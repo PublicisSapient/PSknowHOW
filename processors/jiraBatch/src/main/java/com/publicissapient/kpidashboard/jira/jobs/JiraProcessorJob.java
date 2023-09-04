@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.jira.jobs;
 
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
+import com.publicissapient.kpidashboard.jira.reader.IssueSprintReader;
 import com.publicissapient.kpidashboard.jira.tasklet.JiraIssueReleaseStatusTasklet;
+import com.publicissapient.kpidashboard.jira.tasklet.SprintReportTasklet;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -44,6 +46,9 @@ public class JiraProcessorJob {
 	IssueJqlReader issueJqlReader;
 
 	@Autowired
+	IssueSprintReader issueSprintReader;
+
+	@Autowired
 	IssueScrumProcessor issueScrumProcessor;
 
 	@Autowired
@@ -59,6 +64,9 @@ public class JiraProcessorJob {
 
 	@Autowired
 	JiraIssueReleaseStatusTasklet jiraIssueReleaseStatusTasklet;
+
+	@Autowired
+	SprintReportTasklet sprintReportTasklet;
 
 	@Autowired
 	JiraIssueStepListener jiraIssueStepListener;
@@ -158,4 +166,20 @@ public class JiraProcessorJob {
 
 	/** Kanban projects for Jql job : End **/
 
+	@Bean
+	public Job fetchIssueSprintJob() {
+		return jobBuilderFactory.get("fetchIssueSprint Job").incrementer(new RunIdIncrementer())
+				.start(sprintDataStep()).next(fetchIssueSprintChunkStep()).build();
+	}
+
+	private Step sprintDataStep() {
+		return stepBuilderFactory.get("Fetch Sprint Data").tasklet(sprintReportTasklet).build();
+	}
+
+	private Step fetchIssueSprintChunkStep() {
+		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
+				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter)
+				.listener(jiraIssueJqlWriterListener).listener(jiraIssueStepListener)
+				.listener(notificationJobListener).build();
+	}
 }

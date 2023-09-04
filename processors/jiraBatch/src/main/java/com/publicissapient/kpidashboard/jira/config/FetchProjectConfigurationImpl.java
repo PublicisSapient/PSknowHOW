@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -40,6 +42,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	@Autowired
 	private ConnectionRepository connectionRepository;
 
+	@Autowired
+	private SprintRepository sprintRepository;
+
 	@Override
 	public List<String> fetchBasicProjConfId(String toolName, boolean queryEnabled, boolean isKanban) {
 		List<ProjectBasicConfig> allProjects = projectConfigRepository.findByKanban(isKanban);
@@ -49,6 +54,27 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 				.findByToolNameAndQueryEnabledAndBasicProjectConfigIdIn(toolName, queryEnabled, projectConfigsIds);
 		return projectToolConfigs.stream().map(toolConfig -> toolConfig.getBasicProjectConfigId().toString())
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public ProjectConfFieldMapping fetchConfigurationBasedOnSprintId(String sprintId) {
+		ProjectConfFieldMapping projectConfFieldMapping = null;
+		SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+		ProjectBasicConfig projectBasicConfig = projectConfigRepository
+				.findById(sprintDetails.getBasicProjectConfigId()).orElse(new ProjectBasicConfig());
+
+		FieldMapping fieldMapping = fieldMappingRepository
+				.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
+		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
+		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+			if (null != projectToolConfig.getConnectionId()) {
+				Optional<Connection> jiraConnOpt = connectionRepository.findById(projectToolConfig.getConnectionId());
+				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, jiraConnOpt);
+				projectConfFieldMapping=createProjectConfFieldMapping(fieldMapping, projectBasicConfig, projectToolConfig, jiraToolConfig);
+			}
+		}
+		return projectConfFieldMapping;
 	}
 
 	@Override

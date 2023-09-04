@@ -115,7 +115,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
 
     private String sprintChangeDate;
     private String sprintAssetState;
- 
+
     private String sprintEndDate;
 
     private String sprintBeginDate;
@@ -231,8 +231,10 @@ public class JiraIssue extends BasicModel implements Cloneable {
     private String boardId;
     private String epicLinked;
     private String originalType;
+    private Set<String> parentStoryId;
 
-	@Override public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }

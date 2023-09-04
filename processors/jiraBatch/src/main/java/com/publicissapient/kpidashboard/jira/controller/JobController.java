@@ -12,6 +12,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,10 +45,15 @@ public class JobController {
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
 
+    @Qualifier("fetchIssueSprintJob")
+	@Autowired
+	Job fetchIssueSprintJob;
+
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 
 	private static String PROJECT_ID = "projectId";
+	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
 
 	@GetMapping("/startscrumboardjob")
@@ -167,6 +173,19 @@ public class JobController {
 		}
 		executorService.shutdown();
 		return "Kanban job for boards started ....";
+	}
+
+	@GetMapping("/startfetchsprintjob")
+	public String startfetchsprintjob(@RequestBody String sprintId) throws Exception {
+		log.info("Request coming for job");
+		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+
+		jobParametersBuilder.addString(SPRINT_ID, sprintId);
+		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+
+		JobParameters params = jobParametersBuilder.toJobParameters();
+		jobLauncher.run(fetchIssueSprintJob, params);
+		return "job started ....";
 	}
 
 }

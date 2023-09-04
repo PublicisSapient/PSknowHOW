@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -119,6 +120,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 			setEpicLinked(fieldMapping, jiraIssue, fields);
+			setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
@@ -127,7 +129,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setLabels(getLabelsList(issue));
 			setProjectSpecificDetails(projectConfig, jiraIssue, issue);
 			setAdditionalFilters(jiraIssue, issue, projectConfig);
-			setStoryLinkWithDefect(issue, jiraIssue);
+			setStoryLinkWithDefect(issue, jiraIssue, fields);
 			setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
@@ -144,14 +146,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 		return jiraIssue;
 
-	}
-
-	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
-				&& fields.get(fieldMapping.getEpicLink()) != null
-				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
-			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
-		}
 	}
 
 	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
@@ -202,6 +196,42 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+								   Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
+		}
+	}
+
+	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields,
+											   Set<String> defectStorySet) {
+		String parentKey;
+		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
+
+			try {
+				parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
+						.toString();
+				defectStorySet.add(parentKey);
+			} catch (JSONException e) {
+				log.error(
+						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
+						e);
+			}
+
+		}
+	}
+
+	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
+	}
+
 	private void setJiraAssigneeDetails(JiraIssue jiraIssue, User user, ProjectConfFieldMapping projectConfig) {
 		if (user == null) {
 			jiraIssue.setOwnersUsername(Collections.<String>emptyList());
@@ -245,23 +275,19 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
-			List<String> ownerName = assigneeName.stream().map(JiraIssueProcessorImpl::hash)
+			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
-			List<String> ownerId = assigneeKey.stream().map(JiraIssueProcessorImpl::hash).collect(Collectors.toList());
-			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueProcessorImpl::hash)
+			List<String> ownerId = assigneeKey.stream().map(JiraHelper::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
 			jiraIssue.setOwnersShortName(ownerName);
 			jiraIssue.setOwnersUsername(ownerName);
 			jiraIssue.setOwnersID(ownerId);
 			jiraIssue.setOwnersFullName(ownerFullName);
-			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
+			jiraIssue.setAssigneeId(JiraHelper.hash(jiraIssue.getAssigneeId()));
 			jiraIssue.setAssigneeName(
 					setAssigneeName(jiraIssue.getAssigneeId(), projectConfig.getBasicProjectConfigId().toString()));
 		}
-	}
-
-	public static String hash(String input) {
-		return String.valueOf(Objects.hash(input));
 	}
 
 	String setAssigneeName(String assigneeId, String basicProjectConfigId) {
@@ -674,19 +700,26 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	 * @param issue
 	 * @param jiraIssue
 	 */
-	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue) {
+	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			for (IssueLink issueLink : issue.getIssueLinks()) {
-				if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())
-						&& jiraProcessorConfig.getExcludeLinks().stream()
-								.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
-					break;
-				}
-				defectStorySet.add(issueLink.getTargetIssueKey());
-			}
+			String parentKey = null;
+
+			excludeLinks(issue, defectStorySet);
+			storyWithSubTaskDefect(issue, fields, defectStorySet);
 			jiraIssue.setDefectStoryID(defectStorySet);
+		}
+	}
+
+	private void excludeLinks(Issue issue, Set<String> defectStorySet) {
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getExcludeLinks())) {
+			for (IssueLink issueLink : issue.getIssueLinks()) {
+				if (!jiraProcessorConfig.getExcludeLinks().stream()
+						.anyMatch(issueLink.getIssueLinkType().getDescription()::equalsIgnoreCase)) {
+					defectStorySet.add(issueLink.getTargetIssueKey());
+				}
+			}
 		}
 	}
 

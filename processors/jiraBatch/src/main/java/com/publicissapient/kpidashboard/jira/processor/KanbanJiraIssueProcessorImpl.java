@@ -20,6 +20,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.AdditionalFilterHelper;
+import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
@@ -250,10 +251,10 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
-			List<String> ownerName = assigneeName.stream().map(JiraIssueProcessorImpl::hash)
+			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
-			List<String> ownerId = assigneeKey.stream().map(JiraIssueProcessorImpl::hash).collect(Collectors.toList());
-			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraIssueProcessorImpl::hash)
+			List<String> ownerId = assigneeKey.stream().map(JiraHelper::hash).collect(Collectors.toList());
+			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
 			jiraIssue.setOwnersShortName(ownerName);
 			jiraIssue.setOwnersUsername(ownerName);

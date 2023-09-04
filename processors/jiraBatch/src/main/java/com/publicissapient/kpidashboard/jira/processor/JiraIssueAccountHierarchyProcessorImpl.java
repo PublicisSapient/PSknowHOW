@@ -70,22 +70,23 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 					.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 		}
 
-		Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
-		ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
-		Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
-				.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
-				.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
-						sprintDetails -> sprintDetails));
-		AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
-			List<AccountHierarchy> projectDataList = accountHierarchyRepository
-					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
-			return projectDataList.isEmpty() ? null : projectDataList.get(0);
-		});
-
 		Set<AccountHierarchy> setToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
 				&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
+
+			Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
+			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
+			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
+					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
+					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
+							sprintDetails -> sprintDetails));
+			AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
+				List<AccountHierarchy> projectDataList = accountHierarchyRepository
+						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
+				return projectDataList.isEmpty() ? null : projectDataList.get(0);
+			});
+
 			for (String sprintId : jiraIssue.getSprintIdList()) {
 				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);
 

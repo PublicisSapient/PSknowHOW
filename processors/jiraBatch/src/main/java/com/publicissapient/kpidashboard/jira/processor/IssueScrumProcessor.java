@@ -46,8 +46,12 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 			compositeResult = new CompositeResult();
 			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);
 			Set<SprintDetails> sprintDetailsSet= processSprintData(readData);
-			Set<AccountHierarchy> accountHierarchies = createAccountHierarchies(jiraIssue, readData,sprintDetailsSet);
-			AssigneeDetails assigneeDetails = createAssigneeDetails(readData, jiraIssue);
+			Set<AccountHierarchy> accountHierarchies=null;
+			AssigneeDetails assigneeDetails=null;
+			if (!readData.isSprintFetch()) {
+				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
+				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
+			}
 			if(StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 				compositeResult.setSprintDetailsSet(sprintDetailsSet);
 			}

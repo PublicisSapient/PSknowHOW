@@ -9,5 +9,6 @@ public class ReadData {
 	private Issue issue;
 	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String boardId;
+	private boolean isSprintFetch;
 
 }

@@ -13,4 +13,7 @@ public interface FetchSprintReport {
 
     List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, Set<SprintDetails> setForCacheClean, KerberosClient krb5Client)
             throws InterruptedException;
+
+    List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
+                                   KerberosClient krb5Client);
 }
