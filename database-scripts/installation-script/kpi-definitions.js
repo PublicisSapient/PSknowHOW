@@ -8178,6 +8178,28 @@ db.getCollection('field_mapping_structure').insertMany(
        "tooltip":{
           "definition":"Provide any status from workflow on which Live is considered."
        }
+    },
+    {
+    	"fieldName": "uploadDataKPI42",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
+    },
+    {
+    	"fieldName": "uploadDataKPI16",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
     }
 ]
 );
