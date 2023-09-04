@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -112,6 +113,11 @@ public class RegressionPercentageServiceImplTest {
 		kpiWiseAggregation.put("defectInjectionRate", "average");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMappingDataFactory.getFieldMappings().get(0));
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalTestCaseList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
@@ -134,7 +140,7 @@ public class RegressionPercentageServiceImplTest {
 
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(testCaseDetailsRepository.findTestDetails(any(), any(), any())).thenReturn(testCaseDetailsList);
-
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
 				.thenReturn(kpiRequestTrackerId);

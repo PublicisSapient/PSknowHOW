@@ -172,8 +172,10 @@ public enum FieldMappingEnum {
 
 	//DTS-26123 start
 	KPI155("Defect Count By Type", KPISource.JIRA.name(),
-			Arrays.asList("jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"));
+			Arrays.asList("jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155")),
 	//DTS-26123 end
+	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")),
+	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16"));
 
 	private List<String> fields;
 	private String kpiName;
