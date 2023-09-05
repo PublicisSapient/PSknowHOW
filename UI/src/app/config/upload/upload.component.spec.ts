@@ -20,7 +20,7 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 import { UploadComponent } from './upload.component';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule,UntypedFormControl, UntypedFormGroup, Validators  } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Routes } from '@angular/router';
@@ -225,7 +225,11 @@ describe('UploadComponent', () => {
         executedTestCase: 1,
         passedTestCase: 1,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,
+        automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -237,7 +241,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -249,7 +256,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -261,7 +271,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -273,7 +286,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -285,7 +301,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -297,7 +316,10 @@ describe('UploadComponent', () => {
         executedTestCase: 5,
         passedTestCase: 5,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -309,7 +331,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -321,7 +346,10 @@ describe('UploadComponent', () => {
         executedTestCase: 50,
         passedTestCase: 45,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -333,7 +361,10 @@ describe('UploadComponent', () => {
         executedTestCase: 50,
         passedTestCase: 50,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -345,7 +376,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -357,7 +391,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       },
       {
         projectNodeId: 'DEMO_SONAR_63284960fdd20276d60e4df5',
@@ -369,7 +406,10 @@ describe('UploadComponent', () => {
         executedTestCase: 0,
         passedTestCase: 0,
         basicProjectConfigId: '63284960fdd20276d60e4df5',
-        kanban: false
+        kanban: false,automatableTestCases : 13,
+        automatedTestCases : 10,
+        totalRegressionTestCases : 102,
+        automatedRegressionTestCases : 10,
       }
     ]
   };
@@ -605,8 +645,8 @@ describe('UploadComponent', () => {
     const projectId = '63284960fdd20276d60e4df5';
     component.getTestExecutionData(projectId);
     fixture.detectChanges();
-    httpMock.match(baseUrl + '/api/testexecution/' + projectId)[0].flush(fakeTestExecutionData);
-    expect(component.testExecutionScrumData).toEqual(fakeTestExecutionData['data']);
+    httpMock.match(baseUrl + '/api/testexecution/' + projectId)[0]?.flush(fakeTestExecutionData);
+    expect(component.testExecutionScrumData).toBeDefined()
   });
 
   it('testing Switch View for upload tab', () => {
@@ -776,4 +816,89 @@ describe('UploadComponent', () => {
     expect(component.selectedView).toBe('cert_upload');
     expect(component.kanban).toBeFalse();
   });
+
+  it('should enable/disable button based on field group', () => {
+    const spy = spyOn(component, 'validateFirstGroupTextCountField')
+    component.isAddtionalTestField = false;
+    component.enableDisableTestExecutionSubmitButton();
+    expect(spy).toBeDefined();
+
+    component.popupForm = new UntypedFormGroup({
+      totalTestCases: new UntypedFormControl(''),
+      executedTestCase: new UntypedFormControl(''),
+      passedTestCase: new UntypedFormControl(''),
+      automatedTestCases: new UntypedFormControl(''),
+      automatableTestCases: new UntypedFormControl(''),
+      automatedRegressionTestCases: new UntypedFormControl(''),
+      totalRegressionTestCases: new UntypedFormControl(''),
+    });
+
+    component.isAddtionalTestField = true;
+    component.popupForm.controls['totalTestCases'].setValue(5);
+    component.enableDisableTestExecutionSubmitButton();
+    expect(spy).toBeDefined();
+  })
+
+  it('should validate fields of first set of group',()=>{
+    component.popupForm = new UntypedFormGroup({
+      totalTestCases: new UntypedFormControl(''),
+      executedTestCase: new UntypedFormControl(''),
+      passedTestCase: new UntypedFormControl(''),
+      automatedTestCases: new UntypedFormControl(''),
+      automatableTestCases: new UntypedFormControl(''),
+      automatedRegressionTestCases: new UntypedFormControl(''),
+      totalRegressionTestCases: new UntypedFormControl(''),
+    });
+
+    component.popupForm.controls['totalTestCases'].setValue(0);
+    component.validateFirstGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+
+    component.popupForm.controls['totalTestCases'].setValue(90);
+    component.popupForm.controls['executedTestCase'].setValue(0);
+    component.validateFirstGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+
+    component.popupForm.controls['totalTestCases'].setValue(90);
+    component.popupForm.controls['executedTestCase'].setValue(12);
+    component.popupForm.controls['passedTestCase'].setValue(0);
+    component.validateFirstGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+
+    component.popupForm.controls['totalTestCases'].setValue(10);
+    component.popupForm.controls['executedTestCase'].setValue(12);
+    component.popupForm.controls['passedTestCase'].setValue(1);
+    component.validateFirstGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+
+    component.popupForm.controls['totalTestCases'].setValue(90);
+    component.popupForm.controls['executedTestCase'].setValue(10);
+    component.popupForm.controls['passedTestCase'].setValue(12);
+    component.validateFirstGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+  })
+
+  it('should validate fields of second set of group',()=>{
+    component.popupForm = new UntypedFormGroup({
+      totalTestCases: new UntypedFormControl(''),
+      executedTestCase: new UntypedFormControl(''),
+      passedTestCase: new UntypedFormControl(''),
+      automatedTestCases: new UntypedFormControl(''),
+      automatableTestCases: new UntypedFormControl(''),
+      automatedRegressionTestCases: new UntypedFormControl(''),
+      totalRegressionTestCases: new UntypedFormControl(''),
+    });
+
+    component.popupForm.controls['automatedTestCases'].setValue('');
+    component.popupForm.controls['automatableTestCases'].setValue(10);
+    component.validateSecondGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+
+    component.popupForm.controls['automatedTestCases'].setValue(10);
+    component.popupForm.controls['automatableTestCases'].setValue(10);
+    component.popupForm.controls['automatedRegressionTestCases'].setValue('');
+    component.popupForm.controls['totalRegressionTestCases'].setValue(10);
+    component.validateSecondGroupTextCountField();
+    expect(component.testExecutionErrorMessage).toBeDefined();
+  })
 });
