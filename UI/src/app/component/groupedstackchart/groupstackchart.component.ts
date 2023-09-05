@@ -55,7 +55,7 @@ export class GroupstackchartComponent implements OnChanges {
     // only run when property "data" changed
     if (changes['data']) {
       this.dataPoints = this.data.length;
-      this.dataLength = this.data[0]?.value?.length;
+      // this.dataLength = Object.keys(this.data[0]?.value)?.length;
       this.elem = this.viewContainerRef.element.nativeElement;
       if (!changes['data'].firstChange) {
         this.draw('update');
@@ -84,7 +84,7 @@ export class GroupstackchartComponent implements OnChanges {
     const thresholdValue = this.thresholdValue;
     const barWidth = 20;
     // let width = this.dataLength * barWidth * 8;
-    const width = this.dataLength <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataLength * barWidth * 4;
+    const width = this.dataPoints <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * barWidth * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     const spacingVariable = 50;
     const height = 190;
@@ -121,23 +121,23 @@ export class GroupstackchartComponent implements OnChanges {
 
     const x1 = d3.scaleBand();
 
-    let divisor = 10;
-    let power = 1;
-    let quotient = this.maxYValue;
-    while (quotient > 1) {
-      quotient = quotient / Math.pow(divisor, power);
-      ++power;
+    // let divisor = 10;
+    // let power = 1;
+    // let quotient = this.maxYValue;
+    // while (quotient > 1) {
+    //   quotient = quotient / Math.pow(divisor, power);
+    //   ++power;
+    // }
+    // divisor = Math.pow(10, power > 1 ? power - 1 : 1);
+
+
+
+    if (!(this.maxYValue >= 5)) {
+      this.maxYValue = 5;
+    } else {
+      this.maxYValue = Math.ceil(this.maxYValue / 5) * 5;
+
     }
-    divisor = Math.pow(10, power > 1 ? power - 1 : 1);
-
-
-
-if(!(this.maxYValue >=5)){
-  this.maxYValue =5;
-}else{
-  this.maxYValue = Math.ceil(this.maxYValue/5) *5;
-
-}
 
 
     const y = d3.scaleLinear()
@@ -146,50 +146,55 @@ if(!(this.maxYValue >=5)){
 
     const y1 = d3.scaleBand();
     let z; let stackColorsList;
-    if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
+    // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
       z = d3.scaleOrdinal()
         .range(['#DEB0D2', '#F2C69B', '#B395E2', '#B5E7BE', '#DF9292', '#B5C6E7', '#ff8c00', '#3F51B5', '#aaaaaa']);
       stackColorsList = ['#DEB0D2', '#F2C69B', '#B395E2', '#B5E7BE', '#DF9292', '#B5C6E7', '#ff8c00', '#3F51B5', '#aaaaaa'];
-    } else {
-      z = d3.scaleOrdinal()
-        .range(this.color);
-      stackColorsList = this.color;
-    }
-    const z2 = d3.scaleOrdinal().range(this.color);
+    // } else {
+      // z = d3.scaleOrdinal()
+      //   .range(this.color);
+      // stackColorsList = this.color;
+    // }
+    // const z2 = d3.scaleOrdinal().range(this.color);
     const stack = d3.stack();
 
-    x0.domain(data.map(function(d) {
- return d.xName;
-}));
-    x1.domain(data.map(function(d, i) {
-      return d.sprojectName;
+    x0.domain(data.map(function (d) {
+      return d.xName;
+    }));
+    x1.domain(data.map(function (d, i) {
+      return d.group;
     }))
       .rangeRound([0, x0.bandwidth()]);
     // .padding(0.2);// bar width
-
+    console.log("data", data);
+    
     const actualTypes = [];
-    data.forEach(function(d) {
- if (d.type && !actualTypes.includes(d.type)) {
- actualTypes.push(d.type);
-}
-});
+    data.forEach(function (d) {
+      if (d.type && !actualTypes.includes(d.type)) {
+        actualTypes.push(d.type);
+      }
+    });
     z.domain(actualTypes);
     const keys = z.domain();
-    let groupData = d3.rollup(data, function(d, i) {
-      const d2 = { sprojectName: d[0].sprojectName, xName: d[0].xName, hoverValue: d[0].hoverValue, sSprintName: d[0].sSprintName };
-      d.forEach(function(d) {
+    let groupData = d3.rollup(data, function (d, i) {
+      console.log("d", d);
+      
+      const d2 = { xName: d[0].xName, sSprintName: d[0].sSprintName };
+      d.forEach(function (d) {
         d2[d.type] = d.value;
       });
       return d2;
-    }, function(d) {
- return d.xName + d.sprojectName;
-});
-      // .key(function (d) { return d.xName + d.sprojectName; })
-      // .entries(data)
-      // .map(function (d) { return d.value; });
-      groupData = Array.from(groupData).map(function(d) {
- return d[1];
-});
+    }, function (d) {
+      return d.xName;
+    });
+    
+    // .key(function (d) { return d.xName + d.sprojectName; })
+    // .entries(data)
+    // .map(function (d) { return d.value; });
+    groupData = Array.from(groupData).map(function (d) {
+      return d[1];
+    });
+    console.log("groupData", groupData);
 
     const stackData = stack
       .keys(keys)(groupData);
@@ -206,7 +211,7 @@ if(!(this.maxYValue >=5)){
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
-    const xTick = self.dataPoints === 1 ? width > 1600 ? 20 :width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
+    const xTick = self.dataPoints === 1 ? width > 1600 ? 20 : width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
     svgX
       .select('.xAxis')
       .selectAll('.tick text')
@@ -237,12 +242,12 @@ if(!(this.maxYValue >=5)){
       .append('svg:line')
       .attr('x1', 0)
       .attr('x2', width)
-      .attr('y1', function(d) {
- return y(d);
-})
-      .attr('y2', function(d) {
- return y(d);
-})
+      .attr('y1', function (d) {
+        return y(d);
+      })
+      .attr('y2', function (d) {
+        return y(d);
+      })
       .style('stroke', '#dedede')
       .style('fill', 'none')
       .attr('class', 'gridline');
@@ -252,7 +257,7 @@ if(!(this.maxYValue >=5)){
       .data(stackData)
       .enter().append('g')
       .attr('class', 'serie')
-      .attr('fill', function(d) {
+      .attr('fill', function (d) {
         return z(d.key);
       });
 
@@ -264,101 +269,101 @@ if(!(this.maxYValue >=5)){
 
 
     serie.selectAll('rect')
-      .data(function(d) {
- return d;
-})
+      .data(function (d) {
+        return d;
+      })
       .enter().append('rect')
       .attr('class', 'serie-rect1')
-      .attr('x', function(d, i) {
-        return self.dataPoints === 1 ? spacingVariable + x1(d.data.sprojectName) : x1(d.data.sprojectName);
+      .attr('x', function (d, i) {
+        return spacingVariable;
       })
-      .attr('y', function(d) {
- return y(d[1]);
-})
-      .attr('transform', function(d) {
- return 'translate(' + x0(d?.data?.xName) + ',0)';
-})
-      .attr('height', function(d) {
- return Math.abs(y(d[0]) - y(d[1]));
-})
+      .attr('y', function (d) {
+        return y(d[1]);
+      })
+      .attr('transform', function (d) {
+        return 'translate(' + x0(d?.data?.xName) + ',0)';
+      })
+      .attr('height', function (d) {
+        return Math.abs(y(d[0]) - y(d[1]));
+      })
       .attr('width', barWidth)
-      .on('click', function(d, i) {
-})
-      .on('mouseover', function(event,d) {
-        const topValue = 75;
-        if (d.data.hoverValue) {
-
-          const circle = event.target;
-          const {
-            top: yPosition,
-            left: xPosition
-          } = circle.getBoundingClientRect();
-
-          div.transition()
-            .duration(200)
-            .style('display', 'block')
-            .style('opacity', .9);
-
-          const dataObj = JSON.parse(JSON.stringify(d.data));
-          delete dataObj.sSprintName;
-          delete dataObj.sprojectName;
-          delete dataObj.hoverValue;
-          delete dataObj.xName;
-
-          let dataString = '';
-          for (const hoverData in dataObj) {
-            dataString += `${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataObj[hoverData] + ' ' + (self.unit ? self.unit.toLowerCase() != 'number' ? self.unit : '' : '')} </span>`;
-          }
-
-          div.html(`${d?.data?.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataString}` + '</span>')
-            .style('left', xPosition + 20 + 'px')
-            // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
-            .style('top', yPosition + 20 + 'px')
-            .style('position', 'fixed');
-
-          for (const hoverData in d.data.hoverValue) {
-            div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.data.hoverValue[hoverData]}` + ' </span>');
-          }
-        }
+      .on('click', function (d, i) {
       })
-      .on('mouseout', function(d) {
-        div.transition()
-          .duration(500)
-          .style('display', 'none')
-          .style('opacity', 0);
+      // .on('mouseover', function (event, d) {
+      //   const topValue = 75;
+        // if (d.data.hoverValue) {
 
-      });
-    if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
-      const serie2 = svgX.selectAll('.serie2')
-        .data(stackData)
-        .enter().append('g')
-        .attr('class', 'serie2')
-        .attr('fill', function(d) {
-          return z(d.key);
-        });
+        //   const circle = event.target;
+        //   const {
+        //     top: yPosition,
+        //     left: xPosition
+        //   } = circle.getBoundingClientRect();
 
-      const triangle = d3.symbol().type(d3.symbolTriangle);
-      const dim = barWidth * 5;
-      serie2.selectAll('.path_triangle')
-        .data(function(d) {
- return d;
-})
-        .enter()
-        .append('path')
-        .attr('d', triangle.size(dim))
-        .attr('opacity', 1)
-        .attr('class', 'path_triangle')
-        .attr('transform', function(d) {
- return 'translate(' + x0(d?.data?.xName) + ',0)';
-})
-        .attr('transform', function(d, i) {
-          const xVal = self.dataPoints === 1 ? spacingVariable + x1(d.data.sprojectName) + x0(d?.data?.xName) : x1(d.data.sprojectName) + x0(d?.data?.xName);
-          return 'translate(' + (xVal + 8) + ',' + (y(0) + 10) + ')';
-        })
-        .attr('fill', function(d) {
-          return z2(d?.data?.sprojectName);
-        });
-    }
+        //   div.transition()
+        //     .duration(200)
+        //     .style('display', 'block')
+        //     .style('opacity', .9);
+
+        //   const dataObj = JSON.parse(JSON.stringify(d.data));
+        //   delete dataObj.sSprintName;
+        //   delete dataObj.sprojectName;
+        //   delete dataObj.hoverValue;
+        //   delete dataObj.xName;
+
+        //   let dataString = '';
+        //   for (const hoverData in dataObj) {
+        //     dataString += `${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataObj[hoverData] + ' ' + (self.unit ? self.unit.toLowerCase() != 'number' ? self.unit : '' : '')} </span>`;
+        //   }
+
+        //   div.html(`${d?.data?.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataString}` + '</span>')
+        //     .style('left', xPosition + 20 + 'px')
+        //     // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
+        //     .style('top', yPosition + 20 + 'px')
+        //     .style('position', 'fixed');
+
+        //   for (const hoverData in d.data.hoverValue) {
+        //     div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.data.hoverValue[hoverData]}` + ' </span>');
+        //   }
+        // }
+      // })
+      // .on('mouseout', function (d) {
+      //   div.transition()
+      //     .duration(500)
+      //     .style('display', 'none')
+      //     .style('opacity', 0);
+
+      // });
+    // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
+    //   const serie2 = svgX.selectAll('.serie2')
+    //     .data(stackData)
+    //     .enter().append('g')
+    //     .attr('class', 'serie2')
+    //     .attr('fill', function (d) {
+    //       return z(d.key);
+    //     });
+
+    //   const triangle = d3.symbol().type(d3.symbolTriangle);
+    //   const dim = barWidth * 5;
+    //   serie2.selectAll('.path_triangle')
+    //     .data(function (d) {
+    //       return d;
+    //     })
+    //     .enter()
+    //     .append('path')
+    //     .attr('d', triangle.size(dim))
+    //     .attr('opacity', 1)
+    //     .attr('class', 'path_triangle')
+    //     .attr('transform', function (d) {
+    //       return 'translate(' + x0(d?.data?.xName) + ',0)';
+    //     })
+    //     .attr('transform', function (d, i) {
+    //       const xVal = self.dataPoints === 1 ? spacingVariable + x1(d.data.sprojectName) + x0(d?.data?.xName) : x1(d.data.sprojectName) + x0(d?.data?.xName);
+    //       return 'translate(' + (xVal + 8) + ',' + (y(0) + 10) + ')';
+    //     })
+    //     .attr('fill', function (d) {
+    //       return z2(d?.data?.sprojectName);
+    //     });
+    // }
 
     /** legend code */
     const legendDiv = d3.select(this.elem).select('#groupstackchart').append('div');
@@ -376,7 +381,7 @@ if(!(this.maxYValue >=5)){
       .enter()
       .append('g')
       .attr('class', 'd3-legend')
-      .attr('transform', function(d, i) {
+      .attr('transform', function (d, i) {
         return 'translate(40, 10)';
       });
 
@@ -410,7 +415,7 @@ if(!(this.maxYValue >=5)){
         .attr('height', 12)
         .attr('x', 0)
         .attr('y', -7)
-        .style('fill', function(d, i) {
+        .style('fill', function (d, i) {
           return '#DF9292';
         });
 
@@ -420,12 +425,12 @@ if(!(this.maxYValue >=5)){
         .attr('dy', '.85em')
         .style('text-anchor', 'start')
         .style('font-size', 10)
-        .text(function(d) {
- return 'Legend';
-});
+        .text(function (d) {
+          return 'Legend';
+        });
 
       legend
-        .on('mouseover', function() {
+        .on('mouseover', function () {
           const topValue = 30;
 
           legendDiv.transition()
@@ -445,7 +450,7 @@ if(!(this.maxYValue >=5)){
             .style('left', 70 + 'px')
             .style('top', y[0] - topValue + 'px');
         })
-        .on('mouseout', function() {
+        .on('mouseout', function () {
           legendDiv.transition()
             .duration(500)
             .style('display', 'none')
@@ -460,57 +465,57 @@ if(!(this.maxYValue >=5)){
     // legend.selectAll('text').call(wrap, 30);
 
 
-    function wrap(text, textWidth) {
-      text.each(function() {
-        const textContent = d3.select(this);
-          const words = textContent.text().trim().split(/\s+/).reverse();
-          let word;
-          let line = [];
-          let lineNumber = 0;
-          const lineHeight = 1.1; // ems
-          const yPosition = textContent.attr('y');
-          const dy = parseFloat(textContent.attr('dy'));
-          let tspan = textContent
-            .text(null)
-            .append('tspan')
-            .attr('x', 10)
-            .attr('y', yPosition)
-            .attr('dy', dy + 'em');
+    // function wrap(text, textWidth) {
+    //   text.each(function () {
+    //     const textContent = d3.select(this);
+    //     const words = textContent.text().trim().split(/\s+/).reverse();
+    //     let word;
+    //     let line = [];
+    //     let lineNumber = 0;
+    //     const lineHeight = 1.1; // ems
+    //     const yPosition = textContent.attr('y');
+    //     const dy = parseFloat(textContent.attr('dy'));
+    //     let tspan = textContent
+    //       .text(null)
+    //       .append('tspan')
+    //       .attr('x', 10)
+    //       .attr('y', yPosition)
+    //       .attr('dy', dy + 'em');
 
-        if (words.length > 1) {
-          while ((word = words.pop())) {
-            line.push(word);
-            tspan.text(line.join(' '));
-            if (tspan.node().getComputedTextLength() > textWidth) {
-              line.pop();
-              tspan.text(line.join(' '));
-              line = [word];
-              tspan = textContent
-                .append('tspan')
-                .attr('x', 0)
-                .attr('y', yPosition)
-                .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-                .text(word);
-            }
-          }
-        } else {
-          tspan.text(words[0]);
-          let i = 0;
-          while (tspan.node().getComputedTextLength() > textWidth && i <= 4) {
-            i = 2;
-            word = words[0].substring(0, words[0].length / i);
-            tspan = textContent
-              .append('tspan')
-              .attr('x', 0)
-              .attr('y', yPosition)
-              .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-              .text(word);
+    //     if (words.length > 1) {
+    //       while ((word = words.pop())) {
+    //         line.push(word);
+    //         tspan.text(line.join(' '));
+    //         if (tspan.node().getComputedTextLength() > textWidth) {
+    //           line.pop();
+    //           tspan.text(line.join(' '));
+    //           line = [word];
+    //           tspan = textContent
+    //             .append('tspan')
+    //             .attr('x', 0)
+    //             .attr('y', yPosition)
+    //             .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+    //             .text(word);
+    //         }
+    //       }
+    //     } else {
+    //       tspan.text(words[0]);
+    //       let i = 0;
+    //       while (tspan.node().getComputedTextLength() > textWidth && i <= 4) {
+    //         i = 2;
+    //         word = words[0].substring(0, words[0].length / i);
+    //         tspan = textContent
+    //           .append('tspan')
+    //           .attr('x', 0)
+    //           .attr('y', yPosition)
+    //           .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+    //           .text(word);
 
-            ++i;
-          }
-        }
-      });
-    }
+    //         ++i;
+    //       }
+    //     }
+    //   });
+    // }
 
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
@@ -536,53 +541,54 @@ if(!(this.maxYValue >=5)){
 
       console.log(this.data);
       // this.data = this.padData(this.data);
-      let prevsum = 0; let currentSum = 0; let max = 0;
+      // let prevsum = 0; let currentSum = 0; let max = 0;
       const targetList = [];
-      this.data.forEach((pro) => {
-        pro.value?.forEach((item, index) => {
-          const obj = {};
-          obj['sprojectName'] = pro.data;
-          if (item.hoverValue) {
-            obj['hoverValue'] = item.hoverValue;
-            obj['sSprintName'] = item.sSprintName;
-          }
-          const sprintValue = index + 1;
-          if (typeof (item.value) === 'object') {
-            if (item.value) {
-              const types = Object.keys(item.value);
-              if (types.length >= 1) {
-                types.forEach(function(type) {
-                  obj['type'] = type;
-                  obj['value'] = item.value[type];
-                  obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
-                  targetList.push({ ...obj });
-                  currentSum = currentSum + item.value[type];
-                });
-              } else {
-                obj['type'] = '';
-                obj['value'] = '';
-                obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
-                targetList.push({ ...obj });
-                currentSum = currentSum + 0;
-              }
+      this.data.forEach((item, index) => {
+        // pro.value?.forEach((item, index) => {
+        const obj = {};
+        obj['group'] = item.sSprintName;
+        // obj['sprojectName'] = pro.data;
+        // if (item.hoverValue) {
+        //   obj['hoverValue'] = item.hoverValue;
+        //   obj['sSprintName'] = item.sSprintName;
+        // }
+        const sprintValue = index + 1;
+        if (typeof (item.value) === 'object') {
+          if (item.value) {
+            const types = Object.keys(item.value);
+            if (types.length >= 1) {
+              types.forEach(function (type) {
+                obj['type'] = type;
+                obj['value'] = item.value[type]?.['count'];
+                obj['xName'] = sprintValue;
+                targetList.push(obj);
+                // currentSum = currentSum + item.value[type];
+              });
+            } else {
+              obj['type'] = '';
+              obj['value'] = '';
+              obj['xName'] = sprintValue;
+              targetList.push(obj);
+              // currentSum = currentSum + 0;
             }
-          } else {
-            obj['value'] = item.value;
-            obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
-            targetList.push(obj);
-            currentSum = currentSum + item.value;
           }
-          max = Math.max(prevsum, currentSum);
-          prevsum = currentSum > prevsum ? currentSum : prevsum;
-          currentSum = 0;
+        } else {
+          obj['value'] = item.value;
+          // obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
+          targetList.push(obj);
+          // currentSum = currentSum + item.value;
+        }
+        // max = Math.max(prevsum, currentSum);
+        // prevsum = currentSum > prevsum ? currentSum : prevsum;
+        // currentSum = 0;
 
-          if (item.xAxisTick) {
-            this.xCaption = 'Months';
-          }
-        });
+        // if (item.xAxisTick) {
+        //   this.xCaption = 'Months';
+        // }
+        // });
       });
-      this.maxYValue = max * 1.07;
-      // console.log("targetList", targetList);
+      // this.maxYValue = max * 1.07;
+      console.log("targetList", targetList);
 
       return this.data = targetList;
     }

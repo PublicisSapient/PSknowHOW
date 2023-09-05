@@ -29,37 +29,37 @@
     "trendValueList": {
         "value": [
             {
-                "SprintName": "Sprint1",
+                "sSprintName": "Sprint1",
                 "data": 12,
                 "value": {
                     "To Do": {
-                        "Count": 2,
+                        "count": 2,
                         "size": 5.0
                     },
                     "In Progress": {
-                        "Count": 5,
+                        "count": 5,
                         "size": 20
                     },
                     "Done": {
-                        "Count": 5,
+                        "count": 5,
                         "size": 20
                     }
                 }
             },
             {
-                "SprintName": "Sprint2",
+                "sSprintName": "Sprint2",
                 "data": 11,
                 "value": {
                     "To Do": {
-                        "Count": 2,
+                        "count": 2,
                         "size": 6.0
                     },
                     "In Progress": {
-                        "Count": 5,
+                        "count": 5,
                         "size": 10
                     },
                     "Done": {
-                        "Count": 4,
+                        "count": 4,
                         "size": 10
                     }
                 }
