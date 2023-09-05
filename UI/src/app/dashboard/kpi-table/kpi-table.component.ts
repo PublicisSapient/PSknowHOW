@@ -11,13 +11,13 @@ export class KpiTableComponent implements OnInit {
   @Input() colorObj: object = {};
   @Input() kpiConfigData: object = {};
   activeIndex: number = 0;
-  tabs:Array<string> = [];
-  showToolTip:boolean = false;
-  toolTipHtml:string = '';
-  left:string = '';
+  tabs: Array<string> = [];
+  showToolTip: boolean = false;
+  toolTipHtml: string = '';
+  left: string = '';
   top: string = '';
-  nodeColors:object = {};
-  loader:boolean=false;
+  nodeColors: object = {};
+  loader: boolean = false;
 
   constructor() { }
 
@@ -26,21 +26,48 @@ export class KpiTableComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if(changes['kpiData']?.currentValue != changes['kpiData']?.previousValue){
+    this.loader = true;
+    if (changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
       this.kpiData = changes['kpiData']?.currentValue;
+      this.handleLoader();
     }
-    if(changes['colorObj']?.currentValue != changes['colorObj']?.previousValue){
+    if (changes['colorObj']?.currentValue != changes['colorObj']?.previousValue) {
       this.assignColorToNodes();
     }
-    if(changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue){
+    if (changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue) {
       this.kpiConfigData = changes['kpiConfigData']?.currentValue;
     }
-  }  
+  }
 
-  mouseEnter(event, field, data){  
-    if(field == 'frequency'){
-      if(data?.hoverText?.length > 0){
-        data.hoverText.forEach((item) =>{
+  handleLoader() {
+    let kpisCount = 0;
+    Object.values(this.kpiConfigData)?.map(x => {
+      if (x == true) {
+        kpisCount++;
+      }
+    });
+    let projectWiseLoader = {};
+    for (let key in this.kpiData) {
+      projectWiseLoader[key] = true;
+      console.log("this.kpiData[key]?.length", this.kpiData[key]?.length);
+
+      if (this.kpiData[key]?.length == kpisCount) {
+        projectWiseLoader[key] = false;
+      }
+    }
+    let kpiLoaderValues = Object.values(projectWiseLoader);
+    if (!kpiLoaderValues.includes(true)) {
+      this.loader = false;
+    } else {
+      this.loader = true;
+    }
+    console.log(this.loader);
+  }
+
+  mouseEnter(event, field, data) {
+    if (field == 'frequency') {
+      if (data?.hoverText?.length > 0) {
+        data.hoverText.forEach((item) => {
           this.toolTipHtml += `<span>${item}</span><br/>`;
         });
         this.top = event.pageY + 'px';
@@ -50,15 +77,15 @@ export class KpiTableComponent implements OnInit {
     }
   }
 
-  mouseLeave(){
+  mouseLeave() {
     this.showToolTip = false;
     this.toolTipHtml = '';
   }
 
-  assignColorToNodes(){
+  assignColorToNodes() {
     this.nodeColors = {};
-    for(let key in this.colorObj){
-      this.nodeColors[this.colorObj[key]?.nodeName] = this.colorObj[key]?.color; 
+    for (let key in this.colorObj) {
+      this.nodeColors[this.colorObj[key]?.nodeName] = this.colorObj[key]?.color;
       this.tabs = Object.keys(this.nodeColors);
     }
   }
