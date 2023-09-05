@@ -26,10 +26,15 @@ export class KpiTableComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.loader = true;
-    if (changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
+    
+    let proj = Object.keys(changes['kpiData']?.currentValue)?.[0];
+    let condition = changes['kpiData']?.currentValue[proj]?.length > 0;
+    
+    if (changes['kpiData']?.currentValue != undefined && changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
       this.kpiData = changes['kpiData']?.currentValue;
-      this.handleLoader();
+      if(condition){
+        this.handleLoader();
+      }
     }
     if (changes['colorObj']?.currentValue != changes['colorObj']?.previousValue) {
       this.assignColorToNodes();
@@ -40,6 +45,7 @@ export class KpiTableComponent implements OnInit {
   }
 
   handleLoader() {
+    this.loader = true;
     let kpisCount = 0;
     Object.values(this.kpiConfigData)?.map(x => {
       if (x == true) {
@@ -49,8 +55,6 @@ export class KpiTableComponent implements OnInit {
     let projectWiseLoader = {};
     for (let key in this.kpiData) {
       projectWiseLoader[key] = true;
-      console.log("this.kpiData[key]?.length", this.kpiData[key]?.length);
-
       if (this.kpiData[key]?.length == kpisCount) {
         projectWiseLoader[key] = false;
       }
@@ -61,7 +65,6 @@ export class KpiTableComponent implements OnInit {
     } else {
       this.loader = true;
     }
-    console.log(this.loader);
   }
 
   mouseEnter(event, field, data) {

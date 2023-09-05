@@ -940,7 +940,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
         }
-        
         if(trendValueList?.length > 0){
             let selectedIdx:number = -1;
             let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
@@ -1002,28 +1001,30 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             })
         }else{
             /** when no data available */
-            let obj = {
-                'kpiId': kpiId,
-                'kpiName': this.allKpiArray[idx]?.kpiName,
-                'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
-                'show': enabledKpi?.isEnabled && enabledKpi?.shown,
-                'hoverText': [],
-                'order': enabledKpi?.order
-            }
-            for(let i=0; i<this.noOfDataPoints;i++){
-                obj[i+1] = '-';
-            }
-            obj['latest'] = '-';
-            obj['trend'] = '-';
-            obj['maturity'] = '-';
-            for(let hierarchyName in this.kpiTableDataObj){
-                if(enabledKpi?.isEnabled && enabledKpi?.shown){
-                    let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
-                    if(kpiIndex > -1){
-                        this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+            if(this.allKpiArray[idx]?.kpiName){
+                let obj = {
+                    'kpiId': kpiId,
+                    'kpiName': this.allKpiArray[idx]?.kpiName,
+                    'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                    'show': enabledKpi?.isEnabled && enabledKpi?.shown,
+                    'hoverText': [],
+                    'order': enabledKpi?.order
+                }
+                for(let i=0; i<this.noOfDataPoints;i++){
+                    obj[i+1] = '-';
+                }
+                obj['latest'] = '-';
+                obj['trend'] = '-';
+                obj['maturity'] = '-';
+                for(let hierarchyName in this.kpiTableDataObj){
+                    if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                        let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+                        if(kpiIndex > -1){
+                            this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+                        }
+                        this.kpiTableDataObj[hierarchyName]?.push(obj)
+                        this.sortingRowsInTable(hierarchyName);
                     }
-                    this.kpiTableDataObj[hierarchyName]?.push(obj)
-                    this.sortingRowsInTable(hierarchyName);
                 }
             }
         }
