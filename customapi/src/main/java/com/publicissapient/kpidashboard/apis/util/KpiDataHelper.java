@@ -685,15 +685,17 @@ public final class KpiDataHelper {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
 			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
 			if (MapUtils.isNotEmpty(stringListMap)) {
+				LocalDateTime endLocalDate = sprintDetail.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
+						? LocalDateTime.now()
+						: LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+								ZoneId.systemDefault());
 				return completedIssues.stream().filter(completedIssue -> {
 					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
 					if (CollectionUtils.isNotEmpty(issueDateMap)) {
 						return issueDateMap.stream()
-								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
-												ZoneId.systemDefault()),
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
-												ZoneId.systemDefault())));
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
+										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
+										endLocalDate));
 					}
 					return true;
 				}).collect(Collectors.toSet());
@@ -931,5 +933,26 @@ public final class KpiDataHelper {
 		resultMap.put(Constant.DURATION, duration);
 		resultMap.put(Constant.COUNT, value);
 		return resultMap;
+	}
+
+	public static void getMiniDateOfCompleteCycle(List<String> completionStatus,
+			List<JiraHistoryChangeLog> statusUpdationLog, Map<String, LocalDateTime> minimumCompletedStatusWiseMap,
+			List<LocalDateTime> minimumDate) {
+		for (JiraHistoryChangeLog log : statusUpdationLog) {
+			String changedTo = log.getChangedTo();
+			if (completionStatus.contains(changedTo)) {
+				LocalDateTime updatedOn = log.getUpdatedOn();
+				minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
+			} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
+				// if found a status which is not among closed statuses, then save the minimum
+				// date and clear the map
+				LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream().min(LocalDateTime::compareTo)
+						.orElse(null);
+				if (minDate != null) {
+					minimumDate.add(minDate);
+					minimumCompletedStatusWiseMap.clear();
+				}
+			}
+		}
 	}
 }

@@ -40,6 +40,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -189,13 +190,19 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI135(), null);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI135(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
+					List<JiraIssue> jiraIssueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
 					List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 							.orElse(Collections.emptyList());
@@ -219,7 +226,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getCompletedIssues(), issueList);
+									sprintDetails.getCompletedIssues(), jiraIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,

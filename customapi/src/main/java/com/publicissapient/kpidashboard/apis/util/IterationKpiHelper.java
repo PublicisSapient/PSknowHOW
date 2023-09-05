@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,10 +29,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.bson.types.ObjectId;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,8 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public final class IterationKpiHelper {
-	private static final String CLOSED = "closed";
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 	private IterationKpiHelper() {
 	}
@@ -60,12 +59,25 @@ public final class IterationKpiHelper {
 		return filteredNotCompletedJiraIssue;
 	}
 
-	public static Map<String, List<LocalDateTime>> calculateMinDateFromCloseCycle(
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList, Set<String> issues, List<String> customFields) {
+	public static List<JiraIssueCustomHistory> getFilteredJiraIssueHistory(List<String> issueNumberList,
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(issueNumberList) && CollectionUtils.isNotEmpty(jiraIssueCustomHistoryList)) {
+			jiraIssueCustomHistories = jiraIssueCustomHistoryList.stream()
+					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getStoryID())).collect(Collectors.toList());
+		}
+		return jiraIssueCustomHistories;
+	}
+
+	public static SprintDetails transformSprintdetail(List<JiraIssueCustomHistory> jiraIssueCustomHistoryList,
+			Set<String> issues, SprintDetails dbSprintDetail, List<String> completeIssueType,
+			List<String> completionStatus, ObjectId projectConfigId) {
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates = new HashMap<>();
 		Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
-		if (!customFields.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(completionStatus)) {
 			for (String issue : issues) {
 				List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equalsIgnoreCase(issue))
 						.flatMap(history -> history.getStatusUpdationLog().stream())
 						.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).collect(Collectors.toList());
 				/*
@@ -78,20 +90,8 @@ public final class IterationKpiHelper {
 					Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
 					List<LocalDateTime> minimumDate = new ArrayList<>();
 
-					for (JiraHistoryChangeLog log : statusUpdationLog) {
-						String changedTo = log.getChangedTo();
-						if (customFields.contains(changedTo)) {
-							LocalDateTime updatedOn = log.getUpdatedOn();
-							minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
-						} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
-							LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
-									.min(LocalDateTime::compareTo).orElse(null);
-							if (minDate != null) {
-								minimumDate.add(minDate);
-								minimumCompletedStatusWiseMap.clear();
-							}
-						}
-					}
+					KpiDataHelper.getMiniDateOfCompleteCycle(completionStatus, statusUpdationLog,
+							minimumCompletedStatusWiseMap, minimumDate);
 					// if some status is left in the last cycle then that has to added in the
 					// minimum set
 					if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {
@@ -105,8 +105,10 @@ public final class IterationKpiHelper {
 					issueWiseMinDateTime.put(issue, minimumDate);
 				}
 			}
+			projectIssueWiseClosedDates.put(projectConfigId, issueWiseMinDateTime);
 		}
-		return issueWiseMinDateTime;
+		return KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, completeIssueType, completionStatus,
+				projectIssueWiseClosedDates);
 	}
 
 }

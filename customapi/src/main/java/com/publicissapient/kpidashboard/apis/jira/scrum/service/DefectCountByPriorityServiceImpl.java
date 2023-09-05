@@ -37,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -44,6 +45,7 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -111,8 +113,14 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI140(), null);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI140(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -139,7 +147,8 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 						Collections.singletonList(basicProjectConfigId));
 
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> totalIssueList = getJiraIssuesFromBaseClass(totalIssues);
+					List<JiraIssue> totalIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), totalIssueList);

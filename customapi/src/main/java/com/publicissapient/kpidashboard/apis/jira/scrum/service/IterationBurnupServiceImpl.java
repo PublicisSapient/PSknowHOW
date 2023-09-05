@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -148,9 +149,15 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI125(),
-						fieldMapping.getJiraIterationCompletionStatusKPI125(), null);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
+						fieldMapping.getJiraIterationCompletionStatusKPI125(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
@@ -172,8 +179,10 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
 					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, sprintIssues, getJiraIssuesFromBaseClass(allIssues));
-					List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(allIssues);
+							sprintDetails, sprintIssues,
+							IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList));
+					List<JiraIssueCustomHistory> allIssuesHistory = IterationKpiHelper
+							.getFilteredJiraIssueHistory(allIssues, totalHistoryList);
 					Map<LocalDate, List<JiraIssue>> fullSprintIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> addedIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> removedIssues = new HashMap<>();

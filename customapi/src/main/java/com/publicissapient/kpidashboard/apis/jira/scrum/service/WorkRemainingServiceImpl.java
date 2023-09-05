@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -125,26 +123,28 @@ public class WorkRemainingServiceImpl extends JiraKPIService<Integer, List<Objec
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-				Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates= new HashMap<>();
+				// to modify sprintdetails on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
-				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
-				Map<String, List<LocalDateTime>> stringListMap = IterationKpiHelper.calculateMinDateFromCloseCycle(totalHistoryList, issueList,
-						fieldMapping.getJiraIterationCompletionStatusKPI119());
-				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
-						fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI119(), projectIssueWiseClosedDates);
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI125(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> notCompletedJiraIssueList = IterationKpiHelper.getFilteredJiraIssue(notCompletedIssues,totalJiraIssueList);
+					List<JiraIssue> notCompletedJiraIssueList = IterationKpiHelper
+							.getFilteredJiraIssue(notCompletedIssues, totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), notCompletedJiraIssueList);
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							notCompletedJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
+							notCompletedJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							totalHistoryList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
 					resultListMap.put(ISSUE_CUSTOM_HISTORY, issueHistoryList);
