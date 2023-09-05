@@ -67,6 +67,7 @@ public class DefectByTestingPhaseImpl extends JiraKPIService<Integer, List<Objec
 	private static final String OVERALL = "Overall";
 	private static final String SEARCH_BY_ASSIGNEE = "Filter by Assignee";
 	private static final String SEARCH_BY_PRIORITY = "Filter by Priority";
+	private static final String OTHERS = "Others";
 
 	@Autowired
 	ConfigHelperService configHelperService;
@@ -174,20 +175,22 @@ public class DefectByTestingPhaseImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList) {
-		List<String> testingPhasesList = jiraIssueList.stream()
+		Set<String> testingPhasesList = jiraIssueList.stream()
 				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getTestPhaseOfDefectList()))
-				.flatMap(jiraIssue -> jiraIssue.getTestPhaseOfDefectList().stream()).collect(Collectors.toList());
+				.flatMap(jiraIssue -> jiraIssue.getTestPhaseOfDefectList().stream()).collect(Collectors.toSet());
 		DataCount dataCount = new DataCount();
+		Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
 		testingPhasesList.forEach(s -> {
-			Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
 			releaseProgressCount.put(s,
 					(double) jiraIssueList.stream()
 							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getTestPhaseOfDefectList())
 									&& jiraIssue.getTestPhaseOfDefectList().contains(s))
 							.count());
-			dataCount.setValue(releaseProgressCount);
+			releaseProgressCount.put(OTHERS, (double) jiraIssueList.stream()
+					.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getTestPhaseOfDefectList())).count());
 		});
-
+		dataCount.setValue(releaseProgressCount);
+		dataCount.setData(String.valueOf(releaseProgressCount.values().stream().mapToDouble(Double::doubleValue).sum()));
 		dataCount.setKpiGroup(DEFECTS_COUNT);
 		return dataCount;
 	}
