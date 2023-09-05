@@ -67,7 +67,8 @@ export class MilestoneComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   kpiPart1 : any = [];
   kpiPart2 : any = []
-
+  navigationTabs:Array<object>;
+  activeIndex = 0;
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     
     /** When filter dropdown change */
@@ -117,6 +118,12 @@ export class MilestoneComponent implements OnInit {
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
+    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+      let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
+      if(idx != -1) this.navigationTabs[idx]['count']++;
+    }
+
     // Divide into two parts
     this.kpiPart1= this.upDatedConfigData.slice(0, (Math.floor(this.upDatedConfigData.length / 2)));
     this.kpiPart2 = this.upDatedConfigData.slice((Math.floor(this.upDatedConfigData.length / 2)));
@@ -144,6 +151,11 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.activeIndex = 0;
+    this.navigationTabs = [
+      {'label':'Release Review', 'count': 0},
+      {'label':'Release Progress', 'count': 0},
+    ];
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();

@@ -148,7 +148,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }else{
       this.leadTime = undefined;
     }
-    this.dragableConfigGlobalData = this.updatedConfigGlobalData.filter(kpi=>kpi.kpiId !== 'kpi3')
+    this.dragableConfigGlobalData = this.updatedConfigGlobalData.filter(kpi=>kpi?.kpiId !== 'kpi3')
     
  
     // Divide into two parts

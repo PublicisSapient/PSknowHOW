@@ -74,13 +74,17 @@ export class GroupBarChartComponent implements OnChanges {
 
     const currentDayIndex = this.currentDayIndex;
     const barWidth = 18;
-    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 4);
+  
     const spacingVariable = 50;
     const height = 195;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
+    let width = window.innerWidth- 320 - marginLeft;
+    if(data.length > 5){
+      width += data.length * barWidth * (subgroups.length + 3);
+    }
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
