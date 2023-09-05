@@ -112,6 +112,22 @@ public class DataCount implements Serializable {
 	}
 
 	/**
+	 * Instantiates a drill down data count
+	 * 
+	 * @param subFilter
+	 *            the subFilter
+	 * @param value
+	 *            the value
+	 * @param drillDown
+	 *            the drillDown
+	 */
+	public DataCount(String subFilter, Object value, Object drillDown) {
+		this.subFilter = subFilter;
+		this.value = value;
+		this.drillDown = drillDown;
+	}
+
+	/**
 	 * Instantiates a new Data count.
 	 *
 	 * @param data

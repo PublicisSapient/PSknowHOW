@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -172,271 +173,85 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	}
 
-/*
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
-		DataCount dataCount = new DataCount();
-		Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
-		releaseProgressCount.put(TO_DO,
-				(double) jiraIssueList.stream().filter(
-						jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
-						.count());
-		releaseProgressCount.put(IN_PROGRESS, (double) jiraIssueList.stream().filter(
-				jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
-				.count());
-		releaseProgressCount.put(DONE,
-				(double) jiraIssueList.stream().filter(
-						jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
-						.count());
-		dataCount
-				.setData(String.valueOf(releaseProgressCount.values().stream().mapToDouble(Double::doubleValue).sum()));
-		dataCount.setValue(releaseProgressCount);
-		dataCount.setKpiGroup(ISSUE_COUNT);
-		return dataCount;
+		DataCount issueCountDc = new DataCount();
+		List<DataCount> issueCountDcList = new ArrayList<>();
+		List<JiraIssue> toDoJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getToDoList());
+		List<JiraIssue> inProgressJiraIssue = filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getInProgressList());
+		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
+
+		long toDoCount = toDoJiraIssue.size();
+		Map<String, Integer> toDoStatusMap = toDoJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
+		List<DataCount> toDoDrillDownList = new ArrayList<>();
+		toDoStatusMap.forEach((status, count) -> toDoDrillDownList.add(new DataCount(status, count, null)));
+		DataCount toDoDc = new DataCount(TO_DO, toDoCount, toDoDrillDownList);
+		issueCountDcList.add(toDoDc);
+
+		long inProgressCount = inProgressJiraIssue.size();
+		Map<String, Integer> inProgressStatusMap = inProgressJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
+		List<DataCount> inProgressDrillDownList = new ArrayList<>();
+		inProgressStatusMap.forEach((status, count) -> inProgressDrillDownList.add(new DataCount(status, count, null)));
+		DataCount inProgressDc = new DataCount(IN_PROGRESS, inProgressCount, inProgressDrillDownList);
+		issueCountDcList.add(inProgressDc);
+
+		long doneCount = doneJiraIssue.size();
+		Map<String, Integer> doneStatusMap = (doneJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
+		List<DataCount> doneDrillDownList = new ArrayList<>();
+		doneStatusMap.forEach((status, count) -> doneDrillDownList.add(new DataCount(status, count, null)));
+		DataCount doneDc = new DataCount(DONE, doneCount, doneDrillDownList);
+		issueCountDcList.add(doneDc);
+
+		issueCountDc.setData(String.valueOf(toDoCount + inProgressCount + doneCount));
+		issueCountDc.setValue(issueCountDcList);
+		issueCountDc.setKpiGroup(ISSUE_COUNT);
+		return issueCountDc;
 	}
-*/
-/*
+
 	private DataCount getStatusWiseStoryPointList(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
-		DataCount dataCount = new DataCount();
-		Map<String, Double> releaseProgressStoryPoint = new HashMap<>();
+		DataCount storyPointDc = new DataCount();
+		List<DataCount> storyPointDcList = new ArrayList<>();
+		List<JiraIssue> toDoJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getToDoList());
+		List<JiraIssue> inProgressJiraIssue = filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getInProgressList());
+		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
 
-		releaseProgressStoryPoint.put(TO_DO, jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
-				.mapToDouble(jiraIssue -> {
-					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-					} else {
-						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-						int inHours = integer / 60;
-						return inHours / fieldMapping.getStoryPointToHourMapping();
-					}
-				}).sum());
-		releaseProgressStoryPoint.put(IN_PROGRESS, jiraIssueList.stream().filter(
-				jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
-				.mapToDouble(jiraIssue -> {
-					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-					} else {
-						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-						int inHours = integer / 60;
-						return inHours / fieldMapping.getStoryPointToHourMapping();
-					}
-				}).sum());
-		releaseProgressStoryPoint.put(DONE, jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
-				.mapToDouble(jiraIssue -> {
-					if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-							&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-						return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-					} else {
-						Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-						int inHours = integer / 60;
-						return inHours / fieldMapping.getStoryPointToHourMapping();
-					}
-				}).sum());
-		dataCount.setData(
-				String.valueOf(releaseProgressStoryPoint.values().stream().mapToDouble(Double::doubleValue).sum()));
-		dataCount.setValue(releaseProgressStoryPoint);
-		dataCount.setKpiGroup(STORY_POINT);
-		return dataCount;
+		double toDoSp = calculateStoryPoints(toDoJiraIssue, fieldMapping);
+
+		Map<String, Double> toDoSpMap = createStatusWiseSpMap(toDoJiraIssue, fieldMapping);
+
+		List<DataCount> toDoDrillDownList = new ArrayList<>();
+		toDoSpMap.forEach((status, spVal) -> toDoDrillDownList.add(new DataCount(status, spVal, null)));
+		DataCount toDoSpDc = new DataCount(TO_DO, toDoSp, toDoDrillDownList);
+		storyPointDcList.add(toDoSpDc);
+
+		double inProgressSp = calculateStoryPoints(inProgressJiraIssue, fieldMapping);
+
+		Map<String, Double> inProgressSpMap = createStatusWiseSpMap(inProgressJiraIssue, fieldMapping);
+
+		List<DataCount> inProgressDrillDownList = new ArrayList<>();
+		inProgressSpMap.forEach((status, spVal) -> inProgressDrillDownList.add(new DataCount(status, spVal, null)));
+		DataCount inProgressSpDc = new DataCount(IN_PROGRESS, inProgressSp, inProgressDrillDownList);
+		storyPointDcList.add(inProgressSpDc);
+
+		double doneSp = calculateStoryPoints(doneJiraIssue, fieldMapping);
+		Map<String, Double> doneSpMap = createStatusWiseSpMap(doneJiraIssue, fieldMapping);
+
+		List<DataCount> doneDrillDownList = new ArrayList<>();
+		doneSpMap.forEach((status, spVal) -> doneDrillDownList.add(new DataCount(status, spVal, null)));
+		DataCount doneSpDc = new DataCount(DONE, doneSp, doneDrillDownList);
+		storyPointDcList.add(doneSpDc);
+
+		storyPointDc.setData(String.valueOf(inProgressSp + toDoSp + doneSp));
+		storyPointDc.setValue(storyPointDcList);
+		storyPointDc.setKpiGroup(STORY_POINT);
+		return storyPointDc;
 	}
-*/
-
-private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus) {
-	DataCount issueCountDc = new DataCount();
-	List<DataCount> issueCountDcList = new ArrayList<>();
-	List<JiraIssue> toDoJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-	List<JiraIssue> inProgressJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-	List<JiraIssue> doneJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-
-	DataCount toDoDc = new DataCount();
-	toDoDc.setSubFilter(TO_DO);
-	long toDoCount = toDoJiraIssue.stream().count();
-	toDoDc.setValue(String.valueOf(toDoCount));
-	Map<String, Integer> toDoStatusMap = (toDoJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
-	List<DataCount> toDoDrillDownList = new ArrayList<>();
-	toDoStatusMap.forEach((status, count) -> {
-		DataCount toDoDrillDown = new DataCount();
-		toDoDrillDown.setSubFilter(status);
-		toDoDrillDown.setValue(count);
-		toDoDrillDownList.add(toDoDrillDown);
-	});
-	toDoDc.setDrillDown(toDoDrillDownList);
-	issueCountDcList.add(toDoDc);
-
-	DataCount inProgressDc = new DataCount();
-	inProgressDc.setSubFilter(IN_PROGRESS);
-	long inProgressCount = toDoJiraIssue.stream().count();
-	inProgressDc.setValue(String.valueOf(inProgressCount));
-	Map<String, Integer> inProgressStatusMap = (inProgressJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
-	List<DataCount> inProgressDrillDownList = new ArrayList<>();
-	inProgressStatusMap.forEach((status, count) -> {
-		DataCount toDoDrillDown = new DataCount();
-		toDoDrillDown.setSubFilter(status);
-		toDoDrillDown.setValue(count);
-		inProgressDrillDownList.add(toDoDrillDown);
-	});
-	inProgressDc.setDrillDown(inProgressDrillDownList);
-	issueCountDcList.add(inProgressDc);
-
-	DataCount doneDc = new DataCount();
-	doneDc.setSubFilter(DONE);
-	long doneCount = toDoJiraIssue.stream().count();
-	doneDc.setValue(String.valueOf(doneCount));
-	Map<String, Integer> doneStatusMap = (doneJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
-	List<DataCount> doneDrillDownList = new ArrayList<>();
-	doneStatusMap.forEach((status, count) -> {
-		DataCount toDoDrillDown = new DataCount();
-		toDoDrillDown.setSubFilter(status);
-		toDoDrillDown.setValue(count);
-		doneDrillDownList.add(toDoDrillDown);
-	});
-	doneDc.setDrillDown(doneDrillDownList);
-	issueCountDcList.add(doneDc);
-
-	issueCountDc.setData(String.valueOf(inProgressCount + doneCount + toDoCount));
-	issueCountDc.setValue(issueCountDcList);
-	issueCountDc.setKpiGroup(ISSUE_COUNT);
-	return issueCountDc;
-}
-
-private DataCount getStatusWiseStoryPointList(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping,
-		JiraIssueReleaseStatus jiraIssueReleaseStatus) {
-	DataCount storyPointDc = new DataCount();
-	List<DataCount> storyPointDcList = new ArrayList<>();
-	List<JiraIssue> toDoJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getToDoList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-	List<JiraIssue> inProgressJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-	List<JiraIssue> doneJiraIssue = jiraIssueList.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
-			.collect(Collectors.toList());
-
-	DataCount toDoSpDc = new DataCount();
-	toDoSpDc.setSubFilter(TO_DO);
-	double toDoSp = toDoJiraIssue.stream().mapToDouble(jiraIssue -> {
-		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-		} else {
-			Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-			int inHours = integer / 60;
-			return inHours / fieldMapping.getStoryPointToHourMapping();
-		}
-	}).sum();
-	toDoSpDc.setValue(toDoSp);
-	Map<String, Double> toDoSpMap = toDoJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingDouble(jiraIssue -> {
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-				} else {
-					Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-					int inHours = integer / 60;
-					return inHours / fieldMapping.getStoryPointToHourMapping();
-				}
-			})));
-	List<DataCount> toDoDrillDownList = new ArrayList<>();
-	toDoSpMap.forEach((status, spVal) -> {
-		DataCount toDoDrillDown = new DataCount();
-		toDoDrillDown.setSubFilter(status);
-		toDoDrillDown.setValue(spVal);
-		toDoDrillDownList.add(toDoDrillDown);
-	});
-	toDoSpDc.setDrillDown(toDoDrillDownList);
-	storyPointDcList.add(toDoSpDc);
-
-	DataCount inProgressSpDc = new DataCount();
-	inProgressSpDc.setSubFilter(IN_PROGRESS);
-	double inProgressSp = inProgressJiraIssue.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getInProgressList().values().contains(jiraIssue.getStatus()))
-			.mapToDouble(jiraIssue -> {
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-				} else {
-					Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-					int inHours = integer / 60;
-					return inHours / fieldMapping.getStoryPointToHourMapping();
-				}
-			}).sum();
-	inProgressSpDc.setValue(inProgressSp);
-	Map<String, Double> inProgressSpMap = inProgressJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingDouble(jiraIssue -> {
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-				} else {
-					Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-					int inHours = integer / 60;
-					return inHours / fieldMapping.getStoryPointToHourMapping();
-				}
-			})));
-	List<DataCount> inProgressDrillDownList = new ArrayList<>();
-	inProgressSpMap.forEach((status, spVal) -> {
-		DataCount toDoDrillDown = new DataCount();
-		toDoDrillDown.setSubFilter(status);
-		toDoDrillDown.setValue(spVal);
-		inProgressDrillDownList.add(toDoDrillDown);
-	});
-	inProgressSpDc.setDrillDown(inProgressDrillDownList);
-	storyPointDcList.add(inProgressSpDc);
-
-	DataCount doneSpDc = new DataCount();
-	doneSpDc.setSubFilter(DONE);
-	double doneSp = doneJiraIssue.stream()
-			.filter(jiraIssue -> jiraIssueReleaseStatus.getClosedList().values().contains(jiraIssue.getStatus()))
-			.mapToDouble(jiraIssue -> {
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-				} else {
-					Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-					int inHours = integer / 60;
-					return inHours / fieldMapping.getStoryPointToHourMapping();
-				}
-			}).sum();
-	doneSpDc.setValue(doneSp);
-	Map<String, Double> doneSpMap = doneJiraIssue.stream()
-			.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingDouble(jiraIssue -> {
-				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-				} else {
-					Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-					int inHours = integer / 60;
-					return inHours / fieldMapping.getStoryPointToHourMapping();
-				}
-			})));
-	List<DataCount> doneDrillDownList = new ArrayList<>();
-	doneSpMap.forEach((status, spVal) -> {
-		DataCount doneDrillDown = new DataCount();
-		doneDrillDown.setSubFilter(status);
-		doneDrillDown.setValue(spVal);
-		doneDrillDownList.add(doneDrillDown);
-	});
-	doneSpDc.setDrillDown(doneDrillDownList);
-	storyPointDcList.add(doneSpDc);
-
-	storyPointDc.setData(String.valueOf(inProgressSp + toDoSp + doneSp));
-	storyPointDc.setValue(storyPointDcList);
-	storyPointDc.setKpiGroup(STORY_POINT);
-	return storyPointDc;
-}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
@@ -446,4 +261,26 @@ private DataCount getStatusWiseStoryPointList(List<JiraIssue> jiraIssueList, Fie
 		}
 	}
 
+	private List<JiraIssue> filterIssuesByStatus(List<JiraIssue> jiraIssueList, Map<Long, String> statusMap) {
+		return jiraIssueList.stream().filter(jiraIssue -> statusMap.containsValue(jiraIssue.getStatus()))
+				.collect(Collectors.toList());
+	}
+
+	private double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
+			} else {
+				Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				int inHours = integer / 60;
+				return inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}).sum();
+	}
+
+	private Map<String, Double> createStatusWiseSpMap(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		return jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors
+				.summingDouble(jiraIssue -> calculateStoryPoints(Collections.singletonList(jiraIssue), fieldMapping))));
+	}
 }
