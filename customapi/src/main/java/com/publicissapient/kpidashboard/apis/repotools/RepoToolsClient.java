@@ -76,7 +76,7 @@ public class RepoToolsClient {
 	 */
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
-		String triggerScanUrl = String.format(repoToolsUrl, REPO_TOOLS_TRIGGER_SCAN_URL, projectKey);
+		String triggerScanUrl = String.format(repoToolsUrl.concat(REPO_TOOLS_TRIGGER_SCAN_URL), projectKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
