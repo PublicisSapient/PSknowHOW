@@ -10,8 +10,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -160,6 +159,13 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	}
 
+	/**
+	 * Create statusWiseIssueCountList
+	 * 
+	 * @param jiraIssueList
+	 * @param jiraIssueReleaseStatus
+	 * @return
+	 */
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount issueCountDc = new DataCount();
@@ -172,26 +178,17 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		long toDoCount = toDoJiraIssue.size();
 		Map<String, Integer> toDoStatusMap = toDoJiraIssue.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
-		List<DataCount> toDoDrillDownList = new ArrayList<>();
-		toDoStatusMap.forEach((status, count) -> toDoDrillDownList.add(new DataCount(status, count, null)));
-		DataCount toDoDc = new DataCount(TO_DO, toDoCount, toDoDrillDownList);
-		issueCountDcList.add(toDoDc);
+		createIssueCountDrillDown(toDoStatusMap, TO_DO, toDoCount, issueCountDcList);
 
 		long inProgressCount = inProgressJiraIssue.size();
 		Map<String, Integer> inProgressStatusMap = inProgressJiraIssue.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
-		List<DataCount> inProgressDrillDownList = new ArrayList<>();
-		inProgressStatusMap.forEach((status, count) -> inProgressDrillDownList.add(new DataCount(status, count, null)));
-		DataCount inProgressDc = new DataCount(IN_PROGRESS, inProgressCount, inProgressDrillDownList);
-		issueCountDcList.add(inProgressDc);
+		createIssueCountDrillDown(inProgressStatusMap, IN_PROGRESS, inProgressCount, issueCountDcList);
 
 		long doneCount = doneJiraIssue.size();
 		Map<String, Integer> doneStatusMap = (doneJiraIssue.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
-		List<DataCount> doneDrillDownList = new ArrayList<>();
-		doneStatusMap.forEach((status, count) -> doneDrillDownList.add(new DataCount(status, count, null)));
-		DataCount doneDc = new DataCount(DONE, doneCount, doneDrillDownList);
-		issueCountDcList.add(doneDc);
+		createIssueCountDrillDown(doneStatusMap, DONE, doneCount, issueCountDcList);
 
 		issueCountDc.setData(String.valueOf(toDoCount + inProgressCount + doneCount));
 		issueCountDc.setValue(issueCountDcList);
@@ -199,6 +196,14 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		return issueCountDc;
 	}
 
+	/**
+	 * Create StatusWiseStoryPointList
+	 * 
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 * @param jiraIssueReleaseStatus
+	 * @return
+	 */
 	private DataCount getStatusWiseStoryPointList(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount storyPointDc = new DataCount();
@@ -208,31 +213,17 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				jiraIssueReleaseStatus.getInProgressList());
 		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
 
-		double toDoSp = calculateStoryPoints(toDoJiraIssue, fieldMapping);
-
+		double toDoSp = KpiDataHelper.calculateStoryPoints(toDoJiraIssue, fieldMapping);
 		Map<String, Double> toDoSpMap = createStatusWiseSpMap(toDoJiraIssue, fieldMapping);
+		createSpDrillDown(toDoSpMap, TO_DO, toDoSp, storyPointDcList);
 
-		List<DataCount> toDoDrillDownList = new ArrayList<>();
-		toDoSpMap.forEach((status, spVal) -> toDoDrillDownList.add(new DataCount(status, spVal, null)));
-		DataCount toDoSpDc = new DataCount(TO_DO, toDoSp, toDoDrillDownList);
-		storyPointDcList.add(toDoSpDc);
-
-		double inProgressSp = calculateStoryPoints(inProgressJiraIssue, fieldMapping);
-
+		double inProgressSp = KpiDataHelper.calculateStoryPoints(inProgressJiraIssue, fieldMapping);
 		Map<String, Double> inProgressSpMap = createStatusWiseSpMap(inProgressJiraIssue, fieldMapping);
+		createSpDrillDown(inProgressSpMap, IN_PROGRESS, inProgressSp, storyPointDcList);
 
-		List<DataCount> inProgressDrillDownList = new ArrayList<>();
-		inProgressSpMap.forEach((status, spVal) -> inProgressDrillDownList.add(new DataCount(status, spVal, null)));
-		DataCount inProgressSpDc = new DataCount(IN_PROGRESS, inProgressSp, inProgressDrillDownList);
-		storyPointDcList.add(inProgressSpDc);
-
-		double doneSp = calculateStoryPoints(doneJiraIssue, fieldMapping);
+		double doneSp = KpiDataHelper.calculateStoryPoints(doneJiraIssue, fieldMapping);
 		Map<String, Double> doneSpMap = createStatusWiseSpMap(doneJiraIssue, fieldMapping);
-
-		List<DataCount> doneDrillDownList = new ArrayList<>();
-		doneSpMap.forEach((status, spVal) -> doneDrillDownList.add(new DataCount(status, spVal, null)));
-		DataCount doneSpDc = new DataCount(DONE, doneSp, doneDrillDownList);
-		storyPointDcList.add(doneSpDc);
+		createSpDrillDown(doneSpMap, DONE, doneSp, storyPointDcList);
 
 		storyPointDc.setData(String.valueOf(inProgressSp + toDoSp + doneSp));
 		storyPointDc.setValue(storyPointDcList);
@@ -248,26 +239,60 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 		}
 	}
 
+	/**
+	 * Filtering the jiraIssue based on releaseStatus
+	 * 
+	 * @param jiraIssueList
+	 * @param statusMap
+	 * @return
+	 */
 	private List<JiraIssue> filterIssuesByStatus(List<JiraIssue> jiraIssueList, Map<Long, String> statusMap) {
 		return jiraIssueList.stream().filter(jiraIssue -> statusMap.containsValue(jiraIssue.getStatus()))
 				.collect(Collectors.toList());
 	}
 
-	private double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
-			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-			} else {
-				Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-				int inHours = integer / 60;
-				return inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}).sum();
+	/**
+	 * Create statusWise storyPoint/OriginalEstimate map
+	 * 
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 * @return
+	 */
+	private Map<String, Double> createStatusWiseSpMap(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		return jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingDouble(
+				jiraIssue -> KpiDataHelper.calculateStoryPoints(Collections.singletonList(jiraIssue), fieldMapping))));
 	}
 
-	private Map<String, Double> createStatusWiseSpMap(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		return jiraIssueList.stream().collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors
-				.summingDouble(jiraIssue -> calculateStoryPoints(Collections.singletonList(jiraIssue), fieldMapping))));
+	/**
+	 * Create issueCountDrillDown
+	 * 
+	 * @param issueCountStatusMap
+	 * @param releaseStatus
+	 * @param releaseStatusCount
+	 * @param issueCountDcList
+	 */
+	private static void createIssueCountDrillDown(Map<String, Integer> issueCountStatusMap, String releaseStatus,
+			long releaseStatusCount, List<DataCount> issueCountDcList) {
+		List<DataCount> drillDownList = new ArrayList<>();
+		issueCountStatusMap.forEach((status, count) -> drillDownList.add(new DataCount(status, count, null)));
+		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, drillDownList);
+		issueCountDcList.add(releaseStatusDc);
 	}
+
+	/**
+	 * Create storyPointDrillDown
+	 * 
+	 * @param spStatusMap
+	 * @param releaseStatus
+	 * @param releaseStatusSp
+	 * @param storyPointDcList
+	 */
+	private static void createSpDrillDown(Map<String, Double> spStatusMap, String releaseStatus, double releaseStatusSp,
+			List<DataCount> storyPointDcList) {
+		List<DataCount> spDrillDownList = new ArrayList<>();
+		spStatusMap.forEach((status, spVal) -> spDrillDownList.add(new DataCount(status, spVal, null)));
+		DataCount spDc = new DataCount(releaseStatus, releaseStatusSp, spDrillDownList);
+		storyPointDcList.add(spDc);
+	}
+
 }

@@ -936,4 +936,25 @@ public final class KpiDataHelper {
 		resultMap.put(Constant.COUNT, value);
 		return resultMap;
 	}
+
+	/**
+	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
+	 * 
+	 * @param jiraIssueList theListOfJiraIssue
+	 * @param fieldMapping fieldMapping containing estimationCriteria
+	 * @return sum of storyPoint/OriginalEstimate
+	 */
+	public static double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
+			} else {
+				Integer integer = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				int inHours = integer / 60;
+				return inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}).sum();
+	}
+
 }
