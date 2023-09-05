@@ -115,7 +115,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI75(),
 						fieldMapping.getJiraIterationCompletionStatusKPI75(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

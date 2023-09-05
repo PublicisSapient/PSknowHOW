@@ -114,7 +114,7 @@ public class EstimationHygieneServiceImpl extends JiraKPIService<Integer, List<O
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI124(),
 						fieldMapping.getJiraIterationCompletionStatusKPI124(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

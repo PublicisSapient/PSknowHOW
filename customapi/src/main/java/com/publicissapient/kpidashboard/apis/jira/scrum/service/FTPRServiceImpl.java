@@ -195,7 +195,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI135(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 

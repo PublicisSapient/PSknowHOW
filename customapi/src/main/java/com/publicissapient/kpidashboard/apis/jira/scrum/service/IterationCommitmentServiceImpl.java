@@ -123,7 +123,7 @@ public class IterationCommitmentServiceImpl extends JiraKPIService<Integer, List
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI120(),
 						fieldMapping.getJiraIterationCompletionStatusKPI120(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

@@ -136,7 +136,7 @@ public class DefectCountByStatusServiceImpl extends JiraKPIService<Integer, List
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI136(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 

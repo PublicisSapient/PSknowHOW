@@ -115,7 +115,7 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI134(),
 						fieldMapping.getJiraIterationCompletionStatusKPI134(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

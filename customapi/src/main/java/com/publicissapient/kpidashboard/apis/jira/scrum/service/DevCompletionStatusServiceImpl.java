@@ -117,7 +117,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI145(),
 						fieldMapping.getJiraIterationCompletionStatusKPI145(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

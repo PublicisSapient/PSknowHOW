@@ -50,15 +50,21 @@ public final class IterationKpiHelper {
 	private IterationKpiHelper() {
 	}
 
+	/*
+	filter all jiraIssues
+	 */
 	public static List<JiraIssue> getFilteredJiraIssue(List<String> issueNumberList, List<JiraIssue> allJiraIssues) {
-		List<JiraIssue> filteredNotCompletedJiraIssue = new ArrayList<>();
+		List<JiraIssue> filterJiraIssueList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(issueNumberList) && CollectionUtils.isNotEmpty(allJiraIssues)) {
-			filteredNotCompletedJiraIssue = allJiraIssues.stream()
+			filterJiraIssueList = allJiraIssues.stream()
 					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
 		}
-		return filteredNotCompletedJiraIssue;
+		return filterJiraIssueList;
 	}
 
+	/*
+	filter all issueHistory
+	 */
 	public static List<JiraIssueCustomHistory> getFilteredJiraIssueHistory(List<String> issueNumberList,
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
@@ -69,7 +75,10 @@ public final class IterationKpiHelper {
 		return jiraIssueCustomHistories;
 	}
 
-	public static SprintDetails transformSprintdetail(List<JiraIssueCustomHistory> jiraIssueCustomHistoryList,
+	/*
+	 * to transform sprintdetails for iteration kpis
+	 */
+	public static SprintDetails transformIterSprintdetail(List<JiraIssueCustomHistory> jiraIssueCustomHistoryList,
 			Set<String> issues, SprintDetails dbSprintDetail, List<String> completeIssueType,
 			List<String> completionStatus, ObjectId projectConfigId) {
 		Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates = new HashMap<>();

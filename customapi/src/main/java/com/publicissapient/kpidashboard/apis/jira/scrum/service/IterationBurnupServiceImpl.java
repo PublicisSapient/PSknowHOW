@@ -154,7 +154,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

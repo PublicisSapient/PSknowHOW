@@ -124,7 +124,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetail = IterationKpiHelper.transformSprintdetail(totalHistoryList, issueList,
+				sprintDetail = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
