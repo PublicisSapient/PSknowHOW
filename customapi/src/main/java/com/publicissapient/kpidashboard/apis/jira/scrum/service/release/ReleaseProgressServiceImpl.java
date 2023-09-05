@@ -53,8 +53,7 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String STORY_POINT = "Story Point";
 	private static final String OVERALL = "Overall";
-	private static final String SEARCH_BY_ASSIGNEE = "Filter by Assignee";
-	private static final String SEARCH_BY_PRIORITY = "Filter by Priority";
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -118,9 +117,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 					.get(RELEASE_JIRA_ISSUE_STATUS);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(releaseIssues) && jiraIssueReleaseStatus != null) {
-				Set<String> assignees = new HashSet<>();
-				Set<String> priorities = new HashSet<>();
-				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, assignees, priorities, fieldMapping,
+				Set<String> issueTypes = new HashSet<>();
+				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, issueTypes, fieldMapping,
 						filterDataList);
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
@@ -131,9 +129,8 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				overAllIterationKpiValue.setFilter2(OVERALL);
 				overAllIterationKpiValue.setValue(dataCountList);
 				filterDataList.add(overAllIterationKpiValue);
-				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ASSIGNEE, assignees);
-				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
-				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
+				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 				kpiElement.setFilters(iterationKpiFilters);
 				kpiElement.setSprint(latestRelease.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PROGRESS.getColumns());
@@ -145,31 +142,21 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
-			Set<String> assigneeNames, Set<String> priorities, FieldMapping fieldMapping,
-			List<IterationKpiValue> iterationKpiValues) {
-		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = jiraIssueList.stream().collect(
-				Collectors.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getAssigneeName()).orElse("-"),
-						Collectors.groupingBy(JiraIssue::getPriority)));
-		typeAndStatusWiseIssues
-				.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue.forEach((priority, issues) -> {
-					List<DataCount> dataCountList = new ArrayList<>();
-					assigneeNames.add(assigneeName);
-					priorities.add(priority);
-					dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus));
-					dataCountList.add(getStatusWiseStoryPointList(issues, fieldMapping, jiraIssueReleaseStatus));
-					IterationKpiValue matchingObject = iterationKpiValues.stream()
-							.filter(p -> p.getFilter1().equals(assigneeName) && p.getFilter2().equals(priority))
-							.findAny().orElse(null);
-					if (matchingObject == null) {
-						IterationKpiValue iterationKpiValue = new IterationKpiValue();
-						iterationKpiValue.setFilter1(assigneeName);
-						iterationKpiValue.setFilter2(priority);
-						iterationKpiValue.setValue(dataCountList);
-						iterationKpiValues.add(iterationKpiValue);
-					} else {
-						matchingObject.getValue().addAll(dataCountList);
-					}
-				}));
+			Set<String> issueTypes, FieldMapping fieldMapping, List<IterationKpiValue> iterationKpiValues) {
+		Map<String, List<JiraIssue>> typeWiseIssues = jiraIssueList.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getTypeName));
+
+		typeWiseIssues.forEach((issueType, issues) -> {
+			List<DataCount> dataCountList = new ArrayList<>();
+			issueTypes.add(issueType);
+			dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus));
+			dataCountList.add(getStatusWiseStoryPointList(issues, fieldMapping, jiraIssueReleaseStatus));
+			IterationKpiValue iterationKpiValue = new IterationKpiValue();
+			iterationKpiValue.setFilter1(issueType);
+			iterationKpiValue.setFilter2(null);
+			iterationKpiValue.setValue(dataCountList);
+			iterationKpiValues.add(iterationKpiValue);
+		});
 
 	}
 
