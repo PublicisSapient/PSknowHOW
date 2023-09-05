@@ -62,6 +62,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
+	private static final String APPICATION_JSON = "application/json";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -132,7 +133,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			}
 			break;
 			case Constant.REPO_TOOLS:
-				apiUrl = getApiForRepoTool(connection, toolName);
+				apiUrl = getApiForRepoTool(connection);
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			break;
 		default:
@@ -150,8 +151,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForRepoTool(Connection connection, String toolName) {
-		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(connection.getType());
+	private String getApiForRepoTool(Connection connection) {
+		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
+				.findByToolName(connection.getRepoToolProvider());
 		return repoToolsProvider.getTestApiUrl();
 	}
 
@@ -378,7 +380,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + pat);
 		headers.add(HttpHeaders.ACCEPT, "*/*");
-		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+		headers.add(HttpHeaders.CONTENT_TYPE, APPICATION_JSON);
 		headers.set("Cookie", "");
 		return headers;
 	}
@@ -449,8 +451,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private HttpResponse getApiResponseWithKerbAuth(KerberosClient client, String apiUrl) {
 		HttpUriRequest request = RequestBuilder.get().setUri(apiUrl)
-				.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
-				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json").build();
+				.setHeader(org.apache.http.HttpHeaders.ACCEPT, APPICATION_JSON)
+				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, APPICATION_JSON).build();
 		try {
 			return client.getHttpResponse(request);
 		} catch (IOException e) {

@@ -189,7 +189,6 @@ public class RepoToolsConfigServiceImpl {
 				}
 			}
 		} catch (Exception ex) {
-			ex.printStackTrace();
 			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
 		}
 		return httpStatus;

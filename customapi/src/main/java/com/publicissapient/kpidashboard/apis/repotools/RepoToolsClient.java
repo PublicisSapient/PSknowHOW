@@ -18,23 +18,22 @@
 
 package com.publicissapient.kpidashboard.apis.repotools;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
-import lombok.extern.slf4j.Slf4j;
+import java.net.URI;
+
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.json.Json;
 
-import java.net.URI;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * rest template for repo tools
