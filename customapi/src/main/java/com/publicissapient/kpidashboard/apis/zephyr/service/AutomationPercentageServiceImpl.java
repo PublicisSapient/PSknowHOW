@@ -26,8 +26,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -85,6 +88,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	private static final String TOOL_JIRA_TEST = ProcessorConstants.JIRA_TEST;
 
 	private static final String NIN = "nin";
+	public static final String TEST_EXECUTION_FROM_UPLOAD = "uploadedData";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 	@Autowired
@@ -268,15 +272,35 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
 				.compareTo(o2.getSprintFilter().getStartDate()));
 
-		Map<String, Object> defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+		// partitioning the sprintLeafNodeList by data upload enable
+		Map<Boolean, List<Node>> nodePartitionedMap = sprintLeafNodeList.stream()
+				.collect(Collectors.partitioningBy(leaf -> configHelperService.getFieldMappingMap()
+						.get(leaf.getProjectFilter().getBasicProjectConfigId()).isUploadDataKPI16()));
 
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
+		List<Node> uploadDataEnableNodes = nodePartitionedMap.get(true);
+		List<Node> uploadDataDisableNodes = nodePartitionedMap.get(false);
+
+		// flow 1 : fetching the uploaded data for uploadEnableNode
+		Map<String, Object> uploadedDataMap = fetchTestExecutionUploadDataFromDb(uploadDataEnableNodes, kpiRequest);
+		// Grouping of uploaded data by sprint
+		Map<String, TestExecution> sprintWiseUploadedDataMap = createSprintWiseTestExecutionMap(
+				(List<TestExecution>) uploadedDataMap.getOrDefault(TEST_EXECUTION_FROM_UPLOAD, new ArrayList<>()));
+		// flow 2 : fetching the data from configured tool for uploadDisableNode
+		Map<String, Object> defectDataListMap = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(uploadDataDisableNodes)) {
+			defectDataListMap = fetchKPIDataFromDb(uploadDataDisableNodes, null, null, kpiRequest);
+		}
+
+		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap
+				.getOrDefault(SPRINTSTORIES, new ArrayList<>());
 
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		List<TestCaseDetails> testCaseList = (List<TestCaseDetails>) defectDataListMap.get(TESTCASEKEY);
-		Map<String, Set<JiraIssue>> projectWiseStories = ((List<JiraIssue>) defectDataListMap.get(ISSUE_DATA)).stream()
+		List<TestCaseDetails> testCaseList = (List<TestCaseDetails>) defectDataListMap.getOrDefault(TESTCASEKEY,
+				new ArrayList<>());
+		Map<String, Set<JiraIssue>> projectWiseStories = ((List<JiraIssue>) defectDataListMap.getOrDefault(ISSUE_DATA,
+				new ArrayList<>())).stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
 
 		Map<Pair<String, String>, List<TestCaseDetails>> sprintWiseAutoTestMap = new HashMap<>();
@@ -302,42 +326,82 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		});
 		List<KPIExcelData> excelData = new ArrayList<>();
 		sprintLeafNodeList.forEach(node -> {
+			List<DataCount> resultList = new ArrayList<>();
+			String validationKey = node.getSprintFilter().getName();
+			String sprintId = node.getSprintFilter().getId();
 			// Leaf node wise data
 			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
-			String validationKey = node.getSprintFilter().getName();
+			if (uploadDataEnableNodes.contains(node)) {
+				// flow 1 : populating by uploaded data
+				populatingForUploadedData(mapTmp, trendValueList, node, sprintWiseUploadedDataMap, sprintId, resultList,
+						trendLineName);
+			} else {
+				// flow 2 : populating by configured tool
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			Map<String, Object> howerMap = new LinkedHashMap<>();
-			Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
-			currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
-					sprintWiseAutoTestMap.get(currentNodeIdentifier));
-			currentSprintLeafNodeDefectDataMap.put(TESTCASEKEY, sprintWiseTotalTestMap.get(currentNodeIdentifier));
-			double automationForCurrentLeaf = 0.0;
-			if (null != sprintWisePercentage.get(currentNodeIdentifier)) {
-				automationForCurrentLeaf = sprintWisePercentage.get(currentNodeIdentifier);
+				Map<String, Object> howerMap = new LinkedHashMap<>();
+				Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
+				currentSprintLeafNodeDefectDataMap.put(AUTOMATEDTESTCASEKEY,
+						sprintWiseAutoTestMap.get(currentNodeIdentifier));
+				currentSprintLeafNodeDefectDataMap.put(TESTCASEKEY, sprintWiseTotalTestMap.get(currentNodeIdentifier));
+				double automationForCurrentLeaf = 0.0;
+				if (null != sprintWisePercentage.get(currentNodeIdentifier)) {
+					automationForCurrentLeaf = sprintWisePercentage.get(currentNodeIdentifier);
+				}
+				mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
+				populateExcelDataObject(requestTrackerId, currentSprintLeafNodeDefectDataMap, excelData, validationKey,
+						projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString()));
+				log.debug("[TEST-AUTOMATION-SPRINT-WISE][{}]. TEST-AUTOMATION for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), automationForCurrentLeaf);
+				setHowerMap(sprintWiseAutoTestMap, sprintWiseTotalTestMap, currentNodeIdentifier, howerMap);
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setHoverValue(howerMap);
+				dataCount.setValue(automationForCurrentLeaf);
+				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
 			}
-			mapTmp.get(node.getId()).setValue(automationForCurrentLeaf);
-			populateExcelDataObject(requestTrackerId, currentSprintLeafNodeDefectDataMap, excelData, validationKey,
-					projectWiseStories.get(node.getProjectFilter().getBasicProjectConfigId().toString()));
-			log.debug("[TEST-AUTOMATION-SPRINT-WISE][{}]. TEST-AUTOMATION for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), automationForCurrentLeaf);
-			setHowerMap(sprintWiseAutoTestMap, sprintWiseTotalTestMap, currentNodeIdentifier, howerMap);
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(automationForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setHoverValue(howerMap);
-			dataCount.setValue(automationForCurrentLeaf);
-			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
 
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.INSPRINT_AUTOMATION_COVERAGE.getColumns());
+	}
+
+	/**
+	 * populating from uploaded data
+	 * 
+	 * @param mapTmp
+	 * @param trendValueList
+	 * @param node
+	 * @param sprintWiseUploadedDataMap
+	 * @param sprintId
+	 * @param resultList
+	 * @param trendLineName
+	 */
+	private void populatingForUploadedData(Map<String, Node> mapTmp, List<DataCount> trendValueList, Node node,
+			Map<String, TestExecution> sprintWiseUploadedDataMap, String sprintId, List<DataCount> resultList,
+			String trendLineName) {
+		if (null != sprintWiseUploadedDataMap.get(sprintId)) {
+			setSprintNodeValue(sprintWiseUploadedDataMap.get(sprintId), resultList, node, trendLineName);
+		} else {
+			DataCount dataCount = new DataCount();
+			dataCount.setSubFilter(Constant.EMPTY_STRING);
+			dataCount.setSProjectName(trendLineName);
+			dataCount.setValue(0.0);
+			dataCount.setLineValue(0.0);
+			dataCount.setHoverValue(new HashMap<>());
+			dataCount.setSSprintID(node.getSprintFilter().getId());
+			dataCount.setSSprintName(node.getSprintFilter().getName());
+			resultList.add(dataCount);
+			trendValueList.add(dataCount);
+		}
+		mapTmp.get(node.getId()).setValue(resultList);
 	}
 
 	/**
@@ -402,6 +466,40 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		} else {
 			howerMap.put(TOTAL, 0);
 		}
+	}
+
+	private void setSprintNodeValue(TestExecution executionDetail, List<DataCount> trendValueList, Node node,
+			String trendLineName) {
+
+		// aggregated value of all sub-filters of a project for given sprint
+		double automationPerc = Math
+				.round((100.0 * executionDetail.getAutomatedTestCases()) / executionDetail.getAutomatableTestCases());
+		Map<String, Object> howerMap = new LinkedHashMap<>();
+		howerMap.put(AUTOMATED, executionDetail.getAutomatedTestCases());
+		howerMap.put(TOTAL, executionDetail.getAutomatableTestCases());
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(Math.round(automationPerc)));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSubFilter(trendLineName);
+		dataCount.setValue(automationPerc);
+		dataCount.setHoverValue(howerMap);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		trendValueList.add(dataCount);
+
+	}
+
+	/**
+	 * * Checking if data exist in that sprint & grouping it by sprint
+	 *
+	 * @param resultList
+	 * @return
+	 */
+	public Map<String, TestExecution> createSprintWiseTestExecutionMap(List<TestExecution> resultList) {
+		return resultList.stream()
+				.filter(testExecution -> testExecution.getAutomatedTestCases() != null
+						&& testExecution.getAutomatableTestCases() != null)
+				.collect(Collectors.toMap(TestExecution::getSprintId, Function.identity()));
 	}
 
 	@Override

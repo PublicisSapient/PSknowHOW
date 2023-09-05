@@ -3692,91 +3692,102 @@ db.getCollection('kpi_category_mapping').insertOne( {
 
 //------------------------- 7.8.0 changes----------------------------------------------------------------------------------
 // ---- New FieldMapping Field added to consider subtask defect not tagged in a release ---------------------------------------------------------------------------
-db.getCollection('field_mapping_structure').insertMany([
-    {
-            "fieldName": "jiraSubTaskDefectType",
-            "fieldLabel": "Issue type for sub-task defect",
-            "fieldType": "chips",
-            "fieldCategory": "Issue_Type",
-            "section": "Issue Types Mapping",
-            "tooltip": {
-                "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
-            }
-    }
-]);
+// ---- New FieldMapping Upload Enable for In-sprint & Regression Percentage Kpi
+// ---- //DTS-26123 new FieldMapping structures
+db.getCollection('field_mapping_structure').insertMany([{
+	"fieldName": "jiraSubTaskDefectType",
+	"fieldLabel": "Issue type for sub-task defect",
+	"fieldType": "chips",
+	"fieldCategory": "Issue_Type",
+	"section": "Issue Types Mapping",
+	"tooltip": {
+		"definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+	}
+}, {
+	"fieldName": "uploadDataKPI42",
+	"fieldLabel": "KPI calculation logic",
+	"fieldType": "toggle",
+	"toggleLabel": "Upload Data",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi from data on Upload data screen)"
+	}
+}, {
+	"fieldName": "uploadDataKPI16",
+	"fieldLabel": "KPI calculation logic",
+	"fieldType": "toggle",
+	"toggleLabel": "Upload Data",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi from data on Upload data screen)"
+	}
+}, {
+	"fieldName": "jiraDefectRejectionStatusKPI155",
+	"fieldLabel": "Ticket Rejected/Dropped Status",
+	"fieldType": "text",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
+	}
+}, {
+	"fieldName": "jiraDodKPI155",
+	"fieldLabel": "DOD Status",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+	}
+}, {
+	"fieldName": "jiraLiveStatusKPI155",
+	"fieldLabel": "Status to identify Live status",
+	"fieldType": "text",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Provide any status from workflow on which Live is considered."
+	}
+}]);
 
-//------------------------- 7.8.0 changes----------------------------------------------------------------------------------
- //DTS-26123 start
- db.getCollection('field_mapping_structure').insertMany([
- {
-        "fieldName" : "jiraDefectRejectionStatusKPI155",
-        	"fieldLabel" : "Ticket Rejected/Dropped Status",
-        	"fieldType" : "text",
-        	"fieldCategory" : "workflow",
-        	"section" : "WorkFlow Status Mapping",
-        	"tooltip" : {
-        		"definition" : "Status from workflow on which ticket is considered as Rejected/Dropped."
-        	}
- },
- {
-        "fieldName": "jiraDodKPI155",
-        "fieldLabel": "DOD Status",
-        "fieldType": "chips",
-         "fieldCategory": "workflow",
-         "section": "WorkFlow Status Mapping",
-         "tooltip": {
-             "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-         }
- },
- {
-        "fieldName": "jiraLiveStatusKPI155",
-         "fieldLabel": "Status to identify Live status",
-         "fieldType": "text",
-         "fieldCategory": "workflow",
-         "section": "WorkFlow Status Mapping",
-         "tooltip": {
-             "definition": "Provide any status from workflow on which Live is considered."
-         }
- }
- ]);
-
- const fieldMappings = db.field_mapping.find({});
- fieldMappings.forEach(function(fm) {
- 	db.field_mapping.updateOne({
-             "_id": fm._id
-         }, {
-              $set: {
- 			  "jiraDefectRejectionStatusKPI155": fm.jiraDefectRejectionStatus,
- 			  "jiraDodKPI155": fm.jiraDod,
- 			  "jiraLiveStatusKPI155": fm.jiraLiveStatus
- 			  }
-         });
- });
-
-db.getCollection('kpi_master').insertOne(
-{
-  "kpiId": "kpi155",
-  "kpiName": "Defect Count By Type",
-  "kpiUnit": "Count",
-  "isDeleted": "False",
-  "defaultOrder": 11,
-  "kpiCategory": "Backlog",
-  "kpiSource": "Jira",
-  "groupId": 11,
-  "thresholdValue": "",
-  "kanban": false,
-  "chartType": "pieChart",
-  "kpiInfo": {
-    "definition": "Total count of issues in the backlog with a breakup by defect type."
-  },
-  "xAxisLabel": "",
-  "yAxisLabel": "",
-  "isPositiveTrend": true,
-  "showTrend": false,
-  "isAdditionalFilterSupport": false,
-  "kpiFilter": "dropdown",
-  "boxType": "chart",
-  "calculateMaturity": false
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+	db.field_mapping.updateOne({
+		"_id": fm._id
+	}, {
+		$set: {
+			"jiraDefectRejectionStatusKPI155": fm.jiraDefectRejectionStatus,
+			"jiraDodKPI155": fm.jiraDod,
+			"jiraLiveStatusKPI155": fm.jiraLiveStatus
+		}
+	});
+});
+//DTS-26123
+db.getCollection('kpi_master').insertOne({
+	"kpiId": "kpi155",
+	"kpiName": "Defect Count By Type",
+	"kpiUnit": "Count",
+	"isDeleted": "False",
+	"defaultOrder": 11,
+	"kpiCategory": "Backlog",
+	"kpiSource": "Jira",
+	"groupId": 11,
+	"thresholdValue": "",
+	"kanban": false,
+	"chartType": "pieChart",
+	"kpiInfo": {
+		"definition": "Total count of issues in the backlog with a breakup by defect type."
+	},
+	"xAxisLabel": "",
+	"yAxisLabel": "",
+	"isPositiveTrend": true,
+	"showTrend": false,
+	"isAdditionalFilterSupport": false,
+	"kpiFilter": "dropdown",
+	"boxType": "chart",
+	"calculateMaturity": false
 });
   //DTS-26123 end
 

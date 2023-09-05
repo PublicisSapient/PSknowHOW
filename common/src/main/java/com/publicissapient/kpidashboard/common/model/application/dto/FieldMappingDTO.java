@@ -379,6 +379,9 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraDodKPI155;
 	private String jiraLiveStatusKPI155;
 
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
 	@Builder.Default
 	private String notificationEnabler="On";
 
