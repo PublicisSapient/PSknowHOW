@@ -103,6 +103,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
   currentSelectedSprint;
+  kpiPart1 : any = [];
+  kpiPart2 : any = []
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -153,6 +155,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi120');
+
+     // Divide into two parts
+    this.kpiPart1= this.upDatedConfigData.slice(0, (Math.floor(this.upDatedConfigData.length / 2)));
+    this.kpiPart2 = this.upDatedConfigData.slice((Math.floor(this.upDatedConfigData.length / 2)));
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
       if(x['label'] === 'Daily Standup'){
@@ -892,9 +898,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>,dragContainer) {
     if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.upDatedConfigData = [...this.kpiPart1,...this.kpiPart2];
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);

@@ -137,3 +137,8 @@
   .chart-container-height{
     height: 300px;
   }
+
+  .subKPi{
+    display: flex;
+    flex-direction: column;
+}

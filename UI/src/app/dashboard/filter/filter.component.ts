@@ -840,7 +840,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
 
   setKPIOrder() {
-    const kpiArray = this.selectedTab.toLowerCase() === 'release' ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = (this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'backlog') ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
     for (const kpiBoard of kpiArray) {
       if (kpiBoard.boardName.toLowerCase() === this.selectedTab.toLowerCase()) {
         kpiBoard.kpis = this.kpisNewOrder;

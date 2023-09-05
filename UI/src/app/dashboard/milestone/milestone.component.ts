@@ -65,6 +65,8 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
+  kpiPart1 : any = [];
+  kpiPart2 : any = []
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     
@@ -114,6 +116,11 @@ export class MilestoneComponent implements OnInit {
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+
+    // Divide into two parts
+    this.kpiPart1= this.upDatedConfigData.slice(0, (Math.floor(this.upDatedConfigData.length / 2)));
+    this.kpiPart2 = this.upDatedConfigData.slice((Math.floor(this.upDatedConfigData.length / 2)));
+
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -590,7 +597,8 @@ export class MilestoneComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.upDatedConfigData = [...this.kpiPart1,...this.kpiPart2];
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
