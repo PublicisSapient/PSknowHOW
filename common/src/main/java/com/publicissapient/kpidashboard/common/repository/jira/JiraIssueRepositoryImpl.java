@@ -215,6 +215,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		query.fields().include(LOGGED_WORK_MINUTES);
 		query.fields().include(SPRINT_ASSET_STATE);
+		query.fields().include("sprintEndDate");
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -503,7 +504,19 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		criteria = criteria.and(NUMBER).in(storyNumber);
 		Query query = new Query(criteria);
-
+		query.fields().include("issueId");
+		query.fields().include(NUMBER);
+		query.fields().include(STORY_POINTS);
+		query.fields().include("name");
+		query.fields().include("state");
+		query.fields().include("count");
+		query.fields().include("estimate");
+		query.fields().include("status");
+		query.fields().include("basicProjectConfigId");
+		query.fields().include("createdDate");
+		query.fields().include(SPRINT_NAME);
+		query.fields().include(SPRINT_ID);
+		query.fields().include(URL);
 		return operations.find(query, JiraIssue.class);
 
 	}

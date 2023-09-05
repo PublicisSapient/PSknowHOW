@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -272,7 +274,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-
+        long time1 = System.currentTimeMillis();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			sprintList.add(leaf.getSprintFilter().getId());
@@ -296,6 +298,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
+		log.info("FirstTimePassRate itreate nodeleaf {}",System.currentTimeMillis()-time1);
 
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -306,24 +309,40 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		// Fetch Story ID grouped by Sprint
+		long time2 =System.currentTimeMillis();
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
-
+		log.info("FirstTimePassRate findIssuesGroupBySprint {}",System.currentTimeMillis()-time2);
+		long time3 =System.currentTimeMillis();
 		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMap);
+		Map<String, List<JiraIssue>> issuesBySprintAndTypeMap = issuesBySprintAndType.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+		issuesBySprintAndTypeMap.forEach((projectId, issuesList) -> {
+			issuesList.sort(Comparator.comparing(JiraIssue::getSprintEndDate)); // Sort in descending order
+		});
+		// Limit the list of SprintDetails for each basicProjectConfigId to
+		List<JiraIssue> limitedList = issuesBySprintAndTypeMap.values()
+				.stream()
+				.flatMap(list -> list.stream().limit((long)customApiConfig.getSprintCountForFilters()))
+				.collect(Collectors.toList());
 
+		log.info("FirstTimePassRate findIssuesBySprintAndType {}",System.currentTimeMillis()-time3);
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
+		long time4 = System.currentTimeMillis();
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, limitedList,
 				defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
 		removeStoriesWithDefect(defectListWoDrop, projectWisePriority, projectWiseRCA,
 				statusConfigsOfRejectedStoriesByProject);
+		log.info("FirstTimePassRate removeStoriesWithDefect {}",System.currentTimeMillis()-time4);
 
 		List<String> storyIds = getIssueIds(defectListWoDrop);
+		long time5= System.currentTimeMillis();
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
+		log.info("FirstTimePassRate findByStoryIDIn {}",System.currentTimeMillis()-time5);
 
 		defectListWoDrop.removeIf(issue -> {
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
@@ -336,7 +355,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		sprintWiseStories.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		resultListMap.put(SPRINT_WISE_CLOSED_STORIES, sprintWiseStories);
 		resultListMap.put(FIRST_TIME_PASS_STORIES, defectListWoDrop);
+		long time6 = System.currentTimeMillis();
 		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
+		log.info("FirstTimePassRate findIssueAndDescByNumber {}",System.currentTimeMillis()-time6);
+
 		return resultListMap;
 	}
 
