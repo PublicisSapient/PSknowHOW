@@ -145,7 +145,7 @@ export class UploadComponent implements OnInit {
             field: 'automatableTestCases'
         },
         {
-            header: 'Test Case Automated',
+            header: 'Test Cases Automated',
             field: 'automatedTestCases'
         },
         {
