@@ -12,11 +12,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -488,6 +490,77 @@ public class JiraCommonService {
 		}
 
 		return searchResult;
+	}
+
+	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
+		List<ProjectVersion> projectVersionList = new ArrayList<>();
+		try {
+			JiraToolConfig jiraToolConfig = projectConfig.getJira();
+			if (null != jiraToolConfig) {
+				URL url = getVersionUrl(projectConfig);
+				parseVersionData(getDataFromClient(projectConfig, url, krb5Client ), projectVersionList);
+			}
+		} catch (RestClientException rce) {
+			log.error("Client exception when fetching versions " + rce);
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for fetching versions", mfe);
+		} catch (IOException ioe) {
+			log.error("IOException", ioe);
+		}
+		return projectVersionList;
+	}
+
+	private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
+			throws MalformedURLException {
+
+		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
+		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
+		String serverURL = jiraProcessorConfig.getJiraVersionApi();
+		if (isCloudEnv) {
+			serverURL = jiraProcessorConfig.getJiraCloudVersionApi();
+		}
+		serverURL = serverURL.replace("{projectKey}", projectConfig.getJira().getProjectKey());
+		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + serverURL);
+
+	}
+
+	private void parseVersionData(String dataFromServer, List<ProjectVersion> projectVersionDetailList) {
+		if (StringUtils.isNotBlank(dataFromServer)) {
+			try {
+				JSONArray obj = (JSONArray) new JSONParser().parse(dataFromServer);
+				if (null != obj) {
+					((JSONArray) new JSONParser().parse(dataFromServer)).forEach(values -> {
+						ProjectVersion projectVersion = new ProjectVersion();
+						projectVersion.setId(
+								Long.valueOf(Objects.requireNonNull(getOptionalString((JSONObject) values, "id"))));
+						projectVersion.setName(getOptionalString((JSONObject) values, "name"));
+						projectVersion
+								.setArchived(Boolean.parseBoolean(getOptionalString((JSONObject) values, "archived")));
+						projectVersion
+								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
+						if (getOptionalString((JSONObject) values, "startDate") != null) {
+							projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+						}
+						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+						}
+						projectVersionDetailList.add(projectVersion);
+					});
+				}
+			} catch (Exception pe) {
+				log.error("Parser exception when parsing versions", pe);
+			}
+
+		}
+	}
+
+	private String getOptionalString(final JSONObject jsonObject, final String attributeName) {
+		final Object res = jsonObject.get(attributeName);
+		if (res == null) {
+			return null;
+		}
+		return res.toString();
 	}
 
 }
