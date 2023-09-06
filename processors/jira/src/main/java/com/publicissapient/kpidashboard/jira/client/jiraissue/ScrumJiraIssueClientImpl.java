@@ -1194,6 +1194,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				if (lowerCaseBugRaisedValue.contains(testPhase)) {
 					jiraIssue.setTestPhaseOfDefectList(Collections.singletonList(testPhase));
 					isRaisedByThirdParty = true;
+				} else {
+					jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
 				}
 			}
 		} catch (org.json.simple.parser.ParseException | JSONException e) {
@@ -1819,6 +1821,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(x -> fieldMapping.getTestingPhaseDefectValue().contains(x)).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(commonLabel)) {
 			jiraIssue.setTestPhaseOfDefectList(commonLabel);
+		} else {
+			jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
 		}
 	}
 
@@ -1837,6 +1841,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						.collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(commonLabel)) {
 					jiraIssue.setTestPhaseOfDefectList(commonLabel);
+				} else {
+					jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
 				}
 			}
 		}

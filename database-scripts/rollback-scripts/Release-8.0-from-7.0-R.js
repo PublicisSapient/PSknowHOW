@@ -486,4 +486,8 @@ db.getCollection('kpi_master').deleteOne(
 db.field_mapping_structure.deleteOne({
     "fieldName": "testingPhaseDefectsIdentifier"
 });
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi163" }
+);
 //DTS-26150 end

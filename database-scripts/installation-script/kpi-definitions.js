@@ -3101,6 +3101,31 @@ db.getCollection('kpi_master').insertMany(
     "kpiFilter": "dropdown",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+    "kpiId":"kpi163",
+    "kpiName":"Defect by Testing Phase",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":7,
+    "kpiCategory":"Release",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":"horizontalPercentBarChart",
+    "kpiInfo":{
+      "definition":" It gives a breakup of escaped defects by testing phase"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"multiSelectDropDown",
+    "boxType":"chart",
+    "calculateMaturity":false
   }
 ]
 );
@@ -8200,6 +8225,66 @@ db.getCollection('field_mapping_structure').insertMany(
     	"tooltip": {
     		"definition": "Enabled State (Kpi from data on Upload data screen)"
     	}
+    },
+    {
+        "fieldName":"testingPhaseDefectsIdentifier",
+        "fieldLabel":"Testing phase defects identification",
+        "fieldType":"radiobutton",
+        "section":"Defects Mapping",
+        "tooltip":{
+            "definition":"This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+        },
+        "options":[
+            {
+                "label":"CustomField",
+                "value":"CustomField"
+            },
+            {
+                "label":"Labels",
+                "value":"Labels"
+            },
+            {
+                "label":"Component",
+                "value":"Component"
+            }
+        ],
+        "nestedFields":[
+            {
+                "fieldName":"testingPhaseDefectCustomField",
+                "fieldLabel":"Testing Phase Defect CustomField",
+                "fieldType":"text",
+                "fieldCategory":"fields",
+                "filterGroup":[
+                    "CustomField"
+                ],
+                "tooltip":{
+                    "definition":" Provide customfield name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName":"testingPhaseDefectValue",
+                "fieldLabel":"Testing Phase Defect Values",
+                "fieldType":"chips",
+                "filterGroup":[
+                    "CustomField",
+                    "Labels"
+                ],
+                "tooltip":{
+                    "definition":"Provide label name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName":"testingPhaseDefectComponentValue",
+                "fieldLabel":"Component",
+                "fieldType":"text",
+                "filterGroup":[
+                    "Component"
+                ],
+                "tooltip":{
+                    "definition":"Provide label name to identify testing phase defects."
+                }
+            }
+        ]
     }
 ]
 );

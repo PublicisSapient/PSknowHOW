@@ -3854,6 +3854,33 @@ db.getCollection('field_mapping_structure').insertOne(
     }
   ]
 });
+
+db.getCollection('kpi_master').insertOne(
+{
+    "kpiId":"kpi163",
+    "kpiName":"Defect by Testing Phase",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":7,
+    "kpiCategory":"Release",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":"horizontalPercentBarChart",
+    "kpiInfo":{
+        "definition":" It gives a breakup of escaped defects by testing phase"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"multiSelectDropDown",
+    "boxType":"chart",
+    "calculateMaturity":false
+});
 //DTS-26150 end
 
 

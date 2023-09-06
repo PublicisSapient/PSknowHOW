@@ -1558,4 +1558,23 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+	public static void populateReleaseDefectWithTestPhasesRelatedExcelData(List<JiraIssue> jiraIssues,
+																		   List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueType(jiraIssue.getTypeName());
+				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setSprintName(jiraIssue.getSprintName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
 }

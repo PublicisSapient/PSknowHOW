@@ -434,7 +434,7 @@ public enum KPICode {
     /**
      *Defect count by Type for backlog
      */
-    DEFECT_BY_TESTING_PHASE("kpi163", KPISource.JIRA.name());
+    RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name());
 
 
     // @formatter:on

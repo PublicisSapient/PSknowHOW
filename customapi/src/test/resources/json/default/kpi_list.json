@@ -4150,5 +4150,30 @@
     "kpiFilter": "dropdown",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+    "kpiId":"kpi163",
+    "kpiName":"Defect by Testing Phase",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":7,
+    "kpiCategory":"Release",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":"horizontalPercentBarChart",
+    "kpiInfo":{
+      "definition":" It gives a breakup of escaped defects by testing phase"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"multiSelectDropDown",
+    "boxType":"chart",
+    "calculateMaturity":false
   }
 ]
