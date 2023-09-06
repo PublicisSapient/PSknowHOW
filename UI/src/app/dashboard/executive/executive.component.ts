@@ -935,12 +935,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     /** to prepare table data */
     getTableData(kpiId, idx, enabledKpi){
         let trendValueList = [];
-        if(idx){
+        if(idx >= 0){
             trendValueList = this.allKpiArray[idx]?.trendValueList;
         }else{
             trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
         }
-        
         if(trendValueList?.length > 0){
             let selectedIdx:number = -1;
             let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
@@ -982,7 +981,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     if(item){
                         obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
-                        let val = item?.lineValue ? item?.lineValue : item?.value;
+                        let val = item?.lineValue >=0 ? item?.lineValue : item?.value;
                         obj[i+1] = val > 0 ? 
                         (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
                         : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
@@ -1002,28 +1001,30 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             })
         }else{
             /** when no data available */
-            let obj = {
-                'kpiId': kpiId,
-                'kpiName': this.allKpiArray[idx]?.kpiName,
-                'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
-                'show': enabledKpi?.isEnabled && enabledKpi?.shown,
-                'hoverText': [],
-                'order': enabledKpi?.order
-            }
-            for(let i=0; i<this.noOfDataPoints;i++){
-                obj[i+1] = '-';
-            }
-            obj['latest'] = '-';
-            obj['trend'] = '-';
-            obj['maturity'] = '-';
-            for(let hierarchyName in this.kpiTableDataObj){
-                if(enabledKpi?.isEnabled && enabledKpi?.shown){
-                    let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
-                    if(kpiIndex > -1){
-                        this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+            if(this.allKpiArray[idx]?.kpiName){
+                let obj = {
+                    'kpiId': kpiId,
+                    'kpiName': this.allKpiArray[idx]?.kpiName,
+                    'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                    'show': enabledKpi?.isEnabled && enabledKpi?.shown,
+                    'hoverText': [],
+                    'order': enabledKpi?.order
+                }
+                for(let i=0; i<this.noOfDataPoints;i++){
+                    obj[i+1] = '-';
+                }
+                obj['latest'] = '-';
+                obj['trend'] = '-';
+                obj['maturity'] = '-';
+                for(let hierarchyName in this.kpiTableDataObj){
+                    if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                        let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+                        if(kpiIndex > -1){
+                            this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+                        }
+                        this.kpiTableDataObj[hierarchyName]?.push(obj)
+                        this.sortingRowsInTable(hierarchyName);
                     }
-                    this.kpiTableDataObj[hierarchyName]?.push(obj)
-                    this.sortingRowsInTable(hierarchyName);
                 }
             }
         }
@@ -1388,7 +1389,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let trend:string = '';
         if(item?.value?.length > 0){
             let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
+            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
