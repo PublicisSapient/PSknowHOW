@@ -58,6 +58,7 @@ public class FieldMapping extends BasicModel {
 	private String epicName;
 	private List<String> jiradefecttype;
 	private String epicLink;
+	private List<String> jiraSubTaskDefectType;
 
 	// defectPriority
 	private List<String> defectPriority;
@@ -369,7 +370,14 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
+
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
 	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
 	private String notificationEnabler="On";
