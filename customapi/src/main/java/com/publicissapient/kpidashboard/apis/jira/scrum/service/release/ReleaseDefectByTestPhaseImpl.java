@@ -91,7 +91,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("DefectByTestingPhaseImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("ReleaseDefectByTestPhaseImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -140,7 +140,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
+			log.info("ReleaseDefectByTestPhaseImpl -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
