@@ -4128,6 +4128,30 @@
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi155",
+    "kpiName": "Defect Count By Type",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 9,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Total count of issues in the backlog with a breakup by defect type."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",
