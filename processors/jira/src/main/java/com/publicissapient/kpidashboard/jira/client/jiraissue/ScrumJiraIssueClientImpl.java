@@ -713,7 +713,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 				setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
-				//Testing phase defect identification
+				// Testing phase defect identification
 				setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
 				setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 				jiraIssue.setAffectedVersions(JiraIssueClientUtil.getAffectedVersions(issue));
@@ -1166,7 +1166,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 * @return boolean
 	 */
 	public boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue,
-																JiraIssue jiraIssue) {
+			JiraIssue jiraIssue) {
 		List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		JSONParser parser = new JSONParser();
@@ -1793,18 +1793,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
-	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping,
-			JiraIssue jiraIssue, Map<String, IssueField> fields) {
+	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue,
+			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
 			if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
 					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 				getTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
-			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
-					.getTestingPhaseDefectsIdentifier().trim()
-					.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
-							&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
-							&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
+			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim()
+							.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
+					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
 				isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
 						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
@@ -1847,5 +1847,4 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			}
 		}
 	}
-
 }

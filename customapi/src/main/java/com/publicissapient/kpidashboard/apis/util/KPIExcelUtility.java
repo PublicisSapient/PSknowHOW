@@ -1560,7 +1560,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateReleaseDefectWithTestPhasesRelatedExcelData(List<JiraIssue> jiraIssues,
-																		   List<KPIExcelData> kpiExcelData) {
+			List<KPIExcelData> kpiExcelData) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();

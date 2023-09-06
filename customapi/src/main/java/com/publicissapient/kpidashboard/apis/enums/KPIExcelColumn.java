@@ -269,9 +269,8 @@ public enum KPIExcelColumn {
 			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
 	//DTS-26123 end
 
-	RELEASE_DEFECT_BY_TEST_PHASE("kpi163",
-			Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority", "Sprint Name", "Assignee",
-					"Issue Status"));
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
+			"Sprint Name", "Assignee", "Issue Status"));
 
 	// @formatter:on
 

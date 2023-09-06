@@ -71,9 +71,21 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	@Autowired
 	ConfigHelperService configHelperService;
 
+	/**
+	 *
+	 * @param kpiRequest
+	 *            kpiRequest with request details
+	 * @param kpiElement
+	 *            basic details of KPI
+	 * @param treeAggregatorDetail
+	 *            details of project nodes
+	 * @return KpiElement with data
+	 * @throws ApplicationException
+	 *             exception while processing request
+	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.RELEASE) {
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
@@ -85,7 +97,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 
 	@SuppressWarnings("unchecked")
 	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
-										  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestReleaseNode = new ArrayList<>();
@@ -110,9 +122,21 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		}
 	}
 
+	/**
+	 *
+	 * @param leafNodeList
+	 *            project node details
+	 * @param startDate
+	 *            startDate
+	 * @param endDate
+	 *            endDate
+	 * @param kpiRequest
+	 *            kpiRequest with request details
+	 * @return JiraIssues with test phases
+	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-												  KpiRequest kpiRequest) {
+			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
@@ -126,7 +150,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, Set<String> assigneeNames,
-										Set<String> priorities, List<IterationKpiValue> iterationKpiValues) {
+			Set<String> priorities, List<IterationKpiValue> iterationKpiValues) {
 		Map<String, Map<String, List<JiraIssue>>> typeAndStatusWiseIssues = getTypeAndStatusWiseIssues(jiraIssueList);
 		typeAndStatusWiseIssues.forEach((assigneeName, priorityWiseIssue) -> priorityWiseIssue
 				.forEach((priority, issues) -> constructDataCountGroupMap(assigneeNames, priorities, iterationKpiValues,
@@ -141,7 +165,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private void constructDataCountGroupMap(Set<String> assigneeNames, Set<String> priorities,
-											List<IterationKpiValue> iterationKpiValues, String assigneeName, String priority, List<JiraIssue> issues) {
+			List<IterationKpiValue> iterationKpiValues, String assigneeName, String priority, List<JiraIssue> issues) {
 		List<DataCount> dataCountList = new ArrayList<>();
 		assigneeNames.add(assigneeName);
 		priorities.add(priority);
@@ -181,7 +205,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private static void getTestPhaseData(List<JiraIssue> jiraIssueList, Map<String, Double> releaseProgressCount,
-										 String s) {
+			String s) {
 		releaseProgressCount.put(s,
 				(double) jiraIssueList.stream()
 						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getTestPhaseOfDefectList())
@@ -192,7 +216,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-										 List<JiraIssue> jiraIssueList) {
+			List<JiraIssue> jiraIssueList) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectWithTestPhasesRelatedExcelData(jiraIssueList, excelData);
@@ -200,8 +224,8 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private static void constructKPIElementData(KpiElement kpiElement, List<KPIExcelData> excelData, Node latestRelease,
-												List<IterationKpiValue> filterDataList, Set<String> assignees, Set<String> priorities,
-												List<DataCount> dataCountList) {
+			List<IterationKpiValue> filterDataList, Set<String> assignees, Set<String> priorities,
+			List<DataCount> dataCountList) {
 		IterationKpiValue overAllIterationKpiValue = new IterationKpiValue();
 		overAllIterationKpiValue.setFilter1(OVERALL);
 		overAllIterationKpiValue.setFilter2(OVERALL);
