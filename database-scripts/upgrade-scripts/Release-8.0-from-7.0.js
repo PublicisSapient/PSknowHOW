@@ -3789,7 +3789,19 @@ db.getCollection('kpi_master').insertOne({
 	"boxType": "chart",
 	"calculateMaturity": false
 });
-  //DTS-26123 end
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI155",
+                "value":[
+                    "Closed",
+                    "Done"
+                ]
+            }
+   }}
+);
 
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 //DTS-26150 start
@@ -3882,6 +3894,3 @@ db.getCollection('kpi_master').insertOne(
     "calculateMaturity":false
 });
 //DTS-26150 end
-
-
-

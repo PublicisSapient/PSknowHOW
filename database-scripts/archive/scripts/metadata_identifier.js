@@ -1193,13 +1193,6 @@ db.metadata_identifier.insert([{
                           "Done",
                           "Ready for Sign-off"
                       ]
-                  },
-                  {
-                      "type":"jiraDodKPI155",
-                      "value":[
-                          "Closed",
-                          "Done"
-                      ]
                   }
               ]
 
@@ -1867,13 +1860,6 @@ db.metadata_identifier.insert([{
                           "Ready for Delivery",
                           "Done",
                           "Ready for Sign-off"
-                      ]
-                  },
-                  {
-                      "type":"jiraDodKPI155",
-                      "value":[
-                          "Closed",
-                          "Done"
                       ]
                   }
               ]
@@ -2543,13 +2529,6 @@ db.metadata_identifier.insert([{
                           "Done",
                           "Ready for Sign-off"
                       ]
-                  },
-                  {
-                      "type":"jiraDodKPI155",
-                      "value":[
-                          "Closed",
-                          "Done"
-                      ]
                   }
               ]
 
@@ -3217,13 +3196,6 @@ db.metadata_identifier.insert([{
                           "Ready for Delivery",
                           "Done",
                           "Ready for Sign-off"
-                      ]
-                  },
-                  {
-                      "type":"jiraDodKPI155",
-                      "value":[
-                          "Closed",
-                          "Done"
                       ]
                   }
               ]

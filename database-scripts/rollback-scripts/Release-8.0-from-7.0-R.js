@@ -481,6 +481,15 @@ db.getCollection('kpi_master').deleteOne(
 );
 //DTS-26123 end
 
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI155"
+      }
+   }}
+);
+
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 //DTS-26150 start
 db.field_mapping_structure.deleteOne({
