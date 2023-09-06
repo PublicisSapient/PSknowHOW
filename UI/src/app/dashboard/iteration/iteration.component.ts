@@ -196,8 +196,10 @@ export class IterationComponent implements OnInit, OnDestroy {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         }) 
-        tabDetails['kpiPart1'] = halfWithKpis.slice(0, (Math.floor(halfWithKpis.length / 2)));
-        tabDetails['kpiPart2'] = halfWithKpis.slice((Math.floor(halfWithKpis.length / 2)));
+        const dataLength = halfWithKpis.length;
+        const middleIndex = Math.floor(dataLength / 2);
+        tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
+        tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
         tabDetails['fullWidthKpis'] = fullWidthKPis;
       }
       return tabDetails;

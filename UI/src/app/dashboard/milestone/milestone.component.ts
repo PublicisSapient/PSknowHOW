@@ -130,11 +130,13 @@ export class MilestoneComponent implements OnInit {
       }
     }
 
-      this.navigationTabs.map(tabDetails => {
-        if(tabDetails['width'] === 'half'){
-          tabDetails['kpiPart1'] = tabDetails['kpis'].slice(0, (Math.floor(tabDetails['kpis'].length / 2)));
-          tabDetails['kpiPart2'] = tabDetails['kpis'].slice((Math.floor(tabDetails['kpis'].length / 2)));
-        }
+    this.navigationTabs.map(tabDetails => {
+      if (tabDetails['width'] === 'half') {
+        const dataLength = tabDetails['kpis'].length;
+        const middleIndex = Math.floor(dataLength / 2);
+        tabDetails['kpiPart1'] = tabDetails['kpis'].slice(0, middleIndex + (dataLength % 2));
+        tabDetails['kpiPart2'] = tabDetails['kpis'].slice(middleIndex + (dataLength % 2));
+      }
         return tabDetails;
       })
     if (this.upDatedConfigData?.length === 0) {
