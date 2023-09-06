@@ -129,10 +129,13 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					dataCount.setSSprintName(sprintName);
 					dataCount.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
 					Map<String, StatusWiseIssue> statusWiseStoryCountAndPointMap = new LinkedHashMap<>();
-					statusJiraMap.forEach((status, jiraIssue) -> {
+					TreeMap<String, List<JiraIssue>> sortedStatusJiraMap = new TreeMap<>(statusJiraMap);
+					sortedStatusJiraMap.forEach((status, jiraIssue) -> {
 						StatusWiseIssue statusWiseData = getStatusWiseStoryCountAndPointList(jiraIssue, fieldMapping);
 						statusWiseStoryCountAndPointMap.put(status, statusWiseData);
 					});
+
+					dataCount.setData(String.valueOf(calculateTotalSize(sortedStatusJiraMap)));
 					dataCount.setValue(statusWiseStoryCountAndPointMap);
 					dataCountList.add(dataCount);
 				});
@@ -148,6 +151,15 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
+	}
+
+	public static int calculateTotalSize(Map<String, List<JiraIssue>> map) {
+		int totalSize = 0;
+		for (List<JiraIssue> list : map.values()) {
+			totalSize += list.size();
+		}
+
+		return totalSize;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
