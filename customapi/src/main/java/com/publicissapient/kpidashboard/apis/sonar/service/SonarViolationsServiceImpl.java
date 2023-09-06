@@ -266,38 +266,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
-	private Map<String, SonarHistory> prepareEmptyJobWiseHistoryMap(List<SonarHistory> sonarHistoryList, Long end) {
-
-		List<SonarMetric> metricsList = new ArrayList<>();
-		Map<String, SonarHistory> historyMap = new HashMap<>();
-		SonarHistory refHistory = sonarHistoryList.get(0);
-
-		SonarMetric sonarMetric = SonarMetric.builder().metricName(Constant.CRITICAL_VIOLATIONS).metricValue("0")
-				.build();
-		SonarMetric sonarMetric1 = SonarMetric.builder().metricName(Constant.BLOCKER_VIOLATIONS).metricValue("0")
-				.build();
-		SonarMetric sonarMetric2 = SonarMetric.builder().metricName(Constant.MAJOR_VIOLATIONS).metricValue("0").build();
-		SonarMetric sonarMetric3 = SonarMetric.builder().metricName(Constant.MINOR_VIOLATIONS).metricValue("0").build();
-		SonarMetric sonarMetric4 = SonarMetric.builder().metricName(Constant.INFO_VIOLATIONS).metricValue("0").build();
-
-		metricsList.add(sonarMetric);
-		metricsList.add(sonarMetric1);
-		metricsList.add(sonarMetric2);
-		metricsList.add(sonarMetric3);
-		metricsList.add(sonarMetric4);
-
-		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct()
-				.collect(Collectors.toList());
-		uniqueKeys.forEach(keys -> {
-			SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId())
-					.date(end).timestamp(end).key(keys).name(keys).branch(refHistory.getBranch()).metrics(metricsList)
-					.build();
-			historyMap.put(keys, sonarHistory);
-		});
-
-		return historyMap;
-	}
-
 	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
 			String projectName, String date) {
 		DataCount dataCount = new DataCount();
@@ -338,7 +306,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		} else if (violations instanceof String) {
 			valueMap.put(key, (Integer.parseInt(violations.toString())));
 		} else {
-			valueMap.put(key, (Integer) violations);
+			valueMap.put(key, violations);
 		}
 	}
 
