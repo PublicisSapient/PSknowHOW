@@ -424,7 +424,11 @@ public enum KPICode {
     /**
      *
      */
-    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name());
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+    /**
+     * Backlog - Iteration Readiness kpi
+     */
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name());
 
 
     // @formatter:on
