@@ -384,6 +384,16 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
+	@Builder.Default
+	private List<String> mergeRequestStatusKPI156 = Arrays.asList("MERGED");
+
+	@Builder.Default
+	private boolean leadTimeConfigRepoTool = false;
+
+	private List<String> jiraIssueTypeKPI156;
+
+
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *

@@ -4,11 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -80,6 +86,28 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 
 		}
 		return returnList;
+	}
+
+	@Override
+	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(Set<ObjectId> basicProjectConfigIds,
+			List<String>  fromBranches , List<String> mergeRequestStatusList){
+		LookupOperation lookupProcessorItem = LookupOperation.newLookup().from("processor_items")
+				.localField("processorItemId").foreignField("_id").as("processorItem");
+
+		LookupOperation lookupProjectToolConfig = LookupOperation.newLookup().from("project_tool_configs")
+				.localField("processorItem.toolConfigId").foreignField("_id").as("projectToolConfig");
+
+		MatchOperation matchStage = Aggregation.match(Criteria.where("projectToolConfig.basicProjectConfigId")
+				.in(basicProjectConfigIds).and("fromBranch").in(fromBranches).and("toBranch").is("master")
+				.and("state").in(mergeRequestStatusList));
+
+		ProjectionOperation projectStage = Aggregation.project("processorItemId", "title", "state", "count", "isOpen",
+				"isClosed", "createdDate", "updatedDate", "closedDate", "fromBranch", "toBranch");
+
+		Aggregation aggregation = Aggregation.newAggregation(lookupProcessorItem, Aggregation.unwind("processorItem"),
+				lookupProjectToolConfig, Aggregation.unwind("projectToolConfig"), matchStage, projectStage);
+
+		return operations.aggregate(aggregation, "merge_requests", MergeRequests.class).getMappedResults();
 	}
 
 }

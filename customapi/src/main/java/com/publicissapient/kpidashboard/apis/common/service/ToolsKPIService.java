@@ -560,6 +560,12 @@ public abstract class ToolsKPIService<R, S> {
 					if (null != configHelperService.calculateMaturity().get(kpiId)) {
 						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
 					}
+					Object calculatedAggValue = null;
+					if (kpiId.equals("kpi156")) {
+						List<Double> values = dataCounts.stream().map(val -> (Double) val.getValue())
+								.collect(Collectors.toList());
+						calculatedAggValue = AggregationUtils.average(values).intValue();
+					}
 					String aggregateValue = null;
 					String maturity = null;
 					if (maturityValue != null) {
@@ -567,7 +573,7 @@ public abstract class ToolsKPIService<R, S> {
 						maturity = maturityValue.getKey();
 					}
 					trendValues
-							.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName)));
+							.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName) , calculatedAggValue));
 
 				}
 			}
@@ -607,6 +613,17 @@ public abstract class ToolsKPIService<R, S> {
 						if (null != configHelperService.calculateMaturity().get(kpiId)) {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
 						}
+						Object calculatedAggValue = null;
+						if (kpiId.equals("kpi116")) {
+							List<Double> values = value.stream().map(val -> (Double) val.getValue())
+									.collect(Collectors.toList());
+							calculatedAggValue = AggregationUtils.average(values);
+						}
+						if (kpiId.equals("kpi118")) {
+							List<Long> values = value.stream().map(val -> (Long) val.getValue())
+									.collect(Collectors.toList());
+							calculatedAggValue = AggregationUtils.averageLong(values);
+						}
 						String aggregateValue = null;
 						String maturity = null;
 						if (maturityValue != null) {
@@ -614,7 +631,7 @@ public abstract class ToolsKPIService<R, S> {
 							maturity = maturityValue.getKey();
 						}
 						trendValues
-								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
+								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName) , calculatedAggValue));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
 
 					});

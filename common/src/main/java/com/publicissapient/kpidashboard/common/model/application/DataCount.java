@@ -77,6 +77,8 @@ public class DataCount implements Serializable {
 	private String groupBy;
 	private String maturity;
 	private transient Object maturityValue;
+	//dora dashboard
+	private transient Object aggregationValue;
 	private transient Object lineValue;
 
 	private transient Map<String, Object> subfilterValues;
@@ -133,12 +135,12 @@ public class DataCount implements Serializable {
 	 * @param maturityValue
 	 * @param value
 	 */
-	public DataCount(String data, String maturity, Object maturityValue, Object value) {
+	public DataCount(String data, String maturity, Object maturityValue, Object value, Object aggregationValue) {
 		this.data = data;
 		this.maturity = maturity;
 		this.maturityValue = maturityValue;
 		this.value = value;
-
+		this.aggregationValue = aggregationValue;
 	}
 
 	public String getsSprintID() {

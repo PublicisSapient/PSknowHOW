@@ -22,38 +22,32 @@
       <div class="clearfix">
         <div class="right-container col">
           <div class="p-grid justify-content-start p-pt-3">
-            <ng-container
-              *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
+            <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
               <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
               <div class="p-sm-5 p-pl-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
-                              [kpiData]="updatedConfigDataObj['kpi116']" [trendData]="kpiTrendsObj['kpi116']"
-                              [dropdownArr]="kpiDropdowns['kpi116']"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi116']"
+                  [trendData]="kpiTrendsObj['kpi116']" [dropdownArr]="kpiDropdowns['kpi116']"
                               (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi116']?.kpiName, updatedConfigDataObj['kpi116']?.kpiDetail.kanban,updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport)"
-                              (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])"
-                              [showExport]="true" [showChartView]="showChart"
+                  (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])" [showExport]="true"
+                  [showChartView]="showChart"
                               [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi116']?.kpiDetail?.chartType !== 'table'"
                               [isShow]="(kpiLoader === false) && (ifKpiExist('kpi116') != -1) ? true : false"
-                              [trendValueList]="kpiChartData['kpi116']" [colors]="this.colorObj"
-                              [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi116']"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)"
+                  [trendValueList]="kpiChartData['kpi116']" [colors]="colorObj" [showCommentIcon]="showCommentIcon"
+                  [commentCount]="kpiCommentsCountObj['kpi116']" (getCommentCountByKpi)="getKpiCommentsCount($event)"
                               (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
-                    <ng-container
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                    <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                       <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi116') != -1; else loader">
                         <ng-container
-                          *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList?.length>0); else noData">
+                                *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData">
                           <ng-container *ngIf="showChart">
-                            <app-multiline
-                              [thresholdValue]="updatedConfigDataObj['kpi116']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi116']?.kpiDetail?.thresholdValue"
                               [unit]="updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi116']"
                               [xCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.xaxisLabel"
                               [yCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.yaxisLabel"
-                              [name]="updatedConfigDataObj['kpi116']?.kpiName"
-                              [kpiId]="'kpi116'" [color]="chartColorList"
-                              [selectedtype]="selectedtype" [board]="'dora'">
+                              [name]="updatedConfigDataObj['kpi116']?.kpiName" [kpiId]="'kpi116'"
+                              [color]="chartColorList['kpi116']" [selectedtype]="selectedtype" [board]="'dora'">
                             </app-multiline>
                           </ng-container>
                         </ng-container>
@@ -80,9 +74,8 @@
               <div class="p-sm-2">
                 <div class="kpi-summary p-p-3 p-mb-3 position-relative">
                   <h4 class="p-m-0">Change Failure Rate</h4>
-                  <div
-                    *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList?.length>0); else noData1">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue}}</div>
+                  <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
+                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}</div>
                   </div>
                   <ng-template #noData1>
                     <div class="overlay"
@@ -96,9 +89,8 @@
                   </ng-template>
                 </div>
                 <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0">Deployment Frequency</h4>
-                  <div
-                    *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList?.length>0); else noData2">
+                  <h4 class="p-m-0">Deployment Frequency / Week </h4>
+                  <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
                     <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
                   </div>
                   <ng-template #noData2>
@@ -114,34 +106,29 @@
                 </div>
               </div>
               <div class="p-sm-5 p-pr-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
-                              [kpiData]="updatedConfigDataObj['kpi118']" [trendData]="kpiTrendsObj['kpi118']"
-                              [dropdownArr]="kpiDropdowns['kpi118']"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi118']"
+                  [trendData]="kpiTrendsObj['kpi118']" [dropdownArr]="kpiDropdowns['kpi118']"
                               (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
                               (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi118']?.kpiId, updatedConfigDataObj['kpi118']?.kpiName, updatedConfigDataObj['kpi118']?.kpiDetail.kanban,updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport)"
                               [showExport]="true" [showChartView]="showChart"
                               [isShow]="(kpiLoader === false) && (ifKpiExist('kpi118') != -1) ? true : false"
                               [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi118']?.kpiDetail?.chartType !== 'table'"
-                              [trendValueList]="kpiChartData['kpi118']" [colors]="this.colorObj"
-                              [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi118']"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)"
+                  [trendValueList]="kpiChartData['kpi118']" [colors]="colorObj" [showCommentIcon]="showCommentIcon"
+                  [commentCount]="kpiCommentsCountObj['kpi118']" (getCommentCountByKpi)="getKpiCommentsCount($event)"
                               (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
-                    <ng-container
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData3">
+                    <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData3">
                       <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi118') != -1; else loader">
                         <ng-container
-                          *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList?.length>0); else noData3">
+                                *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData3">
                           <ng-container *ngIf="showChart">
-                            <app-multiline
-                              [thresholdValue]="updatedConfigDataObj['kpi118']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi118']?.kpiDetail?.thresholdValue"
                               [unit]="updatedConfigDataObj['kpi118']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi118']"
                               [xCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.xaxisLabel"
                               [yCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.yaxisLabel"
-                              [name]="updatedConfigDataObj['kpi118']?.kpiName"
-                              [kpiId]="'kpi118'" [color]="chartColorList"
-                              [selectedtype]="selectedtype" [board]="'dora'">
+                              [name]="updatedConfigDataObj['kpi118']?.kpiName" [kpiId]="'kpi118'"
+                              [color]="chartColorList['kpi118']" [selectedtype]="selectedtype" [board]="'dora'">
                             </app-multiline>
                           </ng-container>
                         </ng-container>
@@ -174,44 +161,38 @@
             </ng-container>
           </div>
           <div class="p-grid justify-content-start p-pt-3">
-            <ng-container
-              *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
+            <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
               <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
               <div class="p-sm-5 p-pl-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
-                              [kpiData]="updatedConfigDataObj['kpi156']" [trendData]="kpiTrendsObj['kpi156']"
-                              [dropdownArr]="kpiDropdowns['kpi156']"
-                              (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi156']?.kpiName, updatedConfigDataObj['kpi156']?.kpiDetail.kanban,updatedConfigDataObj['kpi156']?.kpiDetail?.additionalFilterSupport)"
-                              (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi156'])"
-                              [showExport]="true" [showChartView]="showChart"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi156']"
+                  [trendData]="kpiTrendsObj['kpi156']" [dropdownArr]="kpiDropdowns['kpi156']"
+                              (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi156']?.kpiId, updatedConfigDataObj['kpi156']?.kpiName, updatedConfigDataObj['kpi156']?.kpiDetail.kanban,updatedConfigDataObj['kpi156']?.kpiDetail?.additionalFilterSupport)"
+                  (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi156'])" [showExport]="true"
+                  [showChartView]="showChart"
                               [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi156']?.kpiDetail?.chartType !== 'table'"
                               [isShow]="(kpiLoader === false) && (ifKpiExist('kpi156') != -1) ? true : false"
-                              [trendValueList]="kpiChartData['kpi156']" [colors]="this.colorObj"
-                              [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi156']"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)"
+                  [trendValueList]="kpiChartData['kpi156']" [colors]="this.colorObj" [showCommentIcon]="showCommentIcon"
+                  [commentCount]="kpiCommentsCountObj['kpi156']" (getCommentCountByKpi)="getKpiCommentsCount($event)"
                               (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
                   <ng-container *ngIf="!noTabAccess else noDataAccess">
-                    <ng-container
-                      *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                    <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData4">
                       <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi156') != -1; else loader">
                         <ng-container
-                          *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList?.length>0); else noData">
+                          *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData4">
                           <ng-container *ngIf="showChart">
-                            <app-multiline
-                              [thresholdValue]="updatedConfigDataObj['kpi156']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi156']?.kpiDetail?.thresholdValue"
                               [unit]="updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi156']"
                               [xCaption]="updatedConfigDataObj['kpi156']?.kpiDetail?.xaxisLabel"
                               [yCaption]="updatedConfigDataObj['kpi156']?.kpiDetail?.yaxisLabel"
-                              [name]="updatedConfigDataObj['kpi156']?.kpiName"
-                              [kpiId]="'kpi156'" [color]="chartColorList"
-                              [selectedtype]="selectedtype" [board]="'dora'">
+                              [name]="updatedConfigDataObj['kpi156']?.kpiName" [kpiId]="'kpi156'"
+                              [color]="chartColorList['kpi156']" [selectedtype]="selectedtype" [board]="'dora'">
                             </app-multiline>
                           </ng-container>
                         </ng-container>
                       </div>
                     </ng-container>
-                    <ng-template #noData>
+                    <ng-template #noData4>
                       <div class="overlay"
                            *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length) || kpiLoader">
                         <div class="loading-img"></div>
@@ -231,12 +212,11 @@
               </div>
               <div class="p-sm-2">
                 <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0">Lead Time For Change{{kpiChartData['kpi156']?.[0]?.aggregationValue}}</h4>
-                  <div
-                    *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList?.length>0); else noData3">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi156']?.[0]?.aggregationValue}}</div>
+                  <h4 class="p-m-0">Lead Time For Change</h4>
+                  <div *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
+                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi156']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}</div>
                   </div>
-                  <ng-template #noData3>
+                  <ng-template #noData5>
                     <div class="overlay"
                          *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length > 0) || kpiLoader">
                       <div class="loading-img"></div>

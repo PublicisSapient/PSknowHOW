@@ -3098,7 +3098,7 @@ db.getCollection('kpi_master').insertMany(
       "details": [
         {
           "type": "paragraph",
-          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
       ],
       "maturityLevels": []

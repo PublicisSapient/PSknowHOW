@@ -90,7 +90,7 @@ export class DoraComponent implements OnInit {
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       if (Object.keys(x).length > 0) {
         console.log(x);
-        
+
         this.colorObj = x;
         if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
           for (const key in this.kpiChartData) {
@@ -249,7 +249,7 @@ export class DoraComponent implements OnInit {
       for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
         this.kpiJenkins.kpiList[i]['filterDuration'] = {
           duration: 'WEEKS',
-          value: 5
+          value: 8
         }
       }
       this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
@@ -323,14 +323,6 @@ export class DoraComponent implements OnInit {
               });
       }
 
-  // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
-  groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
-    if (this.kpiJenkins?.kpiList?.length > 0) {
-      this.postJenkinsKanbanKpi(this.kpiJenkins, 'jenkins');
-    }
-  }
-
   // calling post request of Jenkins of Kanban and storing in jenkinsKpiData id wise
   postJenkinsKanbanKpi(postData, source): void {
     this.loaderJenkins = true;
@@ -390,16 +382,16 @@ export class DoraComponent implements OnInit {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
           tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.aggregationValue;
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
       } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
-          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.aggregationValue;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value[0]?.aggregationValue;
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
-          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.aggregationValue;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value[0]?.aggregationValue;
         }
       }
     }

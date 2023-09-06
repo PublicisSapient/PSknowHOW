@@ -33,6 +33,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -257,6 +258,16 @@ public class DateUtil {
 		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
 
 		return formattedMonday + " to " + formattedSunday;
+	}
+
+	public static String getWeekRangeUsingDateTime(DateTime currentDate) {
+		DateTime monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
+		DateTime sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);
+
+		String formattedMondayDate = DateTimeFormat.forPattern(D_MMM).print(monday);
+		String formattedSundayDate = DateTimeFormat.forPattern(D_MMM_YY).print(sunday);
+
+		return formattedMondayDate + " to " + formattedSundayDate;
 	}
 
 }

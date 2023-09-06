@@ -265,7 +265,7 @@ public enum KPIExcelColumn {
 	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
 
 	LEAD_TIME_FOR_CHANGE("Kpi156",
-			Arrays.asList("Date"));
+			Arrays.asList("Project Name" , "Date" , "Lead Time (In Days)" , "Created Date" , "Release End Date"));
 
 	// @formatter:on
 
