@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.repository.scm;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 
@@ -14,4 +15,7 @@ public interface MergeRequestRepositoryCustom {
 
 	List<MergeRequests> findMergeRequestList(List<ObjectId> collectorItemIdList, Long startDate, Long endDate,
 			BasicDBList filterList);
+
+	List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(Set<ObjectId> basicProjectConfigIds,
+			List<String>  fromBranches , List<String> mergeRequestStatusList);
 }
