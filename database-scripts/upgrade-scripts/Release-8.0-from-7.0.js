@@ -3789,3 +3789,16 @@ db.getCollection('kpi_master').insertOne({
 	"boxType": "chart",
 	"calculateMaturity": false
 });
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI155",
+                "value":[
+                    "Closed",
+                    "Done"
+                ]
+            }
+   }}
+);
