@@ -141,19 +141,19 @@ export class UploadComponent implements OnInit {
     isAddtionalTestField = false;
     addtionalTestFieldColumn = [
         {
-            header: 'Automatable Test cases',
+            header: 'Automatable Test Cases',
             field: 'automatableTestCases'
         },
         {
-            header: 'Test Case Automated',
+            header: 'Test Cases Automated',
             field: 'automatedTestCases'
         },
         {
-            header: 'Total Regression Test cases',
+            header: 'Total Regression Test Cases',
             field: 'totalRegressionTestCases'
         },
         {
-            header: 'Regression test cases automated',
+            header: 'Regression Test Cases Automated',
             field: 'automatedRegressionTestCases'
         }
     ]
@@ -181,7 +181,7 @@ export class UploadComponent implements OnInit {
                     field: 'executedTestCase'
                 },
                 {
-                    header: 'Passed Test Case',
+                    header: 'Passed Test Cases',
                     field: 'passedTestCase'
                 },
               
