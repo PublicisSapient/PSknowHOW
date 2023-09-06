@@ -352,8 +352,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
       
     }
-    console.log(kpiId, this.kpiChartData[kpiId]);
-
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
