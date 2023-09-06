@@ -73,7 +73,6 @@ public class FieldMapping extends BasicModel {
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String storyFirstStatusKPI3;
-	private List<String> storyFirstStatusKPI154;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -270,7 +269,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressKPI128;
 	private List<String> jiraStatusForInProgressKPI123;
 	private List<String> jiraStatusForInProgressKPI119;
-	private List<String> jiraStatusForInProgressKPI154;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -318,8 +316,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDevDoneStatusKPI119;
 	private List<String> jiraDevDoneStatusKPI145;
 	private List<String> jiraDevDoneStatusKPI128;
-	private List<String> jiraDevDoneStatusKPI154;
-	private List<String> jiraQADoneStatusKPI154;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
@@ -357,7 +353,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI119;
 	private List<String> jiraIterationCompletionStatusKPI131;
 	private List<String> jiraIterationCompletionStatusKPI138;
-	private List<String> jiraIterationCompletionStatusKPI154;
 
 	private List<String> jiraIterationCompletionTypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
@@ -375,15 +370,19 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
-	//to get the first status to identify start of Development
-	private List<String> jiraStatusStartDevelopmentKPI154;
+
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
 	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
 	private String notificationEnabler="On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
-	private List<String> jiraSubTaskIdentification;
 
 	@Builder.Default
 	private List<String> mergeRequestStatusKPI156 = Arrays.asList("MERGED");
@@ -392,8 +391,6 @@ public class FieldMapping extends BasicModel {
 	private boolean leadTimeConfigRepoTool = false;
 
 	private List<String> jiraIssueTypeKPI156;
-
-
 
 	/**
 	 * Get jira issue type names string [ ].
@@ -412,16 +409,6 @@ public class FieldMapping extends BasicModel {
 	 */
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
-	}
-
-
-	public List<String> getJiraStatusForInProgressKPI154() {
-		return jiraStatusForInProgressKPI119;
-	}
-
-	public void setJiraStatusForInProgressKPI119(List<String> status) {
-		this.jiraStatusForInProgressKPI154 = status;
-		this.jiraStatusForInProgressKPI119 = status;
 	}
 
 }

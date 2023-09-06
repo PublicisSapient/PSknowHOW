@@ -23,6 +23,7 @@ package com.publicissapient.kpidashboard.apis.testexecution.service;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -34,6 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -68,6 +72,7 @@ public class TestExecutionDataServiceImplTest {
 
 	TestExecutionData testExecutionData = new TestExecutionData();
 	private MockMvc mockMvc;
+	private FieldMapping fieldMapping;
 	@InjectMocks
 	private TestExecutionDataServiceImpl testExecutionDataServiceImpl;
 	@Mock
@@ -82,6 +87,8 @@ public class TestExecutionDataServiceImplTest {
 	private SprintDetailsService sprintDetailsService;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * initialize values to be used in testing
@@ -95,6 +102,9 @@ public class TestExecutionDataServiceImplTest {
 		testExecutionData.setTotalTestCases(500);
 		testExecutionData.setExecutedTestCase(23);
 		testExecutionData.setPassedTestCase(45);
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 	}
 
 	/**
@@ -160,6 +170,7 @@ public class TestExecutionDataServiceImplTest {
 		when(sprintDetailsService.getSprintDetails(anyString())).thenReturn(Arrays.asList(createSprint()));
 		when(testExecutionRepository.findBySprintIdIn(anyList()))
 				.thenReturn(Arrays.asList(createTestExecutionKpiDbDataScrum()));
+		when(configHelperService.getFieldMapping(any())).thenReturn(fieldMapping);
 		List<TestExecutionData> testExecutions = testExecutionDataServiceImpl
 				.getTestExecutions("5fba82843ab187639c1147bd");
 		Assert.assertEquals(1, testExecutions.size());
@@ -173,6 +184,7 @@ public class TestExecutionDataServiceImplTest {
 		when(projectBasicConfigService.getProjectBasicConfigs(anyString())).thenReturn(project);
 		when(sprintDetailsService.getSprintDetails(anyString())).thenReturn(Arrays.asList(createSprint()));
 		when(testExecutionRepository.findBySprintIdIn(anyList())).thenReturn(new ArrayList<>());
+		when(configHelperService.getFieldMapping(any())).thenReturn(fieldMapping);
 		List<TestExecutionData> testExecutions = testExecutionDataServiceImpl
 				.getTestExecutions("5fba82843ab187639c1147bd");
 		Assert.assertEquals(1, testExecutions.size());

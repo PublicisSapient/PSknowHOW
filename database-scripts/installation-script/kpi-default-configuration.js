@@ -1,4 +1,3 @@
-        db.getCollection('metadata_identifier').remove({});
         db.metadata_identifier.insertMany([
 										{
                                                 "tool": "Jira",
@@ -242,12 +241,6 @@
                   },
                   {
                       "type": "storyFirstStatusKPI3",
-                      "value": [
-                          "Open"
-                      ]
-                  },
-                  {
-                      "type": "storyFirstStatusKPI154",
                       "value": [
                           "Open"
                       ]
@@ -626,14 +619,6 @@
                       ]
                   },
                   {
-                      "type": "jiraStatusForInProgressKPI154",
-                      "value": [
-                          "In Analysis",
-                          "In Development",
-                          "In Progress"
-                      ]
-                  },
-                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -704,17 +689,28 @@
                       ]
                   },
                   {
-                       "type": "jiraStatusStartDevelopmentKPI154",
-                        "value": [
-                              "In Analysis",
-                              "IN ANALYSIS",
-                              "In Development",
-                               "In Progress"
-                        ]
+                    "type": "jiraLiveStatusKPI155",
+                    "value": [
+                      "Live"
+                    ]
+                  },
+                  {
+                    "type": "jiraDodKPI155",
+                    "value": [
+                      "Closed",
+                      "Resolved",
+                      "Ready for Delivery",
+                      "Done",
+                      "Ready for Sign-off"
+                    ]
+                  },
+                  {
+                    "type": "jiraDefectRejectionStatusKPI155",
+                    "value": [
+                      "Rejected"
+                    ]
                   }
-
-              ]
-                                        },
+              ]                                            },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Standard Template",
@@ -934,15 +930,6 @@
                                                 "Open"
                                               ]
                                             },
-                                            {
-                                               "type": "firstDevstatus",
-                                               "value": [
-                                                   "In Analysis",
-                                                   "IN ANALYSIS",
-                                                   "In Development",
-                                                   "In Progress"
-                                               ]
-                                           },
                                             {
                                               "type": "rejection",
                                               "value": [
@@ -1178,15 +1165,6 @@
                                               ]
                                             },
                                             {
-                                               "type": "firstDevstatus",
-                                               "value": [
-                                                   "In Analysis",
-                                                   "IN ANALYSIS",
-                                                   "In Development",
-                                                   "In Progress"
-                                               ]
-                                            },
-                                            {
                                               "type": "rejection",
                                               "value": [
                                                 "Rejected",
@@ -1379,15 +1357,6 @@
                                                 "New"
                                               ]
                                             },
-                                            {
-                                               "type": "firstDevstatus",
-                                               "value": [
-                                                   "In Analysis",
-                                                   "IN ANALYSIS",
-                                                   "In Development",
-                                                   "In Progress"
-                                               ]
-                                           },
                                             {
                                               "type": "rejection",
                                               "value": [

@@ -470,9 +470,27 @@ db.kpi_category_mapping.insertMany([
 // delete FieldMapping Field which consider subtask defect  ---------------------------------------------------------------------------
 
 db.field_mapping_structure.deleteMany({
-    "fieldName": "jiraSubTaskDefectType"
+    "fieldName": {
+        $in: ["uploadDataKPI42", "uploadDataKPI16", "jiraSubTaskDefectType", "jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155"]
+    }
 });
 
+//DTS-26123
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi155" }
+);
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI155"
+      }
+   }}
+);
+
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 db.kpi_master.bulkWrite([
 // delete Lead time for change KPI (156)
   {
@@ -482,29 +500,6 @@ db.kpi_master.bulkWrite([
   }
 ]);
 
-//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
 db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154", "jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "jiraSubTaskIdentification","storyFirstStatusKPI154"]}
+    "fieldName": { $in: [ "", "", "", "", ""]}
 });
-// Update documents in a single operation
-db.getCollection('metadata_identifier').updateMany(
-   {
-      $or: [
-         { "templateCode": "8" },
-         { "tool": "Azure" },
-         { "templateCode": "7" }
-      ]
-   },
-   {
-      $pull: {
-         "workflow": {
-            $in: [
-               { "type": "firstDevstatus" },
-               { "type": "jiraStatusForInProgressKPI154" },
-               { "type": "jiraStatusStartDevelopmentKPI154" },
-               { "type": "storyFirstStatusKPI154" }
-            ]
-         }
-      }
-   }
-);

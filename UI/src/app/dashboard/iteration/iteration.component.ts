@@ -901,8 +901,9 @@ export class IterationComponent implements OnInit, OnDestroy {
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
       hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
       const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
+      const commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120');
       if (capacityKpi) {
-        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+        this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis,...commitmentReliabilityKpi]);
       }
     }
   }

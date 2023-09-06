@@ -3079,6 +3079,30 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi155",
+    "kpiName": "Defect Count By Type",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Total count of issues in the backlog with a breakup by defect type."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",
@@ -8158,73 +8182,56 @@ db.getCollection('field_mapping_structure').insertMany(
       }
     },
     {
-        "fieldName": "jiraStatusStartDevelopmentKPI154",
-        "fieldLabel": "Start of Development",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
-        }
-    },
-    {
-        "fieldName": "jiraDevDoneStatusKPI154",
-        "fieldLabel": "Status to identify Dev completed issues",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
-        }
-    },
-    {
-        "fieldName": "jiraQADoneStatusKPI154",
-        "fieldLabel": "Status to identify QA completed issues",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
-        }
-    },
-    {
-        "fieldName": "jiraIterationCompletionStatusKPI154",
-        "fieldLabel": "Status to identify completed issues",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
-        }
-    },
-    {
-        "fieldName": "jiraStatusForInProgressKPI154",
-        "fieldLabel": "Status to identify In Progress issues",
-        "readOnly": true,
-        "tooltip": {
-            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
-        }
-    },
-    {
-       "fieldName": "jiraSubTaskIdentification",
-       "fieldLabel": "Sub-Task Issue Types",
-       "fieldType": "chips",
-       "fieldCategory": "Issue_Type",
-       "section": "Issue Types Mapping",
-       "tooltip": {
-       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       "fieldName":"jiraDefectRejectionStatusKPI155",
+       "fieldLabel":"Ticket Rejected/Dropped Status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status from workflow on which ticket is considered as Rejected/Dropped."
        }
     },
     {
-        "fieldName": "storyFirstStatusKPI154",
-        "fieldLabel": "Status when 'Story' issue type is created",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "All status that identify open statuses.",
-
-        }
+       "fieldName":"jiraDodKPI155",
+       "fieldLabel":"DOD Status",
+       "fieldType":"chips",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+       }
+    },
+    {
+       "fieldName":"jiraLiveStatusKPI155",
+       "fieldLabel":"Status to identify Live status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Provide any status from workflow on which Live is considered."
+       }
+    },
+    {
+    	"fieldName": "uploadDataKPI42",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
+    },
+    {
+    	"fieldName": "uploadDataKPI16",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
     }
 ]
 );

@@ -48,6 +48,12 @@
         styleClass="p-w-100" [showHeader]="false" [(ngModel)]="value" (onChange)="setValue()">
         </p-multiSelect>
     </div>
+    
+    <div *ngSwitchCase="'toggle'">
+            <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()">
+            </p-inputSwitch>
+            <label for="fieldConfig?.fieldName" class="p-ml-2" style="font-family: 'FuturaNext_Medium', sans-serif;"> Upload Data</label>
+    </div>
 
     <div *ngSwitchCase="'dropdown'">
         <app-additional-filter-field [fieldMappingMetaData]="fieldMappingMetaData"  (additionalFilterChange)="setAdditionalFilterValue($event)"></app-additional-filter-field>
