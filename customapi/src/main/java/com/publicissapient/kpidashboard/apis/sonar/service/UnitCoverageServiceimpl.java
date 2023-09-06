@@ -193,7 +193,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 			Double coverage = metricMap.get(TEST_UNIT_COVERAGE) == null ? 0d
 					: Double.parseDouble(metricMap.get(TEST_UNIT_COVERAGE).toString());
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCountObject(coverage, projectName, date, projectNodeId, keyName);
+			DataCount dcObj = getDataCountObject(coverage, projectName, date, keyName);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -203,7 +203,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		});
 		DataCount dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE.getKpiId()), projectName, date,
-				projectNodeId, AVERAGE_COVERAGE);
+				AVERAGE_COVERAGE);
 		projectWiseDataMap.computeIfAbsent(AVERAGE_COVERAGE, k -> new ArrayList<>()).add(dcObj);
 	}
 
@@ -230,7 +230,7 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		return historyMap;
 	}
 
-	private DataCount getDataCountObject(Double value, String projectName, String date, String projectNodeId , String keyName) {
+	private DataCount getDataCountObject(Double value, String projectName, String date, String keyName) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSSprintID(date);
