@@ -25,6 +25,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { TableService } from 'primeng/table';
 
 declare let require: any;
 
@@ -65,8 +66,6 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-  kpiPart1 : any = [];
-  kpiPart2 : any = []
   navigationTabs:Array<object>;
   activeIndex = 0;
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -111,6 +110,10 @@ export class MilestoneComponent implements OnInit {
   }
 
   processKpiConfigData() {
+    this.navigationTabs = [
+      {'label':'Release Review', 'count': 0,kpis : [],width : 'half'},
+      {'label':'Release Progress', 'count': 0,kpis : [],width :'full'},
+    ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
      /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
@@ -121,13 +124,19 @@ export class MilestoneComponent implements OnInit {
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) this.navigationTabs[idx]['count']++;
+      if(idx != -1) {
+        this.navigationTabs[idx]['count']++;
+        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+      }
     }
 
-    // Divide into two parts
-    this.kpiPart1= this.upDatedConfigData.slice(0, (Math.floor(this.upDatedConfigData.length / 2)));
-    this.kpiPart2 = this.upDatedConfigData.slice((Math.floor(this.upDatedConfigData.length / 2)));
-
+      this.navigationTabs.map(tabDetails => {
+        if(tabDetails['width'] === 'half'){
+          tabDetails['kpiPart1'] = tabDetails['kpis'].slice(0, (Math.floor(tabDetails['kpis'].length / 2)));
+          tabDetails['kpiPart2'] = tabDetails['kpis'].slice((Math.floor(tabDetails['kpis'].length / 2)));
+        }
+        return tabDetails;
+      })
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -152,10 +161,6 @@ export class MilestoneComponent implements OnInit {
    **/
   receiveSharedData($event) {
     this.activeIndex = 0;
-    this.navigationTabs = [
-      {'label':'Release Review', 'count': 0},
-      {'label':'Release Progress', 'count': 0},
-    ];
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
@@ -607,10 +612,17 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>,tab) {
     if (event?.previousIndex !== event.currentIndex) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      this.upDatedConfigData = [...this.kpiPart1,...this.kpiPart2];
+      if(tab.width === 'half'){
+        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2']];
+      }
+      this.upDatedConfigData = [];
+      this.navigationTabs.forEach(tabs=>{
+        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
+      })
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
