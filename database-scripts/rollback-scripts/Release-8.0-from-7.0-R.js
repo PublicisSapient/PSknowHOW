@@ -479,3 +479,12 @@ db.field_mapping_structure.deleteMany({
 db.getCollection('kpi_master').deleteOne(
   { "kpiId": "kpi155" }
 );
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI155"
+      }
+   }}
+);
