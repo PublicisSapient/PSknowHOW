@@ -234,9 +234,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
                 });
             }
           }
-          if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
-            this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
-          }
+          // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
+          //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
+          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -352,8 +352,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
       
     }
-    console.log(kpiId, this.kpiChartData[kpiId]);
-
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }

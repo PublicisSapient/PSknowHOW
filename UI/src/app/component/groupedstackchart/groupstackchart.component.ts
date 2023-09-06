@@ -87,7 +87,7 @@ export class GroupstackchartComponent implements OnChanges {
     const width = this.dataPoints <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * barWidth * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     const spacingVariable = 50;
-    const height = 190;
+    const height = 225;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
@@ -138,7 +138,8 @@ export class GroupstackchartComponent implements OnChanges {
       this.maxYValue = Math.ceil(this.maxYValue / 5) * 5;
 
     }
-
+    console.log(this.maxYValue);
+    
 
     const y = d3.scaleLinear()
       .range([height - margin, 0])
@@ -147,13 +148,13 @@ export class GroupstackchartComponent implements OnChanges {
     const y1 = d3.scaleBand();
     let z; let stackColorsList;
     // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
-      z = d3.scaleOrdinal()
-        .range(['#DEB0D2', '#F2C69B', '#B395E2', '#B5E7BE', '#DF9292', '#B5C6E7', '#ff8c00', '#3F51B5', '#aaaaaa']);
-      stackColorsList = ['#DEB0D2', '#F2C69B', '#B395E2', '#B5E7BE', '#DF9292', '#B5C6E7', '#ff8c00', '#3F51B5', '#aaaaaa'];
+    stackColorsList = ['#DEB0D2', '#F2C69B', '#B395E2', '#B5E7BE', '#DF9292', '#B5C6E7', '#ff8c00', '#3F51B5', '#aaaaaa'];
+    z = d3.scaleOrdinal()
+      .range(stackColorsList);
     // } else {
-      // z = d3.scaleOrdinal()
-      //   .range(this.color);
-      // stackColorsList = this.color;
+    // z = d3.scaleOrdinal()
+    //   .range(this.color);
+    // stackColorsList = this.color;
     // }
     // const z2 = d3.scaleOrdinal().range(this.color);
     const stack = d3.stack();
@@ -166,8 +167,6 @@ export class GroupstackchartComponent implements OnChanges {
     }))
       .rangeRound([0, x0.bandwidth()]);
     // .padding(0.2);// bar width
-    console.log("data", data);
-    
     const actualTypes = [];
     data.forEach(function (d) {
       if (d.type && !actualTypes.includes(d.type)) {
@@ -177,17 +176,15 @@ export class GroupstackchartComponent implements OnChanges {
     z.domain(actualTypes);
     const keys = z.domain();
     let groupData = d3.rollup(data, function (d, i) {
-      console.log("d", d);
-      
-      const d2 = { xName: d[0].xName, sSprintName: d[0].sSprintName };
-      d.forEach(function (d) {
-        d2[d.type] = d.value;
+      const d2 = { xName: d[0].xName, group: d[0].group };
+      d.forEach(function (dx) {
+        d2[dx.type] = dx.value;
       });
       return d2;
     }, function (d) {
       return d.xName;
     });
-    
+
     // .key(function (d) { return d.xName + d.sprojectName; })
     // .entries(data)
     // .map(function (d) { return d.value; });
@@ -269,7 +266,7 @@ export class GroupstackchartComponent implements OnChanges {
 
 
     serie.selectAll('rect')
-      .data(function (d) {
+      .data(function (d) {      
         return d;
       })
       .enter().append('rect')
@@ -289,50 +286,50 @@ export class GroupstackchartComponent implements OnChanges {
       .attr('width', barWidth)
       .on('click', function (d, i) {
       })
-      // .on('mouseover', function (event, d) {
-      //   const topValue = 75;
-        // if (d.data.hoverValue) {
+    // .on('mouseover', function (event, d) {
+    //   const topValue = 75;
+    // if (d.data.hoverValue) {
 
-        //   const circle = event.target;
-        //   const {
-        //     top: yPosition,
-        //     left: xPosition
-        //   } = circle.getBoundingClientRect();
+    //   const circle = event.target;
+    //   const {
+    //     top: yPosition,
+    //     left: xPosition
+    //   } = circle.getBoundingClientRect();
 
-        //   div.transition()
-        //     .duration(200)
-        //     .style('display', 'block')
-        //     .style('opacity', .9);
+    //   div.transition()
+    //     .duration(200)
+    //     .style('display', 'block')
+    //     .style('opacity', .9);
 
-        //   const dataObj = JSON.parse(JSON.stringify(d.data));
-        //   delete dataObj.sSprintName;
-        //   delete dataObj.sprojectName;
-        //   delete dataObj.hoverValue;
-        //   delete dataObj.xName;
+    //   const dataObj = JSON.parse(JSON.stringify(d.data));
+    //   delete dataObj.sSprintName;
+    //   delete dataObj.sprojectName;
+    //   delete dataObj.hoverValue;
+    //   delete dataObj.xName;
 
-        //   let dataString = '';
-        //   for (const hoverData in dataObj) {
-        //     dataString += `${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataObj[hoverData] + ' ' + (self.unit ? self.unit.toLowerCase() != 'number' ? self.unit : '' : '')} </span>`;
-        //   }
+    //   let dataString = '';
+    //   for (const hoverData in dataObj) {
+    //     dataString += `${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataObj[hoverData] + ' ' + (self.unit ? self.unit.toLowerCase() != 'number' ? self.unit : '' : '')} </span>`;
+    //   }
 
-        //   div.html(`${d?.data?.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataString}` + '</span>')
-        //     .style('left', xPosition + 20 + 'px')
-        //     // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
-        //     .style('top', yPosition + 20 + 'px')
-        //     .style('position', 'fixed');
+    //   div.html(`${d?.data?.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${dataString}` + '</span>')
+    //     .style('left', xPosition + 20 + 'px')
+    //     // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
+    //     .style('top', yPosition + 20 + 'px')
+    //     .style('position', 'fixed');
 
-        //   for (const hoverData in d.data.hoverValue) {
-        //     div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.data.hoverValue[hoverData]}` + ' </span>');
-        //   }
-        // }
-      // })
-      // .on('mouseout', function (d) {
-      //   div.transition()
-      //     .duration(500)
-      //     .style('display', 'none')
-      //     .style('opacity', 0);
+    //   for (const hoverData in d.data.hoverValue) {
+    //     div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.data.hoverValue[hoverData]}` + ' </span>');
+    //   }
+    // }
+    // })
+    // .on('mouseout', function (d) {
+    //   div.transition()
+    //     .duration(500)
+    //     .style('display', 'none')
+    //     .style('opacity', 0);
 
-      // });
+    // });
     // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
     //   const serie2 = svgX.selectAll('.serie2')
     //     .data(stackData)
@@ -377,7 +374,7 @@ export class GroupstackchartComponent implements OnChanges {
       .append('g');
 
     const legend = svgLegend.selectAll('.d3-legend')
-      .data(Object.keys(stackData)[0])
+      .data(actualTypes)
       .enter()
       .append('g')
       .attr('class', 'd3-legend')
@@ -538,58 +535,54 @@ export class GroupstackchartComponent implements OnChanges {
 
   formatData() {
     if (this.data?.length > 0) {
-
-      console.log(this.data);
       // this.data = this.padData(this.data);
-      // let prevsum = 0; let currentSum = 0; let max = 0;
+      let max = 0;
       const targetList = [];
       this.data.forEach((item, index) => {
         // pro.value?.forEach((item, index) => {
-        const obj = {};
-        obj['group'] = item.sSprintName;
+        
         // obj['sprojectName'] = pro.data;
         // if (item.hoverValue) {
         //   obj['hoverValue'] = item.hoverValue;
         //   obj['sSprintName'] = item.sSprintName;
         // }
         const sprintValue = index + 1;
-        if (typeof (item.value) === 'object') {
-          if (item.value) {
-            const types = Object.keys(item.value);
-            if (types.length >= 1) {
-              types.forEach(function (type) {
-                obj['type'] = type;
-                obj['value'] = item.value[type]?.['count'];
-                obj['xName'] = sprintValue;
-                targetList.push(obj);
-                // currentSum = currentSum + item.value[type];
-              });
-            } else {
-              obj['type'] = '';
-              obj['value'] = '';
-              obj['xName'] = sprintValue;
-              targetList.push(obj);
-              // currentSum = currentSum + 0;
-            }
-          }
-        } else {
-          obj['value'] = item.value;
-          // obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
-          targetList.push(obj);
-          // currentSum = currentSum + item.value;
+        if (typeof (item.value) === 'object' && item.value) {
+          const types = Object.keys(item.value);
+          // if (types.length >= 1) {
+          types?.forEach(function (type) {
+            const obj = {};
+            obj['group'] = item.sSprintName;
+            obj['type'] = type;
+            obj['value'] = item.value[type]?.['issueCount'];
+            obj['hoverText'] = '(' + item.value[type]?.['issueCount'] + ', ' + item.value[type]?.['issueStoryPoint'] + ')';
+            obj['xName'] = sprintValue;
+            targetList.push(obj);
+            max = Math.max(max, item.data);
+          });
+          // } else {
+          //   obj['type'] = '';
+          //   obj['value'] = '';
+          //   obj['xName'] = sprintValue;
+          //   targetList.push(obj);
+          //   // currentSum = currentSum + 0;
+          // }
         }
-        // max = Math.max(prevsum, currentSum);
-        // prevsum = currentSum > prevsum ? currentSum : prevsum;
-        // currentSum = 0;
+        // else {
+        //   obj['value'] = item.value;
+        // obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
+        // targetList.push(obj);
+        // currentSum = currentSum + item.value;
+        // }
+        
 
         // if (item.xAxisTick) {
         //   this.xCaption = 'Months';
         // }
         // });
       });
-      // this.maxYValue = max * 1.07;
-      console.log("targetList", targetList);
-
+      this.maxYValue = max * 1.07;
+      console.log(this.maxYValue);
       return this.data = targetList;
     }
   }

@@ -29,38 +29,62 @@
     "trendValueList": {
         "value": [
             {
-                "sSprintName": "Sprint1",
-                "data": 12,
+                "sSprintName": "KnowHOW | PI_14| ITR_6",
+                "data": 73,
                 "value": {
-                    "To Do": {
-                        "count": 2,
-                        "size": 5.0
+                    "Dropped": {
+                        "issueCount": 1,
+                        "issueStoryPoint": 2
+                    },
+                    "Ready for Sprint Planning": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 14
+                    },
+                    "On Hold": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 13
+                    },
+                    "In Analysis": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 12
                     },
                     "In Progress": {
-                        "count": 5,
-                        "size": 20
+                        "issueCount": 3,
+                        "issueStoryPoint": 0
                     },
-                    "Done": {
-                        "count": 5,
-                        "size": 20
+                    "Open": {
+                        "issueCount": 58,
+                        "issueStoryPoint": 180
                     }
                 }
             },
             {
-                "sSprintName": "Sprint2",
-                "data": 11,
+                "sSprintName": "KnowHOW | PI_14| ITR_7",
+                "data": 73,
                 "value": {
-                    "To Do": {
-                        "count": 2,
-                        "size": 6.0
+                    "Dropped": {
+                        "issueCount": 1,
+                        "issueStoryPoint": 4
+                    },
+                    "Ready for Sprint Planning": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 14
+                    },
+                    "On Hold": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 13
+                    },
+                    "In Analysis": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 12
                     },
                     "In Progress": {
-                        "count": 5,
-                        "size": 10
+                        "issueCount": 3,
+                        "issueStoryPoint": 0
                     },
-                    "Done": {
-                        "count": 4,
-                        "size": 10
+                    "Open": {
+                        "issueCount": 58,
+                        "issueStoryPoint": 180
                     }
                 }
             }
