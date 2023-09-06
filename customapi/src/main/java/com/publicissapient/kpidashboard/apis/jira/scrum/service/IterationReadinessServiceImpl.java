@@ -116,7 +116,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 											.filter(issue -> issue.getSprintName().equals(sprintName))
 											.min(Comparator.comparing(issue -> {
 												String sprintBeginDate = issue.getSprintBeginDate();
-												return sprintBeginDate != null
+												return StringUtils.isNotEmpty(sprintBeginDate)
 														? LocalDate.parse(sprintBeginDate.split("T")[0],
 																DATE_TIME_FORMATTER)
 														: LocalDate.MIN;
