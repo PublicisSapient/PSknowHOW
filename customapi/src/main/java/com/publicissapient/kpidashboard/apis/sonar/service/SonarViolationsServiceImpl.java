@@ -252,8 +252,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 					.mapToLong(val -> val).sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
-					projectNodeId);
+			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -263,7 +262,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		DataCount dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				projectName, date, projectNodeId);
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
@@ -300,15 +299,13 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	}
 
 	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
-			String projectName, String date, String projectNodeId) {
+			String projectName, String date) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sonarViolations));
 		dataCount.setSSprintID(date);
 		dataCount.setSSprintName(date);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(sonarViolations);
 		dataCount.setHoverValue(sonarViolationsHowerMap);
 		return dataCount;

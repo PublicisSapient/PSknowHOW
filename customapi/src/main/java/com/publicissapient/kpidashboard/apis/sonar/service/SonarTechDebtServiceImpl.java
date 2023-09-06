@@ -186,7 +186,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 				// sqale index is in minutes in a 8 hr day so dividing it by 480
 				long techDebtValueInDays = Math.round(techDebtValue / 480.0);
 				String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-				DataCount dcObj = getDataCountObject(techDebtValueInDays, projectName, date, projectNodeId);
+				DataCount dcObj = getDataCountObject(techDebtValueInDays, projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 				projectList.add(keyName);
 				versionDate.add(date);
@@ -195,7 +195,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 			}
 		});
 		DataCount dcObj = getDataCountObject(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT.getKpiId()),
-				projectName, date, projectNodeId);
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 		return key;
 	}
@@ -223,15 +223,13 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		return historyMap;
 	}
 
-	private DataCount getDataCountObject(Long value, String projectName, String date, String projectNodeId) {
+	private DataCount getDataCountObject(Long value, String projectName, String date) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSSprintID(date);
 		dataCount.setSSprintName(date);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
 		dataCount.setHoverValue(new HashMap<>());
 		return dataCount;

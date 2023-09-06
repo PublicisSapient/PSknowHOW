@@ -240,8 +240,6 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		Map<String, Object> hoverValueMap = new HashMap<>();
 		hoverValueMap.put(keyName , value);
 		dataCount.setHoverValue(hoverValueMap);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
 		return dataCount;
 	}
