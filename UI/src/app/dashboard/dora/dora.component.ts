@@ -227,7 +227,7 @@ export class DoraComponent implements OnInit {
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
+    this.masterData?.kpiList.forEach((obj) => {
       if (!obj.kanban && obj.kpiSource === 'Jenkins' && obj.kpiCategory?.toLowerCase() == 'dora') {
         groupIdSet.add(obj.groupId);
       }
@@ -255,7 +255,7 @@ export class DoraComponent implements OnInit {
     this.jiraKpiData = {};
     // creating a set of unique group Ids
     const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
+    this.masterData?.kpiList.forEach((obj) => {
       if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory?.toLowerCase() == 'dora') {
         groupIdSet.add(obj.groupId);
       }
