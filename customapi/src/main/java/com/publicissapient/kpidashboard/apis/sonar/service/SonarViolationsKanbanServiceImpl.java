@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -37,10 +36,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -57,7 +54,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -75,8 +71,6 @@ public class SonarViolationsKanbanServiceImpl
 	private static final String BLOCKER = "blocker";
 	private static final String INFO = "info";
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Override
 	public String getQualifierType() {
@@ -214,28 +208,6 @@ public class SonarViolationsKanbanServiceImpl
 
 	}
 
-	/**
-	 * populate excel data
-	 * 
-	 * @param requestTrackerId
-	 * @param projectList
-	 * @param versionDate
-	 * @param node
-	 * @return
-	 */
-	private Map<String, ValidationData> populateValidationDataObjectForViolations(String requestTrackerId,
-			List<String> projectList, List<String> violations, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setViolationList(violations);
-			validationDataMap.put(node.getName(), validationData);
-		}
-		return validationDataMap;
-	}
-
 	private void prepareViolationsList(Map<String, SonarHistory> history, String date, String projectNodeId,
 			List<String> projectList, List<String> violations, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
@@ -262,8 +234,7 @@ public class SonarViolationsKanbanServiceImpl
 			Long sonarViolations = sonarViolationsHowerMap.values().stream().map(a -> (Integer) a).mapToLong(val -> val)
 					.sum();
 
-			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
-					projectNodeId);
+			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -273,7 +244,7 @@ public class SonarViolationsKanbanServiceImpl
 		DataCount dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				projectName, date, projectNodeId);
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
@@ -291,21 +262,19 @@ public class SonarViolationsKanbanServiceImpl
 			} else if (violations instanceof String) {
 				valueMap.put(key, (Integer.parseInt(violations.toString())));
 			} else {
-				valueMap.put(key, (Integer) violations);
+				valueMap.put(key, violations);
 			}
 		}
 	}
 
 	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
-			String projectName, String date, String projectNodeId) {
+			String projectName, String date) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(sonarViolations));
 		dataCount.setSSprintID(date);
 		dataCount.setSSprintName(date);
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(sonarViolations);
 		dataCount.setHoverValue(sonarViolationsHowerMap);
 		return dataCount;

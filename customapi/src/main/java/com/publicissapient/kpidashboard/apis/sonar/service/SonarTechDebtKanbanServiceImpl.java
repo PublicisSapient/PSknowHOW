@@ -27,7 +27,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -38,10 +37,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -57,7 +54,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -75,8 +71,6 @@ public class SonarTechDebtKanbanServiceImpl
 
 	private static final String SQALE_INDEX = "sqale_index";
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets KPICode's <tt>SONAR_TECH_DEBT_KANBAN</tt> enum
@@ -283,7 +277,7 @@ public class SonarTechDebtKanbanServiceImpl
 			if (techDebtValue != -1l) {
 				// sqale index is in minutes in a 8 hr day so dividing it by 480
 				long techDebtValueInDays = Math.round(techDebtValue / 480.0);
-				DataCount dcObj = getDataCountObject(techDebtValueInDays, projectName, date, projectNodeId);
+				DataCount dcObj = getDataCountObject(techDebtValueInDays, projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new LinkedList<>()).add(dcObj);
 				projectList.add(keyName);
 				versionDate.add(date);
@@ -292,20 +286,17 @@ public class SonarTechDebtKanbanServiceImpl
 			}
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), projectName, date,
-				projectNodeId);
+				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
 	}
 
-	private DataCount getDataCountObject(Long value, String projectName, String date, String projectNodeId) {
+	private DataCount getDataCountObject(Long value, String projectName, String date) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setSProjectName(projectName);
 		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
 		dataCount.setValue(value);
 		dataCount.setHoverValue(new HashMap<>());
 		return dataCount;
@@ -330,27 +321,6 @@ public class SonarTechDebtKanbanServiceImpl
 			range = dateRange.getStartDate().toString();
 		}
 		return range;
-	}
-
-	/**
-	 * @param requestTrackerId
-	 * @param projectList
-	 * @param debtList
-	 * @param versionDate
-	 * @param node
-	 * @return
-	 */
-	private Map<String, ValidationData> populateValidationDataObjectForTechDebt(String requestTrackerId,
-			List<String> projectList, List<String> debtList, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setSonarTechDebtList(debtList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
-		return validationDataMap;
 	}
 
 	public Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start, Long end,
