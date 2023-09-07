@@ -346,7 +346,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 								.orElse(Collections.emptyList());
 					}));
 			projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
-					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping,"CommitmentReliability");
+					.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
 		}
 
 		Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
@@ -380,10 +380,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
-			long time2 = System.currentTimeMillis();
+
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));
-			log.info("CommitmentReliability findIssueByNumber {}",System.currentTimeMillis()-time2);
+
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
 		}
 		return resultListMap;

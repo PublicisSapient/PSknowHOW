@@ -159,14 +159,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 		long time2= System.currentTimeMillis();
-//		List<SprintDetails> totalSprintDetails = sprintRepository
-//				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-//						sprintStatusList);//NOSONAR
 		List<SprintDetails> totalSprintDetails=sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
 				sprintStatusList,(long) customApiConfig.getSprintVelocityLimit() + customApiConfig.getSprintCountForFilters());
         log.info("Sprint Velocity findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc method time taking {}",System.currentTimeMillis()-time2);
 		// Group the SprintDetails by basicProjectConfigId
-		long time3 = System.currentTimeMillis();
 		Map<ObjectId, List<SprintDetails>> sprintDetailsByProjectId = totalSprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
@@ -187,7 +183,6 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 					result);
 
 		}
-		log.info("sprint valocity time loop {}",System.currentTimeMillis()-time3);
 		return resultListMap;
 
 	}
