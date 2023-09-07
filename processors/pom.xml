@@ -61,6 +61,7 @@
             </activation>
             <modules>
                 <module>jira</module>
+                <module>jiraBatch</module>
                 <module>jira-xray-zephyr-squad</module>
                 <module>jira-zephyr-scale</module>
                 <module>bitbucket</module>
