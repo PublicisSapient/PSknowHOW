@@ -138,8 +138,6 @@ export class GroupstackchartComponent implements OnChanges {
       this.maxYValue = Math.ceil(this.maxYValue / 5) * 5;
 
     }
-    console.log(this.maxYValue);
-    
 
     const y = d3.scaleLinear()
       .range([height - margin, 0])
@@ -160,12 +158,13 @@ export class GroupstackchartComponent implements OnChanges {
     const stack = d3.stack();
 
     x0.domain(data.map(function (d) {
-      return d.xName;
+      return d.group;
     }));
     x1.domain(data.map(function (d, i) {
       return d.group;
     }))
       .rangeRound([0, x0.bandwidth()]);
+      
     // .padding(0.2);// bar width
     const actualTypes = [];
     data.forEach(function (d) {
@@ -191,7 +190,7 @@ export class GroupstackchartComponent implements OnChanges {
     groupData = Array.from(groupData).map(function (d) {
       return d[1];
     });
-    console.log("groupData", groupData);
+    console.log(this.kpiId+"groupData", groupData);
 
     const stackData = stack
       .keys(keys)(groupData);
@@ -209,6 +208,7 @@ export class GroupstackchartComponent implements OnChanges {
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
     const xTick = self.dataPoints === 1 ? width > 1600 ? 20 : width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
+    
     svgX
       .select('.xAxis')
       .selectAll('.tick text')
@@ -272,12 +272,14 @@ export class GroupstackchartComponent implements OnChanges {
       .enter().append('rect')
       .attr('class', 'serie-rect1')
       .attr('x', function (d, i) {
-        return spacingVariable;
+        return self.dataPoints === 1 ? spacingVariable + x1(d.data.group) : x1(d.data.group);;
       })
       .attr('y', function (d) {
         return y(d[1]);
       })
       .attr('transform', function (d) {
+        console.log(x0(d?.data?.group));
+        
         return 'translate(' + x0(d?.data?.xName) + ',0)';
       })
       .attr('height', function (d) {
@@ -582,7 +584,6 @@ export class GroupstackchartComponent implements OnChanges {
         // });
       });
       this.maxYValue = max * 1.07;
-      console.log(this.maxYValue);
       return this.data = targetList;
     }
   }
