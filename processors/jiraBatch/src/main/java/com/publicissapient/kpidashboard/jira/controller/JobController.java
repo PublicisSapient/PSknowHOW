@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.jira.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,6 +13,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +35,7 @@ public class JobController {
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
-	
+
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
@@ -45,7 +48,7 @@ public class JobController {
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
 
-    @Qualifier("fetchIssueSprintJob")
+	@Qualifier("fetchIssueSprintJob")
 	@Autowired
 	Job fetchIssueSprintJob;
 
@@ -57,7 +60,7 @@ public class JobController {
 	private static String CURRENTTIME = "currentTime";
 
 	@GetMapping("/startscrumboardjob")
-	public String startScrumBoardJob() throws Exception {
+	public ResponseEntity<Map> startScrumBoardJob() throws Exception {
 		log.info("Request coming for job for Scrum project configured with board");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -79,11 +82,14 @@ public class JobController {
 			});
 		}
 		executorService.shutdown();
-		return "Scrum job for boards started ....";
+
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
 	}
-	
+
 	@GetMapping("/startscrumjqljob")
-	public String startScrumJqlJob() throws Exception {
+	public ResponseEntity<Map> startScrumJqlJob() throws Exception {
 		log.info("Request coming for job for Scrum project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -105,9 +111,10 @@ public class JobController {
 			});
 		}
 		executorService.shutdown();
-		return "Scrum job for boards started ....";
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
 	}
-	
 
 	private List<JobParameters> getDynamicParameterSets(List<String> scrumBoardbasicProjConfIds) {
 		List<JobParameters> parameterSets = new ArrayList<>();
@@ -126,7 +133,7 @@ public class JobController {
 	}
 
 	@GetMapping("/startkanbanboardjob")
-	public String startKanbanJob() throws Exception {
+	public ResponseEntity<Map> startKanbanJob() throws Exception {
 		log.info("Request coming for job");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
@@ -146,11 +153,13 @@ public class JobController {
 			});
 		}
 		executorService.shutdown();
-		return "Kanban job for boards started ....";
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
 	}
 
 	@GetMapping("/startkanbanjqljob")
-	public String startKanbanJqlJob() throws Exception {
+	public ResponseEntity<Map> startKanbanJqlJob() throws Exception {
 		log.info("Request coming for job for Kanban project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -172,20 +181,29 @@ public class JobController {
 			});
 		}
 		executorService.shutdown();
-		return "Kanban job for boards started ....";
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
 	}
 
 	@GetMapping("/startfetchsprintjob")
-	public String startfetchsprintjob(@RequestBody String sprintId) throws Exception {
-		log.info("Request coming for job");
+	public ResponseEntity<Map> startfetchsprintjob(@RequestBody String sprintId) throws Exception {
+		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
 		jobParametersBuilder.addString(SPRINT_ID, sprintId);
 		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-
 		JobParameters params = jobParametersBuilder.toJobParameters();
-		jobLauncher.run(fetchIssueSprintJob, params);
-		return "job started ....";
+		try {
+			jobLauncher.run(fetchIssueSprintJob, params);
+		} catch (Exception e) {
+			log.info("Jira Sprint data fetch failed for SprintId : {}", params.getString(SPRINT_ID));
+			e.printStackTrace();
+		}
+
+		Map response = new HashMap();
+		response.put("status", "processing");
+		return ResponseEntity.ok().body(response);
 	}
 
 }
