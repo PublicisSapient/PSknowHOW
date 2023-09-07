@@ -17,6 +17,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   @ViewChild('popupHost', { read: ViewContainerRef })
   popupHost!: ViewContainerRef;
   elem: any;
+  selectedNode: {};
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
@@ -40,6 +41,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   draw(data, selectedNode = '') {
     let self = this;
     const elem = this.elem;
+    self.selectedNode = selectedNode;
     let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ? document.getElementById('chart')?.offsetWidth : 485);
     chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
     const chart = d3.select(elem).select('#chart');
@@ -61,7 +63,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
 
     // let subgroups = Object.keys(data[0]['value']);
-    const groups = this.isDrilledDown ? ['(' + selectedNode['data']['kpiGroup'] + ')', data.map(d => d.kpiGroup)[0]] : data.map(d => d.kpiGroup);
+    const groups = this.isDrilledDown ? [data.kpiGroup] : data.map(d => d.kpiGroup);
     let subgroups = [];
     if (!this.isDrilledDown) {
       data[0]['value'].forEach((element) => {
@@ -172,6 +174,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           let kpiGroup = event.target.__data__.data.kpiGroup;
           let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
           data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
+          data.kpiGroup = key;
           this.draw(data, selectedNode);
           d3.select(elem).select('#back_icon').style('display', 'block')
             .on('click', (event, d) => {
