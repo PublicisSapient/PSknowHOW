@@ -26,23 +26,20 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
-@SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
+// @Data
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+// @Builder
+// @AllArgsConstructor
+// @NoArgsConstructor
+@SuppressWarnings("PMD.TooManyFields")
 public class FieldMappingDTO extends BasicModel {
 
 	private ObjectId projectToolConfigId;
@@ -129,7 +126,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
 
-
 	private String jiraStoryPointsCustomField;
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
@@ -156,26 +152,26 @@ public class FieldMappingDTO extends BasicModel {
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;
 
-private String jiraDor;
-private String jiraDorKPI3;
+	private String jiraDor;
+	private String jiraDorKPI3;
 
-private List<String> jiraIntakeToDorIssueType;
-private List<String> jiraIssueTypeKPI3;
+	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIssueTypeKPI3;
 
-private List<String> jiraStoryIdentification;
-private List<String> jiraStoryIdentificationKPI129;
-private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentificationKPI129;
+	private List<String> jiraStoryIdentificationKpi40;
 
-private String jiraLiveStatus;
-private String jiraLiveStatusKPI152;
-private String jiraLiveStatusKPI151;
-private String jiraLiveStatusKPI3;
-private String jiraLiveStatusLTK;
-private String jiraLiveStatusNOPK;
-private String jiraLiveStatusNOSK;
-private String jiraLiveStatusNORK;
-private String jiraLiveStatusOTA;
-private String jiraLiveStatusKPI127;
+	private String jiraLiveStatus;
+	private String jiraLiveStatusKPI152;
+	private String jiraLiveStatusKPI151;
+	private String jiraLiveStatusKPI3;
+	private String jiraLiveStatusLTK;
+	private String jiraLiveStatusNOPK;
+	private String jiraLiveStatusNOSK;
+	private String jiraLiveStatusNORK;
+	private String jiraLiveStatusOTA;
+	private String jiraLiveStatusKPI127;
 
 	private List<String> ticketCountIssueType;
 
@@ -235,7 +231,6 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
 	private List<String> jiraDefectDroppedStatusKPI127;
-
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -327,11 +322,9 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraRejectedInRefinement;
 	private List<String> jiraRejectedInRefinementKPI139;
 
-
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraAcceptedInRefinement;
 	private List<String> jiraAcceptedInRefinementKPI139;
-
 
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
@@ -388,7 +381,7 @@ private String jiraLiveStatusKPI127;
 	private boolean uploadDataKPI42;
 	private boolean uploadDataKPI16;
 	@Builder.Default
-	private String notificationEnabler="On";
+	private String notificationEnabler = "On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
