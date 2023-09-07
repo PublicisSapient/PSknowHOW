@@ -1522,9 +1522,21 @@ public class KPIExcelUtility {
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
 				excelData.setIssueStatus(jiraIssue.getStatus());
 				excelData.setIssueType(jiraIssue.getTypeName());
-				populateAssignee(jiraIssue, excelData);
-				excelData.setRootCause(jiraIssue.getRootCauseList());
-				excelData.setPriority(jiraIssue.getPriority());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				String date = Constant.EMPTY_STRING;
+				if (!jiraIssue.getSprintBeginDate().isEmpty()) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setSprintStartDate(date);
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));

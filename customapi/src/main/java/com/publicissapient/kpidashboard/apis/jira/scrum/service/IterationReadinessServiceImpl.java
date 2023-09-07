@@ -1,7 +1,26 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,6 +60,12 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Jira service class to fetch Iteration readiness kpi details
+ *
+ * @author aksshriv1
+ *
+ */
 @Slf4j
 @Component
 public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -57,7 +82,9 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		return null;
 	}
 
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT);
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT);
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -68,13 +95,33 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		if (leafNode != null) {
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
+
 			List<JiraIssue> futureSprintJiraIssues = totalJiraIssue.stream()
-					.filter(jiraIssue -> jiraIssue.getSprintAssetState().equalsIgnoreCase("FUTURE"))
+					.filter(jiraIssue -> "FUTURE".equalsIgnoreCase(jiraIssue.getSprintAssetState())
+							&& (jiraIssue.getSprintBeginDate().isEmpty()
+									|| isAfterCurrentSystemDate(jiraIssue.getSprintBeginDate())))
 					.collect(Collectors.toList());
+
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, futureSprintJiraIssues);
 		}
 
 		return resultListMap;
+	}
+
+	/**
+	 * method to check sprint begin date is after current Date
+	 * 
+	 * @param dateString
+	 * @return
+	 */
+	private boolean isAfterCurrentSystemDate(String dateString) {
+		try {
+			LocalDateTime sprintBeginDateTime = LocalDateTime.parse(dateString, DATE_TIME_FORMATTER);
+			return sprintBeginDateTime.isAfter(LocalDateTime.now());
+		} catch (DateTimeParseException e) {
+			log.info("Error in parsing the Date ... " + e);
+			return false;
+		}
 	}
 
 	@Override
@@ -117,8 +164,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 											.min(Comparator.comparing(issue -> {
 												String sprintBeginDate = issue.getSprintBeginDate();
 												return StringUtils.isNotEmpty(sprintBeginDate)
-														? LocalDate.parse(sprintBeginDate.split("T")[0],
-																DATE_TIME_FORMATTER)
+														? LocalDate.parse(sprintBeginDate.split("T")[0], DATE_FORMATTER)
 														: LocalDate.MIN;
 											}));
 									return earliestIssue.map(JiraIssue::getSprintBeginDate).orElse("");
@@ -153,6 +199,12 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
 	}
 
+	/**
+	 * Calculate total size of jira issues in a sprint
+	 * 
+	 * @param map
+	 * @return
+	 */
 	public static int calculateTotalSize(Map<String, List<JiraIssue>> map) {
 		int totalSize = 0;
 		for (List<JiraIssue> list : map.values()) {
@@ -162,6 +214,13 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		return totalSize;
 	}
 
+	/**
+	 * 
+	 * @param requestTrackerId
+	 * @param excelData
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
@@ -170,11 +229,18 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		}
 	}
 
+	/**
+	 * calculate status wise total story points and issue counts in a sprint
+	 * 
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 * @return
+	 */
 	private StatusWiseIssue getStatusWiseStoryCountAndPointList(List<JiraIssue> jiraIssueList,
 			FieldMapping fieldMapping) {
 		StatusWiseIssue statusWiseCountAndPoints = new StatusWiseIssue();
 		statusWiseCountAndPoints.setIssueCount((double) jiraIssueList.size());
-		statusWiseCountAndPoints.setIssueStoryPoint(jiraIssueList.stream().mapToDouble(jiraIssue -> {
+		double totalStoryPoints = jiraIssueList.stream().mapToDouble(jiraIssue -> {
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
@@ -183,7 +249,9 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 				int inHours = integer / 60;
 				return inHours / fieldMapping.getStoryPointToHourMapping();
 			}
-		}).sum());
+		}).sum();
+
+		statusWiseCountAndPoints.setIssueStoryPoint(totalStoryPoints + " SP");
 
 		return statusWiseCountAndPoints;
 	}
