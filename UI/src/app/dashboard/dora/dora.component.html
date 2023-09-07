@@ -1,0 +1,192 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+<ng-container *ngIf="!noProjects else noProjectsTemplate">
+    <div *ngIf="!noKpis else noKpiTemplate">
+        <div id="message"></div>
+        <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
+            <div class="clearfix">
+                <div class="right-container col">
+                    <div class="p-grid justify-content-start p-pt-3">
+                        <ng-container
+                            *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
+                            <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
+                            <div class="p-sm-5 p-pl-4">
+                                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
+                                    [kpiData]="updatedConfigDataObj['kpi116']" [trendData]="kpiTrendsObj['kpi116']"
+                                    [dropdownArr]="kpiDropdowns['kpi116']"
+                                    (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi116']?.kpiName, updatedConfigDataObj['kpi116']?.kpiDetail.kanban,updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport)"
+                                    (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])"
+                                    [showExport]="true" [showChartView]="showChart"
+                                    [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi116']?.kpiDetail?.chartType !== 'table'"
+                                    [isShow]="(kpiLoader === false) && (ifKpiExist('kpi116') != -1) ? true : false"
+                                    [trendValueList]="kpiChartData['kpi116']" [colors]="colorObj"
+                                    [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi116']"
+                                    (getCommentCountByKpi)="getKpiCommentsCount($event)"
+                                    (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
+                                    <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                        <ng-container
+                                        *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
+                                            <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi116') != -1; else loader">
+                                                <ng-container
+                                                    *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData">
+                                                    <ng-container *ngIf="showChart">
+                                                        <app-multiline
+                                                            [thresholdValue]="updatedConfigDataObj['kpi116']?.kpiDetail?.thresholdValue"
+                                                            [unit]="updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit"
+                                                            [data]="kpiChartData['kpi116']"
+                                                            [xCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.xaxisLabel"
+                                                            [yCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.yaxisLabel"
+                                                            [name]="updatedConfigDataObj['kpi116']?.kpiName"
+                                                            [kpiId]="'kpi116'" [color]="chartColorList['kpi116']"
+                                                            [selectedtype]="selectedtype" [board]="'dora'">
+                                                        </app-multiline>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #noData>
+                                            <div class="overlay"
+                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
+                                                <div class="loading-img"></div>
+                                            </div>
+                                            <div class="min-ht"
+                                                *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
+                                                <div class="err">No Data Available</div>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #loader>
+                                            <div class="overlay">
+                                                <div class="loading-img"></div>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
+                                </app-kpi-card>
+                            </div>
+                            <div class="p-sm-2">
+                                <div class="kpi-summary p-p-3 p-mb-3 position-relative">
+                                    <h4 class="p-m-0">Change Failure Rate</h4>
+                                    <div
+                                        *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
+                                        <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue}}</div>
+                                    </div>
+                                    <ng-template #noData1>
+                                        <div class="overlay"
+                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
+                                            <div class="loading-img"></div>
+                                        </div>
+                                        <div class="min-ht"
+                                            *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
+                                            <div class="err">No Data Available</div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                                <div class="kpi-summary p-p-3 position-relative">
+                                    <h4 class="p-m-0">Deployment Frequency</h4>
+                                    <div
+                                        *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
+                                        <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
+                                    </div>
+                                    <ng-template #noData2>
+                                        <div class="overlay"
+                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
+                                            <div class="loading-img"></div>
+                                        </div>
+                                        <div class="min-ht"
+                                            *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
+                                            <div class="err">No Data Available</div>
+                                        </div>
+                                    </ng-template>
+                                </div>
+                            </div>
+                            <div class="p-sm-5 p-pr-4">
+                                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj"
+                                    [kpiData]="updatedConfigDataObj['kpi118']" [trendData]="kpiTrendsObj['kpi118']"
+                                    [dropdownArr]="kpiDropdowns['kpi118']"
+                                    (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
+                                    (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi118']?.kpiId, updatedConfigDataObj['kpi118']?.kpiName, updatedConfigDataObj['kpi118']?.kpiDetail.kanban,updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport)"
+                                    [showExport]="true" [showChartView]="showChart"
+                                    [isShow]="(kpiLoader === false) && (ifKpiExist('kpi118') != -1) ? true : false"
+                                    [sprintsOverlayVisible]="sprintsOverlayVisible && updatedConfigDataObj['kpi118']?.kpiDetail?.chartType !== 'table'"
+                                    [trendValueList]="kpiChartData['kpi118']" [colors]="colorObj"
+                                    [showCommentIcon]="showCommentIcon" [commentCount]="kpiCommentsCountObj['kpi118']"
+                                    (getCommentCountByKpi)="getKpiCommentsCount($event)"
+                                    (reloadKPITab)="reloadKPI($event)" [board]="'dora'">
+                                    <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                        <ng-container
+                                            *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData3">
+                                            <div class="p-pl-3 p-pr-3" *ngIf="ifKpiExist('kpi118') != -1; else loader">
+                                                <ng-container
+                                                    *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData3">
+                                                    <ng-container *ngIf="showChart">
+                                                        <app-multiline
+                                                            [thresholdValue]="updatedConfigDataObj['kpi118']?.kpiDetail?.thresholdValue"
+                                                            [unit]="updatedConfigDataObj['kpi118']?.kpiDetail?.kpiUnit"
+                                                            [data]="kpiChartData['kpi118']"
+                                                            [xCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.xaxisLabel"
+                                                            [yCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.yaxisLabel"
+                                                            [name]="updatedConfigDataObj['kpi118']?.kpiName"
+                                                            [kpiId]="'kpi118'" [color]="chartColorList['kpi118']"
+                                                            [selectedtype]="selectedtype" [board]="'dora'">
+                                                        </app-multiline>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #noData3>
+                                            <div class="overlay"
+                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
+                                                <div class="loading-img"></div>
+                                            </div>
+                                            <div class="min-ht"
+                                                *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
+                                                <div class="err">No Data Available</div>
+                                            </div>
+                                        </ng-template>
+                                        <ng-template #loader>
+                                            <div class="overlay">
+                                                <div class="loading-img"></div>
+                                            </div>
+                                        </ng-template>
+                                    </ng-container>
+                                </app-kpi-card>
+                            </div>
+                            <!-- </ng-container> -->
+                            <ng-template #noDataAccess>
+                                <div class="min-ht">
+                                    <div class="err"> No Data Available</div>
+                                </div>
+                            </ng-template>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template #noKpiTemplate>
+        <div class="no-kpi-template">
+            <app-no-access [selectedTab]="''" [userEnable]='enableByUser'></app-no-access>
+        </div>
+    </ng-template>
+</ng-container>
+<ng-template #noProjectsTemplate>
+    <div class="p-d-flex p-align-center p-justify-center no-projects">
+        <h2>You do not have access to any Scrum project</h2>
+    </div>
+</ng-template>
+
+<app-export-excel #exportExcel></app-export-excel>

@@ -1,6 +1,6 @@
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
    <div class="logo cursor-pointer">
-      <img *ngIf="logoImage" src={{logoImage}} 
+      <img *ngIf="logoImage" src={{logoImage}}
          (click)="navigateToHomePage()" alt="Logo" />
       <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG"
          (click)="navigateToHomePage()" alt="Logo" />
@@ -122,7 +122,7 @@
                      <!-- Date filter end -->
                      <!-- additional filters start -->
                      <div class="p-d-flex"
-                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity'">
+                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
                            <div *ngIf="item?.hierarchyLevelId !== 'release'"
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
@@ -174,9 +174,8 @@
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
                   </h4>
-                  
-                
-               </div>  
+
+               </div>
                <p class="last-sync-date p-m-0 p-text-right">
                   {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
@@ -231,7 +230,7 @@
             <!-- comments icon start -->
             <div class="position-relative">
                <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
-                  [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project' 
+                  [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project'
                || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
                   <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
                   src="../../../assets/img/ico-comments.svg" alt="Comments"/>
@@ -253,7 +252,7 @@
                         <div *ngFor="let comment of commentList">
                            <h5 class="comment-heading font-small p-mb-1">{{kpiObj[comment.kpiId]}}</h5>
                            <div class="comment-author font-small">
-                              <b>{{comment?.commentBy}}</b> 
+                              <b>{{comment?.commentBy}}</b>
                               {{comment?.commentOn}}
                            </div>
                            <p class="comment-msg p-mt-1">{{comment?.comment}}</p>
@@ -297,7 +296,7 @@
 
 <div class="clearfix" *ngIf="selectedTab?.toLowerCase() !== 'backlog' && (!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')">
    <div class="filter-nav">
-      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
+      <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release' && selectedTab?.toLowerCase() !== 'dora'">
          <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
             <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
@@ -433,7 +432,7 @@
          </div>
          <div class="p-d-flex p-align-center">
             <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
-               <span class="refresh-state p-p-2" (click)="displayModal = true" 
+               <span class="refresh-state p-p-2" (click)="displayModal = true"
                *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
                   <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>REFRESH
                </span>

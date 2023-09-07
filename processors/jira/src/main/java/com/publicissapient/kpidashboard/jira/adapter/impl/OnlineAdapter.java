@@ -119,6 +119,8 @@ public class OnlineAdapter implements JiraAdapter {
 	private static final String TYPEID = "typeId";
 	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
 
+	public static final String PARSER_EXCEPTION = "Parser exception when parsing statuses";
+
 	private JiraProcessorConfig jiraProcessorConfig;
 	private AesEncryptionService aesEncryptionService;
 	private ProcessorJiraRestClient client;
@@ -484,7 +486,7 @@ public class OnlineAdapter implements JiraAdapter {
 				}
 
 			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
+				log.error(PARSER_EXCEPTION, pe);
 			}
 		}
 		return userTimeZone;
@@ -729,7 +731,7 @@ public class OnlineAdapter implements JiraAdapter {
 				}
 
 			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
+				log.error(PARSER_EXCEPTION, pe);
 			}
 		}
 	}
@@ -1044,7 +1046,7 @@ public class OnlineAdapter implements JiraAdapter {
 				getEpic(valuesJson, epicList);
 				isLast = Boolean.valueOf(obj.get("isLast").toString());
 			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
+				log.error(PARSER_EXCEPTION, pe);
 			}
 		}
 		return isLast;

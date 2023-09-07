@@ -413,10 +413,24 @@ public enum KPICode {
      * Backlog Issue Count By Status
      */
     BACKLOG_ISSUE_COUNT_BY_STATUS("kpi151", KPISource.JIRA.name()),
+	/**
+	 * Backlog Issue Count By Type
+	 */
+	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name()),
+	/**
+	 * PI Predictability
+	 */
+	PI_PREDICTABILITY("kpi153", KPISource.JIRA.name()),
     /**
-     * Backlog Issue Count By Type
+     *
      */
-    BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", KPISource.JIRA.name());
+    DAILY_STANDUP_VIEW("kpi154", KPISource.JIRA.name()),
+    //DTS-26123 start
+    /**
+     *Defect count by Type for backlog
+     */
+    DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name());
+    //DTS-26123 end
 
 
     // @formatter:on

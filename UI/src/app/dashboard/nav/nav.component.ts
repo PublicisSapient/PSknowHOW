@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { HttpService } from '../../services/http.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
@@ -87,7 +87,7 @@ export class NavComponent implements OnInit {
   // call when user is seleting tab
   selectTab(selectedTab) {
     this.selectedTab = selectedTab === 'Kpi Maturity' ? 'Maturity' : selectedTab;
-    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release') && this.selectedType.toLowerCase() !== 'scrum'){
+    if((selectedTab.toLowerCase() === 'iteration' || selectedTab.toLowerCase() === 'backlog' || selectedTab.toLowerCase() === 'release' || selectedTab.toLowerCase() === 'dora') && this.selectedType.toLowerCase() !== 'scrum'){
       this.selectedType = 'Scrum';
     }
     this.setSelectedType(this.selectedType);

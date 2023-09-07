@@ -27,16 +27,20 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -57,6 +61,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -462,7 +467,7 @@ public final class KpiDataHelper {
 	/**
 	 * if remaining time is 0 and sprint is closed, then PCD is sprint end time
 	 * otherwise will create PCD
-	 * 
+	 *
 	 * @param sprintDetails
 	 * @param pivotPCD
 	 * @param estimatedTime
@@ -482,6 +487,8 @@ public final class KpiDataHelper {
 		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
 		iterationPotentialDelay.setDueDate(dueDate.toString());
 		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
+		iterationPotentialDelay.setAssigneeId(issue.getAssigneeId());
+		iterationPotentialDelay.setStatus(issue.getStatus());
 		return iterationPotentialDelay;
 
 	}
@@ -489,7 +496,7 @@ public final class KpiDataHelper {
 	/**
 	 * if due date is less than potential closed date, then potential delay will be
 	 * negative
-	 * 
+	 *
 	 * @param dueDate
 	 * @param potentialClosedDate
 	 * @return
@@ -570,30 +577,6 @@ public final class KpiDataHelper {
 			remainingEstimate = (issueObject.getRemainingEstimateMinutes() / 60) / 8;
 		}
 		return remainingEstimate;
-	}
-
-	/**
-	 * setting in progress and open issues
-	 * 
-	 * @param fieldMapping
-	 * @param allIssues
-	 * @param inProgressIssues
-	 * @param openIssues
-	 * @return
-	 */
-	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
-			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
-				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
-			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
-			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus())).collect(Collectors.toList()));
-		} else {
-			openIssues.addAll(jiraIssuesWithDueDate);
-		}
-
 	}
 
 	/**
@@ -686,7 +669,8 @@ public final class KpiDataHelper {
 					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
 							fieldMappingCompletionType, fieldMappingCompletionStatus);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
+					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+							projectWiseDuplicateIssuesWithMinCloseDate);
 					dbSprintDetail.setCompletedIssues(newCompletedSet);
 					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
 					Set<SprintIssue> totalIssue = new HashSet<>();
@@ -922,5 +906,34 @@ public final class KpiDataHelper {
 
 		});
 		return subTaskTaggedWithSprint;
+	}
+
+	/**
+	 * Return the duration filter details for dora dashboard
+	 * @param kpiElement
+	 * @return
+	 */
+	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
+		int value = 5; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		LocalDateTime startDateTime = null;
+
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 5);
+			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		}
+
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDateTime = LocalDateTime.now().minusWeeks(value);
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDateTime = LocalDateTime.now().minusMonths(value);
+		}
+
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(Constant.DATE, startDateTime);
+		resultMap.put(Constant.DURATION, duration);
+		resultMap.put(Constant.COUNT, value);
+		return resultMap;
 	}
 }

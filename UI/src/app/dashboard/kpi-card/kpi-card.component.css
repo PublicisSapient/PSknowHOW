@@ -197,6 +197,10 @@
     pointer-events: none;
     opacity: 0.5;
 }
+.kpi-card-body.smallChart {
+    height: 272px !important;
+    min-height: 272px !important;
+}
 
 .custom-pi{
     font-size: 1.1rem;
@@ -206,5 +210,4 @@
     font-style: normal;
     -webkit-font-smoothing: antialiased;
 }
-
 
