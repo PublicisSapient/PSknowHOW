@@ -106,6 +106,8 @@ private setting = {
           return new FormControl('');
         case 'radiobutton':
           return new FormControl('');
+        case 'toggle':
+          return new FormControl(false);
         default:
           return new FormControl([]);
       }

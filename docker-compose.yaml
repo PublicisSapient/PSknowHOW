@@ -110,7 +110,6 @@ services:
       - devops-processorvol:/app/certs/
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
-      - producer.instanceName=<Your-IP>
       - spring.data.mongodb.username=<DB ROOT USERNAME>
       - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>

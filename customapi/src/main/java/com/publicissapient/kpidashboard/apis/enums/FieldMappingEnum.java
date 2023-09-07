@@ -173,7 +173,14 @@ public enum FieldMappingEnum {
 
 	KPI154("Daily StandUp View", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
-					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154","storyFirstStatusKPI154"));
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154","storyFirstStatusKPI154")),
+
+	//DTS-26123 start
+	KPI155("Defect Count By Type", KPISource.JIRA.name(),
+			Arrays.asList("jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155")),
+	//DTS-26123 end
+	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")),
+	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16"));
 
 	private List<String> fields;
 	private String kpiName;

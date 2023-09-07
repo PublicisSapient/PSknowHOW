@@ -48,8 +48,12 @@ public class TestExecutionData {
 	private Integer totalTestCases;
 	private Integer executedTestCase;
 	private Integer passedTestCase;
+	private Integer automatedTestCases;
+	private Integer automatableTestCases;
+	private Integer automatedRegressionTestCases;
+	private Integer totalRegressionTestCases;
 	private String executionDate;
 	private String basicProjectConfigId;
 	private boolean kanban;
-
+	private boolean uploadEnable;
 }

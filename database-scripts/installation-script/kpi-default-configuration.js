@@ -711,10 +711,30 @@
                               "In Development",
                                "In Progress"
                         ]
+                  },
+                  {
+                    "type": "jiraLiveStatusKPI155",
+                    "value": [
+                      "Live"
+                    ]
+                  },
+                  {
+                    "type": "jiraDodKPI155",
+                    "value": [
+                      "Closed",
+                      "Resolved",
+                      "Ready for Delivery",
+                      "Done",
+                      "Ready for Sign-off"
+                    ]
+                  },
+                  {
+                    "type": "jiraDefectRejectionStatusKPI155",
+                    "value": [
+                      "Rejected"
+                    ]
                   }
-
-              ]
-                                        },
+              ]                                            },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Standard Template",

@@ -377,7 +377,14 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI39;
 	//to get the first status to identify start of Development
 	private List<String> jiraStatusStartDevelopmentKPI154;
+
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
 	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
 	private String notificationEnabler="On";
