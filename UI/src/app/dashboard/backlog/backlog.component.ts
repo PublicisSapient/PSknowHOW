@@ -378,7 +378,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   getChartType(kpiId){
-    return this.updatedConfigGlobalData.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.chartType;
+    return this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === kpiId)?.kpiDetail?.chartType;
   }
 
   applyAggregationLogicForProgressBar(obj) {
@@ -815,7 +815,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
     }else{
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
       });

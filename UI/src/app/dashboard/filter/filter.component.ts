@@ -1393,7 +1393,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.filteredAddFilters['release'] = [];
     if (this.additionalFiltersDdn?.['release']) {
       this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
-      console.log(this.filteredAddFilters['release'] .map(re=> { return {name : re.nodeName , sDate : re.releaseStartDate , eDate: re.releaseEndDate}}));
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
@@ -1426,7 +1425,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     const currentDate = new Date();
     const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
     passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
-    console.log("findLatestPassedRelease :",passedReleases);
     return passedReleases.length > 0 ? passedReleases : null;
   }
 

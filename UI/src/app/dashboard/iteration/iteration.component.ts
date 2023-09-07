@@ -205,8 +205,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       return tabDetails;
     })
 
-    console.log(this.navigationTabs)
-
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
     } else {
