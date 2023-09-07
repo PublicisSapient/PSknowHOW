@@ -40,6 +40,7 @@
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                               (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                                   <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
@@ -77,6 +78,7 @@
                                     </div>
                                   </ng-container>
                                 </div>
+                              </div>
                               </ng-container>
                             </app-kpi-card>
                           </div>
@@ -110,6 +112,7 @@
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                 (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                  <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                   <div class="p-d-flex p-justify-around p-align-center w-100"
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                                     <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
@@ -146,6 +149,7 @@
                                         </p>
                                       </div>
                                     </ng-container>
+                                  </div>
                                   </div>
                                 </ng-container>
                               </app-kpi-card>
@@ -231,6 +235,7 @@
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                                 (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
+                                  <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                   <div class="p-d-flex p-justify-around p-align-center w-100"
                                     *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
                                     <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
@@ -267,6 +272,7 @@
                                         </p>
                                       </div>
                                     </ng-container>
+                                  </div>
                                   </div>
                                 </ng-container>
                               </app-kpi-card>
