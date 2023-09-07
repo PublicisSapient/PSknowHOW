@@ -49,12 +49,16 @@ import lombok.Setter;
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
+	public static final String READY_FOR_TESTING = "Ready For Testing";
+	public static final String IN_TESTING = "In Testing";
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
 	private String projectId;
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private String epicLink;
+	private List<String> jiraSubTaskDefectType;
 
 	// defectPriority
 	private List<String> defectPriority;
@@ -75,13 +79,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
-	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI148 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI135 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI82 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -107,7 +111,6 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
-	private String jiraDefectRejectionStatusKPI34;
 	private String jiraDefectRejectionStatusKPI37;
 	private String jiraDefectRejectionStatusKPI35;
 	private String jiraDefectRejectionStatusKPI82;
@@ -127,7 +130,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalStatusKPI34;
 	private List<String> jiraDefectRemovalIssueType;
-	private List<String> jiraDefectRemovalIssueTypeKPI34;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
@@ -156,7 +158,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
 	private String jiraDor;
 	private String jiraDorKPI3;
@@ -218,7 +220,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> resolutionTypeForRejection;
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionKPI28;
-	private List<String> resolutionTypeForRejectionKPI34;
 	private List<String> resolutionTypeForRejectionKPI37;
 	private List<String> resolutionTypeForRejectionKPI35;
 	private List<String> resolutionTypeForRejectionKPI82;
@@ -230,6 +231,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
+	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
@@ -244,6 +246,8 @@ public class FieldMapping extends BasicModel {
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	// Squad Mapping
 	private String squadIdentifier;
@@ -369,17 +373,24 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private List<String> jiraIterationIssuetypeKPI39;
 
-	//to get the first status to identify start of Development
-	private List<String> jiraStatusStartDevelopmentKPI154;
-	private List<String> jiraSubTaskIdentification;
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
+	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
 	private String notificationEnabler="On";
 
-	private LocalDateTime createdDate;
+	private List<String> jiraIssueEpicTypeKPI153;
 
-	private String epicLink;
+	//to get the first status to identify start of Development
+	private List<String> jiraStatusStartDevelopmentKPI154;
+	private List<String> jiraSubTaskIdentification;
 
 	/**
 	 * Get jira issue type names string [ ].
