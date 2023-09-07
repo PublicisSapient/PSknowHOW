@@ -323,8 +323,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTVELOCITYISSUETYPEKPI138, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKpi40(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI40, new ArrayList<>()));
-		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(
-				issueTypeMap.getOrDefault(CommonConstant.JIRADEFECTREMOVALISSUETYPEKPI34, new ArrayList<>()));
 		fieldMapping.setJiraIssueEpicType(
 				issueTypeMap.get(CommonConstant.JIRAISSUEEPICTYPE).stream().collect(Collectors.toList()));
 		fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.JIRATECHDEBTISSUETYPE));
@@ -378,8 +376,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 				: null);
 		fieldMapping.setResolutionTypeForRejectionKPI28(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI28, new ArrayList<>()));
-		fieldMapping.setResolutionTypeForRejectionKPI34(
-				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI34, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionKPI37(
 				workflowMap.getOrDefault(CommonConstant.RESOLUTIONTYPEFORREJECTIONKPI37, new ArrayList<>()));
 		fieldMapping.setResolutionTypeForRejectionRCAKPI36(
@@ -414,10 +410,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDefectRejectionStatusKPI151(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151))
 						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI151).get(0)
-						: null);
-		fieldMapping.setJiraDefectRejectionStatusKPI34(
-				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34))
-						? workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI34).get(0)
 						: null);
 		fieldMapping.setJiraDefectRejectionStatusKPI37(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADEFECTREJECTIONSTATUSKPI37))
