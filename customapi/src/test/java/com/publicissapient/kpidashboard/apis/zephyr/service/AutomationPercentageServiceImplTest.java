@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -101,6 +102,8 @@ public class AutomationPercentageServiceImplTest {
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private TestExecutionRepository testExecutionRepository;
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
@@ -159,6 +162,29 @@ public class AutomationPercentageServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
+		when(cacheService.getFromApplicationCache(Mockito.anyString()))
+				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
+		testFetchKPIDataFromDbData();
+		try {
+			kpiElement = automationPercentageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Automated Percentage Value :",
+					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
+					equalTo(5));
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+	@Test
+	public void getKpiDataTestUploadData() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(featureRepository.findIssueAndDescByNumber(any())).thenReturn(issues);
 		when(cacheService.getFromApplicationCache(Mockito.anyString()))
 				.thenReturn(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name());
@@ -197,6 +223,7 @@ public class AutomationPercentageServiceImplTest {
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
 		projectOne.setJiraDodKPI3(Arrays.asList("Done"));
 		projectOne.setJiraDefectCreatedStatusKPI14("Open");
+		projectOne.setUploadDataKPI16(false);
 		projectOne.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
 		FieldMapping projectTwo = new FieldMapping();
@@ -205,12 +232,14 @@ public class AutomationPercentageServiceImplTest {
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
 		projectTwo.setJiraDodKPI3(Arrays.asList("Done"));
 		projectTwo.setJiraDefectCreatedStatusKPI14("Open");
+		projectTwo.setUploadDataKPI16(false);
 		projectTwo.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));
 
 		FieldMapping projectThree = new FieldMapping();
 		projectThree.setBasicProjectConfigId(new ObjectId("63284960fdd20276d60e4df5"));
 		projectThree.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story", "Tech Story"));
 		projectOne.setJiradefecttype(Arrays.asList("Bug"));
+		projectOne.setUploadDataKPI16(true);
 		projectThree.setJiraDodKPI3(Arrays.asList("Done"));
 		projectThree.setJiraDefectCreatedStatusKPI14("Open");
 		projectThree.setJiraTestAutomationIssueType(Arrays.asList("Yes", "No"));

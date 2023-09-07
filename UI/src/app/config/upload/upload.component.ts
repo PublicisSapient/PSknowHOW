@@ -138,6 +138,26 @@ export class UploadComponent implements OnInit {
     selectedSprintAssigneFormArray = [];
     selectedSprintAssigneValidator = [];
     jiraAssigneeLoader = false;
+    isAddtionalTestField = false;
+    addtionalTestFieldColumn = [
+        {
+            header: 'Automatable Test cases',
+            field: 'automatableTestCases'
+        },
+        {
+            header: 'Test Case Automated',
+            field: 'automatedTestCases'
+        },
+        {
+            header: 'Total Regression Test cases',
+            field: 'totalRegressionTestCases'
+        },
+        {
+            header: 'Regression test cases automated',
+            field: 'automatedRegressionTestCases'
+        }
+    ]
+
     constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
     }
 
@@ -163,7 +183,8 @@ export class UploadComponent implements OnInit {
                 {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
-                }
+                },
+              
             ],
             testExecutionKanbanKeys: [
                 {
@@ -181,9 +202,12 @@ export class UploadComponent implements OnInit {
                 {
                     header: 'Passed Test Case',
                     field: 'passedTestCase'
-                }
+                },
             ]
         };
+
+        this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.concat(this.addtionalTestFieldColumn);
+        this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.concat(this.addtionalTestFieldColumn);
         this.isSuperAdmin = this.getAuthorisation.checkIfSuperUser();
         this.items = [
             {
@@ -261,13 +285,21 @@ export class UploadComponent implements OnInit {
                     executionDate: new UntypedFormControl(),
                     totalTestCases: new UntypedFormControl(),
                     executedTestCase: new UntypedFormControl(),
-                    passedTestCase: new UntypedFormControl()
+                    passedTestCase: new UntypedFormControl(),
+                    automatedTestCases: new UntypedFormControl(),
+                    automatableTestCases: new UntypedFormControl(),
+                    automatedRegressionTestCases: new UntypedFormControl(),
+                    totalRegressionTestCases: new UntypedFormControl()
                 });
             } else {
                 this.popupForm = new UntypedFormGroup({
                     totalTestCases: new UntypedFormControl(),
                     executedTestCase: new UntypedFormControl(),
-                    passedTestCase: new UntypedFormControl()
+                    passedTestCase: new UntypedFormControl(),
+                    automatedTestCases: new UntypedFormControl(),
+                    automatableTestCases: new UntypedFormControl(),
+                    automatedRegressionTestCases: new UntypedFormControl(),
+                    totalRegressionTestCases: new UntypedFormControl()
                 });
             }
         }
@@ -645,12 +677,20 @@ export class UploadComponent implements OnInit {
             this.popupForm = new UntypedFormGroup({
                 totalTestCases: new UntypedFormControl(data?.totalTestCases ? data?.totalTestCases : ''),
                 executedTestCase: new UntypedFormControl(data?.executedTestCase ? data?.executedTestCase : ''),
-                passedTestCase: new UntypedFormControl(data?.passedTestCase ? data?.passedTestCase : '')
+                passedTestCase: new UntypedFormControl(data?.passedTestCase ? data?.passedTestCase : ''),
+                automatedTestCases: new UntypedFormControl(data?.automatedTestCases ? data?.automatedTestCases : ''),
+                automatableTestCases: new UntypedFormControl(data?.automatableTestCases ? data?.automatableTestCases : ''),
+                automatedRegressionTestCases: new UntypedFormControl(data?.automatedRegressionTestCases ? data?.automatedRegressionTestCases : ''),
+                totalRegressionTestCases: new UntypedFormControl(data?.totalRegressionTestCases ? data?.totalRegressionTestCases : ''),
             });
 
             this.reqObj['totalTestCases'] = data?.totalTestCases;
             this.reqObj['executedTestCase'] = data?.executedTestCase;
             this.reqObj['passedTestCase'] = data?.passedTestCase;
+            this.reqObj['automatedTestCases'] = data?.automatedTestCases;
+            this.reqObj['automatableTestCases'] = data?.automatableTestCases;
+            this.reqObj['automatedRegressionTestCases'] = data?.automatedRegressionTestCases;
+            this.reqObj['totalRegressionTestCases'] = data?.totalRegressionTestCases;
 
         }
         this.enableDisableSubmitButton();
@@ -660,6 +700,10 @@ export class UploadComponent implements OnInit {
         this.reqObj['totalTestCases'] = this.popupForm?.get('totalTestCases').value;
         this.reqObj['executedTestCase'] = this.popupForm?.get('executedTestCase').value;
         this.reqObj['passedTestCase'] = this.popupForm?.get('passedTestCase').value;
+        this.reqObj['automatedTestCases'] = this.popupForm?.get('automatedTestCases').value === -1 ? '' : this.popupForm?.get('automatedTestCases').value;
+        this.reqObj['automatableTestCases'] = this.popupForm?.get('automatableTestCases').value === -1 ? '' : this.popupForm?.get('automatableTestCases').value;
+        this.reqObj['automatedRegressionTestCases'] = this.popupForm?.get('automatedRegressionTestCases').value === -1 ? '' : this.popupForm?.get('automatedRegressionTestCases').value ;
+        this.reqObj['totalRegressionTestCases'] = this.popupForm?.get('totalRegressionTestCases').value === -1 ? '' : this.popupForm?.get('totalRegressionTestCases').value ;
         this.http_service.saveTestExecutionPercent(this.reqObj)
             .subscribe(response => {
                 if (response.success) {
@@ -682,6 +726,20 @@ export class UploadComponent implements OnInit {
     }
 
     enableDisableTestExecutionSubmitButton() {
+        this.testExecutionErrorMessage = '';
+        if (!this.isAddtionalTestField) {
+            this.validateFirstGroupTextCountField();
+        } else {
+            if ((!!this.popupForm?.get('totalTestCases').value) || (!!this.popupForm?.get('executedTestCase').value) || (!!this.popupForm?.get('passedTestCase').value)) {
+                this.validateFirstGroupTextCountField();
+            }
+            if(this.testExecutionErrorMessage === ''){
+            this.validateSecondGroupTextCountField();
+            }
+        }
+    }
+
+    validateFirstGroupTextCountField(){
         if (!(!!this.popupForm?.get('totalTestCases').value)) {
             this.isTestExecutionSaveDisabled = true;
             if (parseInt(this.popupForm?.get('totalTestCases').value) === 0) {
@@ -718,6 +776,35 @@ export class UploadComponent implements OnInit {
         if (parseFloat(this.popupForm?.get('executedTestCase').value) < parseFloat(this.popupForm?.get('passedTestCase').value)) {
             this.isTestExecutionSaveDisabled = true;
             this.testExecutionErrorMessage = 'Passed Test Cases should not be greater than Executed Test Cases';
+            return;
+        }
+        this.isTestExecutionSaveDisabled = false;
+        this.testExecutionErrorMessage = '';
+    }
+
+    validateSecondGroupTextCountField(){
+        if((!!this.popupForm?.get('automatedTestCases').value) && !(!!this.popupForm?.get('automatableTestCases').value) ||
+        !(!!this.popupForm?.get('automatedTestCases').value) && (!!this.popupForm?.get('automatableTestCases').value)){
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Please fill Automated Test Case & Automatable Test Case both';
+            return;
+        }
+
+        if((!!this.popupForm?.get('automatedRegressionTestCases').value) && !(!!this.popupForm?.get('totalRegressionTestCases').value) || 
+        !(!!this.popupForm?.get('automatedRegressionTestCases').value) && (!!this.popupForm?.get('totalRegressionTestCases').value)){
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Please fill Automated Regrassion & Total Regrassion both';
+            return;
+        }
+
+        if (parseFloat(this.popupForm?.get('automatableTestCases').value) < parseFloat(this.popupForm?.get('automatedTestCases').value)) {
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Automated should not be greater than Automatable Test Cases';
+            return;
+        }
+        if (parseFloat(this.popupForm?.get('totalRegressionTestCases').value) < parseFloat(this.popupForm?.get('automatedRegressionTestCases').value)) {
+            this.isTestExecutionSaveDisabled = true;
+            this.testExecutionErrorMessage = 'Automated Regression should not be greater than Total Regression Test Case';
             return;
         }
         this.isTestExecutionSaveDisabled = false;
@@ -834,10 +921,23 @@ export class UploadComponent implements OnInit {
     }
 
     getTestExecutionData(projectId) {
+        this.isAddtionalTestField = false
         this.http_service.getTestExecutionData(projectId).subscribe((response) => {
             if (response && response?.success && response?.data) {
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
+                    this.isAddtionalTestField = this.testExecutionKanbanData[0]['uploadEnable'];
+                    if(!this.isAddtionalTestField){
+                        this.cols.testExecutionKanbanKeys = this.cols.testExecutionKanbanKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }else{
+                        for (const additionalColumn of this.addtionalTestFieldColumn) {
+                            const fieldAlreadyExists = this.cols.testExecutionKanbanKeys.some(column => column.field === additionalColumn.field);
+                            
+                            if (!fieldAlreadyExists) {
+                                this.cols.testExecutionKanbanKeys.push(additionalColumn);
+                            }
+                        }
+                    }
                     if (this.testExecutionKanbanData?.length > 0) {
                         this.noData = false;
                     } else {
@@ -845,6 +945,18 @@ export class UploadComponent implements OnInit {
                     }
                 } else {
                     this.testExecutionScrumData = response?.data;
+                    this.isAddtionalTestField = this.testExecutionScrumData[0]['uploadEnable'];
+                     if(!this.isAddtionalTestField){
+                        this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
+                    }else{
+                        for (const additionalColumn of this.addtionalTestFieldColumn) {
+                            const fieldAlreadyExists = this.cols.testExecutionScrumKeys.some(column => column.field === additionalColumn.field);
+                            
+                            if (!fieldAlreadyExists) {
+                                this.cols.testExecutionScrumKeys.push(additionalColumn);
+                            }
+                        }
+                    }
                     if (this.testExecutionScrumData?.length > 0) {
                         this.noData = false;
                     } else {
