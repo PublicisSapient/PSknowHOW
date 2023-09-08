@@ -56,5 +56,4 @@ public class JiraProcessorApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }
