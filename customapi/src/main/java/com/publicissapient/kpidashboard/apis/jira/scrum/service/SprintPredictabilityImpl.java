@@ -174,8 +174,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-			Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService.getProjectWiseTotalSprintDetail(
-					projectWiseTotalSprintDetails);
+			Map<ObjectId, Set<String>> duplicateIssues = kpiHelperService
+					.getProjectWiseTotalSprintDetail(projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 
@@ -202,9 +202,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
-					SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+					SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 							fieldMapping.getJiraIterationIssuetypeKpi5(),
-							fieldMapping.getJiraIterationCompletionStatusKpi5(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+							fieldMapping.getJiraIterationCompletionStatusKpi5(),
+							finalProjectWiseDuplicateIssuesWithMinCloseDate);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);
