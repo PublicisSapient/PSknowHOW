@@ -384,7 +384,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private String notificationEnabler="On";
+	private boolean notificationEnabler=true;
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
@@ -418,5 +418,9 @@ public class FieldMapping extends BasicModel {
 	public void setJiraStatusForInProgressKPI119(List<String> status) {
 		this.jiraStatusForInProgressKPI154 = status;
 		this.jiraStatusForInProgressKPI119 = status;
+	}
+
+	public boolean getNotificationEnabler() {
+		return notificationEnabler;
 	}
 }

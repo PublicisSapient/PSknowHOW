@@ -18,13 +18,16 @@
 
 package com.publicissapient.kpidashboard.jira.util;
 
-import com.atlassian.jira.rest.client.api.ExpandableProperty;
-import com.atlassian.jira.rest.client.api.OptionalIterable;
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.atlassian.jira.rest.client.api.domain.BasicUser;
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
-import com.google.common.collect.Maps;
+
+import javax.annotation.Nullable;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -33,13 +36,12 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import javax.annotation.Nullable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import com.atlassian.jira.rest.client.api.ExpandableProperty;
+import com.atlassian.jira.rest.client.api.OptionalIterable;
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.atlassian.jira.rest.client.api.domain.BasicUser;
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
+import com.google.common.collect.Maps;
 
 public class JsonParseUtil {
 	public static final String JIRA_DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";

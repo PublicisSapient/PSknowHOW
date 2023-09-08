@@ -2,8 +2,6 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -15,8 +13,11 @@ import com.publicissapient.kpidashboard.common.model.application.AccountHierarch
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

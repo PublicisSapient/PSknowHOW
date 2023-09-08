@@ -59,6 +59,10 @@ public class JobController {
 	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
 
+	/**
+	 * @return
+	 * @throws Exception
+	 */
 	@GetMapping("/startscrumboardjob")
 	public ResponseEntity<Map> startScrumBoardJob() throws Exception {
 		log.info("Request coming for job for Scrum project configured with board");
@@ -84,7 +88,7 @@ public class JobController {
 		executorService.shutdown();
 
 		Map response = new HashMap();
-		response.put("status", "processing");
+		response.put("status", "job started for scrum board");
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -112,7 +116,7 @@ public class JobController {
 		}
 		executorService.shutdown();
 		Map response = new HashMap();
-		response.put("status", "processing");
+		response.put("status", "job started for scrum jql");
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -154,7 +158,7 @@ public class JobController {
 		}
 		executorService.shutdown();
 		Map response = new HashMap();
-		response.put("status", "processing");
+		response.put("status", "job started for kanban board");
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -182,7 +186,7 @@ public class JobController {
 		}
 		executorService.shutdown();
 		Map response = new HashMap();
-		response.put("status", "processing");
+		response.put("status", "job started for kanban jql");
 		return ResponseEntity.ok().body(response);
 	}
 
@@ -202,7 +206,7 @@ public class JobController {
 		}
 
 		Map response = new HashMap();
-		response.put("status", "processing");
+		response.put("status", "job started for fetching sprint");
 		return ResponseEntity.ok().body(response);
 	}
 

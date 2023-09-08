@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.parser;
 
-import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.atlassian.jira.rest.client.internal.json.JsonObjectParser;
 
 class JsonWeakParserForJsonObject<T> implements JsonWeakParser<T> {
 	private final JsonObjectParser<T> jsonParser;

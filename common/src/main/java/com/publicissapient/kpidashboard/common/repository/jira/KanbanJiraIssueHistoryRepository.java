@@ -51,4 +51,6 @@ public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanI
 	 *            String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);
+
+    List<KanbanIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
 }

@@ -18,15 +18,16 @@
 
 package com.publicissapient.kpidashboard.jira.parser;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
-import com.atlassian.jira.rest.client.internal.json.SearchResultJsonParser;
+import java.util.Collections;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
-import java.util.Collections;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.internal.json.GenericJsonArrayParser;
+import com.atlassian.jira.rest.client.internal.json.SearchResultJsonParser;
 
 public class CustomSearchResultJsonParser extends SearchResultJsonParser {
 

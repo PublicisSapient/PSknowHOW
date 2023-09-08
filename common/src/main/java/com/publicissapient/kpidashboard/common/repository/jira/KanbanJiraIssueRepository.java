@@ -150,4 +150,5 @@ public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssu
 
 	List<KanbanJiraIssue> findAll();
 
+    List<KanbanJiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 }

@@ -50,7 +50,6 @@
                 <module>processors/github</module>
                 <module>processors/github-action</module>
                 <module>processors/sonar</module>
-                <module>processors/jira</module>
                 <module>processors/jiraBatch</module>
                 <module>processors/jira-xray-zephyr-squad</module>
                 <module>processors/jenkins</module>

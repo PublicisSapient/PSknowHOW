@@ -1,19 +1,21 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
-import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.jira.model.CompositeResult;
-import com.publicissapient.kpidashboard.jira.model.ReadData;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import com.publicissapient.kpidashboard.jira.model.ReadData;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component

@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.repository;
 
+import org.springframework.stereotype.Repository;
+
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public interface JiraProcessorRepository extends

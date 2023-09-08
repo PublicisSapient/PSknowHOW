@@ -18,9 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.model;
 
+import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
-import com.publicissapient.kpidashboard.common.model.generic.Processor;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,20 +29,20 @@ import lombok.Setter;
 @Setter
 public class JiraProcessor extends Processor {
 
-    /**
-     * retruns jira processor propotype
-     * @return JiraProcessor
-     */
-    public static JiraProcessor prototype() {
-        JiraProcessor protoType = new JiraProcessor();
-        protoType.setProcessorName(ProcessorConstants.JIRA);
-        protoType.setOnline(true);
-        protoType.setActive(true);
-        protoType.setLastSuccess(false);
-        protoType.setUpdatedTime(System.currentTimeMillis());
-        protoType.setProcessorType(ProcessorType.AGILE_TOOL);
-        return protoType;
-    }
+	/**
+	 * retruns jira processor propotype
+	 * 
+	 * @return JiraProcessor
+	 */
+	public static JiraProcessor prototype() {
+		JiraProcessor protoType = new JiraProcessor();
+		protoType.setProcessorName(ProcessorConstants.JIRA);
+		protoType.setOnline(true);
+		protoType.setActive(true);
+		protoType.setLastSuccess(false);
+		protoType.setUpdatedTime(System.currentTimeMillis());
+		protoType.setProcessorType(ProcessorType.AGILE_TOOL);
+		return protoType;
+	}
 
 }
-

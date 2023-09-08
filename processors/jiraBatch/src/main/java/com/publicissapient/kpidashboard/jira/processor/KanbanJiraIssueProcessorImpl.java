@@ -1,5 +1,37 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.buildFieldMap;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getAffectedVersions;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getAssignee;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getFieldValue;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getLabelsList;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getListFromJson;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.hash;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
@@ -25,38 +57,8 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
+
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.buildFieldMap;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getAffectedVersions;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getAssignee;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getFieldValue;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getLabelsList;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.getListFromJson;
-import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.hash;
 
 @Slf4j
 @Service

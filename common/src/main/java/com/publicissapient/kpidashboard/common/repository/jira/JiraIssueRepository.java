@@ -184,4 +184,6 @@ public interface JiraIssueRepository
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
+
+    List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 }

@@ -16,10 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import org.apache.commons.collections4.CollectionUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -44,12 +41,9 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
@@ -88,9 +82,6 @@ public class JiraCommonService {
 
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraRepo;
-
-	@Autowired
-	ValidateData validateData;
 
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
@@ -263,62 +254,6 @@ public class JiraCommonService {
 		return cleaned;
 	}
 
-	// public void savingIssueLogs(int savedIssuesCount, List<JiraIssue>
-	// jiraIssues, Instant startProcessingJiraIssues,
-	// boolean isEpic, PSLogData psLogData) {
-	// PSLogData saveIssueLog = new PSLogData();
-	// saveIssueLog.setIssueAndDesc(jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
-	// saveIssueLog.setTotalSavedIssues(String.valueOf(savedIssuesCount));
-	// psLogData.setTotalSavedIssues(String.valueOf(savedIssuesCount));
-	// psLogData.setTimeTaken(String.valueOf(Duration.between(startProcessingJiraIssues,
-	// Instant.now()).toMillis()));
-	// psLogData.setSprintListFetched(null);
-	// psLogData.setTotalFetchedSprints(null);
-	// if (!isEpic) {
-	// saveIssueLog.setAction(CommonConstant.SAVED_ISSUES);
-	// psLogData.setAction(CommonConstant.SAVED_ISSUES);
-	// saveIssueLog.setTotalFetchedIssues(psLogData.getTotalFetchedIssues());
-	// log.debug("Saved Issues for project {}",
-	// MDC.get(CommonConstant.PROJECTNAME),
-	// kv(CommonConstant.PSLOGDATA, saveIssueLog));
-	// log.info("Processed Issues for project {}",
-	// MDC.get(CommonConstant.PROJECTNAME),
-	// kv(CommonConstant.PSLOGDATA, psLogData));
-	// } else {
-	// saveIssueLog.setAction(CommonConstant.SAVED_EPIC_ISSUES);
-	// psLogData.setAction(CommonConstant.SAVED_EPIC_ISSUES);
-	// saveIssueLog.setEpicIssuesFetched(psLogData.getEpicIssuesFetched());
-	// log.debug("Saved Epic Issues for project {}",
-	// MDC.get(CommonConstant.PROJECTNAME),
-	// kv(CommonConstant.PSLOGDATA, saveIssueLog));
-	// log.info("Processed Epic Issues for project {}",
-	// MDC.get(CommonConstant.PROJECTNAME),
-	// kv(CommonConstant.PSLOGDATA, psLogData));
-	//
-	// }
-	// }
-
-	public ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
-		List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogService
-				.getTraceLogs(ProcessorConstants.JIRA, projectConfig.getBasicProjectConfigId().toHexString());
-		ProcessorExecutionTraceLog processorExecutionTraceLog = null;
-
-		if (CollectionUtils.isNotEmpty(traceLogs)) {
-			processorExecutionTraceLog = traceLogs.get(0);
-			if (null == processorExecutionTraceLog.getLastSuccessfulRun() || projectConfig.getProjectBasicConfig()
-					.isSaveAssigneeDetails() != processorExecutionTraceLog.isLastEnableAssigneeToggleState()) {
-				processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-			}
-		} else {
-			processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-			processorExecutionTraceLog.setProcessorName(ProcessorConstants.JIRA);
-			processorExecutionTraceLog.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toHexString());
-			processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-			processorExecutionTraceLog.setLastSuccessfulRun(jiraProcessorConfig.getStartDate());
-		}
-		return processorExecutionTraceLog;
-	}
-
 	public KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
 		List<KanbanJiraIssue> jiraIssues = kanbanJiraRepo
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
@@ -328,30 +263,6 @@ public class JiraCommonService {
 			log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
 		}
 
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Find kanban Jira Issue custom history object by issueId
-	 *
-	 * @param issueId
-	 *            Jira issue ID
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return KanbanIssueCustomHistory Kanban history object corresponding to
-	 *         issueId from DB
-	 */
-	public KanbanIssueCustomHistory findOneKanbanIssueCustomHistory(String issueId, String basicProjectConfigId) {
-		List<KanbanIssueCustomHistory> jiraIssues = kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(issueId,
-				basicProjectConfigId);
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | Data issue More than one JIRA issue item found for id {}", issueId);
-		}
 		if (!jiraIssues.isEmpty()) {
 			return jiraIssues.get(0);
 		}
