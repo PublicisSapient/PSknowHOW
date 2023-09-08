@@ -51,27 +51,27 @@ public class NotificationEventProducer {
 	public void sendNotificationEvent(String key, EmailEvent email, Map<String, String> headerDetails, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate) {
 		if (notificationSwitch) {
 			try {
-			LOGGER.info(
-					"Notification Switch is on. Sending message now.....");
-			ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
-			LOGGER.info(
-					"created producer record.....");
-			ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-			LOGGER.info(
-					"sent msg.....");
-			listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
+				LOGGER.info(
+						"Notification Switch is on. Sending message now.....");
+				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
+				LOGGER.info(
+						"created producer record.....");
+				ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
+				LOGGER.info(
+						"sent msg.....");
+				listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
 
-				@Override
-				public void onFailure(Throwable ex) {
-					handleFailure(ex);
-				}
+					@Override
+					public void onFailure(Throwable ex) {
+						handleFailure(ex);
+					}
 
-				@Override
-				public void onSuccess(SendResult<String, Object> result) {
-					handleSuccess(key, email, result);
-				}
+					@Override
+					public void onSuccess(SendResult<String, Object> result) {
+						handleSuccess(key, email, result);
+					}
 
-			});
+				});
 			}catch(Exception ex) {
 				ex.printStackTrace();
 			}
@@ -83,7 +83,7 @@ public class NotificationEventProducer {
 	}
 
 	private ProducerRecord<String, Object> buildProducerRecord(String key, EmailEvent email,
-			Map<String, String> headerDetails,String topic) {
+															   Map<String, String> headerDetails,String topic) {
 		List<Header> recordHeaders = new ArrayList<>();
 		if (MapUtils.isNotEmpty(headerDetails)) {
 			headerDetails.forEach((k, v) -> {

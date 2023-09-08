@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,6 @@ import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
