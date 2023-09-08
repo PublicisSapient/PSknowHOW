@@ -59,14 +59,11 @@ public class NotificationHandler {
 	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor_Template";
 
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
-	public static final String FAILED = "Failed";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 
 	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
 		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-		if (!value.equalsIgnoreCase(FAILED)) {
-			emailAddresses.addAll(getSuperAdminEmailAddress());
-		}
+
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
@@ -91,6 +88,8 @@ public class NotificationHandler {
 			emailAddresses
 					.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
 							.map(UserInfo::getEmailAddress).collect(Collectors.toSet()));
+		} else {
+			log.error("Notification Event not sent : No email address found associated with Super-Admin role");
 		}
 		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
 	}
@@ -132,20 +131,5 @@ public class NotificationHandler {
 
 		return map;
 	}
-
-	// public void sendEmailWithoutKafka(String key, String value, String
-	// projectBasicConfigId) {
-	//
-	// List<String> emailAddresses =
-	// getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-	// Map<String, String> additionalData=new HashMap<>();
-	// additionalData.put(key,value);
-	// Map<String, String> notificationSubjects =
-	// jiraProcessorConfig.getNotificationSubject();
-	// String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
-	// notificationService.sendEmailWithoutKafka(emailAddresses,additionalData,subject,NOTIFICATION_KEY,
-	// jiraProcessorConfig.getKafkaMailTopic(),
-	// Error_In_Jira_Processor_Template_Key);
-	// }
 
 }
