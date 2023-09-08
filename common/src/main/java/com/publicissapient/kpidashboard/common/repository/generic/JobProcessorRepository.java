@@ -31,7 +31,7 @@ import com.publicissapient.kpidashboard.common.model.generic.JobProcessorItem;
  * @param <T>
  *            the type parameter
  */
-public interface JobRepository<T extends JobProcessorItem> extends ProcessorItemRepository<T> {
+public interface JobProcessorRepository<T extends JobProcessorItem> extends ProcessorItemRepository<T> {
 	/**
 	 * Find job t.
 	 *

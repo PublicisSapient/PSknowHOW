@@ -42,13 +42,13 @@ import org.springframework.web.client.RestTemplate;
 @EnableBatchProcessing
 @EnableAsync
 @EnableScheduling
-public class JiraProcessorBatchApplication {
+public class JiraProcessorApplication {
 
 	private static boolean sslHostNameFlag = true;
 
 	public static void main(String[] args) {
 		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> sslHostNameFlag);
-		SpringApplication.run(JiraProcessorBatchApplication.class, args);
+		SpringApplication.run(JiraProcessorApplication.class, args);
 	}
 	
 	@Bean
