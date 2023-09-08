@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,9 +89,13 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
 			try {
-				SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber,
-						new ArrayList<>(issuesToUpdate));
-				issues = JiraHelper.getIssuesFromResult(searchResult);
+				if (CollectionUtils.isNotEmpty(issuesToUpdate)) {
+					SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber,
+							new ArrayList<>(issuesToUpdate));
+					issues = JiraHelper.getIssuesFromResult(searchResult);
+				} else {
+					log.info("No issuesToUpdate found in Sprint {}",updatedSprintDetails.getSprintName());
+				}
 
 			} catch (InterruptedException e) {
 				log.error("Interrupted exception thrown.", e);
