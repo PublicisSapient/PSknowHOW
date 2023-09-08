@@ -3123,7 +3123,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend":true,
     "showTrend":false,
     "isAdditionalFilterSupport":false,
-    "kpiFilter":"multiSelectDropDown",
+    "kpiFilter":"radioButton",
     "boxType":"chart",
     "calculateMaturity":false
   }
@@ -8285,6 +8285,16 @@ db.getCollection('field_mapping_structure').insertMany(
                 }
             }
         ]
+    },
+    {
+    	"fieldName": "jiraDodKPI163",
+    	"fieldLabel": "DOD Status",
+    	"fieldType": "chips",
+    	"fieldCategory": "workflow",
+    	"section": "WorkFlow Status Mapping",
+    	"tooltip": {
+    		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+    	}
     }
 ]
 );

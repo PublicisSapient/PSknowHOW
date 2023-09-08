@@ -383,6 +383,7 @@ public class FieldMapping extends BasicModel {
 	private String testingPhaseDefectsIdentifier;
 	private List<String> testingPhaseDefectValue;
 	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
 	// DTS-26150 end
 
 	/**

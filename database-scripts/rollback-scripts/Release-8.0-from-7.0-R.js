@@ -496,6 +496,19 @@ db.field_mapping_structure.deleteOne({
     "fieldName": "testingPhaseDefectsIdentifier"
 });
 
+db.field_mapping_structure.deleteOne({
+    "fieldName": "jiraDodKPI163"
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI163"
+      }
+   }}
+);
+
 db.getCollection('kpi_master').deleteOne(
   { "kpiId": "kpi163" }
 );

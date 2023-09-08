@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.enums;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -176,7 +177,8 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155")),
 	//DTS-26123 end
 	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")),
-	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16"));
+	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16")),
+	KPI163("Defect by Testing Phase", KPISource.ZEPHYR.name(), Collections.singletonList("jiraDodKPI163"));
 
 	private List<String> fields;
 	private String kpiName;

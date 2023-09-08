@@ -3889,8 +3889,32 @@ db.getCollection('kpi_master').insertOne(
     "isPositiveTrend":true,
     "showTrend":false,
     "isAdditionalFilterSupport":false,
-    "kpiFilter":"multiSelectDropDown",
+    "kpiFilter":"radioButton",
     "boxType":"chart",
     "calculateMaturity":false
 });
+db.getCollection('field_mapping_structure').insertOne(
+{
+	"fieldName": "jiraDodKPI163",
+	"fieldLabel": "DOD Status",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+	}
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI163",
+                "value":[
+                    "Closed",
+                    "Done"
+                ]
+            }
+   }}
+);
 //DTS-26150 end
