@@ -3843,3 +3843,52 @@ db.kpi_master.bulkWrite([{
  }
    }
  }]);
+
+ db.getCollection('field_mapping_structure').insertMany([{
+ 	"fieldName": "mergeRequestStatusKPI156",
+ 	"fieldLabel": "Merge Request Status Type",
+ 	"fieldType": "chips",
+ 	"section": "Issue Types Mapping",
+ 	"tooltip": {
+ 		"definition": "Merge Request Status Type <br> Example: MERGED <hr>"
+ 	}
+ }, {
+ 	"fieldName": "leadTimeConfigRepoTool",
+ 	"fieldLabel": "Lead Time KPI calculation logic",
+ 	"fieldType": "toggle",
+ 	"toggleLabel": "Calculation based on Repo Data",
+    "section": "Custom Fields Mapping",
+ 	"processorCommon": false,
+ 	"tooltip": {
+ 		"definition": "Disable State (Kpi from calculation based on Jira Release)"
+ 	}
+ }, {
+ 	"fieldName": "toBranchForMRKPI156",
+ 	"fieldLabel": "Production Branch Name",
+ 	"fieldType": "text",
+    "section": "Custom Fields Mapping",
+ 	"tooltip": {
+ 		"definition": "Production Branch for merge Request <br> Example: master <hr>"
+ 	},
+ },
+ {
+  "fieldName": "jiraIterationIssuetypeKPI125",
+  "fieldLabel": "Issue type to be included",
+  "fieldType": "chips",
+  "fieldCategory": "Issue_Type",
+  "section": "Issue Types Mapping",
+   "tooltip": {
+       "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+    }
+  },
+{
+   "fieldName": "jiraDodjiraDodKPI156",
+   "fieldLabel": "Status to identify DOD",
+   "fieldType": "chips",
+   "fieldCategory": "workflow",
+   "section": "WorkFlow Status Mapping",
+   "tooltip": {
+         "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
+     },
+}]);
+

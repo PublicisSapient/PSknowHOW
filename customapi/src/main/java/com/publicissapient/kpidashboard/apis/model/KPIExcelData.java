@@ -343,10 +343,16 @@ public class KPIExcelData {
 	@JsonProperty("Achieved Value")
 	private String achievedValue;
 
-	@JsonProperty("Closed Date")
-	private String closedDate;
+	@JsonProperty("Completion Date")
+	private String completionDate;
+
+	@JsonProperty("Merge Date")
+	private String mergeDate;
 
 	@JsonProperty("Release Date")
 	private String releaseDate;
+
+	@JsonProperty("Merge Request Id")
+	private String mergeRequestId;
 
 }

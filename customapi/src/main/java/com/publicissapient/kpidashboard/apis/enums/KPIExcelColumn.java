@@ -270,7 +270,7 @@ public enum KPIExcelColumn {
 	//DTS-26123 end
 
 	LEAD_TIME_FOR_CHANGE("Kpi156",
-			Arrays.asList("Project Name" , "Date" , "Lead Time (In Days)" , "Created Date" , "Release End Date"));
+			Arrays.asList("Project Name" , "Date" ,"Story ID" , "Lead Time (In Days)" , "Completion Date" , "Release Date" , "Merge Date" , "Merge Request Id" , "Branch"));
 
 	// @formatter:on
 

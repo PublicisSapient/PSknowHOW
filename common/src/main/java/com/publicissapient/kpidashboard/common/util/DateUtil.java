@@ -56,6 +56,8 @@ public class DateUtil {
 
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
+	public static final String TIME_FORMAT_WITH_SEC_ZONE = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 	public static final String TIME_FORMAT_WITH_SEC_DATE = "yyyy-MM-dd'T'HH:mm:ssX";
 
 	public static final String ZERO_TIME_ZONE_FORMAT = "T00:00:00.000Z";

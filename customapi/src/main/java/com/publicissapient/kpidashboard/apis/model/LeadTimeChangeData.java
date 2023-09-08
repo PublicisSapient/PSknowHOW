@@ -4,9 +4,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.joda.time.DateTime;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -16,13 +13,15 @@ public class LeadTimeChangeData {
 
 	private String storyID;
 
-	private String storyType;
+	private String url;
 
-	private DateTime createdDate;
+	private String mergeID;
 
-	private DateTime closedDate;
+	private String fromBranch;
 
-	private DateTime releaseDate;
+	private String closedDate;
+
+	private String releaseDate;
 
 	private double leadTime;
 

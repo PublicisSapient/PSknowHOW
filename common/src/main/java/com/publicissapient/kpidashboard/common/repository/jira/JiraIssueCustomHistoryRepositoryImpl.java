@@ -128,7 +128,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 
 		list.add(Aggregation.sort(Sort.Direction.DESC, UPDATED_ON));
-		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STATUS_CHANGE_LOG).as(STATUS_CHANGE_LOG));
+		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID, URL).push(STATUS_CHANGE_LOG).as(STATUS_CHANGE_LOG));
 		list.add(Aggregation.project(STATUS_CHANGE_LOG));
 		TypedAggregation<JiraIssueCustomHistory> agg = Aggregation.newAggregation(JiraIssueCustomHistory.class, list);
 
@@ -142,6 +142,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			history.setStoryID(result.getId().getStoryID());
 			history.setBasicProjectConfigId(result.getId().getBasicProjectConfigId());
 			history.setStatusUpdationLog(result.getStatusUpdationLog());
+			history.setUrl(result.getId().getUrl());
 			resultList.add(history);
 		});
 		return resultList;
@@ -209,7 +210,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			}
 			projectCriteriaList.add(projectCriteria);
 		});
-        Query query;
+		Query query;
 		if (CollectionUtils.isEmpty(projectCriteriaList)) {
 			query = new Query(criteria);
 		} else {

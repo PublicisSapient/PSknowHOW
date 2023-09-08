@@ -499,3 +499,9 @@ db.kpi_master.bulkWrite([
     }
   }
 ]);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["mergeRequestStatusKPI156", "leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodjiraDodKPI156"]
+    }
+});

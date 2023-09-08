@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -51,8 +51,8 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 						new BasicDBObject(ID, new BasicDBObject(DATE,
 								new BasicDBObject("$dateToString",
 										new BasicDBObject("format", "%Y-%m-%d").append(DATE, IDENT_CREATED_DATE)))
-								.append(PROCESSOR_ITEM_ID, "$processorItemId"))
-								.append(COUNT, new BasicDBObject("$sum", 1))),
+												.append(PROCESSOR_ITEM_ID, "$processorItemId")).append(COUNT,
+														new BasicDBObject("$sum", 1))),
 				new BasicDBObject(IDENT_PROJECT,
 						new BasicDBObject(ID, 0).append(DATE, "$_id.date")
 								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
@@ -89,20 +89,20 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	}
 
 	@Override
-	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(Set<ObjectId> basicProjectConfigIds,
-			List<String>  fromBranches , List<String> mergeRequestStatusList){
+	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(ObjectId basicProjectConfigId,
+			List<Pattern> fromBranches, List<String> mergeRequestStatusList, String toBranch) {
 		LookupOperation lookupProcessorItem = LookupOperation.newLookup().from("processor_items")
 				.localField("processorItemId").foreignField("_id").as("processorItem");
 
 		LookupOperation lookupProjectToolConfig = LookupOperation.newLookup().from("project_tool_configs")
 				.localField("processorItem.toolConfigId").foreignField("_id").as("projectToolConfig");
 
-		MatchOperation matchStage = Aggregation.match(Criteria.where("projectToolConfig.basicProjectConfigId")
-				.in(basicProjectConfigIds).and("fromBranch").in(fromBranches).and("toBranch").is("master")
-				.and("state").in(mergeRequestStatusList));
+		MatchOperation matchStage = Aggregation.match(
+				Criteria.where("projectToolConfig.basicProjectConfigId").is(basicProjectConfigId).and("fromBranch")
+						.in(fromBranches).and("toBranch").is(toBranch).and("state").in(mergeRequestStatusList));
 
-		ProjectionOperation projectStage = Aggregation.project("processorItemId", "title", "state", "count", "isOpen",
-				"isClosed", "createdDate", "updatedDate", "closedDate", "fromBranch", "toBranch");
+		ProjectionOperation projectStage = Aggregation.project("processorItemId", "title", "state", "revisionNumber",
+				"createdDate", "updatedDate", "closedDate", "fromBranch", "toBranch");
 
 		Aggregation aggregation = Aggregation.newAggregation(lookupProcessorItem, Aggregation.unwind("processorItem"),
 				lookupProjectToolConfig, Aggregation.unwind("projectToolConfig"), matchStage, projectStage);
