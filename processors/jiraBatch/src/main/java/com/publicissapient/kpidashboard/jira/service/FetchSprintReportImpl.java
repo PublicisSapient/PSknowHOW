@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
@@ -46,6 +63,10 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Slf4j
 @Service
 public class FetchSprintReportImpl implements FetchSprintReport {
@@ -72,8 +93,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private static final String TYPEID = "typeId";
 
-	private PSLogData psLogData = new PSLogData();
-
 	private static final String ID = "id";
 
 	private static final String STATE = "state";
@@ -88,7 +107,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
 										   Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
-		//ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
@@ -498,8 +516,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
 										  KerberosClient krb5Client) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
-		psLogData.setBoardId(boardId);
-		psLogData.setAction(CommonConstant.SPRINT_DATA);
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
@@ -508,23 +524,20 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 				Instant start = Instant.now();
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
-					psLogData.setUrl(url.toString());
 					String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
 					isLast = populateSprintDetailsList(jsonResponse, sprintDetailsList, projectConfig, boardId);
 					startIndex = sprintDetailsList.size();
 					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 				} while (!isLast);
-				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
-				log.info("Fetch Sprint for Board", kv(CommonConstant.PSLOGDATA, psLogData));
+
 			}
 		} catch (RestClientException rce) {
-			log.error("Client exception when fetching sprints for board", rce, kv(CommonConstant.PSLOGDATA, psLogData));
+			log.error("Client exception when fetching sprints for board", rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading sprint sprints for board", mfe,
-					kv(CommonConstant.PSLOGDATA, psLogData));
+			log.error("Malformed url for loading sprint sprints for board", mfe);
 		} catch (IOException ioe) {
-			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, psLogData));
+			log.error("IOException", ioe);
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}

@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
 import java.lang.reflect.InvocationTargetException;
@@ -32,6 +49,10 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Slf4j
 @Service
 public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountHierarchyProcessor {
@@ -47,8 +68,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 	Map<Pair<String, String>, AccountHierarchy> existingHierarchy;
 
 	@Override
-	public Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet) {
+	public Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+			Set<SprintDetails> sprintDetailsSet) {
 
+		log.info("Creating account_hierarchy for the project : {}", projectConfig.getProjectName());
 		if (null == sprintHierarchyLevel) {
 			List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 					.getFullHierarchyLevels(projectConfig.isKanban());
@@ -97,10 +120,10 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 					setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
 
-					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
-							sprintHierarchy, sprintHierarchyLevel, additionalFilterCategoryIds);
-					additionalFiltersHierarchies.forEach(
-							accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
+					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+							jiraIssue, sprintHierarchy, sprintHierarchyLevel, additionalFilterCategoryIds);
+					additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
+							accountHierarchy, existingHierarchy));
 
 				}
 			}
@@ -125,8 +148,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 		}
 	}
 
-	private AccountHierarchy createHierarchyForSprint(SprintDetails sprintDetails, ProjectBasicConfig projectBasicConfig,
-													  AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
+	private AccountHierarchy createHierarchyForSprint(SprintDetails sprintDetails,
+			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
 		AccountHierarchy accountHierarchy = null;
 		try {
 
@@ -137,7 +160,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
 			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
 			accountHierarchy.setNodeId(sprintId);
-			accountHierarchy.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL +  projectBasicConfig.getProjectName());
+			accountHierarchy
+					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 
 			accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 					.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());

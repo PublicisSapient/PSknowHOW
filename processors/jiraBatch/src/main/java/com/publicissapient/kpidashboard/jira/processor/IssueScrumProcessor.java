@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.Set;
@@ -19,6 +36,10 @@ import com.publicissapient.kpidashboard.jira.model.ReadData;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Slf4j
 @Component
 public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeResult> {
@@ -38,22 +59,27 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 	@Autowired
 	private SprintDataProcessor sprintDataProcessor;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
+	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
+		log.info("processing started for the project : {}", readData.getProjectConfFieldMapping().getProjectName());
 		CompositeResult compositeResult = null;
-		log.info("**** Scrum Processor ****");
 		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
 		if (null != jiraIssue) {
 			compositeResult = new CompositeResult();
 			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);
-			Set<SprintDetails> sprintDetailsSet= processSprintData(readData);
-			Set<AccountHierarchy> accountHierarchies=null;
-			AssigneeDetails assigneeDetails=null;
+			Set<SprintDetails> sprintDetailsSet = processSprintData(readData);
+			Set<AccountHierarchy> accountHierarchies = null;
+			AssigneeDetails assigneeDetails = null;
 			if (!readData.isSprintFetch()) {
 				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
 				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
 			}
-			if(StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
+			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 				compositeResult.setSprintDetailsSet(sprintDetailsSet);
 			}
 			compositeResult.setJiraIssue(jiraIssue);
@@ -80,11 +106,13 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 				readData.getProjectConfFieldMapping(), jiraIssue);
 	}
 
-	private Set<SprintDetails> processSprintData(ReadData readData){
-		return sprintDataProcessor.processSprintData(readData.getIssue(),readData.getProjectConfFieldMapping(),readData.getBoardId());
+	private Set<SprintDetails> processSprintData(ReadData readData) {
+		return sprintDataProcessor.processSprintData(readData.getIssue(), readData.getProjectConfFieldMapping(),
+				readData.getBoardId());
 	}
 
-	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData, Set<SprintDetails> sprintDetailsSet) {
+	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,
+			Set<SprintDetails> sprintDetailsSet) {
 		return jiraIssueAccountHierarchyProcessor.createAccountHierarchy(jiraIssue,
 				readData.getProjectConfFieldMapping(), sprintDetailsSet);
 

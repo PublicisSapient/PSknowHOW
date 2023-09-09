@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
 import org.springframework.batch.core.Job;
@@ -32,6 +49,10 @@ import com.publicissapient.kpidashboard.jira.tasklet.SprintScrumBoardTasklet;
 import com.publicissapient.kpidashboard.jira.writer.IssueKanbanWriter;
 import com.publicissapient.kpidashboard.jira.writer.IssueScrumWriter;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Configuration
 public class JiraProcessorJob {
 
@@ -101,6 +122,9 @@ public class JiraProcessorJob {
 	KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;
 
 	/** Scrum projects for board job : Start **/
+	/**
+	 * @return Job
+	 */
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Board Job").incrementer(new RunIdIncrementer())
@@ -135,10 +159,14 @@ public class JiraProcessorJob {
 	/** Scrum projects for board job : End **/
 
 	/** Scrum projects for Jql job : Start **/
+	/**
+	 * @return Job
+	 */
 	@Bean
 	public Job fetchIssueScrumJqlJob() {
 		return jobBuilderFactory.get("FetchIssueScrum JQL Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumJqlChunkStep()).next(scrumReleaseDataStep()).build();
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueScrumJqlChunkStep())
+				.next(scrumReleaseDataStep()).build();
 	}
 
 	private Step fetchIssueScrumJqlChunkStep() {
@@ -151,6 +179,9 @@ public class JiraProcessorJob {
 	/** Scrum projects for Jql job : End **/
 
 	/** Kanban projects for board job : Start **/
+	/**
+	 * @return Job
+	 */
 	@Bean
 	public Job fetchIssueKanbanBoardJob() {
 		return jobBuilderFactory.get("FetchIssueKanban Job").incrementer(new RunIdIncrementer()).start(metaDataStep())
@@ -170,10 +201,14 @@ public class JiraProcessorJob {
 	/** Kanban projects for board job : End **/
 
 	/** Kanban projects for Jql job : Start **/
+	/**
+	 * @return Job
+	 */
 	@Bean
 	public Job fetchIssueKanbanJqlJob() {
 		return jobBuilderFactory.get("FetchIssueKanban JQL Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueKanbanJqlChunkStep()).next(kanbanReleaseDataStep()).build();
+				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueKanbanJqlChunkStep())
+				.next(kanbanReleaseDataStep()).build();
 	}
 
 	private Step fetchIssueKanbanJqlChunkStep() {
@@ -185,6 +220,11 @@ public class JiraProcessorJob {
 
 	/** Kanban projects for Jql job : End **/
 
+	/**
+	 * This method is setup job for fetching sprint details based on sprint id
+	 * 
+	 * @return
+	 */
 	@Bean
 	public Job fetchIssueSprintJob() {
 		return jobBuilderFactory.get("fetchIssueSprint Job").incrementer(new RunIdIncrementer()).start(sprintDataStep())

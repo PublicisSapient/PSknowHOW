@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
 import org.bson.types.ObjectId;
@@ -15,35 +32,47 @@ import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Component
 @Slf4j
 @JobScope
 public class NotificationJobListener extends JobExecutionListenerSupport {
 
-    @Autowired
-    private NotificationHandler handler;
+	@Autowired
+	private NotificationHandler handler;
 
-    private String projectId;
+	private String projectId;
 
-    @Autowired
-    private FieldMappingRepository fieldMappingRepository;
+	@Autowired
+	private FieldMappingRepository fieldMappingRepository;
 
-    @Autowired
-    public NotificationJobListener(@Value("#{jobParameters['projectId']}") String projectId) {
-        this.projectId = projectId;
-    }
+	@Autowired
+	public NotificationJobListener(@Value("#{jobParameters['projectId']}") String projectId) {
+		this.projectId = projectId;
+	}
 
-    @Override
-    public void afterJob(JobExecution jobExecution) {
-        if (jobExecution.getStatus() == BatchStatus.FAILED) {
-        	log.error("job failed : {}",jobExecution.getJobInstance().getJobName());
-            // Send a notification here (e.g., email)
-            FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-            if(fieldMapping.getNotificationEnabler()) {
-                handler.sendEmailToProjectAdmin(jobExecution.getJobInstance().getJobName(), String.valueOf(jobExecution.getFailureExceptions()), projectId);
-            } else {
-                log.info("Notification Switch is Off");
-            }
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.batch.core.listener.JobExecutionListenerSupport#afterJob(
+	 * org.springframework.batch.core.JobExecution)
+	 */
+	@Override
+	public void afterJob(JobExecution jobExecution) {
+		if (jobExecution.getStatus() == BatchStatus.FAILED) {
+			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
+			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
+			if (fieldMapping.getNotificationEnabler()) {
+				handler.sendEmailToProjectAdmin(jobExecution.getJobInstance().getJobName(),
+						String.valueOf(jobExecution.getFailureExceptions()), projectId);
+			} else {
+				log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin",
+						projectId);
+			}
+		}
+	}
 }

@@ -34,8 +34,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication(exclude=DataSourceAutoConfiguration.class)
-//@SpringBootApplication
+/**
+ * @author pankumar8
+ *
+ */
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+// @SpringBootApplication - uncomment this line and remove above line when
+// spring job repository implemented for mongodb
 @EnableCaching
 @ComponentScan(basePackages = { "com.publicissapient" })
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
@@ -50,7 +55,7 @@ public class JiraProcessorApplication {
 		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> sslHostNameFlag);
 		SpringApplication.run(JiraProcessorApplication.class, args);
 	}
-	
+
 	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {

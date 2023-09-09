@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
 import java.time.LocalDateTime;
@@ -24,6 +41,10 @@ import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Component
 @Slf4j
 public class JiraIssueBoardWriterListener implements ItemWriteListener<CompositeResult> {
@@ -36,9 +57,15 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
+	 */
 	@Override
 	public void afterWrite(List<? extends CompositeResult> compositeResults) {
-		log.info("Saving status in Processor execution Trace log");
+		log.info("Write listner called and saving status in Processor execution Trace log");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
 		List<JiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getJiraIssue)

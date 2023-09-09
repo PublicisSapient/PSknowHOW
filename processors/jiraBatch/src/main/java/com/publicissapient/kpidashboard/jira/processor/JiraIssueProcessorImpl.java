@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.buildFieldMap;
@@ -62,6 +79,10 @@ import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Slf4j
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
@@ -87,7 +108,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			throws JSONException {
 
 		JiraIssue jiraIssue = null;
-
+		log.info("Converting issue to JiraIssue for the project : {}", projectConfig.getProjectName());
 		if (null == issue) {
 			log.error("JIRA Processor | No list of current paged JIRA's issues found");
 			return jiraIssue;
@@ -195,7 +216,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
-								   Map<String, IssueField> fields) {
+			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
 				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
 			Set<String> mainStorySet = new HashSet<>();
@@ -205,7 +226,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields,
-											   Set<String> defectStorySet) {
+			Set<String> defectStorySet) {
 		String parentKey;
 		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
 
@@ -223,8 +244,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
-		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
-				&& fields.get(fieldMapping.getEpicLink()) != null
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
 		}
@@ -273,8 +293,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
-			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash)
-					.collect(Collectors.toList());
+			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash).collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(JiraHelper::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
@@ -366,7 +385,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		String createdDate = issue.getCreationDate().toString();
 		jiraIssue.setNumber(JiraProcessorUtil.deodeUTF8String(issue.getKey()));
 		jiraIssue.setName(JiraProcessorUtil.deodeUTF8String(issue.getSummary()));
-		log.info("Issue : {}",jiraIssue.getNumber());
+		log.info("Issue : {}", jiraIssue.getNumber());
 		jiraIssue.setStatus(JiraProcessorUtil.deodeUTF8String(status));
 		jiraIssue.setState(JiraProcessorUtil.deodeUTF8String(status));
 
@@ -702,8 +721,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
 			Set<String> defectStorySet = new HashSet<>();
-			String parentKey = null;
-
 			excludeLinks(issue, defectStorySet);
 			storyWithSubTaskDefect(issue, fields, defectStorySet);
 			jiraIssue.setDefectStoryID(defectStorySet);
@@ -833,7 +850,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setSprintData(List<SprintDetails> sprints, JiraIssue jiraIssue, Object sValue,
-							   ProjectConfFieldMapping projectConfig) {
+			ProjectConfFieldMapping projectConfig) {
 		List<String> sprintsList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprints)) {
 			for (SprintDetails sprint : sprints) {

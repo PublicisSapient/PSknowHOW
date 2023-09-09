@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.writer;
 
 import java.util.ArrayList;
@@ -28,6 +45,10 @@ import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @Slf4j
 @Component
 public class IssueScrumWriter implements ItemWriter<CompositeResult> {
@@ -47,13 +68,18 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
+	 */
 	@Override
 	public void write(List<? extends CompositeResult> compositeResults) throws Exception {
 		List<JiraIssue> jiraIssues = new ArrayList<>();
 		List<JiraIssueCustomHistory> jiraHistoryItems = new ArrayList<>();
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
-		Set<SprintDetails> sprintDetailsSet=new HashSet<>();
+		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 
 		for (CompositeResult compositeResult : compositeResults) {
 			if (null != compositeResult.getJiraIssue()) {
@@ -62,7 +88,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 			if (null != compositeResult.getJiraIssueCustomHistory()) {
 				jiraHistoryItems.add(compositeResult.getJiraIssueCustomHistory());
 			}
-			if (null != compositeResult.getSprintDetailsSet()){
+			if (null != compositeResult.getSprintDetailsSet()) {
 				sprintDetailsSet.addAll(compositeResult.getSprintDetailsSet());
 			}
 			if (CollectionUtils.isNotEmpty(compositeResult.getAccountHierarchies())) {
@@ -79,7 +105,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		if (CollectionUtils.isNotEmpty(jiraHistoryItems)) {
 			writeJiraHistory(jiraHistoryItems);
 		}
-		if (CollectionUtils.isNotEmpty(sprintDetailsSet)){
+		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			writeSprintDetail(sprintDetailsSet);
 		}
 		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
@@ -91,12 +117,12 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 
 	}
 
-	public void writeJiraItem(List<JiraIssue> jiraItems) {
+	private void writeJiraItem(List<JiraIssue> jiraItems) {
 		log.info("Writing issues to Jira_Issue Collection");
 		jiraIssueRepository.saveAll(jiraItems);
 	}
 
-	public void writeJiraHistory(List<JiraIssueCustomHistory> jiraHistoryItems) {
+	private void writeJiraHistory(List<JiraIssueCustomHistory> jiraHistoryItems) {
 		log.info("Writing issues to Jira_Issue_custom_history Collection");
 		jiraIssueCustomHistoryRepository.saveAll(jiraHistoryItems);
 	}
@@ -106,12 +132,12 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		sprintRepository.saveAll(sprintDetailsSet);
 	}
 
-	public void writeAccountHierarchy(Set<AccountHierarchy> accountHierarchies) {
+	private void writeAccountHierarchy(Set<AccountHierarchy> accountHierarchies) {
 		log.info("Writing issues to account_hierarchy Collection");
 		accountHierarchyRepository.saveAll(accountHierarchies);
 	}
 
-	public void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {
+	private void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {
 		log.info("Writing assingees to asignee_details Collection");
 		List<AssigneeDetails> assignees = assigneesToSave.values().stream().collect(Collectors.toList());
 		assigneeDetailsRepository.saveAll(assignees);

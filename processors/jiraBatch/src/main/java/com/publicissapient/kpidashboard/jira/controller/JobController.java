@@ -1,10 +1,30 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -17,11 +37,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author pankumar8
+ *
+ */
 @RestController
 @RequestMapping("/api/job")
 @Slf4j
@@ -51,6 +79,12 @@ public class JobController {
 	Job fetchIssueSprintJob;
 
 	@Autowired
+	private ProjectToolConfigRepository toolRepository;
+
+	@Autowired
+	private ProjectBasicConfigRepository projectConfigRepository;
+
+	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 
 	private static String PROJECT_ID = "projectId";
@@ -58,16 +92,19 @@ public class JobController {
 	private static String CURRENTTIME = "currentTime";
 
 	/**
-	 * @return
+	 * This method is used to start job for the Scrum projects with board setup
+	 * 
+	 * @return ResponseEntity
 	 * @throws Exception
 	 */
+
 	@GetMapping("/startscrumboardjob")
 	public ResponseEntity<String> startScrumBoardJob() throws Exception {
-		log.info("Request coming for job for Scrum project configured with board");
+		log.info("Request come for job for Scrum project configured with board via controller");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, false);
-
+		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -86,6 +123,13 @@ public class JobController {
 		executorService.shutdown();
 		return ResponseEntity.ok().body("job started for scrum board");
 	}
+
+	/**
+	 * This method is used to start job for the Scrum projects with JQL setup
+	 * 
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
 
 	@GetMapping("/startscrumjqljob")
 	public ResponseEntity<String> startScrumJqlJob() throws Exception {
@@ -129,6 +173,12 @@ public class JobController {
 		return parameterSets;
 	}
 
+	/**
+	 * This method is used to start job for the Kanban projects with board setup
+	 * 
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
 	@GetMapping("/startkanbanboardjob")
 	public ResponseEntity<String> startKanbanJob() throws Exception {
 		log.info("Request coming for job");
@@ -153,6 +203,12 @@ public class JobController {
 		return ResponseEntity.ok().body("job started for Kanban Board");
 	}
 
+	/**
+	 * This method is used to start job for the Kanban projects with JQL setup
+	 * 
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
 	@GetMapping("/startkanbanjqljob")
 	public ResponseEntity<String> startKanbanJqlJob() throws Exception {
 		log.info("Request coming for job for Kanban project configured with JQL");
@@ -179,8 +235,15 @@ public class JobController {
 		return ResponseEntity.ok().body("job started for Kanban JQL");
 	}
 
+	/**
+	 * This method is used to fetch the sprint report data
+	 * 
+	 * @param sprintId
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
 	@GetMapping("/startfetchsprintjob")
-	public ResponseEntity<String> startfetchsprintjob(@RequestBody String sprintId) throws Exception {
+	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) throws Exception {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
@@ -194,6 +257,62 @@ public class JobController {
 			e.printStackTrace();
 		}
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
+
+	}
+
+	/**
+	 * This method is used to fetch the jira issues based on project id
+	 * 
+	 * @param basicProjectConfigId
+	 * @return ResponseEntity
+	 * @throws Exception
+	 */
+	@GetMapping("/startprojectwiseissuejob")
+	public ResponseEntity<String> startProjectWiseIssueJob(@RequestBody String basicProjectConfigId) throws Exception {
+		log.info("Request coming for fetching sprint job");
+		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+
+		jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
+		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+		JobParameters params = jobParametersBuilder.toJobParameters();
+		try {
+			Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
+					.findById(new ObjectId(basicProjectConfigId));
+			if (projBasicConfOpt.isPresent()) {
+				ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
+				List<ProjectToolConfig> projectToolConfigs = toolRepository
+						.findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA, projectBasicConfig.getId());
+				if (projectBasicConfig.isKanban()) {
+					// Project is kanban
+					if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+						ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+						if (projectToolConfig.isQueryEnabled()) {
+							// JQL is setup for the project
+							jobLauncher.run(fetchIssueKanbanJqlJob, params);
+						} else {
+							// Board is setup for the project
+							jobLauncher.run(fetchIssueKanbanBoardJob, params);
+						}
+					}
+				} else {
+					// Project is Scrum
+					if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+						ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+						if (projectToolConfig.isQueryEnabled()) {
+							// JQL is setup for the project
+							jobLauncher.run(fetchIssueScrumJqlJob, params);
+						} else {
+							// Board is setup for the project
+							jobLauncher.run(fetchIssueScrumBoardJob, params);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.info("Jira fetch failed for BasicProjectConfigId : {}", params.getString(PROJECT_ID));
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok().body("job started for BasicProjectConfigId : " + basicProjectConfigId);
 
 	}
 
