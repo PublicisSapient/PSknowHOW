@@ -513,12 +513,9 @@ db.field_mapping_structure.updateMany(
 
 );
 //DTS-26150 start
-db.field_mapping_structure.deleteOne({
-    "fieldName": "testingPhaseDefectsIdentifier"
-});
-
-db.field_mapping_structure.deleteOne({
-    "fieldName": "jiraDodKPI163"
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["testingPhaseDefectsIdentifier", "jiraDodKPI163"]}
 });
 
 db.getCollection('metadata_identifier').updateMany(

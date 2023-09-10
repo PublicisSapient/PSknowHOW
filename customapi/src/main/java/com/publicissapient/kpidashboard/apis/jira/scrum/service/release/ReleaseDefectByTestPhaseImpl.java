@@ -173,26 +173,26 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		}
 	}
 
-	private void setDefectList(String openDefects, List<DataCount> openDefectsDataCountList,
-			List<JiraIssue> openDefectsList, List<IterationKpiValue> iterationKpiValueList) {
-		IterationKpiValue kpiValueOpenIssueCount = new IterationKpiValue();
-		kpiValueOpenIssueCount.setFilter1(openDefects);
-		kpiValueOpenIssueCount.setValue(openDefectsDataCountList);
-		openDefectsDataCountList.add(getStatusWiseCountList(openDefectsList));
-		iterationKpiValueList.add(kpiValueOpenIssueCount);
+	private void setDefectList(String defects, List<DataCount> defectsDataCountList,
+			List<JiraIssue> defectsList, List<IterationKpiValue> iterationKpiValueList) {
+		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
+		kpiValueIssueCount.setFilter1(defects);
+		defectsDataCountList.add(getStatusWiseCountList(defectsList));
+		kpiValueIssueCount.setValue(defectsDataCountList);
+		iterationKpiValueList.add(kpiValueIssueCount);
 	}
 
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList) {
 		Set<String> testPhasesList = jiraIssueList.stream()
-				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getTestPhaseOfDefectList()))
-				.flatMap(jiraIssue -> jiraIssue.getTestPhaseOfDefectList().stream()).collect(Collectors.toSet());
+				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup()))
+				.flatMap(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream()).collect(Collectors.toSet());
 		DataCount dataCount = new DataCount();
 		Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(testPhasesList)) {
 			testPhasesList.forEach(s -> getTestPhaseData(jiraIssueList, releaseProgressCount, s));
 		} else {
 			releaseProgressCount.put(UNDEFINED, (double) jiraIssueList.stream()
-					.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getTestPhaseOfDefectList())).count());
+					.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count());
 		}
 		dataCount.setValue(releaseProgressCount);
 		dataCount
@@ -205,11 +205,11 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 			String s) {
 		releaseProgressCount.put(s,
 				(double) jiraIssueList.stream()
-						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getTestPhaseOfDefectList())
-								&& jiraIssue.getTestPhaseOfDefectList().contains(s))
+						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+								&& jiraIssue.getEscapedDefectGroup().contains(s))
 						.count());
 		releaseProgressCount.put(UNDEFINED, (double) jiraIssueList.stream()
-				.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getTestPhaseOfDefectList())).count());
+				.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count());
 	}
 
 	@Override

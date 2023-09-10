@@ -1187,15 +1187,13 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						break;
 					}
 				}
-				jiraIssue.setTestPhaseOfDefectList(testPhasesList);
+				jiraIssue.setEscapedDefectGroup(testPhasesList);
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject) {
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString().toLowerCase();
 				if (lowerCaseBugRaisedValue.contains(testPhase)) {
-					jiraIssue.setTestPhaseOfDefectList(Collections.singletonList(testPhase));
+					jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
 					isRaisedByThirdParty = true;
-				} else {
-					jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
 				}
 			}
 		} catch (org.json.simple.parser.ParseException | JSONException e) {
@@ -1793,13 +1791,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
+	/**
+	 * This method sets the escape defects values to jira issues based on
+	 * configuration in field mapping
+	 */
 	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
 			if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
 					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-				getTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
+				setTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
 					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim()
 							.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
@@ -1809,25 +1811,21 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
 					.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT)) {
-				getTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
-			} else {
-				jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
+				setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
 			}
 		}
 	}
 
-	private static void getTestPhaseDefectsList(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue) {
+	private static void setTestPhaseDefectsList(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue) {
 		List<String> commonLabel = issue.getLabels().stream()
 				.filter(x -> fieldMapping.getTestingPhaseDefectValue().contains(x)).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(commonLabel)) {
-			jiraIssue.setTestPhaseOfDefectList(commonLabel);
-		} else {
-			jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
+			jiraIssue.setEscapedDefectGroup(commonLabel);
 		}
 	}
 
-	private static void getTestPhaseDefectsListForComponent(Issue issue, FieldMapping fieldMapping,
-			JiraIssue jiraIssue) {
+	private static void setTestPhaseDefectsListForComponent(Issue issue, FieldMapping fieldMapping,
+															JiraIssue jiraIssue) {
 		Iterable<BasicComponent> components = issue.getComponents();
 		List<BasicComponent> componentList = new ArrayList<>();
 		components.forEach(componentList::add);
@@ -1840,9 +1838,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						.filter(x -> fieldMapping.getTestingPhaseDefectComponentValue().contains(x))
 						.collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(commonLabel)) {
-					jiraIssue.setTestPhaseOfDefectList(commonLabel);
-				} else {
-					jiraIssue.setTestPhaseOfDefectList(new ArrayList<>());
+					jiraIssue.setEscapedDefectGroup(commonLabel);
 				}
 			}
 		}

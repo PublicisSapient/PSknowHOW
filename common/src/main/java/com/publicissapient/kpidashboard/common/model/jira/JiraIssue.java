@@ -228,7 +228,7 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private String originalType;
 	private String epicLinked;
 
-	private List<String> testPhaseOfDefectList;
+	private List<String> escapedDefectGroup;
 
 	public boolean isDefectRaisedByQA() {
 		return defectRaisedByQA;
