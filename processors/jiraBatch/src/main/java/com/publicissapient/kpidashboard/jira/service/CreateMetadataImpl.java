@@ -30,14 +30,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Field;
@@ -55,8 +48,8 @@ import com.publicissapient.kpidashboard.common.model.jira.MetadataValue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.MetadataIdentifierRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
@@ -87,7 +80,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 	private MetadataIdentifierRepository metadataIdentifierRepository;
 
 	@Autowired
-	private JiraProcessorConfig jiraProcessorConfig;
+	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
 
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	public static final String AZURE = "Azure";
@@ -99,8 +92,10 @@ public class CreateMetadataImpl implements CreateMetadata {
 					projectConfig.getProjectName());
 			boolean isSuccess = processMetadata(projectConfig, client);
 			if (isSuccess) {
-				cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_FIELD_MAPPING_MAP);
-				cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.CACHE_PROJECT_CONFIG_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_FIELD_MAPPING_MAP);
+				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}
 			log.info("Fetched metadata", String.valueOf(isSuccess));
 		} else {
@@ -970,36 +965,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 			}
 		}
 		return issueList;
-	}
-
-	private boolean cacheRestClient(String cacheEndPoint, String cacheName) {
-		boolean cleaned = false;
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
-		uriBuilder.path("/");
-		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(cacheName);
-
-		HttpEntity<?> entity = new HttpEntity<>(headers);
-
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = null;
-		try {
-			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
-		} catch (RuntimeException e) {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
-		}
-
-		if (null != response && response.getStatusCode().is2xxSuccessful()) {
-			cleaned = true;
-			log.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
-		} else {
-			log.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
-		}
-		return cleaned;
 	}
 
 }
