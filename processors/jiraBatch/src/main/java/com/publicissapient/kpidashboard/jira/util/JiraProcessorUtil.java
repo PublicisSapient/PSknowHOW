@@ -51,7 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public final class JiraProcessorUtil {
+public class JiraProcessorUtil {
 
     // not static because not thread safe
     private static final String SPRINT_SPLIT = "(?=,\\w+=)";
@@ -67,10 +67,6 @@ public final class JiraProcessorUtil {
     private static final String ACTIVATEDDATE = "activatedDate";
     private static final String GOAL = "goal";
     private static final String BOARDID = "boardId";
-
-    private JiraProcessorUtil() {
-        // Default
-    }
 
     /**
      * This method return UTF-8 decoded string response
