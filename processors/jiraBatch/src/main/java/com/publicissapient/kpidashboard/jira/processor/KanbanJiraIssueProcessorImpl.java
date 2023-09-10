@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.buildFieldMap;
@@ -55,11 +72,14 @@ import com.publicissapient.kpidashboard.jira.helper.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
-import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author purgupta2
+ *
+ */
 @Slf4j
 @Service
 public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
@@ -72,9 +92,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
-
-	@Autowired
-	private JiraCommonService jiraCommonService;
 
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
@@ -91,7 +108,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			throws JSONException {
 
 		KanbanJiraIssue jiraIssue = null;
-
+		log.info("Converting issue to KanbanJiraIssue for the project : {}", projectConfig.getProjectName());
 		if (null == issue) {
 			log.error("JIRA Processor |. No list of current paged Kanban JIRA's issues found");
 			return jiraIssue;
@@ -253,8 +270,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
-			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash)
-					.collect(Collectors.toList());
+			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash).collect(Collectors.toList());
 			List<String> ownerId = assigneeKey.stream().map(JiraHelper::hash).collect(Collectors.toList());
 			List<String> ownerFullName = assigneeDisplayName.stream().map(JiraHelper::hash)
 					.collect(Collectors.toList());
@@ -358,15 +374,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		jiraIssue.setProjectState("");
 		jiraIssue.setProjectIsDeleted("False");
 		jiraIssue.setProjectPath("");
-	}
-
-	private KanbanJiraIssue getKanbanJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
-		KanbanJiraIssue jiraIssue = jiraCommonService.findOneKanbanIssueRepo(issueId,
-				projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssue == null) {
-			jiraIssue = new KanbanJiraIssue();
-		}
-		return jiraIssue;
 	}
 
 	private void setJiraIssuuefields(Issue issue, KanbanJiraIssue jiraIssue, FieldMapping fieldMapping,

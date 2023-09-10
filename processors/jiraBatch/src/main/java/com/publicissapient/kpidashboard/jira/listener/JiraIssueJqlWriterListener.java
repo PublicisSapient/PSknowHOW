@@ -65,7 +65,7 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 	 */
 	@Override
 	public void afterWrite(List<? extends CompositeResult> compositeResults) {
-		log.info("Saving status in Processor execution Trace log for Jql project");
+		log.info("Saving status in Processor execution Trace log for Scrum Jql project");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
 		List<JiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getJiraIssue)
@@ -115,6 +115,6 @@ public class JiraIssueJqlWriterListener implements ItemWriteListener<CompositeRe
 
 	@Override
 	public void onWriteError(Exception exception, List<? extends CompositeResult> compositeResult) {
-		log.error("Exception occured while writing jira Issue for jql project ", exception);
+		log.error("Exception occured while writing jira Issue for Scrum jql project ", exception);
 	}
 }

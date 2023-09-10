@@ -191,7 +191,8 @@ public class JiraProcessorJob {
 	private Step fetchIssueKanbanBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
-				.listener(kanbanJiraIssueWriterListener).listener(kanbanJiraIssueStepListener).build();
+				.listener(kanbanJiraIssueWriterListener).listener(kanbanJiraIssueStepListener)
+				.listener(notificationJobListener).build();
 	}
 
 	private Step kanbanReleaseDataStep() {

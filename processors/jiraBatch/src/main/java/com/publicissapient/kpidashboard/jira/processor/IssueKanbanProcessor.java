@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.Set;
@@ -17,6 +34,10 @@ import com.publicissapient.kpidashboard.jira.model.ReadData;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author purgupta2
+ *
+ */
 @Slf4j
 @Component
 public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeResult> {
@@ -33,11 +54,17 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 	@Autowired
 	private KanbanJiraIssueAssigneeProcessor kanbanJiraIssueAssigneeProcessor;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
+	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
 		CompositeResult kanbanCompositeResult = null;
+		log.info("Kanban processing started for the project : {}",
+				readData.getProjectConfFieldMapping().getProjectName());
 		KanbanJiraIssue kanbanJiraIssue = convertIssueToKanbanJiraIssue(readData);
-		log.info("-----------Kanban Processor------------");
 		if (null != kanbanJiraIssue) {
 			kanbanCompositeResult = new CompositeResult();
 			KanbanIssueCustomHistory kanbanIssueCustomHistory = convertIssueToKanbanIssueHistory(readData,

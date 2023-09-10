@@ -50,6 +50,7 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 	@Override
 	public AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue) {
 
+		log.info("Creating assignee details for the project : {}", projectConfig.getProjectName());
 		if (null == assigneeDetails || !assigneeDetails.getBasicProjectConfigId()
 				.equalsIgnoreCase(projectConfig.getBasicProjectConfigId().toString())) {
 			log.info("creating assignee details for the project : {}", projectConfig.getProjectName());

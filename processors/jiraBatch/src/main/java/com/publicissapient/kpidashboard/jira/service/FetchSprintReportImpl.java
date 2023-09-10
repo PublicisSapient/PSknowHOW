@@ -51,7 +51,6 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
@@ -105,7 +104,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-										   Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
+			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -113,11 +112,10 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			List<SprintDetails> dbSprints = sprintRepository.findBySprintIDIn(sprintIds);
 			Map<String, SprintDetails> dbSprintDetailMap = dbSprints.stream()
 					.collect(Collectors.toMap(SprintDetails::getSprintID, Function.identity()));
-			PSLogData sprintLogData = new PSLogData();
 			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				//sprint.setProcessorId(jiraProcessorId);
+				// sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
 					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
@@ -127,7 +125,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} // case 2 : sprint state is active or changed which is
-					  // present in db
+						// present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
@@ -146,23 +144,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					sprintToSave.add(sprint);
 				}
 			}
-
-			sprintLogData.setAction(CommonConstant.SPRINT_DATA);
-			sprintLogData
-					.setSprintListSaved(
-							sprintToSave.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalSavedSprints(String.valueOf(sprintToSave.size()));
-			sprintLogData
-					.setSprintListFetched(
-							sprintDetailsSet.stream()
-									.map(sprintDetails -> sprintDetails.getSprintID() + CommonConstant.ARROW
-											+ sprintDetails.getState() + CommonConstant.NEWLINE)
-									.collect(Collectors.toList()));
-			sprintLogData.setTotalFetchedSprints(String.valueOf(sprintDetailsSet.size()));
-			log.info("Sprints Fetched and saved", kv(CommonConstant.PSLOGDATA, sprintLogData));
 		}
 
 		setForCacheClean.addAll(sprintToSave.stream()
@@ -181,30 +162,21 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private void getSprintReport(ProjectConfFieldMapping projectConfig, String sprintId, String boardId,
 			SprintDetails sprint, SprintDetails dbSprintDetails, KerberosClient krb5Client) {
-		PSLogData sprintReportLog = new PSLogData();
-		sprintReportLog.setAction(CommonConstant.SPRINT_REPORTDATA);
-		sprintReportLog.setBoardId(boardId);
-		sprintReportLog.setSprintId(sprintId);
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
-				Instant start = Instant.now();
 				URL url = getSprintReportUrl(projectConfig, sprintId, boardId);
-				sprintReportLog.setUrl(url.toString());
 				getReport(jiraCommonService.getDataFromClient(projectConfig, url, krb5Client), sprint, projectConfig,
 						dbSprintDetails, boardId);
-				sprintReportLog.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
 			}
-			log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId),
-					kv(CommonConstant.PSLOGDATA, sprintReportLog));
+			log.info(String.format("Fetched Sprint Report for Sprint Id : %s , Board Id : %s", sprintId, boardId));
 		} catch (RestClientException rce) {
-			log.error("Client exception when loading sprint report " + rce,
-					kv(CommonConstant.PSLOGDATA, sprintReportLog));
+			log.error("Client exception when loading sprint report for sprint :{} ", sprintId, rce);
 			throw rce;
 		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading sprint report", mfe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+			log.error("Malformed url for loading sprint report for sprint :{} ", sprintId, mfe);
 		} catch (IOException ioe) {
-			log.error("IOException", ioe, kv(CommonConstant.PSLOGDATA, sprintReportLog));
+			log.error("IOException", ioe);
 		}
 	}
 
@@ -514,7 +486,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId,
-										  KerberosClient krb5Client) {
+			KerberosClient krb5Client) {
 		List<SprintDetails> sprintDetailsList = new ArrayList<>();
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();

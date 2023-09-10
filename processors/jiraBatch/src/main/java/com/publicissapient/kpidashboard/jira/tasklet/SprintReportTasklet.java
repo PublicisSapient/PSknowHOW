@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import java.util.HashSet;
@@ -24,53 +41,58 @@ import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author purgupta2
+ *
+ */
 @Slf4j
 @Component
 @StepScope
 public class SprintReportTasklet implements Tasklet {
 
-    @Autowired
-    FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Autowired
-    private FetchSprintReport fetchSprintReport;
+	@Autowired
+	private FetchSprintReport fetchSprintReport;
 
-    @Autowired
-    private SprintRepository sprintRepository;
+	@Autowired
+	private SprintRepository sprintRepository;
 
-    private String sprintId;
+	private String sprintId;
 
-    @Autowired
-    public SprintReportTasklet(@Value("#{jobParameters['sprintId']}") String sprintId) {
-        this.sprintId = sprintId;
-    }
+	@Autowired
+	public SprintReportTasklet(@Value("#{jobParameters['sprintId']}") String sprintId) {
+		this.sprintId = sprintId;
+	}
 
-    @Override
-    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-        log.info("**** Sprint report started * * *");
-        try {
-            ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
-            KerberosClient krb5Client = null;
-            Set<SprintDetails> setForCacheClean = new HashSet<>();
-            SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
-            List<String> originalBoardIds = sprintDetails.getOriginBoardId();
-            Set<SprintDetails> setOfSprintDetails=null;
-            for (String boardId : originalBoardIds) {
-                List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId, krb5Client);
-                if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
-                    // filtering the sprint need to update
-                    Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
-                            .filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
-                    setOfSprintDetails = fetchSprintReport
-                            .fetchSprints(projConfFieldMapping, sprintDetailSet, setForCacheClean, krb5Client);
-                }
-            }
-            sprintRepository.saveAll(setOfSprintDetails);
-        } catch (Exception e) {
-            log.error("Exception while fetching sprint data", e);
-        }
-        log.info("**** Sprint report ended * * *");
-        return RepeatStatus.FINISHED;
-    }
+	@Override
+	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+		log.info("Sprint report job started for the sprint : {}", sprintId);
+		try {
+			ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
+					.fetchConfigurationBasedOnSprintId(sprintId);
+			KerberosClient krb5Client = null;
+			Set<SprintDetails> setForCacheClean = new HashSet<>();
+			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
+			List<String> originalBoardIds = sprintDetails.getOriginBoardId();
+			Set<SprintDetails> setOfSprintDetails = null;
+			for (String boardId : originalBoardIds) {
+				List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId,
+						krb5Client);
+				if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
+					// filtering the sprint need to update
+					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
+							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
+					setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
+							setForCacheClean, krb5Client);
+				}
+			}
+			sprintRepository.saveAll(setOfSprintDetails);
+		} catch (Exception e) {
+			log.error("Exception while fetching sprint data for the sprint : {}", sprintId, e);
+		}
+		return RepeatStatus.FINISHED;
+	}
 
 }

@@ -65,7 +65,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	 */
 	@Override
 	public void afterWrite(List<? extends CompositeResult> compositeResults) {
-		log.info("Write listner called and saving status in Processor execution Trace log");
+		log.info("Write listner called for scrum board project and saving status in Processor execution Trace log");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
 		List<JiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getJiraIssue)

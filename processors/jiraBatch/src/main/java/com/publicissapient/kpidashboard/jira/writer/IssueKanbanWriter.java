@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.writer;
 
 import java.util.ArrayList;
@@ -26,77 +43,84 @@ import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @author purgupta2
+ *
+ */
 @Slf4j
 @Component
 public class IssueKanbanWriter implements ItemWriter<CompositeResult> {
-    
-    @Autowired
-    private KanbanJiraIssueRepository kanbanJiraIssueRepository;
-    @Autowired
-    private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
-    @Autowired
-    private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
-    @Autowired
-    private AssigneeDetailsRepository assigneeDetailsRepository;
 
-    @Override
-    public void write(List<? extends CompositeResult> kanbanCompositeResults) throws Exception {
-        log.info("Saving fetched data into db");
-        List<KanbanJiraIssue> jiraIssues = new ArrayList<>();
-        List<KanbanIssueCustomHistory> kanbanIssueCustomHistory = new ArrayList<>();
-        Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
-        Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
+	@Autowired
+	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
+	@Autowired
+	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
+	@Autowired
+	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepository;
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
-        for (CompositeResult kanbanCompositeResult : kanbanCompositeResults) {
-            if (null != kanbanCompositeResult.getKanbanJiraIssue()) {
-                jiraIssues.add(kanbanCompositeResult.getKanbanJiraIssue());
-            }
-            if (null != kanbanCompositeResult.getKanbanIssueCustomHistory()) {
-                kanbanIssueCustomHistory.add(kanbanCompositeResult.getKanbanIssueCustomHistory());
-            }
-            if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
-                accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
-            }
-            if (null != kanbanCompositeResult.getAssigneeDetails()) {
-                assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
-                        kanbanCompositeResult.getAssigneeDetails());
-            }
-        }
-        if (CollectionUtils.isNotEmpty(jiraIssues)) {
-            writeKanbanJiraItem(jiraIssues);
-        }
-        if (CollectionUtils.isNotEmpty(kanbanIssueCustomHistory)) {
-            writeKanbanJiraHistory(kanbanIssueCustomHistory);
-        }
-        if (CollectionUtils.isNotEmpty(accountHierarchies)) {
-            writeKanbanAccountHierarchy(accountHierarchies);
-        }
-        if (MapUtils.isNotEmpty(assigneesToSave)) {
-            writeAssigneeDetails(assigneesToSave);
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
+	 */
+	@Override
+	public void write(List<? extends CompositeResult> kanbanCompositeResults) throws Exception {
+		List<KanbanJiraIssue> jiraIssues = new ArrayList<>();
+		List<KanbanIssueCustomHistory> kanbanIssueCustomHistory = new ArrayList<>();
+		Set<KanbanAccountHierarchy> accountHierarchies = new HashSet<>();
+		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
 
-    }
+		for (CompositeResult kanbanCompositeResult : kanbanCompositeResults) {
+			if (null != kanbanCompositeResult.getKanbanJiraIssue()) {
+				jiraIssues.add(kanbanCompositeResult.getKanbanJiraIssue());
+			}
+			if (null != kanbanCompositeResult.getKanbanIssueCustomHistory()) {
+				kanbanIssueCustomHistory.add(kanbanCompositeResult.getKanbanIssueCustomHistory());
+			}
+			if (CollectionUtils.isNotEmpty(kanbanCompositeResult.getKanbanAccountHierarchies())) {
+				accountHierarchies.addAll(kanbanCompositeResult.getKanbanAccountHierarchies());
+			}
+			if (null != kanbanCompositeResult.getAssigneeDetails()) {
+				assigneesToSave.put(kanbanCompositeResult.getAssigneeDetails().getBasicProjectConfigId(),
+						kanbanCompositeResult.getAssigneeDetails());
+			}
+		}
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			writeKanbanJiraItem(jiraIssues);
+		}
+		if (CollectionUtils.isNotEmpty(kanbanIssueCustomHistory)) {
+			writeKanbanJiraHistory(kanbanIssueCustomHistory);
+		}
+		if (CollectionUtils.isNotEmpty(accountHierarchies)) {
+			writeKanbanAccountHierarchy(accountHierarchies);
+		}
+		if (MapUtils.isNotEmpty(assigneesToSave)) {
+			writeAssigneeDetails(assigneesToSave);
+		}
 
-    public void writeKanbanJiraItem(List<KanbanJiraIssue> jiraItems) {
-        log.info("Writing issues to Jira_Issue Collection");
-        kanbanJiraIssueRepository.saveAll(jiraItems);
-    }
+	}
 
-    public void writeKanbanJiraHistory(List<KanbanIssueCustomHistory> kanbanIssueCustomHistory) {
-        log.info("Writing issues to Jira_Issue_custom_history Collection");
-        kanbanJiraIssueHistoryRepository.saveAll(kanbanIssueCustomHistory);
-    }
+	public void writeKanbanJiraItem(List<KanbanJiraIssue> jiraItems) {
+		log.info("Writing issues to kanban_jira_Issue Collection");
+		kanbanJiraIssueRepository.saveAll(jiraItems);
+	}
 
-    public void writeKanbanAccountHierarchy(Set<KanbanAccountHierarchy> accountHierarchies) {
-        log.info("Writing issues to account_hierarchy Collection");
-        kanbanAccountHierarchyRepository.saveAll(accountHierarchies);
-    }
+	public void writeKanbanJiraHistory(List<KanbanIssueCustomHistory> kanbanIssueCustomHistory) {
+		log.info("Writing issues to kanban_jira_Issue_custom_history Collection");
+		kanbanJiraIssueHistoryRepository.saveAll(kanbanIssueCustomHistory);
+	}
 
-    public void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {
-        log.info("Writing assingees to asignee_details Collection");
-        List<AssigneeDetails> assignees = assigneesToSave.values().stream().collect(Collectors.toList());
-        assigneeDetailsRepository.saveAll(assignees);
-    }
+	public void writeKanbanAccountHierarchy(Set<KanbanAccountHierarchy> accountHierarchies) {
+		log.info("Writing issues to kanban_account_hierarchy Collection");
+		kanbanAccountHierarchyRepository.saveAll(accountHierarchies);
+	}
+
+	public void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {
+		log.info("Writing assingees to asignee_details Collection");
+		List<AssigneeDetails> assignees = assigneesToSave.values().stream().collect(Collectors.toList());
+		assigneeDetailsRepository.saveAll(assignees);
+	}
 
 }
-

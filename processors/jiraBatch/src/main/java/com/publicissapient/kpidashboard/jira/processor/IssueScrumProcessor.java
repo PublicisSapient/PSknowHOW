@@ -66,7 +66,8 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
-		log.info("processing started for the project : {}", readData.getProjectConfFieldMapping().getProjectName());
+		log.info("Scrum processing started for the project : {}",
+				readData.getProjectConfFieldMapping().getProjectName());
 		CompositeResult compositeResult = null;
 		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
 		if (null != jiraIssue) {
