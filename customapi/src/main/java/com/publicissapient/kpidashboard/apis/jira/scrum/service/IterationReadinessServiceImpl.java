@@ -17,10 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,6 +53,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.StatusWiseIssue;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -70,21 +69,14 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
+	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
+	public static final String SPRINT_LIST = "Sprint List";
+	public static final String SP = " SP";
 	@Autowired
 	private JiraServiceR jiraService;
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT);
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-			.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSS");
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -96,32 +88,19 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
 
-			List<JiraIssue> futureSprintJiraIssues = totalJiraIssue.stream()
-					.filter(jiraIssue -> "FUTURE".equalsIgnoreCase(jiraIssue.getSprintAssetState())
-							&& (jiraIssue.getSprintBeginDate().isEmpty()
-									|| isAfterCurrentSystemDate(jiraIssue.getSprintBeginDate())))
-					.collect(Collectors.toList());
+			List<String> totalSprint = totalJiraIssue.stream().filter(jiraIssue -> SprintDetails.SPRINT_STATE_FUTURE
+					.equalsIgnoreCase(jiraIssue.getSprintAssetState())
+					&& (jiraIssue.getSprintBeginDate().isEmpty()
+							|| LocalDateTime.parse(jiraIssue.getSprintBeginDate().split("\\.")[0], DATE_TIME_FORMATTER)
+									.isAfter(LocalDateTime.now())))
+					.sorted(Comparator.comparing(JiraIssue::getSprintBeginDate)).map(JiraIssue::getSprintName)
+					.distinct().limit(5).collect(Collectors.toList());
 
-			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, futureSprintJiraIssues);
+			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
+			resultListMap.put(SPRINT_LIST, totalSprint);
 		}
 
 		return resultListMap;
-	}
-
-	/**
-	 * method to check sprint begin date is after current Date
-	 * 
-	 * @param dateString
-	 * @return
-	 */
-	private boolean isAfterCurrentSystemDate(String dateString) {
-		try {
-			LocalDateTime sprintBeginDateTime = LocalDateTime.parse(dateString, DATE_TIME_FORMATTER);
-			return sprintBeginDateTime.isAfter(LocalDateTime.now());
-		} catch (DateTimeParseException e) {
-			log.info("Error in parsing the Date ... " + e);
-			return false;
-		}
 	}
 
 	@Override
@@ -154,22 +133,19 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, "", "", kpiRequest);
 			List<JiraIssue> jiraIssues = (List<JiraIssue>) resultMap.get(PROJECT_WISE_JIRA_ISSUE);
-			if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			List<String> sprintList = (List<String>) resultMap.get(SPRINT_LIST);
+			if (CollectionUtils.isNotEmpty(jiraIssues) && CollectionUtils.isNotEmpty(sprintList)) {
 				List<DataCount> dataCountList = new ArrayList<>();
-				Map<String, Map<String, List<JiraIssue>>> sprintStatusJiraIssueGroups = jiraIssues.stream()
-						.collect(Collectors.groupingBy(JiraIssue::getSprintName,
-								() -> new TreeMap<>(Comparator.comparing(sprintName -> {
-									Optional<JiraIssue> earliestIssue = jiraIssues.stream()
-											.filter(issue -> issue.getSprintName().equals(sprintName))
-											.min(Comparator.comparing(issue -> {
-												String sprintBeginDate = issue.getSprintBeginDate();
-												return StringUtils.isNotEmpty(sprintBeginDate)
-														? LocalDate.parse(sprintBeginDate.split("T")[0], DATE_FORMATTER)
-														: LocalDate.MIN;
-											}));
-									return earliestIssue.map(JiraIssue::getSprintBeginDate).orElse("");
-								})), Collectors.groupingBy(JiraIssue::getStatus)));
+				Map<String, Map<String, List<JiraIssue>>> sprintStatusJiraIssueGroups = new HashMap<>();
+				sprintList.forEach(sprint -> {
+					Map<String, List<JiraIssue>> statusWiseJiraIssue = jiraIssues.stream()
+							.filter(jiraIssue -> jiraIssue.getSprintName().equalsIgnoreCase(sprint))
+							.collect(Collectors.groupingBy(JiraIssue::getStatus));
+					sprintStatusJiraIssueGroups.put(sprint, statusWiseJiraIssue);
 
+				});
+
+				List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 				sprintStatusJiraIssueGroups.forEach((sprintName, statusJiraMap) -> {
 					DataCount dataCount = new DataCount();
 					dataCount.setSSprintName(sprintName);
@@ -177,17 +153,18 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					Map<String, StatusWiseIssue> statusWiseStoryCountAndPointMap = new LinkedHashMap<>();
 					TreeMap<String, List<JiraIssue>> sortedStatusJiraMap = new TreeMap<>(statusJiraMap);
 					sortedStatusJiraMap.forEach((status, jiraIssue) -> {
+						filteredJiraIssue.addAll(jiraIssue);
 						StatusWiseIssue statusWiseData = getStatusWiseStoryCountAndPointList(jiraIssue, fieldMapping);
 						statusWiseStoryCountAndPointMap.put(status, statusWiseData);
 					});
 
-					dataCount.setData(String.valueOf(calculateTotalSize(sortedStatusJiraMap)));
+					dataCount.setData(String.valueOf(sortedStatusJiraMap.values().stream().mapToInt(List::size).sum()));
 					dataCount.setValue(statusWiseStoryCountAndPointMap);
 					dataCountList.add(dataCount);
 				});
 
 				overAllIterationKpiValue.setValue(dataCountList);
-				populateExcelDataObject(requestTrackerId, excelData, jiraIssues, fieldMapping);
+				populateExcelDataObject(requestTrackerId, excelData, filteredJiraIssue, fieldMapping);
 				kpiElement.setModalHeads(KPIExcelColumn.ITERATION_READINESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.ITERATION_READINESS.getColumns());
 				kpiElement.setExcelData(excelData);
@@ -197,21 +174,6 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
-	}
-
-	/**
-	 * Calculate total size of jira issues in a sprint
-	 * 
-	 * @param map
-	 * @return
-	 */
-	public static int calculateTotalSize(Map<String, List<JiraIssue>> map) {
-		int totalSize = 0;
-		for (List<JiraIssue> list : map.values()) {
-			totalSize += list.size();
-		}
-
-		return totalSize;
 	}
 
 	/**
@@ -251,8 +213,14 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			}
 		}).sum();
 
-		statusWiseCountAndPoints.setIssueStoryPoint(totalStoryPoints + " SP");
+		statusWiseCountAndPoints.setIssueStoryPoint(totalStoryPoints + SP);
 
 		return statusWiseCountAndPoints;
 	}
+
+	@Override
+	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
+		return null;
+	}
+
 }
