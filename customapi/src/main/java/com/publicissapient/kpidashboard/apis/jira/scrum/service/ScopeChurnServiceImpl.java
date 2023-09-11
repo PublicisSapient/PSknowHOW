@@ -62,7 +62,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -432,10 +431,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		String requestTrackerId = getRequestTrackerId();
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			Map<String, String> addedIssueDateMap = processSprintIssues(sprintWiseAddedList, curSprintName,
-					issueWiseHistoryMap, CommonConstant.ADDED);
-			Map<String, String> removedIssueDateMap = processSprintIssues(sprintWiseRemovedList, curSprintName,
-					issueWiseHistoryMap, CommonConstant.REMOVED);
+			Map<String, String> addedIssueDateMap = KpiDataHelper.processSprintIssues(sprintWiseAddedList,
+					curSprintName, issueWiseHistoryMap, CommonConstant.ADDED);
+			Map<String, String> removedIssueDateMap = KpiDataHelper.processSprintIssues(sprintWiseRemovedList,
+					curSprintName, issueWiseHistoryMap, CommonConstant.REMOVED);
 
 			if (CollectionUtils.isNotEmpty(sprintWiseRemovedList)) {
 				Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
@@ -446,35 +445,6 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			}
 		}
-	}
-
-	/**
-	 * To calculate the added/removed date for scope change issue for Excel
-	 * 
-	 * @param issues
-	 * @param sprint
-	 * @param issueWiseHistoryMap
-	 * @param changeType
-	 * @return
-	 */
-	public Map<String, String> processSprintIssues(List<JiraIssue> issues, String sprint,
-			Map<String, List<JiraHistoryChangeLog>> issueWiseHistoryMap, String changeType) {
-		Map<String, String> issueDateMap = new HashMap<>();
-
-		issues.stream().map(JiraIssue::getNumber).forEach(issueKey -> {
-			List<JiraHistoryChangeLog> sprintUpdateLog = issueWiseHistoryMap.get(issueKey);
-
-			sprintUpdateLog.stream()
-					.filter(sprintUpdate -> changeType.equals(CommonConstant.ADDED)
-							? sprintUpdate.getChangedTo().equalsIgnoreCase(sprint)
-							: changeType.equals(CommonConstant.REMOVED)
-									&& sprintUpdate.getChangedFrom().equalsIgnoreCase(sprint))
-					.forEach(sprintUpdate -> issueDateMap.put(issueKey,
-							DateUtil.dateTimeConverter(sprintUpdate.getUpdatedOn().toString(), DateUtil.DATE_FORMAT,
-									DateUtil.DISPLAY_DATE_FORMAT)));
-		});
-
-		return issueDateMap;
 	}
 
 	/**
