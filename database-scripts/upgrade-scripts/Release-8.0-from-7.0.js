@@ -3931,3 +3931,19 @@ db.getCollection('kpi_category_mapping').insertOne({
 	"kpiOrder": 9,
 	"kanban": false
 });
+
+// Note : below code only For Opensource project
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraStoryIdentificationKPI164",
+                "value":[
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                ]
+            }
+   }}
+);

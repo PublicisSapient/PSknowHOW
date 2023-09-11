@@ -532,3 +532,14 @@ db.kpi_column_configs.deleteOne({
 db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi164"
 });
+
+// Note : below code only For Opensource project
+// deleting metadata_identifier for scope churn
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraStoryIdentificationKPI164"
+      }
+   }}
+);
