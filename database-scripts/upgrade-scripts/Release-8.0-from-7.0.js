@@ -3802,8 +3802,30 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
-
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+//remove search options from fieldmapping structure
+db.field_mapping_structure.updateMany(
+    {
+        "fieldName": {
+            $in: ["resolutionTypeForRejectionKPI37",
+                "resolutionTypeForRejectionKPI28",
+                "resolutionTypeForRejectionDSR",
+                "resolutionTypeForRejectionKPI82",
+                "resolutionTypeForRejectionKPI135",
+                "resolutionTypeForRejectionKPI133",
+                "resolutionTypeForRejectionRCAKPI36",
+                "resolutionTypeForRejectionKPI14",
+                "resolutionTypeForRejectionQAKPI111",
+                "resolutionTypeForRejectionKPI35"
+            ]
+        }
+    },
+    {
+        $unset: { "fieldCategory": null }
+    }
+
+)
+
 db.getCollection('field_mapping_structure').insertMany([
     {
         "fieldName": "jiraStatusStartDevelopmentKPI154",

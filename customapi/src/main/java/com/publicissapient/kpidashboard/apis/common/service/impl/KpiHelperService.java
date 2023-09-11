@@ -590,9 +590,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = fieldMappingMap
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI39(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -659,9 +659,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI138(),
-						fieldMapping.getJiraIterationCompletionStatusKPI138(), null).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI138(), null);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1506,7 +1506,10 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get projectWiseTotalIssues
+	 * when multiple sprints are selected from knowHow dashboard, duplicate issues
+	 * present in total sprintdetails section should be used to find minimum closed
+	 * dates
+	 *
 	 * @param projectWiseTotalSprintDetails
 	 * @return
 	 */
@@ -1541,7 +1544,7 @@ public class KpiHelperService { // NOPMD
 
 		duplicateIssues.forEach((objectId, issues) -> {
 			List<String> customFields = customFieldMapping.getOrDefault(objectId, Collections.emptyList());
-			if (!customFields.isEmpty()) {
+			if (CollectionUtils.isNotEmpty(customFields)) {
 				Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
 				for (String issue : issues) {
 					List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
@@ -1559,20 +1562,7 @@ public class KpiHelperService { // NOPMD
 						Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
 						List<LocalDateTime> minimumDate = new ArrayList<>();
 
-						for (JiraHistoryChangeLog log : statusUpdationLog) {
-							String changedTo = log.getChangedTo();
-							if (customFields.contains(changedTo)) {
-								LocalDateTime updatedOn = log.getUpdatedOn();
-								minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
-							} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
-								LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
-										.min(LocalDateTime::compareTo).orElse(null);
-								if (minDate != null) {
-									minimumDate.add(minDate);
-									minimumCompletedStatusWiseMap.clear();
-								}
-							}
-						}
+						KpiDataHelper.getMiniDateOfCompleteCycle(customFields, statusUpdationLog, minimumCompletedStatusWiseMap, minimumDate);
 
 						//if some status is left in the last cycle then that has to added in the minimum set
 						if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {

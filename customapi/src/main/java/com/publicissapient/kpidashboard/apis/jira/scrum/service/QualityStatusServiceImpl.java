@@ -57,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -64,6 +65,7 @@ import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
@@ -137,10 +139,14 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper
-						.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail), new ArrayList<>(),
-								fieldMapping.getJiraIterationCompletionStatusKPI133(), null)
-						.get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI133(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
@@ -168,10 +174,11 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 				List<String> typeNameList = fieldMapping.getJiraItrQSIssueTypeKPI133();
 
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
-					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssue);
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssue,
+							totalJiraIssueList);
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueList);
+									sprintDetails.getTotalIssues(), filteredJiraIssue);
 
 					sprintReportIssueList = getTypeNameFilterJiraIssueList(defectTypes, typeNameList,
 							sprintReportIssueList);
@@ -206,7 +213,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStories));
 				}
 				if (CollectionUtils.isNotEmpty(completedIssue)) {
-					List<JiraIssue> completedIssueList = getJiraIssuesFromBaseClass(completedIssue);
+					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue,
+							totalJiraIssueList);
 					Set<JiraIssue> completedJiraIssue = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);

@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +60,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -137,21 +137,28 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						fieldMapping.getJiraIterationIssuetypeKPI128(),
-						fieldMapping.getJiraIterationCompletionStatusKPI128(), null).get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI128(),
+						fieldMapping.getJiraIterationCompletionStatusKPI128(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							totalIssues);
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
+							totalJiraIssueList);
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper
+							.getFilteredJiraIssueHistory(totalIssues, totalHistoryList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueList);
+									sprintDetails.getTotalIssues(), jiraIssueList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 					resultListMap.put(ISSUE_CUSTOM_HISTORY, new ArrayList<>(issueHistoryList));
 					resultListMap.put(SPRINT_DETAILS, sprintDetails);
@@ -453,7 +460,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 				.findFirst().orElse(new JiraIssueCustomHistory());
 
-		String devCompletionDate = getDevCompletionDate(issueCustomHistory,fieldMapping.getJiraDevDoneStatusKPI128());
+		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI128());
 		// calling function for cal actual completion days
 		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory, sprintDetails, fieldMapping);
 
@@ -538,7 +545,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				CalculatePCDHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI128(), jiraIssues, inProgressIssues, openIssues);
+				CalculatePCDHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI128(), jiraIssues,
+						inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});
