@@ -512,3 +512,23 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+// delete Scope Churn kpi
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi164" }
+);
+
+//delete fieldMapping for Scope Churn KPI
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: ["jiraStoryIdentificationKPI164"]}
+});
+
+// delete column config for Scope Churn KPI
+db.kpi_column_configs.deleteOne({
+    "kpiId": "kpi164"
+});
+
+// delete kpi_category_mapping for Scope Churn KPI
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi164"
+});
