@@ -6913,7 +6913,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI28",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by Priority' calculation"
@@ -6923,7 +6922,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI37",
         "fieldLabel": "Resolution type to be included",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Rejection Rate' calculation."
@@ -6933,7 +6931,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionDSR",
         "fieldLabel": "Resolution Type for Rejection",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolution type to identify rejected defects. <br>"
@@ -6943,7 +6940,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI82",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6953,7 +6949,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI135",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6963,7 +6958,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI133",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Quality Status' calculation"
@@ -6973,7 +6967,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionRCAKPI36",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by RCA' calculation."
@@ -6983,7 +6976,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI14",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
@@ -6993,7 +6985,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionQAKPI111",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Density' calculation."
@@ -7500,7 +7491,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI35",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Seepage rate' calculation."

@@ -144,7 +144,7 @@ jobs:
         id: testazure
         if: steps.processors.outputs.processors == 'true'
         run: |
-               mvn clean install -PazureProcessor 
+          mvn clean install -Pazure-board-processor
       - name: Building and Testing Devops processor
         id: testdevops-processor
         if: steps.processors.outputs.processors == 'true'
