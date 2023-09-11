@@ -299,6 +299,14 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		return week;
 	}
 
+	/**
+	 * create sonar kpis data count obj
+	 * @param value
+	 * @param hoverValues
+	 * @param projectName
+	 * @param date
+	 * @return
+	 */
 	public DataCount getDataCountObject(Long value, Map<String, Object> hoverValues, String projectName, String date) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));

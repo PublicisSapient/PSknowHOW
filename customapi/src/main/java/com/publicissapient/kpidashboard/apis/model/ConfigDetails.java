@@ -84,10 +84,6 @@ public class ConfigDetails {
 		this.hierarchySelectionCount = hierarchySelectionCount;
 	}
 
-	public int getNoOfDataPoints() {
-		return noOfDataPoints;
-	}
-
 	public void setNoOfDataPoints(int noOfDataPoints) {
 		this.noOfDataPoints = noOfDataPoints;
 	}
