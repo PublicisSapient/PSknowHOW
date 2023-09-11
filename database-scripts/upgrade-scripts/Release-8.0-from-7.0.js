@@ -3802,9 +3802,29 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+//remove search options from fieldmapping structure
+db.field_mapping_structure.updateMany(
+    {
+        "fieldName": {
+            $in: ["resolutionTypeForRejectionKPI37",
+                "resolutionTypeForRejectionKPI28",
+                "resolutionTypeForRejectionDSR",
+                "resolutionTypeForRejectionKPI82",
+                "resolutionTypeForRejectionKPI135",
+                "resolutionTypeForRejectionKPI133",
+                "resolutionTypeForRejectionRCAKPI36",
+                "resolutionTypeForRejectionKPI14",
+                "resolutionTypeForRejectionQAKPI111",
+                "resolutionTypeForRejectionKPI35"
+            ]
+        }
+    },
+    {
+        $unset: { "fieldCategory": null }
+    }
 
-
-//------------------------- 7.9.0 changes---------------------------------------------------------------
+)
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{
@@ -3844,6 +3864,7 @@ db.kpi_master.bulkWrite([{
    }
  }]);
 
+// fieldMapping Structure fields for Lead time for changes in DORA tab
  db.getCollection('field_mapping_structure').insertMany([{
  	"fieldName": "mergeRequestStatusKPI156",
  	"fieldLabel": "Merge Request Status Type",
