@@ -91,16 +91,10 @@
   z-index: 999;
 }
 
-::ng-deep .legend_item {
-  margin-right: 10px;
-}
-
 :host::ng-deep .legend_color_indicator {
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 1px;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px 0 0;
 }
 
 ::ng-deep .legend_color_indicator.current_day {
