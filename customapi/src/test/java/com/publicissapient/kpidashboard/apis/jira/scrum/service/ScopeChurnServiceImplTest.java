@@ -143,6 +143,28 @@ public class ScopeChurnServiceImplTest {
 	}
 
 	@Test
+	public void testFetchKPIDataFromDbEmptyData_BadScenario() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		List<Node> leafNodeList = new ArrayList<>();
+		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
+		Map<String, Object> defectDataListMap = scopeChurnService.fetchKPIDataFromDb(leafNodeList, null, null,
+				kpiRequest);
+		assertNotNull(defectDataListMap);
+	}
+
+	@Test
 	public void testGetData() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -158,6 +180,29 @@ public class ScopeChurnServiceImplTest {
 		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
 		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(totalIssueList);
+		try {
+			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Scope churn value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+		} catch (Exception exception) {
+		}
+	}
+	@Test
+	public void testGetData_BadScenario() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		String kpiRequestTrackerId = "Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(scopeChurnService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(sprintRepository.findBySprintIDIn(Mockito.any())).thenReturn(sprintDetailsList);
+		when(jiraIssueRepository.findIssueByNumber(Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(new ArrayList<>());
 		try {
 			KpiElement kpiElement = scopeChurnService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
