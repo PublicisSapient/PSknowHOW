@@ -561,7 +561,7 @@ public abstract class ToolsKPIService<R, S> {
 						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
 					}
 					Object calculatedAggValue = null;
-					if (kpiId.equals("kpi156")) {
+					if (kpiId.equals(KPICode.LEAD_TIME_FOR_CHANGE.getKpiId())) {
 						List<Double> values = dataCounts.stream().map(val -> (Double) val.getValue())
 								.collect(Collectors.toList());
 						calculatedAggValue = AggregationUtils.average(values).intValue();
@@ -614,12 +614,12 @@ public abstract class ToolsKPIService<R, S> {
 							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
 						}
 						Object calculatedAggValue = null;
-						if (kpiId.equals("kpi116")) {
+						if (kpiId.equals(KPICode.CHANGE_FAILURE_RATE.getKpiId())) {
 							List<Double> values = value.stream().map(val -> (Double) val.getValue())
 									.collect(Collectors.toList());
 							calculatedAggValue = AggregationUtils.average(values);
 						}
-						if (kpiId.equals("kpi118")) {
+						if (kpiId.equals(KPICode.DEPLOYMENT_FREQUENCY.getKpiId())) {
 							List<Long> values = value.stream().map(val -> (Long) val.getValue())
 									.collect(Collectors.toList());
 							calculatedAggValue = AggregationUtils.averageLong(values);

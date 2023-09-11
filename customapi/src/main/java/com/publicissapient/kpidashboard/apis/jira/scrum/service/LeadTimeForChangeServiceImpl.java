@@ -117,7 +117,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 	@Override
 	public String getQualifierType() {
-		return KPICode.LEAD_TIME_CHANGE.name();
+		return KPICode.LEAD_TIME_FOR_CHANGE.name();
 	}
 
 	@Override
@@ -134,8 +134,8 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.LEAD_TIME_CHANGE);
+		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_FOR_CHANGE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.LEAD_TIME_FOR_CHANGE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -190,9 +190,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 						CommonUtils.convertToPatternListForSubString(sortedReleaseList));
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			}
-			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
+			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI156()).isPresent()) {
 				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI3()));
+						CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI156()));
 			}
 			if (Optional.ofNullable(fieldMapping.getJiraDodKPI156()).isPresent()) {
 				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",

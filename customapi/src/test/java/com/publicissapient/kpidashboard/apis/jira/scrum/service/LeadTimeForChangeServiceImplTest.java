@@ -101,7 +101,7 @@ public class LeadTimeForChangeServiceImplTest {
 	public void setup() {
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
-		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.LEAD_TIME_CHANGE.getKpiId());
+		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.LEAD_TIME_FOR_CHANGE.getKpiId());
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -149,7 +149,7 @@ public class LeadTimeForChangeServiceImplTest {
 
 	@Test
 	public void testQualifierType() {
-		String kpiName = KPICode.LEAD_TIME_CHANGE.name();
+		String kpiName = KPICode.LEAD_TIME_FOR_CHANGE.name();
 		String type = leadTimeForChangeService.getQualifierType();
 		assertThat("KPI NAME: ", type, equalTo(kpiName));
 	}

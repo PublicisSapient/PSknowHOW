@@ -116,6 +116,15 @@
                       ]
                   },
                   {
+                      "type": "jiraIssueTypeKPI156",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
                       "type": "jiraQAKPI111IssueType",
                       "value": [
                           "Story",

@@ -8253,15 +8253,15 @@ db.getCollection('field_mapping_structure').insertMany(
      	}
      },
      {
-      "fieldName": "jiraIterationIssuetypeKPI125",
-      "fieldLabel": "Issue type to be included",
-      "fieldType": "chips",
-      "fieldCategory": "Issue_Type",
-      "section": "Issue Types Mapping",
+       "fieldName": "jiraIssueTypeKPI156",
+       "fieldLabel": "Issue type to be included",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
        "tooltip": {
-           "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
-        }
-      },
+             "definition": "All the issue types used by a project in Jira."
+         }
+     },
     {
        "fieldName": "jiraDodKPI156",
        "fieldLabel": "Status to identify DOD",

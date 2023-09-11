@@ -32,6 +32,8 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	private static final String ID = "_id";
 	private static final String DATE = "date";
 	private static final String SCM_MERGED_TIMESTAMP = "closedDate";
+
+	private static final String MERGE_REQUESTS = "merge_requests";
 	@Autowired
 	private MongoOperations operations;
 
@@ -58,7 +60,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 								.append(PROCESSOR_ITEM_ID, "$_id.processorItemId").append(COUNT, 1)),
 				new BasicDBObject("$sort", new BasicDBObject(DATE, 1)));
 
-		AggregateIterable<Document> cursor = operations.getCollection("merge_requests").aggregate(pipeline);
+		AggregateIterable<Document> cursor = operations.getCollection(MERGE_REQUESTS).aggregate(pipeline);
 		MongoCursor<Document> itr = cursor.iterator();
 		List<MergeRequests> returnList = new ArrayList<>();
 		while (itr.hasNext()) {
@@ -76,7 +78,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 		pipeline = Arrays.asList(new BasicDBObject("$match", new BasicDBObject("$or", filterList)
 				.append(SCM_MERGED_TIMESTAMP, new BasicDBObject("$gte", startDate).append("$lte", endDate))));
 
-		AggregateIterable<Document> cursor = operations.getCollection("merge_requests").aggregate(pipeline);
+		AggregateIterable<Document> cursor = operations.getCollection(MERGE_REQUESTS).aggregate(pipeline);
 		MongoCursor<Document> itr = cursor.iterator();
 		List<MergeRequests> returnList = new ArrayList<>();
 		while (itr.hasNext()) {
@@ -92,7 +94,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(ObjectId basicProjectConfigId,
 			List<Pattern> fromBranches, List<String> mergeRequestStatusList, String toBranch) {
 		LookupOperation lookupProcessorItem = LookupOperation.newLookup().from("processor_items")
-				.localField("processorItemId").foreignField("_id").as("processorItem");
+				.localField(PROCESSOR_ITEM_ID).foreignField("_id").as("processorItem");
 
 		LookupOperation lookupProjectToolConfig = LookupOperation.newLookup().from("project_tool_configs")
 				.localField("processorItem.toolConfigId").foreignField("_id").as("projectToolConfig");
@@ -101,13 +103,13 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 				Criteria.where("projectToolConfig.basicProjectConfigId").is(basicProjectConfigId).and("fromBranch")
 						.in(fromBranches).and("toBranch").is(toBranch).and("state").in(mergeRequestStatusList));
 
-		ProjectionOperation projectStage = Aggregation.project("processorItemId", "title", "state", "revisionNumber",
-				"createdDate", "updatedDate", "closedDate", "fromBranch", "toBranch");
+		ProjectionOperation projectStage = Aggregation.project(PROCESSOR_ITEM_ID, "title", "state", "revisionNumber",
+				SCM_CREATED_DATE, "updatedDate", SCM_MERGED_TIMESTAMP, "fromBranch", "toBranch");
 
 		Aggregation aggregation = Aggregation.newAggregation(lookupProcessorItem, Aggregation.unwind("processorItem"),
 				lookupProjectToolConfig, Aggregation.unwind("projectToolConfig"), matchStage, projectStage);
 
-		return operations.aggregate(aggregation, "merge_requests", MergeRequests.class).getMappedResults();
+		return operations.aggregate(aggregation, MERGE_REQUESTS, MergeRequests.class).getMappedResults();
 	}
 
 }

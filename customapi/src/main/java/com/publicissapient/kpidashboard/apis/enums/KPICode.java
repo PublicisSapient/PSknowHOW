@@ -435,7 +435,7 @@ public enum KPICode {
     /**
      * Lead Time Change DORA  kpi code
      */
-    LEAD_TIME_CHANGE("kpi156", KPISource.JIRA.name());
+    LEAD_TIME_FOR_CHANGE("kpi156", KPISource.JIRA.name());
 
 
     // @formatter:on
