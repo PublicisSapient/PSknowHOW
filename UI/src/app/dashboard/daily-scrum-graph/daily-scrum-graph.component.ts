@@ -27,7 +27,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
     this.displayModal = !this.displayModal;
   }
 
-  //generated dates on MM/DD format 
+  //generated dates on MM/DD format
   generateDates() {
     const currentDate = new Date();
 
@@ -167,14 +167,14 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         const yValue = y(index);
         let assigneeName ='';
         if(Array.isArray(issue['assigneeLogGroup'][d])){
-          
+
           for(let i=0;i< issue['assigneeLogGroup'][d].length;i++){
             if(issue['assigneeLogGroup'][d].length > 1 && i !== issue['assigneeLogGroup'][d].length-1){
               assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) +' --> ';
             }else{
               assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]);
             }
-           
+
           }
         }else{
           assigneeName = getNameInitials(issue['assigneeLogGroup'][d]);
@@ -290,8 +290,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .style('font-weight', 'bold')
         .style('cursor', issue['subTask'] ? 'pointer': 'initial')
         .on('click',function(){
-        
-          
+
+
           selectedIssueSubtask = issue['subTask'].map(d => ({...d,isSubtask:true}));
           console.log(issue['subTask'],selectedIssueSubtask);
           showSubTask(issue,i);
@@ -376,7 +376,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
             showIssueIdandStatus(centerDate,issue,i+1,false);
 
           } else if (openIssueStatus.includes(issue['Issue Status'])) {
-            //draw circle to represent issue 
+            //draw circle to represent issue
             const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
             const yValue = y(i+1);
 
@@ -420,7 +420,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       startPoint = issue['Actual-Start-Date']  ? new Date(issue['Actual-Start-Date']) : new Date();
     }
     //calculate endDate
-    const endPoint = issue['Actual-Completion-Date'] ? new Date(issue['Actual-Completion-Date']) : new Date(this.selectedSprintInfo.sprintEndDate);
+    const endPoint = issue['Actual-Completion-Date'] ? new Date(issue['Actual-Completion-Date']) : new Date();
 
     const noOfDaysBetweenStartandEnd = this.getNoOFDayBetweenStartAndEndDate(startPoint,endPoint);
 

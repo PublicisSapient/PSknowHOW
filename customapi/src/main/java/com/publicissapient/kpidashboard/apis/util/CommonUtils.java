@@ -519,20 +519,7 @@ public final class CommonUtils {
 		int hours = inputSeconds / 3600;
 		if (hours > 0) {
 			sb.append(' ').append(hours).append('h');
-			inputSeconds %= (hours * 3600);
 		}
-
-		int minutes = inputSeconds / 60;
-		if (minutes > 0) {
-			sb.append(' ').append(minutes).append('m');
-			inputSeconds %= (minutes * 60);
-		}
-
-		int seconds = inputSeconds;
-		if (seconds > 0) {
-			sb.append(' ').append(seconds).append('s');
-		}
-
 		return sb.toString();
 	}
 

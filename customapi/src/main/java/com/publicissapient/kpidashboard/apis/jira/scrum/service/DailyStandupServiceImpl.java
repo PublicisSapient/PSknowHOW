@@ -25,7 +25,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +61,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -146,15 +146,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 *
-	 * @param sprintLeafNodeList
-	 * @param kpiElement
-	 * @param kpiRequest
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
@@ -241,7 +236,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				userWiseCardDetail.setAssigneeName(assigneeName);
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
-			inheritFromParent(parentChildRelation, mapOfModalObject, (Set<String>) resultMap.get(CLOSE_STATUS));
 			// set filter on Second Screen
 			setFilters(kpiElement, fieldMapping, allRoles);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
@@ -270,9 +264,14 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails = KpiDataHelper.processSprintBasedOnFieldMappings(
-						Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKPI119(),
-						fieldMapping.getJiraIterationCompletionStatusKPI154(), null).get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI119(),
+						fieldMapping.getJiraIterationCompletionStatusKPI119(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
@@ -280,26 +279,19 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				allIssues.addAll(notCompletedIssues);
 				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES));
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.ADDED_ISSUES));
-				allIssues.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
-						CommonConstant.PUNTED_ISSUES));
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
-					List<JiraIssue> allJiraIssues = getJiraIssuesFromBaseClass(allIssues);
-					List<JiraIssue> filteredAllJiraIssue = KpiDataHelper.getFilteredJiraIssue(allIssues, allJiraIssues);
-					List<JiraIssue> filteredNotCompletedJiraIssue = KpiDataHelper
-							.getFilteredJiraIssue(notCompletedIssues, allJiraIssues);
-
+					List<JiraIssue> filteredAllJiraIssue = IterationKpiHelper.getFilteredJiraIssue(allIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, null, filteredAllJiraIssue);
 
-					List<JiraIssueCustomHistory> issueHistoryList = getJiraIssuesCustomHistoryFromBaseClass(
-							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()));
+					List<JiraIssue> filteredNotCompletedJiraIssue = IterationKpiHelper
+							.getFilteredJiraIssue(notCompletedIssues, new ArrayList<>(totalIssueList));
 
-					Set<JiraIssue> notCompletedJiraIssues = KpiDataHelper
-							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getNotCompletedIssues(), filteredNotCompletedJiraIssue);
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
+							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
+							totalHistoryList);
 
 					if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())) {
 						List<String> taskType = fieldMapping.getJiraSubTaskIdentification();
@@ -320,7 +312,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					// get epic name linked with the story (Screen-2)
 					resultListMap.put(EPICS, epics);
 					// calculate remaining estimate and delays
-					resultListMap.put(NOT_COMPLETED_JIRAISSUE, new ArrayList<>(notCompletedJiraIssues));
+					resultListMap.put(NOT_COMPLETED_JIRAISSUE, filteredNotCompletedJiraIssue);
 					// to get the capacity of assignees(Screen-1)
 					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
 							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
@@ -493,7 +485,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						closedStatus);
 
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
-				iterationKpiModalValue.setStatusLogGroup(createDateWiseLogs(inSprintStatusLogs));
+				iterationKpiModalValue.setStatusLogGroup(
+						createDateWiseLogs(inSprintStatusLogs, iterationKpiModalValue.getActualStartDateInTime(),
+								iterationKpiModalValue.getActualCompletionDateInTime()));
 				iterationKpiModalValue.setWorkLogGroup(createDateWiseLogs(inSprintWorkLogs));
 				iterationKpiModalValue.setAssigneeLogGroup(
 						createDateWiseLogs(inSprintAssigneeLogs, iterationKpiModalValue.getActualStartDateInTime(),
@@ -520,6 +514,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						return v;
 					});
 				iterationKpiModalValue.setParentStory(jiraIssue.getParentStoryId());
+				iterationKpiModalValue
+						.setIssueType(StringUtils.isNotEmpty(jiraIssue.getOriginalType()) ? jiraIssue.getOriginalType()
+								: jiraIssue.getTypeName());
+				setPreclosedSubTask(fieldMapping, closedStatus, jiraIssue, iterationKpiModalValue);
 			}
 		}
 	}
@@ -592,7 +590,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			Map<String, IterationPotentialDelay> issueWiseDelay, JiraIssue jiraIssue) {
 		if (issueWiseDelay.containsKey(jiraIssue.getNumber()) && StringUtils.isNotEmpty(jiraIssue.getDueDate())) {
 			IterationPotentialDelay iterationPotentialDelay = issueWiseDelay.get(jiraIssue.getNumber());
-			jiraIssueModalObject.setPotentialDelay(String.valueOf(iterationPotentialDelay.getPotentialDelay()) + "d");
+			jiraIssueModalObject.setPotentialDelay(iterationPotentialDelay.getPotentialDelay() + "d");
 			jiraIssueModalObject.setPredictedCompletionDate(
 					DateUtil.dateTimeConverter(iterationPotentialDelay.getPredictedCompletedDate(),
 							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
@@ -655,8 +653,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		String lastTimeInString = null;
 		if (StringUtils.isEmpty(actualCompletionDateInTime)) {
 			if (CollectionUtils.isNotEmpty(inSprintHistoryLogs)) {
-				Collections.sort(inSprintHistoryLogs,
-						Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
+				inSprintHistoryLogs.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn).reversed());
 				lastTimeInString = CommonUtils.convertSecondsToDays((int) Duration
 						.between(inSprintHistoryLogs.get(0).getUpdatedOn(), LocalDateTime.now()).getSeconds());
 			} else if (CollectionUtils.isNotEmpty(allLogs)) {
@@ -679,38 +676,18 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	/*
-	 * if subtasks issues were closed in the previous sprint, and also spilled the
-	 * issues were coming with full length dotted line, provifing the completion
-	 * date of
+	 * if subtasks issues were closed in the previous sprint, and also spilled, then
+	 * set preClosed to true to provide a different identification for this
 	 */
-	private void inheritFromParent(Map<String, Set<String>> parentChildRelation,
-			Map<String, IterationKpiModalValue> mapOfModalObject, Set<String> closedStatus) {
-		if (MapUtils.isNotEmpty(parentChildRelation) && MapUtils.isNotEmpty(mapOfModalObject)) {
-			IterationKpiModalValue parentModalValue;
-			Map<String, IterationKpiModalValue> issueIdToModalValueMap = mapOfModalObject.entrySet().stream()
-					.filter(entry -> StringUtils.isEmpty(entry.getValue().getActualCompletionDateInTime()))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
-							(existing, replacement) -> existing));
-
-			for (Map.Entry<String, Set<String>> parentChild : parentChildRelation.entrySet()) {
-				Set<String> childSet = parentChild.getValue();
-				String parentKey = parentChild.getKey();
-
-				if (!issueIdToModalValueMap.containsKey(parentKey)
-						&& ObjectUtils.isNotEmpty(mapOfModalObject.get(parentKey))) {
-					parentModalValue = mapOfModalObject.get(parentKey);
-					String actualCompletionDate = parentModalValue.getActualCompletionDateInTime();
-
-					childSet.forEach(child -> mapOfModalObject.computeIfPresent(child, (k, v) -> {
-						if (StringUtils.isEmpty(v.getActualCompletionDateInTime())
-								&& closedStatus.contains(v.getIssueStatus()))
-							v.setActualCompletionDateInTime(actualCompletionDate);
-						v.setTimeWithStatus(Constant.DASH);
-						v.setTimeWithUser(Constant.DASH);
-						return v;
-					}));
-				}
-			}
+	private void setPreclosedSubTask(FieldMapping fieldMapping, Set<String> closedStatus, JiraIssue jiraIssue,
+			IterationKpiModalValue iterationKpiModalValue) {
+		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getOriginalType())
+				&& StringUtils.isEmpty(iterationKpiModalValue.getActualCompletionDateInTime())
+				&& closedStatus.contains(iterationKpiModalValue.getIssueStatus())) {
+			iterationKpiModalValue.setPreClosed(true);
+			iterationKpiModalValue.setTimeWithUser(Constant.DASH);
+			iterationKpiModalValue.setTimeWithStatus(Constant.DASH);
 		}
 	}
 
@@ -761,7 +738,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	@Data
-	protected class UserWiseCardDetail {
+	protected static class UserWiseCardDetail {
 		String assigneeId;
 		String assigneeName;
 		String role;
