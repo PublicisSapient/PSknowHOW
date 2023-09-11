@@ -198,7 +198,7 @@ export class GroupstackchartComponent implements OnChanges {
     //   for(let j = 0; j < actualTypes.length; j++){
     //     if(!groupData[i].hasOwnProperty(actualTypes[j])){
     //       groupData[i][actualTypes[j]] = 0;
-    //     }   
+    //     }
     //   }
     // }
 

@@ -79,7 +79,7 @@ public class KPIExcelUtility {
 	public static final String TIME = "0d ";
 	private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
 	private static final String DATE_YEAR_MONTH_FORMAT = "dd-MMM-yy";
-	private static final String DATE_FORMAT_PRODUCTION_DEFECT_AGEING = "yyyy-MM-dd";
+	private static final String ITERATION_DATE_FORMAT = "yyyy-MM-dd";
 	private static final DecimalFormat df2 = new DecimalFormat(".##");
 	private static final String STATUS = "Status";
 	private static final String WEEK = "Week";
@@ -1012,7 +1012,7 @@ public class KPIExcelUtility {
 				excelData.setPriority(defect.getPriority());
 				String date = Constant.EMPTY_STRING;
 				if (defect.getCreatedDate() != null) {
-					date = DateUtil.dateTimeConverter(defect.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+					date = DateUtil.dateTimeConverter(defect.getCreatedDate(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setCreatedDate(date);
@@ -1458,14 +1458,14 @@ public class KPIExcelUtility {
 				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
 				String date = Constant.EMPTY_STRING;
 				if (jiraIssue.getCreatedDate() != null) {
-					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DateUtil.DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setCreatedDate(date);
 				String updateDate = Constant.EMPTY_STRING;
 				if (jiraIssue.getUpdateDate() != null) {
 					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
-							DATE_FORMAT_PRODUCTION_DEFECT_AGEING, DateUtil.DISPLAY_DATE_FORMAT);
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setUpdatedDate(updateDate);
 				kpiExcelData.add(excelData);
@@ -1510,8 +1510,58 @@ public class KPIExcelUtility {
 
 	}
 
+	private static void populateUserMapForHappinessIndexKpi(
+			Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap, UserRatingData user) {
+		if (Objects.nonNull(user.getRating()) && !user.getRating().equals(0)) {
+			Pair<String, String> userIdentifier = Pair.of(user.getUserId(), user.getUserName());
+			List<Integer> userRatings = userRatingsForSprintMap.getOrDefault(userIdentifier, new ArrayList<>());
+			userRatings.add(user.getRating());
+			userRatingsForSprintMap.put(userIdentifier, userRatings);
+		}
+	}
+
+	public static double roundingOff(double value) {
+		return (double) Math.round(value * 100) / 100;
+	}
+
+	public static void populateBacklogDefectCountExcelData(List<JiraIssue> jiraIssues,
+			List<KPIExcelData> kpiExcelData) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getOriginalType());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
+				excelData.setStoryPoints(jiraIssue.getStoryPoints().toString());
+				List<String> sprintStatusList = Arrays.asList(CommonConstant.ACTIVE, CommonConstant.FUTURE);
+				excelData.setSprintName(StringUtils.isNotEmpty(jiraIssue.getSprintName())
+						&& StringUtils.isNotEmpty(jiraIssue.getSprintAssetState())
+						&& sprintStatusList.contains(jiraIssue.getSprintAssetState()) ? jiraIssue.getSprintName()
+								: "-");
+				String date = Constant.EMPTY_STRING;
+				if (jiraIssue.getCreatedDate() != null) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getCreatedDate(), DateUtil.DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setCreatedDate(date);
+				String updateDate = Constant.EMPTY_STRING;
+				if (jiraIssue.getUpdateDate() != null) {
+					updateDate = DateUtil.dateTimeConverter(jiraIssue.getUpdateDate(),
+							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setUpdatedDate(updateDate);
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
 	public static void populateIterationReadinessExcelData(List<JiraIssue> jiraIssues,
-															 List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+														   List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			jiraIssues.stream().forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
@@ -1533,7 +1583,7 @@ public class KPIExcelUtility {
 				}
 				String date = Constant.EMPTY_STRING;
 				if (!jiraIssue.getSprintBeginDate().isEmpty()) {
-					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), DATE_FORMAT_PRODUCTION_DEFECT_AGEING,
+					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
 							DateUtil.DISPLAY_DATE_FORMAT);
 				}
 				excelData.setSprintStartDate(date);
@@ -1550,19 +1600,4 @@ public class KPIExcelUtility {
 			});
 		}
 	}
-
-	private static void populateUserMapForHappinessIndexKpi(
-			Map<Pair<String, String>, List<Integer>> userRatingsForSprintMap, UserRatingData user) {
-		if (Objects.nonNull(user.getRating()) && !user.getRating().equals(0)) {
-			Pair<String, String> userIdentifier = Pair.of(user.getUserId(), user.getUserName());
-			List<Integer> userRatings = userRatingsForSprintMap.getOrDefault(userIdentifier, new ArrayList<>());
-			userRatings.add(user.getRating());
-			userRatingsForSprintMap.put(userIdentifier, userRatings);
-		}
-	}
-
-	public static double roundingOff(double value) {
-		return (double) Math.round(value * 100) / 100;
-	}
-
 }

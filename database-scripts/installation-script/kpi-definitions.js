@@ -3077,6 +3077,30 @@ db.getCollection('kpi_master').insertMany(
     "kpiFilter": "multiselectdropdown",
     "kpiWidth": 100,
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi155",
+    "kpiName": "Defect Count By Type",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Total count of issues in the backlog with a breakup by defect type."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
   }
 ]
 );
@@ -6386,7 +6410,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI28",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by Priority' calculation"
@@ -6396,7 +6419,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI37",
         "fieldLabel": "Resolution type to be included",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Rejection Rate' calculation."
@@ -6406,7 +6428,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionDSR",
         "fieldLabel": "Resolution Type for Rejection",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolution type to identify rejected defects. <br>"
@@ -6416,7 +6437,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI82",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6426,7 +6446,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI135",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6436,7 +6455,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI133",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Quality Status' calculation"
@@ -6446,7 +6464,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionRCAKPI36",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by RCA' calculation."
@@ -6456,7 +6473,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI14",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
@@ -6466,7 +6482,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionQAKPI111",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Density' calculation."
@@ -6973,7 +6988,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI35",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Seepage rate' calculation."
@@ -8124,6 +8138,58 @@ db.getCollection('field_mapping_structure').insertMany(
       "tooltip": {
            "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
       }
+    },
+    {
+       "fieldName":"jiraDefectRejectionStatusKPI155",
+       "fieldLabel":"Ticket Rejected/Dropped Status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status from workflow on which ticket is considered as Rejected/Dropped."
+       }
+    },
+    {
+       "fieldName":"jiraDodKPI155",
+       "fieldLabel":"DOD Status",
+       "fieldType":"chips",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+       }
+    },
+    {
+       "fieldName":"jiraLiveStatusKPI155",
+       "fieldLabel":"Status to identify Live status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Provide any status from workflow on which Live is considered."
+       }
+    },
+    {
+    	"fieldName": "uploadDataKPI42",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
+    },
+    {
+    	"fieldName": "uploadDataKPI16",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
     }
 ]
 );

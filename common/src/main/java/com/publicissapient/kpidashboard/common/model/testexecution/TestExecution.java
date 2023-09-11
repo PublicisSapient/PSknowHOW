@@ -51,5 +51,9 @@ public class TestExecution extends BasicModel {
 	private Integer totalTestCases;
 	private Integer executedTestCase;
 	private Integer passedTestCase;
+	private Integer automatedTestCases;
+	private Integer automatableTestCases;
+	private Integer automatedRegressionTestCases;
+	private Integer totalRegressionTestCases;
 	private String basicProjectConfigId;
 }

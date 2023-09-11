@@ -264,7 +264,12 @@ public enum KPIExcelColumn {
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
 
-	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay"));
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
+
+	//DTS-26123 start
+	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee"));
+	//DTS-26123 end
 
 	// @formatter:on
 

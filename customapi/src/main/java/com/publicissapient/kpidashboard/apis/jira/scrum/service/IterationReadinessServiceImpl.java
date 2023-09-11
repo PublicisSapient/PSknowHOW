@@ -79,6 +79,21 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 	private ConfigHelperService configHelperService;
 
 	@Override
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+
+		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
+			Filters filters = Filters.getFilter(k);
+			if (Filters.PROJECT == filters) {
+				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
+			}
+		});
+		log.info("Iteration Readiness Service impl -> getKpiData ->  : {}", kpiElement);
+		return kpiElement;
+
+	}
+
+	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -106,21 +121,6 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 	@Override
 	public String getQualifierType() {
 		return KPICode.ITERATION_READINESS_KPI.name();
-	}
-
-	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			Filters filters = Filters.getFilter(k);
-			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
-		log.info("Iteration Readiness Service impl -> getKpiData ->  : {}", kpiElement);
-		return kpiElement;
-
 	}
 
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
