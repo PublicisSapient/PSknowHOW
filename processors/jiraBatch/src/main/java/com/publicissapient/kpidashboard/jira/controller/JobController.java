@@ -37,10 +37,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
@@ -87,6 +89,9 @@ public class JobController {
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 
+	@Autowired
+	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
+
 	private static String PROJECT_ID = "projectId";
 	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
@@ -101,9 +106,12 @@ public class JobController {
 	@GetMapping("/startscrumboardjob")
 	public ResponseEntity<String> startScrumBoardJob() throws Exception {
 		log.info("Request come for job for Scrum project configured with board via controller");
-
+		int completedProjects = 0;
+		int totalProjects = 0;
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, false);
+		totalProjects = scrumBoardbasicProjConfIds.size();
+		log.info("Total projects to fun for Scrum - Board Wise : {}", totalProjects);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
 
@@ -119,6 +127,12 @@ public class JobController {
 					e.printStackTrace();
 				}
 			});
+			completedProjects++;
+		}
+		if (completedProjects == totalProjects) {
+			jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+					CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+			jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		}
 		executorService.shutdown();
 		return ResponseEntity.ok().body("job started for scrum board");
