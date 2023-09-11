@@ -62,7 +62,6 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 	@Autowired
 	private AccountHierarchyRepository accountHierarchyRepository;
-
 	HierarchyLevel sprintHierarchyLevel;
 	List<String> additionalFilterCategoryIds;
 	Map<Pair<String, String>, AccountHierarchy> existingHierarchy;
