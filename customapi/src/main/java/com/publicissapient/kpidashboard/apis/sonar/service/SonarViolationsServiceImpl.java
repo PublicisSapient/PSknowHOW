@@ -265,18 +265,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
-			String projectName, String date) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(sonarViolations));
-		dataCount.setSSprintID(date);
-		dataCount.setSSprintName(date);
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setValue(sonarViolations);
-		dataCount.setHoverValue(sonarViolationsHowerMap);
-		return dataCount;
-	}
 
 	/**
 	 * Gets KPICode's <tt>SONAR_VIOLATIONS</tt> enum

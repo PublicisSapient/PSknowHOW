@@ -277,7 +277,7 @@ public class SonarTechDebtKanbanServiceImpl
 			if (techDebtValue != -1l) {
 				// sqale index is in minutes in a 8 hr day so dividing it by 480
 				long techDebtValueInDays = Math.round(techDebtValue / 480.0);
-				DataCount dcObj = getDataCountObject(techDebtValueInDays, projectName, date);
+				DataCount dcObj = getDataCountObject(techDebtValueInDays, new HashMap<>(), projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new LinkedList<>()).add(dcObj);
 				projectList.add(keyName);
 				versionDate.add(date);
@@ -286,20 +286,11 @@ public class SonarTechDebtKanbanServiceImpl
 			}
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), projectName, date);
+				calculateKpiValue(dateWiseDebtList, KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId()), new HashMap<>(),
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
-	}
-
-	private DataCount getDataCountObject(Long value, String projectName, String date) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setValue(value);
-		dataCount.setHoverValue(new HashMap<>());
-		return dataCount;
 	}
 
 	/**

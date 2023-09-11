@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -37,8 +38,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -54,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -62,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is a service to compute unite coverage for kanban.
- * 
+ *
  * @author shichand0
  *
  */
@@ -72,6 +76,8 @@ public class UnitCoverageKanbanServiceimpl
 		extends SonarKPIService<Double, List<Object>, Map<String, List<SonarHistory>>> {
 
 	private static final String MATRIC_NAME_COVERAGE = "coverage";
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public String getQualifierType() {
@@ -243,7 +249,7 @@ public class UnitCoverageKanbanServiceimpl
 			final Double coverageValue = getCoverageValue(metricMap.get(MATRIC_NAME_COVERAGE));
 			if (coverageValue != -1l) {
 
-				DataCount dcObj = getDataCountObject(coverageValue, projectName, date);
+				DataCount dcObj = getDataCountObject(coverageValue.longValue(), new HashMap<>(), projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new LinkedList<>()).add(dcObj);
 				projectList.add(keyName);
 				versionDate.add(date);
@@ -252,21 +258,11 @@ public class UnitCoverageKanbanServiceimpl
 			}
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()), projectName,
-				date);
+				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()).longValue(),
+				new HashMap<>(), projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
-	}
-
-	private DataCount getDataCountObject(Double value, String projectName, String date) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setValue(value);
-		dataCount.setHoverValue(new HashMap<>());
-		return dataCount;
 	}
 
 	private Double getCoverageValue(Object coverage) {

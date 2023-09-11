@@ -267,19 +267,6 @@ public class SonarViolationsKanbanServiceImpl
 		}
 	}
 
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
-			String projectName, String date) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(sonarViolations));
-		dataCount.setSSprintID(date);
-		dataCount.setSSprintName(date);
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setValue(sonarViolations);
-		dataCount.setHoverValue(sonarViolationsHowerMap);
-		return dataCount;
-	}
-
 	private LocalDate getNextRangeDate(KpiRequest kpiRequest, LocalDate currentDate) {
 		if (kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK)) {
 			currentDate = currentDate.minusWeeks(1);
