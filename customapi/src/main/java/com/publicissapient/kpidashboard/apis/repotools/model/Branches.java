@@ -34,7 +34,7 @@ public class Branches {
     @JsonProperty("merge_requests")
     private List<MergeRequests> mergeRequestList;
     private Map<String, Double> mergeRequestsPT;
-    private long mergeRequests;
+    private Object mergeRequests;
     private double grade;
     private double average;
     private double hours;
