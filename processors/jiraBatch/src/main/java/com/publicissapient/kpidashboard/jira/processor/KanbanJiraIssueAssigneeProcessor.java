@@ -33,9 +33,4 @@ public interface KanbanJiraIssueAssigneeProcessor {
 	 * @return AssigneeDetails
 	 */
 	AssigneeDetails createKanbanAssigneeDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue);
-
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 }

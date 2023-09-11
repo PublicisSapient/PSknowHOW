@@ -41,6 +41,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.json.simple.JSONArray;
@@ -96,8 +97,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
-	private Map<String, Map<String, JiraIssue>> projectWiseIssues;
-
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
@@ -129,7 +128,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			Map<String, String> issueEpics = new HashMap<>();
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
-			jiraIssue = searchIssueInDb(projectConfig, issueId);
+			jiraIssue = getJiraIssue(projectConfig, issueId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());
@@ -167,52 +166,37 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	}
 
-	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
-
-		JiraIssue jiraIssue = new JiraIssue();
-		if (MapUtils.isEmpty(projectWiseIssues)) {
-			populateProjectWiseIssues(projectConfig);
-
-		}
-		if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			Map<String, JiraIssue> issueIdWiseJiraIssue = projectWiseIssues
-					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-				projectWiseIssues = new HashMap<>();
-				populateProjectWiseIssues(projectConfig);
-				Map<String, JiraIssue> updatedIdWiseIssues = projectWiseIssues
-						.get(projectConfig.getBasicProjectConfigId().toString());
-				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-				}
-
-			}
-		}
-		return jiraIssue;
-	}
-
-	private JiraIssue initializeJiraIssue(String issueId, Map<String, JiraIssue> issueIdWiseJiraIssue) {
-		JiraIssue jiraIssue = null;
-		jiraIssue = issueIdWiseJiraIssue.get(issueId);
-		if (null == jiraIssue) {
+	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
+		JiraIssue jiraIssue;
+		jiraIssue = findOneJiraIssue(issueId, projectConfig.getBasicProjectConfigId().toString());
+		if (jiraIssue == null) {
 			jiraIssue = new JiraIssue();
 		}
-		issueIdWiseJiraIssue = null;
 		return jiraIssue;
 	}
 
-	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("Checking if jira issue exist in Db for  project : {}", projectConfig.getProjectName());
-		List<JiraIssue> existingJiraIssues = jiraIssueRepository
-				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-		if (CollectionUtils.isNotEmpty(existingJiraIssues)) {
-			Map<String, JiraIssue> issueIdWiseJiraIssue = existingJiraIssues.stream()
-					.collect(Collectors.toMap(JiraIssue::getIssueId, Function.identity()));
-			projectWiseIssues = new HashMap<>();
-			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
+	/**
+	 * Finds one JiraIssue by issueId
+	 *
+	 * @param issueId
+	 *            jira issueId
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return JiraIssue corresponding to provided IssueId in DB
+	 */
+	private JiraIssue findOneJiraIssue(String issueId, String basicProjectConfigId) {
+		List<JiraIssue> jiraIssues = jiraIssueRepository
+				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
+
+		if (jiraIssues.size() > 1) {
+			log.error("JIRA Processor | More than one Jira Issue item found for id {}", issueId);
 		}
+
+		if (!jiraIssues.isEmpty()) {
+			return jiraIssues.get(0);
+		}
+		return null;
+
 	}
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
@@ -965,11 +949,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
 			}
 		}
-	}
-
-	@Override
-	public void cleanAllObjects() {
-		projectWiseIssues = null;
 	}
 
 }

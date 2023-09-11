@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -167,6 +168,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 	}
 
+	@TrackExecutionTime
 	private void fetchIssues(KerberosClient krb5Client, ProcessorJiraRestClient client) {
 		log.info("Reading issues for project : {} boardid : {} , page No : {}",
 				projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
@@ -238,6 +240,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		return deltaDate;
 	}
 
+	@TrackExecutionTime
 	private List<Issue> fetchEpics(KerberosClient krb5Client, ProcessorJiraRestClient client) {
 		log.info("Reading epics for project : {} boardid : {} ", projectConfFieldMapping.getProjectName(), boardId);
 		List<Issue> epicIssues = new ArrayList<>();

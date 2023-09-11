@@ -119,8 +119,8 @@ public class ProcessorServiceImpl implements ProcessorService {
 	@Override
 	public ServiceResponse fetchActiveSprint(String sprintId) {
 
-		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/processor/run",
-				"/activeIteration/fetch");
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/startprojectwiseissuejob",
+				"/startfetchsprintjob");
 
 		boolean isSuccess = true;
 

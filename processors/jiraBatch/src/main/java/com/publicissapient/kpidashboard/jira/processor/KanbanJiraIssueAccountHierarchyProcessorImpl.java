@@ -56,8 +56,6 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 	private KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
-	Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy;
-	List<String> additionalFilterCategoryIds;
 
 	@Override
 	public Set<KanbanAccountHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
@@ -69,16 +67,15 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel projectHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
 
-		additionalFilterCategoryIds = hierarchyLevelList.stream()
+		List<String> additionalFilterCategoryIds = hierarchyLevelList.stream()
 				.filter(x -> x.getLevel() > projectHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
 				.collect(Collectors.toList());
 
-		if (null == existingKanbanHierarchy) {
 			log.info("Fetching all hierarchy levels");
 			List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-			existingKanbanHierarchy = accountHierarchyList.stream()
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy= accountHierarchyList.stream()
 					.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-		}
+
 
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
@@ -139,12 +136,6 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 				accHierarchyToSave.add(accountHierarchy);
 			}
 		}
-	}
-
-	@Override
-	public void cleanAllObjects() {
-		additionalFilterCategoryIds = null;
-		existingKanbanHierarchy = null;
 	}
 
 }

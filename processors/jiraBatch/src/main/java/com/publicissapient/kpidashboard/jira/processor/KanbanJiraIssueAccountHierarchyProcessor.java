@@ -35,9 +35,4 @@ public interface KanbanJiraIssueAccountHierarchyProcessor {
 	 */
 	Set<KanbanAccountHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
 			ProjectConfFieldMapping projectConfFieldMapping);
-
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 }

@@ -39,9 +39,5 @@ public interface JiraIssueAccountHierarchyProcessor {
 	Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet);
 
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 
 }
