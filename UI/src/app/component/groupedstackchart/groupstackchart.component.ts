@@ -182,7 +182,7 @@ export class GroupstackchartComponent implements OnChanges {
       d2['hoverText'] = {};
       d.forEach((dx) => {
         console.log("dx", dx);
-        
+
         d2[dx.type] = dx.value;
         for (let key in dx?.hoverText) {
           d2['hoverText'][key] = dx?.hoverText[key];
@@ -203,15 +203,15 @@ export class GroupstackchartComponent implements OnChanges {
     //   for(let j = 0; j < actualTypes.length; j++){
     //     if(!groupData[i].hasOwnProperty(actualTypes[j])){
     //       groupData[i][actualTypes[j]] = 0;
-    //     }   
+    //     }
     //   }
     // }
     console.log("groupData", groupData);
-    
+
     const stackData = stack
       .keys(keys)(groupData);
     console.log("stackData", stackData);
-    
+
     svgX.append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${y(0)})`)
@@ -220,8 +220,8 @@ export class GroupstackchartComponent implements OnChanges {
     d3.select('.xAxis')
       .selectAll('.tick text').style('width','70px')
       // .attr('transform', 'rotate(-10)')
-      .call(this.wrap, 60) // select all the text elements 
-    
+      .call(this.wrap, 60) // select all the text elements
+
     const XCaption = d3
       .select(this.elem).select('#xCaptionContainer').append('text')
       .attr('x', ((document.getElementById('groupstackchart').offsetWidth - 70) / 2) - 24)
@@ -625,11 +625,11 @@ export class GroupstackchartComponent implements OnChanges {
   wrap(text, wrapWidth, yAxisAdjustment = 0) {
     text.each(function() {
       var text = d3.select(this),
-          words = text.text().split(/[\s|]+/).reverse(),
+          words = text.text().split(/[\s|_-]+/).reverse(),
           word,
           line = [],
           lineNumber = 0,
-          lineHeight = 1, 
+          lineHeight = 1,
           y = text.attr("y"),
           dy = parseFloat(text.attr("dy")) - yAxisAdjustment,
           tspan = text.text(null).append("tspan").attr("x", 30).attr("y", y - 2).attr("dy", `${dy}em`).attr("text-anchor", "end");
