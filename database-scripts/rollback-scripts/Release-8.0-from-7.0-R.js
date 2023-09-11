@@ -511,4 +511,23 @@ db.field_mapping_structure.updateMany(
         $set: { "fieldCategory": "workflow" }
     }
 
-)
+);
+//DTS-26150 start
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["testingPhaseDefectsIdentifier", "jiraDodKPI163"]}
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI163"
+      }
+   }}
+);
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi163" }
+);
+//DTS-26150 end

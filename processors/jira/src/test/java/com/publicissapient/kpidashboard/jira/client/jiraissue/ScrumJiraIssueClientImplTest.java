@@ -216,7 +216,7 @@ public class ScrumJiraIssueClientImplTest {
 	@Test
 	public void isBugRaisedByValueMatchesRaisedByCustomFieldTest() {
 		boolean flag = scrumJiraIssueClient.isBugRaisedByValueMatchesRaisedByCustomField(Arrays.asList("2", "3"),
-				new Object());
+				new Object(), null);
 		assertEquals(false, flag);
 	}
 
@@ -228,6 +228,10 @@ public class ScrumJiraIssueClientImplTest {
 		srs[0] = "TestHOW";
 		srs[1] = "TestHOW1";
 		fieldMapping.setJiraIssueTypeNames(srs);
+		fieldMapping.setJiradefecttype(Arrays.asList("Defect", "Bug"));
+		fieldMapping.setTestingPhaseDefectsIdentifier("Labels");
+		fieldMapping.setTestingPhaseDefectCustomField("CustomField");
+		fieldMapping.setTestingPhaseDefectValue(Arrays.asList("Bug", "TestHOW"));
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
 		BoardDetails board = new BoardDetails();

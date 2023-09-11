@@ -29,23 +29,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
@@ -383,6 +376,15 @@ public class FieldMapping extends BasicModel {
 	private String notificationEnabler="On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
+
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
+	// DTS-26150 end
 
 	/**
 	 * Get jira issue type names string [ ].

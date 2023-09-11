@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, HostListener, Input, OnChanges, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 
 @Component({
@@ -9,8 +9,8 @@ import * as d3 from 'd3';
 export class HorizontalPercentBarChartComponent implements OnChanges {
   @Input() data=[];
   selectedGroup = '';
-
-  constructor() { }
+  elem: any;
+  constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
   onWindowResize() {
@@ -19,6 +19,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
+      this.elem = this.viewContainerRef.element.nativeElement;
       this.data = this.data[0]['value'];
       this.draw();
     }
@@ -26,9 +27,10 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
 
   draw(){
+    const elem = this.elem;
     let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ?  document.getElementById('chart')?.offsetWidth : 485);
     chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth-70;
-    const chart = d3.select('#chart');
+    const chart = d3.select(elem).select('#chart');
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
     const margin = {top: 10, right: 22, bottom: 20, left: 100};
@@ -131,11 +133,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .on('mouseover', (event, d) => {
         this.selectedGroup = d.data.kpiGroup;
         const tooltipData = this.data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+        d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
         this.showTooltip(subgroups, width, margin, color, tooltipData);
       })
       .on('mouseout', (event, d) => {
-        d3.select('#chart').select('#legendContainer').selectAll('div').remove();
+        d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
         this.showLegend(subgroups, width, margin, color);
       });
 
@@ -144,7 +146,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   showLegend(subgroups, width, margin, color) {
-    const legendDiv = d3.select('#chart').select('#legendContainer')
+    const legendDiv = d3.select(this.elem).select('#chart').select('#legendContainer')
       .style('margin-top', '20px')
       .attr('width', 'auto')
       .style('margin-left', 50+ 'px');
@@ -167,7 +169,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   showTooltip(subgroups, width, margin, color, tooltipData) {
-    const legendDiv = d3.select('#chart').select('#legendContainer')
+    const legendDiv = d3.select(this.elem).select('#chart').select('#legendContainer')
       .style('margin-top', '20px')
       .attr('width', 'auto')
       .style('margin-left', 50 + 'px');
