@@ -56,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -651,36 +652,35 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
-	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
+	public static SprintDetails processSprintBasedOnFieldMappings(SprintDetails dbSprintDetail,
 			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
-		List<SprintDetails> updatedSprintDetails = new ArrayList<>(dbSprintDetails);
-		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
-			updatedSprintDetails.forEach(dbSprintDetail -> {
-				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
-					dbSprintDetail.setCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getCompletedIssues());
-					dbSprintDetail.setNotCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getNotCompletedIssues());
-					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
-							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
-							projectWiseDuplicateIssuesWithMinCloseDate);
-					dbSprintDetail.setCompletedIssues(newCompletedSet);
-					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					Set<SprintIssue> totalIssue = new HashSet<>();
-					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
-					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
-					dbSprintDetail.setTotalIssues(totalIssue);
-				}
-			});
+		if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
+			dbSprintDetail
+					.setCompletedIssues(CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+							: dbSprintDetail.getCompletedIssues());
+			dbSprintDetail.setNotCompletedIssues(
+					CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+							: dbSprintDetail.getNotCompletedIssues());
+			Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail, fieldMappingCompletionType,
+					fieldMappingCompletionStatus);
+			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+			// filtering by minimum closed date, if an issue is originally in RFT in jira
+			// report, and spilled in the same status through fieldmapping we changed RFT as
+			// closed, then the first sprint in which it appeared in RFT should be
+			// considered as the only sprint when it was closed, and not in further sprint,
+			// as it changes the velocity of each sprint
+			newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+					projectWiseDuplicateIssuesWithMinCloseDate);
+			dbSprintDetail.setCompletedIssues(newCompletedSet);
+			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+			Set<SprintIssue> totalIssue = new HashSet<>();
+			totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+			totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+			dbSprintDetail.setTotalIssues(totalIssue);
 		}
-		return updatedSprintDetails;
+		return dbSprintDetail;
 	}
 
 	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
@@ -690,15 +690,17 @@ public final class KpiDataHelper {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
 			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
 			if (MapUtils.isNotEmpty(stringListMap)) {
+				LocalDateTime endLocalDate = sprintDetail.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
+						? LocalDateTime.now()
+						: LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+								ZoneId.systemDefault());
 				return completedIssues.stream().filter(completedIssue -> {
 					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
 					if (CollectionUtils.isNotEmpty(issueDateMap)) {
 						return issueDateMap.stream()
-								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
-												ZoneId.systemDefault()),
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
-												ZoneId.systemDefault())));
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
+										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
+										endLocalDate));
 					}
 					return true;
 				}).collect(Collectors.toSet());
@@ -937,9 +939,30 @@ public final class KpiDataHelper {
 		return resultMap;
 	}
 
+	public static void getMiniDateOfCompleteCycle(List<String> completionStatus,
+			List<JiraHistoryChangeLog> statusUpdationLog, Map<String, LocalDateTime> minimumCompletedStatusWiseMap,
+			List<LocalDateTime> minimumDate) {
+		for (JiraHistoryChangeLog log : statusUpdationLog) {
+			String changedTo = log.getChangedTo();
+			if (completionStatus.contains(changedTo)) {
+				LocalDateTime updatedOn = log.getUpdatedOn();
+				minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
+			} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
+				// if found a status which is not among closed statuses, then save the minimum
+				// date and clear the map
+				LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream().min(LocalDateTime::compareTo)
+						.orElse(null);
+				if (minDate != null) {
+					minimumDate.add(minDate);
+					minimumCompletedStatusWiseMap.clear();
+				}
+			}
+		}
+	}
+
 	/**
 	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
-	 * 
+	 *
 	 * @param jiraIssueList
 	 *            list of Jira Issue
 	 * @param fieldMapping

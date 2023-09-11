@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,12 +48,14 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 import lombok.extern.slf4j.Slf4j;
@@ -103,25 +104,32 @@ public class UnplannedWorkStatusServiceImpl extends JiraKPIService<Integer, List
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Unplanned Work Status -> Requested sprint : {}", leafNode.getName());
-			SprintDetails dbSprintDetail= getSprintDetailsFromBaseClass();
+			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
 			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						fieldMapping.getJiraIterationIssuetypeKPI134(),
-						fieldMapping.getJiraIterationCompletionStatusKPI134(), null).get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI134(),
+						fieldMapping.getJiraIterationCompletionStatusKPI134(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.TOTAL_ISSUES);
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> issueList = getJiraIssuesFromBaseClass(totalIssues);
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getTotalIssues(), issueList);
+									sprintDetails.getTotalIssues(), jiraIssueList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				resultListMap.put(COMPLETED, new ArrayList<>(completedIssues));
