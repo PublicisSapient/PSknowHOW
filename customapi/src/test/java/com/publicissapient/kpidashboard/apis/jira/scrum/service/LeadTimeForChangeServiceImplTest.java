@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -44,6 +46,8 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -59,6 +63,8 @@ import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -91,11 +97,16 @@ public class LeadTimeForChangeServiceImplTest {
 
 	private KpiRequest kpiRequest;
 	private Map<String, Object> filterLevelMap;
+
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private List<DataCount> dataCountList = new ArrayList<>();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+
+	private List<JiraIssue> jiraIssueList = new ArrayList<>();
+
+	private List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -107,9 +118,15 @@ public class LeadTimeForChangeServiceImplTest {
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
 		filterLevelMap = new LinkedHashMap<>();
 		filterLevelMap.put("PROJECT", Filters.PROJECT);
+
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
+		jiraIssueList = jiraIssueDataFactory.getJiraIssues();
+		JiraIssueHistoryDataFactory issueHistoryFactory = JiraIssueHistoryDataFactory.newInstance();
+		issueCustomHistoryList = issueHistoryFactory.getJiraIssueCustomHistory();
 
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -138,13 +155,13 @@ public class LeadTimeForChangeServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
-		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-
+		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any()))
+				.thenReturn(issueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = leadTimeForChangeService.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
-		assertNotNull(defectDataListMap);
+		Map<String, Object> leadTimeDataListMap = leadTimeForChangeService.fetchKPIDataFromDb(leafNodeList, null, null,
+				kpiRequest);
+		assertNotNull(leadTimeDataListMap);
 	}
 
 	@Test
@@ -155,7 +172,7 @@ public class LeadTimeForChangeServiceImplTest {
 	}
 
 	@Test
-	public void getPIPredictability() throws ApplicationException {
+	public void getLeadTimeForChange() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -163,8 +180,11 @@ public class LeadTimeForChangeServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any()))
+				.thenReturn(issueCustomHistoryList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(5);
+		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {
 			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
