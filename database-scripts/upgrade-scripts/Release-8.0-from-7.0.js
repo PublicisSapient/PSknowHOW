@@ -3802,9 +3802,26 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+//remove search options from fieldmapping structure
+db.field_mapping_structure.updateMany(
+    {
+        "fieldName": {
+            $in: ["resolutionTypeForRejectionKPI37",
+                "resolutionTypeForRejectionKPI28",
+                "resolutionTypeForRejectionDSR",
+                "resolutionTypeForRejectionKPI82",
+                "resolutionTypeForRejectionKPI135",
+                "resolutionTypeForRejectionKPI133",
+                "resolutionTypeForRejectionRCAKPI36",
+                "resolutionTypeForRejectionKPI14",
+                "resolutionTypeForRejectionQAKPI111",
+                "resolutionTypeForRejectionKPI35"
+            ]
+        }
+    },
+    {
+        $unset: { "fieldCategory": null }
+    }
 
-//7.9  reorder kpi group
-db.kpi_master.updateMany(
-   { "kpiId": { $in: ["kpi72", "kpi111", "kpi82"] } }, // Match documents with specified kpiId values
-   { $set: { "groupId": 4 } } // Set the new value for groupId
 )

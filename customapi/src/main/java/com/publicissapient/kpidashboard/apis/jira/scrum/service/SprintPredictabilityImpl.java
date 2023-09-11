@@ -166,7 +166,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			basicProjectConfigObjectIds.add(basicProjectConfigId);
 
 		});
-
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
 
@@ -175,7 +174,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						sprintStatusList, Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT);
 
 		List<String> totalIssueIds = new ArrayList<>();
-
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = totalSprintDetails.stream()
@@ -194,7 +192,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 									.map(FieldMapping::getJiraIterationCompletionStatusKpi5)
 									.orElse(Collections.emptyList());
 						}));
-
 				projectWiseDuplicateIssuesWithMinCloseDate = kpiHelperService
 						.getMinimumClosedDateFromConfiguration(duplicateIssues, customFieldMapping);
 			}
@@ -202,7 +199,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			Map<ObjectId, Map<String, List<LocalDateTime>>> finalProjectWiseDuplicateIssuesWithMinCloseDate = projectWiseDuplicateIssuesWithMinCloseDate;
 
 			List<SprintDetails> projectWiseSprintDetails = new ArrayList<>();
-
 			projectWiseTotalSprintDetails.forEach((basicProjectConfigId, sprintDetailsList) -> {
 				List<SprintDetails> sprintDetails = sprintDetailsList.stream()
 						.limit(Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT)
@@ -211,10 +207,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(dbSprintDetail.getBasicProjectConfigId());
 					// to modify sprintdetails on the basis of configuration for the project
-					SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(
-							Collections.singletonList(dbSprintDetail), fieldMapping.getJiraIterationIssuetypeKpi5(),
+					SprintDetails sprintDetail = KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
+							fieldMapping.getJiraIterationIssuetypeKpi5(),
 							fieldMapping.getJiraIterationCompletionStatusKpi5(),
-							finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+							finalProjectWiseDuplicateIssuesWithMinCloseDate);
 					if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 						List<String> sprintWiseIssueIds = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 								sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -227,23 +223,18 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 						totalIssueIds.stream().distinct().collect(Collectors.toList()));
 
 			});
-
-		}
-
-		else {
+		} else {
 			mapOfFilters.put(JiraFeature.SPRINT_ID.getFieldValueInFeature(),
 					sprintList.stream().distinct().collect(Collectors.toList()));
 		}
 
 		/** additional filter **/
-
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
 		if (CollectionUtils.isNotEmpty(totalIssueIds)) {
-
 			List<JiraIssue> sprintWiseJiraList = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 					new HashMap<>());
 			resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseJiraList);
@@ -342,7 +333,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();
-
 		sprintLeafNodeList.forEach(node -> {
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
@@ -368,7 +358,6 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				trendValueList.add(dataCount);
 			}
 		});
-
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());
 	}
