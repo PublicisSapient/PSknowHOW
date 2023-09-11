@@ -132,9 +132,6 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 
 			if (null == exHiery) {
 				accountHierarchy.setCreatedDate(LocalDateTime.now());
-				// update map with hierarchy to be saved
-				existingHierarchy.put(Pair.of(accountHierarchy.getNodeId(), accountHierarchy.getPath()),
-						accountHierarchy);
 				setToSave.add(accountHierarchy);
 			}
 		}

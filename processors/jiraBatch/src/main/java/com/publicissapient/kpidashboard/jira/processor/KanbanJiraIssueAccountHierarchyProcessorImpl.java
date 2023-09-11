@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 /**
  * @author purgupta2
  *
@@ -71,11 +70,10 @@ public class KanbanJiraIssueAccountHierarchyProcessorImpl implements KanbanJiraI
 				.filter(x -> x.getLevel() > projectHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
 				.collect(Collectors.toList());
 
-			log.info("Fetching all hierarchy levels");
-			List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
-		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy= accountHierarchyList.stream()
-					.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
-
+		log.info("Fetching all hierarchy levels");
+		List<KanbanAccountHierarchy> accountHierarchyList = kanbanAccountHierarchyRepo.findAll();
+		Map<Pair<String, String>, KanbanAccountHierarchy> existingKanbanHierarchy = accountHierarchyList.stream()
+				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 
 		Set<KanbanAccountHierarchy> accHierarchyToSave = new HashSet<>();
 		if (StringUtils.isNotBlank(kanbanJiraIssue.getProjectName())) {
