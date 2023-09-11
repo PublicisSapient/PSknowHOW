@@ -40,12 +40,8 @@ import lombok.Setter;
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
@@ -384,15 +380,18 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
+	private List<String> jiraDodKPI156;
+
+	private List<String> jiraIssueTypeKPI156;
+
 	@Builder.Default
 	private List<String> mergeRequestStatusKPI156 = Arrays.asList("MERGED");
 
 	@Builder.Default
-	private boolean leadTimeConfigRepoTool = false;
+	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
 
-	private List<String> jiraIssueTypeKPI156;
-
-
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

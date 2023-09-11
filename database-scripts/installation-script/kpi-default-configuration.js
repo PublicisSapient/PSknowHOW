@@ -705,6 +705,16 @@
                     ]
                   },
                   {
+                    "type": "jiraDodKPI156",
+                    "value": [
+                      "Closed",
+                      "Resolved",
+                      "Ready for Delivery",
+                      "Done",
+                      "Ready for Sign-off"
+                    ]
+                  },
+                  {
                     "type": "jiraDefectRejectionStatusKPI155",
                     "value": [
                       "Rejected"

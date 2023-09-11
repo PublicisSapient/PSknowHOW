@@ -3859,9 +3859,10 @@ db.kpi_master.bulkWrite([{
  	"toggleLabel": "Calculation based on Repo Data",
     "section": "Custom Fields Mapping",
  	"processorCommon": false,
- 	"tooltip": {
- 		"definition": "Disable State (Kpi from calculation based on Jira Release)"
- 	}
+    "tooltip": {
+       "definition": "Disable State (Kpi from calculation based on Jira Release)",
+       "toggleDefinition" : "Disable State (Kpi from calculation based on Repo Data)"
+    }
  }, {
  	"fieldName": "toBranchForMRKPI156",
  	"fieldLabel": "Production Branch Name",
@@ -3869,7 +3870,8 @@ db.kpi_master.bulkWrite([{
     "section": "Custom Fields Mapping",
  	"tooltip": {
  		"definition": "Production Branch for merge Request <br> Example: master <hr>"
- 	},
+
+ 	}
  },
  {
   "fieldName": "jiraIterationIssuetypeKPI125",
@@ -3882,7 +3884,7 @@ db.kpi_master.bulkWrite([{
     }
   },
 {
-   "fieldName": "jiraDodjiraDodKPI156",
+   "fieldName": "jiraDodKPI156",
    "fieldLabel": "Status to identify DOD",
    "fieldType": "chips",
    "fieldCategory": "workflow",
@@ -3891,4 +3893,16 @@ db.kpi_master.bulkWrite([{
          "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
      },
 }]);
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI156",
+                "value":[
+                    "Closed"
+                ]
+            }
+   }}
+);
 

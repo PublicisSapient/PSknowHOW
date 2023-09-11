@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -26,23 +27,16 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class FieldMappingDTO extends BasicModel {
 
 	private ObjectId projectToolConfigId;
@@ -386,6 +380,20 @@ private String jiraLiveStatusKPI127;
 	private String notificationEnabler="On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
+
+	private List<String> jiraDodKPI156;
+
+
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private List<String> mergeRequestStatusKPI156 = Arrays.asList("MERGED");
+
+	@Builder.Default
+	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

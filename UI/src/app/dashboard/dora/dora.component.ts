@@ -232,7 +232,7 @@ export class DoraComponent implements OnInit {
         groupIdSet.add(obj.groupId);
       }
     });
-    
+
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
@@ -454,5 +454,23 @@ export class DoraComponent implements OnInit {
     this.sharedObject = null;
     this.globalConfig = null;
   }
+
+   reloadKPI(event) {
+          const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+          if(idx !== -1){
+              this.allKpiArray.splice(idx,1);
+          }
+          const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+          if (currentKPIGroup?.kpiList?.length > 0) {
+              const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+                  switch (kpiSource) {
+                      case 'jenkins':
+                          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+                          break;
+                      default:
+                          this.postJiraKpi(currentKPIGroup, 'jira');
+              }
+          }
+      }
 
 }
