@@ -429,8 +429,11 @@ public enum KPICode {
     /**
      *Defect count by Type for backlog
      */
-    DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name());
-    //DTS-26123 end
+    DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
+    /**
+     * Backlog - Iteration Readiness kpi
+     */
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name());
 
 
     // @formatter:on

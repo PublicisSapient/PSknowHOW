@@ -112,6 +112,7 @@ public final class CommonConstant {
 	public static final String CACHE_USER_BOARD_CONFIG = "cache_user_board_config";
 
 	public static final String OVERALL = "Overall";
+	public static final String FUTURE_SPRINTS = "Future Sprints";
 
 	public static final String WEEK = "WEEKS";
 	public static final String MONTH = "MONTHS";

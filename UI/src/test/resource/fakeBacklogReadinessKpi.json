@@ -1,0 +1,94 @@
+{
+    "kpiId": "kpi138",
+    "kpiName": "Backlog Readiness",
+    "unit": "Count",
+    "maxValue": "",
+    "chartType": "",
+    "kpiInfo": {
+        "details": [
+            {
+                "type": "paragraph",
+                "value": "Ready Backlog: No. of issues which are refined in the backlog. This is identified through a status configured in KnowHOW."
+            },
+            {
+                "type": "paragraph",
+                "value": "Backlog Strength: Total size of 'Refined' issues in the backlog / Average velocity of last 5 sprints. It is calculated in terms of no. of sprints. Recommended strength is 2 sprints."
+            },
+            {
+                "type": "paragraph",
+                "value": "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+            }
+        ]
+    },
+    "id": "64f540467bfd20ed99eb9353",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "kpiUnit": "Count",
+    "kanban": false,
+    "kpiSource": "Jira",
+    "trendValueList": {
+        "value": [
+            {
+                "sSprintName": "KnowHOW | PI_14| ITR_6",
+                "data": 73,
+                "value": {
+                    "Dropped": {
+                        "issueCount": 1,
+                        "issueStoryPoint": 2
+                    },
+                    "Ready for Sprint Planning": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 14
+                    },
+                    "On Hold": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 13
+                    },
+                    "In Analysis": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 12
+                    },
+                    "In Progress": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 0
+                    },
+                    "Open": {
+                        "issueCount": 58,
+                        "issueStoryPoint": 180
+                    }
+                }
+            },
+            {
+                "sSprintName": "KnowHOW | PI_14| ITR_7",
+                "data": 73,
+                "value": {
+                    "Dropped": {
+                        "issueCount": 1,
+                        "issueStoryPoint": 4
+                    },
+                    "Ready for Sprint Planning": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 14
+                    },
+                    "On Hold": {
+                        "issueCount": 4,
+                        "issueStoryPoint": 13
+                    },
+                    "In Analysis": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 12
+                    },
+                    "In Progress": {
+                        "issueCount": 3,
+                        "issueStoryPoint": 0
+                    },
+                    "Open": {
+                        "issueCount": 58,
+                        "issueStoryPoint": 180
+                    }
+                }
+            }
+        ]
+    },
+    "groupId": 11
+}
