@@ -72,9 +72,6 @@ export class GroupstackchartComponent implements OnChanges {
     d3.select(elem).select('svg').remove();
     d3.select(elem).select('.tooltip').remove();
     d3.select(elem).select('.legend').remove();
-    // console.log("it", d3.select(elem).select('#d3-legend').select('div'));
-
-    // d3.select(elem).select('#d3-legend').select('div').remove();
 
     d3.select(elem).select('#verticalSVG').select('svg').remove();
     d3.select(elem).select('#horizontalSVG').select('svg').remove();
@@ -90,7 +87,7 @@ export class GroupstackchartComponent implements OnChanges {
     const width = this.dataPoints <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * 20 * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     // const spacingVariable = 20;
-    const height = 190;
+    const height = 225;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
@@ -119,7 +116,7 @@ export class GroupstackchartComponent implements OnChanges {
     // } else if (this.dataPoints == 2) {
     //   x0.paddingInner(0.4);
     // } else if (this.dataPoints == 3) {
-      x0.paddingInner(0.5);
+    x0.paddingInner(0.5);
     // }
 
     const x1 = d3.scaleBand();
@@ -181,8 +178,6 @@ export class GroupstackchartComponent implements OnChanges {
       const d2 = { xName: d[0].xName, group: d[0].group };
       d2['hoverText'] = {};
       d.forEach((dx) => {
-        console.log("dx", dx);
-        
         d2[dx.type] = dx.value;
         for (let key in dx?.hoverText) {
           d2['hoverText'][key] = dx?.hoverText[key];
@@ -206,22 +201,20 @@ export class GroupstackchartComponent implements OnChanges {
     //     }   
     //   }
     // }
-    console.log("groupData", groupData);
-    
+
     const stackData = stack
       .keys(keys)(groupData);
-    console.log("stackData", stackData);
-    
+
     svgX.append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${y(0)})`)
       .call(d3.axisBottom(x0));
 
     d3.select('.xAxis')
-      .selectAll('.tick text').style('width','70px')
+      .selectAll('.tick text').style('width', '70px')
       // .attr('transform', 'rotate(-10)')
-      .call(this.wrap, 60) // select all the text elements 
-    
+      .call(this.wrap, 75) // select all the text elements 
+
     const XCaption = d3
       .select(this.elem).select('#xCaptionContainer').append('text')
       .attr('x', ((document.getElementById('groupstackchart').offsetWidth - 70) / 2) - 24)
@@ -484,57 +477,7 @@ export class GroupstackchartComponent implements OnChanges {
     // legend.selectAll('text').call(wrap, 30);
 
 
-    // function wrap(text, textWidth) {
-    //   text.each(function () {
-    //     const textContent = d3.select(this);
-    //     const words = textContent.text().trim().split(/\s+/).reverse();
-    //     let word;
-    //     let line = [];
-    //     let lineNumber = 0;
-    //     const lineHeight = 1.1; // ems
-    //     const yPosition = textContent.attr('y');
-    //     const dy = parseFloat(textContent.attr('dy'));
-    //     let tspan = textContent
-    //       .text(null)
-    //       .append('tspan')
-    //       .attr('x', 10)
-    //       .attr('y', yPosition)
-    //       .attr('dy', dy + 'em');
 
-    //     if (words.length > 1) {
-    //       while ((word = words.pop())) {
-    //         line.push(word);
-    //         tspan.text(line.join(' '));
-    //         if (tspan.node().getComputedTextLength() > textWidth) {
-    //           line.pop();
-    //           tspan.text(line.join(' '));
-    //           line = [word];
-    //           tspan = textContent
-    //             .append('tspan')
-    //             .attr('x', 0)
-    //             .attr('y', yPosition)
-    //             .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-    //             .text(word);
-    //         }
-    //       }
-    //     } else {
-    //       tspan.text(words[0]);
-    //       let i = 0;
-    //       while (tspan.node().getComputedTextLength() > textWidth && i <= 4) {
-    //         i = 2;
-    //         word = words[0].substring(0, words[0].length / i);
-    //         tspan = textContent
-    //           .append('tspan')
-    //           .attr('x', 0)
-    //           .attr('y', yPosition)
-    //           .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-    //           .text(word);
-
-    //         ++i;
-    //       }
-    //     }
-    //   });
-    // }
 
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
@@ -615,6 +558,58 @@ export class GroupstackchartComponent implements OnChanges {
     }
   }
 
+  // wrap(text, textWidth) {
+  //   text.each(function () {
+  //     const textContent = d3.select(this);
+  //     const words = textContent.text().trim().split(/\s+/).reverse();
+  //     let word;
+  //     let line = [];
+  //     let lineNumber = 0;
+  //     const lineHeight = 1.1; // ems
+  //     const yPosition = textContent.attr('y');
+  //     const dy = parseFloat(textContent.attr('dy'));
+  //     let tspan = textContent
+  //       .text(null)
+  //       .append('tspan')
+  //       .attr('x', 10)
+  //       .attr('y', yPosition)
+  //       .attr('dy', dy + 'em');
+
+  //     if (words.length > 1) {
+  //       while ((word = words.pop())) {
+  //         line.push(word);
+  //         tspan.text(line.join(' '));
+  //         if (tspan.node().getComputedTextLength() > textWidth) {
+  //           line.pop();
+  //           tspan.text(line.join(' '));
+  //           line = [word];
+  //           tspan = textContent
+  //             .append('tspan')
+  //             .attr('x', 0)
+  //             .attr('y', yPosition)
+  //             .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+  //             .text(word);
+  //         }
+  //       }
+  //     } else {
+  //       tspan.text(words[0]);
+  //       let i = 0;
+  //       while (tspan.node().getComputedTextLength() > textWidth && i <= 4) {
+  //         i = 2;
+  //         word = words[0].substring(0, words[0].length / i);
+  //         tspan = textContent
+  //           .append('tspan')
+  //           .attr('x', 0)
+  //           .attr('y', yPosition)
+  //           .attr('dy', ++lineNumber * lineHeight + dy + 'em')
+  //           .text(word);
+
+  //         ++i;
+  //       }
+  //     }
+  //   });
+  // }
+
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
       objArray?.sort((a, b) => a.key?.localeCompare(b.data));
@@ -623,24 +618,32 @@ export class GroupstackchartComponent implements OnChanges {
   }
 
   wrap(text, wrapWidth, yAxisAdjustment = 0) {
-    text.each(function() {
-      var text = d3.select(this),
-          words = text.text().split(/[\s|]+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1, 
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")) - yAxisAdjustment,
-          tspan = text.text(null).append("tspan").attr("x", 30).attr("y", y - 2).attr("dy", `${dy}em`).attr("text-anchor", "end");
+    
+    text.each(function () {
+      let text = d3.select(this);
+      if (text.text().length > 25) {
+          text.text(text.text().substring(0, 25) + '...');
+        }
+      let words = text.text().split(/[\s|_-]+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1,
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")) - yAxisAdjustment,
+        tspan = text.text(null).append("tspan").attr("x", 15).attr("y", y - 2)
+          .attr("dy", `${dy}em`).attr("text-anchor", "middle");
+
       while (word = words.pop()) {
+
         line.push(word);
         tspan.text(line.join(" "));
+
         if (tspan.node().getComputedTextLength() > wrapWidth) {
           line.pop();
           tspan.text(line.join(" "));
           line = [word];
-          tspan = text.append("tspan").attr("x", 30).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word).attr("text-anchor", "end");
+          tspan = text.append("tspan").attr("x", 15).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word).attr("text-anchor", "middle");
         }
       }
     });
