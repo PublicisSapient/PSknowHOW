@@ -107,7 +107,7 @@ public class FieldMappingServiceImplTest {
 
 		FieldMapping result = fieldMappingService.getFieldMapping("5d0533b0ff45ea9c730bb718");
 
-		//assertNotNull(result);
+		assertNotNull(result);
 
 	}
 
