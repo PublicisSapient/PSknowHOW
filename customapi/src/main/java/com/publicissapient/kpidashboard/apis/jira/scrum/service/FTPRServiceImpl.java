@@ -40,6 +40,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -99,8 +100,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 			// exclude the issue from total stories based on defect rejection status
 			if (Optional.ofNullable(fieldMapping.getJiraDefectRejectionStatusKPI135()).isPresent()) {
-				totalStoryList = totalStoryList.stream()
-						.filter(jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusKPI135()))
+				totalStoryList = totalStoryList.stream().filter(
+						jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusKPI135()))
 						.collect(Collectors.toList());
 			}
 		}
@@ -189,14 +190,19 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKPI135(), null).get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI135(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(completedIssues)) {
-					List<JiraIssue> issueList = jiraIssueRepository
+					List<JiraIssue> jiraIssueList = jiraIssueRepository
 							.findByNumberInAndBasicProjectConfigId(completedIssues, basicProjectConfigId);
 					List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
 							.orElse(Collections.emptyList());
@@ -220,7 +226,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
-									sprintDetails.getCompletedIssues(), issueList);
+									sprintDetails.getCompletedIssues(), jiraIssueList);
 
 					// fetched all defects which is linked to current sprint report stories
 					List<JiraIssue> linkedDefects = jiraIssueRepository.findLinkedDefects(mapOfFilters,
@@ -278,9 +284,12 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			// Total stories from issues completed collection in a sprint
 			totalStoryList = getTotalStoryList(fieldMapping, allIssues, totalStoryList);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint, fieldMapping.getDefectPriorityKPI135());
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
+					fieldMapping.getDefectPriorityKPI135());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI135());
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI135(), fieldMapping.getJiraDefectRejectionStatusKPI135());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI135(),
+					fieldMapping.getJiraDefectRejectionStatusKPI135());
 			KpiHelperService.getDefectsWithoutDrop(droppedDefects, allIssues, totalJiraIssues);
 
 			List<String> defectTypes = Optional.ofNullable(fieldMapping).map(FieldMapping::getJiradefecttype)
@@ -300,8 +309,8 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 			if (CollectionUtils.isNotEmpty(ftprStory) && CollectionUtils.isNotEmpty(storiesHistory)) {
 
 				ftprStory.removeIf(issue -> kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue,
-						storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI135(), fieldMapping.getJiraStatusForQaKPI135(),fieldMapping.getJiraFtprRejectStatusKPI135())
-				);
+						storiesHistory, fieldMapping.getJiraStatusForDevelopmentKPI135(),
+						fieldMapping.getJiraStatusForQaKPI135(), fieldMapping.getJiraFtprRejectStatusKPI135()));
 
 			}
 

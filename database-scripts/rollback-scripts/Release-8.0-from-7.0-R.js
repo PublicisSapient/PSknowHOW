@@ -488,3 +488,27 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
+
+//------------------------- 7.9.0 changes----------------------------------------------------------------------------------
+//remove search options from fieldmapping structure rollback
+db.field_mapping_structure.updateMany(
+    {
+        "fieldName": {
+            $in: ["resolutionTypeForRejectionKPI37",
+                "resolutionTypeForRejectionKPI28",
+                "resolutionTypeForRejectionDSR",
+                "resolutionTypeForRejectionKPI82",
+                "resolutionTypeForRejectionKPI135",
+                "resolutionTypeForRejectionKPI133",
+                "resolutionTypeForRejectionRCAKPI36",
+                "resolutionTypeForRejectionKPI14",
+                "resolutionTypeForRejectionQAKPI111",
+                "resolutionTypeForRejectionKPI35"
+            ]
+        }
+    },
+    {
+        $set: { "fieldCategory": "workflow" }
+    }
+
+)
