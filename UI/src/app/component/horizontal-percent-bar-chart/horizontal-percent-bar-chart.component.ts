@@ -176,11 +176,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
           data.kpiGroup = key;
           this.draw(data, selectedNode);
-          d3.select(elem).select('#back_icon').style('display', 'block')
+          d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
             .on('click', (event, d) => {
               this.isDrilledDown = false;
               this.draw(this.unmodifiedDataCopy);
-              d3.select(elem).select('#back_icon').style('display', 'none');
+              d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
             });
         }
       })
