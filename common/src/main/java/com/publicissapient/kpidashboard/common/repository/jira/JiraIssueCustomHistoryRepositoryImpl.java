@@ -27,7 +27,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
@@ -190,71 +189,43 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	}
 
 
-//	@Override
-//	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap1(Map<String, List<String>> mapOfFilters,
-//			Map<String, Map<String, Object>> uniqueProjectMap) { //NOSONAR
-//		Criteria criteria = new Criteria();//NOSONAR
-//		// map of common filters Project and Sprint
-//		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {//NOSONAR
-//			if (CollectionUtils.isNotEmpty(entry.getValue())) {
-//				criteria = criteria.and(entry.getKey()).in(entry.getValue());
-//			}
-//		}
-//
-//		List<Criteria> projectCriteriaList = new ArrayList<>();//NOSONAR
-//		uniqueProjectMap.forEach((project, filterMap) -> {//NOSONAR
-//			Criteria projectCriteria = new Criteria();
-//			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
-//			if (null != filterMap.get(STORY_TYPE)) {
-//				projectCriteria.and(STORY_TYPE).in((List<Pattern>) filterMap.get(STORY_TYPE));
-//			}
-//			projectCriteriaList.add(projectCriteria);
-//		});
-//        Query query;
-//		if (CollectionUtils.isEmpty(projectCriteriaList)) {//NOSONAR
-//			query = new Query(criteria);
-//		} else {//NOSONAR
-//			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
-//					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
-//			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
-//			query = new Query(criteriaProjectLevelAdded);
-//		}
-//		query.fields().include(STORY_ID);
-//		query.fields().include(BASIC_PROJ_CONF_ID);
-//		query.fields().include(STATUS_CHANGE_LOG);
-//		//projectID,storyID,basicProjectConfigId,statusUpdationLog
-//		Document queryObject = query.getQueryObject();
-//		System.out.println("Generated Query: " + queryObject.toString());//NOSONAR
-//		System.out.println("Generated Query1: " + query.toString());
-//		return operations.find(query, JiraIssueCustomHistory.class);//NOSONAR
-//
-//	}//NOSONAR
-
+	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
-																	 Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
 		// map of common filters Project and Sprint
-		mapOfFilters.entrySet().stream()
-				.filter(entry -> CollectionUtils.isNotEmpty(entry.getValue()))
-				.forEach(entry -> criteria.and(entry.getKey()).in(entry.getValue()));
+		for (Map.Entry<String, List<String>> entry : mapOfFilters.entrySet()) {
+			if (CollectionUtils.isNotEmpty(entry.getValue())) {
+				criteria = criteria.and(entry.getKey()).in(entry.getValue());
+			}
+		}
 
-		List<Criteria> projectCriteriaList = uniqueProjectMap.entrySet().stream()
-				.map(entry -> {
-					Criteria projectCriteria = new Criteria();
-					projectCriteria.and(STATUS).in((List<Pattern>) entry.getValue().get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
-					if (null != entry.getValue().get(STORY_TYPE)) {
-						projectCriteria.and(STORY_TYPE).in((List<Pattern>) entry.getValue().get(STORY_TYPE));
-					}
-					return projectCriteria;
-				}).collect(Collectors.toList());
-
-		Query query = CollectionUtils.isEmpty(projectCriteriaList) ? new Query(criteria)
-				: new Query(new Criteria().andOperator(criteria, new Criteria().andOperator(projectCriteriaList.toArray(new Criteria[0]))));
-
-		query.fields().include(STORY_ID, BASIC_PROJ_CONF_ID, STATUS_CHANGE_LOG);
-
+		List<Criteria> projectCriteriaList = new ArrayList<>();
+		uniqueProjectMap.forEach((project, filterMap) -> {
+			Criteria projectCriteria = new Criteria();
+			projectCriteria.and(STATUS).in((List<Pattern>) filterMap.get(STATUS_UPDATION_LOG_STORY_CHANGED_TO));
+			if (null != filterMap.get(STORY_TYPE)) {
+				projectCriteria.and(STORY_TYPE).in((List<Pattern>) filterMap.get(STORY_TYPE));
+			}
+			projectCriteriaList.add(projectCriteria);
+		});
+        Query query;
+		if (CollectionUtils.isEmpty(projectCriteriaList)) {
+			query = new Query(criteria);
+		} else {
+			Criteria criteriaAggregatedAtProjectLevel = new Criteria()
+					.andOperator(projectCriteriaList.toArray(new Criteria[0]));
+			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
+			query = new Query(criteriaProjectLevelAdded);
+		}
+		query.fields().include(STORY_ID);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		//projectID,storyID,basicProjectConfigId,statusUpdationLog
 		return operations.find(query, JiraIssueCustomHistory.class);
+
 	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromReleaseMap(List<String> basicProjectConfigId,

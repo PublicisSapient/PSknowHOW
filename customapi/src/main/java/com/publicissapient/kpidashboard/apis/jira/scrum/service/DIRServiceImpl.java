@@ -245,7 +245,6 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			trendValueList.add(dataCount);
 		});
-
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_INJECTION_RATE.getColumns());
 	}

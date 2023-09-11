@@ -506,7 +506,6 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 			criteria = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 
 		}
-
 		criteria = criteria.and(NUMBER).in(storyNumber);
 		Query query = new Query(criteria);
 		query.fields().include("issueId");
