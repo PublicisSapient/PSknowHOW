@@ -137,7 +137,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private boolean checkKPISubCategory(UserBoardConfigDTO existingUserBoardConfigDTO,
 			Map<String, KpiMaster> kpiMasterMap) {
 		Set<String> existingUserSubCategories = existingUserBoardConfigDTO.getOthers().stream()
-				.filter(boardDTO -> boardDTO.getBoardName().equalsIgnoreCase(RELEASE))
 				.flatMap(boardDTO -> boardDTO.getKpis().stream().filter(kpi -> kpi.getSubCategoryBoard() != null)
 						.map(BoardKpisDTO::getSubCategoryBoard))
 				.collect(Collectors.toSet());
