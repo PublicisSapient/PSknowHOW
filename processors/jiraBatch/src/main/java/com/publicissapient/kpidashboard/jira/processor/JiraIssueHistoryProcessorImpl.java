@@ -85,25 +85,11 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 	}
 
 	private JiraIssueCustomHistory getIssueCustomHistory(ProjectConfFieldMapping projectConfig, String issueId) {
-		JiraIssueCustomHistory jiraIssueHistory;
-		jiraIssueHistory = findOneJiraIssueHistory(issueId, projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssueHistory == null) {
-			jiraIssueHistory = new JiraIssueCustomHistory();
-		}
-		return jiraIssueHistory;
-	}
-
-	private JiraIssueCustomHistory findOneJiraIssueHistory(String issueId, String basicProjectConfigId) {
-		List<JiraIssueCustomHistory> jiraIssues = jiraIssueCustomHistoryRepository
+		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
+		JiraIssueCustomHistory jiraIssueHistory = jiraIssueCustomHistoryRepository
 				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | More than one Issue id  found for history {}", issueId);
-		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-		return null;
 
+		return jiraIssueHistory != null ? jiraIssueHistory : new JiraIssueCustomHistory();
 	}
 
 	private void setJiraIssueHistory(JiraIssueCustomHistory jiraIssueHistory, JiraIssue jiraIssue, Issue issue,

@@ -447,16 +447,11 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssue corresponding to provided IssueId in DB
 	 */
 	private JiraIssue findOneAzureIssue(String issueId, String basicProjectConfigId) {
-		List<JiraIssue> jiraIssues = jiraIssueRepository
+		JiraIssue jiraIssues = jiraIssueRepository
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.error("JIRA Processor | More than one Jira Issue item found for id {}", issueId);
-		}
-
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
+		if (ObjectUtils.isNotEmpty(jiraIssues)) {
+			return jiraIssues;
 		}
 
 		return null;
@@ -472,14 +467,11 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssueCustomHistory corresponding to given IssueId from DB
 	 */
 	private JiraIssueCustomHistory findOneAzureIssueHistory(String issueId, String basicProjectConfigId) {
-		List<JiraIssueCustomHistory> jiraIssues = jiraIssueCustomHistoryRepository
+		JiraIssueCustomHistory jiraIssues = jiraIssueCustomHistoryRepository
 				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("Azure Processor | More than one Issue id  found for history {}", issueId);
-		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
+
+		if (ObjectUtils.isNotEmpty(jiraIssues)) {
+			return jiraIssues;
 		}
 		return null;
 	}

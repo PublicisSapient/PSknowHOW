@@ -288,7 +288,6 @@ public class JobController {
 	 */
 
 	@PostMapping("/startprojectwiseissuejob")
-//	@RequestMapping(value = "/startprojectwiseissuejob", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> startProjectWiseIssueJob(@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) throws Exception {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();

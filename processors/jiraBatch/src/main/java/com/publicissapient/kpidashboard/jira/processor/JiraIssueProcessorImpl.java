@@ -167,36 +167,10 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
-		JiraIssue jiraIssue;
-		jiraIssue = findOneJiraIssue(issueId, projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssue == null) {
-			jiraIssue = new JiraIssue();
-		}
-		return jiraIssue;
-	}
+		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
+		JiraIssue jiraIssue = jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-	/**
-	 * Finds one JiraIssue by issueId
-	 *
-	 * @param issueId
-	 *            jira issueId
-	 * @param basicProjectConfigId
-	 *            basicProjectConfigId
-	 * @return JiraIssue corresponding to provided IssueId in DB
-	 */
-	private JiraIssue findOneJiraIssue(String issueId, String basicProjectConfigId) {
-		List<JiraIssue> jiraIssues = jiraIssueRepository
-				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
-
-		if (jiraIssues.size() > 1) {
-			log.error("JIRA Processor | More than one Jira Issue item found for id {}", issueId);
-		}
-
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-		return null;
-
+		return jiraIssue != null ? jiraIssue : new JiraIssue();
 	}
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
