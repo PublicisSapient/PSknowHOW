@@ -3826,6 +3826,12 @@ db.field_mapping_structure.updateMany(
 
 );
 
+//  reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi72", "kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 4 } } // Set the new value for groupId
+);
+
 //For DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },

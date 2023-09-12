@@ -514,6 +514,17 @@ db.field_mapping_structure.updateMany(
 )
 
 
+//  rollback reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi72" }, { $set: { "groupId": 2 } })
+
+
+
+
 //Reversing DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
