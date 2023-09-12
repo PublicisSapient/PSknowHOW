@@ -162,7 +162,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 * @param kpiCategoryList
 	 *            kpiCategoryList
 	 * @param kpiMasterMap
-	 * 	kpiMasterMap
+	 *            kpiMasterMap
 	 * @return kpiCategoryList
 	 */
 	private boolean checkCategories(UserBoardConfigDTO existingUserBoardConfigDTO, List<KpiCategory> kpiCategoryList,
