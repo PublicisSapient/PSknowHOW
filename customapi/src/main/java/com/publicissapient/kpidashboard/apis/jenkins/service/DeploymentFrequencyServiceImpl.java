@@ -109,7 +109,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.DEPLOYMENT_FREQUENCY);
 		Map<String, Map<String, List<DataCount>>> envNameProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((envName, dataCounts) -> {

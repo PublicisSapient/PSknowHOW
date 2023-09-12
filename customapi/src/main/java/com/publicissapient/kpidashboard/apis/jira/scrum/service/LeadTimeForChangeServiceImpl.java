@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -43,6 +44,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -113,6 +115,10 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String LEAD_TIME_CONFIG_REPO_TOOL = "leadTimeConfigRepoTool";
 	private static final String DOD_STATUS = "dodStatus";
 
+	private static final String STATUS_FIELD = "statusUpdationLog.story.changedTo";
+
+	private static final String STORY_ID = "storyID";
+
 	private static final DecimalFormat df = new DecimalFormat(".##");
 
 	@Override
@@ -135,19 +141,25 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.LEAD_TIME_FOR_CHANGE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.LEAD_TIME_FOR_CHANGE);
+		List<DataCount> trendValues = getAggregateTrendValues(kpiRequest, nodeWiseKPIValue,
+				KPICode.LEAD_TIME_FOR_CHANGE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
 	}
 
 	/**
-	 *
+	 * fetch data based on field mapping and project wise
+	 * 
 	 * @param leafNodeList
+	 *            project node
 	 * @param startDate
+	 *            start date
 	 * @param endDate
+	 *            end date
 	 * @param kpiRequest
-	 * @return
+	 *            kpi request
+	 * @return Map<String, Object> map of object
 	 */
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
@@ -174,31 +186,10 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			projectWiseLeadTimeConfigRepoTool.put(basicProjectConfigId.toString(),
 					fieldMapping.getLeadTimeConfigRepoTool());
-			if (Boolean.TRUE.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
-				if (Optional.ofNullable(fieldMapping.getMergeRequestStatusKPI156()).isPresent()) {
-					mergeRequestStatusList.put(basicProjectConfigId.toString(),
-							fieldMapping.getMergeRequestStatusKPI156());
-				}
-				if (Optional.ofNullable(fieldMapping.getToBranchForMRKPI156()).isPresent()) {
-					toBranchForMRList.put(basicProjectConfigId.toString(), fieldMapping.getToBranchForMRKPI156());
-				}
-			}
-			List<String> sortedReleaseList = sortedReleaseListProjectWise.getOrDefault(basicProjectConfigId.toString(),
-					new ArrayList<>());
-			if (CollectionUtils.isNotEmpty(sortedReleaseList)) {
-				mapOfProjectFilters.put(CommonConstant.RELEASE,
-						CommonUtils.convertToPatternListForSubString(sortedReleaseList));
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			}
-			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI156()).isPresent()) {
-				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI156()));
-			}
-			if (Optional.ofNullable(fieldMapping.getJiraDodKPI156()).isPresent()) {
-				mapOfProjectFiltersFH.put("statusUpdationLog.story.changedTo",
-						CommonUtils.convertToPatternList(fieldMapping.getJiraDodKPI156()));
-				projectWiseDodStatus.put(basicProjectConfigId.toString(), fieldMapping.getJiraDodKPI156());
-			}
+			setFieldMappingForRepoTools(mergeRequestStatusList, toBranchForMRList, basicProjectConfigId, fieldMapping);
+			setFieldMappingOfRelease(uniqueProjectMap, sortedReleaseListProjectWise, basicProjectConfigId,
+					mapOfProjectFilters);
+			setFieldMappingForJira(projectWiseDodStatus, basicProjectConfigId, mapOfProjectFiltersFH, fieldMapping);
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			projectBasicConfigIdList.add(basicProjectConfigId.toString());
 		});
@@ -210,9 +201,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		if (CollectionUtils.isNotEmpty(jiraIssueList)) {
 			List<String> issueIdList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 
-			mapOfFiltersFH.put("storyID", issueIdList);
+			mapOfFiltersFH.put(STORY_ID, issueIdList);
 			List<JiraIssueCustomHistory> historyDataList = jiraIssueCustomHistoryRepository
-					.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+					.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH, Sort.Direction.ASC);
 
 			Map<String, List<MergeRequests>> projectWiseMergeRequestList = new HashMap<>();
 			findMergeRequestList(mergeRequestStatusList, toBranchForMRList, projectWiseLeadTimeConfigRepoTool,
@@ -228,12 +219,101 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	/**
+	 * set field maaping for history fetch data of jira
+	 * 
+	 * @param projectWiseDodStatus
+	 *            done status
+	 * @param basicProjectConfigId
+	 *            basic config id
+	 * @param mapOfProjectFiltersFH
+	 *            db fetching object
+	 * @param fieldMapping
+	 *            field mapping
+	 */
+	private void setFieldMappingForJira(Map<String, List<String>> projectWiseDodStatus, ObjectId basicProjectConfigId,
+			Map<String, Object> mapOfProjectFiltersFH, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeKPI156())) {
+			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI156()));
+		} else {
+			List<String> defaultIssueTypes = Arrays.stream(fieldMapping.getJiraIssueTypeNames())
+					.collect(Collectors.toList());
+			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(defaultIssueTypes));
+		}
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI156())) {
+			mapOfProjectFiltersFH.put(STATUS_FIELD, CommonUtils.convertToPatternList(fieldMapping.getJiraDodKPI156()));
+			projectWiseDodStatus.put(basicProjectConfigId.toString(), fieldMapping.getJiraDodKPI156());
+		} else {
+			List<String> defaultDODStatus = new ArrayList<>();
+			defaultDODStatus.add(CommonConstant.CLOSED);
+			mapOfProjectFiltersFH.put(STATUS_FIELD, CommonUtils.convertToPatternList(defaultDODStatus));
+			projectWiseDodStatus.put(basicProjectConfigId.toString(), defaultDODStatus);
+		}
+	}
+
+	/**
+	 * set field mapping for fetch data release wise
+	 * 
+	 * @param uniqueProjectMap
+	 *            db fetching object
+	 * @param sortedReleaseListProjectWise
+	 *            last N release
+	 * @param basicProjectConfigId
+	 *            basic config id
+	 * @param mapOfProjectFilters
+	 *            db fetching object
+	 */
+	private void setFieldMappingOfRelease(Map<String, Map<String, Object>> uniqueProjectMap,
+			Map<String, List<String>> sortedReleaseListProjectWise, ObjectId basicProjectConfigId,
+			Map<String, Object> mapOfProjectFilters) {
+		List<String> sortedReleaseList = sortedReleaseListProjectWise.getOrDefault(basicProjectConfigId.toString(),
+				new ArrayList<>());
+		if (CollectionUtils.isNotEmpty(sortedReleaseList)) {
+			mapOfProjectFilters.put(CommonConstant.RELEASE,
+					CommonUtils.convertToPatternListForSubString(sortedReleaseList));
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+		}
+	}
+
+	/**
+	 * set field mapping for repo tools
 	 * 
 	 * @param mergeRequestStatusList
+	 *            mr list
 	 * @param toBranchForMRList
+	 *            production branch
+	 * @param basicProjectConfigId
+	 *            basic config id
+	 * @param fieldMapping
+	 *            field mapping
+	 */
+	private void setFieldMappingForRepoTools(Map<String, List<String>> mergeRequestStatusList,
+			Map<String, String> toBranchForMRList, ObjectId basicProjectConfigId, FieldMapping fieldMapping) {
+		if (Boolean.TRUE.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
+			if (Optional.ofNullable(fieldMapping.getMergeRequestStatusKPI156()).isPresent()) {
+				mergeRequestStatusList.put(basicProjectConfigId.toString(), fieldMapping.getMergeRequestStatusKPI156());
+			}
+			if (Optional.ofNullable(fieldMapping.getToBranchForMRKPI156()).isPresent()) {
+				toBranchForMRList.put(basicProjectConfigId.toString(), fieldMapping.getToBranchForMRKPI156());
+			}
+		}
+	}
+
+	/**
+	 * find merge request list if field mapping true based on basic config id and
+	 * from branch , to branch and state matches
+	 * 
+	 * @param mergeRequestStatusList
+	 *            merge status list
+	 * @param toBranchForMRList
+	 *            to branch name
 	 * @param projectWiseLeadTimeConfigRepoTool
+	 *            config logic of kpi
 	 * @param issueIdList
+	 *            jira issue ids
 	 * @param projectWiseMergeRequestList
+	 *            merge Request list
 	 */
 	private void findMergeRequestList(Map<String, List<String>> mergeRequestStatusList,
 			Map<String, String> toBranchForMRList, Map<String, Boolean> projectWiseLeadTimeConfigRepoTool,
@@ -254,7 +334,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	/**
 	 * get latest N Released releases project wise
 	 * 
-	 * @return
+	 * @return sorted release
 	 */
 	private Map<String, List<String>> getProjectWiseSortedReleases() {
 		Map<String, List<String>> sortedReleaseListProjectWise = new HashMap<>();
@@ -289,8 +369,11 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 * calculate and set project wise leaf node value
 	 *
 	 * @param mapTmp
+	 *            map tmp data
 	 * @param projectLeafNodeList
+	 *            projectLeafNodeList
 	 * @param kpiElement
+	 *            kpiElement
 	 */
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			KpiElement kpiElement) {
@@ -365,6 +448,20 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 	}
 
+	/**
+	 * populate excel data
+	 * 
+	 * @param excelData
+	 *            excel data
+	 * @param requestTrackerId
+	 *            tracker id for cache
+	 * @param trendLineName
+	 *            project name
+	 * @param leadTimeConfigRepoTool
+	 *            config for logic of kpi
+	 * @param leadTimeMapTimeWise
+	 *            lead time in days
+	 */
 	private void populateLeadTimeExcelData(List<KPIExcelData> excelData, String requestTrackerId, String trendLineName,
 			Boolean leadTimeConfigRepoTool, Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
@@ -378,9 +475,13 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 * date
 	 * 
 	 * @param jiraIssueHistoryDataList
+	 *            history data list
 	 * @param weekOrMonth
+	 *            date of x axis
 	 * @param leadTimeMapTimeWise
+	 *            lead time in days
 	 * @param jiraIssueMap
+	 *            jira issues
 	 */
 	private void findLeadTimeChangeForJira(List<JiraIssueCustomHistory> jiraIssueHistoryDataList, String weekOrMonth,
 			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, Map<String, JiraIssue> jiraIssueMap,
@@ -389,7 +490,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			AtomicReference<DateTime> closedTicketDate = new AtomicReference<>();
 			AtomicReference<DateTime> releaseDate = new AtomicReference<>();
 
-			jiraIssueHistoryData.getStatusUpdationLog().stream().forEach(jiraHistoryChangeLog -> {
+			jiraIssueHistoryData.getStatusUpdationLog().forEach(jiraHistoryChangeLog -> {
 				if (CollectionUtils.isNotEmpty(dodStatus) && dodStatus.contains(jiraHistoryChangeLog.getChangedTo())) {
 					closedTicketDate.set(DateUtil.convertLocalDateTimeToDateTime(jiraHistoryChangeLog.getUpdatedOn()));
 				}
@@ -398,7 +499,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 					.isNotEmpty(jiraIssueMap.get(jiraIssueHistoryData.getStoryID()).getReleaseVersions())) {
 				List<ReleaseVersion> releaseVersionList = jiraIssueMap.get(jiraIssueHistoryData.getStoryID())
 						.getReleaseVersions();
-				releaseVersionList.stream().forEach(releaseVersion -> releaseDate.set(releaseVersion.getReleaseDate()));
+				releaseVersionList.forEach(releaseVersion -> releaseDate.set(releaseVersion.getReleaseDate()));
 			}
 
 			if (closedTicketDate.get() != null && releaseDate.get() != null) {
@@ -406,28 +507,56 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 				String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
 
-				LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
-				leadTimeChangeData.setStoryID(jiraIssueHistoryData.getStoryID());
-				leadTimeChangeData.setUrl(jiraIssueHistoryData.getUrl());
-				leadTimeChangeData.setClosedDate(
-						DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-				leadTimeChangeData.setReleaseDate(
-						DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-				leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
-				leadTimeChangeData.setDate(weekOrMonthName);
-				leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
-					leadTimeChangeListCurrentTime.add(leadTimeChangeData);
-					return leadTimeChangeListCurrentTime;
-				});
+				setLeadTimeChangeDataListForJira(leadTimeMapTimeWise, jiraIssueHistoryData, closedTicketDate,
+						releaseDate, leadTimeChangeInDays, weekOrMonthName);
 			}
 		});
 	}
 
 	/**
+	 * find lead time changes differences between closed ticket date and release
+	 * date using jira
+	 * 
+	 * @param leadTimeMapTimeWise
+	 *            lead time list
+	 * @param jiraIssueHistoryData
+	 *            history data
+	 * @param closedTicketDate
+	 *            closed ticket date
+	 * @param releaseDate
+	 *            release date
+	 * @param leadTimeChangeInDays
+	 *            lead time
+	 * @param weekOrMonthName
+	 *            date
+	 */
+
+	private void setLeadTimeChangeDataListForJira(Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise,
+			JiraIssueCustomHistory jiraIssueHistoryData, AtomicReference<DateTime> closedTicketDate,
+			AtomicReference<DateTime> releaseDate, double leadTimeChangeInDays, String weekOrMonthName) {
+		LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
+		leadTimeChangeData.setStoryID(jiraIssueHistoryData.getStoryID());
+		leadTimeChangeData.setUrl(jiraIssueHistoryData.getUrl());
+		leadTimeChangeData
+				.setClosedDate(DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
+		leadTimeChangeData
+				.setReleaseDate(DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
+		leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
+		leadTimeChangeData.setDate(weekOrMonthName);
+		leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
+			leadTimeChangeListCurrentTime.add(leadTimeChangeData);
+			return leadTimeChangeListCurrentTime;
+		});
+	}
+
+	/**
+	 * get diff b/w closed vs release date in days
 	 * 
 	 * @param closedTicketDate
+	 *            closed date
 	 * @param releaseDate
-	 * @return
+	 *            release date
+	 * @return double
 	 */
 	private double getLeadTimeChangeInDays(AtomicReference<DateTime> closedTicketDate,
 			AtomicReference<DateTime> releaseDate) {
@@ -443,14 +572,18 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 * release date using repo tools
 	 *
 	 * @param mergeRequestList
+	 *            Merge request list
 	 * @param weekOrMonth
+	 *            date
 	 * @param leadTimeMapTimeWise
+	 *            lead time in days
 	 * @param jiraIssueMap
+	 *            jira issues
 	 */
 	private void findLeadTimeChangeForRepoTool(List<MergeRequests> mergeRequestList, String weekOrMonth,
 			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, Map<String, JiraIssue> jiraIssueMap) {
 		if (CollectionUtils.isNotEmpty(mergeRequestList) && MapUtils.isNotEmpty(jiraIssueMap)) {
-			mergeRequestList.stream().forEach(mergeRequests -> {
+			mergeRequestList.forEach(mergeRequests -> {
 				AtomicReference<DateTime> closedTicketDate = new AtomicReference<>();
 				AtomicReference<DateTime> releaseDate = new AtomicReference<>();
 				LocalDateTime closedDate = DateUtil.convertMillisToLocalDateTime(mergeRequests.getClosedDate());
@@ -466,11 +599,11 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 				if (matchJiraIssue.get() != null) {
 					if (CollectionUtils.isNotEmpty(matchJiraIssue.get().getReleaseVersions())) {
-						matchJiraIssue.get().getReleaseVersions().stream()
+						matchJiraIssue.get().getReleaseVersions()
 								.forEach(releaseVersion -> releaseDate.set(releaseVersion.getReleaseDate()));
 					}
 
-					setLeadTimeChangeDataForJira(weekOrMonth, leadTimeMapTimeWise, mergeRequests, closedTicketDate,
+					setLeadTimeChangeDataForRepo(weekOrMonth, leadTimeMapTimeWise, mergeRequests, closedTicketDate,
 							releaseDate, matchJiraIssue);
 				}
 			});
@@ -479,15 +612,23 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	/**
+	 * set lead time changes data as per repo as per merge request from branch
+	 * linked with jira issue id
 	 * 
 	 * @param weekOrMonth
+	 *            date
 	 * @param leadTimeMapTimeWise
+	 *            lead time
 	 * @param mergeRequests
+	 *            MR
 	 * @param closedTicketDate
+	 *            merge date
 	 * @param releaseDate
+	 *            release date
 	 * @param matchJiraIssue
+	 *            linked with branch
 	 */
-	private void setLeadTimeChangeDataForJira(String weekOrMonth,
+	private void setLeadTimeChangeDataForRepo(String weekOrMonth,
 			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, MergeRequests mergeRequests,
 			AtomicReference<DateTime> closedTicketDate, AtomicReference<DateTime> releaseDate,
 			AtomicReference<JiraIssue> matchJiraIssue) {
@@ -514,6 +655,17 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 	}
 
+	/**
+	 * set data count
+	 * 
+	 * @param trendLineName
+	 *            project name
+	 * @param weekOrMonthName
+	 *            date
+	 * @param leadTimeListCurrentTime
+	 *            lead time list
+	 * @return data count
+	 */
 	private DataCount createDataCount(String trendLineName, String weekOrMonthName,
 			List<LeadTimeChangeData> leadTimeListCurrentTime) {
 		double days = leadTimeListCurrentTime.stream().mapToDouble(LeadTimeChangeData::getLeadTime).sum();
@@ -523,8 +675,8 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		dataCount.setDate(weekOrMonthName);
 		dataCount.setValue(days);
 		Map<String, Object> hoverValueMap = new HashMap<>();
-		hoverValueMap.put("Change lead time", days);
-		dataCount.setHoverValue(new HashMap<>());
+		hoverValueMap.put("Lead time Change", days);
+		dataCount.setHoverValue(hoverValueMap);
 		return dataCount;
 	}
 
@@ -547,9 +699,11 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	/**
-	 *
+	 * get last N weeks
+	 * 
 	 * @param count
-	 * @return
+	 *            count
+	 * @return map of list of LeadTimeChangeData
 	 */
 	private Map<String, List<LeadTimeChangeData>> getLastNWeek(int count) {
 		Map<String, List<LeadTimeChangeData>> lastNWeek = new LinkedHashMap<>();
@@ -566,9 +720,11 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	/**
-	 *
+	 * get last N months
+	 * 
 	 * @param count
-	 * @return
+	 *            count
+	 * @return map of list of LeadTimeChangeData
 	 */
 	private Map<String, List<LeadTimeChangeData>> getLastNMonthCount(int count) {
 		Map<String, List<LeadTimeChangeData>> lastNMonth = new LinkedHashMap<>();

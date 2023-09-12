@@ -513,15 +513,11 @@ db.field_mapping_structure.updateMany(
 
 )
 
+// delete lead time for change
+db.kpi_master.deleteOne({
+      "kpiId": "kpi156"
+    });
 
-db.kpi_master.bulkWrite([
-// delete Lead time for change KPI (156)
-  {
-    deleteMany: {
-      filter: { kpiId: { $in: ["kpi156"] } }
-    }
-  }
-]);
 // fieldMapping Structure fields for Lead time for changes in DORA tab
 db.field_mapping_structure.deleteMany({
     "fieldName": {
@@ -530,7 +526,7 @@ db.field_mapping_structure.deleteMany({
 });
 
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { "templateCode": { $in: ["7"] } },
    { $pull: {
       "workflow": {
          "type":"jiraDodKPI155"

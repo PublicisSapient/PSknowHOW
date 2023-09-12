@@ -3827,7 +3827,20 @@ db.field_mapping_structure.updateMany(
 )
 
 // KPI add Lead time for changes in DORA tab
-db.kpi_master.bulkWrite([{
+db.kpi_master.bulkWrite([{ // adding kpi category dora
+  updateMany: {
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+    "aggregationCircleCriteria" : "average"
+      }
+    }
+  }
+}, {
    insertOne: {
      document: {
     "kpiId": "kpi156",
@@ -3858,6 +3871,7 @@ db.kpi_master.bulkWrite([{
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
  }
@@ -3916,7 +3930,7 @@ db.kpi_master.bulkWrite([{
 }]);
 
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { "templateCode": { $in: ["7"] } },
    { $push: {
    "workflow": {
                 "type":"jiraDodKPI156",

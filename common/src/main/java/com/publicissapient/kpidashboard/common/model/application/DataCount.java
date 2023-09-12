@@ -130,10 +130,26 @@ public class DataCount implements Serializable {
 
 	/**
 	 *
-	 * @param data
-	 * @param maturity
-	 * @param maturityValue
-	 * @param value
+	 * @param data the data
+	 * @param maturity maturity
+	 * @param maturityValue maturity value
+	 * @param value value
+	 */
+	public DataCount(String data, String maturity, Object maturityValue, Object value) {
+		this.data = data;
+		this.maturity = maturity;
+		this.maturityValue = maturityValue;
+		this.value = value;
+
+	}
+
+	/**
+	 *
+	 * @param data data
+	 * @param maturity maturity
+	 * @param maturityValue maturity value
+	 * @param value value
+	 * @param aggregationValue aggregation Value
 	 */
 	public DataCount(String data, String maturity, Object maturityValue, Object value, Object aggregationValue) {
 		this.data = data;

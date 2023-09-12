@@ -90,6 +90,16 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 		return returnList;
 	}
 
+	/**
+	 * find merge request list based on basic config id and from branch , to branch
+	 * and state matches
+	 * 
+	 * @param basicProjectConfigId
+	 * @param fromBranches
+	 * @param mergeRequestStatusList
+	 * @param toBranch
+	 * @return
+	 */
 	@Override
 	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(ObjectId basicProjectConfigId,
 			List<Pattern> fromBranches, List<String> mergeRequestStatusList, String toBranch) {

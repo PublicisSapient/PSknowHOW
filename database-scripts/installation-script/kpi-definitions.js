@@ -714,6 +714,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -1147,6 +1148,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -3131,6 +3133,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   }
