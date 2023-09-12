@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -57,9 +58,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation class for UserBoardConfigService
- * 
- * @author narsingh9
  *
+ * @author narsingh9
  */
 @Service
 @Slf4j
@@ -126,32 +126,22 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	/**
 	 * This method checks sub tabs for existing user on release board
 	 *
-	 * @param existingUserBoardConfigDTO
-	 *            existingUserBoardConfigDTO
+	 * @param existingUserBoardStreamList
+	 *            existingUserBoardStreamList
 	 * @param kpiMasterMap
 	 *            kpiMasterMap
 	 * @return kpiMasterMap
 	 */
-	private boolean checkKPISubCategory(UserBoardConfigDTO existingUserBoardConfigDTO,
+	private boolean checkKPISubCategory(Stream<List<BoardDTO>> existingUserBoardStreamList,
 			Map<String, KpiMaster> kpiMasterMap) {
-		Set<String> existingUserSubCategories = existingUserBoardConfigDTO.getOthers().stream()
-				.flatMap(boardDTO -> boardDTO.getKpis().stream().map(BoardKpisDTO::getSubCategoryBoard))
+
+		Set<String> existingUserSubCategories = existingUserBoardStreamList.flatMap(boardDTO -> boardDTO.stream()
+				.flatMap(kpis -> kpis.getKpis().stream()).map(BoardKpisDTO::getSubCategoryBoard))
 				.filter(Objects::nonNull).collect(Collectors.toSet());
-		existingUserSubCategories.addAll(existingUserBoardConfigDTO.getScrum().stream()
-				.flatMap(boardDTO -> boardDTO.getKpis().stream().map(BoardKpisDTO::getSubCategoryBoard))
-				.filter(Objects::nonNull).collect(Collectors.toSet()));
-		existingUserSubCategories.addAll(existingUserBoardConfigDTO.getKanban().stream()
-				.flatMap(boardDTO -> boardDTO.getKpis().stream().map(BoardKpisDTO::getSubCategoryBoard))
-				.filter(Objects::nonNull).collect(Collectors.toSet()));
+
 		Set<String> kpiMasterSubCategories = kpiMasterMap.values().stream().map(KpiMaster::getKpiSubCategory)
 				.filter(Objects::nonNull).collect(Collectors.toSet());
-		if (kpiMasterSubCategories.size() > existingUserSubCategories.size()) {
-			return CollectionUtils.containsAll(existingUserSubCategories, kpiMasterSubCategories);
-		} else if (kpiMasterSubCategories.size() < existingUserSubCategories.size()) {
-			return CollectionUtils.containsAll(kpiMasterSubCategories, existingUserSubCategories);
-		} else {
-			return true;
-		}
+		return kpiMasterSubCategories.size() == existingUserSubCategories.size();
 	}
 
 	/**
@@ -167,12 +157,12 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 */
 	private boolean checkCategories(UserBoardConfigDTO existingUserBoardConfigDTO, List<KpiCategory> kpiCategoryList,
 			Map<String, KpiMaster> kpiMasterMap) {
-		Set<String> existingCategories = existingUserBoardConfigDTO.getScrum().stream().map(BoardDTO::getBoardName)
-				.collect(Collectors.toSet());
-		existingCategories.addAll(existingUserBoardConfigDTO.getKanban().stream().map(BoardDTO::getBoardName)
-				.collect(Collectors.toSet()));
-		existingCategories.addAll(existingUserBoardConfigDTO.getOthers().stream().map(BoardDTO::getBoardName)
-				.collect(Collectors.toSet()));
+
+		Stream<List<BoardDTO>> existingUserBoardStreamList = Stream.of(existingUserBoardConfigDTO.getScrum(),
+				existingUserBoardConfigDTO.getKanban(), existingUserBoardConfigDTO.getOthers());
+
+		Set<String> existingCategories = existingUserBoardStreamList
+				.flatMap(boardList -> boardList.stream().map(BoardDTO::getBoardName)).collect(Collectors.toSet());
 
 		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName)
 				.collect(Collectors.toList());
@@ -182,7 +172,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
 		return !(new HashSet<>(defaultKpiCategory).containsAll(existingCategories)
-				&& checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap));
+				&& checkKPISubCategory(existingUserBoardStreamList, kpiMasterMap));
 	}
 
 	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
@@ -243,7 +233,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
-	 *
 	 * @param existingUserBoardConfig
 	 *            existingUserBoardConfig
 	 * @param userKpiIdList
