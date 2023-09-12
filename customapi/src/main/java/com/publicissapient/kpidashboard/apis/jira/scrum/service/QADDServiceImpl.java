@@ -161,7 +161,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		long time = System.currentTimeMillis();
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
-		log.info("QADD taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
+		log.info("QADD taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 		List<JiraIssue> storyFilteredList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS);

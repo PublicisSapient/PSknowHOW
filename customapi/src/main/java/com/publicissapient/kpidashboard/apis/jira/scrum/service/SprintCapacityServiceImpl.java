@@ -180,7 +180,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
 		Map<String, Object> sprintCapacityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("Sprint Capacity taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
+		log.info("Sprint Capacity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
 		Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap = new HashMap<>();
 

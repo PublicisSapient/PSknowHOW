@@ -142,9 +142,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
-        long time = System.currentTimeMillis();
+		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
+		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
@@ -269,17 +269,21 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI82());
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
+					fieldMapping.getDefectPriorityKPI82());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+						fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
+						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					fieldMapping.getJiraIssueDeliverdStatusKPI82());
-			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
+			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI82(),
+					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
@@ -297,19 +301,18 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
 		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMap);
-		Map<String, List<JiraIssue>> issuesBySprintAndTypeMap = issuesBySprintAndType.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+		Map<String, List<JiraIssue>> issuesBySprintAndTypeMap = issuesBySprintAndType.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 		issuesBySprintAndTypeMap.forEach((projectId, issuesList) -> {
 			issuesList.sort(Comparator.comparing(JiraIssue::getSprintEndDate)); // Sort in descending order
 		});
 		// Limit the list of SprintDetails for each basicProjectConfigId to
-		List<JiraIssue> limitedList = issuesBySprintAndTypeMap.values()
-				.stream()
-				.flatMap(list -> list.stream().limit((long)customApiConfig.getSprintCountForFilters()))
+		List<JiraIssue> limitedList = issuesBySprintAndTypeMap.values().stream()
+				.flatMap(list -> list.stream().limit((long) customApiConfig.getSprintCountForFilters()))
 				.collect(Collectors.toList());
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, limitedList,
-				defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, limitedList, defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
@@ -321,7 +324,8 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),fieldMapping.getJiraFtprRejectStatusKPI82());
+					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),
+					fieldMapping.getJiraFtprRejectStatusKPI82());
 		});
 
 		List<String> storyIdList = new ArrayList<>();
