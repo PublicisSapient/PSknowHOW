@@ -13,6 +13,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   @Input() data = [];
   unmodifiedDataCopy = [];
   @Input() isDrilledDown: boolean = false;
+  @Input() filter;
   selectedGroup = '';
   @ViewChild('popupHost', { read: ViewContainerRef })
   popupHost!: ViewContainerRef;
@@ -25,7 +26,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     this.draw(this.data);
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges) {    
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -35,6 +36,10 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       }
       this.draw(this.data);
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
+    }
+
+    if(changes['filter']) {
+      d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
     }
   }
 
