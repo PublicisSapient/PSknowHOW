@@ -427,8 +427,12 @@ export class MilestoneComponent implements OnInit {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
       } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+        let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
+        // for single select dropdown filters
+        if(!Array.isArray(filters)) {
+          filters = [filters];
+        }
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
