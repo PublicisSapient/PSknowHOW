@@ -512,3 +512,10 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
