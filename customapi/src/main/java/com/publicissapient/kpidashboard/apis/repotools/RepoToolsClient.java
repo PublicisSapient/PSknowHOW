@@ -42,8 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 public class RepoToolsClient {
 
 	private RestTemplate restTemplate;
-	private static final String REPO_TOOLS_ENROLL_URL = "/beta/repositories/";
-	private static final String REPO_TOOLS_TRIGGER_SCAN_URL = "/metric/%s/trigger-scan";
 	private static final String X_API_KEY = "X_API_KEY";
 	private HttpHeaders httpHeaders;
 
@@ -59,7 +57,8 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolConfig);
-		URI url = URI.create(repoToolsUrl + REPO_TOOLS_ENROLL_URL);
+		log.info("enroll project request {} {}", repoToolsUrl, repoToolConfig);
+		URI url = URI.create(repoToolsUrl);
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 		log.debug(response.getBody());
@@ -76,7 +75,8 @@ public class RepoToolsClient {
 	 */
 	public int triggerScanCall(String projectKey, String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
-		String triggerScanUrl = String.format(repoToolsUrl.concat(REPO_TOOLS_TRIGGER_SCAN_URL), projectKey);
+		String triggerScanUrl = String.format(repoToolsUrl, projectKey);
+		log.info("trigger project scan request {} {}", triggerScanUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(triggerScanUrl, HttpMethod.GET, entity, String.class);
 		return response.getStatusCode().value();
@@ -96,6 +96,7 @@ public class RepoToolsClient {
 		setHttpHeaders(apiKey);
 		Gson gson = new Gson();
 		String payload = gson.toJson(repoToolKpiRequestBody);
+		log.info("kpi request payload for {} {}", repoToolsUrl, repoToolKpiRequestBody.toString());
 		HttpEntity<String> entity = new HttpEntity<>(payload, httpHeaders);
 		ResponseEntity<RepoToolKpiBulkMetricResponse> response = restTemplate.exchange(URI.create(repoToolsUrl),
 				HttpMethod.POST, entity, RepoToolKpiBulkMetricResponse.class);
@@ -113,6 +114,7 @@ public class RepoToolsClient {
 	public int deleteProject(String repoToolsUrl, String apiKey) {
 		setHttpHeaders(apiKey);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
+		log.info("delete project request {}", repoToolsUrl);
 		ResponseEntity<JsonNode> response = restTemplate.exchange(URI.create(repoToolsUrl), HttpMethod.DELETE, entity,
 				JsonNode.class);
 		return response.getStatusCode().value();
@@ -127,6 +129,7 @@ public class RepoToolsClient {
 	 */
 	public int deleteRepositories(String deleteRepoUrl, String apiKey) {
 		setHttpHeaders(apiKey);
+		log.info("delete project request {}", deleteRepoUrl);
 		URI url = URI.create(deleteRepoUrl);
 		HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
 		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);

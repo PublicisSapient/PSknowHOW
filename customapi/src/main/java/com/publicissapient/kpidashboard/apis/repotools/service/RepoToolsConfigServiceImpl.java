@@ -87,13 +87,10 @@ public class RepoToolsConfigServiceImpl {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
-	private static final String METRIC = "/metric/";
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String DELETE_REPO = "/project/delete/%s/?only_data=%s";
-	public static final String REMOVE_PROJECT = "/project/delete/%s/%s";
 
 	private RepoToolsClient repoToolsClient;
 
@@ -130,9 +127,9 @@ public class RepoToolsConfigServiceImpl {
 					fistScan.toString().replace("T", " "), toolCredential, branchNames);
 
 			repoToolsClient = createRepoToolsClient();
-			log.debug(repoToolConfig.toString());
 			// api call to enroll the project
-			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig, customApiConfig.getRepoToolURL(),
+			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
+					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} catch (Exception ex) {
@@ -174,7 +171,8 @@ public class RepoToolsConfigServiceImpl {
 				repoToolsClient = createRepoToolsClient();
 
 				// api call to start project scanning
-				httpStatus = repoToolsClient.triggerScanCall(projectCode, customApiConfig.getRepoToolURL(),
+				httpStatus = repoToolsClient.triggerScanCall(projectCode,
+						customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolTriggerScan(),
 						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 				// save ProcessorItemRepository for all the ProjectToolConfig
@@ -215,21 +213,26 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
-		int httpStatus;
+		int httpStatus = HttpStatus.NOT_FOUND.value();
 		long count = toolList.stream()
 				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
 		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 		if (count > 1) {
 			// delete only the repository
-			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(REMOVE_PROJECT,
+			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(
+					customApiConfig.getRepoToolDeleteRepoUrl(),
 					projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), tool.getRepositoryName());
 			httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
 		} else {
-			// delete the project from repo tool if only one repository is present
-			httpStatus = deleteRepoToolProject(projectBasicConfig, false);
+			try {
+				// delete the project from repo tool if only one repository is present
+				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
+			} catch (Exception ex) {
+				log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
+			}
 
 		}
 		return httpStatus == HttpStatus.OK.value();
@@ -248,7 +251,7 @@ public class RepoToolsConfigServiceImpl {
 	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCode, String repoToolKpi,
 			String startDate, String endDate, String frequency) {
 		repoToolsClient = createRepoToolsClient();
-		String repoToolUrl = customApiConfig.getRepoToolURL() + METRIC + repoToolKpi;
+		String repoToolUrl = customApiConfig.getRepoToolURL().concat(repoToolKpi);
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
 		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode, startDate, endDate,
@@ -297,8 +300,9 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
-		String deleteUrl = customApiConfig.getRepoToolURL() + String.format(DELETE_REPO,
-				projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
+		String deleteUrl = customApiConfig.getRepoToolURL()
+				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(),
+						projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
 			repoToolsClient = createRepoToolsClient();

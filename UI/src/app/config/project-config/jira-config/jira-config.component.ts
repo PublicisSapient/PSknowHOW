@@ -2132,7 +2132,7 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'text',
-                label: 'Default Branch',
+                label: 'Default Branch of Repository',
                 id: 'defaultBranch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
@@ -2144,14 +2144,14 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'text',
-                label: 'Scanning Branch',
+                label: 'Branch to Scan for KPIs',
                 id: 'branch',
                 validators: [],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Scanning Branch name to access Repository data.<br />
+                tooltip: `Scanning Branch name to access Repository data for Developer KPIs. If kept empty Default branch will be considered for scanning<br />
                 <i>
-                  Example: master<br />
+                  Example: develop<br />
                   Impacted : All Repository based KPIs</i>`,
               },
             ],

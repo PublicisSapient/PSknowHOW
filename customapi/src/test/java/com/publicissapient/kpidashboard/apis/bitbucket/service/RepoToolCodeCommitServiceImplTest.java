@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +95,8 @@ public class RepoToolCodeCommitServiceImplTest {
 
 	@Mock
 	private ConfigHelperService configHelperService;
-
+	@Mock
+	private CustomApiConfig customApiConfig;
 	@Mock
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
 	@Mock
@@ -113,7 +115,7 @@ public class RepoToolCodeCommitServiceImplTest {
 		kpiRequest.setSelectedMap(selectedMap);
 		kpiRequest.setLabel("Project");
 		kpiElement = kpiRequest.getKpiList().get(0);
-		kpiRequest.setKanbanXaxisDataPoints(5);
+		kpiRequest.setXAxisDataPoints(5);
 		kpiRequest.setDuration("WEEKS");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();

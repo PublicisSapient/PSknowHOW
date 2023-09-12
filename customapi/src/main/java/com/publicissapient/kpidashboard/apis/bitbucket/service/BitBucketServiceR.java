@@ -106,7 +106,7 @@ public class BitBucketServiceR {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
-				kpiRequest.setKanbanXaxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
 				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 

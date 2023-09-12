@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -68,7 +69,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	 *
 	 */
 	private static final String NO_CHECKIN = "No. of Checkins";
-	public static final String REPO_TOOL_COMMIT_KPI = "repo-activity-bulk/";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 	private static final String REPO_TOOLS = "RepoTool";
@@ -78,6 +78,9 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public String getQualifierType() {
@@ -129,11 +132,11 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 			KpiRequest kpiRequest) {
 
 		CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
-
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(
 				dateRange.getEndDate(), toolMap, projectList, kpiRequest);
-		kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectList, kpiElement, kpiRequest);
+		if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList))
+			kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectList, kpiElement, kpiRequest);
 
 	}
 
@@ -146,9 +149,8 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		leafNodeList.forEach(node -> {
 			ProjectFilter accountHierarchyData = node.getProjectFilter();
 			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
-			List<Tool> reposList = new ArrayList<>();
-			populateRepoList(reposList, mapOfListOfTools);
+			List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+					: toolMap.get(configId).get(REPO_TOOLS);
 			if (CollectionUtils.isEmpty(reposList)) {
 				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
@@ -166,16 +168,13 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 						&& repo.getProcessorItemList().get(0).getId() != null) {
 					Map<String, Long> excelDataLoader = new HashMap<>();
 					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
-					List<DataCount> dayWiseCount = new ArrayList<>();
-					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
-						Map<String, Long> dateWiseCommitList = new HashMap<>();
+					Map<String, Long> dateWiseCommitList = new HashMap<>();
 
-						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repo.getRepositoryName(),
-								repo.getBranch(), dateWiseCommitList);
-						aggCommitCountForRepo.putAll(dateWiseCommitList);
-						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, excelDataLoader, projectName,
-								kpiRequest);
-					}
+					createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repo.getRepositoryName(),
+							repo.getBranch(), dateWiseCommitList);
+					aggCommitCountForRepo.putAll(dateWiseCommitList);
+					List<DataCount> dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, excelDataLoader,
+							projectName, kpiRequest);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
@@ -199,6 +198,14 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		kpiElement.setMapOfSprintAndData(validationMap);
 	}
 
+	/**
+	 * create data count object by day/week filter
+	 * @param commitCountForRepo
+	 * @param excelDataLoader
+	 * @param projectName
+	 * @param kpiRequest
+	 * @return
+	 */
 	private List<DataCount> setDayWiseCountForProject(Map<String, Long> commitCountForRepo,
 			Map<String, Long> excelDataLoader, String projectName, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
@@ -251,6 +258,13 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		return currentDate;
 	}
 
+	/**
+	 * create date wise commit map
+	 * @param repoToolKpiMetricResponsesCommit
+	 * @param repoName
+	 * @param branchName
+	 * @param dateWiseCommitRepoTools
+	 */
 	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
 			String repoName, String branchName, Map<String, Long> dateWiseCommitRepoTools) {
 
@@ -267,18 +281,6 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		}
 	}
 
-	/**
-	 * populate repolist from map
-	 *
-	 * @param reposList
-	 * @param mapOfListOfTools
-	 */
-	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
-		if (null != mapOfListOfTools) {
-			reposList.addAll(mapOfListOfTools.get(REPO_TOOLS) == null ? Collections.emptyList()
-					: mapOfListOfTools.get(REPO_TOOLS));
-		}
-	}
 
 	/**
 	 * @param leafNodeList
@@ -294,6 +296,14 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 		return new HashMap<>();
 	}
 
+	/**
+	 * get kpi data from repo tools api
+	 * @param endDate
+	 * @param toolMap
+	 * @param nodeList
+	 * @param kpiRequest
+	 * @return
+	 */
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
 			Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> nodeList, KpiRequest kpiRequest) {
 
@@ -321,7 +331,8 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 			String debbieDuration = kpiRequest.getDuration().equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY
 					: DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-					REPO_TOOL_COMMIT_KPI, startDate.toString(), endDate.toString(), debbieDuration);
+					customApiConfig.getRepoToolCodeCommmitsUrl(), startDate.toString(), endDate.toString(),
+					debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;

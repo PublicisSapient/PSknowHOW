@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,6 +79,8 @@ public class RepoToolCodeCommitKanbanServiceImplTest {
 	ConfigHelperService configHelperService;
 	@Mock
 	RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 	@InjectMocks
 	RepoToolCodeCommitKanbanServiceImpl codeCommitServiceImpl;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -73,8 +74,6 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	private static final String NO_CHECKIN = "No. of Check in";
 	private static final String NO_MERGE = "No. of Merge Requests";
-	public static final String REPO_TOOLS_COMMIT_KPI = "repo-activity-bulk/";
-	public static final String REPO_TOOLS_MR_KPI = "mr-life-cycle-bulk/";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
 	private static final String REPO_TOOLS = "RepoTool";
@@ -84,6 +83,9 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public String getQualifierType() {
@@ -147,23 +149,29 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
 
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(
-				localEndDate, toolMap, projectLeafNodeList, REPO_TOOLS_COMMIT_KPI, duration, dataPoints);
+				localEndDate, toolMap, projectLeafNodeList, customApiConfig.getRepoToolCodeCommmitsUrl(), duration,
+				dataPoints);
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseMergeList = getRepoToolsKpiMetricResponse(localEndDate,
-				toolMap, projectLeafNodeList, REPO_TOOLS_MR_KPI, duration, dataPoints);
+				toolMap, projectLeafNodeList, customApiConfig.getRepoToolMeanTimeToMergeUrl(), duration, dataPoints);
+		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseCommitList)
+				&& CollectionUtils.isEmpty(repoToolKpiMetricResponseMergeList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}",
+					projectLeafNodeList.get(0));
+			return;
+		}
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			ProjectFilter accountHierarchyData = node.getProjectFilter();
 			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
-			List<Tool> reposList = new ArrayList<>();
-			populateRepoList(reposList, mapOfListOfTools);
+			List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+					: toolMap.get(configId).get(REPO_TOOLS);
 			if (CollectionUtils.isEmpty(reposList)) {
 				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
@@ -182,19 +190,15 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 						&& repo.getProcessorItemList().get(0).getId() != null) {
 					Map<String, Long> excelDataLoader = new HashMap<>();
 					Map<String, Long> mergeRequestExcelDataLoader = new HashMap<>();
-					List<DataCount> dayWiseCount = new ArrayList<>();
-					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseMergeList)
-							|| CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList)) {
-						Map<String, Long> dateWiseCommitList = new HashMap<>();
-						Map<String, Long> dateWiseMRList = new HashMap<>();
+					Map<String, Long> dateWiseCommitList = new HashMap<>();
+					Map<String, Long> dateWiseMRList = new HashMap<>();
 
-						createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
-								repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
-						aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
-								dateWiseMRList);
-						dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList, excelDataLoader,
-								projectName, mergeRequestExcelDataLoader, duration, dataPoints);
-					}
+					createDateLabelWiseMap(repoToolKpiMetricResponseCommitList, repoToolKpiMetricResponseMergeList,
+							repo.getRepositoryName(), repo.getBranch(), dateWiseCommitList, dateWiseMRList);
+					aggCommitAndMergeCount(aggCommitCountForRepo, aggMergeCountForRepo, dateWiseCommitList,
+							dateWiseMRList);
+					List<DataCount> dayWiseCount = setDayWiseCountForProject(dateWiseCommitList, dateWiseMRList,
+							excelDataLoader, projectName, mergeRequestExcelDataLoader, duration, dataPoints);
 					aggDataMap.put(getBranchSubFilter(repo, projectName), dayWiseCount);
 					repoWiseCommitList.add(excelDataLoader);
 					repoWiseMergeRequestList.add(mergeRequestExcelDataLoader);
@@ -232,19 +236,6 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	}
 
 	/**
-	 * populate repolist from map
-	 *
-	 * @param reposList
-	 * @param mapOfListOfTools
-	 */
-	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
-		if (null != mapOfListOfTools) {
-			reposList.addAll(mapOfListOfTools.get(REPO_TOOLS) == null ? Collections.emptyList()
-					: mapOfListOfTools.get(REPO_TOOLS));
-		}
-	}
-
-	/**
 	 * Populates validation data object.
 	 *
 	 * @param requestTrackerId
@@ -266,6 +257,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	}
 
 	/**
+	 * create data count object by day/week filter
 	 * @param mergeCountForRepo
 	 * @param commitCountForRepo
 	 * @param excelDataLoader
@@ -341,6 +333,16 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 		return new HashMap<>();
 	}
 
+	/**
+	 * get kpi data from repo tools api
+	 * @param endDate
+	 * @param toolMap
+	 * @param nodeList
+	 * @param kpi
+	 * @param duration
+	 * @param dataPoint
+	 * @return
+	 */
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
 			Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> nodeList, String kpi, String duration,
 			Integer dataPoint) {

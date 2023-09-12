@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -66,8 +67,6 @@ import java.util.stream.Collectors;
 public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, Map<String, Object>> {
 
 	private static final String REPO_TOOLS = "RepoTool";
-	public static final String DATE_FORMAT = "yyyy-MM-dd";
-	public static final String PICKUP_TIME_KPI = "pr-size-bulk/";
 	public static final String MR_COUNT = "No of MRs";
 	public static final String WEEK_FREQUENCY = "week";
 	public static final String DAY_FREQUENCY = "day";
@@ -77,6 +76,9 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public String getQualifierType() {
@@ -130,21 +132,27 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		String requestTrackerId = getRequestTrackerId();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
+
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseList = getRepoToolsKpiMetricResponse(localEndDate,
 				toolMap, projectLeafNodeList, dataPoints, duration);
+
+		if (CollectionUtils.isEmpty(repoToolKpiMetricResponseList)) {
+			log.error("[BITBUCKET-AGGREGATED-VALUE]. No kpi data found for this project {}",
+					projectLeafNodeList.get(0));
+			return;
+		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		projectLeafNodeList.stream().forEach(node -> {
 			ProjectFilter accountHierarchyData = node.getProjectFilter();
 			ObjectId configId = accountHierarchyData == null ? null : accountHierarchyData.getBasicProjectConfigId();
-			Map<String, List<Tool>> mapOfListOfTools = toolMap.get(configId);
-			List<Tool> reposList = new ArrayList<>();
-			populateRepoList(reposList, mapOfListOfTools);
+			List<Tool> reposList = toolMap.get(configId).get(REPO_TOOLS) == null ? Collections.emptyList()
+					: toolMap.get(configId).get(REPO_TOOLS);
 			if (CollectionUtils.isEmpty(reposList)) {
 				log.error("[BITBUCKET-AGGREGATED-VALUE]. No Jobs found for this project {}", node.getProjectFilter());
 				return;
@@ -161,23 +169,21 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
 					Map<String, Long> excelDataLoader = new HashMap<>();
-					if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseList)) {
-						String branchName = getBranchSubFilter(repo, projectName);
-						Map<String, Long> dateWisePickupTime = new HashMap<>();
-						Map<String, Long> dateWiseMRCount = new HashMap<>();
-						createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(),
-								repo.getBranch(), dateWisePickupTime, dateWiseMRCount);
-						aggPickupTime(aggPRSizeForRepo, dateWisePickupTime, aggMRCount, dateWiseMRCount);
-						setWeekWisePickupTime(dateWisePickupTime, dateWiseMRCount, excelDataLoader, branchName,
-								projectName, aggDataMap, kpiRequest);
-					}
+					String branchName = getBranchSubFilter(repo, projectName);
+					Map<String, Long> dateWisePRSize = new HashMap<>();
+					Map<String, Long> dateWiseMRCount = new HashMap<>();
+					createDateLabelWiseMap(repoToolKpiMetricResponseList, repo.getRepositoryName(), repo.getBranch(),
+							dateWisePRSize, dateWiseMRCount);
+					aggPRSize(aggPRSizeForRepo, dateWisePRSize, aggMRCount, dateWiseMRCount);
+					setWeekWisePRSize(dateWisePRSize, dateWiseMRCount, excelDataLoader, branchName, projectName,
+							aggDataMap, kpiRequest);
 					repoWisePRSizeList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
 					branchList.add(repo.getBranch());
 
 				}
 			});
-			setWeekWisePickupTime(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
+			setWeekWisePRSize(aggPRSizeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
 					aggDataMap, kpiRequest);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 
@@ -187,7 +193,7 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		kpiElement.setExcelColumns(KPIExcelColumn.PR_SIZE.getColumns());
 	}
 
-	private void aggPickupTime(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
+	private void aggPRSize(Map<String, Long> aggPRSizeForRepo, Map<String, Long> prSizeForRepo,
 			Map<String, Long> aggMRCount, Map<String, Long> mrCount) {
 		if (MapUtils.isNotEmpty(prSizeForRepo)) {
 			prSizeForRepo.forEach((key, value) -> aggPRSizeForRepo.merge(key, value, Long::sum));
@@ -197,13 +203,14 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		}
 	}
 
-	private void populateRepoList(List<Tool> reposList, Map<String, List<Tool>> mapOfListOfTools) {
-		if (null != mapOfListOfTools) {
-			reposList.addAll(mapOfListOfTools.get(REPO_TOOLS) == null ? Collections.emptyList()
-					: mapOfListOfTools.get(REPO_TOOLS));
-		}
-	}
-
+	/**
+	 * create date wise pr size map
+	 * @param repoToolKpiMetricResponsesCommit
+	 * @param repoName
+	 * @param branchName
+	 * @param dateWisePickupTime
+	 * @param dateWiseMRCount
+	 */
 	private void createDateLabelWiseMap(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponsesCommit,
 			String repoName, String branchName, Map<String, Long> dateWisePickupTime,
 			Map<String, Long> dateWiseMRCount) {
@@ -221,15 +228,25 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		}
 	}
 
-	private void setWeekWisePickupTime(Map<String, Long> weekWisePickupTime, Map<String, Long> weekWiseMRCount,
+	/**
+	 * create data count object by day/week filter
+	 * @param weekWisePRSize
+	 * @param weekWiseMRCount
+	 * @param excelDataLoader
+	 * @param branchName
+	 * @param projectName
+	 * @param aggDataMap
+	 * @param kpiRequest
+	 */
+	private void setWeekWisePRSize(Map<String, Long> weekWisePRSize, Map<String, Long> weekWiseMRCount,
 			Map<String, Long> excelDataLoader, String branchName, String projectName,
 			Map<String, List<DataCount>> aggDataMap, KpiRequest kpiRequest) {
 		LocalDate currentDate = LocalDate.now();
-		Integer dataPoints = kpiRequest.getKanbanXaxisDataPoints();
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
 		String duration = kpiRequest.getDuration();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
-			long prSize = weekWisePickupTime.getOrDefault(dateRange.getStartDate().toString(), 0l);
+			long prSize = weekWisePRSize.getOrDefault(dateRange.getStartDate().toString(), 0l);
 			String date = getDateRange(dateRange, duration);
 			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
 			DataCount dataCount = setDataCount(projectName, date, prSize,
@@ -276,6 +293,15 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 		return dataCount;
 	}
 
+	/**
+	 * get kpi data from repo tools api
+	 * @param endDate
+	 * @param toolMap
+	 * @param nodeList
+	 * @param dataPoint
+	 * @param duration
+	 * @return
+	 */
 	private List<RepoToolKpiMetricResponse> getRepoToolsKpiMetricResponse(LocalDate endDate,
 			Map<ObjectId, Map<String, List<Tool>>> toolMap, List<Node> nodeList, Integer dataPoint, String duration) {
 
@@ -300,9 +326,10 @@ public class PRSizeServiceImpl extends BitBucketKPIService<Long, List<Object>, M
 					startDate = startDate.minusDays(1);
 				}
 			}
+
 			String debbieDuration = duration.equalsIgnoreCase(CommonConstant.WEEK) ? WEEK_FREQUENCY : DAY_FREQUENCY;
 			repoToolKpiMetricResponseList = repoToolsConfigService.getRepoToolKpiMetrics(projectCodeList,
-					PICKUP_TIME_KPI, startDate.toString(), endDate.toString(), debbieDuration);
+					customApiConfig.getRepoToolPRSizeUrl(), startDate.toString(), endDate.toString(), debbieDuration);
 		}
 
 		return repoToolKpiMetricResponseList;
