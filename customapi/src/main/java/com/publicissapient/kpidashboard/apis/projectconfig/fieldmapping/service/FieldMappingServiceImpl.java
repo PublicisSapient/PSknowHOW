@@ -110,8 +110,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			throw new AccessDeniedException("Access is denied");
 		}
 
-		//FieldMapping temp = fieldMappingRepository.findByProjectToolConfigId(new ObjectId(projectToolConfigId)); NOSONAR
-
 		return configHelperService.getFieldMappingMap().get(new ObjectId(projectToolConfigId));
 	}
 
