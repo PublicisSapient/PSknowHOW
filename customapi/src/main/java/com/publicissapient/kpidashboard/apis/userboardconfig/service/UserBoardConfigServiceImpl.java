@@ -107,9 +107,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			return defaultUserBoardConfigDTO;
 		} else {
 			UserBoardConfigDTO existingUserBoardConfigDTO = convertToUserBoardConfigDTO(existingUserBoardConfig);
-			if ((checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
-					&& checkCategories(existingUserBoardConfigDTO, kpiCategoryList))
-					|| checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap)) {
+			if (checkKPIAddOrRemoveForExistingUser(existingUserBoardConfigDTO, kpiMasterMap)
+					|| checkCategories(existingUserBoardConfigDTO, kpiCategoryList, kpiMasterMap)) {
 				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 				filtersBoardsAndSetKpisForExistingUser(existingUserBoardConfigDTO.getScrum(),
 						defaultUserBoardConfigDTO.getScrum());
@@ -147,24 +146,26 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		Set<String> kpiMasterSubCategories = kpiMasterMap.values().stream().map(KpiMaster::getKpiSubCategory)
 				.filter(Objects::nonNull).collect(Collectors.toSet());
 		if (kpiMasterSubCategories.size() > existingUserSubCategories.size()) {
-			return !CollectionUtils.containsAll(existingUserSubCategories, kpiMasterSubCategories);
+			return CollectionUtils.containsAll(existingUserSubCategories, kpiMasterSubCategories);
 		} else if (kpiMasterSubCategories.size() < existingUserSubCategories.size()) {
-			return !CollectionUtils.containsAll(kpiMasterSubCategories, existingUserSubCategories);
+			return CollectionUtils.containsAll(kpiMasterSubCategories, existingUserSubCategories);
 		} else {
-			return false;
+			return true;
 		}
 	}
 
 	/**
 	 * to check if no new default categories are absent in the existing user board
-	 * 
+	 *
 	 * @param existingUserBoardConfigDTO
 	 *            existingUserBoardConfigDTO
 	 * @param kpiCategoryList
 	 *            kpiCategoryList
+	 * @param kpiMasterMap
 	 * @return kpiCategoryList
 	 */
-	private boolean checkCategories(UserBoardConfigDTO existingUserBoardConfigDTO, List<KpiCategory> kpiCategoryList) {
+	private boolean checkCategories(UserBoardConfigDTO existingUserBoardConfigDTO, List<KpiCategory> kpiCategoryList,
+			Map<String, KpiMaster> kpiMasterMap) {
 		Set<String> existingCategories = existingUserBoardConfigDTO.getScrum().stream().map(BoardDTO::getBoardName)
 				.collect(Collectors.toSet());
 		existingCategories.addAll(existingUserBoardConfigDTO.getKanban().stream().map(BoardDTO::getBoardName)
@@ -179,7 +180,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		defaultKpiCategory.add(DORA);
 		defaultKpiCategory.add(BACKLOG);
 		defaultKpiCategory.add(KPI_MATURITY);
-		return (!new HashSet<>(defaultKpiCategory).containsAll(existingCategories));
+		return !(new HashSet<>(defaultKpiCategory).containsAll(existingCategories)
+				&& checkKPISubCategory(existingUserBoardConfigDTO, kpiMasterMap));
 	}
 
 	private void setUserBoardConfigBasedOnCategoryForFreshUser(UserBoardConfigDTO defaultUserBoardConfigDTO,
