@@ -246,7 +246,11 @@ public class JiraServiceR {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
 		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
-			nodes.forEach(relaseNode -> processedList.add(relaseNode.getReleaseFilter().getName().split("_")[0]));
+			nodes.forEach(releaseNode -> {
+				String projectName = "_"+releaseNode.getProjectFilter().getName();
+				processedList.add(
+						releaseNode.getReleaseFilter().getName().split(projectName)[0]);
+			});
 		}
 		return processedList;
 	}
