@@ -1317,8 +1317,9 @@ public class KPIExcelUtility {
 		if (null != jiraIssue.getOriginalEstimateMinutes()
 				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
-			String originalEstimate = CommonUtils.convertIntoDays(jiraIssue.getOriginalEstimateMinutes());
-			jiraIssueModalObject.setIssueSize(originalEstimate);
+			Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+			jiraIssueModalObject.setIssueSize(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/"
+					+ originalEstimateInHours + " hrs");
 		}
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
 				jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT) : "-");
