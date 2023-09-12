@@ -17,7 +17,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -173,8 +173,8 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		}
 	}
 
-	private void setDefectList(String defects, List<DataCount> defectsDataCountList,
-			List<JiraIssue> defectsList, List<IterationKpiValue> iterationKpiValueList) {
+	private void setDefectList(String defects, List<DataCount> defectsDataCountList, List<JiraIssue> defectsList,
+			List<IterationKpiValue> iterationKpiValueList) {
 		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 		kpiValueIssueCount.setFilter1(defects);
 		defectsDataCountList.add(getStatusWiseCountList(defectsList));
@@ -186,30 +186,34 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		Set<String> testPhasesList = jiraIssueList.stream()
 				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup()))
 				.flatMap(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream()).collect(Collectors.toSet());
+		Set<DataCount> dataCountList = new HashSet<>();
 		DataCount dataCount = new DataCount();
-		Map<String, Double> releaseProgressCount = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(testPhasesList)) {
-			testPhasesList.forEach(s -> getTestPhaseData(jiraIssueList, releaseProgressCount, s));
+			testPhasesList.forEach(s -> getTestPhaseData(jiraIssueList, dataCountList, s));
 		} else {
-			releaseProgressCount.put(UNDEFINED, (double) jiraIssueList.stream()
-					.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count());
+			dataCountList.add(new DataCount(UNDEFINED,
+					(double) jiraIssueList.stream()
+							.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count(),
+					null));
 		}
-		dataCount.setValue(releaseProgressCount);
-		dataCount
-				.setData(String.valueOf(releaseProgressCount.values().stream().mapToDouble(Double::doubleValue).sum()));
+		dataCount.setValue(dataCountList);
+		dataCount.setData(String.valueOf(jiraIssueList.size()));
 		dataCount.setKpiGroup(DEFECTS_COUNT);
+		dataCount.setDrillDown(null);
 		return dataCount;
 	}
 
-	private static void getTestPhaseData(List<JiraIssue> jiraIssueList, Map<String, Double> releaseProgressCount,
-			String s) {
-		releaseProgressCount.put(s,
+	private static void getTestPhaseData(List<JiraIssue> jiraIssueList, Set<DataCount> dataCount, String s) {
+		dataCount.add(new DataCount(s,
 				(double) jiraIssueList.stream()
 						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
 								&& jiraIssue.getEscapedDefectGroup().contains(s))
-						.count());
-		releaseProgressCount.put(UNDEFINED, (double) jiraIssueList.stream()
-				.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count());
+						.count(),
+				null));
+		dataCount.add(new DataCount(UNDEFINED,
+				(double) jiraIssueList.stream()
+						.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count(),
+				null));
 	}
 
 	@Override
