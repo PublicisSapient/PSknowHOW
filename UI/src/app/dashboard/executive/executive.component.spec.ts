@@ -2866,7 +2866,7 @@ describe('ExecutiveComponent', () => {
     spyOn(component, 'getKpiCommentsCount');
     component.receiveSharedData(event);
 
-    //expect(spyJenkins).toHaveBeenCalled();
+    expect(spyJenkins).toHaveBeenCalled();
   });
 
   it('should return video link for kpi', () => {
@@ -5904,7 +5904,7 @@ expect(result[1]).toEqual('-ve');
         isEnabled: true,
         order: 23,
         kpiDetail: {
-         
+
         },
         shown: true
       }
