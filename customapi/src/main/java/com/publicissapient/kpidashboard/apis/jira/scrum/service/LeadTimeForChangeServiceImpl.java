@@ -130,7 +130,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(HIERARCHY_LEVEL_ID_PROJECT);
 		projectWiseLeafNodeValue(mapTmp, projectList, kpiElement);
 
-		log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+		log.debug("[LEAD-TIME-CHANGE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
@@ -174,7 +174,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			projectWiseLeadTimeConfigRepoTool.put(basicProjectConfigId.toString(),
 					fieldMapping.getLeadTimeConfigRepoTool());
-			if (fieldMapping.getLeadTimeConfigRepoTool()) {
+			if (Boolean.TRUE.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
 				if (Optional.ofNullable(fieldMapping.getMergeRequestStatusKPI156()).isPresent()) {
 					mergeRequestStatusList.put(basicProjectConfigId.toString(),
 							fieldMapping.getMergeRequestStatusKPI156());
@@ -215,17 +215,8 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 					.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
 
 			Map<String, List<MergeRequests>> projectWiseMergeRequestList = new HashMap<>();
-			projectWiseLeadTimeConfigRepoTool.forEach((projectBasicConfigId, leadTimeConfigRepoTool) -> {
-				if (leadTimeConfigRepoTool) {
-					List<String> mergeRequestStatusKPI156 = mergeRequestStatusList.get(projectBasicConfigId);
-					String toBranchForMRKPI156 = toBranchForMRList.get(projectBasicConfigId);
-					List<MergeRequests> mergeRequestList = mergeRequestRepository
-							.findMergeRequestListBasedOnBasicProjectConfigId(new ObjectId(projectBasicConfigId),
-									CommonUtils.convertTestFolderToPatternList(new ArrayList<>(issueIdList)),
-									mergeRequestStatusKPI156, toBranchForMRKPI156);
-					projectWiseMergeRequestList.put(projectBasicConfigId, mergeRequestList);
-				}
-			});
+			findMergeRequestList(mergeRequestStatusList, toBranchForMRList, projectWiseLeadTimeConfigRepoTool,
+					issueIdList, projectWiseMergeRequestList);
 
 			resultListMap.put(JIRA_DATA, jiraIssueList);
 			resultListMap.put(LEAD_TIME_CONFIG_REPO_TOOL, projectWiseLeadTimeConfigRepoTool);
@@ -234,6 +225,30 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			resultListMap.put(DOD_STATUS, projectWiseDodStatus);
 		}
 		return resultListMap;
+	}
+
+	/**
+	 * 
+	 * @param mergeRequestStatusList
+	 * @param toBranchForMRList
+	 * @param projectWiseLeadTimeConfigRepoTool
+	 * @param issueIdList
+	 * @param projectWiseMergeRequestList
+	 */
+	private void findMergeRequestList(Map<String, List<String>> mergeRequestStatusList,
+			Map<String, String> toBranchForMRList, Map<String, Boolean> projectWiseLeadTimeConfigRepoTool,
+			List<String> issueIdList, Map<String, List<MergeRequests>> projectWiseMergeRequestList) {
+		projectWiseLeadTimeConfigRepoTool.forEach((projectBasicConfigId, leadTimeConfigRepoTool) -> {
+			if (Boolean.TRUE.equals(leadTimeConfigRepoTool)) {
+				List<String> mergeRequestStatusKPI156 = mergeRequestStatusList.get(projectBasicConfigId);
+				String toBranchForMRKPI156 = toBranchForMRList.get(projectBasicConfigId);
+				List<MergeRequests> mergeRequestList = mergeRequestRepository
+						.findMergeRequestListBasedOnBasicProjectConfigId(new ObjectId(projectBasicConfigId),
+								CommonUtils.convertTestFolderToPatternList(new ArrayList<>(issueIdList)),
+								mergeRequestStatusKPI156, toBranchForMRKPI156);
+				projectWiseMergeRequestList.put(projectBasicConfigId, mergeRequestList);
+			}
+		});
 	}
 
 	/**
@@ -327,7 +342,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 							.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 					List<DataCount> dataCountList = new ArrayList<>();
 
-					if (leadTimeConfigRepoTool) {
+					if (Boolean.TRUE.equals(leadTimeConfigRepoTool)) {
 						List<MergeRequests> mergeRequestList = projectWiseMergeRequestList.get(basicProjectConfigId);
 						findLeadTimeChangeForRepoTool(mergeRequestList, weekOrMonth, leadTimeMapTimeWise, jiraIssueMap);
 					} else {
@@ -339,16 +354,22 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 						DataCount dataCount = createDataCount(trendLineName, weekOrMonthName, leadTimeListCurrentTime);
 						dataCountList.add(dataCount);
 					});
-					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-						KPIExcelUtility.populateLeadTimeForChangeExcelData(trendLineName, leadTimeMapTimeWise,
-								excelData, leadTimeConfigRepoTool);
-					}
+					populateLeadTimeExcelData(excelData, requestTrackerId, trendLineName, leadTimeConfigRepoTool,
+							leadTimeMapTimeWise);
 
 					mapTmp.get(node.getId()).setValue(dataCountList);
 				}
 			});
 			kpiElement.setExcelData(excelData);
 			kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME_FOR_CHANGE.getColumns());
+		}
+	}
+
+	private void populateLeadTimeExcelData(List<KPIExcelData> excelData, String requestTrackerId, String trendLineName,
+			Boolean leadTimeConfigRepoTool, Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			KPIExcelUtility.populateLeadTimeForChangeExcelData(trendLineName, leadTimeMapTimeWise, excelData,
+					leadTimeConfigRepoTool);
 		}
 	}
 
@@ -377,9 +398,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 					.isNotEmpty(jiraIssueMap.get(jiraIssueHistoryData.getStoryID()).getReleaseVersions())) {
 				List<ReleaseVersion> releaseVersionList = jiraIssueMap.get(jiraIssueHistoryData.getStoryID())
 						.getReleaseVersions();
-				releaseVersionList.stream().forEach(releaseVersion -> {
-					releaseDate.set(releaseVersion.getReleaseDate());
-				});
+				releaseVersionList.stream().forEach(releaseVersion -> releaseDate.set(releaseVersion.getReleaseDate()));
 			}
 
 			if (closedTicketDate.get() != null && releaseDate.get() != null) {
@@ -416,8 +435,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		long leadTimeChange = duration.getStandardMinutes();
 		double leadTimeChangeDoubleValue = (double) leadTimeChange / 60 / 24;
 		String formattedValue = df.format(leadTimeChangeDoubleValue);
-		double leadTimeChangeInDays = Double.parseDouble(formattedValue);
-		return leadTimeChangeInDays;
+		return Double.parseDouble(formattedValue);
 	}
 
 	/**
@@ -439,7 +457,6 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				closedTicketDate.set(DateUtil.convertLocalDateTimeToDateTime(closedDate));
 				String fromBranch = mergeRequests.getFromBranch();
 				AtomicReference<JiraIssue> matchJiraIssue = new AtomicReference<>();
-				;
 				jiraIssueMap.forEach((key, jiraIssue) -> {
 					String matchIssueKey = ".*" + key + ".*";
 					if (fromBranch.matches(matchIssueKey)) {
@@ -449,35 +466,51 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 				if (matchJiraIssue.get() != null) {
 					if (CollectionUtils.isNotEmpty(matchJiraIssue.get().getReleaseVersions())) {
-						matchJiraIssue.get().getReleaseVersions().stream().forEach(releaseVersion -> {
-							releaseDate.set(releaseVersion.getReleaseDate());
-						});
+						matchJiraIssue.get().getReleaseVersions().stream()
+								.forEach(releaseVersion -> releaseDate.set(releaseVersion.getReleaseDate()));
 					}
 
-					if (closedTicketDate.get() != null && releaseDate.get() != null) {
-						double leadTimeChangeInDays = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
-
-						String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
-
-						LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
-						leadTimeChangeData.setStoryID(matchJiraIssue.get().getNumber());
-						leadTimeChangeData.setUrl(matchJiraIssue.get().getUrl());
-						leadTimeChangeData.setMergeID(mergeRequests.getRevisionNumber());
-						leadTimeChangeData.setFromBranch(mergeRequests.getFromBranch());
-						leadTimeChangeData.setClosedDate(
-								DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-						leadTimeChangeData.setReleaseDate(
-								DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-						leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
-						leadTimeChangeData.setDate(weekOrMonthName);
-						leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
-							leadTimeChangeListCurrentTime.add(leadTimeChangeData);
-							return leadTimeChangeListCurrentTime;
-						});
-					}
+					setLeadTimeChangeDataForJira(weekOrMonth, leadTimeMapTimeWise, mergeRequests, closedTicketDate,
+							releaseDate, matchJiraIssue);
 				}
 			});
 
+		}
+	}
+
+	/**
+	 * 
+	 * @param weekOrMonth
+	 * @param leadTimeMapTimeWise
+	 * @param mergeRequests
+	 * @param closedTicketDate
+	 * @param releaseDate
+	 * @param matchJiraIssue
+	 */
+	private void setLeadTimeChangeDataForJira(String weekOrMonth,
+			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, MergeRequests mergeRequests,
+			AtomicReference<DateTime> closedTicketDate, AtomicReference<DateTime> releaseDate,
+			AtomicReference<JiraIssue> matchJiraIssue) {
+		if (closedTicketDate.get() != null && releaseDate.get() != null) {
+			double leadTimeChangeInDays = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
+
+			String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
+
+			LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
+			leadTimeChangeData.setStoryID(matchJiraIssue.get().getNumber());
+			leadTimeChangeData.setUrl(matchJiraIssue.get().getUrl());
+			leadTimeChangeData.setMergeID(mergeRequests.getRevisionNumber());
+			leadTimeChangeData.setFromBranch(mergeRequests.getFromBranch());
+			leadTimeChangeData.setClosedDate(
+					DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
+			leadTimeChangeData
+					.setReleaseDate(DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
+			leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
+			leadTimeChangeData.setDate(weekOrMonthName);
+			leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
+				leadTimeChangeListCurrentTime.add(leadTimeChangeData);
+				return leadTimeChangeListCurrentTime;
+			});
 		}
 	}
 
