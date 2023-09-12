@@ -511,7 +511,15 @@ db.field_mapping_structure.updateMany(
         $set: { "fieldCategory": "workflow" }
     }
 
+)
+
+
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
 );
+
 //DTS-26150 start
 db.field_mapping_structure.deleteMany(
 {

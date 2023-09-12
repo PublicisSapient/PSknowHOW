@@ -90,7 +90,7 @@
                                 <app-piechart *ngSwitchCase="'pieChart'"
                                   [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                 <app-horizontal-percent-bar-chart *ngSwitchCase="'horizontalPercentBarChart'"
-                                [data]="kpiChartData[kpi?.kpiId]">
+                                [data]="kpiChartData[kpi?.kpiId]" [filter]="kpiSelectedFilterObj[kpi?.kpiId]">
                                 </app-horizontal-percent-bar-chart>
                                 <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"

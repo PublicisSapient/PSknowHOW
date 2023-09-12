@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -58,6 +59,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -955,4 +957,28 @@ public final class KpiDataHelper {
 			}
 		}
 	}
+
+	/**
+	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            list of Jira Issue
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return sum of storyPoint/OriginalEstimate
+	 */
+	public static double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		boolean isStoryPoint = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT);
+		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
+			if (isStoryPoint) {
+				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
+			} else {
+				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				int inHours = timeInMin / 60;
+				return inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}).sum();
+	}
+
 }
