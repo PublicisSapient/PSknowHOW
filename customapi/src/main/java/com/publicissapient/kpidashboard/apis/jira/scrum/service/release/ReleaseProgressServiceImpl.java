@@ -21,14 +21,13 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,6 +49,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -134,9 +135,10 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 					.get(RELEASE_JIRA_ISSUE_STATUS);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(releaseIssues) && jiraIssueReleaseStatus != null) {
-				Set<String> issueTypes = new HashSet<>();
+				Set<String> issueTypes = new LinkedHashSet<>();
 				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, issueTypes, fieldMapping,
 						filterDataList);
+				issueTypes.add(CommonConstant.OVERALL);
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
 				dataCountList.add(getStatusWiseCountList(releaseIssues, jiraIssueReleaseStatus));
