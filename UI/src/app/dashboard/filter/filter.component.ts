@@ -367,13 +367,14 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   makeUniqueArrayList(arr) {
+   
     let uniqueArray = [];
     for (let i = 0; i < arr?.length; i++) {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
         uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
         uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
@@ -1588,4 +1589,24 @@ export class FilterComponent implements OnInit, OnDestroy {
   redirectToCapacityPlanning() {
     this.router.navigate(['./dashboard/Config/Capacity']);
   }
+
+  /** Remove identifier  and append full hierarchy in parent id  */
+  parentIDClean(pId) {
+    switch (this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()) {
+      case 'project':
+        return pId.replace(/_port/i, ' Portfolio');
+
+      case 'portfolio':
+        return pId.replace(/_acc/i, ' Account');
+
+      case 'account':
+        return pId.replace(/_ver/i, ' Verticle');
+
+      case 'vertical':
+        return pId.replace(/_bu/i, ' BU');
+
+      default:
+    }
+  }
+
 }

@@ -43,6 +43,10 @@
                                     <span class="ng-value-label">{{items.length - 2}} more...</span>
                               </div>
                            </ng-template>
+                           <ng-template ng-option-tmp let-item="item" let-index="index">
+                              {{item.nodeName}} 
+                              <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
+                          </ng-template>
                            <ng-template ng-footer-tmp>
                               <div class="p-d-flex p-justify-end p-align-center p-mt-1">
                                  <button pButton pRipple label="Cancel" icon="pi pi-times"
@@ -58,10 +62,15 @@
                      <div *ngIf="!allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container abc" style="max-width: 250px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [placeholder]="'Select ' + getLevelName(filterForm.get('selectedLevel')?.value)"
+                           [items]="trendLineValueList"
+                           bindLabel="nodeName"
+                           bindValue="nodeId"
                            [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
-                           <ng-option *ngFor="let item of trendLineValueList" [value]="item.nodeId">{{item.nodeName}}
-                           </ng-option>
+                           <ng-template ng-option-tmp let-item="item" let-index="index">
+                              {{item.nodeName}} 
+                              <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
+                          </ng-template>
                         </ng-select>
                      </div>
                      <div *ngIf="selectedTab?.toLowerCase() === 'iteration'" class="form-check filter-box p-col-lg trend-line-container sprint-filter abc iteration-selected-sprint">

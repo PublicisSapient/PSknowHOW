@@ -1760,4 +1760,14 @@ describe('FilterComponent', () => {
 
   });
 
+  it('should remove identifier from parent id',()=>{
+     spyOn(sharedService,'getSelectedLevel').and.returnValue({
+        "level": 5,
+        "hierarchyLevelId": "project",
+        "hierarchyLevelName": "Project"
+    });
+    const value1 = component.parentIDClean("Demo_port");
+    expect(value1).toBe("Demo Portfolio");
+  })
+
 });
