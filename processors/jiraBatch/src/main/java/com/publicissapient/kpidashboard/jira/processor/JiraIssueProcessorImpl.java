@@ -168,7 +168,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
 		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
-		JiraIssue jiraIssue = jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
+		JiraIssue jiraIssue = jiraIssueRepository
+				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
 		return jiraIssue != null ? jiraIssue : new JiraIssue();
 	}
@@ -770,6 +771,49 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return isRaisedByThirdParty;
 	}
 
+	// private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String>
+	// bugRaisedValue, Object issueFieldValue, JiraIssue jiraIssue) {
+	// List<String> lowerCaseBugRaisedValue =
+	// bugRaisedValue.stream().map(String::toLowerCase)
+	// .collect(Collectors.toList());
+	// JSONParser parser = new JSONParser();
+	// JSONArray array = new JSONArray();
+	// boolean isRaisedByThirdParty = false;
+	// org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+	// try {
+	// if (issueFieldValue instanceof org.codehaus.jettison.json.JSONArray) {
+	// array = (JSONArray) parser.parse(issueFieldValue.toString());
+	// ArrayList<String> testPhasesList = new ArrayList<>();
+	// for (int i = 0; i < array.size(); i++) {
+	//
+	// jsonObject = (org.json.simple.JSONObject)
+	// parser.parse(array.get(i).toString());
+	// if (lowerCaseBugRaisedValue
+	// .contains(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase())) {
+	// testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase());
+	// isRaisedByThirdParty = true;
+	// break;
+	// }
+	//
+	// }
+	// jiraIssue.setEscapedDefectGroup(testPhasesList);
+	// } else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject)
+	// {
+	// String testPhase = ((org.codehaus.jettison.json.JSONObject)
+	// issueFieldValue).get(JiraConstants.VALUE)
+	// .toString().toLowerCase();
+	//
+	// if (lowerCaseBugRaisedValue.contains(testPhase)) {
+	// jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
+	// isRaisedByThirdParty = true;
+	// }
+	// }
+	// } catch (org.json.simple.parser.ParseException | JSONException e) {
+	// log.error("JIRA Processor | Error while parsing third party field {}", e);
+	// }
+	// return isRaisedByThirdParty;
+	// }
+
 	/**
 	 * Process sprint details
 	 *
@@ -924,5 +968,69 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			}
 		}
 	}
+
+	// private void setTestingPhaseDefectIdentificationField(Issue issue,
+	// FieldMapping fieldMapping, JiraIssue jiraIssue,
+	// Map<String, IssueField> fields) {
+	// if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) &&
+	// fieldMapping.getJiradefecttype().stream()
+	// .anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+	// if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+	// &&
+	// fieldMapping.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS))
+	// {
+	// setTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
+	// } else if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+	// && fieldMapping.getTestingPhaseDefectsIdentifier().trim()
+	// .equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+	// && fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
+	// &&
+	// fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue()
+	// != null) {
+	// isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
+	// fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(),
+	// jiraIssue);
+	// } else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() &&
+	// fieldMapping
+	// .getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT))
+	// {
+	// setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
+	// }
+	// }
+	// }
+	//
+	// private static void setTestPhaseDefectsList(Issue issue, FieldMapping
+	// fieldMapping, JiraIssue jiraIssue) {
+	// List<String> commonLabel = issue.getLabels().stream()
+	// .filter(x ->
+	// fieldMapping.getTestingPhaseDefectValue().contains(x)).collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(commonLabel)) {
+	// jiraIssue.setEscapedDefectGroup(commonLabel);
+	// }
+	// }
+	//
+	// private static void setTestPhaseDefectsListForComponent(Issue issue,
+	// FieldMapping fieldMapping,
+	// JiraIssue jiraIssue) {
+	// Iterable<BasicComponent> components = issue.getComponents();
+	// List<BasicComponent> componentList = new ArrayList<>();
+	// components.forEach(componentList::add);
+	// if (CollectionUtils.isNotEmpty(componentList)) {
+	// List<String> componentNameList =
+	// componentList.stream().map(BasicComponent::getName)
+	// .collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(componentNameList) &&
+	// componentNameList.stream()
+	// .anyMatch(fieldMapping.getTestingPhaseDefectComponentValue()::equalsIgnoreCase))
+	// {
+	// List<String> commonLabel = componentNameList.stream()
+	// .filter(x -> fieldMapping.getTestingPhaseDefectComponentValue().contains(x))
+	// .collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(commonLabel)) {
+	// jiraIssue.setEscapedDefectGroup(commonLabel);
+	// }
+	// }
+	// }
+	// }
 
 }

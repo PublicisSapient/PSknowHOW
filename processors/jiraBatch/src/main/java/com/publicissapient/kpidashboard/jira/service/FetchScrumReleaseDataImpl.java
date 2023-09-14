@@ -56,13 +56,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 	@Override
 	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
-		PSLogData psLogData = new PSLogData();
-		psLogData.setAction(CommonConstant.RELEASE_DATA);
-		String projectKey = projectConfig.getJira().getProjectKey();
-		boolean isKanban = projectConfig.isKanban();
-		psLogData.setProjectKey(projectKey);
-		psLogData.setKanban(String.valueOf(isKanban));
-		log.info("Start Fetching Release Data", kv(CommonConstant.PSLOGDATA, psLogData));
+		log.info("Start Fetching Release Data");
 		ProjectRelease projectRelease = null;
 		try {
 			List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
@@ -72,11 +66,9 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 					? accountHierarchyList.get(0)
 					: null;
 
-			saveProjectRelease(projectConfig, accountHierarchy, psLogData, projectRelease, krb5Client);
-
+			saveProjectRelease(projectConfig, accountHierarchy, projectRelease, krb5Client);
 		} catch (Exception ex) {
-			log.error("No hierarchy data found not processing for Version data",
-					kv(CommonConstant.PSLOGDATA, psLogData));
+			log.error("No hierarchy data found not processing for Version data {}",ex);
 		}
 
 		return projectRelease;
@@ -85,10 +77,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	/**
 	 * @param confFieldMapping
 	 * @param accountHierarchy
-	 * @param psLogData
 	 */
-	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
-			PSLogData psLogData, ProjectRelease projectRelease, KerberosClient krb5Client) {
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
@@ -99,14 +89,9 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 				projectRelease.setProjectId(accountHierarchy.getNodeId());
 				projectRelease.setConfigId(accountHierarchy.getBasicProjectConfigId());
 				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping, projectRelease);
-				 projectReleaseRepo.save(projectRelease);
-				jiraCommonService.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-						CommonConstant.CACHE_ACCOUNT_HIERARCHY);
-				jiraCommonService.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+				projectReleaseRepo.save(projectRelease);
 			}
-			psLogData.setProjectVersion(
-					projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
-			log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
+			log.info("Version processed {}", projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
 		}
 	}
 

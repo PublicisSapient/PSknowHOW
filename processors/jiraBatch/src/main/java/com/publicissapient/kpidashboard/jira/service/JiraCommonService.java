@@ -75,13 +75,7 @@ public class JiraCommonService {
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
 
-	@Autowired
-	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
 	private ProcessorJiraRestClient client;
-
-	@Autowired
-	private KanbanJiraIssueRepository kanbanJiraRepo;
 
 	@Autowired
 	private ToolCredentialProvider toolCredentialProvider;
@@ -89,74 +83,8 @@ public class JiraCommonService {
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
 
-	@Autowired
-	private KanbanJiraIssueHistoryRepository kanbanIssueHistoryRepo;
-
 	public int getPageSize() {
 		return jiraProcessorConfig.getPageSize();
-	}
-
-	public String getUserTimeZone(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
-		String userTimeZone = StringUtils.EMPTY;
-		try {
-			JiraToolConfig jiraToolConfig = projectConfig.getJira();
-
-			if (null != jiraToolConfig) {
-				Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-				String username = connectionOptional.map(Connection::getUsername).orElse(null);
-				URL url = getUrl(projectConfig, username);
-
-				userTimeZone = parseUserTimeZone(getDataFromClient(projectConfig, url, krb5Client));
-			}
-		} catch (RestClientException rce) {
-			log.error("Client exception when loading statuses", rce);
-			throw rce;
-		} catch (MalformedURLException mfe) {
-			log.error("Malformed url for loading statuses", mfe);
-		} catch (IOException ioe) {
-			log.error("IOException", ioe);
-		}
-
-		return userTimeZone;
-	}
-
-	public String parseUserTimeZone(String timezoneObj) {
-		String userTimeZone = StringUtils.EMPTY;
-		if (StringUtils.isNotBlank(timezoneObj)) {
-			try {
-				Object obj = new JSONParser().parse(timezoneObj);
-				JSONArray userInfoList = new JSONArray();
-				userInfoList.add(obj);
-				for (Object userInfo : userInfoList) {
-					JSONArray jsonUserInfo = (JSONArray) userInfo;
-					for (Object timeZone : jsonUserInfo) {
-						JSONObject timeZoneObj = (JSONObject) timeZone;
-						userTimeZone = (String) timeZoneObj.get("timeZone");
-					}
-				}
-
-			} catch (ParseException pe) {
-				log.error("Parser exception when parsing statuses", pe);
-			}
-		}
-		return userTimeZone;
-	}
-
-	private URL getUrl(ProjectConfFieldMapping projectConfig, String jiraUserName) throws MalformedURLException {
-
-		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
-		String serverURL = jiraProcessorConfig.getJiraServerGetUserApi();
-		if (isCloudEnv) {
-			serverURL = jiraProcessorConfig.getJiraCloudGetUserApi();
-		}
-
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-		String apiEndPoint = connectionOptional.map(Connection::getApiEndPoint).orElse("");
-
-		return new URL(baseUrl + (baseUrl.endsWith("/") ? "" : "/") + apiEndPoint
-				+ (apiEndPoint.endsWith("/") ? "" : "/") + serverURL + jiraUserName);
-
 	}
 
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
@@ -217,59 +145,6 @@ public class JiraCommonService {
 		return Base64.getEncoder().encodeToString(cred.getBytes());
 	}
 
-	public boolean cleanCache() {
-		boolean accountHierarchyCleaned = cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
-		boolean kpiDataCleaned = cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
-		return accountHierarchyCleaned && kpiDataCleaned;
-	}
-
-	public boolean cacheRestClient(String cacheEndPoint, String cacheName) {
-		boolean cleaned = false;
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
-		uriBuilder.path("/");
-		uriBuilder.path(cacheEndPoint);
-		uriBuilder.path("/");
-		uriBuilder.path(cacheName);
-
-		HttpEntity<?> entity = new HttpEntity<>(headers);
-
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = null;
-		try {
-			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
-		} catch (RuntimeException e) {
-			LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service", e);
-		}
-
-		if (null != response && response.getStatusCode().is2xxSuccessful()) {
-			cleaned = true;
-			LOGGER.info("[JIRA-CUSTOMAPI-CACHE-EVICT]. Successfully evicted cache {}", cacheName);
-		} else {
-			LOGGER.error("[JIRA-CUSTOMAPI-CACHE-EVICT]. Error while evicting cache {}", cacheName);
-		}
-		return cleaned;
-	}
-
-	public KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
-		List<KanbanJiraIssue> jiraIssues = kanbanJiraRepo
-				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
-
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
-		}
-
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-
-		return null;
-	}
-
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String deltaDate) {
 
@@ -279,10 +154,6 @@ public class JiraCommonService {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
 			try {
-				// find deltaDate logic : processor successful run :
-				// latestSuccessful run -1 day. First time : last n months data
-				// defined in properties file
-
 				String queryDate = DateUtil
 						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
 								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
@@ -350,9 +221,6 @@ public class JiraCommonService {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
 			try {
-				// find deltaDate logic : processor successful run :
-				// latestSuccessful run -1 day. First time : last n months data
-				// defined in properties file
 
 				String queryDate = DateUtil
 						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)

@@ -152,6 +152,8 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 			accountHierarchy
 					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 
+			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
+			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));
 			accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 					.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
 			accountHierarchy.setParentId(projectHierarchy.getNodeId());

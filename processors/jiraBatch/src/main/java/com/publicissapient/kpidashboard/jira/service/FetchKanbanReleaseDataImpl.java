@@ -44,19 +44,13 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
     KanbanAccountHierarchyRepository kanbanAccountHierarchyRepo;
     @Autowired
     private HierarchyLevelService hierarchyLevelService;
-
     @Autowired
     private JiraCommonService jiraCommonService;
 
     @Override
     public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
-        PSLogData psLogData = new PSLogData();
-        psLogData.setAction(CommonConstant.RELEASE_DATA);
-        String projectKey = projectConfig.getJira().getProjectKey();
         boolean isKanban = projectConfig.isKanban();
-        psLogData.setProjectKey(projectKey);
-        psLogData.setKanban(String.valueOf(isKanban));
-        log.info("Start Fetching Release Data", kv(CommonConstant.PSLOGDATA, psLogData));
+        log.info("Start Fetching Release Data");
         ProjectRelease projectRelease =null;
         try {
             if (isKanban) {
@@ -66,11 +60,10 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
                 KanbanAccountHierarchy kanbanAccountHierarchy = CollectionUtils.isNotEmpty(kanbanAccountHierarchyList)
                         ? kanbanAccountHierarchyList.get(0)
                         : null;
-                saveProjectRelease(projectConfig, kanbanAccountHierarchy, psLogData, projectRelease, krb5Client);
+                saveProjectRelease(projectConfig, kanbanAccountHierarchy, projectRelease, krb5Client);
             }
         } catch (Exception ex) {
-            log.error("No hierarchy data found not processing for Version data",
-                    kv(CommonConstant.PSLOGDATA, psLogData));
+            log.error("No hierarchy data found not processing for Version data");
         }
 
         return projectRelease;
@@ -80,11 +73,10 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
     /**
      * @param confFieldMapping
      * @param kanbanAccountHierarchy
-     * @param psLogData
      * @return
      */
     private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping,
-                                              KanbanAccountHierarchy kanbanAccountHierarchy, PSLogData psLogData, ProjectRelease projectRelease, KerberosClient krb5Client) {
+                                              KanbanAccountHierarchy kanbanAccountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) {
         List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping,krb5Client);
 
         if (CollectionUtils.isNotEmpty(projectVersionList)) {
@@ -98,14 +90,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
                 projectRelease.setConfigId(kanbanAccountHierarchy.getBasicProjectConfigId());
                 saveKanbanAccountHierarchy(kanbanAccountHierarchy, confFieldMapping, projectRelease);
                 projectReleaseRepo.save(projectRelease);
-                jiraCommonService.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-                        CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
-                jiraCommonService.cacheRestClient(CommonConstant.CACHE_CLEAR_ENDPOINT,
-                        CommonConstant.JIRAKANBAN_KPI_CACHE);
             }
-            psLogData.setProjectVersion(
-                    projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
-            log.info("Version processed", kv(CommonConstant.PSLOGDATA, psLogData));
+            log.info("Version processed for project version{}",projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
         }
     }
 
