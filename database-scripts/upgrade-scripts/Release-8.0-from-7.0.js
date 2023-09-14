@@ -3825,3 +3825,9 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+//  reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi72", "kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 4 } } // Set the new value for groupId
+)
