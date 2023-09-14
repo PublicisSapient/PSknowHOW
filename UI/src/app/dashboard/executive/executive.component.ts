@@ -275,12 +275,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
                         } else {
-
-                            this.groupJiraKpi(kpiIdsForCurrentBoard);
-                           // this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
+                            this.groupJiraKpi(kpiIdsForCurrentBoard);
+                            this.groupBitBucketKpi(kpiIdsForCurrentBoard);
+                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
                         let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
                         if(projectLevel){
