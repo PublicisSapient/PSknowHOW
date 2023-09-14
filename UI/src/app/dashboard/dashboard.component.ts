@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     });
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
-      this.sideNavStyle ={toggled:this.isApply};
+      this.sideNavStyle ={ 'toggled' : this.isApply };
     });
 
     this.router.events.subscribe(event => {
@@ -109,5 +109,11 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.isApply = false;
+    this.sideNavStyle ={ 'toggled' : this.isApply };
+    this.service.setSideNav(false);
   }
 }

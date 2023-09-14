@@ -97,7 +97,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
       //add X-Axis
       const svgX = svg.append('g')
       .attr('class', 'xAxis')
-      .attr('transform', `translate(0, ${height})`)
+      // .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(x));
 
     // highlight todays Date
@@ -184,6 +184,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
           .attr('width', 100)
           .style('color','#437495')
           .style('font-weight','bold')
+          .style('font-size', '10px')
           .attr('x',  xValue)
           .attr('y', yValue)
           .style('cursor','pointer')
@@ -288,6 +289,7 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .attr('y',  isOpenIssue ? y(i) - 10 : y(i)-15 )
         .html(`${issue['Issue Id']}`)
         .style('font-weight', 'bold')
+        .style('font-size', '10px')
         .style('cursor', issue['subTask'] ? 'pointer': 'initial')
         .on('click',function(){
 
@@ -307,7 +309,8 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         // .attr('x', issue['Actual-Start-Date'] ? x(centerDate) +initialCoordinate/2 : x(centerDate) +initialCoordinate/2 + 30)
         .attr('x',  isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
         .attr('y', isOpenIssue? y(i)+5: y(i)+18)
-        .html(`${issue['Issue Status']}`);
+        .html(`${issue['Issue Status']}`)
+        .style('font-size', '10px');
 
 
 

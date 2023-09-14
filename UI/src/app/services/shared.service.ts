@@ -88,7 +88,7 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
-  visibleSideBarSubject = new BehaviorSubject(true);
+  visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
   constructor() {

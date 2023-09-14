@@ -74,7 +74,7 @@ export class NavComponent implements OnInit {
     this.service.visibleSideBarObs.subscribe(value =>{
       this.visibleSidebar = value;
     });
-    this.service.setSideNav(true);
+    this.service.setSideNav(false);
     this.service.changedMainDashboardValueObs.subscribe((data) => {
       this.mainTab = data;
       this.changedBoardName = data;

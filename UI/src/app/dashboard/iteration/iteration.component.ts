@@ -98,6 +98,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   navigationTabs:Array<object> =[
     {'label':'Iteration Review', 'count': 0},
     {'label':'Iteration Progress', 'count': 0},
+    {'label':'Daily Standup', 'count': 0},
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
@@ -155,9 +156,9 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi120');
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      if(x['label'] === 'Daily Standup'){
-        return x;
-      }
+      // if(x['label'] === 'Daily Standup'){
+      //   return x;
+      // }
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
