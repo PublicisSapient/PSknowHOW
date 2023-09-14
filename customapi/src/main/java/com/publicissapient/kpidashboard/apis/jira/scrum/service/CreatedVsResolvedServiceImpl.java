@@ -249,7 +249,8 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 			List<JiraIssue> subTaskBugs = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalNonBugIssues, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
 			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
 							subTaskBugs.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
@@ -298,8 +299,9 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
-
+		long time = System.currentTimeMillis();
 		Map<String, Object> createdVsResolvedMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+		log.info("CreatedVsResolved taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) createdVsResolvedMap.get(CREATED_VS_RESOLVED_KEY);
 
@@ -472,8 +474,8 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
 					.findFirst().orElse(new JiraIssueCustomHistory());
 			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
-					.filter(changeLog -> fieldMapping.getJiraIssueDeliverdStatusKPI126().contains(changeLog.getChangedTo())
-							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
+					.filter(changeLog -> fieldMapping.getJiraIssueDeliverdStatusKPI126()
+							.contains(changeLog.getChangedTo()) && changeLog.getUpdatedOn().isAfter(sprintStartDate))
 					.findFirst();
 			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
 					.isAfter(LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
@@ -483,14 +485,14 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		return subTaskTaggedWithSprint;
 	}
 
-
 	private List<JiraIssue> getCompletedIssues(List<JiraIssue> sprintWiseDefects, SprintDetails sprintDetails) {
 		FieldMapping fieldMapping = configHelperService.getFieldMapping(sprintDetails.getBasicProjectConfigId());
-		if(CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueDeliverdStatusKPI126()))
-		return sprintWiseDefects.stream()
-				.filter(jiraIssue -> fieldMapping.getJiraIssueDeliverdStatusKPI126().contains(jiraIssue.getStatus()))
-				.collect(Collectors.toList());
-		else return new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueDeliverdStatusKPI126()))
+			return sprintWiseDefects.stream().filter(
+					jiraIssue -> fieldMapping.getJiraIssueDeliverdStatusKPI126().contains(jiraIssue.getStatus()))
+					.collect(Collectors.toList());
+		else
+			return new ArrayList<>();
 	}
 
 	/**
