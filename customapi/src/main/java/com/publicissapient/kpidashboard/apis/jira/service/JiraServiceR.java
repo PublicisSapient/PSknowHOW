@@ -247,9 +247,8 @@ public class JiraServiceR {
 		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
 			nodes.forEach(releaseNode -> {
-				String projectName = "_"+releaseNode.getProjectFilter().getName();
-				processedList.add(
-						releaseNode.getReleaseFilter().getName().split(projectName)[0]);
+				String projectName = CommonConstant.UNDERSCORE + releaseNode.getProjectFilter().getName();
+				processedList.add(releaseNode.getReleaseFilter().getName().split(projectName)[0]);
 			});
 		}
 		return processedList;
