@@ -75,7 +75,7 @@ public class SprintRepositoryCustomImpl implements SprintRepositoryCustom {
 
 		ReplaceRootOperation replaceRootStage = Aggregation.replaceRoot(SPRINTS);
 		ProjectionOperation projectStage = Aggregation.project(SPRINT_ID, BASIC_PROJECT_CONFIG_ID, NOT_COMPLETED_ISSUES,
-				COMPLETED_ISSUES, SPRINT_NAME, START_DATE, END_DATE, COMPLETE_DATE, TOTAL_ISSUES);
+				COMPLETED_ISSUES, SPRINT_NAME, START_DATE, END_DATE, COMPLETE_DATE, TOTAL_ISSUES,STATE);
 
 		Aggregation aggregation = Aggregation.newAggregation(matchStage, sortStage, groupStage, sliceStage, unwindStage,
 				replaceRootStage, projectStage);
