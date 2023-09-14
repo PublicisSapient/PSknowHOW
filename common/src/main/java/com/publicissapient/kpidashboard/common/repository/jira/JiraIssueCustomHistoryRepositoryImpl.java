@@ -188,7 +188,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public List<JiraIssueCustomHistory> findByFilterAndFromStatusMap(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
@@ -218,6 +218,10 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 			query = new Query(criteriaProjectLevelAdded);
 		}
+		query.fields().include(STORY_ID);
+		query.fields().include(BASIC_PROJ_CONF_ID);
+		query.fields().include(STATUS_CHANGE_LOG);
+		//projectID,storyID,basicProjectConfigId,statusUpdationLog
 		return operations.find(query, JiraIssueCustomHistory.class);
 
 	}

@@ -52,6 +52,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -81,6 +82,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 	@Autowired
 	private SprintRepository sprintRepository;
+	@Autowired
+	private SprintRepositoryCustom sprintRepositoryCustom;
 
 	private static void setEstimation(FieldMapping fieldMapping, AtomicDouble effectSumDouble, SprintIssue sprintIssue,
 			JiraIssue jiraIssue) {
@@ -165,9 +168,11 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		});
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED.toLowerCase());
-		List<SprintDetails> totalSprintDetails = sprintRepository
+
+		List<SprintDetails> totalSprintDetails = sprintRepositoryCustom
 				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-						sprintStatusList);
+						sprintStatusList, Long.valueOf(customApiConfig.getSprintCountForFilters()) + SP_CONSTANT);
+
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(totalSprintDetails)) {
 
@@ -290,23 +295,28 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+
+			Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
+					Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
+
 			sprintDetails.forEach(sd -> {
 				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
 				List<String> storyList = new ArrayList<>();
 				AtomicDouble effectSumDouble = new AtomicDouble();
 				if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-					sd.getCompletedIssues().stream()
-							.forEach(sprintIssue -> sprintWiseJiraStoryList.stream().forEach(jiraIssue -> {
-								if (sprintIssue.getNumber().equals(jiraIssue.getNumber())) {
-									IssueDetails issueDetails = new IssueDetails();
-									issueDetails.setSprintIssue(sprintIssue);
-									issueDetails.setUrl(jiraIssue.getUrl());
-									issueDetails.setDesc(jiraIssue.getName());
-									storyList.add(sprintIssue.getNumber());
-									setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
-									filterIssueDetailsSet.add(issueDetails);
-								}
-							}));
+					sd.getCompletedIssues().stream().forEach(sprintIssue -> {
+						JiraIssue jiraIssue = jiraIssueMap.get(sprintIssue.getNumber());
+						if (jiraIssue != null) {
+							IssueDetails issueDetails = new IssueDetails();
+							issueDetails.setSprintIssue(sprintIssue);
+							issueDetails.setUrl(jiraIssue.getUrl());
+							issueDetails.setDesc(jiraIssue.getName());
+							storyList.add(sprintIssue.getNumber());
+							setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
+							filterIssueDetailsSet.add(issueDetails);
+						}
+					});
+
 				}
 				SprintWiseStory sprintWiseStory = new SprintWiseStory();
 				sprintWiseStory.setSprint(sd.getSprintID());
