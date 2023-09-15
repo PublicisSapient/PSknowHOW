@@ -3823,5 +3823,15 @@ db.field_mapping_structure.updateMany(
     {
         $unset: { "fieldCategory": null }
     }
-
 )
+
+//DTS-28198 added radio button filter to release kpis
+var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
+var kpiFilterField = {
+  "kpiFilter" : "radioButton",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: kpiFilterField }
+);
+
