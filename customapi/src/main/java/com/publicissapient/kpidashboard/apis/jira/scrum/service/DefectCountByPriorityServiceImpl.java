@@ -205,10 +205,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 		Node latestSprint = sprintLeafNodeList.get(0);
 		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 		if (latestSprint != null) {
-			long time = System.currentTimeMillis();
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-			log.info("DefectCountByPriority taking fetchKPIDataFromDb {}",
-					String.valueOf(System.currentTimeMillis() - time));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {

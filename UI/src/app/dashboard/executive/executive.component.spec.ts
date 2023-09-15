@@ -5904,7 +5904,7 @@ expect(result[1]).toEqual('-ve');
         isEnabled: true,
         order: 23,
         kpiDetail: {
-
+         
         },
         shown: true
       }

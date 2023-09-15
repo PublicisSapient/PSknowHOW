@@ -3824,6 +3824,7 @@ db.field_mapping_structure.updateMany(
         $unset: { "fieldCategory": null }
     }
 
+)
 );
 
 //  reorder kpi group for performance
