@@ -521,7 +521,7 @@ db.kpi_master.deleteOne({
 // fieldMapping Structure fields for Lead time for changes in DORA tab
 db.field_mapping_structure.deleteMany({
     "fieldName": {
-        $in: ["mergeRequestStatusKPI156", "leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodKPI156" , "jiraIssueTypeKPI156"]
+        $in: ["leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodKPI156" , "jiraIssueTypeKPI156"]
     }
 });
 
@@ -529,7 +529,7 @@ db.getCollection('metadata_identifier').updateMany(
    { "templateCode": { $in: ["7"] } },
    { $pull: {
       "workflow": {
-         "type":"jiraDodKPI155"
+         "type":"jiraDodKPI156"
       },
       "issues" : {
        "type": "jiraIssueTypeKPI156"

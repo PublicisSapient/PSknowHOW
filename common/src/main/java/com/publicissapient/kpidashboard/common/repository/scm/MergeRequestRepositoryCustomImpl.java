@@ -96,13 +96,12 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 	 * 
 	 * @param basicProjectConfigId
 	 * @param fromBranches
-	 * @param mergeRequestStatusList
 	 * @param toBranch
 	 * @return
 	 */
 	@Override
 	public List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(ObjectId basicProjectConfigId,
-			List<Pattern> fromBranches, List<String> mergeRequestStatusList, String toBranch) {
+			List<Pattern> fromBranches, String toBranch) {
 		LookupOperation lookupProcessorItem = LookupOperation.newLookup().from("processor_items")
 				.localField(PROCESSOR_ITEM_ID).foreignField("_id").as("processorItem");
 
@@ -111,7 +110,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 
 		MatchOperation matchStage = Aggregation.match(
 				Criteria.where("projectToolConfig.basicProjectConfigId").is(basicProjectConfigId).and("fromBranch")
-						.in(fromBranches).and("toBranch").is(toBranch).and("state").in(mergeRequestStatusList));
+						.in(fromBranches).and("toBranch").is(toBranch).and("state").is("MERGED"));
 
 		ProjectionOperation projectStage = Aggregation.project(PROCESSOR_ITEM_ID, "title", "state", "revisionNumber",
 				SCM_CREATED_DATE, "updatedDate", SCM_MERGED_TIMESTAMP, "fromBranch", "toBranch");
@@ -120,6 +119,7 @@ public class MergeRequestRepositoryCustomImpl implements MergeRequestRepositoryC
 				lookupProjectToolConfig, Aggregation.unwind("projectToolConfig"), matchStage, projectStage);
 
 		return operations.aggregate(aggregation, MERGE_REQUESTS, MergeRequests.class).getMappedResults();
+		//add to index
 	}
 
 }

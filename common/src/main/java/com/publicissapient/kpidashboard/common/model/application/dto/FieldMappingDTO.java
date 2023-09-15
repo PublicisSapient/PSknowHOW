@@ -387,9 +387,6 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIssueTypeKPI156;
 
 	@Builder.Default
-	private List<String> mergeRequestStatusKPI156 = Arrays.asList("MERGED");
-
-	@Builder.Default
 	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
 
 	@Builder.Default

@@ -17,5 +17,5 @@ public interface MergeRequestRepositoryCustom {
 			BasicDBList filterList);
 
 	List<MergeRequests> findMergeRequestListBasedOnBasicProjectConfigId(ObjectId basicProjectConfigId,
-			List<Pattern> fromBranches, List<String> mergeRequestStatusList, String toBranch);
+			List<Pattern> fromBranches, String toBranch);
 }
