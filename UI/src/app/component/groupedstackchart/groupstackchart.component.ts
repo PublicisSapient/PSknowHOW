@@ -512,7 +512,7 @@ export class GroupstackchartComponent implements OnChanges {
         //   obj['sSprintName'] = item.sSprintName;
         // }
         const sprintValue = index + 1;
-        if (typeof (item.value) === 'object' && item.value) {
+        if (typeof (item.value) === 'object') {
           const types = Object.keys(item.value);
           // if (types.length >= 1) {
           types?.forEach(function (type) {
