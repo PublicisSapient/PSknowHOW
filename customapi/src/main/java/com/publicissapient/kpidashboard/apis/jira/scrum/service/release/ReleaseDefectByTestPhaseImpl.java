@@ -185,37 +185,19 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	}
 
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList) {
-		Set<String> testPhasesList = jiraIssueList.stream()
-				.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup()))
-				.flatMap(jiraIssue -> jiraIssue.getEscapedDefectGroup().stream()).collect(Collectors.toSet());
-		Set<DataCount> dataCountList = new HashSet<>();
 		DataCount dataCount = new DataCount();
-		if (CollectionUtils.isNotEmpty(testPhasesList)) {
-			testPhasesList.forEach(s -> getTestPhaseData(jiraIssueList, dataCountList, s));
-		} else {
-			dataCountList.add(new DataCount(UNDEFINED,
-					(double) jiraIssueList.stream()
-							.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count(),
-					null));
-		}
-		dataCount.setValue(dataCountList);
 		dataCount.setData(String.valueOf(jiraIssueList.size()));
 		dataCount.setKpiGroup(DEFECTS_COUNT);
 		dataCount.setDrillDown(null);
+		Map<String, Long> countByTestPhase = jiraIssueList.stream().collect(
+				Collectors.groupingBy(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+						: UNDEFINED, Collectors.counting()));
+		Set<DataCount> dataCountList = countByTestPhase.entrySet().stream()
+				.map(entry -> new DataCount(entry.getKey(), entry.getValue().doubleValue(), null))
+				.collect(Collectors.toSet());
+		dataCount.setValue(dataCountList);
 		return dataCount;
-	}
-
-	private static void getTestPhaseData(List<JiraIssue> jiraIssueList, Set<DataCount> dataCount, String s) {
-		dataCount.add(new DataCount(s,
-				(double) jiraIssueList.stream()
-						.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
-								&& jiraIssue.getEscapedDefectGroup().contains(s))
-						.count(),
-				null));
-		dataCount.add(new DataCount(UNDEFINED,
-				(double) jiraIssueList.stream()
-						.filter(jiraIssue -> CollectionUtils.isEmpty(jiraIssue.getEscapedDefectGroup())).count(),
-				null));
 	}
 
 	@Override

@@ -3941,7 +3941,7 @@ db.getCollection('field_mapping_structure').insertOne(
 });
 
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["4", "5", "6", "7"] } },
+   { "templateCode": { $in: ["7"] } },
    { $push: {
    "workflow": {
                 "type":"jiraDodKPI163",
