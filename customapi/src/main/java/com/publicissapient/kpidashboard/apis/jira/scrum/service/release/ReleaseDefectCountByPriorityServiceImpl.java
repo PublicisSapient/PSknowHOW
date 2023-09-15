@@ -125,7 +125,8 @@ public class ReleaseDefectCountByPriorityServiceImpl
 				List<JiraIssue> openDefects = totalDefects.stream()
 						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus()))
 						.collect(Collectors.toList());
-				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects, openDefects);
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects,
+						openDefects);
 				log.info("ReleaseDefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
 				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
 				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
@@ -153,7 +154,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
 							middleTrendValueListForPriorities);
 					filterDataList.add(filterData);
-					
+
 				}
 				Map<String, Integer> overallPriorityCountMapAggregate = new HashMap<>();
 				overallPriorityCountMap(dataCountListForAllPriorities, overallPriorityCountMapAggregate);
@@ -167,11 +168,10 @@ public class ReleaseDefectCountByPriorityServiceImpl
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
 					sortedFilterDataList.add(filterDataList.stream()
-							.filter(iterationKpiValue -> iterationKpiValue.getFilter1()
-									.equalsIgnoreCase(OPEN_DEFECT))
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT))
 							.findFirst().orElse(new IterationKpiValue()));
-					filterDataList.removeIf(iterationKpiValue -> iterationKpiValue.getFilter1()
-							.equalsIgnoreCase(OPEN_DEFECT));
+					filterDataList.removeIf(
+							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
 					sortListByKey(filterDataList);
 					sortedFilterDataList.addAll(filterDataList);
 					kpiElement.setTrendValueList(sortedFilterDataList);
@@ -183,7 +183,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-										 List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
@@ -230,6 +230,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 					priorityCountValue, Integer::sum));
 		}
 	}
+
 	private void sortListByKey(List<IterationKpiValue> list) {
 		list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
 	}
