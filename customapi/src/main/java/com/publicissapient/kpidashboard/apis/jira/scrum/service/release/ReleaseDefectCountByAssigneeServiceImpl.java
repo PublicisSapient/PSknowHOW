@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -52,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
 
+// Defect count by Assignee kpi on release tab
 @Slf4j
 @Component
 public class ReleaseDefectCountByAssigneeServiceImpl
@@ -63,38 +66,9 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 	@Autowired
 	private ConfigHelperService configHelperService;
 
-	private static int getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData, int assigneeCount,
-			Map<String, Integer> assigneeCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
-			String assignee = assigneeEntry.getKey();
-			List<JiraIssue> issues = assigneeEntry.getValue();
-			assigneeCount += issues.size();
-			assigneeCountMap.put(assignee, issues.size());
-		}
-		return assigneeCount;
-	}
-
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-
-			if (null != fieldMapping) {
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
-				resultListMap.put(TOTAL_DEFECT, releaseDefects);
-			}
-		}
-		return resultListMap;
 	}
 
 	@Override
@@ -144,10 +118,10 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : assigneeWiseList.entrySet()) {
 					Map<String, Integer> assigneeWiseCountMap = new HashMap<>();
 					Map<String, List<JiraIssue>> assigneeData = entry.getValue();
-					int assigneeCount = 0;
-					assigneeCount = getAssigneeWiseCount(assigneeData, assigneeCount, assigneeWiseCountMap);
+					getAssigneeWiseCount(assigneeData, assigneeWiseCountMap);
+					int issueCount = assigneeData.values().stream().mapToInt(List::size).sum();
 					DataCount assigneeDataCount = new DataCount();
-					assigneeDataCount.setData(String.valueOf(assigneeCount));
+					assigneeDataCount.setData(String.valueOf(issueCount));
 					assigneeDataCount.setValue(assigneeWiseCountMap);
 					List<DataCount> dataCountList = new ArrayList<>();
 					dataCountList.add(assigneeDataCount);
@@ -189,38 +163,93 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 		}
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			log.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			if (null != fieldMapping) {
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
+				resultListMap.put(TOTAL_DEFECT, releaseDefects);
+			}
 		}
+		return resultListMap;
 	}
 
+	/**
+	 * create assignee wise map of total and open defects
+	 * 
+	 * @param defectJiraIssueList
+	 * @param openIssues
+	 * @return
+	 */
 	private Map<String, Map<String, List<JiraIssue>>> getAssigneeWiseList(List<JiraIssue> defectJiraIssueList,
 			List<JiraIssue> openIssues) {
 		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		scopeWiseDefectsMap.put(TOTAL_DEFECT, defectJiraIssueList.stream().filter(jiraIssue -> {
+		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByRootCause = Collectors
+				.groupingBy(JiraIssue::getAssigneeName);
+		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
 			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
 				jiraIssue.setAssigneeName("-");
 			}
 			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName)));
-		scopeWiseDefectsMap.put(OPEN_DEFECT, openIssues.stream().filter(jiraIssue -> {
-			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
-				jiraIssue.setAssigneeName("-");
-			}
-			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getAssigneeName)));
+		};
+		scopeWiseDefectsMap.put(TOTAL_DEFECT,
+				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+		scopeWiseDefectsMap.put(OPEN_DEFECT,
+				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
 		return scopeWiseDefectsMap;
 	}
 
+	/**
+	 * create assignee wise count map of total and open defects
+	 * 
+	 * @param assigneeData
+	 * @param assigneeCountMap
+	 * @return
+	 */
+	private static void getAssigneeWiseCount(Map<String, List<JiraIssue>> assigneeData,
+			Map<String, Integer> assigneeCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> assigneeEntry : assigneeData.entrySet()) {
+			String assignee = assigneeEntry.getKey();
+			List<JiraIssue> issues = assigneeEntry.getValue();
+			assigneeCountMap.put(assignee, issues.size());
+		}
+	}
+
+	/**
+	 * create map of data count by filter
+	 * 
+	 * @param dataCountListForAllAssignees
+	 * @param overallAssigneeCountMapAggregate
+	 */
 	private static void overallAssigneeCountMap(List<DataCount> dataCountListForAllAssignees,
 			Map<String, Integer> overallAssigneeCountMapAggregate) {
 		for (DataCount dataCount : dataCountListForAllAssignees) {
 			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
 			statusCountMap.forEach((assignee, assigneeCountValue) -> overallAssigneeCountMapAggregate.merge(assignee,
 					assigneeCountValue, Integer::sum));
+		}
+	}
+
+	/**
+	 * populate excel data
+	 * 
+	 * @param requestTrackerId
+	 * @param excelData
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 */
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 

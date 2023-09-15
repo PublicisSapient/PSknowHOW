@@ -23,8 +23,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -53,6 +54,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
 
+// Defect count by Priority kpi on release tab
 @Slf4j
 @Component
 public class ReleaseDefectCountByPriorityServiceImpl
@@ -66,24 +68,6 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-
-			if (null != fieldMapping) {
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
-				resultListMap.put(TOTAL_DEFECT, releaseDefects);
-			}
-		}
-		return resultListMap;
 	}
 
 	@Override
@@ -134,9 +118,8 @@ public class ReleaseDefectCountByPriorityServiceImpl
 				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseList.entrySet()) {
 					Map<String, Integer> priorityCountMap = new HashMap<>();
 					Map<String, List<JiraIssue>> priorityData = entry.getValue();
-					int priorityCount = 0;
-					priorityCount = getPriorityCount(overallPriorityWiseCountMap, priorityData, priorityCount,
-							priorityCountMap);
+					int priorityCount = priorityData.values().stream().mapToInt(List::size).sum();
+					getPriorityCount(overallPriorityWiseCountMap, priorityData, priorityCountMap);
 					DataCount priorityDataCount = new DataCount();
 					priorityDataCount.setData(String.valueOf(priorityCount));
 					priorityDataCount.setValue(priorityCountMap);
@@ -182,52 +165,95 @@ public class ReleaseDefectCountByPriorityServiceImpl
 		}
 	}
 
-	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			log.info("Defect count by Priority Release -> Requested sprint : {}", leafNode.getName());
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			if (null != fieldMapping) {
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
+				resultListMap.put(TOTAL_DEFECT, releaseDefects);
+			}
 		}
+		return resultListMap;
 	}
 
+	/**
+	 * create priority wise map of total and open defects
+	 * 
+	 * @param defectJiraIssueList
+	 * @param openIssues
+	 * @return
+	 */
 	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseList(List<JiraIssue> defectJiraIssueList,
 			List<JiraIssue> openIssues) {
 		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		scopeWiseDefectsMap.put(TOTAL_DEFECT, defectJiraIssueList.stream().filter(jiraIssue -> {
+		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByRootCause = Collectors
+				.groupingBy(JiraIssue::getPriority);
+		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
 			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
 				jiraIssue.setPriority("-");
 			}
 			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getPriority)));
-		scopeWiseDefectsMap.put(OPEN_DEFECT, openIssues.stream().filter(jiraIssue -> {
-			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
-				jiraIssue.setPriority("-");
-			}
-			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getPriority)));
+		};
+		scopeWiseDefectsMap.put(TOTAL_DEFECT,
+				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+		scopeWiseDefectsMap.put(OPEN_DEFECT,
+				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
 		return scopeWiseDefectsMap;
 	}
 
-	private static int getPriorityCount(Map<String, Integer> overallPriorityCountMap,
-			Map<String, List<JiraIssue>> priorityData, int priorityCount, Map<String, Integer> priorityCountMap) {
+	/**
+	 * create priority wise count map of total and open defects
+	 * 
+	 * @param overallPriorityCountMap
+	 * @param priorityData
+	 * @param priorityCountMap
+	 * @return
+	 */
+	private static void getPriorityCount(Map<String, Integer> overallPriorityCountMap,
+			Map<String, List<JiraIssue>> priorityData, Map<String, Integer> priorityCountMap) {
 		for (Map.Entry<String, List<JiraIssue>> rcaEntry : priorityData.entrySet()) {
 			String priority = rcaEntry.getKey();
 			List<JiraIssue> issues = rcaEntry.getValue();
-
-			priorityCount += issues.size();
 			priorityCountMap.put(priority, issues.size());
 			overallPriorityCountMap.merge(priority, issues.size(), Integer::sum);
-
 		}
-		return priorityCount;
 	}
 
+	/**
+	 * create map of data count by filter
+	 * 
+	 * @param dataCountListForAllPriorities
+	 * @param overallPriorityCountMapAggregate
+	 */
 	private static void overallPriorityCountMap(List<DataCount> dataCountListForAllPriorities,
 			Map<String, Integer> overallPriorityCountMapAggregate) {
 		for (DataCount dataCount : dataCountListForAllPriorities) {
 			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
 			statusCountMap.forEach((priority, priorityCountValue) -> overallPriorityCountMapAggregate.merge(priority,
 					priorityCountValue, Integer::sum));
+		}
+	}
+
+	/**
+	 * populate excel data
+	 * 
+	 * @param requestTrackerId
+	 * @param excelData
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 */
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
 
