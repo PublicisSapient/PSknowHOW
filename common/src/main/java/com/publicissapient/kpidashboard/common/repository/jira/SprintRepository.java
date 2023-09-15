@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,19 +34,23 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 
 	/**
 	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
 	 * @return SprintDetails
 	 */
 	SprintDetails findTopByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
 	/**
 	 * @param basicProjectConfigId
+	 *            basicProjectConfigId in object form
 	 * @param state
+	 *            state
 	 * @return SprintDetails
 	 */
 	SprintDetails findTopByBasicProjectConfigIdAndState(ObjectId basicProjectConfigId, String state);
 
 	/**
 	 * @param id
+	 *            id
 	 * @return SprintDetails
 	 */
 	SprintDetails findBySprintID(String id);
@@ -64,7 +65,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	List<SprintDetails> findBySprintIDIn(List<String> sprintIDs);
 
 	/**
-	 * delete using projectbasic config id
+	 * delete using project basic config id
 	 * 
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
@@ -75,6 +76,7 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * find all the sprints of the project
 	 * 
 	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
 	 * @return list of sprints
 	 */
 	List<SprintDetails> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
@@ -83,12 +85,14 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 * find all sprints of projects and based on status of sprint
 	 * 
 	 * @param basicProjectConfigIds
+	 *            basicProjectConfigIds
 	 * @param sprintStatusList
-	 * @return
+	 *            sprintStatusList
+	 * @return SprintDetails
 	 */
 	@Query(value = "{ 'basicProjectConfigId' : { $in: ?0 }, 'state' : { $in: ?1} }", fields = "{ 'sprintID' : 1, 'basicProjectConfigId' : 1, 'notCompletedIssues' : 1, 'completedIssues' : 1, 'sprintName' : 1, 'startDate' : 1, 'completeDate' : 1, 'totalIssues' : 1}", sort = "{ 'startDate' : -1 }")
 	List<SprintDetails> findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(Set<ObjectId> basicProjectConfigIds,
-																				 List<String> sprintStatusList);
+			List<String> sprintStatusList);
 
 	/**
 	 * Find all which matches provided ids
@@ -99,4 +103,8 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	 */
 	@Query(value = "{ 'sprintID' : { $in: ?0 } }", fields = "{ 'sprintID' : 1, 'state' : 1 }")
 	List<SprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
+
+	@Query(value = "{ 'basicProjectConfigId' : ?0, 'state' : { $in: [?1] } }", fields = "{'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : 1 }")
+	List<SprintDetails> findByBasicProjectConfigIdAndStateInOrderByStartDateASC(ObjectId basicProjectConfigId,
+			String sprintState);
 }

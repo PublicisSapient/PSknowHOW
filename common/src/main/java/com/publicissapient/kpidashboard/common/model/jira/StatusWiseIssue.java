@@ -17,6 +17,10 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.model.jira;
 
+/**
+ * @author aksshriv1
+ */
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -91,10 +91,15 @@ public class KPIExcelUtility {
 	 * This method populate the excel data for DIR KPI
 	 *
 	 * @param sprint
+	 * 	sprint
 	 * @param storyIds
+	 * 	storyIds
 	 * @param defects
+	 * 	defects
 	 * @param kpiExcelData
+	 * 	kpiExcelData
 	 * @param issueData
+	 * 	issueData
 	 */
 	public static void populateDirExcelData(String sprint, List<String> storyIds, List<JiraIssue> defects,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
@@ -180,10 +185,15 @@ public class KPIExcelUtility {
 	 * present in conditional list then Constant.EXCEL_YES else "N" kpi specific
 	 *
 	 * @param sprint
+	 * 	sprint
 	 * @param totalBugList
+	 * 	Map of total bug
 	 * @param conditionDefects
+	 * 	conditionDefects
 	 * @param kpiExcelData
+	 * 	kpiExcelData
 	 * @param kpiId
+	 * 	kpiId
 	 */
 	public static void populateDefectRelatedExcelData(String sprint, Map<String, JiraIssue> totalBugList,
 			List<JiraIssue> conditionDefects, List<KPIExcelData> kpiExcelData, String kpiId) {

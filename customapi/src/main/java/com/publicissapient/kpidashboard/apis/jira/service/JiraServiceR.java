@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,6 +37,7 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -72,7 +70,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This class handle all Scrum JIRA based KPI request and call each KPIs service
  * in thread. It is responsible for cache of KPI data at different level.
- * 
+ *
  * @author tauakram
  *
  */
@@ -102,13 +100,17 @@ public class JiraServiceR {
 	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
 	@Autowired
 	private ConfigHelperService configHelperService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
-	private ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
-	private ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
-	private ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal.withInitial(ArrayList::new);
-	private ThreadLocal<List<JiraIssue>> threadReleaseIssues = ThreadLocal.withInitial(ArrayList::new);
-	private ThreadLocal<Set<JiraIssue>> threadSubtaskDefects = ThreadLocal.withInitial(HashSet::new);
+	private final ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
+	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);
+	private final ThreadLocal<List<JiraIssueCustomHistory>> threadLocalHistory = ThreadLocal
+			.withInitial(ArrayList::new);
+	private final ThreadLocal<List<JiraIssue>> threadReleaseIssues = ThreadLocal.withInitial(ArrayList::new);
+	private final ThreadLocal<Set<JiraIssue>> threadSubtaskDefects = ThreadLocal.withInitial(HashSet::new);
 	private List<SprintDetails> sprintDetails;
+	private List<SprintDetails> futureSprintDetails;
 	JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 	private List<JiraIssue> jiraIssueList;
 	private List<JiraIssue> jiraIssueReleaseList;
@@ -125,6 +127,7 @@ public class JiraServiceR {
 	 *            flow.
 	 * @return List of KPI data
 	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
 	 */
 	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
@@ -170,9 +173,9 @@ public class JiraServiceR {
 						&& StringUtils.isNotEmpty(origRequestedKpis.get(0).getKpiCategory())) {
 					updateJiraIssueList(kpiRequest, origRequestedKpis, filteredAccountDataList, treeAggregatorDetail);
 				}
-				// set filter value to show on trend line. If sub-projects are
+				// set filter value to show on trend line. If subprojects are
 				// in
-				// selection then show sub-projects on trend line else show
+				// selection then show subprojects on trend line else show
 				// projects
 				kpiRequest.setFilterToShowOnTrend(groupName);
 
@@ -195,7 +198,7 @@ public class JiraServiceR {
 			}
 
 		} catch (Exception e) {
-			log.error("Error while KPI calculation for data {} {}", kpiRequest.getKpiList(), e);
+			log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
 			throw new HttpMessageNotWritableException(e.getMessage(), e);
 		} finally {
 			threadLocalSprintDetails.remove();
@@ -227,6 +230,8 @@ public class JiraServiceR {
 			fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
 					CommonConstant.RELEASE);
 		} else if (origRequestedKpis.get(0).getKpiCategory().equalsIgnoreCase(CommonConstant.BACKLOG)) {
+			futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(),
+					SprintDetails.SPRINT_STATE_FUTURE);
 			fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), new ArrayList<>(),
 					CommonConstant.BACKLOG);
 			fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
@@ -237,10 +242,11 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * creating relase List on the basis of releaseId
-	 * 
+	 * creating release List on the basis of releaseId
+	 *
 	 * @param treeAggregatorDetail
-	 * @return
+	 *            treeAggregatorDetail
+	 * @return list of Strings
 	 */
 	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
@@ -253,8 +259,10 @@ public class JiraServiceR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
-	 * @return
+	 *            filteredAccountDataList
+	 * @return list of AccountHierarchyData
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
@@ -268,7 +276,9 @@ public class JiraServiceR {
 
 	/**
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param filteredAccountDataList
+	 *            filteredAccountDataList
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
@@ -282,10 +292,13 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param responseList
+	 *            responseList
 	 * @param groupId
+	 *            groupId
 	 */
 	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
 			String[] projects) {
@@ -308,12 +321,17 @@ public class JiraServiceR {
 		sprintDetails = sprintRepository.findBySprintIDIn(Arrays.stream(sprintId).collect(Collectors.toList()));
 	}
 
+	public void futureProjectWiseSprintDetails(ObjectId basicProjectConfigId, String sprintState) {
+		futureSprintDetails = sprintRepository
+				.findByBasicProjectConfigIdAndStateInOrderByStartDateASC(basicProjectConfigId, sprintState);
+	}
+
 	public SprintDetails getCurrentSprintDetails() {
 		return threadLocalSprintDetails.get().stream().findFirst().orElse(null);
 	}
 
-	public void setSprintDetails(List<SprintDetails> modifieldSprintDetails) {
-		sprintDetails = modifieldSprintDetails;
+	public void setSprintDetails(List<SprintDetails> modifiedSprintDetails) {
+		sprintDetails = modifiedSprintDetails;
 	}
 
 	public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
@@ -397,11 +415,13 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * This method is used to fetch subtask deffects which are not tagged to release
+	 * This method is used to fetch subtask defects which are not tagged to release
 	 *
 	 * @param projectConfigId
+	 *            projectConfigId
 	 * @param storyIDs
-	 * @return
+	 *            storyIDs
+	 * @return return
 	 */
 	private Set<JiraIssue> fetchSubTaskDefectsRelease(String projectConfigId, Set<String> storyIDs) {
 		ObjectId basicProjectConfigId = new ObjectId(projectConfigId);
@@ -420,6 +440,21 @@ public class JiraServiceR {
 
 	public List<String> getReleaseList() {
 		return releaseList;
+	}
+
+	/**
+	 * This method return list of 5 distinct future sprint names
+	 *
+	 * @return return list of sprintNames
+	 */
+	public List<String> getFutureSprintsList() {
+		List<String> sprintNames = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
+			sprintNames = futureSprintDetails.stream().map(SprintDetails::getSprintName).distinct()
+					.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
+
+		}
+		return sprintNames;
 	}
 
 	/**
@@ -467,7 +502,7 @@ public class JiraServiceR {
 				threadSubtaskDefects.set(subtaskDefectReleaseList);
 				calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
 			} catch (Exception e) {
-				log.error("[PARALLEL_JIRA_SERVICE].Exception occured {}", e);
+				log.error("[PARALLEL_JIRA_SERVICE].Exception occurred", e);
 			}
 		}
 
@@ -478,12 +513,13 @@ public class JiraServiceR {
 		 * @param kpiRequest
 		 *            JIRA KPI request
 		 * @param responseList
-		 *            List of KpiElement having data of each KPIs
+		 *            List of KpiElements having data of each KPI
 		 * @param kpiElement
+		 *            kpiElement object
 		 * @param treeAggregatorDetail
 		 *            filter tree object
 		 * @throws ApplicationException
-		 * @throws EntityNotFoundException
+		 *             ApplicationException
 		 */
 		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
 				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
