@@ -191,7 +191,7 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 	private Map<String, Map<String, List<JiraIssue>>> getAssigneeWiseList(List<JiraIssue> defectJiraIssueList,
 			List<JiraIssue> openIssues) {
 		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByRootCause = Collectors
+		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByAssignee = Collectors
 				.groupingBy(JiraIssue::getAssigneeName);
 		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
 			if (StringUtils.isEmpty(jiraIssue.getAssigneeName())) {
@@ -200,9 +200,9 @@ public class ReleaseDefectCountByAssigneeServiceImpl
 			return true;
 		};
 		scopeWiseDefectsMap.put(TOTAL_DEFECT,
-				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByAssignee));
 		scopeWiseDefectsMap.put(OPEN_DEFECT,
-				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByAssignee));
 		return scopeWiseDefectsMap;
 	}
 

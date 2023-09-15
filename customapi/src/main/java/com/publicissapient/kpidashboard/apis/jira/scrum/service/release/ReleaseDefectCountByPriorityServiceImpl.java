@@ -193,7 +193,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseList(List<JiraIssue> defectJiraIssueList,
 			List<JiraIssue> openIssues) {
 		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
-		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByRootCause = Collectors
+		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByPriority = Collectors
 				.groupingBy(JiraIssue::getPriority);
 		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
 			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
@@ -202,9 +202,9 @@ public class ReleaseDefectCountByPriorityServiceImpl
 			return true;
 		};
 		scopeWiseDefectsMap.put(TOTAL_DEFECT,
-				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByPriority));
 		scopeWiseDefectsMap.put(OPEN_DEFECT,
-				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByRootCause));
+				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByPriority));
 		return scopeWiseDefectsMap;
 	}
 
