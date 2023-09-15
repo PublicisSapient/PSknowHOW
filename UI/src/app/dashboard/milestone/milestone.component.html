@@ -19,7 +19,7 @@
                       [commentCount]="kpiCommentsCountObj[kpi?.kpiId]" (getCommentCountByKpi)="getKpiCommentsCount($event)">
                       <ng-container *ngIf="!noTabAccess else noDataAccess">
                         <div class="p-d-flex p-justify-around p-align-center w-100"
-                          *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
+                          *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0; else noData">
                           <ng-container *ngFor="let item of kpiChartData[kpi?.kpiId]; let index=index">
                             <div *ngFor="let x of item.data; let i = index" class="p-3 p-text-center"
                               [ngClass]="{'wrapper-w-50' : true ,'kpi-content-container': item.data.length ==2 && i!==1 }">
@@ -72,7 +72,7 @@
                           <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                             <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height" [ngSwitch]="kpi?.kpiDetail?.chartType"
                               *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
-                              <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
+                              <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0 && kpiChartData[kpi?.kpiId][0].value; else noData">
                                 <app-groupstackchart *ngSwitchCase="'stackedColumn'"
                                   [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                   [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
@@ -111,12 +111,12 @@
 
                   <ng-template #noData>
                     <div class="overlay"
-                      *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+                      *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length  && kpiChartData[kpi?.kpiId][0].value)|| kpiLoader">
 
                       <div class="loading-img"></div>
                     </div>
                     <div class="min-ht"
-                      *ngIf="kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false">
+                      *ngIf="kpiChartData[kpi.kpiId] &&  (kpiChartData[kpi.kpiId]?.length === 0 || !kpiChartData[kpi?.kpiId][0].value) && kpiLoader === false">
                       <div class="no-data">No Data Available</div>
                     </div>
                   </ng-template>
