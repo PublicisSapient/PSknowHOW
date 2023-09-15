@@ -102,7 +102,6 @@ public class FieldMappingServiceImplTest {
 
 		Set<String> configIds = new HashSet<>();
 		configIds.add("5d0533b0ff45ea9c730bb718");
-		when(configHelperService.getFieldMappingMap()).thenReturn(map);
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718")).thenReturn(projectToolConfig);
 		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);

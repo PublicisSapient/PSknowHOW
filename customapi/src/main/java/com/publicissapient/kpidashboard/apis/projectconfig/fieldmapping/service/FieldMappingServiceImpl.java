@@ -109,8 +109,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		if (!authorizedProjectsService.ifSuperAdminUser() && !hasProjectAccess(projectToolConfigId)) {
 			throw new AccessDeniedException("Access is denied");
 		}
-
-		return configHelperService.getFieldMappingMap().get(new ObjectId(projectToolConfigId));
+		return fieldMappingRepository.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
 	}
 
 	@Override
