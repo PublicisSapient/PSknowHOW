@@ -177,8 +177,10 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 			List<IterationKpiValue> iterationKpiValueList) {
 		IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 		kpiValueIssueCount.setFilter1(defects);
-		defectsDataCountList.add(getStatusWiseCountList(defectsList));
-		kpiValueIssueCount.setValue(defectsDataCountList);
+		if (CollectionUtils.isNotEmpty(defectsList)) {
+			defectsDataCountList.add(getStatusWiseCountList(defectsList));
+			kpiValueIssueCount.setValue(defectsDataCountList);
+		}
 		iterationKpiValueList.add(kpiValueIssueCount);
 	}
 

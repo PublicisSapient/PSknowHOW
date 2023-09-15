@@ -709,6 +709,13 @@
                     "value": [
                       "Rejected"
                     ]
+                  },
+                  {
+                    "type":"jiraDodKPI163",
+                    "value":[
+                      "Closed",
+                      "Done"
+                    ]
                   }
               ]                                            },
                                         {
