@@ -59,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final String TOTAL_DEFECT = "totalDefects";
+	private static final String TOTAL_DEFECT = "Total Defects";
 	private static final String OPEN_DEFECT = "Open Defects";
 
 	@Autowired
