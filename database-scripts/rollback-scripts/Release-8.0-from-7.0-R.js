@@ -512,3 +512,57 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+//revert RepoTool - DTS-27526 remove repo tool changes
+const kpiIdsToCheck = ["kpi157", "kpi158", "kpi159", "kpi160"];
+var kpiData = db
+.getCollection("kpi_master")
+.find({ kpiId: { $in: kpiIdsToCheck } })
+.toArray();
+var kpiColumnData = db
+.getCollection("kpi_column_configs")
+.find({ kpiId: { $in: kpiIdsToCheck } })
+.toArray();
+
+// Revert changes to kpi_master collection
+db.getCollection("kpi_master").remove({ kpiId: { $in: kpiIdsToCheck } });
+
+// Revert changes to kpi_column_configs collection
+db.getCollection("kpi_column_configs").remove({ kpiId: { $in: kpiIdsToCheck } });
+
+// Revert changes to kpi_master collection (if kpiIdsToUpdate were updated)
+var kpiIdsToUpdate = ["kpi84", "kpi11", "kpi65"];
+var developerTabFields = {
+isRepoToolKpi: "",
+kpiCategory: "",
+};
+db.getCollection("kpi_master").updateMany(
+{ kpiId: { $in: kpiIdsToUpdate } },
+{ $unset: developerTabFields }
+);
+
+// Revert changes to repo_tools_provider collection
+db.getCollection("repo_tools_provider").remove({});
+
+// Revert changes to processor collection
+db.getCollection("processor").remove({ processorName: "RepoTool" });
+
+db.kpi_category_mapping.insertMany(
+{
+"kpiId" : "kpi65",
+"categoryId" : "speed",
+"kpiOrder" : Double("4"),
+"kanban" : true
+},
+{
+"kpiId" : "kpi11",
+"categoryId" : "speed",
+"kpiOrder" : Double("8"),
+"kanban" : false
+},
+{
+"kpiId" : "kpi84",
+"categoryId" : "speed",
+"kpiOrder" : Double("7"),
+"kanban" : false
+})
