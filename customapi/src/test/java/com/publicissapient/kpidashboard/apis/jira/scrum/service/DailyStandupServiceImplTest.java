@@ -34,6 +34,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +98,9 @@ public class DailyStandupServiceImplTest {
 	@Mock
 	private JiraServiceR jiraService;
 
+	@Mock
+	private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+
 	@InjectMocks
 	private DailyStandupServiceImpl dailyStandupService;
 
@@ -105,6 +111,7 @@ public class DailyStandupServiceImplTest {
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	private SprintDetails sprintDetails = new SprintDetails();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private JiraIssueReleaseStatus jiraReleasStatus;
 	private KpiRequest kpiRequest;
 
 	@Before
@@ -135,7 +142,19 @@ public class DailyStandupServiceImplTest {
 		capacityKpiData.setCapacityPerSprint(12.0);
 
 		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
+		JiraIssueReleaseStatusDataFactory
+		jiraIssueReleaseStatusDataFactory = JiraIssueReleaseStatusDataFactory
+				.newInstance("/json/default/jira_issue_release_status.json");
+		jiraReleasStatus = createJiraReleasStatus(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList());
 
+
+	}
+
+	private JiraIssueReleaseStatus createJiraReleasStatus(List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList) {
+
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+		jiraIssueReleaseStatus.setInProgressList(jiraIssueReleaseStatusList.get(0).getInProgressList());
+		return jiraIssueReleaseStatus;
 	}
 
 	@Test
@@ -177,6 +196,7 @@ public class DailyStandupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(storyList);
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
 				anyList())).thenReturn(new HashSet<>(subTasks));
+		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(anyString())).thenReturn(jiraReleasStatus);
 		try {
 
 			KpiElement kpiElement = dailyStandupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -207,6 +227,7 @@ public class DailyStandupServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
 				anyList())).thenReturn(new HashSet<>(subTasks));
+		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(anyString())).thenReturn(jiraReleasStatus);
 
 		CapacityKpiData capacityKpiData = new CapacityKpiData();
 		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
