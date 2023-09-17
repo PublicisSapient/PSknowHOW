@@ -101,7 +101,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
-
 		if (!ObjectId.isValid(projectToolConfigId)) {
 			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
@@ -109,7 +108,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			throw new AccessDeniedException("Access is denied");
 		}
 
-		return configHelperService.getFieldMappingMap().get(new ObjectId(projectToolConfigId));
+		return fieldMappingRepository.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
 	}
 
 	@Override
