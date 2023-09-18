@@ -496,6 +496,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIssueTypeKPI3",
 			"jiraStoryIdentification",
 			"jiraStoryIdentificationKpi40",
+			"jiraStoryIdentificationKPI164",
 			"jiraStoryIdentificationKPI129",
 
 			"jiraLiveStatusKPI3",

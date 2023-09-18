@@ -4150,5 +4150,46 @@
     "kpiFilter": "dropdown",
     "boxType": "chart",
     "calculateMaturity": false
+  },
+  {
+    "kpiId" : "kpi164",
+    "kpiName" : "Scope Churn",
+    "maxValue" : "200",
+    "kpiUnit" : "%",
+    "isDeleted" : "False",
+    "defaultOrder" : 18,
+    "kpiSource" : "Jira",
+    "groupId" : 2,
+    "thresholdValue" : "85",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "Scope churn explain the change in the scope of sprint since the start of iteration",
+      "formula" : [
+        {
+          "lhs" : "Scope Churn",
+          "operator" : "division",
+          "operands" : [ "Count of Stories added + Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start" ]
+        }
+      ],
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+          }
+        }
+      ]
+    },
+    "xAxisLabel" : "Sprints",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : true,
+    "showTrend" : true,
+    "aggregationCriteria" : "average",
+    "kpiFilter" : "dropDown",
+    "isAdditionalFilterSupport" : true,
+    "calculateMaturity" : true,
+    "maturityRange" : [ "-40", "40-60", "60-75", "75-90", "90-" ]
   }
 ]
