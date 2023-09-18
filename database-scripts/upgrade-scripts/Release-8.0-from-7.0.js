@@ -3825,3 +3825,34 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+db.getCollection('field_mapping_structure').updateMany(
+  { "fieldName": { $in: ["jiraDorKPI3","jiraLiveStatusKPI3"] } },
+  { $set: { "fieldType": "chips" } }
+);
+
+
+
+//Update the String field by converting it into a list for lead time
+db.field_mapping.find({ jiraLiveStatusKPI3: { $type: 2 } }).forEach(function(doc) {
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                jiraLiveStatusKPI3: [doc.jiraLiveStatusKPI3]
+            }
+        }
+    );
+});
+
+db.field_mapping.find({ jiraDorKPI3: { $type: 2 } }).forEach(function(doc) {
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                jiraDorKPI3: [doc.jiraDorKPI3]
+            }
+        }
+    );
+});
+

@@ -512,3 +512,39 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+
+// --- Reverse fieldType for Backlog leadTime
+db.getCollection('field_mapping_structure').updateMany(
+  { "fieldName": { $in: ["jiraDorKPI3", "jiraLiveStatusKPI3"] } },
+  {
+    $set: {
+      "fieldType": "text"
+    }
+  }
+);
+
+
+// -- Reverse field by converting the array back to a string
+db.field_mapping.find({ jiraLiveStatusKPI3: { $type: 4}}).forEach(function(doc) {
+
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                jiraLiveStatusKPI3: doc.jiraLiveStatusKPI3[0]
+            }
+        }
+    );
+});
+
+db.field_mapping.find({ jiraDorKPI3: { $type: 4}}).forEach(function(doc) {
+
+    db.field_mapping.updateMany(
+        { _id: doc._id },
+        {
+            $set: {
+                jiraDorKPI3: doc.jiraDorKPI3[0]
+            }
+        }
+    );
+});
