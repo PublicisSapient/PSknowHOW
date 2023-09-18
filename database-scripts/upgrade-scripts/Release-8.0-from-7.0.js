@@ -3826,41 +3826,57 @@ db.field_mapping_structure.updateMany(
 
 )
 // scope churn kpi_master
-db.kpi_master.insertOne({
-	"kpiId": "kpi164",
-	"kpiName": "Scope Churn",
-	"maxValue": "200",
-	"kpiUnit": "%",
-	"isDeleted": "False",
-	"defaultOrder": Double("30"),
-	"kpiSource": "Jira",
-	"groupId": Double("4"),
-	"thresholdValue": "85",
-	"kanban": false,
-	"chartType": "line",
-	"kpiInfo": {
-		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
-		"formula": [{
-			"lhs": "Scope Churn",
-			"operator": "division",
-			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
-		}],
-		"details": [{
-			"type": "link",
-			"kpiLinkDetail": {
-				"text": "Detailed Information at",
-				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
-			}
-		}]
-	},
-	"xAxisLabel": "Sprints",
-	"yAxisLabel": "Percentage",
-	"isPositiveTrend": true,
-	"showTrend": true,
-	"aggregationCriteria": "average",
-	"isAdditionalFilterSupport": true,
-	"calculateMaturity": true,
-}, )
+//DTS-28198 added radio button filter to release kpis
+db.getCollection("kpi_master").bulkWrite(
+  [
+    {
+      updateMany: {
+        filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+        update: { $set: { "kpiFilter": "radioButton" } }
+      }
+    },
+    {
+      insertOne: {
+        document: {
+          "kpiId": "kpi164",
+          "kpiName": "Scope Churn",
+          "maxValue": 200,
+          "kpiUnit": "%",
+          "isDeleted": false,
+          "defaultOrder": 30,
+          "kpiSource": "Jira",
+          "groupId": 4,
+          "thresholdValue": 85,
+          "kanban": false,
+          "chartType": "line",
+          "kpiInfo": {
+            "definition": "Scope churn explains the change in the scope of the sprint since the start of the iteration",
+            "formula": [{
+              "lhs": "Scope Churn",
+              "operator": "division",
+              "operands": ["Count of Stories added + Count of Stories removed", "Count of Stories in Initial Commitment at the time of Sprint start"]
+            }],
+            "details": [{
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+              }
+            }]
+          },
+          "xAxisLabel": "Sprints",
+          "yAxisLabel": "Percentage",
+          "isPositiveTrend": true,
+          "showTrend": true,
+          "aggregationCriteria": "average",
+          "isAdditionalFilterSupport": true,
+          "calculateMaturity": true
+        }
+      }
+    }
+  ]
+);
+
 
 db.getCollection('field_mapping_structure').insertMany(
 	[{
@@ -3948,14 +3964,4 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 
-
-//DTS-28198 added radio button filter to release kpis
-var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
-var kpiFilterField = {
-  "kpiFilter" : "radioButton",
-};
-db.getCollection("kpi_master").updateMany(
-  { kpiId: { $in: kpiIdsToUpdate } },
-  { $set: kpiFilterField }
-);
 
