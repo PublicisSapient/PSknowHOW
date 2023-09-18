@@ -156,6 +156,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		pageNumber += pageSize;
 		if (CollectionUtils.isNotEmpty(issues)) {
 			issueIterator = issues.iterator();
+
 		}
 	}
 
