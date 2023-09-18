@@ -959,6 +959,40 @@ public final class KpiDataHelper {
 	}
 
 	/**
+	 * To calculate the added/removed date of sprint change for JiraIssues
+	 *
+	 * @param issues
+	 *            list of jiraIssue
+	 * @param sprint
+	 *            name of sprint
+	 * @param issueWiseHistoryMap
+	 *            Map of issueKey vs sprintUpdateLog
+	 * @param changeType
+	 *            add/remove
+	 * @return Map<issueKey, Date>
+	 */
+	public static Map<String, String> processSprintIssues(List<JiraIssue> issues, String sprint,
+			Map<String, List<JiraHistoryChangeLog>> issueWiseHistoryMap, String changeType) {
+		Map<String, String> issueDateMap = new HashMap<>();
+
+		issues.stream().map(JiraIssue::getNumber).forEach(issueKey -> {
+			List<JiraHistoryChangeLog> sprintUpdateLog = issueWiseHistoryMap.get(issueKey);
+
+			sprintUpdateLog.stream()
+					.filter(sprintUpdate -> changeType.equals(CommonConstant.ADDED)
+							? sprintUpdate.getChangedTo().equalsIgnoreCase(sprint)
+							: changeType.equals(CommonConstant.REMOVED)
+									&& sprintUpdate.getChangedFrom().equalsIgnoreCase(sprint))
+					.forEach(sprintUpdate -> issueDateMap.put(issueKey,
+							DateUtil.dateTimeConverter(sprintUpdate.getUpdatedOn().toString(), DateUtil.DATE_FORMAT,
+									DateUtil.DISPLAY_DATE_FORMAT)));
+		});
+
+		return issueDateMap;
+	}
+
+
+	/**
 	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
 	 *
 	 * @param jiraIssueList
