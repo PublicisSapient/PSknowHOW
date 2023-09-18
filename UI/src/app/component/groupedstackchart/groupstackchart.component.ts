@@ -512,7 +512,7 @@ export class GroupstackchartComponent implements OnChanges {
         //   obj['sSprintName'] = item.sSprintName;
         // }
         const sprintValue = index + 1;
-        if (typeof (item.value) === 'object') {
+        if (typeof (item.value) === 'object' && Object.keys(item.value)?.length > 0) {
           const types = Object.keys(item.value);
           // if (types.length >= 1) {
           types?.forEach(function (type) {
@@ -532,20 +532,13 @@ export class GroupstackchartComponent implements OnChanges {
             targetList.push(obj);
             max = Math.max(max, item.data);
           });
-          // } else {
-          //   obj['type'] = '';
-          //   obj['value'] = '';
-          //   obj['xName'] = sprintValue;
-          //   targetList.push(obj);
-          //   // currentSum = currentSum + 0;
-          // }
-        }
-        // else {
-        //   obj['value'] = item.value;
-        // obj['xName'] = item.xAxisTick ? item.xAxisTick : sprintValue;
-        // targetList.push(obj);
-        // currentSum = currentSum + item.value;
-        // }
+          } else {
+            const obj = {};
+            obj['group'] = item.sSprintName;
+            obj['hoverText'] = {};
+            obj['xName'] = sprintValue;
+            targetList.push(obj);
+          }
 
 
         // if (item.xAxisTick) {
