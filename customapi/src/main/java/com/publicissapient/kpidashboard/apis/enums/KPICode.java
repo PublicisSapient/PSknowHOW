@@ -434,7 +434,11 @@ public enum KPICode {
 	/**
 	 * Release defect by test phase
 	 */
-	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name());
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name()),
+    /**
+     * Scope Churn
+     */
+    SCOPE_CHURN("kpi164", KPISource.JIRA.name());
 
 
     // @formatter:on

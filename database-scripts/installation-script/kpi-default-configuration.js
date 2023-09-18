@@ -711,13 +711,23 @@
                     ]
                   },
                   {
+                  "type":"jiraStoryIdentificationKPI164",
+                  "value":[
+                            "Story",
+                            "Enabler Story",
+                            "Tech Story",
+                            "Change request"
+                        ]
+                  },
+                  {
                     "type":"jiraDodKPI163",
                     "value":[
                       "Closed",
                       "Done"
                     ]
                   }
-              ]                                            },
+        ]
+                                        },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Standard Template",

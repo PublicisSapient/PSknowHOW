@@ -19,10 +19,13 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -32,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -46,53 +48,26 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 
 import lombok.extern.slf4j.Slf4j;
 
+// Defect count by Priority kpi on release tab
 @Slf4j
 @Component
 public class ReleaseDefectCountByPriorityServiceImpl
 		extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	private static final String TOTAL_DEFECT = "totalDefects";
+	private static final String TOTAL_DEFECT = "Total Defects";
+	private static final String OPEN_DEFECT = "Open Defects";
 	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CommonServiceImpl commonService;
-
-	private static void getPriorityWiseCount(Map<String, List<JiraIssue>> priorityData,
-			Map<String, Integer> priorityCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> priorityEntry : priorityData.entrySet()) {
-			priorityCountMap.put(priorityEntry.getKey(), priorityEntry.getValue().size());
-		}
-	}
 
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Defect count by Assignee Release -> Requested sprint : {}", leafNode.getName());
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-
-			if (null != fieldMapping) {
-				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
-				resultListMap.put(TOTAL_DEFECT, releaseDefects);
-			}
-		}
-		return resultListMap;
 	}
 
 	@Override
@@ -129,45 +104,151 @@ public class ReleaseDefectCountByPriorityServiceImpl
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(totalDefects)) {
-				Map<String, List<JiraIssue>> priorityWiseList = getPriorityWiseList(totalDefects);
+				Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+				List<JiraIssue> openDefects = totalDefects.stream()
+						.filter(jiraIssue -> fieldMapping.getStoryFirstStatus().contains(jiraIssue.getStatus()))
+						.collect(Collectors.toList());
+				Map<String, Map<String, List<JiraIssue>>> priorityWiseList = getPriorityWiseList(totalDefects,
+						openDefects);
 				log.info("ReleaseDefectCountByPriorityServiceImpl -> priorityWiseList ->  : {}", priorityWiseList);
-				Map<String, Integer> priorityWiseCountMap = new HashMap<>();
-				getPriorityWiseCount(priorityWiseList, priorityWiseCountMap);
-				if (MapUtils.isNotEmpty(priorityWiseCountMap)) {
-					Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
-					FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+				List<IterationKpiValue> sortedFilterDataList = new ArrayList<>();
+				List<DataCount> dataCountListForAllPriorities = new ArrayList<>();
+				Map<String, Integer> overallPriorityWiseCountMap = new HashMap<>();
+				for (Map.Entry<String, Map<String, List<JiraIssue>>> entry : priorityWiseList.entrySet()) {
+					Map<String, Integer> priorityCountMap = new HashMap<>();
+					Map<String, List<JiraIssue>> priorityData = entry.getValue();
+					int priorityCount = priorityData.values().stream().mapToInt(List::size).sum();
+					getPriorityCount(overallPriorityWiseCountMap, priorityData, priorityCountMap);
+					DataCount priorityDataCount = new DataCount();
+					priorityDataCount.setData(String.valueOf(priorityCount));
+					priorityDataCount.setValue(priorityCountMap);
+					List<DataCount> dataCountList = new ArrayList<>();
+					dataCountList.add(priorityDataCount);
+					dataCountListForAllPriorities.add(priorityDataCount);
 
-					List<DataCount> trendValueListOverAll = new ArrayList<>();
-					DataCount overallData = new DataCount();
-					int sumOfDefectsCount = priorityWiseCountMap.values().stream().mapToInt(Integer::intValue).sum();
-					overallData.setData(String.valueOf(sumOfDefectsCount));
-					overallData.setValue(priorityWiseCountMap);
-					overallData.setKpiGroup(CommonConstant.OVERALL);
-					overallData.setSProjectName(latestRelease.getProjectFilter().getName());
-					trendValueListOverAll.add(overallData);
-
-					List<DataCount> middleTrendValueListOverAll = new ArrayList<>();
+					// to make structure to create pie chart
+					List<DataCount> middleTrendValueListForPriorities = new ArrayList<>();
 					DataCount middleOverallData = new DataCount();
 					middleOverallData.setData(latestRelease.getProjectFilter().getName());
-					middleOverallData.setValue(trendValueListOverAll);
-					middleTrendValueListOverAll.add(middleOverallData);
+					middleOverallData.setValue(dataCountList);
+					middleTrendValueListForPriorities.add(middleOverallData);
+
+					IterationKpiValue filterData = new IterationKpiValue(entry.getKey(),
+							middleTrendValueListForPriorities);
+					filterDataList.add(filterData);
+
+				}
+				Map<String, Integer> overallPriorityCountMapAggregate = new HashMap<>();
+				overallPriorityCountMap(dataCountListForAllPriorities, overallPriorityCountMapAggregate);
+				if (MapUtils.isNotEmpty(overallPriorityCountMapAggregate)) {
+
 					populateExcelDataObject(requestTrackerId, excelData, totalDefects, fieldMapping);
 
-					IterationKpiValue filterDataOverall = new IterationKpiValue(CommonConstant.OVERALL,
-							middleTrendValueListOverAll);
-					filterDataList.add(filterDataOverall);
+					// filterDataList
 					kpiElement.setSprint(latestRelease.getName());
 					kpiElement.setModalHeads(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
 					kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_PRIORITY_RELEASE.getColumns());
 					kpiElement.setExcelData(excelData);
+					sortedFilterDataList.add(filterDataList.stream()
+							.filter(iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT))
+							.findFirst().orElse(new IterationKpiValue()));
+					filterDataList.removeIf(
+							iterationKpiValue -> iterationKpiValue.getFilter1().equalsIgnoreCase(OPEN_DEFECT));
+					sortListByKey(filterDataList);
+					sortedFilterDataList.addAll(filterDataList);
+					kpiElement.setTrendValueList(sortedFilterDataList);
 					log.info("ReleaseDefectCountByPriorityServiceImpl -> request id : {} total jira Issues : {}",
 							requestTrackerId, filterDataList.get(0));
 				}
 			}
-			kpiElement.setTrendValueList(filterDataList);
 		}
 	}
 
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+			KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			log.info("Defect count by Priority Release -> Requested sprint : {}", leafNode.getName());
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			if (null != fieldMapping) {
+				List<JiraIssue> releaseDefects = getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping);
+				resultListMap.put(TOTAL_DEFECT, releaseDefects);
+			}
+		}
+		return resultListMap;
+	}
+
+	/**
+	 * create priority wise map of total and open defects
+	 * 
+	 * @param defectJiraIssueList
+	 * @param openIssues
+	 * @return
+	 */
+	private Map<String, Map<String, List<JiraIssue>>> getPriorityWiseList(List<JiraIssue> defectJiraIssueList,
+			List<JiraIssue> openIssues) {
+		Map<String, Map<String, List<JiraIssue>>> scopeWiseDefectsMap = new HashMap<>();
+		Collector<JiraIssue, ?, Map<String, List<JiraIssue>>> groupingByPriority = Collectors
+				.groupingBy(JiraIssue::getPriority);
+		Predicate<JiraIssue> hasNonEmptyRootCauseList = jiraIssue -> {
+			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
+				jiraIssue.setPriority("-");
+			}
+			return true;
+		};
+		scopeWiseDefectsMap.put(TOTAL_DEFECT,
+				defectJiraIssueList.stream().filter(hasNonEmptyRootCauseList).collect(groupingByPriority));
+		scopeWiseDefectsMap.put(OPEN_DEFECT,
+				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByPriority));
+		return scopeWiseDefectsMap;
+	}
+
+	/**
+	 * create priority wise count map of total and open defects
+	 * 
+	 * @param overallPriorityCountMap
+	 * @param priorityData
+	 * @param priorityCountMap
+	 * @return
+	 */
+	private static void getPriorityCount(Map<String, Integer> overallPriorityCountMap,
+			Map<String, List<JiraIssue>> priorityData, Map<String, Integer> priorityCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : priorityData.entrySet()) {
+			String priority = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+			priorityCountMap.put(priority, issues.size());
+			overallPriorityCountMap.merge(priority, issues.size(), Integer::sum);
+		}
+	}
+
+	/**
+	 * create map of data count by filter
+	 * 
+	 * @param dataCountListForAllPriorities
+	 * @param overallPriorityCountMapAggregate
+	 */
+	private static void overallPriorityCountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallPriorityCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((priority, priorityCountValue) -> overallPriorityCountMapAggregate.merge(priority,
+					priorityCountValue, Integer::sum));
+		}
+	}
+
+	/**
+	 * populate excel data
+	 * 
+	 * @param requestTrackerId
+	 * @param excelData
+	 * @param jiraIssueList
+	 * @param fieldMapping
+	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
@@ -176,12 +257,7 @@ public class ReleaseDefectCountByPriorityServiceImpl
 		}
 	}
 
-	private Map<String, List<JiraIssue>> getPriorityWiseList(List<JiraIssue> defectJiraIssueList) {
-		return defectJiraIssueList.stream().filter(jiraIssue -> {
-			if (StringUtils.isEmpty(jiraIssue.getPriority())) {
-				jiraIssue.setPriority("-");
-			}
-			return true;
-		}).collect(Collectors.groupingBy(JiraIssue::getPriority));
+	private void sortListByKey(List<IterationKpiValue> list) {
+		list.sort(Comparator.comparing(IterationKpiValue::getFilter1));
 	}
 }

@@ -145,6 +145,7 @@
     "jiraLiveStatusKPI155" : "LIVE",
     "isUploadDataKPI42" : true,
     "isUploadDataKPI16" : true,
-    "getJiraDodKPI163" : ["Done", "Closed"]
+    "getJiraDodKPI163" : ["Done", "Closed"],
+    "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"]
   }
 ]

@@ -2646,7 +2646,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2671,7 +2671,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2696,7 +2696,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -3103,30 +3103,65 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-    "kpiId":"kpi163",
-    "kpiName":"Defect by Testing Phase",
-    "maxValue":"",
-    "kpiUnit":"Count",
-    "isDeleted":"False",
-    "defaultOrder":7,
-    "kpiCategory":"Release",
-    "kpiSource":"Jira",
-    "groupId":9,
-    "thresholdValue":"",
-    "kanban":false,
-    "chartType":"horizontalPercentBarChart",
-    "kpiInfo":{
-      "definition":" It gives a breakup of escaped defects by testing phase"
-    },
-    "xAxisLabel":"",
-    "yAxisLabel":"",
-    "isPositiveTrend":true,
-    "showTrend":false,
-    "isAdditionalFilterSupport":false,
-    "kpiFilter":"radioButton",
-    "boxType":"chart",
-    "calculateMaturity":false
-  }
+	"kpiId": "kpi164",
+	"kpiName": "Scope Churn",
+	"maxValue": "200",
+	"kpiUnit": "%",
+	"isDeleted": "False",
+	"defaultOrder": Double("30"),
+	"kpiSource": "Jira",
+	"groupId": Double("4"),
+	"thresholdValue": "85",
+	"kanban": false,
+	"chartType": "line",
+	"kpiInfo": {
+		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
+		"formula": [{
+			"lhs": "Scope Churn",
+			"operator": "division",
+			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
+		}],
+		"details": [{
+			"type": "link",
+			"kpiLinkDetail": {
+				"text": "Detailed Information at",
+				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+			}
+		}]
+	},
+	"xAxisLabel": "Sprints",
+	"yAxisLabel": "Percentage",
+	"isPositiveTrend": true,
+	"showTrend": true,
+	"aggregationCriteria": "average",
+	"isAdditionalFilterSupport": true,
+	"calculateMaturity": true,
+ },
+ {
+     "kpiId":"kpi163",
+     "kpiName":"Defect by Testing Phase",
+     "maxValue":"",
+     "kpiUnit":"Count",
+     "isDeleted":"False",
+     "defaultOrder":7,
+     "kpiCategory":"Release",
+     "kpiSource":"Jira",
+     "groupId":9,
+     "thresholdValue":"",
+     "kanban":false,
+     "chartType":"horizontalPercentBarChart",
+     "kpiInfo":{
+       "definition":" It gives a breakup of escaped defects by testing phase"
+     },
+     "xAxisLabel":"",
+     "yAxisLabel":"",
+     "isPositiveTrend":true,
+     "showTrend":false,
+     "isAdditionalFilterSupport":false,
+     "kpiFilter":"radioButton",
+     "boxType":"chart",
+     "calculateMaturity":false
+   }
 ]
 );
 
@@ -3395,7 +3430,13 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"categoryId": "categoryThree",
 		"kpiOrder": 2,
 		"kanban": true
-	}
+	},
+    {
+    	"kpiId": "kpi164",
+    	"categoryId": "categoryOne",
+    	"kpiOrder": 9,
+    	"kanban": false
+    }
 ]);
 
 
@@ -6193,8 +6234,53 @@ db.kpi_column_configs.insertMany([
                                  			isShown: true,
                                  			isDefault: false
                                  		 }]
-                                 	}
-                                 ]);
+                                 	},
+                                 	{
+                                    	basicProjectConfigId: null,
+                                    	kpiId: 'kpi164',
+                                    	kpiColumnDetails: [{
+                                    		columnName: 'Sprint Name',
+                                    		order: 0,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue ID',
+                                    		order: 2,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Type',
+                                    		order: 3,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Description',
+                                    		order: 4,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Size(story point/hours)',
+                                    		order: 5,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Scope Change Date',
+                                    		order: 6,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Scope Change (Added/Removed)',
+                                    		order: 7,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Status',
+                                    		order: 8,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}]
+                                    }
+                                   ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
@@ -8285,6 +8371,16 @@ db.getCollection('field_mapping_structure').insertMany(
     	"tooltip": {
     		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
     	}
+    },
+    {
+      "fieldName":"jiraStoryIdentificationKPI164",
+      "fieldLabel":"Issue type to identify Story",
+      "fieldType":"chips",
+      "fieldCategory":"Issue_Type",
+      "section":"Issue Types Mapping",
+      "tooltip":{
+        "definition":"All issue types that are used as/equivalent to Story."
+      }
     }
 ]
 );
