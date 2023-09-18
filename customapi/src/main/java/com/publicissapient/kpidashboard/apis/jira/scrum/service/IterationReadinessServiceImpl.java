@@ -93,9 +93,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 		if (leafNode != null) {
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
-
 			List<String> totalSprint = jiraService.getFutureSprintsList();
-
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
 		}
