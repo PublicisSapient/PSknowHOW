@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,6 +83,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	private static final String OVERALL = "Overall";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String COMPLETED_ISSUES = "completedIssue";
+	public static final DecimalFormat decformat = new DecimalFormat("#0.00");
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -442,7 +444,8 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
 					.mapToInt(JiraIssue::getOriginalEstimateMinutes).sum();
 			double originalEstimateInDays = (double) originalEstimateMinutesSum / 480;
-			return Math.round(originalEstimateInDays == 0 ? 0 : linkedDefect.size() / originalEstimateInDays);
+			return originalEstimateInDays == 0 ? 0
+					: Double.parseDouble(decformat.format(linkedDefect.size() / originalEstimateInDays));
 		}
 	}
 
