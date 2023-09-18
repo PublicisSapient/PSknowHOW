@@ -547,11 +547,9 @@ db.getCollection('metadata_identifier').updateMany(
 
 
 //DTS-28198 remove radio button filter to release kpis
-var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
-var originalKpiFilterField = {
-  "kpiFilter" : "",
-};
 db.getCollection("kpi_master").updateMany(
-  { kpiId: { $in: kpiIdsToUpdate } },
-  { $set: originalKpiFilterField }
+  { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+  {
+    $set: {"kpiFilter" : "",}
+  }
 );
