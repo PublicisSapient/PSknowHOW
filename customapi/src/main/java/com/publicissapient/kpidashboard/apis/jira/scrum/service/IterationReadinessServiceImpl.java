@@ -118,8 +118,9 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			List<JiraIssue> jiraIssues = (List<JiraIssue>) resultMap.get(PROJECT_WISE_JIRA_ISSUE);
 			List<String> sprintList = (List<String>) resultMap.get(SPRINT_LIST);
 			if (CollectionUtils.isNotEmpty(sprintList)) {
+
 				List<DataCount> dataCountList = new ArrayList<>();
-				Map<String, Map<String, List<JiraIssue>>> sprintStatusJiraIssueGroups = new HashMap<>();
+				List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 				sprintList.forEach(sprint -> {
 					Map<String, List<JiraIssue>> statusWiseJiraIssue = new HashMap<>();
 					if (CollectionUtils.isNotEmpty(jiraIssues)) {
@@ -127,18 +128,13 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 								.filter(jiraIssue -> jiraIssue.getSprintName().equalsIgnoreCase(sprint))
 								.collect(Collectors.groupingBy(JiraIssue::getStatus));
 					}
-					sprintStatusJiraIssueGroups.put(sprint, statusWiseJiraIssue);
 
-				});
-
-				List<JiraIssue> filteredJiraIssue = new ArrayList<>();
-				sprintStatusJiraIssueGroups.forEach((sprintName, statusJiraMap) -> {
 					DataCount dataCount = new DataCount();
-					dataCount.setSSprintName(sprintName);
+					dataCount.setSSprintName(sprint);
 					dataCount.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
 					Map<String, StatusWiseIssue> statusWiseStoryCountAndPointMap = new LinkedHashMap<>();
-					if (MapUtils.isNotEmpty(statusJiraMap)) {
-						TreeMap<String, List<JiraIssue>> sortedStatusJiraMap = new TreeMap<>(statusJiraMap);
+					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
+						TreeMap<String, List<JiraIssue>> sortedStatusJiraMap = new TreeMap<>(statusWiseJiraIssue);
 						sortedStatusJiraMap.forEach((status, jiraIssue) -> {
 							filteredJiraIssue.addAll(jiraIssue);
 							StatusWiseIssue statusWiseData = getStatusWiseStoryCountAndPointList(jiraIssue,
@@ -153,6 +149,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 					dataCount.setValue(statusWiseStoryCountAndPointMap);
 					dataCountList.add(dataCount);
+
 				});
 
 				overAllIterationKpiValue.setValue(dataCountList);

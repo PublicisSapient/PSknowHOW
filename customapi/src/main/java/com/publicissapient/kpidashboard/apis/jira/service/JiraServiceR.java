@@ -18,6 +18,7 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -323,7 +324,7 @@ public class JiraServiceR {
 
 	public void futureProjectWiseSprintDetails(ObjectId basicProjectConfigId, String sprintState) {
 		futureSprintDetails = sprintRepository
-				.findByBasicProjectConfigIdAndStateInOrderByStartDateASC(basicProjectConfigId, sprintState);
+				.findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(basicProjectConfigId, sprintState);
 	}
 
 	public SprintDetails getCurrentSprintDetails() {
@@ -450,7 +451,10 @@ public class JiraServiceR {
 	public List<String> getFutureSprintsList() {
 		List<String> sprintNames = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
-			sprintNames = futureSprintDetails.stream().map(SprintDetails::getSprintName).distinct()
+			sprintNames = futureSprintDetails.stream()
+					.sorted(Comparator.comparing(SprintDetails::getStartDate,
+							Comparator.nullsLast(Comparator.naturalOrder())))
+					.map(SprintDetails::getSprintName).distinct()
 					.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 
 		}

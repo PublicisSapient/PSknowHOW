@@ -105,6 +105,6 @@ public interface SprintRepository extends MongoRepository<SprintDetails, ObjectI
 	List<SprintDetails> findBySprintIDInGetStatus(List<String> sprintIDs);
 
 	@Query(value = "{ 'basicProjectConfigId' : ?0, 'state' : { $in: [?1] } }", fields = "{'sprintName' : 1, 'startDate' : 1}", sort = "{ 'startDate' : 1 }")
-	List<SprintDetails> findByBasicProjectConfigIdAndStateInOrderByStartDateASC(ObjectId basicProjectConfigId,
+	List<SprintDetails> findByBasicProjectConfigIdAndStateIgnoreCaseOrderByStartDateASC(ObjectId basicProjectConfigId,
 			String sprintState);
 }
