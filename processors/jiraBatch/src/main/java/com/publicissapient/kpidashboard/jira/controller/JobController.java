@@ -261,7 +261,7 @@ public class JobController {
 	 * @return ResponseEntity
 	 * @throws Exception
 	 */
-	@GetMapping("/startfetchsprintjob")
+	@PostMapping("/startfetchsprintjob")
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) throws Exception {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
