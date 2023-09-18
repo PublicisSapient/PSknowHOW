@@ -41,6 +41,7 @@ export class KpiTableComponent implements OnInit {
     }
     if (changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue) {
       this.kpiConfigData = changes['kpiConfigData']?.currentValue;
+      this.loader = false;
     }
   }
 
