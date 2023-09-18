@@ -513,6 +513,55 @@ db.field_mapping_structure.updateMany(
 
 )
 
+// delete Scope Churn kpi
+//DTS-28198 remove radio button filter to release kpis
+db.getCollection("kpi_master").bulkWrite(
+  [
+    {
+      deleteOne: {
+        filter: { "kpiId": "kpi164" }
+      }
+    },
+    {
+      updateMany: {
+        filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+        update: { $set: { "kpiFilter": "" } }
+      }
+    }
+  ]
+);
+
+//delete fieldMapping for Scope Churn KPI
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: ["jiraStoryIdentificationKPI164"]}
+});
+
+// delete column config for Scope Churn KPI
+db.kpi_column_configs.deleteOne({
+    "kpiId": "kpi164"
+});
+
+// delete kpi_category_mapping for Scope Churn KPI
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi164"
+});
+
+// Note : below code only For Opensource project
+// deleting metadata_identifier for scope churn
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraStoryIdentificationKPI164"
+      }
+   }}
+);
+
+
+
+
+
+
 // --- Reverse fieldType for Backlog leadTime
 db.getCollection('field_mapping_structure').updateMany(
   { "fieldName": { $in: ["jiraDorKPI3", "jiraLiveStatusKPI3"] } },

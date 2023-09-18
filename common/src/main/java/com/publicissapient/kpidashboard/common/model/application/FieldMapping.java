@@ -169,6 +169,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationKPI129;
 	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentificationKPI164;
 
 	private String jiraLiveStatus;
 	private String jiraLiveStatusKPI152;
