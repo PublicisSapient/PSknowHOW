@@ -3342,14 +3342,18 @@
   },
   {
     "_id": "649ab123c2dc03570b2d5798",
-    "sprintID": "47357_KnowHOW_6360fefc3fa9e175755f0728",
+    "sprintID": "47357_KnowHOW_6335363749794a18e8a4479b",
     "sprintName": "KnowHOW | PI_14| ITR_Dummy",
     "originalSprintId": "47357",
     "state": "FUTURE",
+    "startDate": "2022-08-10T09:47:00.000Z",
+    "endDate": "2022-08-24T09:47:00.000Z",
+    "completeDate": "2022-08-24T03:35:24.843Z",
+    "activatedDate": "2022-08-10T09:47:13.639Z",
     "originBoardId": [
       "11856"
     ],
-    "basicProjectConfigId": "6360fefc3fa9e175755f0728",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "5ea7d218e4b098dbe79d7aa2",
     "completedIssues": [],
     "notCompletedIssues": [
