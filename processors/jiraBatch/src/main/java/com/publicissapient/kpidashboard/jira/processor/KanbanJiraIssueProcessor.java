@@ -38,8 +38,4 @@ public interface KanbanJiraIssueProcessor {
 	KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfFieldMapping,
 			String boardId) throws JSONException;
 
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 }

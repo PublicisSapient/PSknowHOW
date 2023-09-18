@@ -36,13 +36,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -99,8 +98,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
 
-	private Map<String, Map<String, KanbanJiraIssue>> projectWiseIssues;
-
 	AssigneeDetails assigneeDetails;
 
 	@Override
@@ -131,7 +128,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		if (issueTypeNames
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
-			jiraIssue = searchIssueInDb(projectConfig, issueId);
+			jiraIssue = getKanbanJiraIssue(projectConfig, issueId);
 
 			// Add url to Issue
 			setURL(issue.getKey(), jiraIssue, projectConfig);
@@ -180,51 +177,28 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		return jiraIssue;
 	}
 
-	private KanbanJiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
-
-		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
-		if (MapUtils.isEmpty(projectWiseIssues)) {
-			populateProjectWiseIssues(projectConfig);
-		}
-		if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			Map<String, KanbanJiraIssue> issueIdWiseJiraIssue = projectWiseIssues
-					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-				projectWiseIssues = new HashMap<>();
-				populateProjectWiseIssues(projectConfig);
-				Map<String, KanbanJiraIssue> updatedIdWiseIssues = projectWiseIssues
-						.get(projectConfig.getBasicProjectConfigId().toString());
-				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-				}
-
-			}
-		}
-		return jiraIssue;
-	}
-
-	private KanbanJiraIssue initializeJiraIssue(String issueId, Map<String, KanbanJiraIssue> issueIdWiseJiraIssue) {
-		KanbanJiraIssue jiraIssue = null;
-		jiraIssue = issueIdWiseJiraIssue.get(issueId);
-		if (null == jiraIssue) {
+	private KanbanJiraIssue getKanbanJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
+		KanbanJiraIssue jiraIssue = findOneKanbanIssueRepo(issueId, projectConfig.getBasicProjectConfigId().toString());
+		if (jiraIssue == null) {
 			jiraIssue = new KanbanJiraIssue();
 		}
-		issueIdWiseJiraIssue = null;
 		return jiraIssue;
 	}
 
-	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("Checking if jira issue exist in Db for  project : {}", projectConfig.getProjectName());
-		List<KanbanJiraIssue> existingJiraIssues = kanbanJiraIssueRepository
-				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-		if (CollectionUtils.isNotEmpty(existingJiraIssues)) {
-			Map<String, KanbanJiraIssue> issueIdWiseJiraIssue = existingJiraIssues.stream()
-					.collect(Collectors.toMap(KanbanJiraIssue::getIssueId, Function.identity()));
-			projectWiseIssues = new HashMap<>();
-			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
+	public KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
+		List<KanbanJiraIssue> jiraIssues = kanbanJiraIssueRepository
+				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
+
+		// Not sure of the state of the data
+		if (jiraIssues.size() > 1) {
+			log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
 		}
+
+		if (!jiraIssues.isEmpty()) {
+			return jiraIssues.get(0);
+		}
+
+		return null;
 	}
 
 	private void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, ProjectConfFieldMapping projectConfig) {
@@ -664,11 +638,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 					: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
 		}
 		kanbanJiraIssue.setUrl(baseUrl);
-	}
-
-	@Override
-	public void cleanAllObjects() {
-		projectWiseIssues = null;
 	}
 
 }

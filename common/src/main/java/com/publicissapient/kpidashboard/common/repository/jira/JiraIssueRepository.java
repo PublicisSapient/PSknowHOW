@@ -116,7 +116,7 @@ public interface JiraIssueRepository
 	 * @return the feature id by id
 	 */
 	@Query(fields = "{'issueId' : 1}")
-	List<JiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
+	JiraIssue findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
 	/**
 	 * Gets story by number.

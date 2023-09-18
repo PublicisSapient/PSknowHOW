@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
@@ -33,8 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -47,6 +50,8 @@ import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * @author pankumar8
@@ -256,7 +261,7 @@ public class JobController {
 	 * @return ResponseEntity
 	 * @throws Exception
 	 */
-	@GetMapping("/startfetchsprintjob")
+	@PostMapping("/startfetchsprintjob")
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) throws Exception {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
@@ -277,15 +282,17 @@ public class JobController {
 	/**
 	 * This method is used to fetch the jira issues based on project id
 	 * 
-	 * @param basicProjectConfigId
+	 * @param processorExecutionBasicConfig
 	 * @return ResponseEntity
 	 * @throws Exception
 	 */
-	@GetMapping("/startprojectwiseissuejob")
-	public ResponseEntity<String> startProjectWiseIssueJob(@RequestBody String basicProjectConfigId) throws Exception {
+
+	@PostMapping("/startprojectwiseissuejob")
+	public ResponseEntity<String> startProjectWiseIssueJob(@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) throws Exception {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
+		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
 		jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
 		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
 		JobParameters params = jobParametersBuilder.toJobParameters();

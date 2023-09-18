@@ -33,8 +33,5 @@ public interface JiraIssueAssigneeProcessor {
 	 */
 	AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue);
 
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 }
+

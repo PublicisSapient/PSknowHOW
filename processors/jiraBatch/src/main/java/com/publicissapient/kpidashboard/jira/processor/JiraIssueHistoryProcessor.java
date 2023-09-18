@@ -35,6 +35,4 @@ public interface JiraIssueHistoryProcessor {
 	 */
 	JiraIssueCustomHistory convertToJiraIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
 			JiraIssue jiraIssue);
-
-	void cleanAllObjects();
 }

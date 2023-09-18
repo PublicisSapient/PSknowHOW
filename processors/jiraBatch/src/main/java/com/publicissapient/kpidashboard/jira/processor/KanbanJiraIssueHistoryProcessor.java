@@ -36,8 +36,4 @@ public interface KanbanJiraIssueHistoryProcessor {
 	KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfFieldMapping,
 			KanbanJiraIssue kanbanJiraIssue);
 
-	/**
-	 * This method is used to clean all class level objects
-	 */
-	void cleanAllObjects();
 }

@@ -41,6 +41,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.json.simple.JSONArray;
@@ -96,8 +97,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
 
-	private Map<String, Map<String, JiraIssue>> projectWiseIssues;
-
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
@@ -129,7 +128,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			Map<String, String> issueEpics = new HashMap<>();
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
-			jiraIssue = searchIssueInDb(projectConfig, issueId);
+			jiraIssue = getJiraIssue(projectConfig, issueId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());
@@ -167,52 +166,12 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	}
 
-	private JiraIssue searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
+	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
+		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
+		JiraIssue jiraIssue = jiraIssueRepository
+				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		JiraIssue jiraIssue = new JiraIssue();
-		if (MapUtils.isEmpty(projectWiseIssues)) {
-			populateProjectWiseIssues(projectConfig);
-
-		}
-		if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			Map<String, JiraIssue> issueIdWiseJiraIssue = projectWiseIssues
-					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-				projectWiseIssues = new HashMap<>();
-				populateProjectWiseIssues(projectConfig);
-				Map<String, JiraIssue> updatedIdWiseIssues = projectWiseIssues
-						.get(projectConfig.getBasicProjectConfigId().toString());
-				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-				}
-
-			}
-		}
-		return jiraIssue;
-	}
-
-	private JiraIssue initializeJiraIssue(String issueId, Map<String, JiraIssue> issueIdWiseJiraIssue) {
-		JiraIssue jiraIssue = null;
-		jiraIssue = issueIdWiseJiraIssue.get(issueId);
-		if (null == jiraIssue) {
-			jiraIssue = new JiraIssue();
-		}
-		issueIdWiseJiraIssue = null;
-		return jiraIssue;
-	}
-
-	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("Checking if jira issue exist in Db for  project : {}", projectConfig.getProjectName());
-		List<JiraIssue> existingJiraIssues = jiraIssueRepository
-				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-		if (CollectionUtils.isNotEmpty(existingJiraIssues)) {
-			Map<String, JiraIssue> issueIdWiseJiraIssue = existingJiraIssues.stream()
-					.collect(Collectors.toMap(JiraIssue::getIssueId, Function.identity()));
-			projectWiseIssues = new HashMap<>();
-			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
-		}
+		return jiraIssue != null ? jiraIssue : new JiraIssue();
 	}
 
 	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
@@ -812,6 +771,49 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return isRaisedByThirdParty;
 	}
 
+	// private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String>
+	// bugRaisedValue, Object issueFieldValue, JiraIssue jiraIssue) {
+	// List<String> lowerCaseBugRaisedValue =
+	// bugRaisedValue.stream().map(String::toLowerCase)
+	// .collect(Collectors.toList());
+	// JSONParser parser = new JSONParser();
+	// JSONArray array = new JSONArray();
+	// boolean isRaisedByThirdParty = false;
+	// org.json.simple.JSONObject jsonObject = new org.json.simple.JSONObject();
+	// try {
+	// if (issueFieldValue instanceof org.codehaus.jettison.json.JSONArray) {
+	// array = (JSONArray) parser.parse(issueFieldValue.toString());
+	// ArrayList<String> testPhasesList = new ArrayList<>();
+	// for (int i = 0; i < array.size(); i++) {
+	//
+	// jsonObject = (org.json.simple.JSONObject)
+	// parser.parse(array.get(i).toString());
+	// if (lowerCaseBugRaisedValue
+	// .contains(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase())) {
+	// testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase());
+	// isRaisedByThirdParty = true;
+	// break;
+	// }
+	//
+	// }
+	// jiraIssue.setEscapedDefectGroup(testPhasesList);
+	// } else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject)
+	// {
+	// String testPhase = ((org.codehaus.jettison.json.JSONObject)
+	// issueFieldValue).get(JiraConstants.VALUE)
+	// .toString().toLowerCase();
+	//
+	// if (lowerCaseBugRaisedValue.contains(testPhase)) {
+	// jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
+	// isRaisedByThirdParty = true;
+	// }
+	// }
+	// } catch (org.json.simple.parser.ParseException | JSONException e) {
+	// log.error("JIRA Processor | Error while parsing third party field {}", e);
+	// }
+	// return isRaisedByThirdParty;
+	// }
+
 	/**
 	 * Process sprint details
 	 *
@@ -967,9 +969,68 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	@Override
-	public void cleanAllObjects() {
-		projectWiseIssues = null;
-	}
+	// private void setTestingPhaseDefectIdentificationField(Issue issue,
+	// FieldMapping fieldMapping, JiraIssue jiraIssue,
+	// Map<String, IssueField> fields) {
+	// if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) &&
+	// fieldMapping.getJiradefecttype().stream()
+	// .anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+	// if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+	// &&
+	// fieldMapping.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS))
+	// {
+	// setTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
+	// } else if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+	// && fieldMapping.getTestingPhaseDefectsIdentifier().trim()
+	// .equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+	// && fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
+	// &&
+	// fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue()
+	// != null) {
+	// isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
+	// fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(),
+	// jiraIssue);
+	// } else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() &&
+	// fieldMapping
+	// .getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT))
+	// {
+	// setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
+	// }
+	// }
+	// }
+	//
+	// private static void setTestPhaseDefectsList(Issue issue, FieldMapping
+	// fieldMapping, JiraIssue jiraIssue) {
+	// List<String> commonLabel = issue.getLabels().stream()
+	// .filter(x ->
+	// fieldMapping.getTestingPhaseDefectValue().contains(x)).collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(commonLabel)) {
+	// jiraIssue.setEscapedDefectGroup(commonLabel);
+	// }
+	// }
+	//
+	// private static void setTestPhaseDefectsListForComponent(Issue issue,
+	// FieldMapping fieldMapping,
+	// JiraIssue jiraIssue) {
+	// Iterable<BasicComponent> components = issue.getComponents();
+	// List<BasicComponent> componentList = new ArrayList<>();
+	// components.forEach(componentList::add);
+	// if (CollectionUtils.isNotEmpty(componentList)) {
+	// List<String> componentNameList =
+	// componentList.stream().map(BasicComponent::getName)
+	// .collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(componentNameList) &&
+	// componentNameList.stream()
+	// .anyMatch(fieldMapping.getTestingPhaseDefectComponentValue()::equalsIgnoreCase))
+	// {
+	// List<String> commonLabel = componentNameList.stream()
+	// .filter(x -> fieldMapping.getTestingPhaseDefectComponentValue().contains(x))
+	// .collect(Collectors.toList());
+	// if (CollectionUtils.isNotEmpty(commonLabel)) {
+	// jiraIssue.setEscapedDefectGroup(commonLabel);
+	// }
+	// }
+	// }
+	// }
 
 }

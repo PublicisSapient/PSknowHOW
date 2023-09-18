@@ -39,5 +39,4 @@ public interface JiraIssueProcessor {
 	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig, String boardId)
 			throws JSONException;
 
-	void cleanAllObjects();
 }

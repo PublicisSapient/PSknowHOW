@@ -28,9 +28,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.JiraIssueStepListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
-import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueStepListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.NotificationJobListener;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
@@ -98,9 +96,6 @@ public class JiraProcessorJob {
 	KanbanReleaseDataTasklet kanbanReleaseDataTasklet;
 
 	@Autowired
-	JiraIssueStepListener jiraIssueStepListener;
-
-	@Autowired
 	JiraIssueBoardWriterListener jiraIssueBoardWriterListener;
 
 	@Autowired
@@ -111,9 +106,6 @@ public class JiraProcessorJob {
 
 	@Autowired
 	IssueKanbanProcessor issueKanbanProcessor;
-
-	@Autowired
-	KanbanJiraIssueStepListener kanbanJiraIssueStepListener;
 
 	@Autowired
 	KanbanJiraIssueWriterListener kanbanJiraIssueWriterListener;
@@ -148,8 +140,7 @@ public class JiraProcessorJob {
 	private Step fetchIssueScrumBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueBoardWriterListener).listener(jiraIssueStepListener)
-				.listener(notificationJobListener).build();
+				.listener(jiraIssueBoardWriterListener).listener(notificationJobListener).build();
 	}
 
 	private Step scrumReleaseDataStep() {
@@ -172,8 +163,7 @@ public class JiraProcessorJob {
 	private Step fetchIssueScrumJqlChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Scrum-Jql").<ReadData, CompositeResult>chunk(50)
 				.reader(issueJqlReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueJqlWriterListener).listener(jiraIssueStepListener).listener(notificationJobListener)
-				.build();
+				.listener(jiraIssueJqlWriterListener).listener(notificationJobListener).build();
 	}
 
 	/** Scrum projects for Jql job : End **/
@@ -191,8 +181,7 @@ public class JiraProcessorJob {
 	private Step fetchIssueKanbanBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
-				.listener(kanbanJiraIssueWriterListener).listener(kanbanJiraIssueStepListener)
-				.listener(notificationJobListener).build();
+				.listener(kanbanJiraIssueWriterListener).listener(notificationJobListener).build();
 	}
 
 	private Step kanbanReleaseDataStep() {
@@ -215,8 +204,7 @@ public class JiraProcessorJob {
 	private Step fetchIssueKanbanJqlChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(50)
 				.reader(issueJqlReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
-				.listener(kanbanJiraIssueJqlWriterListener).listener(kanbanJiraIssueStepListener)
-				.listener(notificationJobListener).build();
+				.listener(kanbanJiraIssueJqlWriterListener).listener(notificationJobListener).build();
 	}
 
 	/** Kanban projects for Jql job : End **/
@@ -239,7 +227,6 @@ public class JiraProcessorJob {
 	private Step fetchIssueSprintChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
 				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueJqlWriterListener).listener(jiraIssueStepListener).listener(notificationJobListener)
-				.build();
+				.listener(jiraIssueJqlWriterListener).listener(notificationJobListener).build();
 	}
 }

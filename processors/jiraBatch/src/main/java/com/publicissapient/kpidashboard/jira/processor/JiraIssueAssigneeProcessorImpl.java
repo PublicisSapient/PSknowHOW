@@ -45,18 +45,12 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
-	AssigneeDetails assigneeDetails;
-
 	@Override
 	public AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue) {
 
 		log.info("Creating assignee details for the project : {}", projectConfig.getProjectName());
-		if (null == assigneeDetails || !assigneeDetails.getBasicProjectConfigId()
-				.equalsIgnoreCase(projectConfig.getBasicProjectConfigId().toString())) {
-			log.info("creating assignee details for the project : {}", projectConfig.getProjectName());
-			assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
-					projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.JIRA);
-		}
+		AssigneeDetails assigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(
+				projectConfig.getBasicProjectConfigId().toString(), ProcessorConstants.JIRA);
 
 		Set<Assignee> assigneeSetToSave = new LinkedHashSet<>();
 		if (StringUtils.isNotEmpty(jiraIssue.getAssigneeId()) && StringUtils.isNotEmpty(jiraIssue.getAssigneeName())) {
@@ -85,11 +79,6 @@ public class JiraIssueAssigneeProcessorImpl implements JiraIssueAssigneeProcesso
 			return null;
 		}
 		return assigneeDetails;
-	}
-
-	@Override
-	public void cleanAllObjects() {
-		assigneeDetails = null;
 	}
 
 }

@@ -18,13 +18,8 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,66 +53,38 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 	@Autowired
 	private KanbanJiraIssueHistoryRepository kanbanJiraIssueHistoryRepository;
 
-	Map<String, Map<String, KanbanIssueCustomHistory>> projectWiseIssues;
-
 	@Override
 	public KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
 			KanbanJiraIssue kanbanJiraIssue) {
 		log.info("Converting issue to KanbanJiraIssueHistory for the project : {}", projectConfig.getProjectName());
-		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
-		KanbanIssueCustomHistory jiraIssueHistory = searchIssueInDb(projectConfig, issueNumber);
+		KanbanIssueCustomHistory jiraIssueHistory = getKanbanIssueCustomHistory(projectConfig, issue);
 		setJiraIssueHistory(jiraIssueHistory, kanbanJiraIssue, issue, fieldMapping);
 
 		return jiraIssueHistory;
 	}
 
-	private KanbanIssueCustomHistory searchIssueInDb(ProjectConfFieldMapping projectConfig, String issueId) {
-
-		KanbanIssueCustomHistory jiraIssue = new KanbanIssueCustomHistory();
-		if (MapUtils.isEmpty(projectWiseIssues)) {
-			populateProjectWiseIssues(projectConfig);
+	private KanbanIssueCustomHistory getKanbanIssueCustomHistory(ProjectConfFieldMapping projectConfig, Issue issue) {
+		KanbanIssueCustomHistory jiraIssueHistory = findOneKanbanIssueCustomHistory(issue.getKey(),
+				projectConfig.getBasicProjectConfigId().toString());
+		if (jiraIssueHistory == null) {
+			jiraIssueHistory = new KanbanIssueCustomHistory();
 		}
-		if (MapUtils.isNotEmpty(projectWiseIssues)) {
-			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = projectWiseIssues
-					.get(projectConfig.getBasicProjectConfigId().toString());
-			if (MapUtils.isNotEmpty(issueIdWiseJiraIssue)) {
-				jiraIssue = initializeJiraIssue(issueId, issueIdWiseJiraIssue);
-			} else if (MapUtils.isNotEmpty(projectWiseIssues)) {
-				projectWiseIssues = new HashMap<>();
-				populateProjectWiseIssues(projectConfig);
-				Map<String, KanbanIssueCustomHistory> updatedIdWiseIssues = projectWiseIssues
-						.get(projectConfig.getBasicProjectConfigId().toString());
-				if (MapUtils.isNotEmpty(updatedIdWiseIssues)) {
-					jiraIssue = initializeJiraIssue(issueId, updatedIdWiseIssues);
-				}
-
-			}
-		}
-		return jiraIssue;
+		return jiraIssueHistory;
 	}
 
-	private KanbanIssueCustomHistory initializeJiraIssue(String issueId,
-			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue) {
-		KanbanIssueCustomHistory jiraIssue = null;
-		jiraIssue = issueIdWiseJiraIssue.get(issueId);
-		if (null == jiraIssue) {
-			jiraIssue = new KanbanIssueCustomHistory();
+	public KanbanIssueCustomHistory findOneKanbanIssueCustomHistory(String issueId, String basicProjectConfigId) {
+		List<KanbanIssueCustomHistory> jiraIssues = kanbanJiraIssueHistoryRepository
+				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
+		// Not sure of the state of the data
+		if (jiraIssues.size() > 1) {
+			log.warn("JIRA Processor | Data issue More than one JIRA issue item found for id {}", issueId);
 		}
-		issueIdWiseJiraIssue = null;
-		return jiraIssue;
-	}
+		if (!jiraIssues.isEmpty()) {
+			return jiraIssues.get(0);
+		}
 
-	private void populateProjectWiseIssues(ProjectConfFieldMapping projectConfig) {
-		log.info("Checking if jira history issue exist in Db for  project : {}", projectConfig.getProjectName());
-		List<KanbanIssueCustomHistory> existingJiraHistoryIssues = kanbanJiraIssueHistoryRepository
-				.findByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-		if (CollectionUtils.isNotEmpty(existingJiraHistoryIssues)) {
-			Map<String, KanbanIssueCustomHistory> issueIdWiseJiraIssue = existingJiraHistoryIssues.stream()
-					.collect(Collectors.toMap(KanbanIssueCustomHistory::getStoryID, Function.identity()));
-			projectWiseIssues = new HashMap<>();
-			projectWiseIssues.put(projectConfig.getBasicProjectConfigId().toString(), issueIdWiseJiraIssue);
-		}
+		return null;
 	}
 
 	public void setJiraIssueHistory(KanbanIssueCustomHistory jiraIssueHistory, KanbanJiraIssue jiraIssue, Issue issue,
@@ -243,10 +210,5 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 		}
 		return historyDetails;
 
-	}
-
-	@Override
-	public void cleanAllObjects() {
-		projectWiseIssues = null;
 	}
 }
