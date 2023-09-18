@@ -346,4 +346,11 @@ public class KPIExcelData {
 	@JsonProperty("Achieved Value")
 	private String achievedValue;
 
+	@JsonProperty("Scope Change Date")
+	private String scopeChangeDate;
+
+	@JsonProperty("Scope Change (Added/Removed)")
+	private String scopeChange;
+
+
 }
