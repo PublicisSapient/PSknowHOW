@@ -33,7 +33,7 @@ export class KpiTableComponent implements OnInit {
     if (changes['kpiData']?.currentValue != undefined && changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
       this.kpiData = changes['kpiData']?.currentValue;
       if(condition){
-        this.handleLoader();
+        // this.handleLoader();
       }
     }
     if (changes['colorObj']?.currentValue != changes['colorObj']?.previousValue) {
