@@ -160,9 +160,8 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 		LocalDate localStartDate = dateRange.getStartDate();
 		LocalDate localEndDate = dateRange.getEndDate();
 
-		Integer dataPoints = NumberUtils.isCreatable(kpiRequest.getIds()[0]) ? Integer.parseInt(kpiRequest.getIds()[0])
-				: 5;
-		String duration = kpiRequest.getSelectedMap().get(CommonConstant.date).get(0);
+		Integer dataPoints = kpiRequest.getXAxisDataPoints();
+		String duration = kpiRequest.getDuration();
 
 		// gets the tool configuration
 		Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -341,6 +340,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
 			dayWiseCommitCount.add(setDataCount(projectName, date, hoverValues, commitCountValue, mergeCountValue));
 			currentDate = getNextRangeDate(duration, currentDate);
 		}
+		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
 
 	}
