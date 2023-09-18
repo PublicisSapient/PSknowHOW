@@ -3825,3 +3825,125 @@ db.field_mapping_structure.updateMany(
     }
 
 )
+// scope churn kpi_master
+db.kpi_master.insertOne({
+	"kpiId": "kpi164",
+	"kpiName": "Scope Churn",
+	"maxValue": "200",
+	"kpiUnit": "%",
+	"isDeleted": "False",
+	"defaultOrder": Double("30"),
+	"kpiSource": "Jira",
+	"groupId": Double("4"),
+	"thresholdValue": "85",
+	"kanban": false,
+	"chartType": "line",
+	"kpiInfo": {
+		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
+		"formula": [{
+			"lhs": "Scope Churn",
+			"operator": "division",
+			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
+		}],
+		"details": [{
+			"type": "link",
+			"kpiLinkDetail": {
+				"text": "Detailed Information at",
+				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+			}
+		}]
+	},
+	"xAxisLabel": "Sprints",
+	"yAxisLabel": "Percentage",
+	"isPositiveTrend": true,
+	"showTrend": true,
+	"aggregationCriteria": "average",
+	"isAdditionalFilterSupport": true,
+	"calculateMaturity": true,
+}, )
+
+db.getCollection('field_mapping_structure').insertMany(
+	[{
+		"fieldName": "jiraStoryIdentificationKPI164",
+		"fieldLabel": "Issue type to identify Story",
+		"fieldType": "chips",
+		"fieldCategory": "Issue_Type",
+		"section": "Issue Types Mapping",
+		"tooltip": {
+			"definition": "All issue types that are used as/equivalent to Story.",
+
+		}
+	}]
+)
+
+// Scope Churn KPI column config
+db.getCollection('kpi_column_configs').insertOne({
+	basicProjectConfigId: null,
+	kpiId: 'kpi164',
+	kpiColumnDetails: [{
+		columnName: 'Sprint Name',
+		order: 0,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue ID',
+		order: 2,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Type',
+		order: 3,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Description',
+		order: 4,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Size(story point/hours)',
+		order: 5,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change Date',
+		order: 6,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change (Added/Removed)',
+		order: 7,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Status',
+		order: 8,
+		isShown: true,
+		isDefault: false
+	}]
+});
+
+// Note : below code only For Opensource project
+// Scope Churn KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne({
+	"kpiId": "kpi164",
+	"categoryId": "categoryOne",
+	"kpiOrder": 9,
+	"kanban": false
+});
+
+// Note : below code only For Opensource project
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraStoryIdentificationKPI164",
+                "value":[
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                ]
+            }
+   }}
+);
