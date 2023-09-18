@@ -1592,21 +1592,13 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   /** Remove identifier  and append full hierarchy in parent id  */
   parentIDClean(pId) {
-    switch (this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()) {
-      case 'project':
-        return pId.replace(/_port/i, ' Portfolio');
-
-      case 'portfolio':
-        return pId.replace(/_acc/i, ' Account');
-
-      case 'account':
-        return pId.replace(/_ver/i, ' Verticle');
-
-      case 'vertical':
-        return pId.replace(/_bu/i, ' BU');
-
-      default:
-    }
+    const selectedType = this.kanban ? 'kanban' : 'scrum';
+    const levelDEtails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType];
+    const currentLevel = this.service.getSelectedLevel();
+    const oneLevelUp = levelDEtails.filter(hier=> hier.level === (currentLevel['level'] -1))[0];
+    const sortName = `_${oneLevelUp['hierarchyLevelId']}`;
+    const longName = ` ${oneLevelUp['hierarchyLevelName']}`;
+    const final = pId.replace(sortName,longName);
+    return final;
   }
-
 }

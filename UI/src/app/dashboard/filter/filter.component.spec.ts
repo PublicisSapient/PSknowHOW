@@ -211,6 +211,29 @@ describe('FilterComponent', () => {
     }
 ]
 
+const completeHierarchyData = {
+  kanban: [
+   {
+    level: 4,
+    hierarchyLevelId: "port",
+    hierarchyLevelName: "Portfolio"
+   },
+    {
+      level: 6,
+      hierarchyLevelId: 'sqd',
+      hierarchyLevelName: 'Squad'
+    }
+  ],
+  scrum: [
+    
+    {
+      level: 4,
+      hierarchyLevelId: "port",
+      hierarchyLevelName: "Portfolio"
+     }
+  ]
+};
+
   beforeEach(() => {
 
     const routes: Routes = [
@@ -1761,6 +1784,8 @@ describe('FilterComponent', () => {
   });
 
   it('should remove identifier from parent id',()=>{
+    component.kanban = false;
+    localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
      spyOn(sharedService,'getSelectedLevel').and.returnValue({
         "level": 5,
         "hierarchyLevelId": "project",
