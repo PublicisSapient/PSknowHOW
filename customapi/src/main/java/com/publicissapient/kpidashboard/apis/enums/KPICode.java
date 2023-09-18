@@ -431,6 +431,10 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
     //DTS-26123 end
+    /**
+     * Scope Churn
+     */
+    SCOPE_CHURN("kpi164", KPISource.JIRA.name()),
 
     /**
      * Mean Time To Merge

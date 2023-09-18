@@ -2132,12 +2132,12 @@ export class JiraConfigComponent implements OnInit {
               },
               {
                 type: 'text',
-                label: 'Default Branch of Repository',
+                label: 'Default Branch (to check how ahead/behind is scanning branch)',
                 id: 'defaultBranch',
                 validators: ['required'],
                 containerClass: 'p-sm-6',
                 show: true,
-                tooltip: `Default Branch name to access Repository data.<br />
+                tooltip: `Default Branch name to access Repository data. It is used to check how far ahead/behind it is from Scanning Branch<br />
                 <i>
                   Example: master<br />
                   Impacted : All Repository based KPIs</i>`,

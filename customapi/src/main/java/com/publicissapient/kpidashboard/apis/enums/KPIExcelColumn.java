@@ -270,8 +270,9 @@ public enum KPIExcelColumn {
 											"PR Size (No. of lines)")),
 	// DTS-26123 start
 	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Issue Status",
-			"Sprint Name", "Priority", "Created Date", "Updated Date", "Assignee"));
+			"Sprint Name", "Priority", "Created Date", "Updated Date", "Assignee")),
 	// DTS-26123 end
+	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status"));
 
 	// @formatter:on
 

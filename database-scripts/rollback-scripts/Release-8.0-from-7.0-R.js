@@ -513,6 +513,50 @@ db.field_mapping_structure.updateMany(
 
 )
 
+// delete Scope Churn kpi
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi164" }
+);
+
+//delete fieldMapping for Scope Churn KPI
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: ["jiraStoryIdentificationKPI164"]}
+});
+
+// delete column config for Scope Churn KPI
+db.kpi_column_configs.deleteOne({
+    "kpiId": "kpi164"
+});
+
+// delete kpi_category_mapping for Scope Churn KPI
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi164"
+});
+
+// Note : below code only For Opensource project
+// deleting metadata_identifier for scope churn
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraStoryIdentificationKPI164"
+      }
+   }}
+);
+
+
+
+//DTS-28198 remove radio button filter to release kpis
+var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
+var originalKpiFilterField = {
+  "kpiFilter" : "",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: originalKpiFilterField }
+);
+
+
 //revert RepoTool - DTS-27526 remove repo tool changes
 const kpiIdsToCheck = ["kpi157", "kpi158", "kpi159", "kpi160"];
 var kpiData = db
