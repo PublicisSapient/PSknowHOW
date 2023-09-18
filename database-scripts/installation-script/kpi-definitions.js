@@ -2646,7 +2646,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2671,7 +2671,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2696,7 +2696,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
