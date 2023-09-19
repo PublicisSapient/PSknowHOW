@@ -66,7 +66,7 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
-    d3.select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
+    d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
     data = this.formatData(data);
 
