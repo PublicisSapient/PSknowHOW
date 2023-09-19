@@ -156,7 +156,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> readyForDevelopmentStatusKPI138;
 
 private String jiraDor;
-private String jiraDorKPI3;
+private List<String> jiraDorKPI3;
 
 private List<String> jiraIntakeToDorIssueType;
 private List<String> jiraIssueTypeKPI3;
@@ -169,7 +169,7 @@ private List<String> jiraStoryIdentificationKPI164;
 private String jiraLiveStatus;
 private String jiraLiveStatusKPI152;
 private String jiraLiveStatusKPI151;
-private String jiraLiveStatusKPI3;
+private List<String> jiraLiveStatusKPI3;
 private String jiraLiveStatusLTK;
 private String jiraLiveStatusNOPK;
 private String jiraLiveStatusNOSK;

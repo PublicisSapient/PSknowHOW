@@ -238,7 +238,7 @@ public class OfflineDataProcessorImplTest {
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
 
-		fieldMapping.setJiraDorKPI3("In Progress");
+		fieldMapping.setJiraDorKPI3(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 

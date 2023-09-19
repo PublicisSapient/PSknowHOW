@@ -6714,7 +6714,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraDorKPI3",
         "fieldLabel": "DOR status",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -7348,7 +7348,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraLiveStatusKPI3",
         "fieldLabel": "Live Status - Lead Time",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
