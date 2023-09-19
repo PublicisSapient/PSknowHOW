@@ -29,7 +29,7 @@ import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { MessageService } from 'primeng/api';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 @Component({
   selector: 'app-developer',
@@ -37,6 +37,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
   styleUrls: ['./developer.component.css']
 })
 export class DeveloperComponent implements OnInit {
+  @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   selectedTab = 'developer';
   subscriptions: any[] = [];
   masterData = <any>{};
@@ -79,6 +80,7 @@ export class DeveloperComponent implements OnInit {
   bitBucketKpiData = {};
   enableByeUser: boolean;
   showChart = 'chart';
+  iSAdditionalFilterSelected = false;
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -514,6 +516,12 @@ export class DeveloperComponent implements OnInit {
     this.kpiSelectedFilterObj['action'] = 'update';
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
+
+  // download excel functionality
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, this.iSAdditionalFilterSelected);
+  }
+
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
