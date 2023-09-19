@@ -3949,7 +3949,7 @@ db.getCollection('kpi_column_configs').insertOne({
 	}]
 });
 
-// --Converting the String to array for leadTime backlog
+// --Converting the String to array and filling with curr str val for leadTime backlog
 db.field_mapping.updateMany(
     {},
     [
