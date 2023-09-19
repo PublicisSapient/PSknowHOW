@@ -187,14 +187,11 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		leafNodeList.forEach(node -> {
 			List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
 					.get(node.getProjectFilter().getBasicProjectConfigId().toString());
-			if (CollectionUtils.isNotEmpty(issueCustomHistoryList)) {
+
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(node.getProjectFilter().getBasicProjectConfigId());
 				List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
 				getCycleTime(issueCustomHistoryList, fieldMapping, cycleTimeList, kpiElement, dataCount);
-			} else {
-				kpiElement.setTrendValueList(CollectionUtils.emptyCollection());
-			}
 		});
 		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
 	}
