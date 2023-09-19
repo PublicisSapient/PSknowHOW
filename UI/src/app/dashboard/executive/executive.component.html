@@ -53,7 +53,7 @@
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                              [selectedtype]="selectedtype" [viewType]="showChart">
+                              [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'">
                             </app-multiline>
                             <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"

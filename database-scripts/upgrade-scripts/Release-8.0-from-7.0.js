@@ -3988,3 +3988,26 @@ db.getCollection('metadata_identifier').updateMany(
         }
     }
 );
+
+
+
+//DTS-27549 release sub tabs addition in release kpi's
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Review" }
+    }
+);
+
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi150"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Progress" }
+    }
+);

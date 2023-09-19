@@ -367,13 +367,14 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   makeUniqueArrayList(arr) {
+   
     let uniqueArray = [];
     for (let i = 0; i < arr?.length; i++) {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
         uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
         uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
@@ -840,7 +841,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
 
   setKPIOrder() {
-    const kpiArray = this.selectedTab.toLowerCase() === 'release' ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
+    const kpiArray = (this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'backlog') ? this.kpiListData['others'] : this.kpiListData[this.kanban ? 'kanban' : 'scrum'];
     for (const kpiBoard of kpiArray) {
       if (kpiBoard.boardName.toLowerCase() === this.selectedTab.toLowerCase()) {
         kpiBoard.kpis = this.kpisNewOrder;
@@ -1393,7 +1394,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.filteredAddFilters['release'] = [];
     if (this.additionalFiltersDdn?.['release']) {
       this.filteredAddFilters['release'] = [...this.additionalFiltersDdn['release']?.filter((x) => x['parentId']?.includes(selectedProject))];
-      console.log(this.filteredAddFilters['release'] .map(re=> { return {name : re.nodeName , sDate : re.releaseStartDate , eDate: re.releaseEndDate}}));
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
@@ -1426,7 +1426,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     const currentDate = new Date();
     const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
     passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
-    console.log("findLatestPassedRelease :",passedReleases);
     return passedReleases.length > 0 ? passedReleases : null;
   }
 
@@ -1589,5 +1588,17 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   redirectToCapacityPlanning() {
     this.router.navigate(['./dashboard/Config/Capacity']);
+  }
+
+  /** Remove identifier  and append full hierarchy in parent id  */
+  parentIDClean(pId) {
+    const selectedType = this.kanban ? 'kanban' : 'scrum';
+    const levelDEtails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType];
+    const currentLevel = this.service.getSelectedLevel();
+    const oneLevelUp = levelDEtails.filter(hier=> hier.level === (currentLevel['level'] -1))[0];
+    const sortName = `_${oneLevelUp['hierarchyLevelId']}`;
+    const longName = ` ${oneLevelUp['hierarchyLevelName']}`;
+    const final = pId.replace(sortName,longName);
+    return final;
   }
 }

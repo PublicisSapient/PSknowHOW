@@ -73,6 +73,7 @@
   box-shadow: 0px 0px 6px #b9b9bb;
   pointer-events: none;
   z-index: 1;
+  width: max-content;
 }
 
 ::ng-deep .toolTipValue {
@@ -161,7 +162,7 @@
     position: absolute;
     bottom: 0;
   }
-  .tooltip-container{
+  .tooltip-container, .current-week-tooltip{
       position: relative;
   }
 

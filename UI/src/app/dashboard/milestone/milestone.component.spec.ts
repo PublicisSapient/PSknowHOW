@@ -409,6 +409,10 @@ describe('MilestoneComponent', () => {
 
     it('should process kpi config Data', () => {
         component.configGlobalData = configGlobalData;
+        component.navigationTabs = [
+            {'label':'Release Review', 'count': 0},
+            {'label':'Release Progress', 'count': 0},
+          ];
         component.processKpiConfigData();
         expect(component.noKpis).toBeFalse();
         component.configGlobalData[0]['isEnabled'] = false;
