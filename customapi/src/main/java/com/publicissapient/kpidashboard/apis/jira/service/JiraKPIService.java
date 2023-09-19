@@ -295,6 +295,14 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
 	}
 
+	public List<JiraIssue> getBaseReleaseJiraIssues() {
+		return jiraService.getJiraIssuesForSelectedRelease();
+	}
+
+	public Set<JiraIssue> getBaseReleaseSubTask() {
+		return jiraService.getSubTaskDefects();
+	}
+
 	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(FieldMapping fieldMapping) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> subtaskDefects = new ArrayList<>();

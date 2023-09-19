@@ -3136,7 +3136,107 @@ db.getCollection('kpi_master').insertMany(
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
- }
+ },
+  {
+      "kpiId": "kpi141",
+      "kpiName": "Defect Count by Status",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 1,
+      "kpiCategory": "Release",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "pieChart",
+      "kpiInfo": {
+        "definition": "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "",
+      "boxType": "chart",
+      "calculateMaturity": false
+    },
+  {
+    "kpiId": "kpi147",
+    "kpiName": "Release Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+    {
+      "kpiId": "kpi147",
+      "kpiName": "Release Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 5,
+      "kpiCategory": "Release",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+        "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false
+    },
+   {
+    "kpiId": "kpi165",
+    "kpiName": "Epic Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  }
 ]
 );
 

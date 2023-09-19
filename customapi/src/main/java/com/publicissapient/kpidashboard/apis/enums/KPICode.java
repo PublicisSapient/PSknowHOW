@@ -434,7 +434,12 @@ public enum KPICode {
     /**
      * Scope Churn
      */
-    SCOPE_CHURN("kpi164", KPISource.JIRA.name());
+    SCOPE_CHURN("kpi164", KPISource.JIRA.name()),
+    /**
+     * DTS-27553
+     * Epic Progress
+     */
+    EPIC_PROGRESS("kpi165", KPISource.JIRA.name());
 
 
     // @formatter:on

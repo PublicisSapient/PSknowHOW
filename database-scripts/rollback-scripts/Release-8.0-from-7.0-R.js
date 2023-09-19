@@ -556,6 +556,11 @@ db.getCollection("kpi_master").updateMany(
   { $set: originalKpiFilterField }
 );
 
+// delete Scope Churn kpi
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi165" }
+);
+
 
 
 //Reversing DTS-27550 making release Progress filter to dropdown

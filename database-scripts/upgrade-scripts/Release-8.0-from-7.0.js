@@ -3959,10 +3959,36 @@ db.getCollection("kpi_master").updateMany(
   { $set: kpiFilterField }
 );
 
-
-
 //For DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
   { $set: { "kpiFilter": "dropDown" } }
 );
+
+db.kpi_master.insertOne(
+   {
+       "kpiId": "kpi165",
+       "kpiName": " EpicProgress",
+       "maxValue": "",
+       "kpiUnit": "Count",
+       "isDeleted": "False",
+       "defaultOrder": 5,
+       "kpiCategory": "Release",
+       "kpiSource": "Jira",
+       "groupId": 9,
+       "thresholdValue": "",
+       "kanban": false,
+       "chartType": "horizontalPercentBarChart",
+       "kpiInfo": {
+         "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+       },
+       "xAxisLabel": "",
+       "yAxisLabel": "",
+       "isPositiveTrend": true,
+       "showTrend": false,
+       "isAdditionalFilterSupport": false,
+       "kpiFilter": "multiSelectDropDown",
+       "boxType": "chart",
+       "calculateMaturity": false
+     }
+ )
