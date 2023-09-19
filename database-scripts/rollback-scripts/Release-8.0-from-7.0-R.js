@@ -514,8 +514,21 @@ db.field_mapping_structure.updateMany(
 )
 
 // delete Scope Churn kpi
-db.getCollection('kpi_master').deleteOne(
-  { "kpiId": "kpi164" }
+//DTS-28198 remove radio button filter to release kpis
+db.getCollection("kpi_master").bulkWrite(
+  [
+    {
+      deleteOne: {
+        filter: { "kpiId": "kpi164" }
+      }
+    },
+    {
+      updateMany: {
+        filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+        update: { $set: { "kpiFilter": "" } }
+      }
+    }
+  ]
 );
 
 //delete fieldMapping for Scope Churn KPI
@@ -546,12 +559,4 @@ db.getCollection('metadata_identifier').updateMany(
 
 
 
-//DTS-28198 remove radio button filter to release kpis
-var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
-var originalKpiFilterField = {
-  "kpiFilter" : "",
-};
-db.getCollection("kpi_master").updateMany(
-  { kpiId: { $in: kpiIdsToUpdate } },
-  { $set: originalKpiFilterField }
-);
+
