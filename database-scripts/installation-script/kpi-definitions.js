@@ -2265,6 +2265,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
+    "kpiWidth": 100,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
     "calculateMaturity": false
@@ -2608,6 +2609,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2633,6 +2635,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2658,6 +2661,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 3,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2683,6 +2687,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2744,6 +2749,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 5,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2962,6 +2968,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 6,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Progress",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -6707,7 +6714,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraDorKPI3",
         "fieldLabel": "DOR status",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -7341,7 +7348,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraLiveStatusKPI3",
         "fieldLabel": "Live Status - Lead Time",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
