@@ -3803,28 +3803,53 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
-//remove search options from fieldmapping structure
-db.field_mapping_structure.updateMany(
-    {
-        "fieldName": {
-            $in: ["resolutionTypeForRejectionKPI37",
-                "resolutionTypeForRejectionKPI28",
-                "resolutionTypeForRejectionDSR",
-                "resolutionTypeForRejectionKPI82",
-                "resolutionTypeForRejectionKPI135",
-                "resolutionTypeForRejectionKPI133",
-                "resolutionTypeForRejectionRCAKPI36",
-                "resolutionTypeForRejectionKPI14",
-                "resolutionTypeForRejectionQAKPI111",
-                "resolutionTypeForRejectionKPI35"
-            ]
-        }
-    },
-    {
-        $unset: { "fieldCategory": null }
+//remove search options from fieldMapping structure
+// make backlog leadTime Kpi chips
+// add field for scope churn kpi
+db.getCollection('field_mapping_structure').bulkWrite([
+  {
+    updateMany: {
+      filter: { "fieldName": { $in: ["jiraDorKPI3", "jiraLiveStatusKPI3"] } },
+      update: { $set: { "fieldType": "chips" } }
     }
+  },
+  {
+    insertOne: {
+      document: {
+        "fieldName": "jiraStoryIdentificationKPI164",
+        "fieldLabel": "Issue type to identify Story",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+          "definition": "All issue types that are used as/equivalent to Story"
+        }
+      }
+    }
+  },
+  {
+    updateMany: {
+      filter: {
+        "fieldName": {
+          $in: [
+            "resolutionTypeForRejectionKPI37",
+            "resolutionTypeForRejectionKPI28",
+            "resolutionTypeForRejectionDSR",
+            "resolutionTypeForRejectionKPI82",
+            "resolutionTypeForRejectionKPI135",
+            "resolutionTypeForRejectionKPI133",
+            "resolutionTypeForRejectionRCAKPI36",
+            "resolutionTypeForRejectionKPI14",
+            "resolutionTypeForRejectionQAKPI111",
+            "resolutionTypeForRejectionKPI35"
+          ]
+        }
+      },
+          update: { $unset: { "fieldCategory": null } }
+    }
+  }
+]);
 
-)
 // scope churn kpi_master
 //DTS-28198 added radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -3877,21 +3902,6 @@ db.getCollection("kpi_master").bulkWrite(
   ]
 );
 
-
-db.getCollection('field_mapping_structure').insertMany(
-	[{
-		"fieldName": "jiraStoryIdentificationKPI164",
-		"fieldLabel": "Issue type to identify Story",
-		"fieldType": "chips",
-		"fieldCategory": "Issue_Type",
-		"section": "Issue Types Mapping",
-		"tooltip": {
-			"definition": "All issue types that are used as/equivalent to Story.",
-
-		}
-	}]
-)
-
 // Scope Churn KPI column config
 db.getCollection('kpi_column_configs').insertOne({
 	basicProjectConfigId: null,
@@ -3939,6 +3949,19 @@ db.getCollection('kpi_column_configs').insertOne({
 	}]
 });
 
+// --Converting the String to array for leadTime backlog
+db.field_mapping.updateMany(
+    {},
+    [
+        {
+            $set: {
+                jiraDorKPI3: ["$jiraDorKPI3"],
+                jiraLiveStatusKPI3: ["$jiraLiveStatusKPI3"]
+            }
+        }
+    ]
+);
+
 // Note : below code only For Opensource project
 // Scope Churn KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne({
@@ -3950,50 +3973,18 @@ db.getCollection('kpi_category_mapping').insertOne({
 
 // Note : below code only For Opensource project
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["7"] } },
-   { $push: {
-   "workflow": {
-                "type":"jiraStoryIdentificationKPI164",
-                "value":[
-                          "Story",
-                          "Enabler Story",
-                          "Tech Story",
-                          "Change request"
+    { "templateCode": { $in: ["7"] } },
+    {
+        $push: {
+            "workflow": {
+                "type": "jiraStoryIdentificationKPI164",
+                "value": [
+                    "Story",
+                    "Enabler Story",
+                    "Tech Story",
+                    "Change request"
                 ]
             }
-   }}
-);
-
-
-
-
-db.getCollection('field_mapping_structure').updateMany(
-  { "fieldName": { $in: ["jiraDorKPI3","jiraLiveStatusKPI3"] } },
-  { $set: { "fieldType": "chips" } }
-);
-
-
-
-//Update the String field by converting it into a list for lead time
-db.field_mapping.find({ jiraLiveStatusKPI3: { $type: 2 } }).forEach(function(doc) {
-    db.field_mapping.updateMany(
-        { _id: doc._id },
-        {
-            $set: {
-                jiraLiveStatusKPI3: [doc.jiraLiveStatusKPI3]
-            }
         }
-    );
-});
-
-db.field_mapping.find({ jiraDorKPI3: { $type: 2 } }).forEach(function(doc) {
-    db.field_mapping.updateMany(
-        { _id: doc._id },
-        {
-            $set: {
-                jiraDorKPI3: [doc.jiraDorKPI3]
-            }
-        }
-    );
-});
-
+    }
+);
