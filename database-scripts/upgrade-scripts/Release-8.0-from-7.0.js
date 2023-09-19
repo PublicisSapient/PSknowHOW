@@ -3962,6 +3962,27 @@ db.field_mapping.updateMany(
     ]
 );
 
+//DTS-27549 release sub tabs addition in release kpi's
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Review" }
+    }
+);
+
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi150"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Progress" }
+    }
+);
+
 // Note : below code only For Opensource project
 // Scope Churn KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne({
@@ -3986,28 +4007,5 @@ db.getCollection('metadata_identifier').updateMany(
                 ]
             }
         }
-    }
-);
-
-
-
-//DTS-27549 release sub tabs addition in release kpi's
-db.kpi_master.updateMany(
-    {
-        "kpiCategory": "Release",
-        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
-    },
-    {
-        $set: { "kpiSubCategory": "Release Review" }
-    }
-);
-
-db.kpi_master.updateMany(
-    {
-        "kpiCategory": "Release",
-        "kpiId": { $in: ["kpi150"] }
-    },
-    {
-        $set: { "kpiSubCategory": "Release Progress" }
     }
 );
