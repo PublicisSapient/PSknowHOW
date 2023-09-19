@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,8 +98,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
 
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-						fieldMapping.getJiraIssueTypeKPI3(),
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+						fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
@@ -162,7 +163,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 		if (filterDuration != null) {
 			value = (int) filterDuration.getOrDefault("value", 2);
-			duration = (String) filterDuration.getOrDefault("duration",CommonConstant.WEEK);
+			duration = (String) filterDuration.getOrDefault("duration", CommonConstant.WEEK);
 		}
 		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 			startDate = LocalDate.now().minusWeeks(value).toString();
@@ -363,11 +364,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
 			Map<String, DateTime> dodStatusDateMap, JiraHistoryChangeLog statusUpdateLog) {
 		DateTime updatedOn = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
-		List<String> dor = fieldMapping.getJiraDorKPI3().stream().map(String::toLowerCase).collect(Collectors.toList());
+		List<String> dor = fieldMapping.getJiraDorKPI3().stream().filter(Objects::nonNull).map(String::toLowerCase)
+				.collect(Collectors.toList());
 		List<String> dod = fieldMapping.getJiraDodKPI3().stream().map(String::toLowerCase).collect(Collectors.toList());
-		List<String> live = fieldMapping.getJiraLiveStatusKPI3().stream().map(String::toLowerCase).collect(Collectors.toList());
+		List<String> live = fieldMapping.getJiraLiveStatusKPI3().stream().filter(Objects::nonNull)
+				.map(String::toLowerCase).collect(Collectors.toList());
 		String storyFirstStatus = fieldMapping.getStoryFirstStatusKPI3();
-		if (cycleTime.getReadyTime() == null && CollectionUtils.isNotEmpty(dor) && dor.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
+		if (cycleTime.getReadyTime() == null && CollectionUtils.isNotEmpty(dor)
+				&& dor.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
 			cycleTime.setReadyTime(updatedOn);
 			cycleTimeValidationData.setDorDate(updatedOn);
 		} // case of reopening the ticket
@@ -387,7 +391,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			cycleTime.setDeliveryTime(minUpdatedOn);
 			cycleTimeValidationData.setDodDate(minUpdatedOn);
 		}
-		if (cycleTime.getLiveTime() == null && CollectionUtils.isNotEmpty(live) && live.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
+		if (cycleTime.getLiveTime() == null && CollectionUtils.isNotEmpty(live)
+				&& live.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
 			cycleTime.setLiveTime(updatedOn);
 			cycleTimeValidationData.setLiveDate(updatedOn);
 		}
