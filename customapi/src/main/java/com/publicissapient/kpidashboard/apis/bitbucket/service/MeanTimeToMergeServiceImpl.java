@@ -10,14 +10,12 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -170,18 +168,18 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 							.get(repo.getProcessorItemList().get(0).getId());
 					if (CollectionUtils.isNotEmpty(mergeReqList)) {
 						aggMergeRequests.addAll(mergeReqList);
-
-						String branchName = getBranchSubFilter(repo, projectName);
-						setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader, branchName, projectName, aggDataMap,
-								duration, dataPoints);
+						List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(mergeReqList, excelDataLoader,
+								projectName, duration, dataPoints);
+						aggDataMap.put(getBranchSubFilter(repo, projectName), dataCountList);
 						repoWiseMRList.add(excelDataLoader);
 						repoList.add(repo.getUrl());
 						branchList.add(repo.getBranch());
 					}
 				}
 			});
-			setWeekWiseMeanTimeToMerge(aggMergeRequests, new HashMap<>(), Constant.AGGREGATED_VALUE, projectName,
-					aggDataMap, duration, dataPoints);
+			List<DataCount> dataCountList = setWeekWiseMeanTimeToMerge(aggMergeRequests, new HashMap<>(), projectName,
+					duration, dataPoints);
+			aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
 		});
@@ -189,11 +187,10 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 		kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());
 	}
 
-	private void setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList, Map<String, Double> excelDataLoader,
-			String branchName, String projectName, Map<String, List<DataCount>> aggDataMap, String duration,
-			Integer dataPoints) {
-		List<Double> valueForCurrentLeafList = new ArrayList<>();
-		Map<String, Double> weekRange = new TreeMap<>();
+	private List<DataCount> setWeekWiseMeanTimeToMerge(List<MergeRequests> mergeReqList,
+			Map<String, Double> excelDataLoader, String projectName, String duration, Integer dataPoints) {
+
+		List<DataCount> dataCountList = new ArrayList<>();
 		LocalDate currentDate = LocalDate.now();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
@@ -210,17 +207,14 @@ public class MeanTimeToMergeServiceImpl extends BitBucketKPIService<Double, List
 			String date = getDateRange(dateRange, duration);
 			Double valueForCurrentLeaf = ObjectUtils.defaultIfNull(AggregationUtils.average(durationList), 0.0d);
 			if (null != valueForCurrentLeaf) {
-				valueForCurrentLeafList.add(valueForCurrentLeaf);
-				weekRange.put(date, valueForCurrentLeaf);
+				DataCount dataCount = setDataCount(projectName, date, valueForCurrentLeaf);
+				dataCountList.add(dataCount);
+				excelDataLoader.put(date, (double) TimeUnit.MILLISECONDS.toHours(valueForCurrentLeaf.longValue()));
 			}
 			currentDate = getNextRangeDate(duration, currentDate);
 		}
-		aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-		weekRange.forEach((week, value) -> {
-			DataCount dataCount = setDataCount(projectName, week, value);
-			aggDataMap.get(branchName).add(dataCount);
-			excelDataLoader.put(week, (double) TimeUnit.MILLISECONDS.toHours(value.longValue()));
-		});
+		Collections.reverse(dataCountList);
+		return dataCountList;
 	}
 
 	private String getDateRange(CustomDateRange dateRange, String duration) {
