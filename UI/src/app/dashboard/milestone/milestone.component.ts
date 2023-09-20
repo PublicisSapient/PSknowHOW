@@ -25,6 +25,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
+import { TableService } from 'primeng/table';
 
 declare let require: any;
 
@@ -65,7 +66,8 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-
+  navigationTabs:Array<object>;
+  activeIndex = 0;
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -108,12 +110,35 @@ export class MilestoneComponent implements OnInit {
   }
 
   processKpiConfigData() {
+    this.navigationTabs = [
+      {'label':'Release Review', 'count': 0,kpis : [],width : 'half'},
+      {'label':'Release Progress', 'count': 0,kpis : [],width :'full'},
+    ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-    /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
+     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+
+    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+      let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
+      if(idx != -1) {
+        this.navigationTabs[idx]['count']++;
+        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+      }
+    }
+
+    this.navigationTabs.map(tabDetails => {
+      if (tabDetails['width'] === 'half') {
+        const dataLength = tabDetails['kpis'].length;
+        const middleIndex = Math.floor(dataLength / 2);
+        tabDetails['kpiPart1'] = tabDetails['kpis'].slice(0, middleIndex + (dataLength % 2));
+        tabDetails['kpiPart2'] = tabDetails['kpis'].slice(middleIndex + (dataLength % 2));
+      }
+        return tabDetails;
+      })
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -137,7 +162,8 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if (this.service.getDashConfigData()) {
+    this.activeIndex = 0;
+    if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
@@ -599,9 +625,17 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>,tab) {
     if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      if(tab.width === 'half'){
+        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2']];
+      }
+      this.upDatedConfigData = [];
+      this.navigationTabs.forEach(tabs=>{
+        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
+      })
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
