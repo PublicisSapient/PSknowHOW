@@ -168,6 +168,7 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 		} catch (JSONException e) {
 			throw new RestClientException(e);
 		}
+		log.info("Making Post call as max length for Get Call has exceeded");
 		return postAndParse(baseUri, postEntity, searchResultJsonParser);
 	}
 

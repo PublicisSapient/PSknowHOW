@@ -21,11 +21,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +71,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	 */
 	@Override
 	public void afterWrite(List<? extends CompositeResult> compositeResults) {
+
 		log.info("Write listner called for scrum board project and saving status in Processor execution Trace log");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();

@@ -18,7 +18,9 @@
 package com.publicissapient.kpidashboard.jira.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -100,6 +102,9 @@ public class JobController {
 	private static String PROJECT_ID = "projectId";
 	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
+
+	// Create a map to track ongoing executions
+	private Map<String, Boolean> ongoingExecutions = new HashMap<>();
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
@@ -288,11 +293,24 @@ public class JobController {
 	 */
 
 	@PostMapping("/startprojectwiseissuejob")
-	public ResponseEntity<String> startProjectWiseIssueJob(@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) throws Exception {
-		log.info("Request coming for fetching sprint job");
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+	public ResponseEntity<String> startProjectWiseIssueJob(
+			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) throws Exception {
+		log.info("Request coming for fetching issue job");
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
+
+		// Check if an execution is already in progress for this BasicProjectConfigId
+		if (ongoingExecutions.containsKey(basicProjectConfigId) && ongoingExecutions.get(basicProjectConfigId)) {
+			log.error("An execution is already in progress");
+			return ResponseEntity.badRequest()
+					.body("An execution is already in progress for BasicProjectConfigId: " + basicProjectConfigId);
+		}
+
+		// Set the flag to indicate an execution is in progress
+		ongoingExecutions.put(basicProjectConfigId, true);
+
+		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+
 		jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
 		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
 		JobParameters params = jobParametersBuilder.toJobParameters();
@@ -332,9 +350,13 @@ public class JobController {
 		} catch (Exception e) {
 			log.info("Jira fetch failed for BasicProjectConfigId : {}", params.getString(PROJECT_ID));
 			e.printStackTrace();
+		} finally {
+			// After the job is complete, remove the flag to allow the same
+			// BasicProjectConfigId to be executed again
+			//need changes
+			ongoingExecutions.remove(basicProjectConfigId);
 		}
-		return ResponseEntity.ok().body("job started for BasicProjectConfigId : " + basicProjectConfigId);
-
+		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
 	}
 
 }

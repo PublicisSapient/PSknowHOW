@@ -124,7 +124,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		// save only issues which are in configuration.
 		if (issueTypeNames
-				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
+				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
 			Map<String, String> issueEpics = new HashMap<>();
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
@@ -163,7 +163,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setBoardId(boardId);
 		}
 		return jiraIssue;
-
 	}
 
 	private JiraIssue getJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -146,6 +147,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 
 	}
 
+	@TrackExecutionTime
 	private void fetchIssues(KerberosClient krb5Client, ProcessorJiraRestClient client) {
 		log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 				pageNumber / pageSize);

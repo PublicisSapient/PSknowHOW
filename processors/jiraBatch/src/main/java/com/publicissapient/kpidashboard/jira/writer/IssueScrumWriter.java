@@ -70,7 +70,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
 	 */
 	@Override
@@ -99,6 +99,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 						compositeResult.getAssigneeDetails());
 			}
 		}
+
 		if (CollectionUtils.isNotEmpty(jiraIssues)) {
 			writeJiraItem(jiraIssues);
 		}
@@ -114,7 +115,6 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		if (MapUtils.isNotEmpty(assigneesToSave)) {
 			writeAssigneeDetails(assigneesToSave);
 		}
-
 	}
 
 	private void writeJiraItem(List<JiraIssue> jiraItems) {
@@ -138,7 +138,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	}
 
 	private void writeAssigneeDetails(Map<String, AssigneeDetails> assigneesToSave) {
-		log.info("Writing assingees to asignee_details Collection");
+		log.info("Writing assignees to assignee_details Collection");
 		List<AssigneeDetails> assignees = assigneesToSave.values().stream().collect(Collectors.toList());
 		assigneeDetailsRepository.saveAll(assignees);
 	}

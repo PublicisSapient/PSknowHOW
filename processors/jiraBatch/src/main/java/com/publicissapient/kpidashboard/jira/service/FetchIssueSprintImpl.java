@@ -94,7 +94,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 							new ArrayList<>(issuesToUpdate));
 					issues = JiraHelper.getIssuesFromResult(searchResult);
 				} else {
-					log.info("No issuesToUpdate found in Sprint {}",updatedSprintDetails.getSprintName());
+					log.info("No issuesToUpdate found in Sprint {}", updatedSprintDetails.getSprintName());
 				}
 
 			} catch (InterruptedException e) {
@@ -123,7 +123,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
 					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-							Math.min(pageStart + jiraCommonService.getPageSize() - 1, searchResult.getTotal()),
+							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());

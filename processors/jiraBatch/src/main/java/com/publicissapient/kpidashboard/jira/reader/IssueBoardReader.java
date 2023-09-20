@@ -105,14 +105,16 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.batch.item.ItemReader#read()
 	 */
 	@Override
 	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
-			log.info("Gathering data to fetch jira issues for the project : {}",projectId);
+			log.info("Gathering data to fetch jira issues for the project : {}", projectId);
 			initializeReader(projectId);
 		}
 		ReadData readData = null;
@@ -131,7 +133,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 					if (boardIterator.hasNext()) {
 						BoardDetails boardDetails = boardIterator.next();
 						boardId = boardDetails.getBoardId();
-						fetchIssues(krb5Client, client);
+						fetchIssues(client);
 						epicIssues = fetchEpics(krb5Client, client);
 						if (CollectionUtils.isNotEmpty(epicIssues)) {
 							issues.addAll(epicIssues);
@@ -139,7 +141,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 					}
 
 				} else {
-					fetchIssues(krb5Client, client);
+					fetchIssues(client);
 				}
 
 				if (CollectionUtils.isNotEmpty(issues)) {
@@ -168,15 +170,14 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 	}
 
-	@TrackExecutionTime
-	private void fetchIssues(KerberosClient krb5Client, ProcessorJiraRestClient client) {
+	private void fetchIssues(ProcessorJiraRestClient client) {
 		log.info("Reading issues for project : {} boardid : {} , page No : {}",
 				projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
 
 		String deltaDate = getDeltaDateFromTraceLog();
 
-		issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, krb5Client, pageNumber,
-				boardId, deltaDate);
+		issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, pageNumber, boardId,
+				deltaDate);
 		boardIssueSize = issues.size();
 		pageNumber += pageSize;
 	}
@@ -203,7 +204,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 					}
 				}
 				// this code is to support backward compatibility. Initially no
-				// board was saved with project in in trace log
+				// board was saved with project in trace log
 				if (MapUtils.isEmpty(boardWiseDate)) {
 					log.info(
 							"project: {} found but board {} not found in trace log so data will be fetched from beginning",

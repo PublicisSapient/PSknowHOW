@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -105,6 +107,9 @@ public class JiraProcessorJob {
 	NotificationJobListener notificationJobListener;
 
 	@Autowired
+	JiraIssueSprintJobListener jiraIssueSprintJobListener;
+
+	@Autowired
 	IssueKanbanProcessor issueKanbanProcessor;
 
 	@Autowired
@@ -117,6 +122,7 @@ public class JiraProcessorJob {
 	/**
 	 * @return Job
 	 */
+	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Board Job").incrementer(new RunIdIncrementer())
@@ -137,6 +143,7 @@ public class JiraProcessorJob {
 				.build();
 	}
 
+	@TrackExecutionTime
 	private Step fetchIssueScrumBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter)
@@ -153,6 +160,7 @@ public class JiraProcessorJob {
 	/**
 	 * @return Job
 	 */
+	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueScrumJqlJob() {
 		return jobBuilderFactory.get("FetchIssueScrum JQL Job").incrementer(new RunIdIncrementer())
@@ -160,6 +168,7 @@ public class JiraProcessorJob {
 				.next(scrumReleaseDataStep()).build();
 	}
 
+	@TrackExecutionTime
 	private Step fetchIssueScrumJqlChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Scrum-Jql").<ReadData, CompositeResult>chunk(50)
 				.reader(issueJqlReader).processor(issueScrumProcessor).writer(issueScrumWriter)
@@ -172,12 +181,14 @@ public class JiraProcessorJob {
 	/**
 	 * @return Job
 	 */
+	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueKanbanBoardJob() {
 		return jobBuilderFactory.get("FetchIssueKanban Job").incrementer(new RunIdIncrementer()).start(metaDataStep())
 				.next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep()).build();
 	}
 
+	@TrackExecutionTime
 	private Step fetchIssueKanbanBoardChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-board").<ReadData, CompositeResult>chunk(50)
 				.reader(issueBoardReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
@@ -194,6 +205,7 @@ public class JiraProcessorJob {
 	/**
 	 * @return Job
 	 */
+	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueKanbanJqlJob() {
 		return jobBuilderFactory.get("FetchIssueKanban JQL Job").incrementer(new RunIdIncrementer())
@@ -201,6 +213,7 @@ public class JiraProcessorJob {
 				.next(kanbanReleaseDataStep()).build();
 	}
 
+	@TrackExecutionTime
 	private Step fetchIssueKanbanJqlChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(50)
 				.reader(issueJqlReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
@@ -214,6 +227,7 @@ public class JiraProcessorJob {
 	 * 
 	 * @return
 	 */
+	@TrackExecutionTime
 	@Bean
 	public Job fetchIssueSprintJob() {
 		return jobBuilderFactory.get("fetchIssueSprint Job").incrementer(new RunIdIncrementer()).start(sprintDataStep())
@@ -224,9 +238,10 @@ public class JiraProcessorJob {
 		return stepBuilderFactory.get("Fetch Sprint Data").tasklet(sprintReportTasklet).build();
 	}
 
+	@TrackExecutionTime
 	private Step fetchIssueSprintChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
 				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueJqlWriterListener).listener(notificationJobListener).build();
+				.listener(jiraIssueSprintJobListener).build();
 	}
 }

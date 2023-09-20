@@ -104,7 +104,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
+			KerberosClient krb5Client) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
@@ -125,7 +125,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} // case 2 : sprint state is active or changed which is
-						// present in db
+					  // present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
@@ -145,10 +145,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 				}
 			}
 		}
-
-		setForCacheClean.addAll(sprintToSave.stream()
-				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
-				.collect(Collectors.toSet()));
 
 		return sprintToSave;
 	}
@@ -459,15 +455,14 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException {
+			KerberosClient krb5Client) throws InterruptedException {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		for (BoardDetails boardDetails : boardDetailsList) {
 			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-				sprintDetailsBasedOnBoard
-						.addAll(fetchSprints(projectConfig, sprintDetailSet, setForCacheClean, krb5Client));
+				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client));
 			}
 		}
 		return sprintDetailsBasedOnBoard;

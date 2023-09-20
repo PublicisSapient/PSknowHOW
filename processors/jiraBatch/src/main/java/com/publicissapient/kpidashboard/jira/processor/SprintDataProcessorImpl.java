@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,10 +80,9 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 			}
 		}
 		KerberosClient krb5Client = null;
-		Set<SprintDetails> setForCacheClean = new HashSet<>();
 		if (StringUtils.isEmpty(boardId)) {
 			try {
-				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, setForCacheClean, krb5Client);
+				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client);
 			} catch (InterruptedException e) {
 				log.error("JIRA Processor | Failed to fetch Sprint {}", e);
 			}

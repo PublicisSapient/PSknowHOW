@@ -62,15 +62,17 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 @Slf4j
 @Component
 public class JiraCommonService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(JiraCommonService.class);
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String NO_RESULT_QUERY = "No result available for query: {}";
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
 
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -82,10 +84,6 @@ public class JiraCommonService {
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
-
-	public int getPageSize() {
-		return jiraProcessorConfig.getPageSize();
-	}
 
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
@@ -171,6 +169,7 @@ public class JiraCommonService {
 	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
 		SearchResult searchResult = null;
+		int totalIssue = 0;
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -197,6 +196,11 @@ public class JiraCommonService {
 				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
+				if (searchResult != null) {
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+							searchResult.getTotal()));
+				}
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
 					log.error(ERROR_MSG_401);
@@ -212,8 +216,7 @@ public class JiraCommonService {
 	}
 
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String boardId,
-			String deltaDate) {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
@@ -239,6 +242,7 @@ public class JiraCommonService {
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
 		SearchResult searchResult = null;
+		int totalIssue = 0;
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -247,17 +251,18 @@ public class JiraCommonService {
 			log.error("Either Project key is empty or jiraIssueTypeNames not provided. key {} ",
 					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
-			String issueTypes = Arrays.stream(jiraIssueTypeNames)
-					.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
 			String query = StringUtils.EMPTY;
 			try {
-				query = "issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate
-						+ "' order by updatedDate asc";
+				query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
 				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
 				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
-
+				if (searchResult != null) {
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+							searchResult.getTotal()));
+				}
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
 					log.error(ERROR_MSG_401);
@@ -271,13 +276,20 @@ public class JiraCommonService {
 		return searchResult;
 	}
 
+	private int getTotal(SearchResult searchResult) {
+		if (searchResult != null) {
+			return searchResult.getTotal();
+		}
+		return 0;
+	}
+
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();
 		try {
 			JiraToolConfig jiraToolConfig = projectConfig.getJira();
 			if (null != jiraToolConfig) {
 				URL url = getVersionUrl(projectConfig);
-				parseVersionData(getDataFromClient(projectConfig, url, krb5Client ), projectVersionList);
+				parseVersionData(getDataFromClient(projectConfig, url, krb5Client), projectVersionList);
 			}
 		} catch (RestClientException rce) {
 			log.error("Client exception when fetching versions " + rce);
@@ -289,8 +301,7 @@ public class JiraCommonService {
 		return projectVersionList;
 	}
 
-	private URL getVersionUrl(ProjectConfFieldMapping projectConfig)
-			throws MalformedURLException {
+	private URL getVersionUrl(ProjectConfFieldMapping projectConfig) throws MalformedURLException {
 
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		boolean isCloudEnv = connectionOptional.map(Connection::isCloudEnv).orElse(false);
@@ -319,10 +330,14 @@ public class JiraCommonService {
 						projectVersion
 								.setReleased(Boolean.parseBoolean(getOptionalString((JSONObject) values, "released")));
 						if (getOptionalString((JSONObject) values, "startDate") != null) {
-							projectVersion.setStartDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),"yyyy-MM-dd"));
+							projectVersion.setStartDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "startDate")),
+									"yyyy-MM-dd"));
 						}
 						if (getOptionalString((JSONObject) values, "releaseDate") != null) {
-							projectVersion.setReleaseDate(DateUtil.stringToDateTime(Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),"yyyy-MM-dd"));
+							projectVersion.setReleaseDate(DateUtil.stringToDateTime(
+									Objects.requireNonNull(getOptionalString((JSONObject) values, "releaseDate")),
+									"yyyy-MM-dd"));
 						}
 						projectVersionDetailList.add(projectVersion);
 					});

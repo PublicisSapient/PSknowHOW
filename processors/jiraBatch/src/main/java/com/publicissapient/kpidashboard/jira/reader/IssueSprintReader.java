@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
@@ -123,6 +124,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 
 	}
 
+	@TrackExecutionTime
 	private void fetchIssues(ProcessorJiraRestClient client) {
 		log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 				pageNumber / pageSize);

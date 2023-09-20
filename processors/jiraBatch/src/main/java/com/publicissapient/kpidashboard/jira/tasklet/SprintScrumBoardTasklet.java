@@ -76,12 +76,11 @@ public class SprintScrumBoardTasklet implements Tasklet {
 		log.info("**** Sprint report for Scrum Board started * * *");
 		try {
 			ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-			log.info("Fetching spring reports for the project : {}",projConfFieldMapping.getProjectName());
+			log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
 			KerberosClient krb5Client = null;
-			ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-			Set<SprintDetails> setForCacheClean = new HashSet<>();
+			jiraClient.getClient(projConfFieldMapping, krb5Client);
 			List<SprintDetails> sprintDetailsList = fetchSprintReport
-					.createSprintDetailBasedOnBoard(projConfFieldMapping, setForCacheClean, krb5Client);
+					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
 			sprintRepository.saveAll(sprintDetailsList);
 		} catch (Exception e) {
 			log.error("Exception while fetching sprint data for scrum project and board setup", e);

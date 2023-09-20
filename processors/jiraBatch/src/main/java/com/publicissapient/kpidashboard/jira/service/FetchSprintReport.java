@@ -33,23 +33,21 @@ public interface FetchSprintReport {
 	/**
 	 * @param projectConfig
 	 * @param sprintDetailsSet
-	 * @param setForCacheClean
 	 * @param krb5Client
 	 * @return Set<SprintDetails>
 	 * @throws InterruptedException
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException;
+			KerberosClient krb5Client) throws InterruptedException;
 
 	/**
 	 * @param projectConfig
-	 * @param setForCacheClean
 	 * @param krb5Client
 	 * @return List<SprintDetails>
 	 * @throws InterruptedException
 	 */
-	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> setForCacheClean, KerberosClient krb5Client) throws InterruptedException;
+	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+			throws InterruptedException;
 
 	/**
 	 * @param projectConfig

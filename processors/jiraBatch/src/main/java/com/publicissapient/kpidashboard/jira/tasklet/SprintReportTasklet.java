@@ -73,7 +73,6 @@ public class SprintReportTasklet implements Tasklet {
 			ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration
 					.fetchConfigurationBasedOnSprintId(sprintId);
 			KerberosClient krb5Client = null;
-			Set<SprintDetails> setForCacheClean = new HashSet<>();
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 			List<String> originalBoardIds = sprintDetails.getOriginBoardId();
 			Set<SprintDetails> setOfSprintDetails = null;
@@ -85,7 +84,7 @@ public class SprintReportTasklet implements Tasklet {
 					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
 							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
 					setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
-							setForCacheClean, krb5Client);
+							krb5Client);
 				}
 			}
 			sprintRepository.saveAll(setOfSprintDetails);
