@@ -129,7 +129,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.COMMITMENT_RELIABILITY);
 		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream()
-				.sorted(Collections.reverseOrder(Map.Entry.comparingByKey()))
+				.sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
 		unsortedMap.forEach((statusType, dataCounts) -> {
