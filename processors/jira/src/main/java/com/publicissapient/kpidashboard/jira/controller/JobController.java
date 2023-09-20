@@ -290,15 +290,12 @@ public class JobController {
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
 
-		// Check if an execution is already in progress for this BasicProjectConfigId
-		if (ongoingExecutions.containsKey(basicProjectConfigId) && ongoingExecutions.get(basicProjectConfigId)) {
+		// Check if an execution is already in progress for the same BasicProjectConfigId
+		if (ongoingExecutions.putIfAbsent(basicProjectConfigId, true) != null) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
 					.body("An execution is already in progress for BasicProjectConfigId: " + basicProjectConfigId);
 		}
-
-		// Set the flag to indicate an execution is in progress
-		ongoingExecutions.put(basicProjectConfigId, true);
 
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
@@ -344,7 +341,7 @@ public class JobController {
 		} finally {
 			// After the job is complete, remove the flag to allow the same
 			// BasicProjectConfigId to be executed again
-			// need changes
+			log.info("removing project with basicProjectConfigId {}",basicProjectConfigId);
 			ongoingExecutions.remove(basicProjectConfigId);
 		}
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
