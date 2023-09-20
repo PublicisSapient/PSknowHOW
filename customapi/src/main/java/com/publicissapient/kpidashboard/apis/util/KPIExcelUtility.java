@@ -938,7 +938,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setWeeks(m.getKey());
+					excelData.setDaysWeeks(m.getKey());
 					excelData.setMeanTimetoMerge(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
@@ -1013,7 +1013,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setDays(date);
+					excelData.setDaysWeeks(date);
 					excelData.setNumberOfCommit(commitHours.toString());
 					excelData.setNumberOfMerge(mergeHours.toString());
 					kpiExcelData.add(excelData);

@@ -356,4 +356,7 @@ public class KPIExcelData {
 	@JsonProperty("PR Size (No. of lines)")
 	private String prSize;
 
+	@JsonProperty("Days/Weeks")
+	private String daysWeeks;
+
 }
