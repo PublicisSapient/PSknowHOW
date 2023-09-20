@@ -84,7 +84,7 @@ public class SprintReportTasklet implements Tasklet {
 					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
 							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
 					setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
-							krb5Client);
+							krb5Client,true);
 				}
 			}
 			sprintRepository.saveAll(setOfSprintDetails);

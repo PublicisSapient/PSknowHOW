@@ -22,7 +22,6 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,8 +35,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -52,7 +54,6 @@ import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.JiraIssueMetadata;
@@ -79,6 +80,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
+
 	private static final String CONTENTS = "contents";
 	private static final String COMPLETED_ISSUES = "completedIssues";
 	private static final String PUNTED_ISSUES = "puntedIssues";
@@ -104,8 +108,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client) throws InterruptedException {
+										   KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
@@ -115,7 +120,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				// sprint.setProcessorId(jiraProcessorId);
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} " + sprint.getSprintID(),
+						sprint.getState(), boardId);
+				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
 					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
@@ -124,21 +131,32 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
-					} // case 2 : sprint state is active or changed which is
-					  // present in db
+					} // case 2 : sprint state is active or changed which is present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
+					} // fetching for only Iteration data don't change the state of sprint
+					else if (!sprint.getState().equalsIgnoreCase(dbSprintDetails.getState()) && isSprintFetch) {
+						sprint.setState(dbSprintDetails.getState());
+						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
+						fetchReport = true;
 					} else {
+						log.info("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
+								sprint.getState());
 						fetchReport = false;
 					}
 				} else {
+					log.info("sprint id {} not found in db." + sprint.getSprintID());
 					fetchReport = true;
 				}
 
 				if (fetchReport) {
-					TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					try {
+						TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
+					} catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
 					getSprintReport(sprint, projectConfig, boardId, dbSprintDetailMap.get(sprint.getSprintID()),
 							krb5Client);
 					sprintToSave.add(sprint);
@@ -462,7 +480,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client));
+				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client,false));
 			}
 		}
 		return sprintDetailsBasedOnBoard;

@@ -109,7 +109,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private Set<SprintDetails> processSprintData(ReadData readData) {
 		return sprintDataProcessor.processSprintData(readData.getIssue(), readData.getProjectConfFieldMapping(),
-				readData.getBoardId());
+				readData.getBoardId(),readData.isSprintFetch());
 	}
 
 	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,

@@ -38,7 +38,7 @@ public interface FetchSprintReport {
 	 * @throws InterruptedException
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client) throws InterruptedException;
+									KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException;
 
 	/**
 	 * @param projectConfig
