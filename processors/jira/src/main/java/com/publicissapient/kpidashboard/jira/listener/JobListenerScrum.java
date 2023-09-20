@@ -41,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @JobScope
-public class NotificationJobListener extends JobExecutionListenerSupport {
+public class JobListenerScrum extends JobExecutionListenerSupport {
 
 	@Autowired
 	private NotificationHandler handler;
@@ -55,8 +55,12 @@ public class NotificationJobListener extends JobExecutionListenerSupport {
 	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
 
 	@Autowired
-	public NotificationJobListener(@Value("#{jobParameters['projectId']}") String projectId) {
+	public JobListenerScrum(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
+	}
+
+	@Override
+	public void beforeJob(JobExecution jobExecution) {
 	}
 
 	/*
@@ -68,7 +72,7 @@ public class NotificationJobListener extends JobExecutionListenerSupport {
 	 */
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		log.info("********in notification listener clearing cache*********");
+		log.info("********in scrum JobExecution listener - finishing job *********");
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);

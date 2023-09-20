@@ -90,7 +90,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	int pageNumber = 0;
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
-	Map<String, Map<String, String>> projectBoardWiseDeltaDate;
+	Map<String, Map<String, String>> projectBoardWiseDeltaDate=new HashMap<>();
 	int boardIssueSize = 0;
 
 	private String projectId;
@@ -194,7 +194,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 					.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
 							Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
 			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-				projectBoardWiseDeltaDate = new HashMap<>();
 				Map<String, String> boardWiseDate = new HashMap<>();
 				String lastSuccessfulRun = deltaDate;
 				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {

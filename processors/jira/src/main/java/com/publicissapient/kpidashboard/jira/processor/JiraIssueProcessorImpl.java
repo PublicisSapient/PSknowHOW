@@ -34,7 +34,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.MapUtils;
@@ -343,7 +342,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		String createdDate = issue.getCreationDate().toString();
 		jiraIssue.setNumber(JiraProcessorUtil.deodeUTF8String(issue.getKey()));
 		jiraIssue.setName(JiraProcessorUtil.deodeUTF8String(issue.getSummary()));
-		log.info("Issue : {}", jiraIssue.getNumber());
+		log.debug("Issue : {}", jiraIssue.getNumber());
 		jiraIssue.setStatus(JiraProcessorUtil.deodeUTF8String(status));
 		jiraIssue.setState(JiraProcessorUtil.deodeUTF8String(status));
 
