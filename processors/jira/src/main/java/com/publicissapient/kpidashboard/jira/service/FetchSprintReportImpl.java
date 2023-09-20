@@ -122,8 +122,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					if (!dbSprintDetails.getOriginBoardId().containsAll(sprint.getOriginBoardId())) {
 						sprint.getOriginBoardId().addAll(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
-					} // case 2 : sprint state is active or changed which is
-					  // present in db
+					} // case 2 : sprint state is active or changed which is present in db
 					else if (sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
 							|| !sprint.getState().equalsIgnoreCase(dbSprintDetails.getState())) {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
