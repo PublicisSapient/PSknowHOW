@@ -590,31 +590,19 @@ db.getCollection('metadata_identifier').updateMany(
 
 
 //revert RepoTool - DTS-27526 remove repo tool changes
-const kpiIdsToCheck = ["kpi157", "kpi158", "kpi159", "kpi160"];
-var kpiData = db
-.getCollection("kpi_master")
-.find({ kpiId: { $in: kpiIdsToCheck } })
-.toArray();
-var kpiColumnData = db
-.getCollection("kpi_column_configs")
-.find({ kpiId: { $in: kpiIdsToCheck } })
-.toArray();
-
 // Revert changes to kpi_master collection
-db.getCollection("kpi_master").remove({ kpiId: { $in: kpiIdsToCheck } });
+db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
 
 // Revert changes to kpi_column_configs collection
-db.getCollection("kpi_column_configs").remove({ kpiId: { $in: kpiIdsToCheck } });
+db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
 
 // Revert changes to kpi_master collection (if kpiIdsToUpdate were updated)
-var kpiIdsToUpdate = ["kpi84", "kpi11", "kpi65"];
-var developerTabFields = {
-isRepoToolKpi: "",
-kpiCategory: "",
-};
 db.getCollection("kpi_master").updateMany(
-{ kpiId: { $in: kpiIdsToUpdate } },
-{ $unset: developerTabFields }
+{ kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
+{ $unset: {
+          isRepoToolKpi: "",
+          kpiCategory: "",
+          } }
 );
 
 // Revert changes to repo_tools_provider collection
