@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -102,7 +101,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
-
 		if (!ObjectId.isValid(projectToolConfigId)) {
 			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
@@ -110,7 +108,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			throw new AccessDeniedException("Access is denied");
 		}
 
-		return configHelperService.getFieldMappingMap().get(new ObjectId(projectToolConfigId));
+		return fieldMappingRepository.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
 	}
 
 	@Override
@@ -401,10 +399,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			Optional<ProjectToolConfig> projectToolConfigOpt) {
 		if (projectToolConfigOpt.isPresent()) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-			if (projectBasicConfig.getIsKanban()) {
+			if (projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("9");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			} else {
+			} else if (!projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("10");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
@@ -498,6 +498,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIssueTypeKPI3",
 			"jiraStoryIdentification",
 			"jiraStoryIdentificationKpi40",
+			"jiraStoryIdentificationKPI164",
 			"jiraStoryIdentificationKPI129",
 
 			"jiraLiveStatusKPI3",

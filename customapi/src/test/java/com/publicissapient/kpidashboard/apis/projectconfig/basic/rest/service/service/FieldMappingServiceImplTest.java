@@ -25,9 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -90,8 +88,7 @@ public class FieldMappingServiceImplTest {
 	@Test
 	public void getFieldMappingSuccess() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
-		Map<ObjectId, FieldMapping> map =  new HashMap<>();
-		map.put(new ObjectId("5d0533b0ff45ea9c730bb718"),fieldMapping);
+
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5d0533b0ff45ea9c730bb718"));
 		Optional<ProjectToolConfig> projectToolConfigOpt = Optional.of(projectToolConfig);
@@ -102,7 +99,7 @@ public class FieldMappingServiceImplTest {
 
 		Set<String> configIds = new HashSet<>();
 		configIds.add("5d0533b0ff45ea9c730bb718");
-		when(configHelperService.getFieldMappingMap()).thenReturn(map);
+
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718")).thenReturn(projectToolConfig);
 		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
@@ -346,7 +343,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
-		fieldMapping.setJiraDorKPI3("In Analysis");
+		fieldMapping.setJiraDorKPI3(Arrays.asList("In Analysis"));
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Closed");
 		fieldMapping.setJiraDodKPI3(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed", "Ready for Delivery"));

@@ -21,10 +21,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyCollection;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -34,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -124,9 +119,6 @@ public class SprintVelocityServiceImplTest {
 
 	@Mock
 	private FilterHelperService filterHelperService;
-	@Mock
-	private SprintRepositoryCustom sprintRepositoryCustom;
-
 
 	@Before
 	public void setup() {
@@ -165,11 +157,11 @@ public class SprintVelocityServiceImplTest {
 
 	}
 
-//	@After
-//	public void cleanup() {
-//		jiraIssueRepository.deleteAll();
-//
-//	}
+	@After
+	public void cleanup() {
+		jiraIssueRepository.deleteAll();
+
+	}
 
 	@Test
 	public void testCalculateKPIMetrics() {
@@ -197,7 +189,7 @@ public class SprintVelocityServiceImplTest {
 		resultListMap.put(PREVIOUS_SPRINT_VELOCITY, previousTotalIssueList);
 		resultListMap.put(PREVIOUS_SPRINT_WISE_DETAILS, new ArrayList<>());
 		when(kpiHelperService.fetchSprintVelocityDataFromDb(any(), any(), any())).thenReturn(resultListMap);
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(), anyList(),anyLong()))
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(any(), any()))
 				.thenReturn(sprintDetailsList);
 		when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		Map<String, Object> velocityListMap = sprintVelocityServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate,
