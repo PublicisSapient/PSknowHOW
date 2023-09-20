@@ -128,8 +128,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.COMMITMENT_RELIABILITY);
-		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream()
-				.sorted(Map.Entry.comparingByKey())
+		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();
 		unsortedMap.forEach((statusType, dataCounts) -> {
@@ -282,7 +281,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		kpiElement.setExcelColumns(KPIExcelColumn.COMMITMENT_RELIABILITY.getColumns());
 	}
 
-	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd, Set<JiraIssue> completedIssues) {
+	private static Set<JiraIssue> getCompletedIssues(List<JiraIssue> allJiraIssue, SprintDetails sd,
+			Set<JiraIssue> completedIssues) {
 		if (sd.getCompletedIssues() != null && CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
 			completedIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
 					sd.getCompletedIssues(), allJiraIssue);
