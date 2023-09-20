@@ -26,8 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,9 @@ public class NotificationJobListener extends JobExecutionListenerSupport {
 	private FieldMappingRepository fieldMappingRepository;
 
 	@Autowired
+	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
+
+	@Autowired
 	public NotificationJobListener(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
@@ -63,6 +68,10 @@ public class NotificationJobListener extends JobExecutionListenerSupport {
 	 */
 	@Override
 	public void afterJob(JobExecution jobExecution) {
+		log.info("********in notification listener clearing cache*********");
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
+				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
+		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
 		if (jobExecution.getStatus() == BatchStatus.FAILED) {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));

@@ -113,7 +113,6 @@ public class JobController {
 	@GetMapping("/startscrumboardjob")
 	public ResponseEntity<String> startScrumBoardJob() throws Exception {
 		log.info("Request come for job for Scrum project configured with board via controller");
-		int completedProjects = 0;
 		int totalProjects = 0;
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, false);
@@ -134,12 +133,7 @@ public class JobController {
 					e.printStackTrace();
 				}
 			});
-			completedProjects++;
-		}
-		if (completedProjects == totalProjects) {
-			jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
-					CommonConstant.CACHE_ACCOUNT_HIERARCHY);
-			jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
+			
 		}
 		executorService.shutdown();
 		return ResponseEntity.ok().body("job started for scrum board");
