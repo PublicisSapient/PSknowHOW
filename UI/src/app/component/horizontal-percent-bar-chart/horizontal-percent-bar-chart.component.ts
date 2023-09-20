@@ -26,7 +26,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     this.draw(this.data);
   }
 
-  ngOnChanges(changes: SimpleChanges) {    
+  ngOnChanges(changes: SimpleChanges) {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -38,7 +38,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
 
-    if(changes['filter']) {
+    if (changes['filter']) {
       d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
     }
   }
@@ -179,14 +179,16 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           let kpiGroup = event.target.__data__.data.kpiGroup;
           let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
           data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
-          data.kpiGroup = key;
-          this.draw(data, selectedNode);
-          d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
-            .on('click', (event, d) => {
-              this.isDrilledDown = false;
-              this.draw(this.unmodifiedDataCopy);
-              d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
-            });
+          if (data && data.length && data[0]) {
+            data.kpiGroup = key;
+            this.draw(data, selectedNode);
+            d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
+              .on('click', (event, d) => {
+                this.isDrilledDown = false;
+                this.draw(this.unmodifiedDataCopy);
+                d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
+              });
+          }
         }
       })
       .selectAll('rect')

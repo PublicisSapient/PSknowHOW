@@ -3847,9 +3847,13 @@ db.getCollection('field_mapping_structure').bulkWrite([
       },
           update: { $unset: { "fieldCategory": null } }
     }
-  }
-]);
 
+)
+//For DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "dropDown" } }
+);
 // scope churn kpi_master
 //DTS-28198 added radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -4011,6 +4015,18 @@ db.getCollection('metadata_identifier').updateMany(
 );
 
 )
+
+//DTS-28198 added radio button filter to release kpis
+var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
+var kpiFilterField = {
+  "kpiFilter" : "radioButton",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: kpiFilterField }
+);
+
+
 
 //For DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(

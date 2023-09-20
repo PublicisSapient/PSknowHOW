@@ -552,6 +552,11 @@ db.getCollection("kpi_master").bulkWrite(
     ]
 );
 
+//delete fieldMapping for Scope Churn KPI
+db.field_mapping_structure.deleteMany({
+    "fieldName": { $in: ["jiraStoryIdentificationKPI164"]}
+});
+
 // delete column config for Scope Churn KPI
 db.kpi_column_configs.deleteOne({
     "kpiId": "kpi164"
@@ -589,6 +594,18 @@ db.getCollection('metadata_identifier').updateMany(
 );
 
 )
+
+
+//DTS-28198 remove radio button filter to release kpis
+var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
+var originalKpiFilterField = {
+  "kpiFilter" : "",
+};
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: kpiIdsToUpdate } },
+  { $set: originalKpiFilterField }
+);
+
 
 
 //Reversing DTS-27550 making release Progress filter to dropdown
