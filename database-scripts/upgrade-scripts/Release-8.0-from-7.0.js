@@ -3951,7 +3951,8 @@ db.getCollection('kpi_master').insertOne(
     "isAdditionalFilterSupport":false,
     "kpiFilter":"radioButton",
     "boxType":"chart",
-    "calculateMaturity":false
+    "calculateMaturity":false,
+    "kpiSubCategory": "Release Review"
 });
 db.getCollection('field_mapping_structure').insertOne(
 {
