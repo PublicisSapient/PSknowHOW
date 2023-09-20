@@ -114,6 +114,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     kpiTableHeadingArr:Array<object> = [];
     kpiTableDataObj:object={};
     noOfDataPoints:number = 5;
+    maturityTableKpiList = [];
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -139,6 +140,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }));
 
         this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+            this.maturityTableKpiList = [];
             if (Object.keys(x).length > 0) {
                 this.colorObj = x;
                 this.trendBoxColorObj = { ...x };
@@ -154,17 +156,20 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     for (const key in this.kpiChartData) {
                         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
                         this.createTrendsData(key);
+                        this.handleMaturityTableLoader();
                     }
                 }
             }
             return this.service.passDataToDashboard;
         }), distinctUntilChanged()).subscribe((sharedobject: any) => {
             // used to get all filter data when user click on apply button in filter
+            this.maturityTableKpiList = [];
             if (sharedobject?.filterData?.length) {
                 this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
                 this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
                 this.receiveSharedData(sharedobject);
                 this.noTabAccess = false;
+                 this.handleMaturityTableLoader();
             } else {
                 this.noTabAccess = true;
             }
@@ -193,11 +198,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         } else {
             this.noKpis = false;
         }
+        this.maturityTableKpiList = []
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
                 if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
                     this.createTrendsData(element.kpiId);
+                     this.handleMaturityTableLoader();
                 }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
@@ -913,6 +920,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
+        this.handleMaturityTableLoader();
     }
 
     /**To create KPI table headings */
@@ -1027,6 +1035,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }
                 }
             }
+        }
+        if(!this.maturityTableKpiList.includes(kpiId)){
+            this.maturityTableKpiList.push(kpiId);
         }
     }
     sortingRowsInTable(hierarchyName){
@@ -1539,4 +1550,21 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    handleMaturityTableLoader() {
+        const currentMaturityTableKpiList = this.kpiTableDataObj[Object.keys(this.kpiTableDataObj)[0]]?.map(data=>data.kpiId)
+        let loader  = true;
+        this.maturityTableKpiList?.forEach(kpi => {
+            const idx = this.ifKpiExist(kpi);
+            const idx2 = currentMaturityTableKpiList?.findIndex(kpi=>kpi === kpi);
+            if(idx2 === -1 || idx === -1){
+                loader = false;
+            }
+        });
+        if(currentMaturityTableKpiList && currentMaturityTableKpiList.length > 0 && loader){
+            this.service.setMaturiyTableLoader(false);
+        }else{
+            this.service.setMaturiyTableLoader(true);
+        }
+      }
 }

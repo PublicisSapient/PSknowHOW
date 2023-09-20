@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-kpi-table',
@@ -19,10 +20,13 @@ export class KpiTableComponent implements OnInit {
   nodeColors: object = {};
   loader: boolean = false;
 
-  constructor() { }
+  constructor(private service : SharedService) { }
 
   ngOnInit(): void {
     this.assignColorToNodes();
+    this.service.maturityTableLoader.subscribe(value=>{
+      this.loader = value;
+    })
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -41,7 +45,6 @@ export class KpiTableComponent implements OnInit {
     }
     if (changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue) {
       this.kpiConfigData = changes['kpiConfigData']?.currentValue;
-      this.loader = false;
     }
   }
 

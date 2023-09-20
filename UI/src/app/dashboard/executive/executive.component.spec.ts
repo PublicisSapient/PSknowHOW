@@ -6628,4 +6628,20 @@ expect(result[1]).toEqual('-ve');
     expect(spy).toHaveBeenCalled();
   })
 
+  it("should take care of loader untill full table data is loading", () => {
+    component.kpiTableDataObj = {
+      'knowhow': [ {
+          kpiId: 'kpi123'
+        },
+        {
+          kpiId: 'kpi1234'
+        }]
+     }
+    component.maturityTableKpiList = ['kpi123','kpi1234']
+    spyOn(component,'ifKpiExist').and.returnValue(1);
+    const spy = spyOn(service,'setMaturiyTableLoader');
+    component.handleMaturityTableLoader();
+    expect(spy).toBeDefined();
+  })
+
 });
