@@ -80,7 +80,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
 				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
 			}
-			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
+			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet) && !readData.isSprintFetch()) {
 				compositeResult.setSprintDetailsSet(sprintDetailsSet);
 			}
 			compositeResult.setJiraIssue(jiraIssue);
