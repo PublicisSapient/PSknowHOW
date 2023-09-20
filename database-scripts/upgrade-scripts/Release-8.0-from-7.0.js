@@ -3803,25 +3803,209 @@ db.getCollection('metadata_identifier').updateMany(
    }}
 );
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
-//remove search options from fieldmapping structure
-db.field_mapping_structure.updateMany(
-    {
-        "fieldName": {
-            $in: ["resolutionTypeForRejectionKPI37",
-                "resolutionTypeForRejectionKPI28",
-                "resolutionTypeForRejectionDSR",
-                "resolutionTypeForRejectionKPI82",
-                "resolutionTypeForRejectionKPI135",
-                "resolutionTypeForRejectionKPI133",
-                "resolutionTypeForRejectionRCAKPI36",
-                "resolutionTypeForRejectionKPI14",
-                "resolutionTypeForRejectionQAKPI111",
-                "resolutionTypeForRejectionKPI35"
-            ]
+//remove search options from fieldMapping structure
+// make backlog leadTime Kpi chips
+// add field for scope churn kpi
+db.getCollection('field_mapping_structure').bulkWrite([
+  {
+    updateMany: {
+      filter: { "fieldName": { $in: ["jiraDorKPI3", "jiraLiveStatusKPI3"] } },
+      update: { $set: { "fieldType": "chips" } }
+    }
+  },
+  {
+    insertOne: {
+      document: {
+        "fieldName": "jiraStoryIdentificationKPI164",
+        "fieldLabel": "Issue type to identify Story",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+          "definition": "All issue types that are used as/equivalent to Story"
         }
+      }
+    }
+  },
+  {
+    updateMany: {
+      filter: {
+        "fieldName": {
+          $in: [
+            "resolutionTypeForRejectionKPI37",
+            "resolutionTypeForRejectionKPI28",
+            "resolutionTypeForRejectionDSR",
+            "resolutionTypeForRejectionKPI82",
+            "resolutionTypeForRejectionKPI135",
+            "resolutionTypeForRejectionKPI133",
+            "resolutionTypeForRejectionRCAKPI36",
+            "resolutionTypeForRejectionKPI14",
+            "resolutionTypeForRejectionQAKPI111",
+            "resolutionTypeForRejectionKPI35"
+          ]
+        }
+      },
+          update: { $unset: { "fieldCategory": null } }
+    }
+  }
+]);
+
+// scope churn kpi_master
+//DTS-28198 added radio button filter to release kpis
+db.getCollection("kpi_master").bulkWrite(
+  [
+    {
+      updateMany: {
+        filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+        update: { $set: { "kpiFilter": "radioButton" } }
+      }
     },
     {
-        $unset: { "fieldCategory": null }
+      insertOne: {
+        document: {
+          "kpiId": "kpi164",
+          "kpiName": "Scope Churn",
+          "maxValue": 200,
+          "kpiUnit": "%",
+          "isDeleted": false,
+          "defaultOrder": 30,
+          "kpiSource": "Jira",
+          "groupId": 4,
+          "thresholdValue": 85,
+          "kanban": false,
+          "chartType": "line",
+          "kpiInfo": {
+            "definition": "Scope churn explains the change in the scope of the sprint since the start of the iteration",
+            "formula": [{
+              "lhs": "Scope Churn",
+              "operator": "division",
+              "operands": ["Count of Stories added + Count of Stories removed", "Count of Stories in Initial Commitment at the time of Sprint start"]
+            }],
+            "details": [{
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+              }
+            }]
+          },
+          "xAxisLabel": "Sprints",
+          "yAxisLabel": "Percentage",
+          "isPositiveTrend": true,
+          "showTrend": true,
+          "aggregationCriteria": "average",
+          "isAdditionalFilterSupport": true,
+          "calculateMaturity": true
+        }
+      }
     }
+  ]
+);
 
-)
+// Scope Churn KPI column config
+db.getCollection('kpi_column_configs').insertOne({
+	basicProjectConfigId: null,
+	kpiId: 'kpi164',
+	kpiColumnDetails: [{
+		columnName: 'Sprint Name',
+		order: 0,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue ID',
+		order: 2,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Type',
+		order: 3,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Description',
+		order: 4,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Size(story point/hours)',
+		order: 5,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change Date',
+		order: 6,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change (Added/Removed)',
+		order: 7,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Status',
+		order: 8,
+		isShown: true,
+		isDefault: false
+	}]
+});
+
+// --Converting the String to array and filling with curr str val for leadTime backlog
+db.field_mapping.updateMany(
+    {},
+    [
+        {
+            $set: {
+                jiraDorKPI3: ["$jiraDorKPI3"],
+                jiraLiveStatusKPI3: ["$jiraLiveStatusKPI3"]
+            }
+        }
+    ]
+);
+
+//DTS-27549 release sub tabs addition in release kpi's
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Review" }
+    }
+);
+
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi150"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Progress" }
+    }
+);
+
+// Note : below code only For Opensource project
+// Scope Churn KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne({
+	"kpiId": "kpi164",
+	"categoryId": "categoryOne",
+	"kpiOrder": 9,
+	"kanban": false
+});
+
+// Note : below code only For Opensource project
+db.getCollection('metadata_identifier').updateMany(
+    { "templateCode": { $in: ["7"] } },
+    {
+        $push: {
+            "workflow": {
+                "type": "jiraStoryIdentificationKPI164",
+                "value": [
+                    "Story",
+                    "Enabler Story",
+                    "Tech Story",
+                    "Change request"
+                ]
+            }
+        }
+    }
+);
