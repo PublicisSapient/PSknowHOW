@@ -35,8 +35,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -77,6 +80,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
+
 	private static final String CONTENTS = "contents";
 	private static final String COMPLETED_ISSUES = "completedIssues";
 	private static final String PUNTED_ISSUES = "puntedIssues";
@@ -104,6 +110,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
 										   KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 			List<String> sprintIds = sprintDetailsSet.stream().map(SprintDetails::getSprintID)
 					.collect(Collectors.toList());
@@ -113,7 +120,9 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				// sprint.setProcessorId(jiraProcessorId);
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} " + sprint.getSprintID(),
+						sprint.getState(), boardId);
+				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
 				if (null != dbSprintDetailMap.get(sprint.getSprintID())) {
 					SprintDetails dbSprintDetails = dbSprintDetailMap.get(sprint.getSprintID());
