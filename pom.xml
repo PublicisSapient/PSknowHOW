@@ -50,7 +50,7 @@
                 <module>processors/github</module>
                 <module>processors/github-action</module>
                 <module>processors/sonar</module>
-                <module>processors/jiraBatch</module>
+                <module>processors/jira</module>
                 <module>processors/jira-xray-zephyr-squad</module>
                 <module>processors/jenkins</module>
                 <module>processors/bamboo</module>
@@ -221,10 +221,10 @@
             </build>
         </profile>
         <profile>
-            <id>jiraProcessorBatch</id>
+            <id>jira-processor</id>
             <modules>
                 <module>common</module>
-                <module>processors/jiraBatch</module>
+                <module>processors/jira</module>
             </modules>
         </profile>
         <profile>
