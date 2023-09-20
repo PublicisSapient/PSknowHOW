@@ -237,10 +237,10 @@ public class JiraServiceR {
 	}
 
 	/**
-	 * creating relase List on the basis of releaseId
+	 * creating release List on the basis of releaseId
 	 * 
 	 * @param treeAggregatorDetail
-	 * @return
+	 * @return release names
 	 */
 	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
