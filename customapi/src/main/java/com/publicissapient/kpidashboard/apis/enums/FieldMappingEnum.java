@@ -176,7 +176,9 @@ public enum FieldMappingEnum {
 	//DTS-26123 end
 	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")),
 	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16")),
+	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraBacklogSubtaskKPI161")),
 	KPI164("Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164"));
+
 
 	private List<String> fields;
 	private String kpiName;

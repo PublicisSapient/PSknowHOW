@@ -92,6 +92,7 @@ public class IterationReadinessServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		when(jiraService.getFutureSprintsList()).thenReturn(new ArrayList<>());
 		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList, null, null,
@@ -106,6 +107,7 @@ public class IterationReadinessServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(issueList);
 		when(jiraService.getFutureSprintsList()).thenReturn(sprintList);
 		Map<String, Object> sprintDataListMap = iterationReadinessService.fetchKPIDataFromDb(leafNodeList, null, null,

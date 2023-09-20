@@ -8287,6 +8287,16 @@ db.getCollection('field_mapping_structure').insertMany(
 			"definition": "All issue types that are used as/equivalent to Story.",
 
 		}
-	}
+	},
+	{
+        "fieldName": "jiraBacklogSubtaskKPI161",
+        "fieldLabel": "Issue type to exclude subtask",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Any issue type mentioned will be excluded",
+        }
+    }
 ]
 );

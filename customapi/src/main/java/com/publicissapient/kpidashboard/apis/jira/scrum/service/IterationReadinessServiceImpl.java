@@ -92,7 +92,14 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 		if (leafNode != null) {
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraBacklogSubtaskKPI161())) {
+				totalJiraIssue = totalJiraIssue.stream().filter(
+						jiraIssue -> !fieldMapping.getJiraBacklogSubtaskKPI161().contains(jiraIssue.getTypeName()))
+						.collect(Collectors.toList());
+			}
 			List<String> totalSprint = jiraService.getFutureSprintsList();
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);

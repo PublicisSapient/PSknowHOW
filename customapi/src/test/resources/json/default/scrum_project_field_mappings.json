@@ -145,6 +145,7 @@
     "jiraLiveStatusKPI155" : "LIVE",
     "isUploadDataKPI42" : true,
     "isUploadDataKPI16" : true,
-    "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"]
+    "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"],
+    "jiraBacklogSubtaskKPI161" : ["Task"]
   }
 ]

@@ -379,6 +379,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusKPI155;
 	private List<String> jiraDodKPI155;
 	private String jiraLiveStatusKPI155;
+	private List<String> jiraBacklogSubtaskKPI161;
 
 	@Builder.Default
 	private String notificationEnabler="On";
