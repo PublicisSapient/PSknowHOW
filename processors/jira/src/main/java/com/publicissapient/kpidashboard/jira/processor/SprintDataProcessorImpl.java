@@ -79,7 +79,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 			}
 		}
 		KerberosClient krb5Client = null;
-		if (StringUtils.isEmpty(boardId)) {
+		if (StringUtils.isEmpty(boardId) && !isSprintFetch) {
 			try {
 				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client,isSprintFetch);
 			} catch (InterruptedException e) {
