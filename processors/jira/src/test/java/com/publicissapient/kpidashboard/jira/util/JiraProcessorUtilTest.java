@@ -100,7 +100,7 @@ public class JiraProcessorUtilTest {
 	@Test
 	public void deodeUTF8StringEmpty() throws URISyntaxException {
 		FieldMapping fieldMapping = new FieldMapping();
-		fieldMapping.setJiraDorKPI3("");
+		fieldMapping.setJiraDorKPI3(new ArrayList<>());
 		Object jiraResponse = fieldMapping.getJiraDorKPI3();
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
 

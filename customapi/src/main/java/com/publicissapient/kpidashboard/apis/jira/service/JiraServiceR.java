@@ -244,16 +244,18 @@ public class JiraServiceR {
 
 	/**
 	 * creating release List on the basis of releaseId
-	 *
+	 * 
 	 * @param treeAggregatorDetail
-	 *            treeAggregatorDetail
-	 * @return list of Strings
+	 * @return release names
 	 */
 	private List<String> getReleaseList(TreeAggregatorDetail treeAggregatorDetail) {
 		List<Node> nodes = treeAggregatorDetail.getMapOfListOfLeafNodes().get(Filters.RELEASE.toString().toLowerCase());
 		List<String> processedList = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(nodes)) {
-			nodes.forEach(relaseNode -> processedList.add(relaseNode.getReleaseFilter().getName().split("_")[0]));
+			nodes.forEach(releaseNode -> {
+				String projectName = CommonConstant.UNDERSCORE + releaseNode.getProjectFilter().getName();
+				processedList.add(releaseNode.getReleaseFilter().getName().split(projectName)[0]);
+			});
 		}
 		return processedList;
 	}
