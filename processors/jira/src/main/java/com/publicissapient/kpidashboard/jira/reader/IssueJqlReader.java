@@ -131,6 +131,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 					readData = new ReadData();
 					readData.setIssue(issue);
 					readData.setProjectConfFieldMapping(projectConfFieldMapping);
+					readData.setSprintFetch(false);
 				}
 
 				if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {

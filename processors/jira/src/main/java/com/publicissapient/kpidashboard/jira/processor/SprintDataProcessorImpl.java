@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,7 +54,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	private FetchSprintReport fetchSprintReport;
 
 	@Override
-	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) {
+	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, boolean isSprintFetch) {
 		log.info("creating sprint report for the project : {}", projectConfig.getProjectName());
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
@@ -82,7 +81,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		KerberosClient krb5Client = null;
 		if (StringUtils.isEmpty(boardId)) {
 			try {
-				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client);
+				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client,isSprintFetch);
 			} catch (InterruptedException e) {
 				log.error("JIRA Processor | Failed to fetch Sprint {}", e);
 			}

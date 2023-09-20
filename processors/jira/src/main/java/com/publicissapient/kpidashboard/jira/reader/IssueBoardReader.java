@@ -155,6 +155,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				readData.setIssue(issue);
 				readData.setProjectConfFieldMapping(projectConfFieldMapping);
 				readData.setBoardId(boardId);
+				readData.setSprintFetch(false);
 			}
 
 			if ((null == projectConfFieldMapping)
