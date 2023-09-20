@@ -183,7 +183,8 @@ public class KanbanReleaseDataClientImpl implements ReleaseDataClient {
 				kanbanAccountHierarchy.setIsDeleted(JiraConstants.FALSE);
 				kanbanAccountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
 				String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL
-						+ projectRelease.getProjectName().split(JiraConstants.COMBINE_IDS_SYMBOL)[0];
+						+ projectRelease.getProjectName()
+								.split(JiraConstants.COMBINE_IDS_SYMBOL + projectRelease.getConfigId())[0];
 				String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 						+ projectRelease.getProjectId();
 				kanbanAccountHierarchy.setNodeId(versionId);
