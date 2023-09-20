@@ -253,7 +253,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     /** Adding tooltip container */
     let tooltipContainer;
-    if (viewType === 'large' && selectedProjectCount === 1) {
+    if (selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
@@ -647,7 +647,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           });
 
          /** Adding tooltip text  */
-        if (viewType === 'large' && selectedProjectCount === 1) {
+        if (selectedProjectCount === 1) {
           tooltipContainer
             .selectAll('div')
             .data(newRawData[0]['value'])
@@ -662,14 +662,18 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               }
               return cssClass;
             })
-            .style('left', d => {
-              let left = d.date || d.sortSprint
-              return x0(left) + x0.bandwidth() / 2 + 'px'
+            .style('left', (d,i) => {
+              let left = d.date || d.sortSprint;
+              if(viewType === 'large'){
+                return x0(left) + x0.bandwidth() / 2 + 'px';
+              }else{
+                return x0(i+1) + x0.bandwidth() / 2 + 'px';
+              }
             })
             .style('top', d => {
               return yScale(d.lineValue) - 25 + 'px'
             })
-            .text(d => d.lineValue+' '+showUnit)
+            .text(d => d.lineValue)
             .transition()
             .duration(500)
             .style('display', 'block')

@@ -490,38 +490,67 @@ db.getCollection('metadata_identifier').updateMany(
 );
 
 //------------------------- 7.9.0 changes----------------------------------------------------------------------------------
-//remove search options from fieldmapping structure rollback
-db.field_mapping_structure.updateMany(
+db.getCollection('field_mapping_structure').bulkWrite([
+    //delete fieldMappingStructure for Scope Churn KPI
     {
-        "fieldName": {
-            $in: ["resolutionTypeForRejectionKPI37",
-                "resolutionTypeForRejectionKPI28",
-                "resolutionTypeForRejectionDSR",
-                "resolutionTypeForRejectionKPI82",
-                "resolutionTypeForRejectionKPI135",
-                "resolutionTypeForRejectionKPI133",
-                "resolutionTypeForRejectionRCAKPI36",
-                "resolutionTypeForRejectionKPI14",
-                "resolutionTypeForRejectionQAKPI111",
-                "resolutionTypeForRejectionKPI35"
-            ]
+        deleteMany: {
+            filter: { "fieldName": "jiraStoryIdentificationKPI164" }
         }
     },
-    {
-        $set: { "fieldCategory": "workflow" }
-    }
 
-)
+    //remove search options from fieldMapping structure rollback
+    {
+        updateMany: {
+            filter: {
+                "fieldName": {
+                    $in: [
+                        "resolutionTypeForRejectionKPI37",
+                        "resolutionTypeForRejectionKPI28",
+                        "resolutionTypeForRejectionDSR",
+                        "resolutionTypeForRejectionKPI82",
+                        "resolutionTypeForRejectionKPI135",
+                        "resolutionTypeForRejectionKPI133",
+                        "resolutionTypeForRejectionRCAKPI36",
+                        "resolutionTypeForRejectionKPI14",
+                        "resolutionTypeForRejectionQAKPI111",
+                        "resolutionTypeForRejectionKPI35"
+                    ]
+                }
+            },
+            update: { $set: { "fieldCategory": "workflow" } }
+        }
+    },
+
+    // --- Reverse fieldType for Backlog leadTime kpi
+    {
+        updateMany: {
+            filter: {
+                "fieldName": {
+                    $in: ["jiraDorKPI3", "jiraLiveStatusKPI3"]
+                }
+            },
+            update: { $set: { "fieldType": "text" } }
+        }
+    }
+]);
 
 // delete Scope Churn kpi
-db.getCollection('kpi_master').deleteOne(
-  { "kpiId": "kpi164" }
+//DTS-28198 remove radio button filter to release kpis
+db.getCollection("kpi_master").bulkWrite(
+    [
+        {
+            deleteOne: {
+                filter: { "kpiId": "kpi164" }
+            }
+        },
+        {
+            updateMany: {
+                filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
+                update: { $set: { "kpiFilter": "" } }
+            }
+        }
+    ]
 );
-
-//delete fieldMapping for Scope Churn KPI
-db.field_mapping_structure.deleteMany({
-    "fieldName": { $in: ["jiraStoryIdentificationKPI164"]}
-});
 
 // delete column config for Scope Churn KPI
 db.kpi_column_configs.deleteOne({
@@ -533,27 +562,30 @@ db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi164"
 });
 
+// -- Reverse field by converting the array back to a string for leadTime backlog
+db.field_mapping.updateMany(
+    {},
+    [
+        {
+            $set: {
+                "jiraDorKPI3": { $arrayElemAt: ["$jiraDorKPI3", 0] },
+                "jiraLiveStatusKPI3": { $arrayElemAt: ["$jiraLiveStatusKPI3", 0] }
+            }
+        }
+    ]
+);
+
 // Note : below code only For Opensource project
 // deleting metadata_identifier for scope churn
 db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["7"] } },
-   { $pull: {
-      "workflow": {
-         "type":"jiraStoryIdentificationKPI164"
-      }
-   }}
-);
-
-
-
-//DTS-28198 remove radio button filter to release kpis
-var kpiIdsToUpdate = ["kpi142", "kpi143", "kpi144"];
-var originalKpiFilterField = {
-  "kpiFilter" : "",
-};
-db.getCollection("kpi_master").updateMany(
-  { kpiId: { $in: kpiIdsToUpdate } },
-  { $set: originalKpiFilterField }
+    { "templateCode": { $in: ["7"] } },
+    {
+        $pull: {
+            "workflow": {
+                "type": "jiraStoryIdentificationKPI164"
+            }
+        }
+    }
 );
 
 
@@ -591,6 +623,7 @@ db.getCollection("repo_tools_provider").remove({});
 // Revert changes to processor collection
 db.getCollection("processor").remove({ processorName: "RepoTool" });
 
+// Added bitbucket kpis to speed
 db.kpi_category_mapping.insertMany(
 {
 "kpiId" : "kpi65",
