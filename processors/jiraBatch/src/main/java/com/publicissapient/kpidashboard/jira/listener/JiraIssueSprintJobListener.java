@@ -48,5 +48,6 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 			fetchDetails.setFetchSuccessful(false);
 		}
 		sprintTraceLogRepository.save(fetchDetails);
+
 	}
 }
