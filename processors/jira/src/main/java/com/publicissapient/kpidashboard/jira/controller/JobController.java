@@ -115,7 +115,8 @@ public class JobController {
 		log.info("Total projects to fun for Scrum - Board Wise : {}", totalProjects);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -128,7 +129,7 @@ public class JobController {
 					e.printStackTrace();
 				}
 			});
-			
+
 		}
 		executorService.shutdown();
 		return ResponseEntity.ok().body("job started for scrum board");
@@ -149,6 +150,8 @@ public class JobController {
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -195,7 +198,8 @@ public class JobController {
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -227,7 +231,8 @@ public class JobController {
 				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -339,7 +344,7 @@ public class JobController {
 		} finally {
 			// After the job is complete, remove the flag to allow the same
 			// BasicProjectConfigId to be executed again
-			//need changes
+			// need changes
 			ongoingExecutions.remove(basicProjectConfigId);
 		}
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);

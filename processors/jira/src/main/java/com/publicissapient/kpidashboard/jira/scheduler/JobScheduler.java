@@ -88,7 +88,8 @@ public class JobScheduler {
 				false, false);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -119,7 +120,8 @@ public class JobScheduler {
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -148,7 +150,8 @@ public class JobScheduler {
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -179,7 +182,8 @@ public class JobScheduler {
 				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-
+		log.info("Total number of processor available : {} = number or projects run in parallel",
+				Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
