@@ -96,7 +96,7 @@ export class GroupstackchartComponent implements OnChanges {
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
-      .attr('height', (height + 15) + 'px')
+      .attr('height', (height + 13) + 'px')
       .style('text-align', 'center')
       .append('g')
       .attr('transform', `translate(${0}, ${marginTop})`);
@@ -213,7 +213,7 @@ export class GroupstackchartComponent implements OnChanges {
     d3.select('.xAxis')
       .selectAll('.tick text').style('width', '70px')
       // .attr('transform', 'rotate(-10)')
-      .call(this.wrap, 75) // select all the text elements 
+      .call(this.wrap, 75) // select all the text elements
 
     const XCaption = d3
       .select(this.elem).select('#xCaptionContainer').append('text')
@@ -611,7 +611,7 @@ export class GroupstackchartComponent implements OnChanges {
   }
 
   wrap(text, wrapWidth, yAxisAdjustment = 0) {
-    
+
     text.each(function () {
       let text = d3.select(this);
       if (text.text().length > 25) {
