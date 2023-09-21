@@ -66,7 +66,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 	 */
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
-		log.info("Scrum processing started for the project : {}",
+		log.debug("Scrum processing started for the project : {}",
 				readData.getProjectConfFieldMapping().getProjectName());
 		CompositeResult compositeResult = null;
 		JiraIssue jiraIssue = convertIssueToJiraIssue(readData);
@@ -80,7 +80,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
 				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
 			}
-			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
+			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet) && !readData.isSprintFetch()) {
 				compositeResult.setSprintDetailsSet(sprintDetailsSet);
 			}
 			compositeResult.setJiraIssue(jiraIssue);

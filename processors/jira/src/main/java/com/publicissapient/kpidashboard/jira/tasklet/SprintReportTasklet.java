@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -66,6 +67,14 @@ public class SprintReportTasklet implements Tasklet {
 		this.sprintId = sprintId;
 	}
 
+	/**
+	 *
+	 * @param sc
+	 * @param cc
+	 * @return RepeatStatus
+	 * @throws Exception
+	 */
+	@TrackExecutionTime
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		log.info("Sprint report job started for the sprint : {}", sprintId);

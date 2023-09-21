@@ -235,7 +235,7 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueSprintJob() {
 		return jobBuilderFactory.get("fetchIssueSprint Job").incrementer(new RunIdIncrementer()).start(sprintDataStep())
-				.next(fetchIssueSprintChunkStep()).listener(jobListenerScrum).build();
+				.next(fetchIssueSprintChunkStep()).listener(jiraIssueSprintJobListener).build();
 	}
 
 	private Step sprintDataStep() {
@@ -245,7 +245,6 @@ public class JiraProcessorJob {
 	@TrackExecutionTime
 	private Step fetchIssueSprintChunkStep() {
 		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
-				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter)
-				.listener(jiraIssueSprintJobListener).build();
+				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter).build();
 	}
 }

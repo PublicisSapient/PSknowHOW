@@ -64,6 +64,13 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 		this.projectId = projectId;
 	}
 
+	/**
+	 *
+	 * @param sc
+	 * @param cc
+	 * @return RepeatStatus
+	 * @throws Exception
+	 */
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
