@@ -66,6 +66,7 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('svg').remove();
     d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
+    d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
     data = this.formatData(data);
 
@@ -74,13 +75,17 @@ export class GroupBarChartComponent implements OnChanges {
 
     const currentDayIndex = this.currentDayIndex;
     const barWidth = 18;
-    const width = data.length <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : data.length * barWidth * (subgroups.length + 4);
+  
     const spacingVariable = 50;
     const height = 195;
     const margin = 50;
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
+    let width = window.innerWidth- 320 - marginLeft;
+    if(data.length > 5){
+      width += data.length * barWidth * (subgroups.length + 3);
+    }
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
@@ -140,12 +145,27 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('x', xTick)
       .attr('y', 15);
 
+   
     if (currentDayIndex >= 0) {
       svgX
         .select('.xAxis')
         .selectAll(`.tick:nth-of-type(${currentDayIndex + 1}) text`)
         .style('color', '#079FFF').
         style("font-weight", "bolder")
+    }
+
+     /** Showing  data point for current plot */
+    const currentWeekTooltipContainer = d3.select('#horizontalSVG').select('.current-week-tooltip');
+    let top = (height / 2) - 30;
+    for (const kpiGroup of this.lineGroups) {
+      const lineData = data[data.length - 1];
+      currentWeekTooltipContainer.append('div')
+        .attr('class', 'tooltip')
+        .style('left', `${x(lineData.group)}px`)
+        .style('top', top + 'px')
+        .text(`${kpiGroup} - ${lineData[kpiGroup]}`)
+        .style('opacity', 1);
+      top = top + 30;
     }
 
     svgX
@@ -238,6 +258,7 @@ export class GroupBarChartComponent implements OnChanges {
 
       const tooltipContainer = d3.select('#horizontalSVG').select('.tooltip-container');
       const showTooltip = (linedata) => {
+        currentWeekTooltipContainer.style('display','none');
         tooltipContainer
           .selectAll('div')
           .data(linedata)
@@ -252,6 +273,7 @@ export class GroupBarChartComponent implements OnChanges {
           .style('opacity', 1);
       };
       const hideTooltip = () => {
+        currentWeekTooltipContainer.style('display','block');
         tooltipContainer
           .selectAll('.tooltip')
           .transition()

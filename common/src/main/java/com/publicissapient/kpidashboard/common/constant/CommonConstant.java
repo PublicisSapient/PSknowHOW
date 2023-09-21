@@ -137,7 +137,8 @@ public final class CommonConstant {
 	public static final String COMPLETED_ISSUES = "completedIssues";
 	public static final String TOTAL_ISSUES = "totalIssues";
 	public static final String ADDED_ISSUES = "addedIssues";
-	public static final String ADDEDINBTWN_ISSUES = "addedIssues";
+	public static final String ADDED = "Added";
+	public static final String REMOVED = "Removed";
 	public static final String PUNTED_ISSUES = "puntedIssues";
 	public static final String COMPLETED_ISSUES_ANOTHER_SPRINT = "issuesCompletedInAnotherSprint";
 	public static final String NOT_COMPLETED_ISSUES = "issuesNotCompletedInCurrentSprint";
@@ -222,6 +223,7 @@ public final class CommonConstant {
 	public static final String JIRAQAKPI111ISSUETYPE="jiraQAKPI111IssueType";
 	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
+	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
 	public static final String STORYFIRSTSTATUSKPI3="storyFirstStatusKPI3";
