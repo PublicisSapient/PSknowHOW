@@ -279,3 +279,8 @@ padding: 0.75rem !important;
 .w-80{
     width: 80%;   
 }
+
+.subKPi{
+    display: flex;
+    flex-direction: column;
+}
