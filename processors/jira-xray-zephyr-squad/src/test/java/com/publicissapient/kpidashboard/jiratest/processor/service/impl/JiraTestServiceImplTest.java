@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Test;
@@ -74,6 +75,9 @@ class JiraTestServiceImplTest {
 	private JiraOAuthProperties jiraOAuthProperties;
 	@Mock
 	private ToolCredentialProvider toolCredentialProvider;
+
+	@Mock
+	private ConnectionRepository connectionRepository;
 
 	private static ProjectConfFieldMapping getProjectConfFieldMapping() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
@@ -153,6 +157,7 @@ class JiraTestServiceImplTest {
 		when(testCaseDetailsRepository.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(jiraTestProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
+		when(connectionRepository.findById(any())).thenReturn(null);
 		assertEquals(3, jiraTestServiceImpl.processesJiraIssues(projectConfFieldMapping));
 	}
 

@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -283,4 +284,13 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 		return client;
 	}
 
+	public com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient getSpnegoSamlClient(
+			KerberosClient kerberosClient) {
+		com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient client = null;
+		kerberosClient.login(jiraTestProcessorConfig.getSamlTokenStartString(), jiraTestProcessorConfig.getSamlTokenEndString(),
+				jiraTestProcessorConfig.getSamlUrlStartString(), jiraTestProcessorConfig.getSamlUrlEndString());
+		client = new com.publicissapient.kpidashboard.jiratest.adapter.impl.async.factory.ProcessorAsynchJiraRestClientFactory().createWithAuthenticationCookies(
+				URI.create(kerberosClient.getJiraHost()), kerberosClient.getCookies(), jiraTestProcessorConfig);
+		return client;
+	}
 }
