@@ -959,6 +959,30 @@ public final class KpiDataHelper {
 	}
 
 	/**
+	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            list of Jira Issue
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return sum of storyPoint/OriginalEstimate
+	 */
+	public static double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		boolean isStoryPoint = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT);
+		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
+			if (isStoryPoint) {
+				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
+			} else {
+				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				int inHours = timeInMin / 60;
+				return inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}).sum();
+	}
+
+
+	/**
 	 * To calculate the added/removed date of sprint change for JiraIssues
 	 *
 	 * @param issues
@@ -989,30 +1013,6 @@ public final class KpiDataHelper {
 		});
 
 		return issueDateMap;
-	}
-
-
-	/**
-	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
-	 *
-	 * @param jiraIssueList
-	 *            list of Jira Issue
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @return sum of storyPoint/OriginalEstimate
-	 */
-	public static double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		boolean isStoryPoint = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT);
-		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
-			if (isStoryPoint) {
-				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
-			} else {
-				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
-				int inHours = timeInMin / 60;
-				return inHours / fieldMapping.getStoryPointToHourMapping();
-			}
-		}).sum();
 	}
 
 }
