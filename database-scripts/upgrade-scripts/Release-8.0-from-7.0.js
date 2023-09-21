@@ -3852,31 +3852,17 @@ db.getCollection('field_mapping_structure').bulkWrite([
 
 // scope churn kpi_master
 //DTS-28198 added radio button filter to release kpis
-// added new repo tools kpi for developer tab
 db.getCollection("kpi_master").bulkWrite(
   [
     {
-      updateMany: [
-      {
+      updateMany: {
         filter: { kpiId: { $in: ["kpi142", "kpi143", "kpi144"] } },
         update: { $set: { "kpiFilter": "radioButton" } }
-      },
-    ]
-    },
-    {
-      updateMany: {
-        filter: { kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
-          update: {
-            $set: {
-              isRepoToolKpi: false,
-              kpiCategory: "Developer",
-          }
-        }
       }
     },
     {
-      insertMany: [
-        {
+      insertOne: {
+        document: {
           "kpiId": "kpi164",
           "kpiName": "Scope Churn",
           "maxValue": 200,
@@ -3910,8 +3896,127 @@ db.getCollection("kpi_master").bulkWrite(
           "aggregationCriteria": "average",
           "isAdditionalFilterSupport": true,
           "calculateMaturity": true
-        },
+        }
+      }
+    }
+  ]
+);
+
+// Scope Churn KPI column config
+db.getCollection('kpi_column_configs').insertOne({
+	basicProjectConfigId: null,
+	kpiId: 'kpi164',
+	kpiColumnDetails: [{
+		columnName: 'Sprint Name',
+		order: 0,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue ID',
+		order: 2,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Type',
+		order: 3,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Description',
+		order: 4,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Size(story point/hours)',
+		order: 5,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change Date',
+		order: 6,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Scope Change (Added/Removed)',
+		order: 7,
+		isShown: true,
+		isDefault: false
+	}, {
+		columnName: 'Issue Status',
+		order: 8,
+		isShown: true,
+		isDefault: false
+	}]
+});
+
+// --Converting the String to array and filling with curr str val for leadTime backlog
+db.field_mapping.updateMany(
+    {},
+    [
         {
+            $set: {
+                jiraDorKPI3: ["$jiraDorKPI3"],
+                jiraLiveStatusKPI3: ["$jiraLiveStatusKPI3"]
+            }
+        }
+    ]
+);
+
+//DTS-27549 release sub tabs addition in release kpi's
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Review" }
+    }
+);
+
+db.kpi_master.updateMany(
+    {
+        "kpiCategory": "Release",
+        "kpiId": { $in: ["kpi150"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Release Progress" }
+    }
+);
+
+// Note : below code only For Opensource project
+// Scope Churn KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne({
+	"kpiId": "kpi164",
+	"categoryId": "categoryOne",
+	"kpiOrder": 9,
+	"kanban": false
+});
+
+// Note : below code only For Opensource project
+db.getCollection('metadata_identifier').updateMany(
+    { "templateCode": { $in: ["7"] } },
+    {
+        $push: {
+            "workflow": {
+                "type": "jiraStoryIdentificationKPI164",
+                "value": [
+                    "Story",
+                    "Enabler Story",
+                    "Tech Story",
+                    "Change request"
+                ]
+            }
+        }
+    }
+);
+
+
+
+
+// RepoTool - DTS-27526
+// added new repo tools kpi for developer tab
+    db.getCollection("kpi_master").insertMany([
+      {
         kpiId: "kpi157",
         kpiName: "Check-Ins & Merge Requests",
         maxValue: "10",
@@ -3980,261 +4085,257 @@ db.getCollection("kpi_master").bulkWrite(
         maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
         isRepoToolKpi: true,
         kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi158",
+        kpiName: "Mean Time To Merge",
+        maxValue: "10",
+        kpiUnit: "Hours",
+        isDeleted: "False",
+        defaultOrder: 2,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "55",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: "<4 Hours",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "4-8 Hours",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "8-16 Hours",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "16-48 Hours",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: ">48 Hours",
+            },
+          ],
         },
-        {
-                kpiId: "kpi158",
-                kpiName: "Mean Time To Merge",
-                maxValue: "10",
-                kpiUnit: "Hours",
-                isDeleted: "False",
-                defaultOrder: 2,
-                groupId: 1,
-                kpiSource: "BitBucket",
-                thresholdValue: "55",
-                kanban: false,
-                chartType: "line",
-                kpiInfo: {
-                  definition:
-                    "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
-                  details: [
-                    {
-                      type: "paragraph",
-                      value:
-                        "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "Maturity of the KPI is calculated based on the average of the last 5 weeks",
-                    },
-                  ],
-                  maturityLevels: [
-                    {
-                      level: "M5",
-                      bgColor: "#6cab61",
-                      range: "<4 Hours",
-                    },
-                    {
-                      level: "M4",
-                      bgColor: "#AEDB76",
-                      range: "4-8 Hours",
-                    },
-                    {
-                      level: "M3",
-                      bgColor: "#eff173",
-                      range: "8-16 Hours",
-                    },
-                    {
-                      level: "M2",
-                      bgColor: "#ffc35b",
-                      range: "16-48 Hours",
-                    },
-                    {
-                      level: "M1",
-                      bgColor: "#F06667",
-                      range: ">48 Hours",
-                    },
-                  ],
-                },
-                xAxisLabel: "Weeks",
-                yAxisLabel: "Count(Hours)",
-                isPositiveTrend: false,
-                showTrend: true,
-                kpiFilter: "dropDown",
-                aggregationCriteria: "average",
-                isAdditionalFilterSupport: false,
-                calculateMaturity: true,
-                hideOverallFilter: true,
-                maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
-                isRepoToolKpi: true,
-                kpiCategory: "Developer",
-              },
-        {
-                kpiId: "kpi159",
-                kpiName: "Number of Check-ins",
-                maxValue: "10",
-                kpiUnit: "check-ins",
-                isDeleted: "False",
-                defaultOrder: 1,
-                groupId: 1,
-                kpiSource: "BitBucket",
-                thresholdValue: "55",
-                kanban: true,
-                chartType: "line",
-                kpiInfo: {
-                  definition:
-                    "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
-                  details: [
-                    {
-                      type: "paragraph",
-                      value:
-                        "It is calculated as a Count. Higher the count better is the ‘Speed’",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive.",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "Maturity of the KPI is calculated based on the latest value",
-                    },
-                  ],
-                  maturityLevels: [
-                    {
-                      level: "M5",
-                      bgColor: "#6cab61",
-                      range: ">16",
-                    },
-                    {
-                      level: "M4",
-                      bgColor: "#AEDB76",
-                      range: "8-16",
-                    },
-                    {
-                      level: "M3",
-                      bgColor: "#eff173",
-                      range: "4-8",
-                    },
-                    {
-                      level: "M2",
-                      bgColor: "#ffc35b",
-                      range: "2-4",
-                    },
-                    {
-                      level: "M1",
-                      bgColor: "#F06667",
-                      range: "0-2",
-                    },
-                  ],
-                },
-                xAxisLabel: "Weeks",
-                yAxisLabel: "Count",
-                isPositiveTrend: true,
-                showTrend: true,
-                kpiFilter: "dropDown",
-                aggregationCriteria: "sum",
-                isAdditionalFilterSupport: false,
-                calculateMaturity: true,
-                hideOverallFilter: true,
-                maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
-                isRepoToolKpi: true,
-                kpiCategory: "Developer",
-              },
-        {
-                kpiId: "kpi160",
-                kpiName: "Pickup Time",
-                maxValue: "10",
-                kpiUnit: "Hours",
-                isDeleted: "False",
-                defaultOrder: 3,
-                groupId: 1,
-                kpiSource: "BitBucket",
-                thresholdValue: "20",
-                kanban: false,
-                chartType: "line",
-                kpiInfo: {
-                  definition:
-                    "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
-                  details: [
-                    {
-                      type: "paragraph",
-                      value:
-                        "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "A progress indicator shows trend of Pickup Time in last 2 weeks. A downward trend is considered positive",
-                    },
-                    {
-                      type: "paragraph",
-                      value:
-                        "Maturity of the KPI is calculated based on the average of the last 5 weeks",
-                    },
-                  ],
-                  maturityLevels: [
-                    {
-                      level: "M5",
-                      bgColor: "#6cab61",
-                      range: "<4 Hours",
-                    },
-                    {
-                      level: "M4",
-                      bgColor: "#AEDB76",
-                      range: "4-8 Hours",
-                    },
-                    {
-                      level: "M3",
-                      bgColor: "#eff173",
-                      range: "8-16 Hours",
-                    },
-                    {
-                      level: "M2",
-                      bgColor: "#ffc35b",
-                      range: "16-48 Hours",
-                    },
-                    {
-                      level: "M1",
-                      bgColor: "#F06667",
-                      range: ">48 Hours",
-                    },
-                  ],
-                },
-                xAxisLabel: "Weeks",
-                yAxisLabel: "Count(Hours)",
-                isPositiveTrend: false,
-                showTrend: true,
-                kpiFilter: "dropDown",
-                aggregationCriteria: "average",
-                isAdditionalFilterSupport: false,
-                calculateMaturity: true,
-                hideOverallFilter: true,
-                maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
-                isRepoToolKpi: true,
-                kpiCategory: "Developer",
-              },
-        {
-                kpiId: "kpi162",
-                kpiName: "PR Size",
-                maxValue: "10",
-                kpiUnit: "Lines",
-                isDeleted: "False",
-                defaultOrder: 4,
-                groupId: 1,
-                kpiSource: "BitBucket",
-                kanban: false,
-                chartType: "line",
-                kpiInfo: {
-                  definition:
-                    "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
-                },
-                xAxisLabel: "Weeks",
-                yAxisLabel: "Count(No. of Lines)",
-                isPositiveTrend: false,
-                showTrend: true,
-                kpiFilter: "dropDown",
-                aggregationCriteria: "average",
-                isAdditionalFilterSupport: false,
-                calculateMaturity: true,
-                hideOverallFilter: true,
-                maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
-                isRepoToolKpi: true,
-                kpiCategory: "Developer",
-              },
-        ]
-      }
-  ]
-);
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(Hours)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi159",
+        kpiName: "Number of Check-ins",
+        maxValue: "10",
+        kpiUnit: "check-ins",
+        isDeleted: "False",
+        defaultOrder: 1,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "55",
+        kanban: true,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated as a Count. Higher the count better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive.",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the latest value",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: ">16",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "8-16",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "4-8",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "2-4",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: "0-2",
+            },
+          ],
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count",
+        isPositiveTrend: true,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "sum",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-2", "2-4", "4-8", "8-16", "16-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi160",
+        kpiName: "Pickup Time",
+        maxValue: "10",
+        kpiUnit: "Hours",
+        isDeleted: "False",
+        defaultOrder: 3,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        thresholdValue: "20",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
+          details: [
+            {
+              type: "paragraph",
+              value:
+                "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+            },
+            {
+              type: "paragraph",
+              value:
+                "A progress indicator shows trend of Pickup Time in last 2 weeks. A downward trend is considered positive",
+            },
+            {
+              type: "paragraph",
+              value:
+                "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+            },
+          ],
+          maturityLevels: [
+            {
+              level: "M5",
+              bgColor: "#6cab61",
+              range: "<4 Hours",
+            },
+            {
+              level: "M4",
+              bgColor: "#AEDB76",
+              range: "4-8 Hours",
+            },
+            {
+              level: "M3",
+              bgColor: "#eff173",
+              range: "8-16 Hours",
+            },
+            {
+              level: "M2",
+              bgColor: "#ffc35b",
+              range: "16-48 Hours",
+            },
+            {
+              level: "M1",
+              bgColor: "#F06667",
+              range: ">48 Hours",
+            },
+          ],
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(Hours)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+      {
+        kpiId: "kpi162",
+        kpiName: "PR Size",
+        maxValue: "10",
+        kpiUnit: "Lines",
+        isDeleted: "False",
+        defaultOrder: 4,
+        groupId: 1,
+        kpiSource: "BitBucket",
+        kanban: false,
+        chartType: "line",
+        kpiInfo: {
+          definition:
+            "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
+        },
+        xAxisLabel: "Weeks",
+        yAxisLabel: "Count(No. of Lines)",
+        isPositiveTrend: false,
+        showTrend: true,
+        kpiFilter: "dropDown",
+        aggregationCriteria: "average",
+        isAdditionalFilterSupport: false,
+        calculateMaturity: true,
+        hideOverallFilter: true,
+        maturityRange: ["-16", "16-8", "8-4", "4-2", "2-"],
+        isRepoToolKpi: true,
+        kpiCategory: "Developer",
+      },
+    ]);
 
-// Scope Churn KPI column config
-// RepoTools kpi
+
 db.getCollection("kpi_column_configs").insertMany([
     {
       basicProjectConfigId: null,
@@ -4422,119 +4523,29 @@ db.getCollection("kpi_column_configs").insertMany([
         },
       ],
     },
-    {
-    	basicProjectConfigId: null,
-    	kpiId: 'kpi164',
-    	kpiColumnDetails: [{
-    		columnName: 'Sprint Name',
-    		order: 0,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Issue ID',
-    		order: 2,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Issue Type',
-    		order: 3,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Issue Description',
-    		order: 4,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Size(story point/hours)',
-    		order: 5,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Scope Change Date',
-    		order: 6,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Scope Change (Added/Removed)',
-    		order: 7,
-    		isShown: true,
-    		isDefault: false
-    	}, {
-    		columnName: 'Issue Status',
-    		order: 8,
-    		isShown: true,
-    		isDefault: false
-    	}]
-    },
   ]);
 
-
-
-// --Converting the String to array and filling with curr str val for leadTime backlog
-db.field_mapping.updateMany(
-    {},
-    [
-        {
-            $set: {
-                jiraDorKPI3: ["$jiraDorKPI3"],
-                jiraLiveStatusKPI3: ["$jiraLiveStatusKPI3"]
-            }
-        }
-    ]
+db.getCollection("kpi_master").updateMany(
+  { kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
+  { $set: {
+            isRepoToolKpi: false,
+            kpiCategory: "Developer",
+          } }
 );
 
-//DTS-27549 release sub tabs addition in release kpi's
-db.kpi_master.updateMany(
-    {
-        "kpiCategory": "Release",
-        "kpiId": { $in: ["kpi141", "kpi142","kpi143","kpi147","kpi144"] }
-    },
-    {
-        $set: { "kpiSubCategory": "Release Review" }
-    }
-);
-
-db.kpi_master.updateMany(
-    {
-        "kpiCategory": "Release",
-        "kpiId": { $in: ["kpi150"] }
-    },
-    {
-        $set: { "kpiSubCategory": "Release Progress" }
-    }
-);
-
-// Note : below code only For Opensource project
-// Scope Churn KPI category mapping
-db.getCollection('kpi_category_mapping').insertOne({
-	"kpiId": "kpi164",
-	"categoryId": "categoryOne",
-	"kpiOrder": 9,
-	"kanban": false
-});
-
-// Note : below code only For Opensource project
-db.getCollection('metadata_identifier').updateMany(
-    { "templateCode": { $in: ["7"] } },
-    {
-        $push: {
-            "workflow": {
-                "type": "jiraStoryIdentificationKPI164",
-                "value": [
-                    "Story",
-                    "Enabler Story",
-                    "Tech Story",
-                    "Change request"
-                ]
-            }
-        }
-    }
-);
+//added repo tool processor
+db.processor.insertOne(
+  {
+    "processorName": "RepoTool",
+    "processorType": "SCM",
+    "isActive": true,
+    "isOnline": true,
+    "errors": [],
+    "isLastSuccess": false,
+  }
+)
 
 
-
-// RepoTool - DTS-27526
 db.repo_tools_provider.insertMany([
   {
     "toolName": "bitbucket",
@@ -4555,17 +4566,6 @@ db.repo_tools_provider.insertMany([
   }
 ])
 
-//added repo tool processor
-db.processor.insertOne(
-  {
-    "processorName": "RepoTool",
-    "processorType": "SCM",
-    "isActive": true,
-    "isOnline": true,
-    "errors": [],
-    "isLastSuccess": false,
-  }
-)
 
 //remove bitbucket kpis from speed
 db.kpi_category_mapping.deleteMany(
