@@ -993,6 +993,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         obj[i+1] = val > 0 ? 
                         (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
                         : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
+                        if(kpiId === 'kpi153'){
+                            obj[i+1] = item?.dataValue.find(pdata=> pdata['name'] === 'Achieved Value').value || '-';
+                        }
                     }else{
                         obj[i+1] = '-';
                     }
