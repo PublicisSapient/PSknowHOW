@@ -80,7 +80,12 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraKPIService<Integer, 
 		if (leafNode != null) {
 			log.info("BackLog Count By Issue Type kpi -> Requested project : {}",
 					leafNode.getProjectFilter().getName());
-			List<JiraIssue> totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+			List<JiraIssue> totalJiraIssue = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI152())) {
+				totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
+			}
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}
 

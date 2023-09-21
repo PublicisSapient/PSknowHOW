@@ -33,6 +33,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -49,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
@@ -59,6 +61,8 @@ import lombok.extern.slf4j.Slf4j;
 public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	@Autowired
+	private ConfigHelperService configHelperService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -103,7 +107,15 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 		if (leafNode != null) {
 			log.info("Flow Distribution kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
+
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI146())) {
+				jiraIssueCustomHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+			}
+
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));
 		}
 		return resultListMap;
