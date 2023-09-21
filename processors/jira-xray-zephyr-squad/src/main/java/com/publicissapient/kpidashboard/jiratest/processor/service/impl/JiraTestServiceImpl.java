@@ -676,10 +676,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 		String password = "";
 		if (jiraTestConn.isPresent()) {
 			Connection conn = jiraTestConn.get();
-			if (conn.isVault()) {
+			if (conn.getIsOAuth()) {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
-			} else if (conn.getIsOAuth()) {
 				client = jiraRestClientFactory.getJiraOAuthClient(
 						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
 								.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
@@ -689,77 +688,14 @@ public class JiraTestServiceImpl implements JiraTestService {
 						conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
 				client = jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
 			} else {
+				username = conn.getUsername();
+				password = decryptJiraPassword(conn.getPassword());
 				client = jiraRestClientFactory.getJiraClient(
 						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
 								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 			}
 		}
-		/*ProcessorToolConnection processorToolConnection = projectConfFieldMapping.getProcessorToolConnection();
-		String username = "";
-		String password = "";
-		if (processorToolConnection.isVault()) {
-			ToolCredential toolCredential = toolCredentialProvider
-					.findCredential(processorToolConnection.getUsername());
-			if (toolCredential != null) {
-				username = toolCredential.getUsername();
-				password = toolCredential.getPassword();
-			}
-
-		} else {
-			username = processorToolConnection.getUsername();
-			password = decryptJiraPassword(processorToolConnection.getPassword());
-		}
-
-		if (processorToolConnection.isOAuth()) {
-			// Sets Jira OAuth properties
-			jiraOAuthProperties.setJiraBaseURL(processorToolConnection.getUrl());
-			jiraOAuthProperties.setConsumerKey(processorToolConnection.getConsumerKey());
-			jiraOAuthProperties.setPrivateKey(decryptJiraPassword(processorToolConnection.getPrivateKey()));
-
-			generateAndSaveAccessToken(processorToolConnection);
-			jiraOAuthProperties.setAccessToken(processorToolConnection.getAccessToken());
-
-			client = jiraRestClientFactory.getJiraOAuthClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
-							.password(password).jiraConfigAccessToken(processorToolConnection.getAccessToken())
-							.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
-
-		} else {
-
-			client = jiraRestClientFactory.getJiraClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
-							.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
-
-		}*/
 		return client;
-	}
-
-	/**
-	 * Generate and save accessToken
-	 *
-	 * @param processorToolConnection
-	 */
-	private void generateAndSaveAccessToken(ProcessorToolConnection processorToolConnection) {
-
-		String username = processorToolConnection.getUsername();
-		String plainTextPassword = decryptJiraPassword(processorToolConnection.getPassword());
-
-		String accessToken;
-		try {
-			accessToken = jiraOAuthClient.getAccessToken(username, plainTextPassword);
-			processorToolConnection.setAccessToken(accessToken);
-			Optional<Connection> connection = connectionRepository.findById(processorToolConnection.getConnectionId());
-			if (connection.isPresent()) {
-				connection.get().setAccessToken(accessToken);
-				connectionRepository.save(connection.get());
-			}
-		} catch (FailingHttpStatusCodeException e) {
-			log.error("HTTP Status code error while generating accessToken", e);
-		} catch (MalformedURLException e) {
-			log.error("Malformed URL error while generating accessToken", e);
-		} catch (IOException e) {
-			log.error("Error while generating accessToken", e);
-		}
 	}
 
 	private String decryptJiraPassword(String encryptedPassword) {
@@ -905,8 +841,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection connection)
 			throws IOException {
 		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
-		if (connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
-			Connection conn = connectionOptional.get();
+		if (connectionOptional.isPresent() && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
 			HttpUriRequest request = RequestBuilder.get().setUri(connection.getURL().toString())
 					.setHeader(HttpHeaders.ACCEPT, "application/json")
 					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
