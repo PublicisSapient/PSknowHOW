@@ -728,8 +728,18 @@
                     "value": [
                       "Rejected"
                     ]
+                  },
+                  {
+                  "type":"jiraStoryIdentificationKPI164",
+                  "value":[
+                            "Story",
+                            "Enabler Story",
+                            "Tech Story",
+                            "Change request"
+                        ]
                   }
-              ]                                            },
+        ]
+                                        },
                                         {
                                           "tool": "Jira",
                                           "templateName": "Standard Template",

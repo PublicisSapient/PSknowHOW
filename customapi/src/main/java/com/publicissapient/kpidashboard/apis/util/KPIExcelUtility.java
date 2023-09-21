@@ -651,7 +651,7 @@ public class KPIExcelUtility {
 	 * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is
 	 * present in conditional list then Constant.EXCEL_YES else
 	 * Constant.EMPTY_STRING kpi specific
-	 *
+	 * 
 	 * @param sprint
 	 * @param totalStoriesMap
 	 * @param initialIssueNumber
@@ -1236,7 +1236,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Method to populate assignee name in kpi's
-	 *
+	 * 
 	 * @param jiraIssue
 	 * @param object
 	 */
@@ -1251,7 +1251,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 *
+	 * 
 	 * @param overAllModalValues
 	 * @param modalValues
 	 * @param jiraIssue
@@ -1357,7 +1357,7 @@ public class KPIExcelUtility {
 	/**
 	 * This Method is used for fetching status and Weekname to show the data in
 	 * excel data record
-	 *
+	 * 
 	 * @param weekAndTypeMap
 	 * @param e
 	 */
@@ -1561,6 +1561,41 @@ public class KPIExcelUtility {
 				}
 				excelData.setUpdatedDate(updateDate);
 				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+	public static void populateStoryChunk(String sprintName, Map<String, JiraIssue> totalSprintStoryMap,
+			Map<String, String> addedIssueDateMap, Map<String, String> removedIssueDateMap,
+			List<KPIExcelData> excelDataList, FieldMapping fieldMapping) {
+		if (MapUtils.isNotEmpty(totalSprintStoryMap)) {
+
+			totalSprintStoryMap.forEach((storyId, jiraIssue) -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(sprintName);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				Map<String, String> storyDetails = new HashMap<>();
+				storyDetails.put(storyId, checkEmptyURL(jiraIssue));
+				excelData.setIssueID(storyDetails);
+				excelData.setIssueType(jiraIssue.getTypeName());
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				if (addedIssueDateMap.containsKey(jiraIssue.getNumber())) {
+					excelData.setScopeChange(CommonConstant.ADDED);
+					excelData.setScopeChangeDate(addedIssueDateMap.get(jiraIssue.getNumber()));
+				}
+				if (removedIssueDateMap.containsKey(jiraIssue.getNumber())) {
+					excelData.setScopeChange(CommonConstant.REMOVED);
+					excelData.setScopeChangeDate(removedIssueDateMap.get(jiraIssue.getNumber()));
+				}
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					excelData.setStoryPoint(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					excelData.setStoryPoint(jiraIssue.getOriginalEstimateMinutes() / 60 + " hrs");
+				}
+				excelDataList.add(excelData);
+
 			});
 		}
 	}
