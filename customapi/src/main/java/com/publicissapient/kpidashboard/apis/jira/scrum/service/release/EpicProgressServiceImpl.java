@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -47,11 +49,6 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 	private static final String TO_DO = "To Do";
 	private static final String IN_PROGRESS = "In Progress";
 	private static final String DONE = "Done";
-	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String STORY_POINT = "Story Point";
-	private static final String OVERALL = "Overall";
-	private static final String SEARCH_BY_ASSIGNEE = "Filter by Assignee";
-	private static final String SEARCH_BY_PRIORITY = "Filter by Priority";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -60,38 +57,6 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 
 	@Autowired
 	private CommonServiceImpl commonService;
-
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
-		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
-		if (null != leafNode) {
-			log.info("Epic Progress -> Requested sprint : {}", leafNode.getName());
-			List<JiraIssue> releaseIssues = ReleaseKpiHelper
-					.getFilteredReleaseJiraIssuesFromBaseClass(getBaseReleaseJiraIssues(), getBaseReleaseSubTask());
-
-			resultListMap.put(TOTAL_ISSUES, releaseIssues);
-			resultListMap.put(EPIC_LINKED,
-					jiraIssueRepository.findEpicByNumberInAndBasicProjectConfigIdAndTypeName(
-							releaseIssues.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
-							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
-							NormalizedJira.ISSUE_TYPE.getValue()));
-			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, getJiraIssueReleaseStatus());
-
-		}
-		return resultListMap;
-	}
-
-	@Override
-	public String getQualifierType() {
-		return KPICode.EPIC_PROGRESS.name();
-	}
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
@@ -127,20 +92,6 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, epicIssues, fieldMapping,
 						filterDataList);
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
-				/*
-				 * List<DataCount> dataCountList = new ArrayList<>();
-				 * 
-				 * dataCountList.add(getStatusWiseCountList(releaseIssues,
-				 * jiraIssueReleaseStatus, epic));
-				 * 
-				 * 
-				 * IterationKpiValue overAllIterationKpiValue = new IterationKpiValue();
-				 * overAllIterationKpiValue.setFilter1(OVERALL);
-				 * overAllIterationKpiValue.setFilter2(OVERALL);
-				 * overAllIterationKpiValue.setValue(dataCountList);
-				 * filterDataList.add(overAllIterationKpiValue);
-				 */
-
 				kpiElement.setSprint(latestRelease.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.RELEASE_PROGRESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_PROGRESS.getColumns());
@@ -150,8 +101,30 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 		}
 	}
 
+	@Override
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+												  KpiRequest kpiRequest) {
+		Map<String, Object> resultListMap = new HashMap<>();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (null != leafNode) {
+			log.info("Epic Progress -> Requested sprint : {}", leafNode.getName());
+			List<JiraIssue> releaseIssues = ReleaseKpiHelper
+					.getFilteredReleaseJiraIssuesFromBaseClass(getBaseReleaseJiraIssues(), getBaseReleaseSubTask());
+
+			resultListMap.put(TOTAL_ISSUES, releaseIssues);
+			resultListMap.put(EPIC_LINKED,
+					jiraIssueRepository.findEpicByNumberInAndBasicProjectConfigIdAndTypeName(
+							releaseIssues.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
+							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
+							NormalizedJira.ISSUE_TYPE.getValue()));
+			resultListMap.put(RELEASE_JIRA_ISSUE_STATUS, getJiraIssueReleaseStatus());
+
+		}
+		return resultListMap;
+	}
+
 	public void createDataCountGroupMap(List<JiraIssue> jiraIssueList, JiraIssueReleaseStatus jiraIssueReleaseStatus,
-			Set<JiraIssue> epicIssues, FieldMapping fieldMapping, List<IterationKpiValue> iterationKpiValues) {
+										Set<JiraIssue> epicIssues, FieldMapping fieldMapping, List<IterationKpiValue> iterationKpiValues) {
 
 		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream().collect(
 				Collectors.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getEpicLinked()).orElse("None")));
@@ -160,17 +133,17 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 		List<DataCount> dataCountList = new ArrayList<>();
 		epicWiseJiraIssues.forEach((epic, issues) -> {
 			String epicName = epicIssue.getOrDefault(epic, "None");
-			dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicName));
+			dataCountList.add(getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicName, fieldMapping));
 		});
 		IterationKpiValue iterationKpiValue = new IterationKpiValue();
+		sorting(dataCountList);
 		iterationKpiValue.setValue(dataCountList);
-		iterationKpiValue.setFilter1(OVERALL);
-		iterationKpiValue.setFilter2(OVERALL);
 		iterationKpiValues.add(iterationKpiValue);
 	}
 
+
 	private DataCount getStatusWiseCountList(List<JiraIssue> jiraIssueList,
-			JiraIssueReleaseStatus jiraIssueReleaseStatus, String epic) {
+											 JiraIssueReleaseStatus jiraIssueReleaseStatus, String epic, FieldMapping fieldMapping) {
 		DataCount issueCountDc = new DataCount();
 		List<DataCount> issueCountDcList = new ArrayList<>();
 		List<JiraIssue> toDoJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getToDoList());
@@ -179,32 +152,29 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
 
 		long toDoCount = toDoJiraIssue.size();
-		Map<String, Integer> toDoStatusMap = toDoJiraIssue.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
-		createIssueCountDrillDown(toDoStatusMap, TO_DO, toDoCount, issueCountDcList);
+		double toDoSize = KpiDataHelper.calculateStoryPoints(toDoJiraIssue, fieldMapping);
+		Map<String, List<JiraIssue>> toDoStatusMap = toDoJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus));
+		createIssueCountDrillDown(toDoStatusMap, TO_DO, toDoCount, toDoSize, issueCountDcList, fieldMapping);
 
 		long inProgressCount = inProgressJiraIssue.size();
-		Map<String, Integer> inProgressStatusMap = inProgressJiraIssue.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1)));
-		createIssueCountDrillDown(inProgressStatusMap, IN_PROGRESS, inProgressCount, issueCountDcList);
+		double inProgressSize = KpiDataHelper.calculateStoryPoints(inProgressJiraIssue, fieldMapping);
+		Map<String, List<JiraIssue>> inProgressStatusMap = inProgressJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus));
+		createIssueCountDrillDown(inProgressStatusMap, IN_PROGRESS, inProgressCount, inProgressSize, issueCountDcList,
+				fieldMapping);
 
 		long doneCount = doneJiraIssue.size();
-		Map<String, Integer> doneStatusMap = (doneJiraIssue.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getStatus, Collectors.summingInt(issue -> 1))));
-		createIssueCountDrillDown(doneStatusMap, DONE, doneCount, issueCountDcList);
+		double doneSize = KpiDataHelper.calculateStoryPoints(doneJiraIssue, fieldMapping);
+		Map<String, List<JiraIssue>> doneStatusMap = doneJiraIssue.stream()
+				.collect(Collectors.groupingBy(JiraIssue::getStatus));
+		createIssueCountDrillDown(doneStatusMap, DONE, doneCount, doneSize, issueCountDcList, fieldMapping);
 
 		issueCountDc.setData(String.valueOf(toDoCount + inProgressCount + doneCount));
+		issueCountDc.setSize(String.valueOf(toDoSize + inProgressSize + doneSize));
 		issueCountDc.setValue(issueCountDcList);
 		issueCountDc.setKpiGroup(epic);
 		return issueCountDc;
-	}
-
-	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
-		}
 	}
 
 	/**
@@ -220,19 +190,55 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 	}
 
 	/**
-	 * Create issueCountDrillDown
-	 *
 	 * @param issueCountStatusMap
 	 * @param releaseStatus
 	 * @param releaseStatusCount
+	 * @param issueSize
 	 * @param issueCountDcList
+	 * @param fieldMapping
 	 */
-	private static void createIssueCountDrillDown(Map<String, Integer> issueCountStatusMap, String releaseStatus,
-			long releaseStatusCount, List<DataCount> issueCountDcList) {
+	private static void createIssueCountDrillDown(Map<String, List<JiraIssue>> issueCountStatusMap,
+												  String releaseStatus, long releaseStatusCount, double issueSize, List<DataCount> issueCountDcList,
+												  FieldMapping fieldMapping) {
 		List<DataCount> drillDownList = new ArrayList<>();
-		issueCountStatusMap.forEach((status, count) -> drillDownList.add(new DataCount(status, count, null)));
-		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, drillDownList);
+		issueCountStatusMap.forEach((status, issueList) -> drillDownList.add(new DataCount(status, issueList.size(),
+				KpiDataHelper.calculateStoryPoints(issueList, fieldMapping), null)));
+		DataCount releaseStatusDc = new DataCount(releaseStatus, releaseStatusCount, issueSize, drillDownList);
 		issueCountDcList.add(releaseStatusDc);
 	}
+
+	private void sorting(List<DataCount> dataCountList) {
+		dataCountList.stream().sorted(Comparator.comparing(data -> {
+			DataCount data1 = (DataCount) data;
+			return ((List<DataCount>) data1.getValue()).stream()
+					.filter(subfilter -> subfilter.getSubFilter().equalsIgnoreCase(TO_DO)
+							|| subfilter.getSubFilter().equalsIgnoreCase(IN_PROGRESS))
+					.mapToLong(a -> (long) a.getValue()).sum();
+		}).reversed()).collect(Collectors.toList());
+	}
+
+	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
+										 List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
+		}
+	}
+
+	@Override
+	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
+		return null;
+	}
+
+	@Override
+	public String getQualifierType() {
+		return KPICode.EPIC_PROGRESS.name();
+	}
+
+
+
+
+
+
 
 }

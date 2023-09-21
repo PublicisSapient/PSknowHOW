@@ -84,6 +84,7 @@ public class DataCount implements Serializable {
 	private String graphType;// for non-clustered bar and line graph
 
 	private List<DataValue> dataValue; // for multiple line graph
+	private Object size; // horizontal stacked bar graph
 
 	/**
 	 * Instantiates a new Data count.
@@ -124,6 +125,21 @@ public class DataCount implements Serializable {
 	public DataCount(String subFilter, Object value, Object drillDown) {
 		this.subFilter = subFilter;
 		this.value = value;
+		this.drillDown = drillDown;
+	}
+
+	/**
+	 * Instantiates a drill down data count
+	 * 
+	 * @param subFilter
+	 * @param value
+	 * @param size
+	 * @param drillDown
+	 */
+	public DataCount(String subFilter, Object value, Object size, Object drillDown) {
+		this.subFilter = subFilter;
+		this.value = value;
+		this.size = size;
 		this.drillDown = drillDown;
 	}
 
