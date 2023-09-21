@@ -13,7 +13,7 @@ export class DailyScrumTabComponent implements OnInit {
   @Input() columns =[];
   @Input() issueData =[];
   @Input() standUpStatusFilter =[];
-  displayModal = false;
+  displayModal = true;
   showLess = true;
   selectedRole =null;
   selectedUser = 'Overall';

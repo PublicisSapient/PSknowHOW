@@ -14,3 +14,8 @@
     height: 100vh;
     width: 100vw !important;
 }
+
+:host ::ng-deep .expandCollapseModal .container {
+    max-height: 100vh;
+    height: 100vh;
+}
