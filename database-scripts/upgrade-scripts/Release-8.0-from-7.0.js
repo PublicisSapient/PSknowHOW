@@ -4030,19 +4030,20 @@ db.kpi_master.updateOne(
 db.kpi_master.insertOne(
    {
        "kpiId": "kpi165",
-       "kpiName": " EpicProgress",
+       "kpiName": "Epic Progress",
        "maxValue": "",
        "kpiUnit": "Count",
        "isDeleted": "False",
        "defaultOrder": 5,
        "kpiCategory": "Release",
+       "kpiSubCategory": "Release Review",
        "kpiSource": "Jira",
        "groupId": 9,
        "thresholdValue": "",
        "kanban": false,
        "chartType": "horizontalPercentBarChart",
        "kpiInfo": {
-         "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+         "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
        },
        "xAxisLabel": "",
        "yAxisLabel": "",

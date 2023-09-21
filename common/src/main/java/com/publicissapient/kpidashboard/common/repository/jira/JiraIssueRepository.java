@@ -179,12 +179,14 @@ public interface JiraIssueRepository
 	 *
 	 *
 	 * @param basicProjectConfigId
+	 * 
 	 * @param typeName
 	 *
 	 * @return JiraIssue
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 
-	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }" , fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1}")
-	Set<JiraIssue> findEpicByNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId, String typeName);
+	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1 }")
+	Set<JiraIssue> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
+			String typeName);
 }

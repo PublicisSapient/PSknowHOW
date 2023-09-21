@@ -604,3 +604,8 @@ db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
   { $set: { "kpiFilter": "multiSelectDropDown" } }
 );
+
+//deleting kpi 165
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi165" }
+);

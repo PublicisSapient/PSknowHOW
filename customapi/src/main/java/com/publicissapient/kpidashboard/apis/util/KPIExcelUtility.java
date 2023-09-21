@@ -1594,4 +1594,19 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+
+	public static void populateEpicProgessExcelData(Map<String, String> epicWiseIssueSize, Map<String, JiraIssue> epicIssues, List<KPIExcelData> excelDataList) {
+		epicWiseIssueSize.forEach((epicNumber,issue)->{
+			KPIExcelData excelData= new KPIExcelData();
+			JiraIssue jiraIssue = epicIssues.get(epicNumber);
+			Map<String, String> storyDetails = new HashMap<>();
+			storyDetails.put(epicNumber, checkEmptyURL(jiraIssue));
+			excelData.setEpicID(storyDetails);
+			excelData.setEpicName(checkEmptyName(jiraIssue));
+			excelData.setEpicStatus(jiraIssue.getStatus());
+			excelData.setStoryPoint(issue);
+			excelDataList.add(excelData);
+		});
+	}
 }

@@ -4191,5 +4191,30 @@
     "isAdditionalFilterSupport" : true,
     "calculateMaturity" : true,
     "maturityRange" : [ "-40", "40-60", "60-75", "75-90", "90-" ]
+  },
+  {
+    "kpiId": "kpi165",
+    "kpiName": " EpicProgress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
   }
 ]

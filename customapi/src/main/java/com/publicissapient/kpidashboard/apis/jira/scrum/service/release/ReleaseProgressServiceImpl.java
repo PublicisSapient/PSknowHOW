@@ -50,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.apis.util.ReleaseKpiHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -189,10 +190,12 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount issueCountDc = new DataCount();
 		List<DataCount> issueCountDcList = new ArrayList<>();
-		List<JiraIssue> toDoJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getToDoList());
-		List<JiraIssue> inProgressJiraIssue = filterIssuesByStatus(jiraIssueList,
+		List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getToDoList());
+		List<JiraIssue> inProgressJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 				jiraIssueReleaseStatus.getInProgressList());
-		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
+		List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getClosedList());
 
 		long toDoCount = toDoJiraIssue.size();
 		Map<String, Integer> toDoStatusMap = toDoJiraIssue.stream()
@@ -227,10 +230,12 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			JiraIssueReleaseStatus jiraIssueReleaseStatus) {
 		DataCount storyPointDc = new DataCount();
 		List<DataCount> storyPointDcList = new ArrayList<>();
-		List<JiraIssue> toDoJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getToDoList());
-		List<JiraIssue> inProgressJiraIssue = filterIssuesByStatus(jiraIssueList,
+		List<JiraIssue> toDoJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getToDoList());
+		List<JiraIssue> inProgressJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
 				jiraIssueReleaseStatus.getInProgressList());
-		List<JiraIssue> doneJiraIssue = filterIssuesByStatus(jiraIssueList, jiraIssueReleaseStatus.getClosedList());
+		List<JiraIssue> doneJiraIssue = ReleaseKpiHelper.filterIssuesByStatus(jiraIssueList,
+				jiraIssueReleaseStatus.getClosedList());
 
 		double toDoSp = KpiDataHelper.calculateStoryPoints(toDoJiraIssue, fieldMapping);
 		Map<String, Double> toDoSpMap = createStatusWiseSpMap(toDoJiraIssue, fieldMapping);
@@ -256,18 +261,6 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
-	}
-
-	/**
-	 * Filtering the jiraIssue based on releaseStatus
-	 * 
-	 * @param jiraIssueList
-	 * @param statusMap
-	 * @return
-	 */
-	private List<JiraIssue> filterIssuesByStatus(List<JiraIssue> jiraIssueList, Map<Long, String> statusMap) {
-		return jiraIssueList.stream().filter(jiraIssue -> statusMap.containsValue(jiraIssue.getStatus()))
-				.collect(Collectors.toList());
 	}
 
 	/**

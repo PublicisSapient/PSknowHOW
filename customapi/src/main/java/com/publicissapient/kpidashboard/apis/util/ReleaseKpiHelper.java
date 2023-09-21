@@ -20,12 +20,12 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -45,7 +45,7 @@ public final class ReleaseKpiHelper {
 	}
 
 	/*
-	filter all jiraIssues
+	 * filter all jiraIssues
 	 */
 	public static List<JiraIssue> getFilteredJiraIssue(List<String> issueNumberList, List<JiraIssue> allJiraIssues) {
 		List<JiraIssue> filterJiraIssueList = new ArrayList<>();
@@ -57,7 +57,7 @@ public final class ReleaseKpiHelper {
 	}
 
 	/*
-	filter all issueHistory
+	 * filter all issueHistory
 	 */
 	public static List<JiraIssueCustomHistory> getFilteredJiraIssueHistory(List<String> issueNumberList,
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
@@ -69,7 +69,8 @@ public final class ReleaseKpiHelper {
 		return jiraIssueCustomHistories;
 	}
 
-	public static List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(List<JiraIssue> jiraIssuesForCurrentRelease, Set<JiraIssue> defectsList) {
+	public static List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(List<JiraIssue> jiraIssuesForCurrentRelease,
+			Set<JiraIssue> defectsList) {
 		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
 		List<JiraIssue> subtaskDefects = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(defectsList)) {
@@ -79,5 +80,24 @@ public final class ReleaseKpiHelper {
 		}
 		filteredJiraIssue.addAll(jiraIssuesForCurrentRelease);
 		return filteredJiraIssue;
+	}
+
+	/**
+	 * Filtering the jiraIssue based on releaseStatus
+	 *
+	 * @param jiraIssueList
+	 *            jiraIssueList
+	 * @param statusMap
+	 *            statusMap
+	 * @return list of jiraIssue
+	 */
+	public static List<JiraIssue> filterIssuesByStatus(List<JiraIssue> jiraIssueList, Map<Long, String> statusMap) {
+		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(jiraIssueList) && MapUtils.isNotEmpty(statusMap)) {
+			filteredJiraIssue = jiraIssueList.stream()
+					.filter(jiraIssue -> statusMap.containsValue(jiraIssue.getStatus())).collect(Collectors.toList());
+		}
+		return filteredJiraIssue;
+
 	}
 }
