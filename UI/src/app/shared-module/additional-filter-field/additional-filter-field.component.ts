@@ -37,7 +37,6 @@ export class AdditionalFilterFieldComponent implements OnInit {
   selectedFieldMapping: any = {};
   additionalFilterOptions: any = [];
   additionalFilterConfig = [];
-
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -269,7 +268,7 @@ resetRadioButton(fieldName){
       if (this.selectedValue.length) {
         this.fieldMappingForm.controls[this.selectedField].setValue(this.selectedValue);
       }
-    }
+    } 
     this.handleAdditionalFilters()
     this.populateDropdowns = false;
     this.displayDialog = false;

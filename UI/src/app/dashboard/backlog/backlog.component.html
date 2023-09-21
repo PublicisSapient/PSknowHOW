@@ -46,7 +46,6 @@
                                 <span *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
                                   {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                 </span>
-
                               </ng-template>
                             </p>
                           </div>
@@ -66,7 +65,6 @@
                   *ngIf="(kpiChartData['kpi3'] && kpiChartData['kpi3']?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes('kpi3')) || (kpiChartData['kpi3'] && kpiChartData['kpi3']?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes('kpi3'))">
                   <div class="err">No Data Available</div>
                 </div>
-
               </ng-template>
               <ng-template #loader>
                 <div class="overlay">
@@ -118,7 +116,6 @@
                                     *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
                                     {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                   </span>
-
                                 </ng-template>
                               </p>
                             </div>
@@ -170,9 +167,7 @@
                                 [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
                             </ng-container>
                           </div>
-
                         </ng-container>
-
                       </ng-container>
                     </app-kpi-card>
                   </div>
@@ -186,7 +181,6 @@
                     *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId)) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId))">
                     <div class="err">No Data Available</div>
                   </div>
-
                 </ng-template>
                 <ng-template #loader>
                   <div class="overlay">
@@ -239,7 +233,6 @@
                                     *ngIf="x?.value1 && x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours'">
                                     {{ x?.value1 != -99 ? x?.unit1 : ''}}
                                   </span>
-
                                 </ng-template>
                               </p>
                             </div>
@@ -291,9 +284,7 @@
                                 [data]="kpiChartData[kpi?.kpiId]"></app-stacked-area-chart>
                             </ng-container>
                           </div>
-
                         </ng-container>
-
                       </ng-container>
                     </app-kpi-card>
                   </div>
@@ -307,7 +298,6 @@
                     *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId)) || (kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false && !kpiSpecificLoader.includes(kpi.kpiId))">
                     <div class="err">No Data Available</div>
                   </div>
-
                 </ng-template>
                 <ng-template #loader>
                   <div class="overlay">

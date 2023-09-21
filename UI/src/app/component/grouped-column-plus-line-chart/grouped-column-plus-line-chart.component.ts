@@ -163,7 +163,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const categoriesNames = data.map((d) => d.categorie);
     const rateNames = data[0].value.map((d) => d.rate);
-    const paddingTop = 24;
+    const paddingTop = 24; 
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
@@ -184,7 +184,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     }else{
       x0.domain(categoriesNames);
     }
-
     x1.domain(rateNames)
       .range([0, x0.bandwidth()]); //.padding(0.0);
 
@@ -303,7 +302,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       if (viewType === 'large' && selectedProjectCount === 1) {
         xAxisText.each((d, i, nodes) => {
           const textElement = d3.select(nodes[i]);
-          const width = tempAxis.bandwidth();
+          const width = tempAxis.bandwidth(); 
           this.wrap(textElement, width);
         });
       }
@@ -389,7 +388,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         }else{
           return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x1(d.rate) + barWidth / 1.5 : x1(d.rate)
         }
-
       })
       .style('fill', (d) => color(d.rate))
       .attr('y', (d) => y(0))
@@ -497,7 +495,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         })
         const newRawData = unFormatedData;
          const colorArr = this.color;
-
         /* Add line into SVG acoording to data */
         let maxObjectNo = 0;
         let maxXValueCount = 0;
@@ -512,7 +509,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
-        let xScale
+        let xScale 
         if(viewType === 'large' && selectedProjectCount === 1){
           xScale =  d3.scaleBand()
           .rangeRound([0, width - margin.left])

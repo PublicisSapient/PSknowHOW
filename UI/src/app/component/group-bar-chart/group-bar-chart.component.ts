@@ -75,7 +75,6 @@ export class GroupBarChartComponent implements OnChanges {
 
     const currentDayIndex = this.currentDayIndex;
     const barWidth = 18;
-
     const spacingVariable = 50;
     const height = 195;
     const margin = 50;
@@ -144,7 +143,6 @@ export class GroupBarChartComponent implements OnChanges {
       .selectAll('.tick text')
       .attr('x', xTick)
       .attr('y', 15);
-
 
     if (currentDayIndex >= 0) {
       svgX
@@ -285,7 +283,6 @@ export class GroupBarChartComponent implements OnChanges {
 
       for (const kpiGroup of this.lineGroups) {
         const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup]}})
-
         const line = svgX
           .append('g')
           .attr('transform', `translate(17,0)`)
@@ -309,7 +306,6 @@ export class GroupBarChartComponent implements OnChanges {
               .style('stroke-width', 2);
             hideTooltip();
           });
-
         const circlegroup = svgX
           .append('g')
           .attr('class', 'circle-group')

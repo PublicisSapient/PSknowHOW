@@ -62,7 +62,6 @@ export class MultilineComponent implements OnChanges {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
   }
-
   ngOnInit(): void {
     this.service.showTableViewObs.subscribe(view => {
       this.viewType = view;
@@ -179,7 +178,6 @@ export class MultilineComponent implements OnChanges {
         .domain(sprintList)
         .range([0, width - margin])
         .padding(0)
-
     }else{
       xScale = d3
       .scaleBand()
@@ -232,7 +230,6 @@ export class MultilineComponent implements OnChanges {
       .scaleLinear()
       .domain([0, maxYValue])
       .range([height - margin, 0]);
-
     if (selectedProjectCount === 1 && board === 'executive') {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
@@ -264,7 +261,6 @@ export class MultilineComponent implements OnChanges {
           }else{
             return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
           }
-
         })
         .style('top', d => {
           return yScale(Math.round(d.value * 100) / 100)+10 + 'px'
@@ -628,14 +624,12 @@ export class MultilineComponent implements OnChanges {
         .select('.x')
         .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
       }
-
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
       const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
         .attr('id', 'legendContainer')
         .style('margin-left', 60 + 'px')
         .append('div');
-
       legendDiv.transition()
         .duration(200)
         .style('display', 'block')
@@ -651,14 +645,10 @@ export class MultilineComponent implements OnChanges {
 
       if(colorArr?.length>0){
         let htmlString = '<div class="legend_item" style="display:flex; align-items:center;"><div>';
-
-
         colorArr.forEach((d, i) => {
           htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
         });
-
         htmlString += '</div><div class="font-small"> Average Coverage</div></div>'
-
         legendDiv.html(htmlString);
       }
     }
