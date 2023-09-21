@@ -588,6 +588,15 @@ db.getCollection('metadata_identifier').updateMany(
     }
 );
 
+//--- DTS-28864 ---
+db.kpi_master.updateOne(
+    {
+        "kpiId": "kpi120"
+    },
+    {
+        $set: { "kpiWidth": 50 }
+    }
+);
 
 //revert RepoTool - DTS-27526 remove repo tool changes
 // Revert changes to kpi_master collection
