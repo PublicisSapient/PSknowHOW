@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -43,6 +43,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
@@ -90,7 +91,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	int pageNumber = 0;
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
-	Map<String, Map<String, String>> projectBoardWiseDeltaDate=new HashMap<>();
+	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
 
 	private String projectId;
@@ -171,16 +172,30 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 	}
 
-	private void fetchIssues(ProcessorJiraRestClient client) {
+	private void fetchIssues(ProcessorJiraRestClient client) throws InterruptedException,Exception {
 		log.info("Reading issues for project : {} boardid : {} , page No : {}",
 				projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
+		int retryTime = 3;
+		while (retryTime > 0) {
+			try {
+				String deltaDate = getDeltaDateFromTraceLog();
+				issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, pageNumber, boardId,
+						deltaDate);
+				boardIssueSize = issues.size();
+				pageNumber += pageSize;
+				return;
+			} catch (Exception e) {
+				log.error(
+						"Reading issues for project : {} boardid : {} , page No : {} failed. Retry number: {}",
+						projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize, retryTime,e);
+				retryTime--;
+				TimeUnit.MILLISECONDS.sleep(3000);
+			}
+		}
+		if(retryTime==0) {
+			throw new Exception();
+		}
 
-		String deltaDate = getDeltaDateFromTraceLog();
-
-		issues = jiraCommonService.fetchIssueBasedOnBoard(projectConfFieldMapping, client, pageNumber, boardId,
-				deltaDate);
-		boardIssueSize = issues.size();
-		pageNumber += pageSize;
 	}
 
 	private String getDeltaDateFromTraceLog() {

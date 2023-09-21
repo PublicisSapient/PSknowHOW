@@ -1,7 +1,5 @@
 package com.publicissapient.kpidashboard.jira.service;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,17 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
-import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
@@ -68,7 +65,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 			saveProjectRelease(projectConfig, accountHierarchy, projectRelease, krb5Client);
 		} catch (Exception ex) {
-			log.error("No hierarchy data found not processing for Version data {}",ex);
+			log.error("No hierarchy data found not processing for Version data {}", ex);
 		}
 
 		return projectRelease;
@@ -78,7 +75,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	 * @param confFieldMapping
 	 * @param accountHierarchy
 	 */
-	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) {
+	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
+			ProjectRelease projectRelease, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
@@ -91,7 +89,8 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 				saveScrumAccountHierarchy(accountHierarchy, confFieldMapping, projectRelease);
 				projectReleaseRepo.save(projectRelease);
 			}
-			log.info("Version processed {}", projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
+			log.debug("Version processed {}",
+					projectVersionList.stream().map(ProjectVersion::getName).collect(Collectors.toList()));
 		}
 	}
 

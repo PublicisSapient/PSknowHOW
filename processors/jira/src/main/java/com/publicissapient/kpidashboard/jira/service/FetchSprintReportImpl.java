@@ -17,8 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import static net.logstash.logback.argument.StructuredArguments.kv;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,8 +33,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -49,6 +45,7 @@ import org.springframework.stereotype.Service;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
@@ -59,6 +56,7 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.JiraIssueMetadata;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -142,7 +140,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						sprint.setOriginBoardId(dbSprintDetails.getOriginBoardId());
 						fetchReport = true;
 					} else {
-						log.info("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
+						log.debug("Sprint not to be saved again : {}, status: {} ", sprint.getOriginalSprintId(),
 								sprint.getState());
 						fetchReport = false;
 					}
