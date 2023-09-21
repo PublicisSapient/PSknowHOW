@@ -137,3 +137,29 @@
   .chart-container-height{
     height: 300px;
   }
+
+  .subKPi{
+    display: flex;
+    flex-direction: column;
+}
+
+:host::ng-deep.iteration-tabs .p-tabview-nav-link{
+    border: 1px solid #707070 !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+    margin: 10px !important;
+}
+:host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
+    padding: 0;
+}
+:host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
+    color: #fff !important;
+    background: var(--color-black) !important;
+}
+:host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
+    background: transparent;
+    padding: 0 ;
+}
+:host::ng-deep .p-tabview .p-tabview-nav .p-tabview-ink-bar{
+    display: none;
+}

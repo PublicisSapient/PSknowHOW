@@ -271,11 +271,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
-		if (CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.DOR))) {
-			fieldMapping.setJiraDorKPI3(workflowMap.get(CommonConstant.DOR).get(0));
-		} else {
-			fieldMapping.setJiraDorKPI3(null);
-		}
+		fieldMapping.setJiraDorKPI3(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));

@@ -234,7 +234,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       .domain([0, maxYValue])
       .range([height - margin, 0]);
 
-    if (viewType === 'large' && selectedProjectCount === 1) {
+    if (selectedProjectCount === 1) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       /** Adding tooltip container */
@@ -249,9 +249,14 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
         .data(data[0].value)
         .join('div')
         .attr('class', 'tooltip2')
-        .style('left', d => {
-          let left = d.date || d.sSprintName
-          return (xScale(left) + xScale.bandwidth() / 2 - 5)+ 'px'
+        .style('left', (d,i) => {
+          let left = d.date || d.sSprintName;
+          if(viewType === 'large' ){
+            return (xScale(left) + xScale.bandwidth() / 2 - 5)+ 'px';
+          }else{
+            return (xScale(i+1) + xScale.bandwidth() / 2 - 5)+ 'px';
+          }
+
         })
         .style('top', d => {
           return (yScale(d.value) + 7 ) +'px'

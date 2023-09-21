@@ -211,6 +211,29 @@ describe('FilterComponent', () => {
     }
 ]
 
+const completeHierarchyData = {
+  kanban: [
+   {
+    level: 4,
+    hierarchyLevelId: "port",
+    hierarchyLevelName: "Portfolio"
+   },
+    {
+      level: 6,
+      hierarchyLevelId: 'sqd',
+      hierarchyLevelName: 'Squad'
+    }
+  ],
+  scrum: [
+
+    {
+      level: 4,
+      hierarchyLevelId: "port",
+      hierarchyLevelName: "Portfolio"
+     }
+  ]
+};
+
   beforeEach(() => {
 
     const routes: Routes = [
@@ -1594,7 +1617,7 @@ describe('FilterComponent', () => {
     }
     component.selectedTab = 'my-knowhow';
     const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of(fakeCommentList['data']));
-    
+
     component.getRecentComments();
     tick();
     expect(spy).toHaveBeenCalled();
@@ -1759,5 +1782,17 @@ describe('FilterComponent', () => {
     expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');
 
   });
+
+  it('should remove identifier from parent id',()=>{
+    component.kanban = false;
+    localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
+     spyOn(sharedService,'getSelectedLevel').and.returnValue({
+        "level": 5,
+        "hierarchyLevelId": "project",
+        "hierarchyLevelName": "Project"
+    });
+    const value1 = component.parentIDClean("Demo_port");
+    expect(value1).toBe("Demo Portfolio");
+  })
 
 });

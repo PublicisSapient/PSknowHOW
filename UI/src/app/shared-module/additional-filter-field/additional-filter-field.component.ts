@@ -37,7 +37,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
   selectedFieldMapping: any = {};
   additionalFilterOptions: any = [];
   additionalFilterConfig = [];
-  
+
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;
@@ -113,7 +113,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
 
   addAdditionalFilterOptions() {
     this.additionalFilterOptions = [];
-    const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
+    const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0]?.level);
     additionalFilters?.forEach(element => {
       this.additionalFilterOptions.push({
         name: element.hierarchyLevelName,
@@ -170,7 +170,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
 
 handleAdditionalFilters(): any {
   const submitData = this.fieldMappingForm.value;
-  const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0].level);
+  const additionalFilters = this.filterHierarchy?.filter((filter) => filter.level > this.filterHierarchy?.filter(f => f.hierarchyLevelId === 'sprint')[0]?.level);
   this.additionalFilterConfig = [];
   additionalFilters?.forEach(element => {
     if (submitData[element.hierarchyLevelId + 'Identifier'] && submitData[element.hierarchyLevelId + 'Identifier'].length) {
@@ -269,7 +269,7 @@ resetRadioButton(fieldName){
       if (this.selectedValue.length) {
         this.fieldMappingForm.controls[this.selectedField].setValue(this.selectedValue);
       }
-    } 
+    }
     this.handleAdditionalFilters()
     this.populateDropdowns = false;
     this.displayDialog = false;

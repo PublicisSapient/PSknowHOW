@@ -5,6 +5,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-backlog',
@@ -58,6 +59,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
   kpiCommentsCountObj: object = {};
   kpiSpecificLoader =[];
   durationFilter='Past 2 Weeks';
+  kpiPart1 : any = []
+  kpiPart2 : any = []
+  leadTime : object;
+  dragableConfigGlobalData;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -135,9 +140,22 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.enableByUser = disabledKpis?.length ? true : false;
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
 
-    const kpi3Index = this.updatedConfigGlobalData .findIndex(kpi => kpi.kpiId === 'kpi3');
-    const kpi3 = this.updatedConfigGlobalData .splice(kpi3Index,1);
-    this.updatedConfigGlobalData .splice(0,0,kpi3[0]);
+    const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
+    const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index,1);
+    this.updatedConfigGlobalData.splice(0,0,kpi3[0]);
+    if(kpi3Index >= 0){
+      this.leadTime = this.updatedConfigGlobalData.find(kpi=>kpi.kpiId === 'kpi3')
+    }else{
+      this.leadTime = undefined;
+    }
+    this.dragableConfigGlobalData = this.updatedConfigGlobalData.filter(kpi=>kpi?.kpiId !== 'kpi3')
+
+
+    // Divide into two parts
+    const dataLength = this.dragableConfigGlobalData.length;
+    const middleIndex = Math.floor(dataLength / 2);
+    this.kpiPart1 = this.dragableConfigGlobalData.slice(0, middleIndex + (dataLength % 2));
+    this.kpiPart2 = this.dragableConfigGlobalData.slice(middleIndex + (dataLength % 2));
 
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
@@ -360,7 +378,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   getChartType(kpiId){
-    return this.updatedConfigGlobalData.find(kpi => kpi.kpiId === kpiId)?.kpiDetail?.chartType;
+    return this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === kpiId)?.kpiDetail?.chartType;
   }
 
   applyAggregationLogicForProgressBar(obj) {
@@ -607,7 +625,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
         kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
         console.log(kpi3preAggregatedValues);
-        
+
         kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
         this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
@@ -797,7 +815,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
     }else{
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
       });
@@ -810,6 +828,19 @@ export class BacklogComponent implements OnInit, OnDestroy{
     const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
     if (currentKPIGroup?.kpiList?.length > 0) {
         this.postJiraKpi(this.kpiJira, 'jira');
+    }
+  }
+
+  drop(event: CdkDragDrop<string[]>,dragContainer) {
+    if(event?.previousIndex !== event.currentIndex) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      this.updatedConfigGlobalData = [...this.kpiPart1,...this.kpiPart2];
+      this.updatedConfigGlobalData.map((kpi, index) => kpi.order = index + 3);
+      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
+      disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
+      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
+      hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
+      this.service.kpiListNewOrder.next([this.leadTime,...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
     }
   }
 
