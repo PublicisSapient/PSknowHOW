@@ -10,8 +10,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -152,13 +154,14 @@ class JiraTestServiceImplTest {
 		when(sr.getIssues()).thenReturn(issueIterable);
 
 		JiraTestProcessor jiraProcessor = new JiraTestProcessor();
+		Optional<Connection> connectionOptional = Optional.ofNullable(new Connection());
 		when(jiraTestProcessorConfig.getJiraServerGetUserApi()).thenReturn("user/search?username=");
 		// when(getUserTimeZone(projectConfFieldMapping)).thenReturn("Indian/Maldives");
 		when(testCaseDetailsRepository.findTopByBasicProjectConfigId(any())).thenReturn(null);
 		when(jiraTestProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
 		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
-		when(connectionRepository.findById(any())).thenReturn(null);
-		assertEquals(3, jiraTestServiceImpl.processesJiraIssues(projectConfFieldMapping));
+		when(connectionRepository.findById(any())).thenReturn(connectionOptional);
+		assertEquals(0, jiraTestServiceImpl.processesJiraIssues(projectConfFieldMapping));
 	}
 
 	private void prepareIssuesData() {

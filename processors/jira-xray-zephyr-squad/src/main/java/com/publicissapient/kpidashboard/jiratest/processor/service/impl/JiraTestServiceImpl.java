@@ -674,7 +674,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 		Optional<Connection> jiraTestConn = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
 		String username = "";
 		String password = "";
-		if (jiraTestConn != null && jiraTestConn.isPresent()) {
+		if (jiraTestConn.isPresent()) {
 			Connection conn = jiraTestConn.get();
 			if (conn.isVault()) {
 				username = conn.getUsername();
@@ -905,7 +905,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection connection)
 			throws IOException {
 		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
-		if (connectionOptional!=null && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
+		if (connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
 			Connection conn = connectionOptional.get();
 			HttpUriRequest request = RequestBuilder.get().setUri(connection.getURL().toString())
 					.setHeader(HttpHeaders.ACCEPT, "application/json")
