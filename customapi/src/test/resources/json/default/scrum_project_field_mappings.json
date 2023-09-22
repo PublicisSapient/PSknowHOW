@@ -59,14 +59,14 @@
     "jiraIssueDeliverdStatusKPI126" : [ "Closed","Ready for Delivery"],
     "jiraIssueDeliverdStatusKPI82" : [ "Closed","Ready for Delivery" ],
     "readyForDevelopmentStatusKPI138" : [ "In Analysis" ],
-    "jiraDorKPI3" : "Ready for Sprint Planning",
+    "jiraDorKPI3" : ["Ready for Sprint Planning"],
     "jiraIssueTypeKPI3" : [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraStoryIdentification" : [ ],
     "jiraStoryIdentificationKPI129" : [ "Story", "Enabler Story" ],
     "jiraStoryIdentificationKpi40" : [ "Story", "Enabler Story" ],
     "jiraLiveStatusKPI152" : "Closed",
     "jiraLiveStatusKPI151" : "Closed",
-    "jiraLiveStatusKPI3" : "Closed",
+    "jiraLiveStatusKPI3" : ["Closed"],
     "jiraLiveStatusLTK" : "Closed",
     "jiraLiveStatusNOPK" : "Closed",
     "jiraLiveStatusNOSK" : "Closed",
@@ -144,6 +144,7 @@
     "jiraDodKPI155" : [ "Done", "Closed" ],
     "jiraLiveStatusKPI155" : "LIVE",
     "isUploadDataKPI42" : true,
-    "isUploadDataKPI16" : true
+    "isUploadDataKPI16" : true,
+    "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"]
   }
 ]

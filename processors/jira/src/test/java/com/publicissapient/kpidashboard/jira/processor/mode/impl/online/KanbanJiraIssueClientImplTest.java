@@ -270,7 +270,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
-		fieldMapping.setJiraDorKPI3("In Progress");
+		fieldMapping.setJiraDorKPI3(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
