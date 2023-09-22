@@ -3112,41 +3112,7 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-	"kpiId": "kpi164",
-	"kpiName": "Scope Churn",
-	"maxValue": "200",
-	"kpiUnit": "%",
-	"isDeleted": "False",
-	"defaultOrder": Double("30"),
-	"kpiSource": "Jira",
-	"groupId": Double("4"),
-	"thresholdValue": "85",
-	"kanban": false,
-	"chartType": "line",
-	"kpiInfo": {
-		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
-		"formula": [{
-			"lhs": "Scope Churn",
-			"operator": "division",
-			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
-		}],
-		"details": [{
-			"type": "link",
-			"kpiLinkDetail": {
-				"text": "Detailed Information at",
-				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
-			}
-		}]
-	},
-	"xAxisLabel": "Sprints",
-	"yAxisLabel": "Percentage",
-	"isPositiveTrend": true,
-	"showTrend": true,
-	"aggregationCriteria": "average",
-	"isAdditionalFilterSupport": true,
-	"calculateMaturity": true
-  },
-  {
+<<<<<<<<< Temporary merge branch 1
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",
@@ -3179,6 +3145,42 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   }
+=========
+	"kpiId": "kpi164",
+	"kpiName": "Scope Churn",
+	"maxValue": "200",
+	"kpiUnit": "%",
+	"isDeleted": "False",
+	"defaultOrder": Double("30"),
+	"kpiSource": "Jira",
+	"groupId": Double("4"),
+	"thresholdValue": "85",
+	"kanban": false,
+	"chartType": "line",
+	"kpiInfo": {
+		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
+		"formula": [{
+			"lhs": "Scope Churn",
+			"operator": "division",
+			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
+		}],
+		"details": [{
+			"type": "link",
+			"kpiLinkDetail": {
+				"text": "Detailed Information at",
+				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+			}
+		}]
+	},
+	"xAxisLabel": "Sprints",
+	"yAxisLabel": "Percentage",
+	"isPositiveTrend": true,
+	"showTrend": true,
+	"aggregationCriteria": "average",
+	"isAdditionalFilterSupport": true,
+	"calculateMaturity": true,
+ }
+>>>>>>>>> Temporary merge branch 2
 ]
 );
 
@@ -8329,54 +8331,47 @@ db.getCollection('field_mapping_structure').insertMany(
 			"definition": "All issue types that are used as/equivalent to Story.",
 
 		}
-    },
-    {
-     	"fieldName": "mergeRequestStatusKPI156",
-     	"fieldLabel": "Merge Request Status Type",
-     	"fieldType": "chips",
-     	"section": "Issue Types Mapping",
-     	"tooltip": {
-     		"definition": "Merge Request Status Type <br> Example: MERGED <hr>"
-     	}
-     }, {
-     	"fieldName": "leadTimeConfigRepoTool",
-     	"fieldLabel": "Lead Time KPI calculation logic",
-     	"fieldType": "toggle",
-     	"toggleLabel": "Calculation based on Repo Data",
-        "section": "Custom Fields Mapping",
-     	"processorCommon": false,
-        "tooltip": {
-           "definition": "Disable State (Kpi from calculation based on Jira Release)",
-           "toggleDefinition" : "Disable State (Kpi from calculation based on Repo Data)"
-        }
-     }, {
-     	"fieldName": "toBranchForMRKPI156",
-     	"fieldLabel": "Production Branch Name",
-     	"fieldType": "text",
-        "section": "Custom Fields Mapping",
-     	"tooltip": {
-     		"definition": "Production Branch for merge Request <br> Example: master <hr>"
+	},
+	{
+       	"fieldName": "leadTimeConfigRepoTool",
+       	"fieldLabel": "Lead Time KPI calculation logic",
+       	"fieldType": "toggle",
+       	"toggleLabel": "Calculation based on Repo Data",
+          "section": "Custom Fields Mapping",
+       	"processorCommon": false,
+          "tooltip": {
+             "definition": "Disable State (Calculation is based on Jira Issues and Releases).",
+             "toggleDefinition" : "Enable State (Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.)"
+          }
+       }, {
+       	"fieldName": "toBranchForMRKPI156",
+       	"fieldLabel": "Production Branch Name",
+       	"fieldType": "text",
+          "section": "Custom Fields Mapping",
+       	"tooltip": {
+       		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
 
-     	}
-     },
-     {
-       "fieldName": "jiraIssueTypeKPI156",
-       "fieldLabel": "Issue type to be included",
-       "fieldType": "chips",
-       "fieldCategory": "Issue_Type",
-       "section": "Issue Types Mapping",
-       "tooltip": {
-             "definition": "All the issue types used by a project in Jira."
-         }
-     },
-    {
-       "fieldName": "jiraDodKPI156",
-       "fieldLabel": "Status to identify DOD",
-       "fieldType": "chips",
-       "fieldCategory": "workflow",
-       "section": "WorkFlow Status Mapping",
-       "tooltip": {
-             "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
-         }
+       	}
+       },
+       {
+        "fieldName": "jiraIssueTypeKPI156",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+              "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr> "
+          }
+        },
+      {
+         "fieldName": "jiraDodKPI156",
+         "fieldLabel": "Status to identify DOD",
+         "fieldType": "chips",
+         "fieldCategory": "workflow",
+         "section": "WorkFlow Status Mapping",
+         "tooltip": {
+               "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+           },
       }
-]);
+]
+);
