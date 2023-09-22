@@ -399,10 +399,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			Optional<ProjectToolConfig> projectToolConfigOpt) {
 		if (projectToolConfigOpt.isPresent()) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-			if (projectBasicConfig.getIsKanban()) {
+			if (projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("9");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			} else {
+			} else if (!projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("10");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
