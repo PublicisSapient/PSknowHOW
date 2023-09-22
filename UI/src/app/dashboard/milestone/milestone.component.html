@@ -20,7 +20,7 @@
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                               [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -71,7 +71,7 @@
                                 [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                                     <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height"
@@ -135,7 +135,7 @@
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                               [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -186,7 +186,7 @@
                                 [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                                     <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height"
@@ -251,7 +251,7 @@
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
                               [showExport]="false" [isShow]="true" [showChartView]="kpi?.kpiDetail?.boxType == 'chart'"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                              (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                              (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <div class="p-d-flex p-justify-around p-align-center w-100"
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId]?.length > 0;else noData">
@@ -302,7 +302,7 @@
                                 [showExport]="true" [isShow]="true"
                                 [showChartView]="kpi?.kpiDetail?.boxType == 'chart' && !(kpiChartData[kpi.kpiId] &&  kpiChartData[kpi.kpiId]?.length === 0 && kpiLoader === false)"
                                 [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
-                                (getCommentCountByKpi)="getKpiCommentsCount($event)">
+                                (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                                 <ng-container *ngIf="!noTabAccess else noDataAccess">
                                   <ng-container *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
                                     <div class="p-pl-3 p-pr-3 w-100 position-relative chart-container-height"
