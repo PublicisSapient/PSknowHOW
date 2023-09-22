@@ -1,5 +1,23 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -56,13 +74,21 @@ public class NotificationHandler {
 	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
 
 	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
-	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor_Template";
+	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor";
 
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 
+	/**
+	 *
+	 * @param key
+	 * @param value
+	 * @param projectBasicConfigId
+	 */
 	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
-		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
+		List<String> emailAddresses = new ArrayList<>();
+		emailAddresses.add("guptapurushottam123@gmail.com");
+		emailAddresses.add("akshat.shrivastav@publicissapient.com");
 
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {

@@ -41,15 +41,11 @@ public class JiraProcessorConfig {
 	// Do not remove pmd this is for ignoring TooManyFields violation
 	// it is required
 
-	private String cron;
 	private int pageSize;
 	private String startDate;
 	private long minsToReduce;
-	private String jiraBackLogStatusFlow;
-	private String jsonFileName;
 	private String customApiBaseUrl;
 	private Integer socketTimeOut;
-	private String estimationCriteria;
 	private int threadPoolSize;
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
@@ -57,9 +53,7 @@ public class JiraProcessorConfig {
 	private String jiraServerGetUserApi;
 	private boolean fetchMetadata;
 	private List<String> excludeLinks;
-	private String sprintJsonFileName;
 	private List<String> rcaValuesForCodeIssue;
-	private Integer sprintCountForCacheClean;
 	private String jiraCloudSprintReportApi;
 	private String jiraServerSprintReportApi;
 	private String jiraDirectTicketLinkKey;
@@ -70,15 +64,13 @@ public class JiraProcessorConfig {
 	private boolean considerStartDate;
 	private long subsequentApiCallDelayInMilli;
 
-	@Value("$spring.kafka.producer.bootstrap-servers")
-	private List<String> kafkaProducerBootStrapServers;
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 
-	private Map<String,String> mailTemplate;
+	private Map<String, String> mailTemplate;
 
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;

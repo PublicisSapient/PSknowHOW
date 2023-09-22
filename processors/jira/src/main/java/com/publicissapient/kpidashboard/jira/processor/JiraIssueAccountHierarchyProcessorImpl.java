@@ -80,7 +80,6 @@ public class JiraIssueAccountHierarchyProcessorImpl implements JiraIssueAccountH
 				.filter(x -> x.getLevel() > sprintHierarchyLevel.getLevel()).map(HierarchyLevel::getHierarchyLevelId)
 				.collect(Collectors.toList());
 
-		log.info("Fetching all hierarchy levels");
 		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findAll();
 		Map<Pair<String, String>, AccountHierarchy> existingHierarchy = accountHierarchyList.stream()
 				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
