@@ -34,9 +34,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFact
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
+import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -68,12 +66,14 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -142,11 +142,9 @@ public class DailyStandupServiceImplTest {
 		capacityKpiData.setCapacityPerSprint(12.0);
 
 		when(capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(any(), any())).thenReturn(capacityKpiData);
-		JiraIssueReleaseStatusDataFactory
-		jiraIssueReleaseStatusDataFactory = JiraIssueReleaseStatusDataFactory
+		JiraIssueReleaseStatusDataFactory jiraIssueReleaseStatusDataFactory = JiraIssueReleaseStatusDataFactory
 				.newInstance("/json/default/jira_issue_release_status.json");
 		jiraReleasStatus = createJiraReleasStatus(jiraIssueReleaseStatusDataFactory.getJiraIssueReleaseStatusList());
-
 
 	}
 
@@ -193,7 +191,8 @@ public class DailyStandupServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(anyList(), anyString())).thenReturn(storyList);
+		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
+				.thenReturn(new HashSet<>(storyList));
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(anyString(), anySet(),
 				anyList())).thenReturn(new HashSet<>(subTasks));
 		when(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(anyString())).thenReturn(jiraReleasStatus);

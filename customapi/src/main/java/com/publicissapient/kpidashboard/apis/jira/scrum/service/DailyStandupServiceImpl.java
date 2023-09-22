@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -66,6 +65,7 @@ import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AssigneeCapacity;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -77,6 +77,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -170,7 +171,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-			List<String> statusCategoryInprogress = (List<String>)resultMap.get(IN_PROGRESS_CATEGORY);
+			List<String> statusCategoryInprogress = (List<String>) resultMap.get(IN_PROGRESS_CATEGORY);
 			resultMap.put(CLOSE_STATUS, getClosedStatus(fieldMapping, sprintDetails));
 			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
@@ -305,9 +306,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 								taskType);
 					}
 
-					Set<JiraIssue> epics = new HashSet<>(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
+					Set<JiraIssue> epics = jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(
 							totalIssueList.stream().map(JiraIssue::getEpicLinked).collect(Collectors.toList()),
-							basicProjectConfigId.toString()));
+							leafNode.getProjectFilter().getBasicProjectConfigId().toString(),
+							NormalizedJira.ISSUE_TYPE.getValue());
 
 					// get sprint start and sprint end time
 					resultListMap.put(SPRINT, sprintDetails);
@@ -322,8 +324,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					// to get the capacity of assignees(Screen-1)
 					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
 							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
-					//DTS-28440, provide status category inprogress list for (Screen-2 filter)
-					resultListMap.put(IN_PROGRESS_CATEGORY,new ArrayList<>(jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId.toString()).getInProgressList().values()));
+					// DTS-28440, provide status category inprogress list for (Screen-2 filter)
+					resultListMap.put(IN_PROGRESS_CATEGORY, new ArrayList<>(jiraIssueReleaseStatusRepository
+							.findByBasicProjectConfigId(basicProjectConfigId.toString()).getInProgressList().values()));
 
 				}
 			}
@@ -703,7 +706,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	/*
 	 * filter Status on Second Screen
 	 */
-	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles, List<String> statusCategoryInprogress) {
+	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles,
+			List<String> statusCategoryInprogress) {
 		List<Filter> firstScreenFilter = new ArrayList<>();
 		// Role Filter on First Screen
 		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
@@ -713,8 +717,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		// Filters on Second Screen
 		List<Filter> secondScreenFilters = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(statusCategoryInprogress)) {
-			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2,
-					statusCategoryInprogress, FILTER_BUTTON, true, 1);
+			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2, statusCategoryInprogress, FILTER_BUTTON, true,
+					1);
 			secondScreenFilters.add(inProgressFilters);
 		}
 		Filter openFilter;
