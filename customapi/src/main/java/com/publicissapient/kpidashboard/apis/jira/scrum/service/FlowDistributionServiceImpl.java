@@ -114,6 +114,10 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI146())) {
 				jiraIssueCustomHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				jiraIssueCustomHistoryList = jiraIssueCustomHistoryList.stream()
+						.filter(jiraIssueCustomHistory -> fieldMapping.getJiraIssueTypeNamesKPI146()
+								.contains(jiraIssueCustomHistory.getStoryType()))
+						.collect(Collectors.toList());
 			}
 
 			resultListMap.put(BACKLOG_CUSTOM_HISTORY, new ArrayList<>(jiraIssueCustomHistoryList));

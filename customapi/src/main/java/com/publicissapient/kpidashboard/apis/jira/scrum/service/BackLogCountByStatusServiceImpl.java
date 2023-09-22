@@ -83,6 +83,9 @@ public class BackLogCountByStatusServiceImpl extends JiraKPIService<Integer, Lis
 			List<JiraIssue> totalJiraIssue = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI151())) {
 				totalJiraIssue = getBackLogJiraIssuesFromBaseClass();
+				totalJiraIssue = totalJiraIssue.stream().filter(
+						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI151().contains(jiraIssue.getTypeName()))
+						.collect(Collectors.toList());
 			}
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 		}

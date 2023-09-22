@@ -95,16 +95,14 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 			List<JiraIssue> totalJiraIssue = new ArrayList<>();
-			List<String> totalSprint = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI161())) {
 				totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
 				totalJiraIssue = totalJiraIssue.stream().filter(
 						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI161().contains(jiraIssue.getTypeName()))
 						.collect(Collectors.toList());
-				totalSprint = jiraService.getFutureSprintsList();
 			}
-
+			List<String> totalSprint = jiraService.getFutureSprintsList();
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
 		}

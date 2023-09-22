@@ -91,10 +91,10 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 			List<JiraIssueCustomHistory> issuesHistory = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI161())) {
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI148())) {
 				issuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
 				issuesHistory = issuesHistory.stream().filter(
-						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI161().contains(jiraIssue.getStoryType()))
+						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI148().contains(jiraIssue.getStoryType()))
 						.collect(Collectors.toList());
 			}
 
