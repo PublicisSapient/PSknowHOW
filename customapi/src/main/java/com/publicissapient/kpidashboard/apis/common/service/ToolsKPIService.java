@@ -41,7 +41,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
-			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name() , KPICode.PI_PREDICTABILITY.name()));
+			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name(), KPICode.PI_PREDICTABILITY.name()));
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -314,14 +314,15 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * calculate Aggregated MultipleValue based on projects and sprints wise data
+	 * 
 	 * @param kpiName
 	 * @param aggregatedValueList
 	 * @param node
 	 * @param kpiId
 	 * @return
 	 */
-	public List<DataCount> calculateAggregatedMultipleValueGroup(String kpiName, List<DataCount> aggregatedValueList, Node node,
-			String kpiId) {
+	public List<DataCount> calculateAggregatedMultipleValueGroup(String kpiName, List<DataCount> aggregatedValueList,
+			Node node, String kpiId) {
 
 		Map<String, List<DataCount>> projectWiseDataCount = aggregatedValueList.stream()
 				.collect(Collectors.groupingBy(DataCount::getSProjectName, Collectors.toList()));
@@ -364,6 +365,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * aggregated Data Values based on multi line chart
+	 * 
 	 * @param kpiId
 	 * @param dataCount
 	 * @param valueMultiLine
@@ -422,12 +424,13 @@ public abstract class ToolsKPIService<R, S> {
 
 	/**
 	 * Collect Aggregated Data based on multi Line chart type
+	 * 
 	 * @param valueMultiLine
 	 * @param dc
 	 */
 	private void collectAggregatedDataBasedOnLineType(Map<String, List<DataValue>> valueMultiLine, DataCount dc) {
 		dc.getDataValue().stream().forEach(dataValue -> {
-			valueMultiLine.computeIfPresent(dataValue.getLineType() , (k , v) -> {
+			valueMultiLine.computeIfPresent(dataValue.getLineType(), (k, v) -> {
 				v.add(dataValue);
 				return v;
 			});
@@ -437,7 +440,7 @@ public abstract class ToolsKPIService<R, S> {
 		});
 	}
 
-	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc ) {
+	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc) {
 		collectHoverDataBaseOnLineType(dc.getHoverValue(), hoverValue);
 	}
 
@@ -556,10 +559,7 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-					Pair<String, String> maturityValue = null;
-					if (null != configHelperService.calculateMaturity().get(kpiId)) {
-						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
-					}
+					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					String aggregateValue = null;
 					String maturity = null;
 					if (maturityValue != null) {
@@ -576,7 +576,8 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * This method return trend value for simple non filter and circle KPI (like DORA KPI)
+	 * This method return trend value for simple non filter and circle KPI (like
+	 * DORA KPI)
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
@@ -584,8 +585,8 @@ public abstract class ToolsKPIService<R, S> {
 	 *            nodeWiseKPIValue
 	 * @return trend values
 	 */
-	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest, Map<Pair<String, String>, Node> nodeWiseKPIValue,
-			KPICode kpiCode) {
+	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,
+			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
@@ -600,10 +601,7 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-					Pair<String, String> maturityValue = null;
-					if (null != configHelperService.calculateMaturity().get(kpiId)) {
-						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
-					}
+					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
 							.map(val -> (R) val.getValue()).collect(Collectors.toList());
 					R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
@@ -613,13 +611,21 @@ public abstract class ToolsKPIService<R, S> {
 						aggregateValue = maturityValue.getValue();
 						maturity = maturityValue.getKey();
 					}
-					trendValues
-							.add(new DataCount(node.getName(), maturity, aggregateValue, getList(dataCounts, kpiName) , calculatedAggValue));
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
+							getList(dataCounts, kpiName), calculatedAggValue));
 
 				}
 			}
 		}
 		return trendValues;
+	}
+
+	private Pair<String, String> getMaturityValuePair(String kpiName, String kpiId, List<DataCount> dataCounts) {
+		Pair<String, String> maturityValue = null;
+		if (null != configHelperService.calculateMaturity().get(kpiId)) {
+			maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
+		}
+		return maturityValue;
 	}
 
 	/**
@@ -650,10 +656,7 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						Pair<String, String> maturityValue = null;
-						if (null != configHelperService.calculateMaturity().get(kpiId)) {
-							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
-						}
+						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;
 						if (maturityValue != null) {
@@ -672,7 +675,8 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * This method return trend value for KPIs containing filter or map as value and circle KPI (like DORA KPI)
+	 * This method return trend value for KPIs containing filter or map as value and
+	 * circle KPI (like DORA KPI)
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
@@ -699,10 +703,7 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						Pair<String, String> maturityValue = null;
-						if (null != configHelperService.calculateMaturity().get(kpiId)) {
-							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
-						}
+						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
 						R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
@@ -917,21 +918,22 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	public Double calculateKpiValueForDouble(List<Double> valueList, String kpiId) {
 		Double calculatedValue = 0.0;
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.PERCENTILE
+						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				calculatedValue = AggregationUtils.percentiles(valueList, 90.0D);
 			} else {
 				calculatedValue = AggregationUtils.percentiles(valueList, customApiConfig.getPercentileValue());
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = AggregationUtils.median(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = AggregationUtils.average(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
 		}
 		return round(calculatedValue);
@@ -947,22 +949,23 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return result
 	 */
 	public Long calculateKpiValueForLong(List<Long> valueList, String kpiId) {
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.PERCENTILE
+						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
 			} else {
 				Double percentile = customApiConfig.getPercentileValue();
 				return AggregationUtils.percentilesLong(valueList, percentile);
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			return AggregationUtils.getMedianForLong(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			return AggregationUtils.averageLong(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId)) ||
-				Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			return AggregationUtils.sumLong(valueList);
 		}
 		return AggregationUtils.percentilesLong(valueList, 90d);
