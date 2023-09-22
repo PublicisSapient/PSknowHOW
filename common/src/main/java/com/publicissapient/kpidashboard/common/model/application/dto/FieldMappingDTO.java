@@ -36,9 +36,6 @@ import lombok.Setter;
 // @Data
 @Getter
 @Setter
-// @Builder
-// @AllArgsConstructor
-// @NoArgsConstructor
 @SuppressWarnings("PMD.TooManyFields")
 public class FieldMappingDTO extends BasicModel {
 
@@ -152,26 +149,27 @@ public class FieldMappingDTO extends BasicModel {
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;
 
-	private String jiraDor;
-	private String jiraDorKPI3;
+    private String jiraDor;
+    private List<String> jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;
 	private List<String> jiraIssueTypeKPI3;
 
-	private List<String> jiraStoryIdentification;
-	private List<String> jiraStoryIdentificationKPI129;
-	private List<String> jiraStoryIdentificationKpi40;
+private List<String> jiraStoryIdentification;
+private List<String> jiraStoryIdentificationKPI129;
+private List<String> jiraStoryIdentificationKpi40;
+private List<String> jiraStoryIdentificationKPI164;
 
-	private String jiraLiveStatus;
-	private String jiraLiveStatusKPI152;
-	private String jiraLiveStatusKPI151;
-	private String jiraLiveStatusKPI3;
-	private String jiraLiveStatusLTK;
-	private String jiraLiveStatusNOPK;
-	private String jiraLiveStatusNOSK;
-	private String jiraLiveStatusNORK;
-	private String jiraLiveStatusOTA;
-	private String jiraLiveStatusKPI127;
+private String jiraLiveStatus;
+private String jiraLiveStatusKPI152;
+private String jiraLiveStatusKPI151;
+private List<String> jiraLiveStatusKPI3;
+private String jiraLiveStatusLTK;
+private String jiraLiveStatusNOPK;
+private String jiraLiveStatusNOSK;
+private String jiraLiveStatusNORK;
+private String jiraLiveStatusOTA;
+private String jiraLiveStatusKPI127;
 
 	private List<String> ticketCountIssueType;
 
