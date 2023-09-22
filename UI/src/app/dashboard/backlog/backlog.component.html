@@ -149,7 +149,7 @@
                                 [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                 [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
                                 [selectedtype]="selectedtype"></app-groupstackchart>
-                              <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                              <app-multiline *ngSwitchCase="'line'"  [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                 [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                 [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                 [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
