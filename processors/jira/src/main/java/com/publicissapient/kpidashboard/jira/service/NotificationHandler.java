@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -86,9 +85,7 @@ public class NotificationHandler {
 	 * @param projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
-		List<String> emailAddresses = new ArrayList<>();
-		emailAddresses.add("guptapurushottam123@gmail.com");
-		emailAddresses.add("akshat.shrivastav@publicissapient.com");
+		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
 
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
