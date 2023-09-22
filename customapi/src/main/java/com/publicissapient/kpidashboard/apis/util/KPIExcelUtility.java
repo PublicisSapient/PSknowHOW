@@ -1236,7 +1236,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Method to populate assignee name in kpi's
-	 *
+	 * 
 	 * @param jiraIssue
 	 * @param object
 	 */
@@ -1251,7 +1251,7 @@ public class KPIExcelUtility {
 
 	/**
 	 * Common method to populate modal window of Iteration KPI's
-	 *
+	 * 
 	 * @param overAllModalValues
 	 * @param modalValues
 	 * @param jiraIssue
@@ -1357,7 +1357,7 @@ public class KPIExcelUtility {
 	/**
 	 * This Method is used for fetching status and Weekname to show the data in
 	 * excel data record
-	 *
+	 * 
 	 * @param weekAndTypeMap
 	 * @param e
 	 */

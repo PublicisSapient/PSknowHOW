@@ -3144,8 +3144,8 @@ db.getCollection('kpi_master').insertMany(
 	"showTrend": true,
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
-	"calculateMaturity": true,
- },
+	"calculateMaturity": true
+  },
   {
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
@@ -7383,7 +7383,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraLiveStatusKPI3",
         "fieldLabel": "Live Status - Lead Time",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -8329,7 +8329,7 @@ db.getCollection('field_mapping_structure').insertMany(
 			"definition": "All issue types that are used as/equivalent to Story.",
 
 		}
-	},
+    },
     {
      	"fieldName": "mergeRequestStatusKPI156",
      	"fieldLabel": "Merge Request Status Type",
@@ -8377,5 +8377,6 @@ db.getCollection('field_mapping_structure').insertMany(
        "section": "WorkFlow Status Mapping",
        "tooltip": {
              "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
-         },
-}]);
+         }
+      }
+]);
