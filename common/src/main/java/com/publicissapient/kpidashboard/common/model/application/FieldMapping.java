@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -29,23 +28,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
@@ -79,13 +72,9 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentAVR;
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
-	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
-	@Builder.Default
 	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
-	@Builder.Default
 	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
-	@Builder.Default
 	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
@@ -273,13 +262,10 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressKPI119;
 	private List<String> jiraStatusForInProgressKPI154;
 
-	@Builder.Default
 	private String estimationCriteria = "Story Point";
 
-	@Builder.Default
 	private Double storyPointToHourMapping = 8D;
 
-	@Builder.Default
 	private Double workingHoursDayCPT = 6D;
 
 	// additional filter config fields
@@ -376,7 +362,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
 	private List<String> jiraIterationIssuetypeKPI39;
-	//to get the first status to identify start of Development
+	// to get the first status to identify start of Development
 	private List<String> jiraStatusStartDevelopmentKPI154;
 
 	private boolean uploadData;
@@ -388,7 +374,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private String notificationEnabler="On";
+	private String notificationEnabler = "On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
@@ -411,7 +397,6 @@ public class FieldMapping extends BasicModel {
 	public void setJiraIssueTypeNames(String[] jiraIssueTypeNames) {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
 	}
-
 
 	public List<String> getJiraStatusForInProgressKPI154() {
 		return jiraStatusForInProgressKPI119;
