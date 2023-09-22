@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
 import java.io.BufferedReader;
@@ -85,6 +102,14 @@ public class JiraCommonService {
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
 
+	/**
+	 *
+	 * @param projectConfig
+	 * @param url
+	 * @param krb5Client
+	 * @return
+	 * @throws IOException
+	 */
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
@@ -99,6 +124,13 @@ public class JiraCommonService {
 		}
 	}
 
+	/**
+	 *
+	 * @param url
+	 * @param connectionOptional
+	 * @return
+	 * @throws IOException
+	 */
 	public String getDataFromServer(URL url, Optional<Connection> connectionOptional) throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
@@ -134,15 +166,35 @@ public class JiraCommonService {
 		return sb.toString();
 	}
 
+	/**
+	 *
+	 * @param encryptedPassword
+	 * @return
+	 */
 	public String decryptJiraPassword(String encryptedPassword) {
 		return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
 	}
 
+	/**
+	 *
+	 * @param username
+	 * @param password
+	 * @return
+	 */
 	public String encodeCredentialsToBase64(String username, String password) {
 		String cred = username + ":" + password;
 		return Base64.getEncoder().encodeToString(cred.getBytes());
 	}
 
+	/**
+	 *
+	 * @param projectConfig
+	 * @param clientIncoming
+	 * @param krb5Client
+	 * @param pageNumber
+	 * @param deltaDate
+	 * @return
+	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String deltaDate) {
 
@@ -166,6 +218,14 @@ public class JiraCommonService {
 		return issues;
 	}
 
+	/**
+	 *
+	 * @param projectConfig
+	 * @param deltaDate
+	 * @param pageStart
+	 * @return
+	 * @throws InterruptedException
+	 */
 	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
 		SearchResult searchResult = null;
@@ -215,6 +275,15 @@ public class JiraCommonService {
 		return searchResult;
 	}
 
+	/**
+	 *
+	 * @param projectConfig
+	 * @param clientIncoming
+	 * @param pageNumber
+	 * @param boardId
+	 * @param deltaDate
+	 * @return
+	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) {
 
@@ -239,6 +308,15 @@ public class JiraCommonService {
 		return issues;
 	}
 
+	/**
+	 *
+	 * @param boardId
+	 * @param projectConfig
+	 * @param deltaDate
+	 * @param pageStart
+	 * @return
+	 * @throws InterruptedException
+	 */
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
 		SearchResult searchResult = null;
@@ -276,13 +354,12 @@ public class JiraCommonService {
 		return searchResult;
 	}
 
-	private int getTotal(SearchResult searchResult) {
-		if (searchResult != null) {
-			return searchResult.getTotal();
-		}
-		return 0;
-	}
-
+	/**
+	 *
+	 * @param projectConfig
+	 * @param krb5Client
+	 * @return
+	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();
 		try {

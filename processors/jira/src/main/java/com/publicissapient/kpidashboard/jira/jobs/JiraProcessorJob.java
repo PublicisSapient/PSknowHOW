@@ -22,6 +22,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -105,7 +106,7 @@ public class JiraProcessorJob {
 
 	@Autowired
 	JobListenerScrum jobListenerScrum;
-	
+
 	@Autowired
 	JobListenerScrum jobListenerKanban;
 
@@ -121,6 +122,8 @@ public class JiraProcessorJob {
 	@Autowired
 	KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;
 
+	final int count = 1;
+
 	/** Scrum projects for board job : Start **/
 	/**
 	 * @return Job
@@ -129,9 +132,10 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueScrumBoardJob() {
 		return jobBuilderFactory.get("FetchIssueScrum Board Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(sprintReportStep()).next(processProjectStatusStep())
-				.next(fetchIssueScrumBoardChunkStep()).next(scrumReleaseDataStep()).listener(jobListenerScrum)
-				.build();
+				.start(metaDataStep()).next(sprintReportStep())
+				// .next(testExitStep())
+				.next(processProjectStatusStep()).next(fetchIssueScrumBoardChunkStep()).next(scrumReleaseDataStep())
+				.listener(jobListenerScrum).build();
 	}
 
 	private Step metaDataStep() {
@@ -189,7 +193,8 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueKanbanBoardJob() {
 		return jobBuilderFactory.get("FetchIssueKanban Job").incrementer(new RunIdIncrementer()).start(metaDataStep())
-				.next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
+				.next(fetchIssueKanbanBoardChunkStep()).next(kanbanReleaseDataStep()).listener(jobListenerKanban)
+				.build();
 	}
 
 	@TrackExecutionTime
@@ -247,4 +252,15 @@ public class JiraProcessorJob {
 		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
 				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter).build();
 	}
+
+	@Bean
+	public Step testExitStep() {
+		return stepBuilderFactory.get("testExitStep").tasklet((contribution, chunkContext) -> {
+			if (count == 1) {
+				throw new RuntimeException("Exiting job for testing.");
+			}
+			return RepeatStatus.FINISHED;
+		}).build();
+	}
+
 }
