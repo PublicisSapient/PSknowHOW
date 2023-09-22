@@ -31,43 +31,14 @@ export class KpiTableComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     
-    let proj = Object.keys(changes['kpiData']?.currentValue)?.[0];
-    let condition = changes['kpiData']?.currentValue[proj]?.length > 0;
-    
     if (changes['kpiData']?.currentValue != undefined && changes['kpiData']?.currentValue != changes['kpiData']?.previousValue) {
       this.kpiData = changes['kpiData']?.currentValue;
-      if(condition){
-        // this.handleLoader();
-      }
     }
     if (changes['colorObj']?.currentValue != changes['colorObj']?.previousValue) {
       this.assignColorToNodes();
     }
     if (changes['kpiConfigData']?.currentValue != changes['kpiConfigData']?.previousValue) {
       this.kpiConfigData = changes['kpiConfigData']?.currentValue;
-    }
-  }
-
-  handleLoader() {
-    this.loader = true;
-    let kpisCount = 0;
-    Object.values(this.kpiConfigData)?.map(x => {
-      if (x == true) {
-        kpisCount++;
-      }
-    });
-    let projectWiseLoader = {};
-    for (let key in this.kpiData) {
-      projectWiseLoader[key] = true;
-      if (this.kpiData[key]?.length == kpisCount) {
-        projectWiseLoader[key] = false;
-      }
-    }
-    let kpiLoaderValues = Object.values(projectWiseLoader);
-    if (!kpiLoaderValues.includes(true)) {
-      this.loader = false;
-    } else {
-      this.loader = true;
     }
   }
 
