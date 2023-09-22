@@ -268,27 +268,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private List<Issue> fetchEpics(KerberosClient krb5Client, ProcessorJiraRestClient client) {
 
 		List<Issue> epicIssues = new ArrayList<>();
-		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
-
-			log.info("Reading epics for project : {} boardid : {} ", projectConfFieldMapping.getProjectName(), boardId);
-			epicIssues.clear();
-
-			try {
-				epicIssues.addAll(fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client));
-			} catch (Exception e) {
-				log.error("Exception occurred while fetching epic issues:", e);
-				throw e;
-			}
-			return null;
-		};
-
+		log.info("Reading epics for project : {} boardid : {} ", projectConfFieldMapping.getProjectName(), boardId);
 		try {
-			retryHelper.executeWithRetry(retryableOperation);
+			epicIssues = fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
 		} catch (Exception e) {
-			log.error("All retry attempts failed while fetching issues.", e);
+			log.error("Exception occurred while fetching epic issues:", e);
 		}
 		return epicIssues;
-
 	}
 
 }

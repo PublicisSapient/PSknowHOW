@@ -285,25 +285,19 @@ public class JiraCommonService {
 	 * @return
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) throws InterruptedException {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
 		if (client == null) {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
-			try {
-
 				String queryDate = DateUtil
 						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
 								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
 
 				SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
 				issues = JiraHelper.getIssuesFromResult(searchResult);
-
-			} catch (InterruptedException e) {
-				log.error("Interrupted exception thrown.", e);
-			}
 		}
 		return issues;
 	}
@@ -320,7 +314,6 @@ public class JiraCommonService {
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
 		SearchResult searchResult = null;
-		int totalIssue = 0;
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -330,7 +323,6 @@ public class JiraCommonService {
 					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
 			String query = StringUtils.EMPTY;
-			try {
 				query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
 				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
 				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
@@ -341,13 +333,6 @@ public class JiraCommonService {
 							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 							searchResult.getTotal()));
 				}
-			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-				}
-			}
 
 		}
 
