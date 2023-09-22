@@ -2763,7 +2763,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropDown",
+    "kpiFilter": "multiSelectDropDown",
     "boxType": "chart",
     "calculateMaturity": false
   },
