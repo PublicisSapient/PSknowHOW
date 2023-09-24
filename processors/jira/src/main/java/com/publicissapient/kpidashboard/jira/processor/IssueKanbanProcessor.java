@@ -62,7 +62,7 @@ public class IssueKanbanProcessor implements ItemProcessor<ReadData, CompositeRe
 	@Override
 	public CompositeResult process(ReadData readData) throws Exception {
 		CompositeResult kanbanCompositeResult = null;
-		log.info("Kanban processing started for the project : {}",
+		log.debug("Kanban processing started for the project : {}",
 				readData.getProjectConfFieldMapping().getProjectName());
 		KanbanJiraIssue kanbanJiraIssue = convertIssueToKanbanJiraIssue(readData);
 		if (null != kanbanJiraIssue) {

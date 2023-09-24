@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -97,6 +98,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	int boardIssueSize = 0;
 
 	private String projectId;
+
+	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 
 	@Autowired
 	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
@@ -189,6 +193,16 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 						deltaDate);
 				boardIssueSize = issues.size();
 				pageNumber += pageSize;
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+				throw e;
+			} catch (InterruptedException e) {
+				log.error("Interrupted exception thrown.", e);
+				throw e;
 			} catch (Exception e) {
 				log.error("Exception while fetching issues for project: {} boardid: {}, page No: {}",
 						projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize, e);
@@ -202,7 +216,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		try {
 			retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
-			log.error("All retry attempts failed while fetching issues.", e);
+			log.error("All retry attempts failed while fetching issues.");
 		}
 	}
 

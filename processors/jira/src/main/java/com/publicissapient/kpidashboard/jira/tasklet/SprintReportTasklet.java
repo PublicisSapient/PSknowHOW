@@ -84,7 +84,6 @@ public class SprintReportTasklet implements Tasklet {
 			KerberosClient krb5Client = null;
 			SprintDetails sprintDetails = sprintRepository.findBySprintID(sprintId);
 			List<String> originalBoardIds = sprintDetails.getOriginBoardId();
-			Set<SprintDetails> setOfSprintDetails = null;
 			for (String boardId : originalBoardIds) {
 				List<SprintDetails> sprintDetailsList = fetchSprintReport.getSprints(projConfFieldMapping, boardId,
 						krb5Client);
@@ -92,11 +91,11 @@ public class SprintReportTasklet implements Tasklet {
 					// filtering the sprint need to update
 					Set<SprintDetails> sprintDetailSet = sprintDetailsList.stream()
 							.filter(s -> s.getSprintID().equalsIgnoreCase(sprintId)).collect(Collectors.toSet());
-					setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
+					Set<SprintDetails> setOfSprintDetails = fetchSprintReport.fetchSprints(projConfFieldMapping, sprintDetailSet,
 							krb5Client,true);
+					sprintRepository.saveAll(setOfSprintDetails);
 				}
 			}
-			sprintRepository.saveAll(setOfSprintDetails);
 		} catch (Exception e) {
 			log.error("Exception while fetching sprint data for the sprint : {}", sprintId, e);
 		}

@@ -76,6 +76,7 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 			fetchDetails.setErrorInFetch(true);
 			fetchDetails.setFetchSuccessful(false);
 		}
+		log.info("Saving sprint Trace Log for sprintId: {}", sprintId);
 		sprintTraceLogRepository.save(fetchDetails);
 
 	}

@@ -36,11 +36,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
+import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.json.simple.JSONArray;
@@ -99,6 +101,9 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
+
 	AssigneeDetails assigneeDetails;
 
 	@Override
@@ -117,6 +122,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			return jiraIssue;
 		}
 
+		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		Set<String> issueTypeNames = Arrays.stream(fieldMapping.getJiraIssueTypeNames()).map(String::toLowerCase)
 				.collect(Collectors.toSet());
 		IssueType issueType = issue.getIssueType();
@@ -125,6 +131,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (issueTypeNames
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
 			Map<String, String> issueEpics = new HashMap<>();
+
+			jiraIssue.setProcessorId(jiraProcessorId);
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
 			jiraIssue = getJiraIssue(projectConfig, issueId);
@@ -358,13 +366,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
 		setEstimate(jiraIssue, fields, fieldMapping);
-		Integer timeSpent = 0;
-		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
-			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
-		}
-		jiraIssue.setTimeSpentInMinutes(timeSpent);
-
+		setAggregateTimeEstimates(jiraIssue, fields);
 		jiraIssue.setChangeDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setUpdateDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(changeDate)));
 		jiraIssue.setIsDeleted(JiraConstants.FALSE);
@@ -378,6 +380,28 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		// Created Date
 		jiraIssue.setCreatedDate(JiraProcessorUtil.getFormattedDate(JiraProcessorUtil.deodeUTF8String(createdDate)));
 
+	}
+
+	private void setAggregateTimeEstimates(JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		Integer timeSpent = 0;
+		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
+		}
+		jiraIssue.setTimeSpentInMinutes(timeSpent);
+
+		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
+
+		}
+		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
+				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
+					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
+
+		}
 	}
 
 	private void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping) {

@@ -73,14 +73,15 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 		if (null != jiraIssue) {
 			compositeResult = new CompositeResult();
 			JiraIssueCustomHistory jiraIssueCustomHistory = convertIssueToJiraIssueHistory(readData, jiraIssue);
-			Set<SprintDetails> sprintDetailsSet = processSprintData(readData);
+			Set<SprintDetails> sprintDetailsSet = null;
 			Set<AccountHierarchy> accountHierarchies = null;
 			AssigneeDetails assigneeDetails = null;
 			if (!readData.isSprintFetch()) {
+				sprintDetailsSet = processSprintData(readData);
 				accountHierarchies = createAccountHierarchies(jiraIssue, readData, sprintDetailsSet);
 				assigneeDetails = createAssigneeDetails(readData, jiraIssue);
 			}
-			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet) && !readData.isSprintFetch()) {
+			if (StringUtils.isEmpty(readData.getBoardId()) && CollectionUtils.isNotEmpty(sprintDetailsSet)) {
 				compositeResult.setSprintDetailsSet(sprintDetailsSet);
 			}
 			compositeResult.setJiraIssue(jiraIssue);
@@ -109,7 +110,7 @@ public class IssueScrumProcessor implements ItemProcessor<ReadData, CompositeRes
 
 	private Set<SprintDetails> processSprintData(ReadData readData) {
 		return sprintDataProcessor.processSprintData(readData.getIssue(), readData.getProjectConfFieldMapping(),
-				readData.getBoardId(),readData.isSprintFetch());
+				readData.getBoardId());
 	}
 
 	private Set<AccountHierarchy> createAccountHierarchies(JiraIssue jiraIssue, ReadData readData,

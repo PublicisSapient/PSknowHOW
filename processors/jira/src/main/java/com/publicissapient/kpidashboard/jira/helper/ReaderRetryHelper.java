@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.helper;
 
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -24,10 +26,13 @@ import org.springframework.retry.support.RetryTemplate;
 
 public class ReaderRetryHelper {
 
+	public static final int MAX_RETRY_ATTEMPT=3;
+	public static final long TIME_INTERVAL_BETWEEN_RETRY=3000;
+
 	/**
 	 * 
 	 * @param operation
-	 * @return
+	 * @return <T>
 	 * @param <T>
 	 * @throws Exception
 	 */
@@ -37,13 +42,13 @@ public class ReaderRetryHelper {
 
 		// Configure the retry policy (maximum of 3 retry attempts)
 		SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
-		retryPolicy.setMaxAttempts(3);
+		retryPolicy.setMaxAttempts(MAX_RETRY_ATTEMPT);
 		retryTemplate.setRetryPolicy(retryPolicy);
 
 		// Configure the backoff policy (fixed delay of 3000 milliseconds between
 		// retries)
 		FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
-		backOffPolicy.setBackOffPeriod(7000);
+		backOffPolicy.setBackOffPeriod(TIME_INTERVAL_BETWEEN_RETRY);
 		retryTemplate.setBackOffPolicy(backOffPolicy);
 
 		return retryTemplate.execute(context -> operation.execute());

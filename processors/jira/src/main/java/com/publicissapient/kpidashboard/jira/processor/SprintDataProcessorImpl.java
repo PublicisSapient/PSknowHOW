@@ -54,7 +54,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	private FetchSprintReport fetchSprintReport;
 
 	@Override
-	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, boolean isSprintFetch) {
+	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) {
 		log.info("creating sprint report for the project : {}", projectConfig.getProjectName());
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
@@ -79,9 +79,9 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 			}
 		}
 		KerberosClient krb5Client = null;
-		if (StringUtils.isEmpty(boardId) && !isSprintFetch) {
+		if (StringUtils.isEmpty(boardId)) {
 			try {
-				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client,isSprintFetch);
+				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client,false);
 			} catch (InterruptedException e) {
 				log.error("JIRA Processor | Failed to fetch Sprint {}", e);
 			}

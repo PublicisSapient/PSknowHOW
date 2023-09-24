@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
@@ -121,6 +122,9 @@ public class JiraProcessorJob {
 	@Autowired
 	KanbanJiraIssueJqlWriterListener kanbanJiraIssueJqlWriterListener;
 
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
+
 	/** Scrum projects for board job : Start **/
 	/**
 	 * @return Job
@@ -148,7 +152,7 @@ public class JiraProcessorJob {
 
 	@TrackExecutionTime
 	private Step fetchIssueScrumBoardChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(50)
+		return stepBuilderFactory.get("Fetch Issue-Scrum-board").<ReadData, CompositeResult>chunk(getChunkSize())
 				.reader(issueBoardReader).processor(issueScrumProcessor).writer(issueScrumWriter)
 				.listener(jiraIssueBoardWriterListener).build();
 	}
@@ -173,7 +177,7 @@ public class JiraProcessorJob {
 
 	@TrackExecutionTime
 	private Step fetchIssueScrumJqlChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Scrum-Jql").<ReadData, CompositeResult>chunk(50)
+		return stepBuilderFactory.get("Fetch Issue-Scrum-Jql").<ReadData, CompositeResult>chunk(getChunkSize())
 				.reader(issueJqlReader).processor(issueScrumProcessor).writer(issueScrumWriter)
 				.listener(jiraIssueJqlWriterListener).build();
 	}
@@ -194,7 +198,7 @@ public class JiraProcessorJob {
 
 	@TrackExecutionTime
 	private Step fetchIssueKanbanBoardChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Kanban-board").<ReadData, CompositeResult>chunk(50)
+		return stepBuilderFactory.get("Fetch Issue-Kanban-board").<ReadData, CompositeResult>chunk(getChunkSize())
 				.reader(issueBoardReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
 				.listener(kanbanJiraIssueWriterListener).build();
 	}
@@ -219,7 +223,7 @@ public class JiraProcessorJob {
 
 	@TrackExecutionTime
 	private Step fetchIssueKanbanJqlChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(50)
+		return stepBuilderFactory.get("Fetch Issue-Kanban-Jql").<ReadData, CompositeResult>chunk(getChunkSize())
 				.reader(issueJqlReader).processor(issueKanbanProcessor).writer(issueKanbanWriter)
 				.listener(kanbanJiraIssueJqlWriterListener).build();
 	}
@@ -244,8 +248,12 @@ public class JiraProcessorJob {
 
 	@TrackExecutionTime
 	private Step fetchIssueSprintChunkStep() {
-		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(50)
+		return stepBuilderFactory.get("Fetch Issue-Sprint").<ReadData, CompositeResult>chunk(getChunkSize())
 				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter).build();
+	}
+
+	private Integer getChunkSize(){
+		return jiraProcessorConfig.getChunkSize();
 	}
 
 }

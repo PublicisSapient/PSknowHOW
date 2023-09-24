@@ -34,5 +34,5 @@ public interface SprintDataProcessor {
 	 * @param boardId
 	 * @return Set<SprintDetails>
 	 */
-	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId, boolean isSprintFetch);
+	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId);
 }
