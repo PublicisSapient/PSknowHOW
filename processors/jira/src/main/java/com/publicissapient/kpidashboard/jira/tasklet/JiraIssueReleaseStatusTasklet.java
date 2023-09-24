@@ -67,9 +67,12 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	/**
 	 *
 	 * @param sc
+	 *         StepContribution
 	 * @param cc
+	 *         ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
+	 * Exception
 	 */
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {

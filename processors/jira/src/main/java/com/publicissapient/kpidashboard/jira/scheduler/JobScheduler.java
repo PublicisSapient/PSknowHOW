@@ -64,10 +64,6 @@ public class JobScheduler {
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
 
-	@Qualifier("fetchIssueSprintJob")
-	@Autowired
-	Job fetchIssueSprintJob;
-
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
 
@@ -76,12 +72,11 @@ public class JobScheduler {
 
 	/**
 	 * This method is used to start scrum job setup with board
-	 * 
-	 * @throws Exception
+	 *
 	 */
 	@Async
 	@Scheduled(cron = "${jira.scrumBoardCron}")
-	public void startScrumBoardJob() throws Exception {
+	public void startScrumBoardJob() {
 		log.info("Request come for job for Scrum project configured with board via controller");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -108,12 +103,11 @@ public class JobScheduler {
 
 	/**
 	 * This method is used to start scrum job setup with JQL
-	 * 
-	 * @throws Exception
+	 *
 	 */
 	@Async
 	@Scheduled(cron = "${jira.scrumJqlCron}")
-	public void startScrumJqlJob() throws Exception {
+	public void startScrumJqlJob() {
 		log.info("Request coming for job for Scrum project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -140,12 +134,11 @@ public class JobScheduler {
 
 	/**
 	 * This method is used to start Kanban job setup with Board
-	 * 
-	 * @throws Exception
+	 *
 	 */
 	@Async
 	@Scheduled(cron = "${jira.kanbanBoardCron}")
-	public void startKanbanJob() throws Exception {
+	public void startKanbanJob() {
 		log.info("Request coming for job");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
@@ -170,12 +163,11 @@ public class JobScheduler {
 
 	/**
 	 * This method is used to start Kanban job setup with JQL
-	 * 
-	 * @throws Exception
+	 *
 	 */
 	@Async
 	@Scheduled(cron = "${jira.kanbanJqlCron}")
-	public void startKanbanJqlJob() throws Exception {
+	public void startKanbanJqlJob() {
 		log.info("Request coming for job for Kanban project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,

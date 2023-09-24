@@ -17,8 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.helper;
 
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.retry.backoff.FixedBackOffPolicy;
 import org.springframework.retry.policy.SimpleRetryPolicy;
@@ -32,9 +30,12 @@ public class ReaderRetryHelper {
 	/**
 	 * 
 	 * @param operation
+	 * RetryableOperation<T>
 	 * @return <T>
 	 * @param <T>
+	 *     RetryableOperation<T>
 	 * @throws Exception
+	 * Exception
 	 */
 	@Retryable
 	public <T> T executeWithRetry(RetryableOperation<T> operation) throws Exception {

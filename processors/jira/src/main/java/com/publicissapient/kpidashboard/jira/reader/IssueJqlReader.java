@@ -119,11 +119,11 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
 				if (null == issueIterator) {
 					pageNumber = 0;
-					fetchIssues(krb5Client, client);
+					fetchIssues(client);
 				}
 
 				if (null != issueIterator && !issueIterator.hasNext()) {
-					fetchIssues(krb5Client, client);
+					fetchIssues(client);
 				}
 
 				if (null != issueIterator && issueIterator.hasNext()) {
@@ -149,11 +149,11 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	}
 
 	@TrackExecutionTime
-	private void fetchIssues(KerberosClient krb5Client, ProcessorJiraRestClient client) {
+	private void fetchIssues(ProcessorJiraRestClient client) {
 		log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 				pageNumber / pageSize);
 		String deltaDate = getDeltaDateFromTraceLog();
-		issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, krb5Client, pageNumber,
+		issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
 				deltaDate);
 		issueSize = issues.size();
 		pageNumber += pageSize;

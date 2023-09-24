@@ -102,11 +102,10 @@ public class JobController {
 	 * This method is used to start job for the Scrum projects with board setup
 	 * 
 	 * @return ResponseEntity
-	 * @throws Exception
 	 */
 
 	@GetMapping("/startscrumboardjob")
-	public ResponseEntity<String> startScrumBoardJob() throws Exception {
+	public ResponseEntity<String> startScrumBoardJob() {
 		log.info("Request come for job for Scrum project configured with board via controller");
 		int totalProjects = 0;
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -139,11 +138,10 @@ public class JobController {
 	 * This method is used to start job for the Scrum projects with JQL setup
 	 * 
 	 * @return ResponseEntity
-	 * @throws Exception
 	 */
 
 	@GetMapping("/startscrumjqljob")
-	public ResponseEntity<String> startScrumJqlJob() throws Exception {
+	public ResponseEntity<String> startScrumJqlJob() {
 		log.info("Request coming for job for Scrum project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -190,10 +188,9 @@ public class JobController {
 	 * This method is used to start job for the Kanban projects with board setup
 	 * 
 	 * @return ResponseEntity
-	 * @throws Exception
 	 */
 	@GetMapping("/startkanbanboardjob")
-	public ResponseEntity<String> startKanbanJob() throws Exception {
+	public ResponseEntity<String> startKanbanJob() {
 		log.info("Request coming for job");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
@@ -221,10 +218,10 @@ public class JobController {
 	 * This method is used to start job for the Kanban projects with JQL setup
 	 * 
 	 * @return ResponseEntity
-	 * @throws Exception
+	 
 	 */
 	@GetMapping("/startkanbanjqljob")
-	public ResponseEntity<String> startKanbanJqlJob() throws Exception {
+	public ResponseEntity<String> startKanbanJqlJob() {
 		log.info("Request coming for job for Kanban project configured with JQL");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
@@ -254,11 +251,11 @@ public class JobController {
 	 * This method is used to fetch the sprint report data
 	 * 
 	 * @param sprintId
+	 * sprintId
 	 * @return ResponseEntity
-	 * @throws Exception
 	 */
 	@PostMapping("/startfetchsprintjob")
-	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) throws Exception {
+	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
 		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
 
@@ -279,13 +276,13 @@ public class JobController {
 	 * This method is used to fetch the jira issues based on project id
 	 * 
 	 * @param processorExecutionBasicConfig
+	 * processorExecutionBasicConfig
 	 * @return ResponseEntity
-	 * @throws Exception
 	 */
 
 	@PostMapping("/startprojectwiseissuejob")
 	public ResponseEntity<String> startProjectWiseIssueJob(
-			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) throws Exception {
+			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 		log.info("Request coming for fetching issue job");
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);

@@ -33,26 +33,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.StringEscapeUtils;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -61,11 +49,7 @@ import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.CustomAsynchronousIssueRestClient;
@@ -78,8 +62,6 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import io.atlassian.util.concurrent.Promise;
 import lombok.extern.slf4j.Slf4j;
-
-import static net.logstash.logback.argument.StructuredArguments.kv;
 
 @Slf4j
 @Component
@@ -105,10 +87,14 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param url
+	 * url
 	 * @param krb5Client
-	 * @return
+	 * krb5Client
+	 * @return String
 	 * @throws IOException
+	 * IOException
 	 */
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
@@ -127,9 +113,12 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param url
+	 * url
 	 * @param connectionOptional
-	 * @return
+	 * connectionOptional
+	 * @return String
 	 * @throws IOException
+	 * IOException
 	 */
 	public String getDataFromServer(URL url, Optional<Connection> connectionOptional) throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -155,7 +144,7 @@ public class JiraCommonService {
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -169,7 +158,8 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param encryptedPassword
-	 * @return
+	 * encryptedPassword
+	 * @return String
 	 */
 	public String decryptJiraPassword(String encryptedPassword) {
 		return aesEncryptionService.decrypt(encryptedPassword, jiraProcessorConfig.getAesEncryptionKey());
@@ -178,8 +168,10 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param username
+	 * username
 	 * @param password
-	 * @return
+	 * password
+	 * @return String
 	 */
 	public String encodeCredentialsToBase64(String username, String password) {
 		String cred = username + ":" + password;
@@ -189,14 +181,17 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param clientIncoming
-	 * @param krb5Client
+	 * clientIncoming
 	 * @param pageNumber
+	 * pageNumber
 	 * @param deltaDate
-	 * @return
+	 * deltaDate
+	 * @return List<Issue>
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client, int pageNumber, String deltaDate) {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
@@ -221,15 +216,18 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param deltaDate
+	 * deltaDate
 	 * @param pageStart
-	 * @return
+	 * pageStart
+	 * @return SearchResult
 	 * @throws InterruptedException
+	 * InterruptedException
 	 */
 	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
 		SearchResult searchResult = null;
-		int totalIssue = 0;
 		String[] jiraIssueTypeNames = projectConfig.getFieldMapping().getJiraIssueTypeNames();
 		if (client == null) {
 			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
@@ -278,11 +276,16 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param clientIncoming
+	 * clientIncoming
 	 * @param pageNumber
+	 * pageNumber
 	 * @param boardId
+	 * boardId
 	 * @param deltaDate
-	 * @return
+	 * deltaDate
+	 * @return List<Issue>
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) throws InterruptedException {
@@ -305,11 +308,16 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param boardId
+	 * boardId
 	 * @param projectConfig
+	 * projectConfig
 	 * @param deltaDate
+	 * deltaDate
 	 * @param pageStart
-	 * @return
+	 * pageStart
+	 * @return SearchResult
 	 * @throws InterruptedException
+	 * InterruptedException
 	 */
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
@@ -342,8 +350,10 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param krb5Client
-	 * @return
+	 * krb5Client
+	 * @return List<ProjectVersion>
 	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();

@@ -233,7 +233,7 @@ public class JiraProcessorJob {
 	/**
 	 * This method is setup job for fetching sprint details based on sprint id
 	 * 
-	 * @return
+	 * @return job
 	 */
 	@TrackExecutionTime
 	@Bean
