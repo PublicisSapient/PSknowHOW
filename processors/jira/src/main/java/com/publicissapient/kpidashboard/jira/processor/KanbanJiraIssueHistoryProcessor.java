@@ -29,11 +29,11 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public interface KanbanJiraIssueHistoryProcessor {
 	/**
 	 * @param issue
-	 * issue
+	 *            issue
 	 * @param projectConfFieldMapping
-	 * projectConfFieldMapping
+	 *            projectConfFieldMapping
 	 * @param kanbanJiraIssue
-	 * kanbanJiraIssue
+	 *            kanbanJiraIssue
 	 * @return KanbanIssueCustomHistory
 	 */
 	KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfFieldMapping,

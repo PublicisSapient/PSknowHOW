@@ -29,11 +29,11 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public interface JiraIssueHistoryProcessor {
 	/**
 	 * @param issue
-	 * issue
+	 *            issue
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param jiraIssue
-	 * jiraIssue
+	 *            jiraIssue
 	 * @return JiraIssueCustomHistory
 	 */
 	JiraIssueCustomHistory convertToJiraIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,

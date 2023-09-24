@@ -110,11 +110,11 @@ import com.google.common.collect.Sets;
 
 public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
-	private static Set<String> specialFields = Sets.newHashSet(IssueFieldId.ids());
-
 	public static final String SCHEMA_SECTION = "schema";
 	public static final String NAMES_SECTION = "names";
-
+	private static final String FIELDS = "fields";
+	private static final String VALUE_ATTR = "value";
+	private static Set<String> specialFields = Sets.newHashSet(IssueFieldId.ids());
 	private final BasicIssueJsonParser basicIssueJsonParser = new BasicIssueJsonParser();
 	private final IssueLinkJsonParserV5 issueLinkJsonParserV5 = new IssueLinkJsonParserV5();
 	private final BasicVotesJsonParser votesJsonParser = new BasicVotesJsonParser();
@@ -134,10 +134,6 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 	private final CustomChangelogJsonParser changelogJsonParser = new CustomChangelogJsonParser();
 	private final OperationsJsonParser operationsJsonParser = new OperationsJsonParser();
 	private final JsonWeakParserForString jsonWeakParserForString = new JsonWeakParserForString();
-
-	private static final String FIELDS = "fields";
-	private static final String VALUE_ATTR = "value";
-
 	private final JSONObject providedNames;
 	private final JSONObject providedSchema;
 
@@ -158,7 +154,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
 	private <T> Collection<T> parseArray(final JSONObject jsonObject, final JsonWeakParser<T> jsonParser,
 			final String arrayAttribute) throws JSONException {
-		
+
 		final JSONArray valueObject = jsonObject.optJSONArray(arrayAttribute);
 		if (valueObject == null) {
 			return new ArrayList<>();

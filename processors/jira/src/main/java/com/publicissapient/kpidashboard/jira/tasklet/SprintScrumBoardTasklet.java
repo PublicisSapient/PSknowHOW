@@ -17,9 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -35,7 +33,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
@@ -73,12 +70,12 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	/**
 	 *
 	 * @param sc
-	 * StepContribution
+	 *            StepContribution
 	 * @param cc
-	 * ChunkContext
+	 *            ChunkContext
 	 * @return RepeatStatus
 	 * @throws Exception
-	 * Exception
+	 *             Exception
 	 */
 	@TrackExecutionTime
 	@Override

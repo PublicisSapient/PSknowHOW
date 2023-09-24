@@ -11,23 +11,23 @@
     "boardQuery": "project in (\"DTS\") and component in (KnowHOW) and type in (\"Story\", \"Defect\", \"Enabler Story\", \"Change request\", \"Epic\")",
     "boards": [
     ],
-    "_class" : "com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig"
+    "_class": "com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig"
   },
   {
-    "id" : "63c04df3b7617e260763ca50",
-    "toolName" : "Jira",
-    "basicProjectConfigId" : "63bfa0d5b7617e260763ca21",
-    "connectionId" : "5fd99f7bc8b51a7b55aec836",
-    "projectKey" : "DTS",
-    "createdAt" : "2023-01-12T18:14:11",
-    "updatedAt" : "2023-01-12T18:14:11",
-    "queryEnabled" : false,
-    "boards" : [
+    "id": "63c04df3b7617e260763ca50",
+    "toolName": "Jira",
+    "basicProjectConfigId": "63bfa0d5b7617e260763ca21",
+    "connectionId": "5fd99f7bc8b51a7b55aec836",
+    "projectKey": "DTS",
+    "createdAt": "2023-01-12T18:14:11",
+    "updatedAt": "2023-01-12T18:14:11",
+    "queryEnabled": false,
+    "boards": [
       {
         "boardId": "1111",
         "boardName": "test board"
       }
     ],
-    "_class" : "com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig"
+    "_class": "com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig"
   }
 ]

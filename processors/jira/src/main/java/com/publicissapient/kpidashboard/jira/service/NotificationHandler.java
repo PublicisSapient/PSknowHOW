@@ -53,39 +53,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NotificationHandler {
 
-	@Autowired
-	private JiraProcessorConfig jiraProcessorConfig;
-
-	@Autowired
-	private KafkaTemplate<String, Object> kafkaTemplate;
-
-	@Autowired
-	private ProjectBasicConfigRepository projectBasicConfigRepository;
-
-	@Autowired
-	private UserInfoRepository userInfoRepository;
-
-	@Autowired
-	private NotificationService notificationService;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationHandler.class);
-
-	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
-
-	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
-	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor";
-
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
+	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationHandler.class);
+	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
+	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
+	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor";
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
+	@Autowired
+	private ProjectBasicConfigRepository projectBasicConfigRepository;
+	@Autowired
+	private UserInfoRepository userInfoRepository;
+	@Autowired
+	private NotificationService notificationService;
 
 	/**
 	 *
 	 * @param key
-	 * key
+	 *            key
 	 * @param value
-	 * value
+	 *            value
 	 * @param projectBasicConfigId
-	 * projectBasicConfigId
+	 *            projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
 		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);

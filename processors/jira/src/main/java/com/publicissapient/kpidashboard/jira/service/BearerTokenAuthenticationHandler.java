@@ -26,26 +26,27 @@ import com.atlassian.jira.rest.client.api.AuthenticationHandler;
  */
 public class BearerTokenAuthenticationHandler implements AuthenticationHandler {
 
-    private static final String AUTHORIZATION_HEADER = "Authorization";
+	private static final String AUTHORIZATION_HEADER = "Authorization";
 
-    private static final String BEARER = "Bearer ";
+	private static final String BEARER = "Bearer ";
 
-    private final String bearerToken;
+	private final String bearerToken;
 
-    public BearerTokenAuthenticationHandler(final String bearerToken) {
-        this.bearerToken = bearerToken;
-    }
+	public BearerTokenAuthenticationHandler(final String bearerToken) {
+		this.bearerToken = bearerToken;
+	}
 
-    @Override
-    public void configure(Request.Builder builder) {
-        builder.setHeader(AUTHORIZATION_HEADER, BEARER + getBearerToken());
-    }
+	@Override
+	public void configure(Request.Builder builder) {
+		builder.setHeader(AUTHORIZATION_HEADER, BEARER + getBearerToken());
+	}
 
-    /**
-     * This method return bearer token
-     * @return token
-     */
-    private String getBearerToken() {
-        return bearerToken;
-    }
+	/**
+	 * This method return bearer token
+	 * 
+	 * @return token
+	 */
+	private String getBearerToken() {
+		return bearerToken;
+	}
 }

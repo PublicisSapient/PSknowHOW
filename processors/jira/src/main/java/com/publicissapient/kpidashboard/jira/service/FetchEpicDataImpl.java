@@ -52,14 +52,11 @@ import lombok.extern.slf4j.Slf4j;
 public class FetchEpicDataImpl implements FetchEpicData {
 
 	private static final String KEY = "key";
-
+	ProcessorJiraRestClient client;
 	@Autowired
 	private JiraCommonService jiraCommonService;
-
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
-
-	ProcessorJiraRestClient client;
 
 	@Override
 	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,

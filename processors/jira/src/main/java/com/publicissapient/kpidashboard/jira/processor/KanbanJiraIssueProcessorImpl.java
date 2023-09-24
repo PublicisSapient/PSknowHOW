@@ -83,22 +83,17 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
+	AssigneeDetails assigneeDetails;
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
-
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
-
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
-
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
-
 	@Autowired
 	private KanbanJiraIssueRepository kanbanJiraIssueRepository;
-
-	AssigneeDetails assigneeDetails;
 
 	@Override
 	public KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)

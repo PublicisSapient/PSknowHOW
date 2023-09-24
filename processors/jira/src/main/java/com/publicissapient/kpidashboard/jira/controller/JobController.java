@@ -59,42 +59,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JobController {
 
-	@Autowired
-	JobLauncher jobLauncher;
-
-	@Qualifier("fetchIssueScrumBoardJob")
-	@Autowired
-	Job fetchIssueScrumBoardJob;
-
-	@Qualifier("fetchIssueScrumJqlJob")
-	@Autowired
-	Job fetchIssueScrumJqlJob;
-
-	@Qualifier("fetchIssueKanbanBoardJob")
-	@Autowired
-	Job fetchIssueKanbanBoardJob;
-
-	@Qualifier("fetchIssueKanbanJqlJob")
-	@Autowired
-	Job fetchIssueKanbanJqlJob;
-
-	@Qualifier("fetchIssueSprintJob")
-	@Autowired
-	Job fetchIssueSprintJob;
-
-	@Autowired
-	private ProjectToolConfigRepository toolRepository;
-
-	@Autowired
-	private ProjectBasicConfigRepository projectConfigRepository;
-
-	@Autowired
-	private FetchProjectConfiguration fetchProjectConfiguration;
-
 	private static String PROJECT_ID = "projectId";
 	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
-
+	@Autowired
+	JobLauncher jobLauncher;
+	@Qualifier("fetchIssueScrumBoardJob")
+	@Autowired
+	Job fetchIssueScrumBoardJob;
+	@Qualifier("fetchIssueScrumJqlJob")
+	@Autowired
+	Job fetchIssueScrumJqlJob;
+	@Qualifier("fetchIssueKanbanBoardJob")
+	@Autowired
+	Job fetchIssueKanbanBoardJob;
+	@Qualifier("fetchIssueKanbanJqlJob")
+	@Autowired
+	Job fetchIssueKanbanJqlJob;
+	@Qualifier("fetchIssueSprintJob")
+	@Autowired
+	Job fetchIssueSprintJob;
+	@Autowired
+	private ProjectToolConfigRepository toolRepository;
+	@Autowired
+	private ProjectBasicConfigRepository projectConfigRepository;
+	@Autowired
+	private FetchProjectConfiguration fetchProjectConfiguration;
 	// Create a map to track ongoing executions
 	private Map<String, Boolean> ongoingExecutions = new HashMap<>();
 
@@ -218,7 +208,7 @@ public class JobController {
 	 * This method is used to start job for the Kanban projects with JQL setup
 	 * 
 	 * @return ResponseEntity
-	 
+	 * 
 	 */
 	@GetMapping("/startkanbanjqljob")
 	public ResponseEntity<String> startKanbanJqlJob() {
@@ -251,7 +241,7 @@ public class JobController {
 	 * This method is used to fetch the sprint report data
 	 * 
 	 * @param sprintId
-	 * sprintId
+	 *            sprintId
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/startfetchsprintjob")
@@ -276,7 +266,7 @@ public class JobController {
 	 * This method is used to fetch the jira issues based on project id
 	 * 
 	 * @param processorExecutionBasicConfig
-	 * processorExecutionBasicConfig
+	 *            processorExecutionBasicConfig
 	 * @return ResponseEntity
 	 */
 
@@ -287,7 +277,8 @@ public class JobController {
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
 
-		// Check if an execution is already in progress for the same BasicProjectConfigId
+		// Check if an execution is already in progress for the same
+		// BasicProjectConfigId
 		if (ongoingExecutions.putIfAbsent(basicProjectConfigId, true) != null) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
@@ -338,7 +329,7 @@ public class JobController {
 		} finally {
 			// After the job is complete, remove the flag to allow the same
 			// BasicProjectConfigId to be executed again
-			log.info("removing project with basicProjectConfigId {}",basicProjectConfigId);
+			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
 			ongoingExecutions.remove(basicProjectConfigId);
 		}
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);

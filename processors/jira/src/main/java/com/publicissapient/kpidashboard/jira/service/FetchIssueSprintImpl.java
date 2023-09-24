@@ -39,13 +39,13 @@ import org.springframework.stereotype.Service;
 import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
@@ -60,14 +60,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FetchIssueSprintImpl implements FetchIssueSprint {
 
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
+	public static final String TILDA_SYMBOL = "^";
+	public static final String DOLLAR_SYMBOL = "$";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String NO_RESULT_QUERY = "No result available for query: {}";
-	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
-	public static final String TILDA_SYMBOL = "^";
-	public static final String DOLLAR_SYMBOL = "$";
-
 	@Autowired
 	JiraCommonService jiraCommonService;
 

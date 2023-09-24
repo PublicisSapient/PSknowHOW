@@ -53,13 +53,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClient {
 
-	CustomIssueJsonParser issueJsonParser = new CustomIssueJsonParser();
-
-	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
 	private static final EnumSet<Expandos> DEFAULT_EXPANDS = EnumSet.of(Expandos.NAMES, Expandos.SCHEMA,
 			Expandos.TRANSITIONS);
 	private static final Function<Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); // NOSONAR
+	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
 	private final URI baseUri;
+	CustomIssueJsonParser issueJsonParser = new CustomIssueJsonParser();
 
 	public CustomAsynchronousIssueRestClient(URI baseUri, HttpClient client, SessionRestClient sessionRestClient,
 			MetadataRestClient metadataRestClient) {

@@ -47,12 +47,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class JiraHelper {
 
-	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-	private static final String EXCEPTION = "Exception";
-	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-
 	public static final Comparator<SprintDetails> SPRINT_COMPARATOR = (SprintDetails o1, SprintDetails o2) -> {
 		int cmp1 = ObjectUtils.compare(o1.getStartDate(), o2.getStartDate());
 		if (cmp1 != 0) {
@@ -60,6 +54,11 @@ public class JiraHelper {
 		}
 		return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
 	};
+	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
+	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
+	private static final String EXCEPTION = "Exception";
+	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
 	public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
 		Map<String, IssueField> rt = new HashMap<>();
@@ -270,6 +269,5 @@ public class JiraHelper {
 		}
 		log.debug(EXCEPTION, e);
 	}
-
 
 }

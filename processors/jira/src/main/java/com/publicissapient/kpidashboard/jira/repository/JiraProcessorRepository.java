@@ -24,6 +24,5 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepos
 import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 
 @Repository
-public interface JiraProcessorRepository extends
-        ProcessorRepository<JiraProcessor> {
+public interface JiraProcessorRepository extends ProcessorRepository<JiraProcessor> {
 }

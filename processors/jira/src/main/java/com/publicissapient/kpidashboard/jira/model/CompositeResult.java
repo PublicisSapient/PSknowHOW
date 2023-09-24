@@ -24,5 +24,5 @@ public class CompositeResult {
 	private KanbanJiraIssue kanbanJiraIssue;
 	private KanbanIssueCustomHistory kanbanIssueCustomHistory;
 	private Set<KanbanAccountHierarchy> kanbanAccountHierarchies;
-	
+
 }

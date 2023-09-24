@@ -22,13 +22,13 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchScrumReleaseData {
-    /**
-     *
-     * @param projectConfig
-     * projectConfig
-     * @param krb5Client
-     * krb5Client
-     * @return ProjectRelease
-     */
-    ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
+	/**
+	 *
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param krb5Client
+	 *            krb5Client
+	 * @return ProjectRelease
+	 */
+	ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
 }

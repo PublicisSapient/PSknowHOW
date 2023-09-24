@@ -67,40 +67,31 @@ import net.logstash.logback.util.StringUtils;
 @StepScope
 public class IssueBoardReader implements ItemReader<ReadData> {
 
+	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
+	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
-
 	@Autowired
 	JiraClient jiraClient;
-
 	@Autowired
 	JiraCommonService jiraCommonService;
-
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
-
 	@Autowired
 	FetchEpicData fetchEpicData;
-
-	private ReaderRetryHelper retryHelper;
-
-	@Autowired
-	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
-
-	private Iterator<BoardDetails> boardIterator;
-	private Iterator<Issue> issueIterator;
 	int pageSize = 50;
-	private ProjectConfFieldMapping projectConfFieldMapping;
 	int pageNumber = 0;
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
-
+	private ReaderRetryHelper retryHelper;
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+	private Iterator<BoardDetails> boardIterator;
+	private Iterator<Issue> issueIterator;
+	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String projectId;
-
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 
 	@Autowired
 	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {

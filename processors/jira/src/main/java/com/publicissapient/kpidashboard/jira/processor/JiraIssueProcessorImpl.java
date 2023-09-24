@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -76,6 +75,7 @@ import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.helper.AdditionalFilterHelper;
 import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
 import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
@@ -89,22 +89,35 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
+	AssigneeDetails assigneeDetails;
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
-
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
-
 	@Autowired
 	private AdditionalFilterHelper additionalFilterHelper;
-
 	@Autowired
 	private AssigneeDetailsRepository assigneeDetailsRepository;
-
 	@Autowired
 	private JiraProcessorRepository jiraProcessorRepository;
 
-	AssigneeDetails assigneeDetails;
+	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields,
+			Set<String> defectStorySet) {
+		String parentKey;
+		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
+
+			try {
+				parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
+						.toString();
+				defectStorySet.add(parentKey);
+			} catch (JSONException e) {
+				log.error(
+						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
+						e);
+			}
+
+		}
+	}
 
 	@Override
 	public JiraIssue convertToJiraIssue(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
@@ -129,7 +142,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		// save only issues which are in configuration.
 		if (issueTypeNames
-				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
+				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))
+				|| StringUtils.isNotEmpty(boardId)) {
 			Map<String, String> issueEpics = new HashMap<>();
 
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
@@ -187,24 +201,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			Set<String> mainStorySet = new HashSet<>();
 			storyWithSubTaskDefect(issue, fields, mainStorySet);
 			jiraIssue.setParentStoryId(mainStorySet);
-		}
-	}
-
-	private static void storyWithSubTaskDefect(Issue issue, Map<String, IssueField> fields,
-			Set<String> defectStorySet) {
-		String parentKey;
-		if (issue.getIssueType().isSubtask() && MapUtils.isNotEmpty(fields)) {
-
-			try {
-				parentKey = ((JSONObject) fields.get(JiraConstants.PARENT).getValue()).get(JiraConstants.KEY)
-						.toString();
-				defectStorySet.add(parentKey);
-			} catch (JSONException e) {
-				log.error(
-						"JIRA Processor | Error while parsing parent value as JSONObject or converting JSONObject to string",
-						e);
-			}
-
 		}
 	}
 

@@ -67,12 +67,11 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class JiraCommonService {
 
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String NO_RESULT_QUERY = "No result available for query: {}";
-	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
-
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
 
@@ -87,14 +86,14 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param url
-	 * url
+	 *            url
 	 * @param krb5Client
-	 * krb5Client
+	 *            krb5Client
 	 * @return String
 	 * @throws IOException
-	 * IOException
+	 *             IOException
 	 */
 	public String getDataFromClient(ProjectConfFieldMapping projectConfig, URL url, KerberosClient krb5Client)
 			throws IOException {
@@ -113,12 +112,12 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param url
-	 * url
+	 *            url
 	 * @param connectionOptional
-	 * connectionOptional
+	 *            connectionOptional
 	 * @return String
 	 * @throws IOException
-	 * IOException
+	 *             IOException
 	 */
 	public String getDataFromServer(URL url, Optional<Connection> connectionOptional) throws IOException {
 		HttpURLConnection request = (HttpURLConnection) url.openConnection();
@@ -158,7 +157,7 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param encryptedPassword
-	 * encryptedPassword
+	 *            encryptedPassword
 	 * @return String
 	 */
 	public String decryptJiraPassword(String encryptedPassword) {
@@ -168,9 +167,9 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param username
-	 * username
+	 *            username
 	 * @param password
-	 * password
+	 *            password
 	 * @return String
 	 */
 	public String encodeCredentialsToBase64(String username, String password) {
@@ -181,13 +180,13 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param clientIncoming
-	 * clientIncoming
+	 *            clientIncoming
 	 * @param pageNumber
-	 * pageNumber
+	 *            pageNumber
 	 * @param deltaDate
-	 * deltaDate
+	 *            deltaDate
 	 * @return List of Issue
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
@@ -216,14 +215,14 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param deltaDate
-	 * deltaDate
+	 *            deltaDate
 	 * @param pageStart
-	 * pageStart
+	 *            pageStart
 	 * @return SearchResult
 	 * @throws InterruptedException
-	 * InterruptedException
+	 *             InterruptedException
 	 */
 	private SearchResult getJqlIssues(ProjectConfFieldMapping projectConfig, String deltaDate, int pageStart)
 			throws InterruptedException {
@@ -276,33 +275,34 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param clientIncoming
-	 * clientIncoming
+	 *            clientIncoming
 	 * @param pageNumber
-	 * pageNumber
+	 *            pageNumber
 	 * @param boardId
-	 * boardId
+	 *            boardId
 	 * @param deltaDate
-	 * deltaDate
+	 *            deltaDate
 	 * @return List of Issue
 	 * @throws InterruptedException
-	 * InterruptedException
+	 *             InterruptedException
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) throws InterruptedException {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate)
+			throws InterruptedException {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
 		if (client == null) {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
-				String queryDate = DateUtil
-						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
-								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
+			String queryDate = DateUtil
+					.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
+							.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
 
-				SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
-				issues = JiraHelper.getIssuesFromResult(searchResult);
+			SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
+			issues = JiraHelper.getIssuesFromResult(searchResult);
 		}
 		return issues;
 	}
@@ -310,16 +310,16 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param boardId
-	 * boardId
+	 *            boardId
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param deltaDate
-	 * deltaDate
+	 *            deltaDate
 	 * @param pageStart
-	 * pageStart
+	 *            pageStart
 	 * @return SearchResult
 	 * @throws InterruptedException
-	 * InterruptedException
+	 *             InterruptedException
 	 */
 	public SearchResult getBoardIssues(String boardId, ProjectConfFieldMapping projectConfig, String deltaDate,
 			int pageStart) throws InterruptedException {
@@ -333,16 +333,16 @@ public class JiraCommonService {
 					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
 			String query = StringUtils.EMPTY;
-				query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
-				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
-				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
-						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
-				searchResult = promisedRs.claim();
-				if (searchResult != null) {
-					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
-							searchResult.getTotal()));
-				}
+			query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
+			CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
+			Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
+					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+			searchResult = promisedRs.claim();
+			if (searchResult != null) {
+				log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+						Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+						searchResult.getTotal()));
+			}
 
 		}
 
@@ -352,9 +352,9 @@ public class JiraCommonService {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param krb5Client
-	 * krb5Client
+	 *            krb5Client
 	 * @return List of ProjectVersion
 	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {

@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -42,6 +41,7 @@ import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
@@ -74,18 +74,15 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
-
-	@Autowired
-	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
-
-	private Iterator<Issue> issueIterator;
 	int pageSize = 50;
-	private ProjectConfFieldMapping projectConfFieldMapping;
 	int pageNumber = 0;
 	List<Issue> issues = new ArrayList<>();
 	Map<String, String> projectWiseDeltaDate;
 	int issueSize = 0;
-
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+	private Iterator<Issue> issueIterator;
+	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String projectId;
 
 	@Autowired
@@ -153,8 +150,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 				pageNumber / pageSize);
 		String deltaDate = getDeltaDateFromTraceLog();
-		issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
-				deltaDate);
+		issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber, deltaDate);
 		issueSize = issues.size();
 		pageNumber += pageSize;
 		if (CollectionUtils.isNotEmpty(issues)) {

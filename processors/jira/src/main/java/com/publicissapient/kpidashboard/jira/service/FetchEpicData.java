@@ -29,16 +29,16 @@ public interface FetchEpicData {
 	/**
 	 *
 	 * @param projectConfig
-	 * projectConfig
+	 *            projectConfig
 	 * @param boardId
-	 * boardId
+	 *            boardId
 	 * @param clientIncoming
-	 * clientIncoming
+	 *            clientIncoming
 	 * @param krb5Client
-	 * krb5Client
+	 *            krb5Client
 	 * @return List of Issue
 	 * @throws InterruptedException
-	 * InterruptedException
+	 *             InterruptedException
 	 */
 	List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId, ProcessorJiraRestClient clientIncoming,
 			KerberosClient krb5Client) throws InterruptedException;

@@ -65,13 +65,15 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 		FieldMapping fieldMapping = fieldMappingRepository
 				.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
-		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
+		List<ProjectToolConfig> projectToolConfigs = toolRepository
+				.findByBasicProjectConfigId(sprintDetails.getBasicProjectConfigId());
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 			if (null != projectToolConfig.getConnectionId()) {
 				Optional<Connection> jiraConnOpt = connectionRepository.findById(projectToolConfig.getConnectionId());
 				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, jiraConnOpt);
-				projectConfFieldMapping=createProjectConfFieldMapping(fieldMapping, projectBasicConfig, projectToolConfig, jiraToolConfig);
+				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig,
+						projectToolConfig, jiraToolConfig);
 			}
 		}
 		return projectConfFieldMapping;
@@ -89,7 +91,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 			if (null != projectToolConfig.getConnectionId()) {
 				Optional<Connection> jiraConnOpt = connectionRepository.findById(projectToolConfig.getConnectionId());
 				JiraToolConfig jiraToolConfig = createJiraToolConfig(projectToolConfig, jiraConnOpt);
-				projectConfFieldMapping=createProjectConfFieldMapping(fieldMapping, projectBasicConfig, projectToolConfig, jiraToolConfig);
+				projectConfFieldMapping = createProjectConfFieldMapping(fieldMapping, projectBasicConfig,
+						projectToolConfig, jiraToolConfig);
 			}
 		}
 		return projectConfFieldMapping;

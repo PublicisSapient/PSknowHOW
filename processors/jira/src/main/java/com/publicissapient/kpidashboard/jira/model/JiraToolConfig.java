@@ -51,4 +51,3 @@ public class JiraToolConfig {
 	private List<BoardDetails> boards;
 
 }
-

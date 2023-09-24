@@ -69,18 +69,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FetchSprintReportImpl implements FetchSprintReport {
 
-	@Autowired
-	private JiraProcessorConfig jiraProcessorConfig;
-
-	@Autowired
-	private SprintRepository sprintRepository;
-
-	@Autowired
-	private JiraCommonService jiraCommonService;
-
-	@Autowired
-	private JiraProcessorRepository jiraProcessorRepository;
-
 	private static final String CONTENTS = "contents";
 	private static final String COMPLETED_ISSUES = "completedIssues";
 	private static final String PUNTED_ISSUES = "puntedIssues";
@@ -91,11 +79,8 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private static final String ENTITY_DATA = "entityData";
 	private static final String PRIORITYID = "priorityId";
 	private static final String STATUSID = "statusId";
-
 	private static final String TYPEID = "typeId";
-
 	private static final String ID = "id";
-
 	private static final String STATE = "state";
 	private static final String NAME = "name";
 	private static final String STARTDATE = "startDate";
@@ -103,10 +88,18 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 	private static final String COMPLETEDATE = "completeDate";
 	private static final String ACTIVATEDDATE = "activatedDate";
 	private static final String GOAL = "goal";
+	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	private SprintRepository sprintRepository;
+	@Autowired
+	private JiraCommonService jiraCommonService;
+	@Autowired
+	private JiraProcessorRepository jiraProcessorRepository;
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-										   KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException {
+			KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -478,7 +471,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
-				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client,false));
+				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
 			}
 		}
 		return sprintDetailsBasedOnBoard;

@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemReader;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
@@ -60,14 +60,12 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 
 	@Autowired
 	FetchIssueSprint fetchIssueSprint;
-
-	private Iterator<Issue> issueIterator;
 	int pageSize = 50;
-	private ProjectConfFieldMapping projectConfFieldMapping;
 	int pageNumber = 0;
 	List<Issue> issues = new ArrayList<>();
 	int issueSize = 0;
-
+	private Iterator<Issue> issueIterator;
+	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String sprintId;
 
 	@Autowired

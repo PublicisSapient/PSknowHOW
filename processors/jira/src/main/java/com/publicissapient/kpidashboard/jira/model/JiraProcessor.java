@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.jira.model;
 
-import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
+import com.publicissapient.kpidashboard.common.model.generic.Processor;
 
 import lombok.Getter;
 import lombok.Setter;

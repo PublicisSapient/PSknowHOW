@@ -29,12 +29,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Sprint implements IdentifiableEntity<Long> {
-    private Long id;
-    private Long rapidViewId;
-    private String state;
-    private String name;
-    private String startDateStr;
-    private String endDateStr;
-    private String completeDateStr;
-    private int sequence;
+	private Long id;
+	private Long rapidViewId;
+	private String state;
+	private String name;
+	private String startDateStr;
+	private String endDateStr;
+	private String completeDateStr;
+	private int sequence;
 }

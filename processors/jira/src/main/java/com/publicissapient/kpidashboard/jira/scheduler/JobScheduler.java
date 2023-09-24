@@ -45,30 +45,24 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JobScheduler {
 
+	private static String PROJECT_ID = "projectId";
+	private static String CURRENTTIME = "currentTime";
 	@Autowired
 	JobLauncher jobLauncher;
-
 	@Qualifier("fetchIssueScrumBoardJob")
 	@Autowired
 	Job fetchIssueScrumBoardJob;
-
 	@Qualifier("fetchIssueScrumJqlJob")
 	@Autowired
 	Job fetchIssueScrumJqlJob;
-
 	@Qualifier("fetchIssueKanbanBoardJob")
 	@Autowired
 	Job fetchIssueKanbanBoardJob;
-
 	@Qualifier("fetchIssueKanbanJqlJob")
 	@Autowired
 	Job fetchIssueKanbanJqlJob;
-
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
-
-	private static String PROJECT_ID = "projectId";
-	private static String CURRENTTIME = "currentTime";
 
 	/**
 	 * This method is used to start scrum job setup with board

@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.service.AdditionalFilterCategoryService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.util.JiraIssueClientUtil;
@@ -150,17 +150,17 @@ public class AdditionalFilterHelper {
 		Set<String> values = new HashSet<>();
 		String customField = additionalFilterConfig.getIdentificationField();
 
-		if (null != fields.get(customField) &&
-				StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
+		if (null != fields.get(customField)
+				&& StringUtils.isNotEmpty(JiraProcessorUtil.deodeUTF8String(fields.get(customField).getValue()))) {
 			try {
 				if (fields.get(customField).getValue() instanceof JSONObject) {
 					JSONObject jsonObject = (JSONObject) fields.get(customField).getValue();
 					getValueFromField(values, jsonObject);
 				} else if (fields.get(customField).getValue() instanceof JSONArray) {
 					JSONArray fieldArray = (JSONArray) fields.get(customField).getValue();
-					if(fieldArray.length() > 0) {
-						for(int i = 0; i < fieldArray.length(); i++) {
-							getValueFromField(values,(JSONObject) fieldArray.get(i));
+					if (fieldArray.length() > 0) {
+						for (int i = 0; i < fieldArray.length(); i++) {
+							getValueFromField(values, (JSONObject) fieldArray.get(i));
 						}
 					}
 				} else {
@@ -173,10 +173,9 @@ public class AdditionalFilterHelper {
 		return values;
 	}
 
-	private void getValueFromField(Set<String> values, JSONObject jsonObject){
+	private void getValueFromField(Set<String> values, JSONObject jsonObject) {
 		try {
-			if (null != jsonObject && StringUtils.isNotBlank(
-					(String) jsonObject.get(JiraConstants.VALUE))) {
+			if (null != jsonObject && StringUtils.isNotBlank((String) jsonObject.get(JiraConstants.VALUE))) {
 				values.add((String) jsonObject.get(JiraConstants.VALUE));
 			}
 		} catch (JSONException e) {

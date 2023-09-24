@@ -30,14 +30,14 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public interface KanbanJiraIssueProcessor {
 	/**
 	 * @param issue
-	 * issue
+	 *            issue
 	 * @param projectConfFieldMapping
-	 * projectConfFieldMapping
+	 *            projectConfFieldMapping
 	 * @param boardId
-	 * boardId
+	 *            boardId
 	 * @return KanbanJiraIssue
 	 * @throws JSONException
-	 * JSONException
+	 *             JSONException
 	 */
 	KanbanJiraIssue convertToKanbanJiraIssue(Issue issue, ProjectConfFieldMapping projectConfFieldMapping,
 			String boardId) throws JSONException;

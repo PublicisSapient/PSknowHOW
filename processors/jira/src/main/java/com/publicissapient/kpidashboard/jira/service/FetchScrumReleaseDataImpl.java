@@ -60,13 +60,11 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	@Autowired
 	AccountHierarchyRepository accountHierarchyRepository;
 	@Autowired
+	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
-
 	@Autowired
 	private JiraCommonService jiraCommonService;
-
-	@Autowired
-	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Override
 	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {

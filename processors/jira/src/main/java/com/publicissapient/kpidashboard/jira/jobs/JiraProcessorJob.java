@@ -252,7 +252,7 @@ public class JiraProcessorJob {
 				.reader(issueSprintReader).processor(issueScrumProcessor).writer(issueScrumWriter).build();
 	}
 
-	private Integer getChunkSize(){
+	private Integer getChunkSize() {
 		return jiraProcessorConfig.getChunkSize();
 	}
 

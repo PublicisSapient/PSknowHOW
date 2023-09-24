@@ -81,7 +81,7 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 		KerberosClient krb5Client = null;
 		if (StringUtils.isEmpty(boardId)) {
 			try {
-				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client,false);
+				return fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false);
 			} catch (InterruptedException e) {
 				log.error("JIRA Processor | Failed to fetch Sprint {}", e);
 			}

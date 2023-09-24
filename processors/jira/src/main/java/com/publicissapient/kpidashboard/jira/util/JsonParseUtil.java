@@ -48,9 +48,9 @@ public class JsonParseUtil {
 	public static final DateTimeFormatter JIRA_DATE_TIME_FORMATTER = DateTimeFormat.forPattern(JIRA_DATE_TIME_PATTERN);
 	public static final DateTimeFormatter JIRA_DATE_FORMATTER = ISODateTimeFormat.date();
 	public static final String SELF_ATTR = "self";
-	
-	private JsonParseUtil(){
-		
+
+	private JsonParseUtil() {
+
 	}
 
 	public static <T> Collection<T> parseJsonArray(final JSONArray jsonArray, final JsonObjectParser<T> jsonParser)
@@ -230,7 +230,8 @@ public class JsonParseUtil {
 	 * Tries to parse date and time and return that. If fails then tries to parse
 	 * date only.
 	 *
-	 * @param str String contains either date and time or date only
+	 * @param str
+	 *            String contains either date and time or date only
 	 * @return date and time or date only
 	 */
 	public static DateTime parseDateTimeOrDate(final String str) {

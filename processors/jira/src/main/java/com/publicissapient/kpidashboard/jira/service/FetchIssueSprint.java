@@ -25,18 +25,18 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchIssueSprint {
 
-    /**
-     *
-     * @param projectConfig
-     * projectConfig
-     * @param client
-     * client
-     * @param pageNumber
-     * pageNumber
-     * @param sprintId
-     * sprintId
-     * @return List of Issue
-     */
-    List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
-                                            ProcessorJiraRestClient client, int pageNumber, String sprintId);
+	/**
+	 *
+	 * @param projectConfig
+	 *            projectConfig
+	 * @param client
+	 *            client
+	 * @param pageNumber
+	 *            pageNumber
+	 * @param sprintId
+	 *            sprintId
+	 * @return List of Issue
+	 */
+	List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
+			int pageNumber, String sprintId);
 }
