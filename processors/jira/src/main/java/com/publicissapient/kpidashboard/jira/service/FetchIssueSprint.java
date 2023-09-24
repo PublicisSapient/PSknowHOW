@@ -35,7 +35,7 @@ public interface FetchIssueSprint {
      * pageNumber
      * @param sprintId
      * sprintId
-     * @return List<Issue>
+     * @return List of Issue
      */
     List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
                                             ProcessorJiraRestClient client, int pageNumber, String sprintId);

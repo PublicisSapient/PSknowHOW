@@ -36,8 +36,9 @@ public interface FetchEpicData {
 	 * clientIncoming
 	 * @param krb5Client
 	 * krb5Client
-	 * @return
+	 * @return List of Issue
 	 * @throws InterruptedException
+	 * InterruptedException
 	 */
 	List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId, ProcessorJiraRestClient clientIncoming,
 			KerberosClient krb5Client) throws InterruptedException;

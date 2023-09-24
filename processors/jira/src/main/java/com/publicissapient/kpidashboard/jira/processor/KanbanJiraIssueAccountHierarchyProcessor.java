@@ -33,7 +33,7 @@ public interface KanbanJiraIssueAccountHierarchyProcessor {
 	 * kanbanJiraIssue
 	 * @param projectConfFieldMapping
 	 * projectConfFieldMapping
-	 * @return Set<KanbanAccountHierarchy>
+	 * @return Set of KanbanAccountHierarchy
 	 */
 	Set<KanbanAccountHierarchy> createKanbanAccountHierarchy(KanbanJiraIssue kanbanJiraIssue,
 			ProjectConfFieldMapping projectConfFieldMapping);

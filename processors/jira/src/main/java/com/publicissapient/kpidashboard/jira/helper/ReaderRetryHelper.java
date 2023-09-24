@@ -30,10 +30,7 @@ public class ReaderRetryHelper {
 	/**
 	 * 
 	 * @param operation
-	 * RetryableOperation<T>
-	 * @return <T>
-	 * @param <T>
-	 * RetryableOperation<T>
+	 * operation
 	 * @throws Exception
 	 * Exception
 	 */

@@ -258,7 +258,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		}
 	}
 
-	String setAssigneeName(String assigneeId, String basicProjectConfigId) {
+	private String setAssigneeName(String assigneeId, String basicProjectConfigId) {
 		String assigneeName = JiraConstants.USER + JiraConstants.SPACE + 1;
 		if (null == assigneeDetails
 				|| !assigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
@@ -505,19 +505,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	}
 
-	/**
-	 * Sets Estimate
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param jiraProcessorConfig
-	 *            Jira Processor Configuration
-	 */
-	public void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping, // NOSONAR
+	private void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping, // NOSONAR
 			JiraProcessorConfig jiraProcessorConfig) {
 		Double value = 0d;
 		String valueString = "0";
@@ -557,13 +545,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		jiraIssue.setStoryPoints(value);
 	}
 
-	/**
-	 * Set Details related to issues with Epic Issue type
-	 *
-	 * @param fieldMapping
-	 * @param jiraIssue
-	 * @param fields
-	 */
 	private void setEpicIssueData(FieldMapping fieldMapping, KanbanJiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		if (fields.get(fieldMapping.getEpicJobSize()) != null
@@ -618,13 +599,6 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		}
 	}
 
-	/**
-	 * setting Url to KanbanJiraIssue
-	 *
-	 * @param ticketNumber
-	 * @param kanbanJiraIssue
-	 * @param projectConfig
-	 */
 	private void setURL(String ticketNumber, KanbanJiraIssue kanbanJiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
 		Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();

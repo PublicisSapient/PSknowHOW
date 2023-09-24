@@ -188,7 +188,7 @@ public class JiraCommonService {
 	 * pageNumber
 	 * @param deltaDate
 	 * deltaDate
-	 * @return List<Issue>
+	 * @return List of Issue
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) {
@@ -285,7 +285,9 @@ public class JiraCommonService {
 	 * boardId
 	 * @param deltaDate
 	 * deltaDate
-	 * @return List<Issue>
+	 * @return List of Issue
+	 * @throws InterruptedException
+	 * InterruptedException
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate) throws InterruptedException {
@@ -353,7 +355,7 @@ public class JiraCommonService {
 	 * projectConfig
 	 * @param krb5Client
 	 * krb5Client
-	 * @return List<ProjectVersion>
+	 * @return List of ProjectVersion
 	 */
 	public List<ProjectVersion> getVersion(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
 		List<ProjectVersion> projectVersionList = new ArrayList<>();

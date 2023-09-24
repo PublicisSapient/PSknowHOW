@@ -37,7 +37,7 @@ public interface JiraIssueAccountHierarchyProcessor {
 	 * projectConfig
 	 * @param sprintDetailsSet
 	 * sprintDetailsSet
-	 * @return Set<AccountHierarchy>
+	 * @return Set of AccountHierarchy
 	 */
 	Set<AccountHierarchy> createAccountHierarchy(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> sprintDetailsSet);

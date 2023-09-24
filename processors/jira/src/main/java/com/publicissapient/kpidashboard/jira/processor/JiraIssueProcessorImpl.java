@@ -470,11 +470,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		jiraIssue.setProjectPath("");
 	}
 
-	/**
-	 * @param issueEpics
-	 * @param epic
-	 * @param jiraIssue
-	 */
 	private void setIssueEpics(Map<String, String> issueEpics, IssueField epic, JiraIssue jiraIssue) {
 		if (epic != null && epic.getValue() != null && !JiraProcessorUtil.deodeUTF8String(epic.getValue()).isEmpty()) {
 			issueEpics.put(jiraIssue.getIssueId(), JiraProcessorUtil.deodeUTF8String(epic.getValue()));
@@ -514,18 +509,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	/**
-	 * Sets RCA
-	 *
-	 * @param fieldMapping
-	 *            fieldMapping provided by the User
-	 * @param issue
-	 *            Atlassian Issue
-	 * @param jiraIssue
-	 *            JiraIssue instance
-	 * @param fields
-	 *            Map of Issue Fields
-	 */
 	private void setRCA(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 
 		List<String> rcaList = new ArrayList<>();
@@ -598,12 +581,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return rcaCauseResult.toLowerCase();
 	}
 
-	/**
-	 * @param featureConfig
-	 * @param issue
-	 * @param feature
-	 * @param fields
-	 */
 	private void setQADefectIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
 			Map<String, IssueField> fields) {
 		try {
@@ -692,12 +669,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return isRaisedByThirdParty;
 	}
 
-	/**
-	 * Sets Story Link with Defect
-	 *
-	 * @param issue
-	 * @param jiraIssue
-	 */
 	private void setStoryLinkWithDefect(Issue issue, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())
 				|| NormalizedJira.TEST_TYPE.getValue().equalsIgnoreCase(jiraIssue.getTypeName())) {
@@ -719,20 +690,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	/**
-	 * Populate field to identify if defect is from Third party or UAT. Get
-	 * customfield value from jiraBugRaisedByField. This value can be any custom
-	 * field or "labels"
-	 *
-	 * @param fieldMapping
-	 *            Porject Field mapping
-	 * @param issue
-	 *            Atlassian issue
-	 * @param jiraIssue
-	 *            jiraIssue
-	 * @param fields
-	 *            Map of IssueField Id and IssueField
-	 */
 	private void setThirdPartyDefectIdentificationField(FieldMapping fieldMapping, Issue issue, JiraIssue jiraIssue,
 			Map<String, IssueField> fields) {
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
@@ -752,15 +709,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-	/**
-	 * Checks if the bug is raised by third party
-	 *
-	 * @param bugRaisedValue
-	 *            Value of raised defect
-	 * @param issueFieldValue
-	 *            Issue Field Value Object
-	 * @return boolean
-	 */
 	private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue) {
 		List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
@@ -836,14 +784,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	// return isRaisedByThirdParty;
 	// }
 
-	/**
-	 * Process sprint details
-	 *
-	 * @param jiraIssue
-	 *            JiraIssue
-	 * @param sprintField
-	 *            Issuefield containing sprint Data
-	 */
 	private void processSprintData(JiraIssue jiraIssue, IssueField sprintField, ProjectConfFieldMapping projectConfig) {
 		if (sprintField == null || sprintField.getValue() == null
 				|| JiraConstants.EMPTY_STR.equals(sprintField.getValue())) {
