@@ -35,6 +35,15 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanIssueCustomHistory, ObjectId>,
 		QuerydslPredicateExecutor<KanbanIssueCustomHistory>, KanbanJiraIssueHistoryRepoCustom {
 
+	/**
+	 * Find by story id list.
+	 *
+	 * @param storyID
+	 *            the story id
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return the KanbanIssueCustomHistory
+	 */
 	@Query(fields = "{ 'storyID' : 1, 'createdDate' : 1, 'estimate' : 1, 'bufferedEstimateTime': 1 }")
 	KanbanIssueCustomHistory findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
 
