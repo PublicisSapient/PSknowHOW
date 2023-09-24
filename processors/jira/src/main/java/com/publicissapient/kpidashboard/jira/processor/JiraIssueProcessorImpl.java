@@ -132,10 +132,10 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
 			Map<String, String> issueEpics = new HashMap<>();
 
-			jiraIssue.setProcessorId(jiraProcessorId);
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 
 			jiraIssue = getJiraIssue(projectConfig, issueId);
+			jiraIssue.setProcessorId(jiraProcessorId);
 
 			Map<String, IssueField> fields = buildFieldMap(issue.getFields());
 			IssueField epic = fields.get(fieldMapping.getEpicName());

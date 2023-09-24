@@ -33,7 +33,7 @@ public class ReaderRetryHelper {
 	 * RetryableOperation<T>
 	 * @return <T>
 	 * @param <T>
-	 *     RetryableOperation<T>
+	 * RetryableOperation<T>
 	 * @throws Exception
 	 * Exception
 	 */
