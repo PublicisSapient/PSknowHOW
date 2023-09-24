@@ -25,8 +25,11 @@ public interface FetchKanbanReleaseData {
     /**
      *
      * @param projectConfig
+     * projectConfig
      * @param krb5Client
+     * krb5Client
      * @return
+     * ProjectRelease
      */
     ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
 }

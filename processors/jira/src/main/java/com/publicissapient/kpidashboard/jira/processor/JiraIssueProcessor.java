@@ -31,10 +31,14 @@ public interface JiraIssueProcessor {
 
 	/**
 	 * @param currentPagedJiraRs
+	 * currentPagedJiraRs
 	 * @param projectConfig
+	 * projectConfig
 	 * @param boardId
+	 * boardId
 	 * @return JiraIssue
 	 * @throws JSONException
+	 * JSONException
 	 */
 	JiraIssue convertToJiraIssue(Issue currentPagedJiraRs, ProjectConfFieldMapping projectConfig, String boardId)
 			throws JSONException;

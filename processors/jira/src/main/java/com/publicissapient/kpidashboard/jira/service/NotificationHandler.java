@@ -81,8 +81,11 @@ public class NotificationHandler {
 	/**
 	 *
 	 * @param key
+	 * key
 	 * @param value
+	 * value
 	 * @param projectBasicConfigId
+	 * projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
 		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);

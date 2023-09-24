@@ -28,10 +28,14 @@ public interface FetchIssueSprint {
     /**
      *
      * @param projectConfig
+     * projectConfig
      * @param client
+     * client
      * @param pageNumber
+     * pageNumber
      * @param sprintId
-     * @return
+     * sprintId
+     * @return List<Issue>
      */
     List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
                                             ProcessorJiraRestClient client, int pageNumber, String sprintId);

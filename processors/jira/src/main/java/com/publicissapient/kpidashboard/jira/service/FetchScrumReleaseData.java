@@ -25,8 +25,10 @@ public interface FetchScrumReleaseData {
     /**
      *
      * @param projectConfig
+     * projectConfig
      * @param krb5Client
-     * @return
+     * krb5Client
+     * @return ProjectRelease
      */
     ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
 }

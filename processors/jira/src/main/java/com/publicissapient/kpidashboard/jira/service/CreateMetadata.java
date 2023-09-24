@@ -28,7 +28,9 @@ public interface CreateMetadata {
   
     /**
      * @param projectConfig
+     * projectConfig
      * @param client
+     * client
      */
     void collectMetadata(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client);
 }

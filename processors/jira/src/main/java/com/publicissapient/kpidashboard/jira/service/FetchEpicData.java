@@ -29,9 +29,13 @@ public interface FetchEpicData {
 	/**
 	 *
 	 * @param projectConfig
+	 * projectConfig
 	 * @param boardId
+	 * boardId
 	 * @param clientIncoming
+	 * clientIncoming
 	 * @param krb5Client
+	 * krb5Client
 	 * @return
 	 * @throws InterruptedException
 	 */

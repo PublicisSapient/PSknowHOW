@@ -28,7 +28,9 @@ import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 public interface JiraIssueAssigneeProcessor {
 	/**
 	 * @param projectConfig
+	 * projectConfig
 	 * @param jiraIssue
+	 * jiraIssue
 	 * @return AssigneeDetails
 	 */
 	AssigneeDetails createAssigneeDetails(ProjectConfFieldMapping projectConfig, JiraIssue jiraIssue);

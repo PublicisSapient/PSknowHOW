@@ -29,7 +29,9 @@ public interface KanbanJiraIssueAssigneeProcessor {
 
 	/**
 	 * @param projectConfig
+	 * projectConfig
 	 * @param jiraIssue
+	 * jiraIssue
 	 * @return AssigneeDetails
 	 */
 	AssigneeDetails createKanbanAssigneeDetails(ProjectConfFieldMapping projectConfig, KanbanJiraIssue jiraIssue);
