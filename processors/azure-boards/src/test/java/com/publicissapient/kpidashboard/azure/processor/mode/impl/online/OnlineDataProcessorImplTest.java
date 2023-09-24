@@ -378,7 +378,7 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(kanbanJiraRepo.findByIssueId(any())).thenReturn(new ArrayList<KanbanJiraIssue>());
 		when(kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(any(), any()))
-				.thenReturn(new ArrayList<KanbanIssueCustomHistory>());
+				.thenReturn(new KanbanIssueCustomHistory());
 
 		when(client.getWiqlResponse(prepareAzureServer(), time, projectConfFieldMapping, false))
 				.thenReturn(createWiqlResponse());

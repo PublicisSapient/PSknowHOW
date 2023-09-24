@@ -57,34 +57,21 @@ public class KanbanJiraIssueHistoryProcessorImpl implements KanbanJiraIssueHisto
 	public KanbanIssueCustomHistory convertToKanbanIssueHistory(Issue issue, ProjectConfFieldMapping projectConfig,
 			KanbanJiraIssue kanbanJiraIssue) {
 		log.info("Converting issue to KanbanJiraIssueHistory for the project : {}", projectConfig.getProjectName());
+		String issueNumber = JiraProcessorUtil.deodeUTF8String(issue.getKey());
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
-		KanbanIssueCustomHistory jiraIssueHistory = getKanbanIssueCustomHistory(projectConfig, issue);
+		KanbanIssueCustomHistory jiraIssueHistory = getKanbanIssueCustomHistory(projectConfig, issueNumber);
 		setJiraIssueHistory(jiraIssueHistory, kanbanJiraIssue, issue, fieldMapping);
 
 		return jiraIssueHistory;
 	}
 
-	private KanbanIssueCustomHistory getKanbanIssueCustomHistory(ProjectConfFieldMapping projectConfig, Issue issue) {
-		KanbanIssueCustomHistory jiraIssueHistory = findOneKanbanIssueCustomHistory(issue.getKey(),
-				projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssueHistory == null) {
-			jiraIssueHistory = new KanbanIssueCustomHistory();
-		}
-		return jiraIssueHistory;
-	}
-
-	public KanbanIssueCustomHistory findOneKanbanIssueCustomHistory(String issueId, String basicProjectConfigId) {
-		List<KanbanIssueCustomHistory> jiraIssues = kanbanJiraIssueHistoryRepository
+	private KanbanIssueCustomHistory getKanbanIssueCustomHistory(ProjectConfFieldMapping projectConfig,
+			String issueId) {
+		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
+		KanbanIssueCustomHistory jiraIssueHistory = kanbanJiraIssueHistoryRepository
 				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | Data issue More than one JIRA issue item found for id {}", issueId);
-		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
 
-		return null;
+		return jiraIssueHistory != null ? jiraIssueHistory : new KanbanIssueCustomHistory();
 	}
 
 	public void setJiraIssueHistory(KanbanIssueCustomHistory jiraIssueHistory, KanbanJiraIssue jiraIssue, Issue issue,

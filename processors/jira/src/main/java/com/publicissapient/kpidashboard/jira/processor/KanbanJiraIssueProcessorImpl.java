@@ -178,27 +178,11 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	}
 
 	private KanbanJiraIssue getKanbanJiraIssue(ProjectConfFieldMapping projectConfig, String issueId) {
-		KanbanJiraIssue jiraIssue = findOneKanbanIssueRepo(issueId, projectConfig.getBasicProjectConfigId().toString());
-		if (jiraIssue == null) {
-			jiraIssue = new KanbanJiraIssue();
-		}
-		return jiraIssue;
-	}
-
-	public KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
-		List<KanbanJiraIssue> jiraIssues = kanbanJiraIssueRepository
+		String basicProjectConfigId = projectConfig.getBasicProjectConfigId().toString();
+		KanbanJiraIssue jiraIssue = kanbanJiraIssueRepository
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
-		}
-
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-
-		return null;
+		return jiraIssue != null ? jiraIssue : new KanbanJiraIssue();
 	}
 
 	private void setJiraAssigneeDetails(KanbanJiraIssue jiraIssue, User user, ProjectConfFieldMapping projectConfig) {

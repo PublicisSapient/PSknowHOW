@@ -38,8 +38,17 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 public interface KanbanJiraIssueRepository extends CrudRepository<KanbanJiraIssue, ObjectId>,
 		QuerydslPredicateExecutor<KanbanJiraIssue>, KanbanJiraIssueRepoCustom {
 
+	/**
+	 * Gets feature id by id.
+	 *
+	 * @param issueId
+	 *            the s id
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return the feature id by id
+	 */
 	@Query(fields = "{'issueId' : 1}")
-	List<KanbanJiraIssue> findByIssueIdAndBasicProjectConfigId(String issueId, String asicProjectConfigId);
+	KanbanJiraIssue findByIssueIdAndBasicProjectConfigId(String issueId, String basicProjectConfigId);
 
 	/**
 	 * Finds object with max date for given project. This essentially returns the

@@ -450,7 +450,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		JiraIssue jiraIssues = jiraIssueRepository
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		if (ObjectUtils.isNotEmpty(jiraIssues)) {
+		if (StringUtils.isNotEmpty(jiraIssues.getIssueId())) {
 			return jiraIssues;
 		}
 
