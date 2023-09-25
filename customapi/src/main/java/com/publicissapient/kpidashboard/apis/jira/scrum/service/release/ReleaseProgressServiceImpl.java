@@ -137,9 +137,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			if (CollectionUtils.isNotEmpty(releaseIssues) && jiraIssueReleaseStatus != null) {
 				Set<String> issueTypes = new LinkedHashSet<>();
+				issueTypes.add(CommonConstant.OVERALL);
 				createDataCountGroupMap(releaseIssues, jiraIssueReleaseStatus, issueTypes, fieldMapping,
 						filterDataList);
-				issueTypes.add(CommonConstant.OVERALL);
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
 				List<DataCount> dataCountList = new ArrayList<>();
 				dataCountList.add(getStatusWiseCountList(releaseIssues, jiraIssueReleaseStatus));
