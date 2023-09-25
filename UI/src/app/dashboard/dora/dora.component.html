@@ -75,7 +75,7 @@
                 <div class="kpi-summary p-p-3 p-mb-3 position-relative">
                   <h4 class="p-m-0">Change Failure Rate</h4>
                   <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi116']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}</div>
+                    <div class="p-mt-3 summary-circle p-text-center">{{kpiChartData['kpi116']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}</div>
                   </div>
                   <ng-template #noData1>
                     <div class="overlay"
@@ -91,7 +91,7 @@
                 <div class="kpi-summary p-p-3 position-relative">
                   <h4 class="p-m-0">Deployment Frequency / Week </h4>
                   <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
+                    <div class="p-mt-3 summary-circle p-text-center">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
                   </div>
                   <ng-template #noData2>
                     <div class="overlay"
@@ -214,7 +214,7 @@
                 <div class="kpi-summary p-p-3 position-relative">
                   <h4 class="p-m-0">Lead Time For Change</h4>
                   <div *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
-                    <div class="p-mt-3 summary-circle">{{kpiChartData['kpi156']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}</div>
+                    <div class="p-mt-3 summary-circle p-text-center">{{kpiChartData['kpi156']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}</div>
                   </div>
                   <ng-template #noData5>
                     <div class="overlay"
