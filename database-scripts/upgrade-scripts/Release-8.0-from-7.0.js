@@ -4020,6 +4020,12 @@ db.kpi_master.updateOne(
     }
 );
 
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//For DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "dropDown" } }
+);
 db.getCollection('field_mapping_structure').insertMany([
     {
         "fieldName": "jiraStatusStartDevelopmentKPI154",
