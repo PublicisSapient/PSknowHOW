@@ -116,6 +116,15 @@
                       ]
                   },
                   {
+                      "type": "jiraIssueTypeKPI156",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+                  },
+                  {
                       "type": "jiraQAKPI111IssueType",
                       "value": [
                           "Story",
@@ -696,6 +705,16 @@
                   },
                   {
                     "type": "jiraDodKPI155",
+                    "value": [
+                      "Closed",
+                      "Resolved",
+                      "Ready for Delivery",
+                      "Done",
+                      "Ready for Sign-off"
+                    ]
+                  },
+                  {
+                    "type": "jiraDodKPI156",
                     "value": [
                       "Closed",
                       "Resolved",

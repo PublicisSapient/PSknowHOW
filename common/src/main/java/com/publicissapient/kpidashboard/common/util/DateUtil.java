@@ -33,6 +33,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -54,6 +55,8 @@ public class DateUtil {
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+
+	public static final String TIME_FORMAT_WITH_SEC_ZONE = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
 	public static final String TIME_FORMAT_WITH_SEC_DATE = "yyyy-MM-dd'T'HH:mm:ssX";
 
@@ -257,6 +260,16 @@ public class DateUtil {
 		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
 
 		return formattedMonday + " to " + formattedSunday;
+	}
+
+	public static String getWeekRangeUsingDateTime(DateTime currentDate) {
+		DateTime monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
+		DateTime sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);
+
+		String formattedMondayDate = DateTimeFormat.forPattern(D_MMM).print(monday);
+		String formattedSundayDate = DateTimeFormat.forPattern(D_MMM_YY).print(sunday);
+
+		return formattedMondayDate + " to " + formattedSundayDate;
 	}
 
 }
