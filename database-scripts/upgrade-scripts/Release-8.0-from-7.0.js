@@ -4020,9 +4020,12 @@ db.kpi_master.updateOne(
     }
 );
 
-
-
 //------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//For DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "dropDown" } }
+);
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{ // adding kpi category dora

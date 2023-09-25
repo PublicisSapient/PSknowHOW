@@ -57,6 +57,7 @@ public class DataCount implements Serializable {
 	private String sSprintName;
 	private String sRootCause;
 	private transient Object value;
+	private transient Object drillDown;
 	private String kanbanDate;
 	private Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
@@ -110,6 +111,22 @@ public class DataCount implements Serializable {
 	public DataCount(String data, Object value) {
 		this.data = data;
 		this.value = value;
+	}
+
+	/**
+	 * Instantiates a drill down data count
+	 * 
+	 * @param subFilter
+	 *            the subFilter
+	 * @param value
+	 *            the value
+	 * @param drillDown
+	 *            the drillDown
+	 */
+	public DataCount(String subFilter, Object value, Object drillDown) {
+		this.subFilter = subFilter;
+		this.value = value;
+		this.drillDown = drillDown;
 	}
 
 	/**

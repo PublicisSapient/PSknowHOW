@@ -598,7 +598,13 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
 // delete lead time for change
 db.kpi_master.deleteOne({
       "kpiId": "kpi156"
