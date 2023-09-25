@@ -2098,6 +2098,66 @@ export class JiraConfigComponent implements OnInit {
           };
         }
         break;
+        case 'RepoTool':
+        {
+          this.formTitle = 'RepoTool';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'username', header: 'User Name', class: 'normal' },
+            { field: 'repoToolProvider', header: 'RepoTool Provider', class: 'normal' },
+            { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
+          ];
+          this.configuredToolTableCols = [
+            { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
+            { field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
+            { field: 'defaultBranch', header: 'Default Branch', class: 'long-text' },
+            { field: 'branch', header: 'Scanning Branch', class: 'long-text' },
+          ];
+          this.formTemplate = {
+            group: 'RepoTool',
+            elements: [
+              {
+                type: 'text',
+                label: 'Repository Name',
+                id: 'repositoryName',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Repository Name.<br / <i>Impacted : All Repository based KPIs</i>`,
+                // onFocusOut : this.getGitActionWorkflowName
+              },
+              {
+                type: 'text',
+                label: 'Default Branch (to check how ahead/behind is scanning branch)',
+                id: 'defaultBranch',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Default Branch name to access Repository data. It is used to check how far ahead/behind it is from Scanning Branch<br />
+                <i>
+                  Example: master<br />
+                  Impacted : All Repository based KPIs</i>`,
+              },
+              {
+                type: 'text',
+                label: 'Branch to Scan for KPIs',
+                id: 'branch',
+                validators: [],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `Scanning Branch name to access Repository data for Developer KPIs. If kept empty Default branch will be considered for scanning<br />
+                <i>
+                  Example: develop<br />
+                  Impacted : All Repository based KPIs</i>`,
+              },
+            ],
+          };
+        }
+        break;
     }
 
     const group = {};
