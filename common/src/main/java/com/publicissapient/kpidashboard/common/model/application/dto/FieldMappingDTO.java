@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -151,8 +150,6 @@ public class FieldMappingDTO extends BasicModel {
 
     private String jiraDor;
     private List<String> jiraDorKPI3;
-	private String jiraDor;
-	private List<String> jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;
 	private List<String> jiraIssueTypeKPI3;
