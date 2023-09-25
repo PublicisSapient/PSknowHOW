@@ -286,7 +286,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			}
 			return epicIssues;
 		};
-
 		try {
 			return retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
