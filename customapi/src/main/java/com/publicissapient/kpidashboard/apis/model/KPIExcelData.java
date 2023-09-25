@@ -349,9 +349,6 @@ public class KPIExcelData {
 	@JsonProperty("Scope Change (Added/Removed)")
 	private String scopeChange;
 
-	@JsonProperty("Epic Id")
-	private String epicId;
-
 	@JsonProperty("Epic Status")
 	private String epicStatus;
 
