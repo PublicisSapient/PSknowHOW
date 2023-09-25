@@ -2780,7 +2780,7 @@ db.getCollection('kpi_master').insert(
     "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": 'stackedColumn',
+    "chartType": 'null',
     "kpiInfo": {
       "details": [
         {
