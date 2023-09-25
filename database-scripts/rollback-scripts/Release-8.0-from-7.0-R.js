@@ -605,6 +605,16 @@ db.kpi_master.updateOne(
   { $set: { "kpiFilter": "multiSelectDropDown" } }
 );
 
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi161" }
+);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
+    }
+});
+
 // delete lead time for change
 db.kpi_master.deleteOne({
       "kpiId": "kpi156"

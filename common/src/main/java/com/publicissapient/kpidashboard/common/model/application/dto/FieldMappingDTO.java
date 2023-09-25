@@ -151,25 +151,27 @@ public class FieldMappingDTO extends BasicModel {
 
     private String jiraDor;
     private List<String> jiraDorKPI3;
+	private String jiraDor;
+	private List<String> jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;
 	private List<String> jiraIssueTypeKPI3;
 
-private List<String> jiraStoryIdentification;
-private List<String> jiraStoryIdentificationKPI129;
-private List<String> jiraStoryIdentificationKpi40;
-private List<String> jiraStoryIdentificationKPI164;
+	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentificationKPI129;
+	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentificationKPI164;
 
-private String jiraLiveStatus;
-private String jiraLiveStatusKPI152;
-private String jiraLiveStatusKPI151;
-private List<String> jiraLiveStatusKPI3;
-private String jiraLiveStatusLTK;
-private String jiraLiveStatusNOPK;
-private String jiraLiveStatusNOSK;
-private String jiraLiveStatusNORK;
-private String jiraLiveStatusOTA;
-private String jiraLiveStatusKPI127;
+	private String jiraLiveStatus;
+	private String jiraLiveStatusKPI152;
+	private String jiraLiveStatusKPI151;
+	private List<String> jiraLiveStatusKPI3;
+	private String jiraLiveStatusLTK;
+	private String jiraLiveStatusNOPK;
+	private String jiraLiveStatusNOSK;
+	private String jiraLiveStatusNORK;
+	private String jiraLiveStatusOTA;
+	private String jiraLiveStatusKPI127;
 
 	private List<String> ticketCountIssueType;
 
@@ -374,7 +376,6 @@ private String jiraLiveStatusKPI127;
 	private String jiraDefectRejectionStatusKPI155;
 	private List<String> jiraDodKPI155;
 	private String jiraLiveStatusKPI155;
-
 	private boolean uploadData;
 	private boolean uploadDataKPI42;
 	private boolean uploadDataKPI16;
@@ -395,6 +396,13 @@ private String jiraLiveStatusKPI127;
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
+
+	private List<String> jiraIssueTypeNamesKPI161;
+	private List<String> jiraIssueTypeNamesKPI146;
+	private List<String> jiraIssueTypeNamesKPI148;
+	private List<String> jiraIssueTypeNamesKPI151;
+	private List<String> jiraIssueTypeNamesKPI152;
+
 
 	/**
 	 * Get jira issue type names string [ ].

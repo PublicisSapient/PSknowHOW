@@ -289,6 +289,9 @@ public class KPIExcelData {
 	@JsonProperty("Start Date")
 	private String startDate;
 
+	@JsonProperty("Sprint Start Date")
+	private String sprintStartDate;
+
 	@JsonProperty("End Date")
 	private String endDate;
 
