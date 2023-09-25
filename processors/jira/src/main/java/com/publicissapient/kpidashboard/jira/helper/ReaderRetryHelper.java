@@ -25,7 +25,7 @@ import org.springframework.retry.support.RetryTemplate;
 public class ReaderRetryHelper {
 
 	public static final int MAX_RETRY_ATTEMPT = 3;
-	public static final long TIME_INTERVAL_BETWEEN_RETRY = 3000;
+	public static final long TIME_INTERVAL_BETWEEN_RETRY = 5000;
 
 	/**
 	 * 

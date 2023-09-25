@@ -277,6 +277,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				log.info("Reading epics for project: {} boardid: {}", projectConfFieldMapping.getProjectName(),
 						boardId);
 				epicIssues = fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
+			} catch (RestClientException rce) {
+				log.error("Client exception when loading epic data", rce);
+				throw rce;
 			} catch (Exception e) {
 				log.error("Exception occurred while fetching epic issues:", e);
 				throw e;

@@ -60,7 +60,7 @@ public class FetchEpicDataImpl implements FetchEpicData {
 
 	@Override
 	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws InterruptedException {
+			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client) throws InterruptedException, RestClientException {
 
 		List<String> epicList = new ArrayList<>();
 		client = clientIncoming;
@@ -78,9 +78,6 @@ public class FetchEpicDataImpl implements FetchEpicData {
 				} while (!isLast);
 
 			}
-		} catch (RestClientException rce) {
-			log.error("Client exception when loading epic data", rce);
-			throw rce;
 		} catch (MalformedURLException mfe) {
 			log.error("Malformed url for loading epic data", mfe);
 		} catch (IOException ioe) {
