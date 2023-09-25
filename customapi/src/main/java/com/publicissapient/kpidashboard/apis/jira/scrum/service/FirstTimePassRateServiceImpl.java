@@ -301,18 +301,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
 		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMap);
-		Map<String, List<JiraIssue>> issuesBySprintAndTypeMap = issuesBySprintAndType.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-		issuesBySprintAndTypeMap.forEach((projectId, issuesList) -> {
-			issuesList.sort(Comparator.comparing(JiraIssue::getSprintEndDate)); // Sort in descending order
-		});
-		// Limit the list of SprintDetails for each basicProjectConfigId to
-		List<JiraIssue> limitedList = issuesBySprintAndTypeMap.values().stream()
-				.flatMap(list -> list.stream().limit((long) customApiConfig.getSprintCountForFilters()))
-				.collect(Collectors.toList());
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, limitedList, defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType, defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
