@@ -122,6 +122,14 @@ public class ProcessorServiceImpl implements ProcessorService {
 		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/startprojectwiseissuejob",
 				"/startfetchsprintjob");
 
+		// setting the fetchStatus as false for the fetch sprint
+		SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
+		sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
+		sprintTrace.setSprintId(sprintId);
+		sprintTrace.setFetchSuccessful(false);
+		sprintTrace.setErrorInFetch(false);
+		sprintTraceLogRepository.save(sprintTrace);
+
 		boolean isSuccess = true;
 
 		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
@@ -146,15 +154,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
 			isSuccess = false;
 		}
-		// setting the fetchStatus as false for the fetch sprint
-		if (HttpStatus.OK.value() == statuscode) {
-			SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
-			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
-			sprintTrace.setSprintId(sprintId);
-			sprintTrace.setFetchSuccessful(false);
-			sprintTrace.setErrorInFetch(false);
-			sprintTraceLogRepository.save(sprintTrace);
-		}
+
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
 }

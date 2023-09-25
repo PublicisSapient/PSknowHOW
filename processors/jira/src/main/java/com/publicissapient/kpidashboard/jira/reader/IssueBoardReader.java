@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.jira.reader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,8 +68,6 @@ import net.logstash.logback.util.StringUtils;
 @StepScope
 public class IssueBoardReader implements ItemReader<ReadData> {
 
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
@@ -186,9 +185,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				pageNumber += pageSize;
 			} catch (RestClientException e) {
 				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
+					log.error(JiraConstants.ERROR_MSG_401);
 				} else {
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+					log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
 				}
 				throw e;
 			} catch (InterruptedException e) {
@@ -272,14 +271,25 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	@TrackExecutionTime
 	private List<Issue> fetchEpics(KerberosClient krb5Client, ProcessorJiraRestClient client) {
 
-		List<Issue> epicIssues = new ArrayList<>();
-		log.info("Reading epics for project : {} boardid : {} ", projectConfFieldMapping.getProjectName(), boardId);
+		ReaderRetryHelper.RetryableOperation<List<Issue>> retryableOperation = () -> {
+			List<Issue> epicIssues = new ArrayList<>();
+			try {
+				log.info("Reading epics for project: {} boardid: {}", projectConfFieldMapping.getProjectName(),
+						boardId);
+				epicIssues = fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
+			} catch (Exception e) {
+				log.error("Exception occurred while fetching epic issues:", e);
+				throw e;
+			}
+			return epicIssues;
+		};
+
 		try {
-			epicIssues = fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
+			return retryHelper.executeWithRetry(retryableOperation);
 		} catch (Exception e) {
-			log.error("Exception occurred while fetching epic issues:", e);
+			log.error("All retry attempts failed while fetching epics.");
+			return Collections.emptyList();
 		}
-		return epicIssues;
 	}
 
 }

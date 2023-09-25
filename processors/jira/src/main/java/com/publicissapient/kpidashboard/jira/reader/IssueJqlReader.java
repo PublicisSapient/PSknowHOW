@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
+import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -84,10 +86,12 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	private Iterator<Issue> issueIterator;
 	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String projectId;
+	private ReaderRetryHelper retryHelper;
 
 	@Autowired
 	public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
+		this.retryHelper = new ReaderRetryHelper();
 	}
 
 	public void initializeReader(String projectId) {
@@ -147,15 +151,41 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 
 	@TrackExecutionTime
 	private void fetchIssues(ProcessorJiraRestClient client) {
-		log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
-				pageNumber / pageSize);
-		String deltaDate = getDeltaDateFromTraceLog();
-		issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber, deltaDate);
-		issueSize = issues.size();
-		pageNumber += pageSize;
-		if (CollectionUtils.isNotEmpty(issues)) {
-			issueIterator = issues.iterator();
 
+		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
+
+			try {
+				log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
+						pageNumber / pageSize);
+				String deltaDate = getDeltaDateFromTraceLog();
+				issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber, deltaDate);
+				issueSize = issues.size();
+				pageNumber += pageSize;
+				if (CollectionUtils.isNotEmpty(issues)) {
+					issueIterator = issues.iterator();
+				}
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(JiraConstants.ERROR_MSG_401);
+				} else {
+					log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+				throw e;
+			} catch (InterruptedException e) {
+				log.error("Interrupted exception thrown.", e);
+				throw e;
+			} catch (Exception e) {
+				log.error("Exception while fetching issues for project: {} page No: {}",
+						projectConfFieldMapping.getProjectName(), pageNumber / pageSize, e);
+				throw e;
+			}
+			return null;
+		};
+
+		try {
+			retryHelper.executeWithRetry(retryableOperation);
+		} catch (Exception e) {
+			log.error("All retry attempts failed while fetching issues.");
 		}
 	}
 

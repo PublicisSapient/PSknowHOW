@@ -190,24 +190,21 @@ public class JiraCommonService {
 	 * @return List of Issue
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) {
+			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) throws InterruptedException {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
 		if (client == null) {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
-			try {
-				String queryDate = DateUtil
-						.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
-								.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
 
-				SearchResult searchResult = getJqlIssues(projectConfig, queryDate, pageNumber);
-				issues = JiraHelper.getIssuesFromResult(searchResult);
+			String queryDate = DateUtil
+					.dateTimeFormatter(DateUtil.stringToLocalDateTime(deltaDate, JiraConstants.QUERYDATEFORMAT)
+							.minusDays(jiraProcessorConfig.getDaysToReduce()), JiraConstants.QUERYDATEFORMAT);
 
-			} catch (InterruptedException e) {
-				log.error("Interrupted exception thrown.", e);
-			}
+			SearchResult searchResult = getJqlIssues(projectConfig, queryDate, pageNumber);
+			issues = JiraHelper.getIssuesFromResult(searchResult);
+
 		}
 		return issues;
 	}
@@ -242,33 +239,22 @@ public class JiraCommonService {
 					.map(array -> "\"" + String.join("\", \"", array) + "\"").collect(Collectors.joining(", "));
 			StringBuilder query = new StringBuilder("project in (")
 					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") and ");
-			try {
-				String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase()
-						.split(JiraConstants.ORDERBY)[0];
-				query.append(userQuery);
-				query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate + "' ");
-				query.append(" order BY updated asc");
 
-				log.info("jql query :{}", query);
-				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
-						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
-				searchResult = promisedRs.claim();
-				if (searchResult != null) {
-					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
-							searchResult.getTotal()));
-				}
-			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.info(NO_RESULT_QUERY, query);
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-				}
+			String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0];
+			query.append(userQuery);
+			query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate + "' ");
+			query.append(" order BY updated asc");
+			log.info("jql query :{}", query);
+			Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+			searchResult = promisedRs.claim();
+			if (searchResult != null) {
+				log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+						Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+						searchResult.getTotal()));
 			}
 
 		}
-
 		return searchResult;
 	}
 

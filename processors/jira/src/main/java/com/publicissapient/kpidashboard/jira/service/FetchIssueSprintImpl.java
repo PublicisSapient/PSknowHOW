@@ -36,7 +36,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -64,11 +63,6 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 	public static final String TILDA_SYMBOL = "^";
 	public static final String DOLLAR_SYMBOL = "$";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-	private static final String NO_RESULT_QUERY = "No result available for query: {}";
-	@Autowired
-	JiraCommonService jiraCommonService;
 
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
@@ -81,7 +75,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 
 	@Override
 	public List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig,
-			ProcessorJiraRestClient client, int pageNumber, String sprintId) {
+			ProcessorJiraRestClient client, int pageNumber, String sprintId) throws InterruptedException {
 
 		SprintDetails updatedSprintDetails = sprintRepository.findBySprintID(sprintId);
 
@@ -104,17 +98,12 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 		if (client == null) {
 			log.error(MSG_JIRA_CLIENT_SETUP_FAILED);
 		} else {
-			try {
-				if (CollectionUtils.isNotEmpty(issuesToUpdate)) {
-					SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber,
-							new ArrayList<>(issuesToUpdate));
-					issues = JiraHelper.getIssuesFromResult(searchResult);
-				} else {
-					log.info("No issuesToUpdate found in Sprint {}", updatedSprintDetails.getSprintName());
-				}
-
-			} catch (InterruptedException e) {
-				log.error("Interrupted exception thrown.", e);
+			if (CollectionUtils.isNotEmpty(issuesToUpdate)) {
+				SearchResult searchResult = getIssuesSprint(projectConfig, client, pageNumber,
+						new ArrayList<>(issuesToUpdate));
+				issues = JiraHelper.getIssuesFromResult(searchResult);
+			} else {
+				log.info("No issuesToUpdate found in Sprint {}", updatedSprintDetails.getSprintName());
 			}
 		}
 		return issues;
@@ -131,26 +120,18 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 		} else {
 			StringBuilder query = new StringBuilder("project in (")
 					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
-			try {
-				query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
-				log.info("jql query :{}", query);
-				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
-						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
-				searchResult = promisedRs.claim();
-				if (searchResult != null) {
-					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
-							Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
-							searchResult.getTotal()));
-				}
-				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
-			} catch (RestClientException e) {
-				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
-					log.error(ERROR_MSG_401);
-				} else {
-					log.info(NO_RESULT_QUERY, query);
-					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
-				}
+
+			query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
+			log.info("jql query :{}", query);
+			Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
+			searchResult = promisedRs.claim();
+			if (searchResult != null) {
+				log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+						Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
+						searchResult.getTotal()));
 			}
+			TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 
 		}
 
