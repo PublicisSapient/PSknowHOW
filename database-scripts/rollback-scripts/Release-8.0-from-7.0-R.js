@@ -598,12 +598,20 @@ db.kpi_master.updateOne(
     }
 );
 
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
+
 //revert RepoTool - DTS-27526 remove repo tool changes
 // Revert changes to kpi_master collection
-db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160", "kpi162"] } });
 
 // Revert changes to kpi_column_configs collection
-db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160", "kpi162"] } });
 
 // Revert changes to kpi_master collection (if kpiIdsToUpdate were updated)
 db.getCollection("kpi_master").updateMany(
