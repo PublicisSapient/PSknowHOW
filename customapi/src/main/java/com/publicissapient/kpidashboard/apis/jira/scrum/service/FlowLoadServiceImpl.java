@@ -86,7 +86,18 @@ public class FlowLoadServiceImpl extends JiraKPIService<Double, List<Object>, Ma
 
 		if (leafNode != null) {
 			log.info("Flow Load kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
-			List<JiraIssueCustomHistory> issuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+
+			List<JiraIssueCustomHistory> issuesHistory = new ArrayList<>();
+
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIssueTypeNamesKPI148())) {
+				issuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
+				issuesHistory = issuesHistory.stream().filter(
+						jiraIssue -> fieldMapping.getJiraIssueTypeNamesKPI148().contains(jiraIssue.getStoryType()))
+						.collect(Collectors.toList());
+			}
+
 			resultListMap.put(ISSUE_HISTORY, issuesHistory);
 		}
 

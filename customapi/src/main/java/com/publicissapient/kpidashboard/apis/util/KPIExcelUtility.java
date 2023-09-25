@@ -79,6 +79,7 @@ public class KPIExcelUtility {
 	public static final String TIME = "0d ";
 	private static final String MONTH_YEAR_FORMAT = "MMM yyyy";
 	private static final String DATE_YEAR_MONTH_FORMAT = "dd-MMM-yy";
+	private static final String ITERATION_DATE_FORMAT = "yyyy-MM-dd";
 	private static final DecimalFormat df2 = new DecimalFormat(".##");
 	private static final String STATUS = "Status";
 	private static final String WEEK = "Week";
@@ -90,10 +91,15 @@ public class KPIExcelUtility {
 	 * This method populate the excel data for DIR KPI
 	 *
 	 * @param sprint
+	 * 	sprint
 	 * @param storyIds
+	 * 	storyIds
 	 * @param defects
+	 * 	defects
 	 * @param kpiExcelData
+	 * 	kpiExcelData
 	 * @param issueData
+	 * 	issueData
 	 */
 	public static void populateDirExcelData(String sprint, List<String> storyIds, List<JiraIssue> defects,
 			List<KPIExcelData> kpiExcelData, Map<String, JiraIssue> issueData) {
@@ -179,10 +185,15 @@ public class KPIExcelUtility {
 	 * present in conditional list then Constant.EXCEL_YES else "N" kpi specific
 	 *
 	 * @param sprint
+	 * 	sprint
 	 * @param totalBugList
+	 * 	Map of total bug
 	 * @param conditionDefects
+	 * 	conditionDefects
 	 * @param kpiExcelData
+	 * 	kpiExcelData
 	 * @param kpiId
+	 * 	kpiId
 	 */
 	public static void populateDefectRelatedExcelData(String sprint, Map<String, JiraIssue> totalBugList,
 			List<JiraIssue> conditionDefects, List<KPIExcelData> kpiExcelData, String kpiId) {
@@ -1591,6 +1602,47 @@ public class KPIExcelUtility {
 				}
 				excelDataList.add(excelData);
 
+			});
+		}
+	}
+
+	public static void populateIterationReadinessExcelData(List<JiraIssue> jiraIssues,
+														   List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(jiraIssue.getSprintName());
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				String date = Constant.EMPTY_STRING;
+				if (!jiraIssue.getSprintBeginDate().isEmpty()) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setSprintStartDate(date);
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				kpiExcelData.add(excelData);
 			});
 		}
 	}
