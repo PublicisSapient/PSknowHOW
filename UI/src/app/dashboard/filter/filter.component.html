@@ -13,7 +13,7 @@
                <div class="p-d-flex p-justify-between p-align-center">
                   <div class="p-d-flex p-align-end">
                      <!-- Aggregation level -->
-                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
+                     <div *ngIf="selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release' && selectedTab?.toLowerCase() !== 'developer'" class="form-check filter-box p-col-lg abc" style="min-width: 170px;">
                         <ng-select formControlName="selectedLevel" [dropdownPosition]="'bottom'"
                            (change)="handleSelect($event)" placeholder="Organization Level"
                            id="Filter-Aggregation-Level" class="p-pb-0" [readonly]="(showChart === 'large')">
@@ -94,12 +94,12 @@
                   </div>
                   <div class="p-d-flex p-align-end" *ngIf="this.selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'release'">
                      <!-- Date filter start -->
-                     <div *ngIf="kanban && selectedDateFilter !== ''"
+                     <div *ngIf="(kanban && selectedDateFilter !== '') || this.selectedTab?.toLowerCase() === 'developer'"
                         class="selected-date p-ml-auto p-mr-2 p-mt-auto p-align-end">
                         <img src="../../../assets/img/ico-date.svg" alt="date" class="p-mr-1" />
                         <span>{{selectedDateFilter}}</span>
                      </div>
-                     <div class="position-relative" *ngIf="kanban">
+                     <div class="position-relative" *ngIf="kanban || this.selectedTab?.toLowerCase() === 'developer'">
                         <div class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"
                            #dateToggleButton [ngClass]="{'active': toggleDateDropdown}"
                            (click)="toggleDateDropdown = !toggleDateDropdown">
@@ -131,7 +131,7 @@
                      <!-- Date filter end -->
                      <!-- additional filters start -->
                      <div class="p-d-flex"
-                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora'">
+                        *ngIf="selectedTab?.toLowerCase() !== 'value' && selectedTab?.toLowerCase() !== 'maturity' && selectedTab?.toLowerCase() !== 'dora' && selectedTab?.toLowerCase() !== 'developer'">
                         <div *ngFor="let item of additionalFiltersArr; let i = index;" class="position-relative">
                            <div *ngIf="item?.hierarchyLevelId !== 'release'"
                               class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded p-ml-2 filter-btn"

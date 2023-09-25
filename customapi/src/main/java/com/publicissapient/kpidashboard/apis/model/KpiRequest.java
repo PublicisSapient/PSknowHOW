@@ -47,6 +47,7 @@ public class KpiRequest implements Serializable {
 	private List<String> sprintIncluded;
 	private String selecedHierarchyLabel;
 	private int kanbanXaxisDataPoints = 7;
+	private int xAxisDataPoints = 5;
 	private String duration = CommonConstant.MONTH;
 
 	/**
@@ -279,6 +280,14 @@ public class KpiRequest implements Serializable {
 
 	public void setKanbanXaxisDataPoints(int kanbanXaxisDataPoints) {
 		this.kanbanXaxisDataPoints = kanbanXaxisDataPoints;
+	}
+	
+	public int getXAxisDataPoints() {
+		return xAxisDataPoints;
+	}
+
+	public void setXAxisDataPoints(int xAxisDataPoints) {
+		this.xAxisDataPoints = xAxisDataPoints;
 	}
 
 	public String getDuration() {

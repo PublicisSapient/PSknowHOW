@@ -35,11 +35,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit",
+									Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repository Url", "Branch", "Weeks",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
@@ -161,7 +161,7 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -270,7 +270,13 @@ public enum KPIExcelColumn {
 	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
 	LEAD_TIME_FOR_CHANGE("Kpi156",
-			Arrays.asList("Project Name" , "Date" ,"Story ID" , "Lead Time (In Days)" , "Completion Date" , "Release Date" , "Merge Date" , "Merge Request Id" , "Branch"));
+			Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)", "Completion Date", "Release Date",
+					"Merge Date", "Merge Request Id", "Branch")), PICKUP_TIME(
+							"kpi160",
+							Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+									"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+											Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+													"PR Size (No. of lines)")),
 
 	// @formatter:on
 
