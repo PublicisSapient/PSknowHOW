@@ -379,6 +379,16 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
 
+	private List<String> jiraDodKPI156;
+
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *

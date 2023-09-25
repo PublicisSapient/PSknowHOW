@@ -434,7 +434,12 @@ public enum KPICode {
     /**
      * Scope Churn
      */
-    SCOPE_CHURN("kpi164", KPISource.JIRA.name());
+    SCOPE_CHURN("kpi164", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Change DORA  kpi code
+     */
+    LEAD_TIME_FOR_CHANGE("kpi156", KPISource.JIRA.name());
 
 
     // @formatter:on

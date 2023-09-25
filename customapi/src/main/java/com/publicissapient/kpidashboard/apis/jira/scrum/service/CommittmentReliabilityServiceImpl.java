@@ -248,7 +248,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
 					.collect(Collectors.toList());
-			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
+			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalSumIssues);
 			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
 					totalPresentCompletedIssue);
 			Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(totalPresentInitialIssue);

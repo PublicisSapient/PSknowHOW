@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -33,10 +34,9 @@ import lombok.Setter;
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
-// @Data
+@SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
-@SuppressWarnings("PMD.TooManyFields")
 public class FieldMappingDTO extends BasicModel {
 
 	private ObjectId projectToolConfigId;
@@ -384,6 +384,17 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
 	private List<String> jiraStatusStartDevelopmentKPI154;
+
+	private List<String> jiraDodKPI156;
+
+
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

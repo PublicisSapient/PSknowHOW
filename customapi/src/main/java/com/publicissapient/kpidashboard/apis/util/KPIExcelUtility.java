@@ -1603,4 +1603,31 @@ public class KPIExcelUtility {
 			});
 		}
 	}
+
+	public static void populateLeadTimeForChangeExcelData(String projectName,
+			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, List<KPIExcelData> kpiExcelData , Boolean leadTimeConfigRepoTool) {
+
+		if (MapUtils.isNotEmpty(leadTimeMapTimeWise)) {
+			leadTimeMapTimeWise.forEach((weekOrMonthName, leadTimeListCurrentTime) -> {
+				leadTimeListCurrentTime.stream().forEach(leadTimeChangeData -> {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setDate(weekOrMonthName);
+					if(leadTimeConfigRepoTool) {
+						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
+						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
+						excelData.setBranch(leadTimeChangeData.getFromBranch());
+					} else {
+						excelData.setCompletionDate(leadTimeChangeData.getClosedDate());
+					}
+					Map<String, String> issueDetails = new HashMap<>();
+					issueDetails.put(leadTimeChangeData.getStoryID(), checkEmptyURL(leadTimeChangeData));
+					excelData.setStoryId(issueDetails);
+					excelData.setLeadTime(String.valueOf(leadTimeChangeData.getLeadTime()));
+					excelData.setReleaseDate(leadTimeChangeData.getReleaseDate());
+					kpiExcelData.add(excelData);
+				});
+			});
+		}
+	}
 }
