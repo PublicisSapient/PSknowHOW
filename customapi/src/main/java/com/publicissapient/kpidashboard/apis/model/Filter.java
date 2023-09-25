@@ -36,4 +36,21 @@ public class Filter {
 	String filterName;
 	String filterType;
 	List<String> options;
+	Boolean isShown;
+	Integer order;
+
+	public Filter(String filterKey, String filterType, List<String> options) {
+		this.filterKey = filterKey;
+		this.filterType = filterType;
+		this.options = options;
+	}
+
+	public Filter(String filterName, List<String> options, String filterType, Boolean isShown, Integer order) {
+		this.filterName = filterName;
+		this.options = options;
+		this.filterType = filterType;
+		this.isShown = isShown;
+		this.order = order;
+	}
+
 }

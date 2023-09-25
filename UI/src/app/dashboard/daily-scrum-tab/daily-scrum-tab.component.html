@@ -1,6 +1,6 @@
 
 
-<app-daily-scrum *ngIf="!displayModal" 
+    <app-daily-scrum *ngIf="!displayModal" 
     [assigneeList]="assigneeList" 
     [columns]="columns" 
     [filterData]="filterData"
@@ -12,9 +12,11 @@
     (onShowLessOrMore)="onShowLessOrMore()"
     (onFilterChange)="onFilterChange($event)"
     (onSelectedUserChange)="onSelectedUserChange($event)"
+    [issueData]="issueData"
+    [standUpStatusFilter]="standUpStatusFilter"
    >
 </app-daily-scrum>
-
+<div class="expandCollapseModal">
 <p-dialog [(visible)]="displayModal">
     <app-daily-scrum 
     [assigneeList]="assigneeList" 
@@ -27,6 +29,10 @@
     (onExpandOrCollapse)="setExpandView($event)"
     (onShowLessOrMore)="onShowLessOrMore()"
     (onFilterChange)="onFilterChange($event)"
-    (onSelectedUserChange)="onSelectedUserChange($event)">
+    (onSelectedUserChange)="onSelectedUserChange($event)"
+    [issueData]="issueData"
+    [standUpStatusFilter]="standUpStatusFilter">
     </app-daily-scrum>
 </p-dialog>
+
+</div>

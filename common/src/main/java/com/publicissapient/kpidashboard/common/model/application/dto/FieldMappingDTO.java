@@ -62,6 +62,7 @@ public class FieldMappingDTO extends BasicModel {
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String storyFirstStatusKPI3;
+	private List<String> storyFirstStatusKPI154;
 	private String[] linkDefectToStoryField;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
@@ -122,7 +123,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
 
-
 	private String jiraStoryPointsCustomField;
 	// parent issue type for the test
 	private List<String> jiraTestAutomationIssueType;
@@ -149,11 +149,11 @@ public class FieldMappingDTO extends BasicModel {
 	private String readyForDevelopmentStatus;
 	private List<String> readyForDevelopmentStatusKPI138;
 
-private String jiraDor;
-private List<String> jiraDorKPI3;
+    private String jiraDor;
+    private List<String> jiraDorKPI3;
 
-private List<String> jiraIntakeToDorIssueType;
-private List<String> jiraIssueTypeKPI3;
+	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIssueTypeKPI3;
 
 private List<String> jiraStoryIdentification;
 private List<String> jiraStoryIdentificationKPI129;
@@ -230,7 +230,6 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraDefectDroppedStatus;
 	private List<String> jiraDefectDroppedStatusKPI127;
 
-
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
 	private String epicRiskReduction;
@@ -266,6 +265,7 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraStatusForInProgressKPI128;
 	private List<String> jiraStatusForInProgressKPI123;
 	private List<String> jiraStatusForInProgressKPI119;
+	private List<String> jiraStatusForInProgressKPI154;
 
 	@Builder.Default
 	private String estimationCriteria = "Story Point";
@@ -313,16 +313,16 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraDevDoneStatusKPI119;
 	private List<String> jiraDevDoneStatusKPI145;
 	private List<String> jiraDevDoneStatusKPI128;
+	private List<String> jiraDevDoneStatusKPI154;
+	private List<String> jiraQADoneStatusKPI154;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
 	private List<String> jiraRejectedInRefinementKPI139;
 
-
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraAcceptedInRefinement;
 	private List<String> jiraAcceptedInRefinementKPI139;
-
 
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
@@ -353,6 +353,7 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationCompletionStatusKPI119;
 	private List<String> jiraIterationCompletionStatusKPI131;
 	private List<String> jiraIterationCompletionStatusKPI138;
+	private List<String> jiraIterationCompletionStatusKPI154;
 
 	private List<String> jiraIterationCompletionTypeCustomField;
 	private List<String> jiraIterationIssuetypeKPI122;
@@ -378,9 +379,11 @@ private String jiraLiveStatusKPI127;
 	private boolean uploadDataKPI42;
 	private boolean uploadDataKPI16;
 	@Builder.Default
-	private String notificationEnabler="On";
+	private String notificationEnabler = "On";
 
 	private List<String> jiraIssueEpicTypeKPI153;
+	private List<String> jiraSubTaskIdentification;
+	private List<String> jiraStatusStartDevelopmentKPI154;
 
 	private List<String> jiraDodKPI156;
 

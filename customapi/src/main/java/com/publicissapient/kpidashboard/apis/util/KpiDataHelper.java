@@ -909,7 +909,7 @@ public final class KpiDataHelper {
 
 	/**
 	 * Return the duration filter details for dora dashboard
-	 * 
+	 *
 	 * @param kpiElement
 	 * @return
 	 */

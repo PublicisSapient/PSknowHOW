@@ -1344,6 +1344,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
+        this.service.setVisibleSideBar(false);
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1384,6 +1385,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     this.httpService.getShowHideKpi().subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();

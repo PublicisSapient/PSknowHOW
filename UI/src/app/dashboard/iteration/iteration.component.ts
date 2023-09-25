@@ -98,6 +98,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   navigationTabs:Array<object> =[
     {'label':'Iteration Review', 'count': 0,width : 'half',kpis : []},
     {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+    {'label':'Daily Standup', 'count': 0,width : 'full',kpis : []},
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
@@ -165,12 +166,12 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-    
+
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      if(x['label'] === 'Daily Standup'){
-        return x;
-      }
+      // if(x['label'] === 'Daily Standup'){
+      //   return x;
+      // }
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
@@ -195,7 +196,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           }else{
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
-        }) 
+        })
         const dataLength = halfWithKpis.length;
         const middleIndex = Math.floor(dataLength / 2);
         tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));

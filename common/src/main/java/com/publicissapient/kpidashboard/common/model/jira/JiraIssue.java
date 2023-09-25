@@ -227,6 +227,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
 
 	private String originalType;
 	private String epicLinked;
+	//to find the linkage of subTasks with parentStory
+	private Set<String> parentStoryId;
 
 	public boolean isDefectRaisedByQA() {
 		return defectRaisedByQA;

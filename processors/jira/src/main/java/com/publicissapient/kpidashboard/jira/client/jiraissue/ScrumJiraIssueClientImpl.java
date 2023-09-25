@@ -617,16 +617,22 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	/**
-	 * Saves jira issues details
 	 *
 	 * @param currentPagedJiraRs
-	 *            List of Jira issue in current page call
+	 * 			List of Jira issue in current page call
 	 * @param projectConfig
-	 *            Project Configuration Mapping
+	 * 			Project Configuration Mapping
 	 * @param setForCacheClean
-	 *            setForCacheClean
+	 * 			setForCacheClean
+	 * @param jiraAdapter
+	 * 			jiraAdapter
+	 * @param dataFromBoard
+	 *        dataFromBoard
+	 * @param isSprintFetch
+	 * 			isSprintFetch
+	 * @return
 	 * @throws JSONException
-	 *             Error If JSON is invalid
+	 * @throws InterruptedException
 	 */
 	public List<JiraIssue> saveJiraIssueDetails(List<Issue> currentPagedJiraRs, ProjectConfFieldMapping projectConfig,
 			Set<SprintDetails> setForCacheClean, JiraAdapter jiraAdapter, boolean dataFromBoard, boolean isSprintFetch)
@@ -694,6 +700,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 				setEpicLinked(fieldMapping, jiraIssue, fields);
+				setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
+				
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
 
@@ -844,6 +852,16 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
 				&& fieldMapping.getJiradefecttype().stream().anyMatch(issueType.getName()::equalsIgnoreCase)) {
 			jiraIssue.setTypeName(NormalizedJira.DEFECT_TYPE.getValue());
+		}
+	}
+
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 
@@ -1224,7 +1242,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// yyyy-MM-dd'T'HH:mm:ss format so string compare will be fine
 				Collections.sort(sprints, JiraIssueClientUtil.SPRINT_COMPARATOR);
 				setSprintData(sprints, jiraIssue, sValue, projectConfig, sprintDetailsSet);
-			} catch (ParseException | JSONException e) {
+			} catch (JSONException e) {
 				log.error("JIRA Processor | Failed to obtain sprint data from {} {}", sValue, e);
 			}
 		}

@@ -88,6 +88,9 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
+  maturityTableLoader = new Subject<boolean>();
+  visibleSideBarSubject = new BehaviorSubject(false);
+  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -154,6 +157,10 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
+  }
+
+  setVisibleSideBar(value){
+    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {
@@ -355,6 +362,10 @@ export class SharedService {
 
   getFieldMappingMetaData(){
     return this.fieldMappingOptionsMetaData;
+  }
+
+  setMaturiyTableLoader(value){
+    this.maturityTableLoader.next(value)
   }
 }
 

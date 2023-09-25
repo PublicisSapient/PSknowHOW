@@ -1,3 +1,4 @@
+        db.getCollection('metadata_identifier').remove({});
         db.metadata_identifier.insertMany([
 										{
                                                 "tool": "Jira",
@@ -250,6 +251,12 @@
                   },
                   {
                       "type": "storyFirstStatusKPI3",
+                      "value": [
+                          "Open"
+                      ]
+                  },
+                  {
+                      "type": "storyFirstStatusKPI154",
                       "value": [
                           "Open"
                       ]
@@ -628,6 +635,14 @@
                       ]
                   },
                   {
+                      "type": "jiraStatusForInProgressKPI154",
+                      "value": [
+                          "In Analysis",
+                          "In Development",
+                          "In Progress"
+                      ]
+                  },
+                  {
                       "type": "jiraDodKPI14",
                       "value": [
                           "Closed",
@@ -696,6 +711,15 @@
                           "Done",
                           "Ready for Sign-off"
                       ]
+                  },
+                  {
+                       "type": "jiraStatusStartDevelopmentKPI154",
+                        "value": [
+                              "In Analysis",
+                              "IN ANALYSIS",
+                              "In Development",
+                               "In Progress"
+                        ]
                   },
                   {
                     "type": "jiraLiveStatusKPI155",
@@ -960,6 +984,15 @@
                                               ]
                                             },
                                             {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                           },
+                                            {
                                               "type": "rejection",
                                               "value": [
                                                 "Rejected",
@@ -1194,6 +1227,15 @@
                                               ]
                                             },
                                             {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                            },
+                                            {
                                               "type": "rejection",
                                               "value": [
                                                 "Rejected",
@@ -1386,6 +1428,15 @@
                                                 "New"
                                               ]
                                             },
+                                            {
+                                               "type": "firstDevstatus",
+                                               "value": [
+                                                   "In Analysis",
+                                                   "IN ANALYSIS",
+                                                   "In Development",
+                                                   "In Progress"
+                                               ]
+                                           },
                                             {
                                               "type": "rejection",
                                               "value": [
