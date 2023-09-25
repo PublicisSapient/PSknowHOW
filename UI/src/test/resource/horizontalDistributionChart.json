@@ -1,0 +1,206 @@
+[
+    {
+        "filter1": "Mory DOSSO",
+        "filter2": "Low",
+        "value": [
+            {
+                "data": "33.0",
+                "value": [
+                    {
+                        "To Do": 2,
+                        "distribution": {
+                            "kpiGroup": "To Do",
+                            "data": "2.0",
+                            "value": [
+                                {
+                                    "Open": 2
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "In Progress": 3,
+                        "distribution": {
+                            "kpiGroup": "In Progress",
+                            "data": "3.0",
+                            "value": [
+                                {
+                                    "In Analysis": 2
+                                },
+                                {
+                                    "In development": 1
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Done": 45,
+                        "distribution": {
+                            "kpiGroup": "Done",
+                            "data": "45.0",
+                            "value": [
+                                {
+                                    "In Testing": 3
+                                },
+                                {
+                                    "Deployed": 7
+                                },
+                                {
+                                    "Live": 5
+                                },
+                                {
+                                    "In Testing2": 3
+                                },
+                                {
+                                    "Deployed2": 7
+                                },
+                                {
+                                    "Live2": 5
+                                },
+                                {
+                                    "In Testing3": 3
+                                },
+                                {
+                                    "Deployed3": 7
+                                },
+                                {
+                                    "Live3": 5
+                                },
+                                {
+                                    "In Testing4": 3
+                                },
+                                {
+                                    "Deployed4": 7
+                                },
+                                {
+                                    "Live4": 5
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "kpiGroup": "Issue Count"
+            },
+            {
+                "data": "18.0",
+                "value": [
+                    {
+                        "To Do": 0,
+                        "distribution": {
+                            "kpiGroup": "To Do",
+                            "data": "0.0",
+                            "value": [
+                            ]
+                        }
+                    },
+                    {
+                        "In Progress": 3,
+                        "distribution": {
+                            "kpiGroup": "In Progress",
+                            "data": "3.0",
+                            "value": [
+                                {
+                                    "In Analysis": 2
+                                },
+                                {
+                                    "In development": 1
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "Done": 15,
+                        "distribution": {
+                            "kpiGroup": "Done",
+                            "data": "15.0",
+                            "value": [
+                                {
+                                    "In Testing": 3
+                                },
+                                {
+                                    "Deployed": 7
+                                },
+                                {
+                                    "Live": 5
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "kpiGroup": "Story Point"
+            }
+        ]
+    },
+    {
+        "filter1": "Mikołaj Kozakiewicz",
+        "filter2": "High",
+        "value": [
+            {
+                "data": "1.0",
+                "value": {
+                    "To Do": 0,
+                    "In Progress": 0,
+                    "Done": 1
+                },
+                "kpiGroup": "Issue Count"
+            },
+            {
+                "data": "0.0",
+                "value": {
+                    "To Do": 0,
+                    "Done": 0,
+                    "In Progress": 0
+                },
+                "kpiGroup": "Story Point"
+            }
+        ]
+    },
+    {
+        "filter1": "Mikołaj Kozakiewicz",
+        "filter2": "Low",
+        "value": [
+            {
+                "data": "1.0",
+                "value": {
+                    "To Do": 0,
+                    "In Progress": 0,
+                    "Done": 1
+                },
+                "kpiGroup": "Issue Count"
+            },
+            {
+                "data": "5.0",
+                "value": {
+                    "To Do": 0,
+                    "Done": 5,
+                    "In Progress": 0
+                },
+                "kpiGroup": "Story Point"
+            }
+        ]
+    },
+    {
+        "filter1": "Overall",
+        "filter2": "Overall",
+        "value": [
+            {
+                "data": "3.0",
+                "value": {
+                    "To Do": 0,
+                    "In Progress": 0,
+                    "Done": 3
+                },
+                "kpiGroup": "Issue Count"
+            },
+            {
+                "data": "8.0",
+                "value": {
+                    "To Do": 0,
+                    "Done": 8,
+                    "In Progress": 0
+                },
+                "kpiGroup": "Story Point"
+            }
+        ]
+    }
+]
