@@ -64,7 +64,6 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String SCOPE_REMOVED = "Scope Removed";
 	private static final String SCOPE_ADDED = "Scope Added";
 	private static final String RELEASE_SCOPE = "Release Scope";
-	private static final int DAYS_RANGE = 15;
 	private static final String RELEASE_PROGRESS = "Release Progress";
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final String BAR_GRAPH_TYPE = "bar";
@@ -345,13 +344,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		long range;
 		String duration;
 		// added+1 to add the end date as well
-		if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > 15) {
-			range = ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
-			duration = CommonConstant.WEEK;
-		} else {
-			range = DAYS_RANGE;
-			duration = CommonConstant.DAYS;
-		}
+		range = ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
+		duration = CommonConstant.DAYS;
 		map.put(duration, range);
 		return map;
 	}
