@@ -176,11 +176,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseInitialScopeIssues = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWisePuntedIssues = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
+		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
+		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
+		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeIssues = new HashMap<>();
+		Map<Pair<String, String>, Set<JiraIssue>> sprintWisePuntedIssues = new HashMap<>();
+		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
 
 		if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(sprintDetails)) {
 			sprintDetails.forEach(sd -> {
@@ -201,14 +201,14 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 				totalCompltdInitialIssues = new HashSet<>(
 						CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
 				sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(totalIssues));
+						new HashSet<>(totalIssues));
 				sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(completedIssues));
+						new HashSet<>(completedIssues));
 				sprintWiseInitialScopeIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(totalInitialIssues));
+						new HashSet<>(totalInitialIssues));
 				sprintWiseInitialScopeCompletedIssues.put(
 						Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(totalCompltdInitialIssues));
+						new HashSet<>(totalCompltdInitialIssues));
 			});
 		}
 
@@ -223,10 +223,10 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 			List<CommitmentReliabilityValidationData> validationDataList = new ArrayList<>();
 
-			List<JiraIssue> totalPresentJiraIssue = new ArrayList<>();
-			List<JiraIssue> totalPresentCompletedIssue = new ArrayList<>();
-			List<JiraIssue> totalPresentInitialIssue = new ArrayList<>();
-			List<JiraIssue> totalPresentCompltdInitialIssue = new ArrayList<>();
+			Set<JiraIssue> totalPresentJiraIssue = new HashSet<>();
+			Set<JiraIssue> totalPresentCompletedIssue = new HashSet<>();
+			Set<JiraIssue> totalPresentInitialIssue = new HashSet<>();
+			Set<JiraIssue> totalPresentCompltdInitialIssue = new HashSet<>();
 
 			if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
 				totalPresentJiraIssue = sprintWiseCreatedIssues.get(currentNodeIdentifier);
@@ -240,7 +240,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			}
 
 			Map<String, Double> commitmentHowerMap = new HashMap<>();
-			List<JiraIssue> totalSumIssues = new ArrayList<>();
+			Set<JiraIssue> totalSumIssues = new HashSet<>();
 			totalSumIssues.addAll(totalPresentJiraIssue);
 			totalSumIssues.addAll(totalPresentCompletedIssue);
 			totalSumIssues.addAll(totalPresentInitialIssue);
@@ -263,8 +263,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 						totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
 				prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
 			}
-			commitmentMap = getCommitmentMap(totalPresentJiraIssue, totalPresentCompletedIssue, commitmentHowerMap,
-					fieldMapping, totalPresentInitialIssue, totalPresentCompltdInitialIssue, CommonConstant.OVERALL);
+			commitmentMap = getCommitmentMap(new ArrayList<>(totalPresentJiraIssue), new ArrayList<>(totalPresentCompletedIssue), commitmentHowerMap,
+					fieldMapping, new ArrayList<>(totalPresentInitialIssue), new ArrayList<>(totalPresentCompltdInitialIssue), CommonConstant.OVERALL);
 			CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
 			reliabilityValidationData.setTotalIssueNumbers(totalPresentJiraIssue);
 			reliabilityValidationData.setCompletedIssueNumber(totalPresentCompletedIssue);
@@ -290,7 +290,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		return completedIssues;
 	}
 
-	public Map<String, List<JiraIssue>> getGroupByAllIssues(List<JiraIssue> jiraIssuesList) {
+	public Map<String, List<JiraIssue>> getGroupByAllIssues(Set<JiraIssue> jiraIssuesList) {
 		return jiraIssuesList.stream().collect(Collectors.groupingBy(JiraIssue::getTypeName));
 
 	}
@@ -554,12 +554,12 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	@Getter
 	@Setter
 	public class CommitmentReliabilityValidationData {
-		private List<JiraIssue> totalIssueNumbers;
+		private Set<JiraIssue> totalIssueNumbers;
 		private String url;
 		private String issueDescription;
-		private List<JiraIssue> completedIssueNumber;
-		private List<JiraIssue> initialIssueNumber;
-		private List<JiraIssue> initialCompletedIssueNumber;
+		private Set<JiraIssue> completedIssueNumber;
+		private Set<JiraIssue> initialIssueNumber;
+		private Set<JiraIssue> initialCompletedIssueNumber;
 	}
 
 }
