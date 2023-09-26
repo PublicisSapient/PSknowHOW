@@ -234,7 +234,7 @@ export class MultilineComponent implements OnChanges {
       .domain([0, maxYValue])
       .range([height - margin, 0]);
   
-    if (selectedProjectCount === 1 && board === 'executive') {
+    if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer')) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       /** Adding tooltip container */
