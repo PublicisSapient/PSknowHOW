@@ -1,0 +1,683 @@
+[{
+    "kpiId": "kpi28",
+    "kpiName": "Defect Count By Priority",
+    "unit": "Number",
+    "maxValue": "90",
+    "chartType": "",
+    "kpiInfo": {
+        "definition": "Measures the number of defects grouped by priority in an iteration",
+        "formula": [
+            {
+                "lhs": "Defect Count By Priority=No. of defects linked to stories grouped by priority"
+            }
+        ],
+        "details": [
+            {
+                "type": "link",
+                "kpiLinkDetail": {
+                    "text": "Detailed Information at",
+                    "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+                }
+            }
+        ]
+    },
+    "id": "64e72b51cab22644f44242fb",
+    "isDeleted": "False",
+    "kpiUnit": "Number",
+    "kanban": false,
+    "kpiSource": "Jira",
+    "thresholdValue": 55,
+    "trendValueList": [
+        {
+            "filter": "Overall",
+            "value": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "38",
+                            "sSprintID": "949_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 71_AddingIterationProject",
+                            "value": 38,
+                            "hoverValue": {
+                                "P1": 12,
+                                "P2": 20,
+                                "P3": 4,
+                                "P4": 2
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 71",
+                            "xName": 1
+                        },
+                        {
+                            "data": "33",
+                            "sSprintID": "957_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 72_AddingIterationProject",
+                            "value": 33,
+                            "hoverValue": {
+                                "P1": 12,
+                                "P2": 16,
+                                "P3": 1,
+                                "P4": 4
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 72",
+                            "xName": 2
+                        },
+                        {
+                            "data": "32",
+                            "sSprintID": "962_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 73_AddingIterationProject",
+                            "value": 32,
+                            "hoverValue": {
+                                "P1": 7,
+                                "P2": 13,
+                                "P3": 10,
+                                "P4": 2
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 73",
+                            "xName": 3
+                        },
+                        {
+                            "data": "36",
+                            "sSprintID": "966_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 74_AddingIterationProject",
+                            "value": 36,
+                            "hoverValue": {
+                                "P1": 5,
+                                "P2": 19,
+                                "P3": 9,
+                                "P4": 3
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 74",
+                            "xName": 4
+                        },
+                        {
+                            "data": "19",
+                            "sSprintID": "967_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 75_AddingIterationProject",
+                            "value": 19,
+                            "hoverValue": {
+                                "P1": 1,
+                                "P2": 4,
+                                "P3": 11,
+                                "P4": 3
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 75",
+                            "xName": 5
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P1": 0,
+                                "P2": 2,
+                                "P3": 2,
+                                "P4": 0
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 76",
+                            "xName": 6
+                        },
+                        {
+                            "data": "22",
+                            "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                            "value": 22,
+                            "hoverValue": {
+                                "P1": 4,
+                                "P2": 13,
+                                "P3": 4,
+                                "P4": 1
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 77",
+                            "xName": 7
+                        },
+                        {
+                            "data": "16",
+                            "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                            "value": 16,
+                            "hoverValue": {
+                                "P1": 1,
+                                "P2": 10,
+                                "P3": 4,
+                                "P4": 1
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 78",
+                            "xName": 8
+                        },
+                        {
+                            "data": "2",
+                            "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                            "value": 2,
+                            "hoverValue": {
+                                "P1": 0,
+                                "P2": 1,
+                                "P3": 1,
+                                "P4": 0
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 79",
+                            "xName": 9
+                        },
+                        {
+                            "data": "25",
+                            "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                            "value": 25,
+                            "hoverValue": {
+                                "P1": 0,
+                                "P2": 10,
+                                "P3": 11,
+                                "P4": 4
+                            },
+                            "kpiGroup": "Overall",
+                            "sprojectName": "AddingIterationProject",
+                            "sortSprint": "DRP Sprint 80",
+                            "xName": 10
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filter": "P1",
+            "value": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "12",
+                            "sSprintID": "949_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 71_AddingIterationProject",
+                            "value": 12,
+                            "hoverValue": {
+                                "P1": 12
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "12",
+                            "sSprintID": "957_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 72_AddingIterationProject",
+                            "value": 12,
+                            "hoverValue": {
+                                "P1": 12
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "7",
+                            "sSprintID": "962_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 73_AddingIterationProject",
+                            "value": 7,
+                            "hoverValue": {
+                                "P1": 7
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "5",
+                            "sSprintID": "966_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 74_AddingIterationProject",
+                            "value": 5,
+                            "hoverValue": {
+                                "P1": 5
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "967_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 75_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P1": 1
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "0",
+                            "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {
+                                "P1": 0
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P1": 4
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P1": 1
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "0",
+                            "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {
+                                "P1": 0
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "0",
+                            "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {
+                                "P1": 0
+                            },
+                            "kpiGroup": "P1",
+                            "sprojectName": "AddingIterationProject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filter": "P2",
+            "value": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "20",
+                            "sSprintID": "949_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 71_AddingIterationProject",
+                            "value": 20,
+                            "hoverValue": {
+                                "P2": 20
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "16",
+                            "sSprintID": "957_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 72_AddingIterationProject",
+                            "value": 16,
+                            "hoverValue": {
+                                "P2": 16
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "13",
+                            "sSprintID": "962_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 73_AddingIterationProject",
+                            "value": 13,
+                            "hoverValue": {
+                                "P2": 13
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "19",
+                            "sSprintID": "966_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 74_AddingIterationProject",
+                            "value": 19,
+                            "hoverValue": {
+                                "P2": 19
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "967_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 75_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P2": 4
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "2",
+                            "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                            "value": 2,
+                            "hoverValue": {
+                                "P2": 2
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "13",
+                            "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                            "value": 13,
+                            "hoverValue": {
+                                "P2": 13
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "10",
+                            "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                            "value": 10,
+                            "hoverValue": {
+                                "P2": 10
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P2": 1
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "10",
+                            "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                            "value": 10,
+                            "hoverValue": {
+                                "P2": 10
+                            },
+                            "kpiGroup": "P2",
+                            "sprojectName": "AddingIterationProject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filter": "P3",
+            "value": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "4",
+                            "sSprintID": "949_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 71_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P3": 4
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "957_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 72_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P3": 1
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "10",
+                            "sSprintID": "962_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 73_AddingIterationProject",
+                            "value": 10,
+                            "hoverValue": {
+                                "P3": 10
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "9",
+                            "sSprintID": "966_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 74_AddingIterationProject",
+                            "value": 9,
+                            "hoverValue": {
+                                "P3": 9
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "11",
+                            "sSprintID": "967_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 75_AddingIterationProject",
+                            "value": 11,
+                            "hoverValue": {
+                                "P3": 11
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "2",
+                            "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                            "value": 2,
+                            "hoverValue": {
+                                "P3": 2
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P3": 4
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P3": 4
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P3": 1
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "11",
+                            "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                            "value": 11,
+                            "hoverValue": {
+                                "P3": 11
+                            },
+                            "kpiGroup": "P3",
+                            "sprojectName": "AddingIterationProject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "filter": "P4",
+            "value": [
+                {
+                    "data": "AddingIterationProject",
+                    "value": [
+                        {
+                            "data": "2",
+                            "sSprintID": "949_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 71_AddingIterationProject",
+                            "value": 2,
+                            "hoverValue": {
+                                "P4": 2
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "957_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 72_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P4": 4
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "2",
+                            "sSprintID": "962_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 73_AddingIterationProject",
+                            "value": 2,
+                            "hoverValue": {
+                                "P4": 2
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "3",
+                            "sSprintID": "966_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 74_AddingIterationProject",
+                            "value": 3,
+                            "hoverValue": {
+                                "P4": 3
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "3",
+                            "sSprintID": "967_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 75_AddingIterationProject",
+                            "value": 3,
+                            "hoverValue": {
+                                "P4": 3
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "0",
+                            "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {
+                                "P4": 0
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P4": 1
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "1",
+                            "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                            "value": 1,
+                            "hoverValue": {
+                                "P4": 1
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "0",
+                            "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                            "value": 0,
+                            "hoverValue": {
+                                "P4": 0
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        },
+                        {
+                            "data": "4",
+                            "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                            "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                            "value": 4,
+                            "hoverValue": {
+                                "P4": 4
+                            },
+                            "kpiGroup": "P4",
+                            "sprojectName": "AddingIterationProject"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "groupId": 1
+}]

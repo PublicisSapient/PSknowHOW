@@ -4096,6 +4096,31 @@
     "calculateMaturity": false
   },
   {
+    "kpiId": "kpi161",
+    "kpiName": "Iteration Readiness",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stackedColumn",
+    "kpiInfo": {
+      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+    },
+    "xAxisLabel": "SprintName",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
     "kpiId": "kpi153",
     "kpiName": "PI Predictability",
     "maxValue": "200",

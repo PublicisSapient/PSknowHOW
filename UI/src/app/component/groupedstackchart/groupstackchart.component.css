@@ -16,9 +16,6 @@
  *
  ******************************************************************************/
 
-::ng-deep svg {
-  font: 10px sans-serif;
-}
 ::ng-deep .axis path,
 ::ng-deep .axis line {
   fill: none;
@@ -54,8 +51,8 @@
 
 :host ::ng-deep div.tooltip {
   position: absolute;
-  text-align: center;
-  max-width: 120px;
+  text-align: left;
+  max-width: 150px;
   padding: 5px;
   font-size: 10px;
   background: rgba(255, 255, 255, 0.95);
@@ -63,7 +60,7 @@
   border-radius: 5px;
   box-shadow: 0px 0px 6px #b9b9bb;
   pointer-events: none;
-  z-index: 1;
+  z-index: 1000;
 }
 
 ::ng-deep .toolTipValue {
@@ -77,20 +74,10 @@
   overflow-x: hidden;
 }
 
-::ng-deep .d3-legend {
-  z-index: 999;
-}
-
-::ng-deep .legend_item {
-  padding-bottom: 10px;
-  padding-right: 10px;
-}
-
 ::ng-deep .legend_color_indicator {
-  width: 18px;
-  height: 18px;
-  display: inline-block;
-  vertical-align: middle;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px 0 0;
 }
 ::ng-deep div.legend-tooltip {
   position: absolute;
@@ -135,6 +122,10 @@
 ::ng-deep div.normal-legend{
   font-size: 10px;
   color: var(--color-gray-34);
-  position: absolute;
-  bottom: 0;
+  height: 40px;
+  margin-top: 20px;
+  overflow-y: scroll;
+}
+::ng-deep .stack-key{
+  width: 70px;
 }

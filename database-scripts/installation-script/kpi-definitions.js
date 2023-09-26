@@ -8310,84 +8310,150 @@ db.getCollection('field_mapping_structure').insertMany(
     	}
     },
     {
-        "fieldName":"testingPhaseDefectsIdentifier",
-        "fieldLabel":"Testing phase defects identification",
-        "fieldType":"radiobutton",
-        "section":"Defects Mapping",
-        "tooltip":{
-            "definition":"This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
-        },
-        "options":[
-            {
-                "label":"CustomField",
-                "value":"CustomField"
-            },
-            {
-                "label":"Labels",
-                "value":"Labels"
-            },
-            {
-                "label":"Component",
-                "value":"Component"
-            }
-        ],
-        "nestedFields":[
-            {
-                "fieldName":"testingPhaseDefectCustomField",
-                "fieldLabel":"Testing Phase Defect CustomField",
-                "fieldType":"text",
-                "fieldCategory":"fields",
-                "filterGroup":[
-                    "CustomField"
-                ],
-                "tooltip":{
-                    "definition":" Provide customfield name to identify testing phase defects."
-                }
-            },
-            {
-                "fieldName":"testingPhaseDefectValue",
-                "fieldLabel":"Testing Phase Defect Values",
-                "fieldType":"chips",
-                "filterGroup":[
-                    "CustomField",
-                    "Labels"
-                ],
-                "tooltip":{
-                    "definition":"Provide label name to identify testing phase defects."
-                }
-            },
-            {
-                "fieldName":"testingPhaseDefectComponentValue",
-                "fieldLabel":"Component",
-                "fieldType":"text",
-                "filterGroup":[
-                    "Component"
-                ],
-                "tooltip":{
-                    "definition":"Provide label name to identify testing phase defects."
-                }
-            }
-        ]
+		"fieldName": "jiraStoryIdentificationKPI164",
+		"fieldLabel": "Issue type to identify Story",
+		"fieldType": "chips",
+		"fieldCategory": "Issue_Type",
+		"section": "Issue Types Mapping",
+		"tooltip": {
+			"definition": "All issue types that are used as/equivalent to Story.",
+
+		}
+	},
+{
+    "fieldName": "jiraIssueTypeNamesKPI161",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI148",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI151",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI152",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+  "fieldName":"testingPhaseDefectsIdentifier",
+  "fieldLabel":"Testing phase defects identification",
+  "fieldType":"radiobutton",
+  "section":"Defects Mapping",
+  "tooltip":{
+    "definition":"This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+  },
+  "options":[
+    {
+      "label":"CustomField",
+      "value":"CustomField"
     },
     {
-    	"fieldName": "jiraDodKPI163",
-    	"fieldLabel": "DOD Status",
-    	"fieldType": "chips",
-    	"fieldCategory": "workflow",
-    	"section": "WorkFlow Status Mapping",
-    	"tooltip": {
-    		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-    	}
+      "label":"Labels",
+      "value":"Labels"
     },
     {
-      "fieldName":"jiraStoryIdentificationKPI164",
-      "fieldLabel":"Issue type to identify Story",
-      "fieldType":"chips",
-      "fieldCategory":"Issue_Type",
-      "section":"Issue Types Mapping",
+      "label":"Component",
+      "value":"Component"
+    }
+  ],
+  "nestedFields":[
+    {
+      "fieldName":"testingPhaseDefectCustomField",
+      "fieldLabel":"Testing Phase Defect CustomField",
+      "fieldType":"text",
+      "fieldCategory":"fields",
+      "filterGroup":[
+        "CustomField"
+      ],
       "tooltip":{
-        "definition":"All issue types that are used as/equivalent to Story."
+        "definition":" Provide customfield name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName":"testingPhaseDefectValue",
+      "fieldLabel":"Testing Phase Defect Values",
+      "fieldType":"chips",
+      "filterGroup":[
+        "CustomField",
+        "Labels"
+      ],
+      "tooltip":{
+        "definition":"Provide label name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName":"testingPhaseDefectComponentValue",
+      "fieldLabel":"Component",
+      "fieldType":"text",
+      "filterGroup":[
+        "Component"
+      ],
+      "tooltip":{
+        "definition":"Provide label name to identify testing phase defects."
       }
     }
-]
+  ]
+},
+{
+  "fieldName":"jiraDodKPI163",
+  "fieldLabel":"DOD Status",
+  "fieldType":"chips",
+  "fieldCategory":"workflow",
+  "section":"WorkFlow Status Mapping",
+  "tooltip":{
+    "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+  }
+},
+{
+  "fieldName":"jiraStoryIdentificationKPI164",
+  "fieldLabel":"Issue type to identify Story",
+  "fieldType":"chips",
+  "fieldCategory":"Issue_Type",
+  "section":"Issue Types Mapping",
+  "tooltip":{
+    "definition":"All issue types that are used as/equivalent to Story."
+  }
+}
+    ]
 );
