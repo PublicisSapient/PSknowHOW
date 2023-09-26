@@ -3112,7 +3112,6 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-<<<<<<<<< Temporary merge branch 1
     "kpiId": "kpi156",
     "kpiName": "Lead Time For Change",
     "maxValue": "100",
@@ -3144,8 +3143,8 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
-  }
-=========
+  },
+  {
 	"kpiId": "kpi164",
 	"kpiName": "Scope Churn",
 	"maxValue": "200",
@@ -3180,7 +3179,6 @@ db.getCollection('kpi_master').insertMany(
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
  }
->>>>>>>>> Temporary merge branch 2
 ]
 );
 

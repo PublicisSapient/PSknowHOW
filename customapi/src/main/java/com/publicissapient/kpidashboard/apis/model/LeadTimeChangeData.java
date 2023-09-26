@@ -25,5 +25,7 @@ public class LeadTimeChangeData {
 
 	private double leadTime;
 
+	private String leadTimeInDays;
+
 	private String date;
 }

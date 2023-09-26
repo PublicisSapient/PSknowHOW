@@ -270,8 +270,8 @@ public enum KPIExcelColumn {
 	//DTS-26123 end
 	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
-	LEAD_TIME_FOR_CHANGE("Kpi156",
-			Arrays.asList("Project Name" , "Date" ,"Story ID" , "Lead Time (In Days)" , "Completion Date" , "Release Date" , "Merge Date" , "Merge Request Id" , "Branch"));
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
+			"Release Date", "Completion Date", "Merge Date", "Merge Request Id", "Branch"));
 
 	// @formatter:on
 

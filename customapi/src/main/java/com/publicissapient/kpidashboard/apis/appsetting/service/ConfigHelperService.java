@@ -276,7 +276,7 @@ public class ConfigHelperService {
 	}
 
 	@PostConstruct
-	@Cacheable(CommonConstant.CACHE_AGG_CRITERIA)
+	@Cacheable(CommonConstant.CACHE_AGG_CIRCLE_CRITERIA)
 	public Map<String, String> calculateCriteriaForCircleKPI() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
 		return masterList.stream().filter(d -> d.getAggregationCircleCriteria() != null)

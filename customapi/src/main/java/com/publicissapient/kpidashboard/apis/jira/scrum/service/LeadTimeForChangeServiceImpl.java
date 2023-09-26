@@ -516,7 +516,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 *            closed ticket date
 	 * @param releaseDate
 	 *            release date
-	 * @param leadTimeChangeInDays
+	 * @param leadTimeChange
 	 *            lead time
 	 * @param weekOrMonthName
 	 *            date
@@ -524,15 +524,17 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 
 	private void setLeadTimeChangeDataListForJira(Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise,
 			JiraIssueCustomHistory jiraIssueHistoryData, AtomicReference<DateTime> closedTicketDate,
-			AtomicReference<DateTime> releaseDate, double leadTimeChangeInDays, String weekOrMonthName) {
+			AtomicReference<DateTime> releaseDate, double leadTimeChange, String weekOrMonthName) {
 		LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
 		leadTimeChangeData.setStoryID(jiraIssueHistoryData.getStoryID());
 		leadTimeChangeData.setUrl(jiraIssueHistoryData.getUrl());
-		leadTimeChangeData
-				.setClosedDate(DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-		leadTimeChangeData
-				.setReleaseDate(DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-		leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
+		leadTimeChangeData.setClosedDate(DateUtil.dateTimeConverterUsingFromAndTo(closedTicketDate.get(),
+				DateUtil.TIME_FORMAT_WITH_SEC_ZONE, DateUtil.DISPLAY_DATE_TIME_FORMAT));
+		leadTimeChangeData.setReleaseDate(DateUtil.dateTimeConverterUsingFromAndTo(releaseDate.get(),
+				DateUtil.TIME_FORMAT_WITH_SEC_ZONE, DateUtil.DISPLAY_DATE_TIME_FORMAT));
+		String leadTimeChangeInDays = DateUtil.convertDoubleToDaysAndHoursString(leadTimeChange);
+		leadTimeChangeData.setLeadTimeInDays(leadTimeChangeInDays);
+		leadTimeChangeData.setLeadTime(leadTimeChange);
 		leadTimeChangeData.setDate(weekOrMonthName);
 		leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
 			leadTimeChangeListCurrentTime.add(leadTimeChangeData);
@@ -554,7 +556,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		Duration duration = new Duration(closedTicketDate.get(), releaseDate.get());
 		long leadTimeChange = duration.getStandardMinutes();
 		double leadTimeChangeDoubleValue = (double) leadTimeChange / 60 / 24;
-		if(leadTimeChangeDoubleValue > 0) {
+		if (leadTimeChangeDoubleValue > 0) {
 			String formattedValue = df.format(leadTimeChangeDoubleValue);
 			return Double.parseDouble(formattedValue);
 		} else {
@@ -628,7 +630,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			AtomicReference<DateTime> closedTicketDate, AtomicReference<DateTime> releaseDate,
 			AtomicReference<JiraIssue> matchJiraIssue) {
 		if (closedTicketDate.get() != null && releaseDate.get() != null) {
-			double leadTimeChangeInDays = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
+			double leadTimeChange = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
 
 			String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
 
@@ -637,11 +639,13 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			leadTimeChangeData.setUrl(matchJiraIssue.get().getUrl());
 			leadTimeChangeData.setMergeID(mergeRequests.getRevisionNumber());
 			leadTimeChangeData.setFromBranch(mergeRequests.getFromBranch());
-			leadTimeChangeData.setClosedDate(
-					DateUtil.dateTimeConverter(closedTicketDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-			leadTimeChangeData
-					.setReleaseDate(DateUtil.dateTimeConverter(releaseDate.get(), DateUtil.TIME_FORMAT_WITH_SEC_ZONE));
-			leadTimeChangeData.setLeadTime(leadTimeChangeInDays);
+			leadTimeChangeData.setClosedDate(DateUtil.dateTimeConverterUsingFromAndTo(closedTicketDate.get(),
+					DateUtil.TIME_FORMAT_WITH_SEC_ZONE, DateUtil.DISPLAY_DATE_TIME_FORMAT));
+			leadTimeChangeData.setReleaseDate(DateUtil.dateTimeConverterUsingFromAndTo(releaseDate.get(),
+					DateUtil.TIME_FORMAT_WITH_SEC_ZONE, DateUtil.DISPLAY_DATE_TIME_FORMAT));
+			String leadTimeChangeInDays = DateUtil.convertDoubleToDaysAndHoursString(leadTimeChange);
+			leadTimeChangeData.setLeadTimeInDays(leadTimeChangeInDays);
+			leadTimeChangeData.setLeadTime(leadTimeChange);
 			leadTimeChangeData.setDate(weekOrMonthName);
 			leadTimeMapTimeWise.computeIfPresent(weekOrMonthName, (key, leadTimeChangeListCurrentTime) -> {
 				leadTimeChangeListCurrentTime.add(leadTimeChangeData);
