@@ -1,0 +1,26 @@
+<p-tabView [(activeIndex)]="activeIndex" class="kpi-table-tabs">
+    <p-tabPanel *ngFor="let tab of tabs; let i = index;" [header]="tab" [headerStyle]="{'background': nodeColors[tab]}">
+        <div class="card">
+            <p-table [columns]="cols" [value]="kpiData[tab]" styleClass="p-datatable-striped p-datatable-gridlines" 
+            [loading]="loader" loadingIcon="loading-img">
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                        <th *ngFor="let col of columns" [ngStyle]="{'max-width': col.field == 'kpiName' ? '200px': ''}">
+                            {{col.header}}
+                        </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr *ngIf="kpiConfigData[rowData['kpiId']]">
+                        <td *ngFor="let col of columns" (mouseenter)="mouseEnter($event, col.field, rowData)"
+                            (mouseleave)="mouseLeave()" [ngStyle]="{'color': col.field == 'trend' ? (rowData[col.field] == '+ve' ? 'green' : rowData[col.field] == '-ve' ? 'red' : '#333333') : '#333333', 
+                        'max-width': col.field == 'kpiName' ? '200px': ''}">
+                            {{ rowData[col.field] }}
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </p-tabPanel>
+</p-tabView>
+<div class="tool-tip" *ngIf="showToolTip" innerHtml="{{toolTipHtml}}" [ngStyle]="{'left': left, 'top': top}"></div>

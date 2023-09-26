@@ -88,6 +88,7 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
+  maturityTableLoader = new Subject<boolean>();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -355,6 +356,10 @@ export class SharedService {
 
   getFieldMappingMetaData(){
     return this.fieldMappingOptionsMetaData;
+  }
+
+  setMaturiyTableLoader(value){
+    this.maturityTableLoader.next(value)
   }
 }
 

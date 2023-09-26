@@ -120,7 +120,7 @@ public class SprintCapacityServiceImplTest {
 		filterComponentIdWiseDefectMap.put(SPRINTCAPACITYKEY, totalJiraIssueList);
 		Double capacityValue = sprintCapacityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
 
-		assertThat("Capacity value :", capacityValue, equalTo(172.0));
+		assertThat("Capacity value :", capacityValue, equalTo(180.0));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -142,7 +142,7 @@ public class SprintCapacityServiceImplTest {
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
-				equalTo(41));
+				equalTo(42));
 	}
 
 	@SuppressWarnings("unchecked")

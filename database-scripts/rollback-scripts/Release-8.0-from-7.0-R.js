@@ -598,6 +598,24 @@ db.kpi_master.updateOne(
     }
 );
 
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi161" }
+);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
+    }
+});
+
+
 //revert RepoTool - DTS-27526 remove repo tool changes
 // Revert changes to kpi_master collection
 db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
