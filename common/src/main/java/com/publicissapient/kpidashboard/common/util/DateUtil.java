@@ -65,7 +65,7 @@ public class DateUtil {
 
 	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
 
-	public static final String DISPLAY_DATE_TIME_FORMAT = "dd-MMM-yyyy'T'HH:mm:ss";
+	public static final String DISPLAY_DATE_TIME_FORMAT = "dd-MMM-yyyy HH:mm:ss";
 
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 
