@@ -29,7 +29,7 @@ import { TableService } from 'primeng/table';
 
 declare let require: any;
 
- @Component({
+@Component({
   selector: 'app-milestone',
   templateUrl: './milestone.component.html',
   styleUrls: ['./milestone.component.css']
@@ -69,7 +69,7 @@ export class MilestoneComponent implements OnInit {
   navigationTabs:Array<object>;
   activeIndex = 0;
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
-    
+
     /** When filter dropdown change */
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'release') {
@@ -79,7 +79,7 @@ export class MilestoneComponent implements OnInit {
         this.kpiDropdowns = {};
         this.kpiCommentsCountObj = {};
         this.sharedObject = sharedobject;
-        if(this.globalConfig || this.service.getDashConfigData()){
+        if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
       }
@@ -95,8 +95,8 @@ export class MilestoneComponent implements OnInit {
 
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig){
-        if(this.sharedObject || this.service.getFilterObject()){
+      if (globalConfig) {
+        if (this.sharedObject || this.service.getFilterObject()) {
           this.receiveSharedData(this.service.getFilterObject());
         }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
@@ -179,12 +179,12 @@ export class MilestoneComponent implements OnInit {
             const today = new Date().toISOString().split('T')[0];
             const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
             this.timeRemaining = this.calcBusinessDays(today, endDate);
-            this.service.iterationCongifData.next({daysLeft: this.timeRemaining});
+            this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
             this.groupJiraKpi(kpiIdsForCurrentBoard);
             this.getKpiCommentsCount();
           }
         }
-      } 
+      }
     }
 
   }
@@ -192,7 +192,7 @@ export class MilestoneComponent implements OnInit {
   /**  Used for grouping all Sonar kpi from master data and calling Sonar kpi.(only for scrum) */
   groupJiraKpi(kpiIdsForCurrentBoard) {
     this.jiraKpiData = {};
-   /** creating a set of unique group Ids */
+    /** creating a set of unique group Ids */
     const groupIdSet = new Set();
     this.masterData.kpiList.forEach((obj) => {
       if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory == 'Release') {
@@ -200,24 +200,24 @@ export class MilestoneComponent implements OnInit {
       }
     });
 
-  /** sending requests after grouping the the KPIs according to group Id */
+    /** sending requests after grouping the the KPIs according to group Id */
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Release');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Release');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
 
   }
 
-   // download excel functionality
-   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
+  // download excel functionality
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false);
   }
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-    this.kpiSelectedFilterObj['action']='update';
+    this.kpiSelectedFilterObj['action'] = 'update';
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
 
       for (const key in event) {
@@ -228,7 +228,7 @@ export class MilestoneComponent implements OnInit {
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
       // this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
 
@@ -253,7 +253,7 @@ export class MilestoneComponent implements OnInit {
           }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
-         
+
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
@@ -261,7 +261,7 @@ export class MilestoneComponent implements OnInit {
           });
         }
         this.kpiLoader = false;
-       
+
       });
   }
 
@@ -328,7 +328,7 @@ export class MilestoneComponent implements OnInit {
     return id;
   }
   createAllKpiArray(data) {
-    this.kpiSelectedFilterObj['action']='new';
+    this.kpiSelectedFilterObj['action'] = 'new';
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -372,7 +372,7 @@ export class MilestoneComponent implements OnInit {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-      }else if(!trendValueList || trendValueList?.length == 0) {
+      } else if (!trendValueList || trendValueList?.length == 0) {
         this.getDropdownArray(data[key]?.kpiId);
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
@@ -435,7 +435,7 @@ export class MilestoneComponent implements OnInit {
     }
     /**if trendValueList is an array */
     else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')){
+      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
         let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
@@ -453,8 +453,12 @@ export class MilestoneComponent implements OnInit {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
       } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2')) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+        let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
+        // for single select dropdown filters
+        if(!Array.isArray(filters)) {
+          filters = [filters];
+        }
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
@@ -481,24 +485,31 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  getKpiChartType(kpiId){
+  getKpiChartType(kpiId) {
     return this.updatedConfigGlobalData.filter(kpiDetails => kpiDetails.kpiId === kpiId)[0]?.kpiDetail?.chartType;
   }
 
-  applyAggregationForChart(arr){
+  applyAggregationForChart(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
-    for(let i=1;i<arr.length;i++){
-        for(let j=0;j<arr[i].value.length;j++){
-          if(typeof aggregatedArr.value[j].value === 'number'){
-            aggregatedArr.value[j].value +=arr[i].value[j].value;
-            aggregatedArr.value[j].hoverValue = {...aggregatedArr.value[j].hoverValue,...arr[i].value[j].hoverValue};
-          }
-          if(typeof aggregatedArr.value[j].value === 'object'){
-            for(const key in aggregatedArr.value[j].value){
+    for (let i = 1; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].value.length; j++) {
+        if (typeof aggregatedArr.value[j].value === 'number') {
+          aggregatedArr.value[j].value += arr[i].value[j].value;
+          aggregatedArr.value[j].hoverValue = { ...aggregatedArr.value[j].hoverValue, ...arr[i].value[j].hoverValue };
+        }
+        if (typeof aggregatedArr.value[j].value === 'object') {
+          if (!Array.isArray(aggregatedArr.value[j].value)) {
+            for (const key in aggregatedArr.value[j].value) {
               aggregatedArr.value[j].value[key] += arr[i].value[j].value[key];
+            }
+          } else {
+            // kpi147
+            for (const key in aggregatedArr.value[j].value) {
+              Object.assign(aggregatedArr.value[j].value[key], arr[i].value[j].value[key]);
             }
           }
         }
+      }
     }
     return [aggregatedArr];
   }
@@ -539,15 +550,15 @@ export class MilestoneComponent implements OnInit {
 
     aggregatedArr[0]?.data?.forEach((item) => {
       item['value'] = +(item['value']?.toFixed(2));
-      if(item.value1){
+      if (item.value1) {
         item['value1'] = +(item['value1']?.toFixed(2));
       }
     });
 
     const evalvateExpression = aggregatedArr[0]['data'].filter(el => el.hasOwnProperty('expressions'));
-    if(evalvateExpression.length > 0){
-      evalvateExpression.forEach(item =>{
-        this.evalvateExpression(item, aggregatedArr[0]['data'],arr);
+    if (evalvateExpression.length > 0) {
+      evalvateExpression.forEach(item => {
+        this.evalvateExpression(item, aggregatedArr[0]['data'], arr);
       });
     }
     return aggregatedArr;
@@ -608,7 +619,7 @@ export class MilestoneComponent implements OnInit {
         obj['options'] = dropdownArr;
         this.kpiDropdowns[kpiId] = [];
         this.kpiDropdowns[kpiId].push(obj);
-      }else if(!trendValueList || trendValueList?.length == 0 ){
+      } else if (!trendValueList || trendValueList?.length == 0) {
         this.kpiDropdowns[kpiId] = [];
       }
     }
@@ -634,28 +645,28 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  getKpiCommentsCount(kpiId?){
+  getKpiCommentsCount(kpiId?) {
     let requestObj = {
       "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
-      "level":this.filterApplyData?.level,
+      "level": this.filterApplyData?.level,
       "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
       'kpiIds': []
     };
-    if(kpiId){
+    if (kpiId) {
       requestObj['kpiIds'] = [kpiId];
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
-    }else{
+    } else {
       requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
       });
     }
-    
+
   }
 
-   /** unsubscribing all Kpi Request  */
+  /** unsubscribing all Kpi Request  */
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
     this.sharedObject = null;

@@ -11,7 +11,7 @@
                   <div class="p-grid p-mr-1 p-ml-1 p-mt-0 iteration-dashboard">
 
                     <ng-container *ngIf="board.width === 'half'">
-                    
+
                       <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.kpiPart1">
                         <ng-container *ngFor="let kpi of board.kpiPart1">
                           <div class="card-type-1 p-mb-3 p-pr-0 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
@@ -50,7 +50,7 @@
                                           (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) :
                                             x?.value1)}}</span>
                                             <span
-                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'
                                                                       || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                               *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                               {{ x?.value1 != -99 ? x?.unit1 : ''}}
@@ -89,8 +89,8 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [selectedtype]="selectedtype"
                                           [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                         </app-group-bar-chart>
-                    
-                    
+
+
                                         <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                         <app-horizontal-percent-bar-chart *ngSwitchCase="'horizontalPercentBarChart'"
                                           [data]="kpiChartData[kpi?.kpiId]">
@@ -104,15 +104,15 @@
                                       </ng-container>
                                     </div>
                                   </ng-container>
-                    
+
                                 </ng-container>
                               </app-kpi-card>
                             </div>
                           </ng-template>
-                    
+
                           <ng-template #noData>
                             <div class="overlay" *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
-                    
+
                               <div class="loading-img"></div>
                             </div>
                             <div class="min-ht"
@@ -165,7 +165,7 @@
                                           (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) :
                                             x?.value1)}}</span>
                                             <span
-                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'
                                                                       || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                               *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                               {{ x?.value1 != -99 ? x?.unit1 : ''}}
@@ -204,8 +204,8 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [selectedtype]="selectedtype"
                                           [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                         </app-group-bar-chart>
-                    
-                    
+
+
                                         <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                         <app-horizontal-percent-bar-chart *ngSwitchCase="'horizontalPercentBarChart'"
                                           [data]="kpiChartData[kpi?.kpiId]">
@@ -219,7 +219,7 @@
                                       </ng-container>
                                     </div>
                                   </ng-container>
-                    
+
                                 </ng-container>
                               </app-kpi-card>
                             </div>
@@ -281,7 +281,7 @@
                                           (((x?.value1 >= 0 || x?.value1 < 0) && x?.unit1) ? convertToHoursIfTime(x?.value1,x?.unit1) :
                                             x?.value1)}}</span>
                                             <span
-                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added' 
+                                              [ngClass]="{'text-red': x?.label?.toLowerCase() === 'scope added'
                                                                       || x?.label?.toLowerCase() === 'issues at risk', 'noSpace':x?.unit1 == '%'}"
                                               *ngIf="x?.value1 != -99 && x?.unit1 && x?.unit1?.toLowerCase() !== 'hours' && x?.unit1?.toLowerCase() !== 'day'">
                                               {{ x?.value1 != -99 ? x?.unit1 : ''}}
@@ -320,8 +320,8 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [selectedtype]="selectedtype"
                                           [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                         </app-group-bar-chart>
-                    
-                    
+
+
                                         <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                         <app-horizontal-percent-bar-chart *ngSwitchCase="'horizontalPercentBarChart'"
                                           [data]="kpiChartData[kpi?.kpiId]">
@@ -335,7 +335,7 @@
                                       </ng-container>
                                     </div>
                                   </ng-container>
-                    
+
                                 </ng-container>
                               </app-kpi-card>
                             </div>

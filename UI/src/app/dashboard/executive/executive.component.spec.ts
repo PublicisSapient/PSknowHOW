@@ -2414,8 +2414,46 @@ describe('ExecutiveComponent', () => {
   ];
 
   const fakeJiraGroupId1 = require('../../../test/resource/fakeJiraGroupId1.json');
-
-
+  const fakeAllKpiArrayForTableData = require('../../../test/resource/fakeAllKpiArrayForTableData.json');
+  const fakeAllKpiArrayForTableDataWithFilter = require('../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
+  const fakeKpiTableHeadingArray = [
+    {
+        "field": "kpiName",
+        "header": "Kpi Name"
+    },
+    {
+        "field": "frequency",
+        "header": "Frequency"
+    },
+    {
+        "field": 1,
+        "header": 1
+    },
+    {
+        "field": 2,
+        "header": 2
+    },
+    {
+        "field": 3,
+        "header": 3
+    },
+    {
+        "field": 4,
+        "header": 4
+    },
+    {
+        "field": 5,
+        "header": 5
+    },
+    {
+        "field": "trend",
+        "header": "Trend"
+    },
+    {
+        "field": "maturity",
+        "header": "Maturity"
+    }
+  ]
   beforeEach(() => {
 
     service = new SharedService();
@@ -5933,6 +5971,677 @@ expect(result[1]).toEqual('-ve');
     spyOn(helperService, 'applyAggregationLogic').and.callThrough();
     component.getChartData('kpi118', 0, 'sum')
     expect(component.kpiChartData['kpi118'][0]?.value?.length).toEqual(res?.value?.length);
+  });
+
+  it('should get table data for kpi when trendValueList dont have filter', () => {
+    component.allKpiArray = fakeAllKpiArrayForTableData;
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfDataPoints = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+          "nodeName": "AddingIterationProject",
+          "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true,
+      "order": '1'
+    }
+    const returnedObj = {
+      'AddingIterationProject':[{
+      "1": "122.6",
+      "2": "126.9",
+      "3": "176.5",
+      "4": "83.3",
+      "5": "57.7",
+      "kpiId": "kpi14",
+      "kpiName": "Defect Injection Rate",
+      "frequency": "Sprints",
+      "show": true,
+      "hoverText": [
+          "1 - DRP Sprint 71_AddingIterationProject",
+          "2 - DRP Sprint 72_AddingIterationProject",
+          "3 - DRP Sprint 73_AddingIterationProject",
+          "4 - DRP Sprint 74_AddingIterationProject",
+          "5 - DRP Sprint 75_AddingIterationProject"
+      ],
+      "latest": "85 %",
+      "trend": "-ve",
+      "maturity": "M3",
+      "order": '1'
+    }]}
+    
+    component.getTableData('kpi14', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
+
+  it('should get table data for kpi when trendValueList has filter', () => {
+    component.allKpiArray = fakeAllKpiArrayForTableDataWithFilter;
+    component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+    component.noOfDataPoints = 5;
+    component.colorObj = {
+      "AddingIterationProject_64e739541426ba469c39c102": {
+          "nodeName": "AddingIterationProject",
+          "color": "#079FFF"
+      }
+    };
+    component.kpiTableDataObj['AddingIterationProject'] = [];
+    const enabledKpi = {
+      'kpiDetail': {
+        'xaxisLabel': 'Sprints'
+      },
+      'isEnabled': true,
+      'shown': true,
+      "order": '1'
+    }
+    const returnedObj = {
+      'AddingIterationProject':[{
+        "1": "38",
+        "2": "33",
+        "3": "32",
+        "4": "36",
+        "5": "19",
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "frequency": "Sprints",
+        "show": true,
+        "hoverText": [
+            "1 - DRP Sprint 71_AddingIterationProject",
+            "2 - DRP Sprint 72_AddingIterationProject",
+            "3 - DRP Sprint 73_AddingIterationProject",
+            "4 - DRP Sprint 74_AddingIterationProject",
+            "5 - DRP Sprint 75_AddingIterationProject",
+        ],
+        "latest": "25",
+        "trend": "-ve",
+        "maturity": "NA",
+        "order": '1'
+    }]}
+    
+    component.getTableData('kpi28', 0, enabledKpi);
+    expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+  });
+
+  it('should create all kpi Table Heads when scrum is selected', () => {
+    const tableHeadsArr = [
+        {
+            "field": "kpiName",
+            "header": "Kpi Name"
+        },
+        {
+            "field": "frequency",
+            "header": "Frequency"
+        },
+        {
+            "field": 1,
+            "header": 1
+        },
+        {
+            "field": 2,
+            "header": 2
+        },
+        {
+            "field": 3,
+            "header": 3
+        },
+        {
+            "field": 4,
+            "header": 4
+        },
+        {
+            "field": 5,
+            "header": 5
+        },
+        {
+            "field": "trend",
+            "header": "Trend"
+        },
+        {
+            "field": "maturity",
+            "header": "Maturity"
+        }
+    ];
+    component.selectedtype = 'Scrum';
+    component.noOfDataPoints = 5;
+    component.kpiTableHeadingArr = [];
+    component.createKpiTableHeads(component.selectedtype?.toLowerCase());
+    expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
+  });
+
+  it('should create all kpi Table Heads when kanban is selected', () => {
+    const tableHeadsArr = [
+        {
+            "field": "kpiName",
+            "header": "Kpi Name"
+        },
+        {
+            "field": "frequency",
+            "header": "Frequency"
+        },
+        {
+            "field": 1,
+            "header": 1
+        },
+        {
+            "field": 2,
+            "header": 2
+        },
+        {
+            "field": 3,
+            "header": 3
+        },
+        {
+            "field": 4,
+            "header": 4
+        },
+        {
+            "field": 5,
+            "header": 5
+        },
+        {
+            "field": "trend",
+            "header": "Trend"
+        },
+        {
+            "field": "maturity",
+            "header": "Maturity"
+        }
+    ];
+    component.selectedtype = 'Kanban';
+    component.filterApplyData = {
+      'ids': [5]
+    }
+    component.noOfDataPoints = 5;
+    component.kpiTableHeadingArr = [];
+    component.createKpiTableHeads(component.selectedtype?.toLowerCase());
+    expect(component.kpiTableHeadingArr?.length).toEqual(tableHeadsArr?.length);
+  });
+
+  it('should get tooltip data', () => {
+    component.tooltip = {};
+    component.noOfDataPoints = 0;
+    const data = {
+      "noOfDataPoints": 5
+    }
+    spyOn(httpService, 'getTooltipData').and.returnValue(of(data));
+    component.ngOnInit();
+    expect(component.noOfDataPoints).toEqual(data.noOfDataPoints);
+  })
+
+  it('should create all kpi array when trendValueList does not have filter', () => {
+    const data = {
+      'kpi14': {
+      "kpiId": "kpi14",
+      "kpiName": "Defect Injection Rate",
+      "unit": "%",
+      "maxValue": "200",
+      "chartType": "",
+      "id": "64e72b51cab22644f44242f5",
+      "isDeleted": "False",
+      "kpiUnit": "%",
+      "kanban": false,
+      "kpiSource": "Jira",
+    }};
+    component.updatedConfigGlobalData = [{
+      "kpiId": "kpi14",
+      "kpiName": "Defect Injection Rate",
+      "isEnabled": true,
+      "order": 1,
+      "kpiDetail": {
+          "aggregationCriteria": "average"
+      },
+      "shown": true
+    }];
+    spyOn(component, 'ifKpiExist');
+    const spy = spyOn(component, 'getChartData').and.callThrough();
+    component.createAllKpiArray(data, false);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should create all kpi array when trendValueList has dropdown filter', () => {
+    const data = {
+      'kpi28': {
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "unit": "Number",
+        "maxValue": "90",
+        "chartType": "",
+        "id": "64e72b51cab22644f44242fb",
+        "isDeleted": "False",
+        "kpiUnit": "Number",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "thresholdValue": 55,
+        "trendValueList": [
+            {
+                "filter": "Overall",
+                "value":[
+                  {
+                      "data": "KnowHOW",
+                      "value": [
+                          {
+                              "data": "4",
+                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                              "value": 4,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "1",
+                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                              "value": 1,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "6",
+                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                              "value": 6,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "19",
+                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                              "value": 19,
+                              "hoverValue": {
+                                  "P1": 1,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "3",
+                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                              "value": 3,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          }
+                      ]
+                  }
+                ]
+            },
+            {
+                "filter": "P1",
+                "value":[
+                  {
+                      "data": "KnowHOW",
+                      "value": [
+                          {
+                              "data": "4",
+                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                              "value": 4,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "1",
+                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                              "value": 1,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "6",
+                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                              "value": 6,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "19",
+                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                              "value": 19,
+                              "hoverValue": {
+                                  "P1": 1,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          },
+                          {
+                              "data": "3",
+                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                              "value": 3,
+                              "hoverValue": {
+                                  "P1": 0,
+                              },
+                              "kpiGroup": "Overall",
+                              "sprojectName": "KnowHOW"
+                          }
+                      ]
+                  }
+                ]
+            },
+        ],
+    }};
+    component.updatedConfigGlobalData = [{
+      "kpiId": "kpi28",
+      "kpiName": "Defect Injection Rate",
+      "isEnabled": true,
+      "order": 1,
+      "kpiDetail": {
+          "aggregationCriteria": "average",
+          'kpiFilter': 'dropdown'
+      },
+      "shown": true
+    }];
+    spyOn(component, 'ifKpiExist');
+    component.kpiSelectedFilterObj['kpi28'] = {};
+    spyOn(component, 'getDropdownArray');
+    component.kpiSelectedFilterObj['action']='new';
+    spyOn(service, 'setKpiSubFilterObj');
+    const spy = spyOn(component, 'getChartData').and.callThrough();
+    component.createAllKpiArray(data, false);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should create all kpi array when trendValueList has radiobutton filter', () => {
+    const data = {
+      'kpi126': {
+        "kpiId": "kpi126",
+        "kpiName": "Created vs Resolved defects",
+        "unit": "Number",
+        "maxValue": "300",
+        "chartType": "",
+        "id": "64e72b51cab22644f44242fd",
+        "isDeleted": "False",
+        "kpiUnit": "Number",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "trendValueList": [
+            {
+                "filter": "Total Defects",
+                "value": [
+                    {
+                        "data": "AddingIterationProject",
+                        "value": [
+                            {
+                                "data": "38.0",
+                                "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                                "value": 38,
+                                "hoverValue": {
+                                    "createdDefects": 38,
+                                    "resolvedDefects": 24
+                                },
+                                "kpiGroup": "Total Defects",
+                                "sprintIds": [
+                                    "974_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 76_AddingIterationProject"
+                                ],
+                                "lineValue": 24,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "33.0",
+                                "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                                "value": 33,
+                                "hoverValue": {
+                                    "createdDefects": 33,
+                                    "resolvedDefects": 28
+                                },
+                                "kpiGroup": "Total Defects",
+                                "sprintIds": [
+                                    "975_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 77_AddingIterationProject"
+                                ],
+                                "lineValue": 28,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "23.0",
+                                "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                                "value": 23,
+                                "hoverValue": {
+                                    "createdDefects": 23,
+                                    "resolvedDefects": 21
+                                },
+                                "kpiGroup": "Total Defects",
+                                "sprintIds": [
+                                    "976_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 78_AddingIterationProject"
+                                ],
+                                "lineValue": 21,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "37.0",
+                                "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                                "value": 37,
+                                "hoverValue": {
+                                    "createdDefects": 37,
+                                    "resolvedDefects": 28
+                                },
+                                "kpiGroup": "Total Defects",
+                                "sprintIds": [
+                                    "977_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 79_AddingIterationProject"
+                                ],
+                                "lineValue": 28,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "32.0",
+                                "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                                "value": 32,
+                                "hoverValue": {
+                                    "createdDefects": 32,
+                                    "resolvedDefects": 29
+                                },
+                                "kpiGroup": "Total Defects",
+                                "sprintIds": [
+                                    "978_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 80_AddingIterationProject"
+                                ],
+                                "lineValue": 29,
+                                "sprojectName": "AddingIterationProject"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "filter": "Added Defects",
+                "value": [
+                    {
+                        "data": "AddingIterationProject",
+                        "value": [
+                            {
+                                "data": "30.0",
+                                "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                                "value": 30,
+                                "hoverValue": {
+                                    "createdDefects": 30,
+                                    "resolvedDefects": 18
+                                },
+                                "kpiGroup": "Added Defects",
+                                "sprintIds": [
+                                    "974_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 76_AddingIterationProject"
+                                ],
+                                "lineValue": 18,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "16.0",
+                                "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                                "value": 16,
+                                "hoverValue": {
+                                    "createdDefects": 16,
+                                    "resolvedDefects": 14
+                                },
+                                "kpiGroup": "Added Defects",
+                                "sprintIds": [
+                                    "975_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 77_AddingIterationProject"
+                                ],
+                                "lineValue": 14,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "21.0",
+                                "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                                "value": 21,
+                                "hoverValue": {
+                                    "createdDefects": 21,
+                                    "resolvedDefects": 19
+                                },
+                                "kpiGroup": "Added Defects",
+                                "sprintIds": [
+                                    "976_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 78_AddingIterationProject"
+                                ],
+                                "lineValue": 19,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "26.0",
+                                "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                                "value": 26,
+                                "hoverValue": {
+                                    "createdDefects": 26,
+                                    "resolvedDefects": 20
+                                },
+                                "kpiGroup": "Added Defects",
+                                "sprintIds": [
+                                    "977_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 79_AddingIterationProject"
+                                ],
+                                "lineValue": 20,
+                                "sprojectName": "AddingIterationProject"
+                            },
+                            {
+                                "data": "27.0",
+                                "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                                "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                                "value": 27,
+                                "hoverValue": {
+                                    "createdDefects": 27,
+                                    "resolvedDefects": 24
+                                },
+                                "kpiGroup": "Added Defects",
+                                "sprintIds": [
+                                    "978_AddingIterationProject_64e739541426ba469c39c102"
+                                ],
+                                "sprintNames": [
+                                    "DRP Sprint 80_AddingIterationProject"
+                                ],
+                                "lineValue": 24,
+                                "sprojectName": "AddingIterationProject"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+    }};
+    component.updatedConfigGlobalData = [{
+      "kpiId": "kpi126",
+      "kpiName": "Defect Injection Rate",
+      "isEnabled": true,
+      "order": 1,
+      "kpiDetail": {
+          "aggregationCriteria": "average",
+          'kpiFilter': 'radiobutton',
+          "kpiUnit": "Number"
+      },
+      "shown": true
+    }];
+    spyOn(component, 'ifKpiExist');
+    component.kpiSelectedFilterObj['kpi126'] = {};
+    spyOn(component, 'getDropdownArray');
+    component.kpiDropdowns['kpi126'] = [
+      {
+          "filterType": "Select a filter",
+          "options": [
+              "Total Defects",
+              "Added Defects"
+          ]
+      }
+    ]
+    component.kpiSelectedFilterObj['action']='new';
+    spyOn(service, 'setKpiSubFilterObj');
+    const spy = spyOn(component, 'getChartData').and.callThrough();
+    component.createAllKpiArray(data, false);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it("should take care of loader untill full table data is loading", () => {
+    component.kpiTableDataObj = {
+      'knowhow': [ {
+          kpiId: 'kpi123'
+        },
+        {
+          kpiId: 'kpi1234'
+        }]
+     }
+    component.maturityTableKpiList = ['kpi123','kpi1234']
+    spyOn(component,'ifKpiExist').and.returnValue(1);
+    const spy = spyOn(service,'setMaturiyTableLoader');
+    component.handleMaturityTableLoader();
+    expect(spy).toBeDefined();
   })
 
 });

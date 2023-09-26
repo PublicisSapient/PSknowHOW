@@ -29,8 +29,6 @@ import * as Excel from 'exceljs';
 import * as fs from 'file-saver';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 declare let require: any;
-
-
 @Component({
     selector: 'app-executive',
     templateUrl: './executive.component.html',
@@ -113,6 +111,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noProjects = false;
     sprintsOverlayVisible : boolean = false;
     kpiCommentsCountObj: object = {};
+    kpiTableHeadingArr:Array<object> = [];
+    kpiTableDataObj:object={};
+    noOfDataPoints:number = 5;
+    maturityTableKpiList = [];
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
@@ -138,29 +140,36 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }));
 
         this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+            this.maturityTableKpiList = [];
             if (Object.keys(x).length > 0) {
                 this.colorObj = x;
-                if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-                    for (const key in this.kpiChartData) {
-                        this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-                        this.createTrendsData(key);
-                    }
-                }
                 this.trendBoxColorObj = { ...x };
+                let tempObj = {};
                 for (const key in this.trendBoxColorObj) {
                     const idx = key.lastIndexOf('_');
                     const nodeName = key.slice(0, idx);
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+                    tempObj[nodeName] = [];
+                }
+                this.kpiTableDataObj = {...tempObj}; 
+                if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+                    for (const key in this.kpiChartData) {
+                        this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+                        this.createTrendsData(key);
+                        this.handleMaturityTableLoader();
+                    }
                 }
             }
             return this.service.passDataToDashboard;
         }), distinctUntilChanged()).subscribe((sharedobject: any) => {
             // used to get all filter data when user click on apply button in filter
+            this.maturityTableKpiList = [];
             if (sharedobject?.filterData?.length) {
                 this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
                 this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
                 this.receiveSharedData(sharedobject);
                 this.noTabAccess = false;
+                 this.handleMaturityTableLoader();
             } else {
                 this.noTabAccess = true;
             }
@@ -189,11 +198,13 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         } else {
             this.noKpis = false;
         }
+        this.maturityTableKpiList = []
         this.configGlobalData?.forEach(element => {
             if (element.shown && element.isEnabled) {
                 this.kpiConfigData[element.kpiId] = true;
                 if(!this.kpiTrendsObj.hasOwnProperty(element.kpiId)){
                     this.createTrendsData(element.kpiId);
+                     this.handleMaturityTableLoader();
                 }
             } else {
                 this.kpiConfigData[element.kpiId] = false;
@@ -209,6 +220,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         this.httpService.getTooltipData().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
+                this.noOfDataPoints = filterData['noOfDataPoints'] || 5;
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
@@ -255,6 +267,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.kpiDropdowns = {};
                     this.kpiTrendsObj = {};
                     this.kpiLoader =true;
+                    this.kpiTableDataObj = {};
+                    for (const key in this.colorObj) {
+                        const idx = key.lastIndexOf('_');
+                        const nodeName = key.slice(0, idx);
+                        this.kpiTableDataObj[nodeName] = []; 
+                    }
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
                 this.masterData = $event.masterData;
@@ -282,6 +300,8 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
                         }
+                        this.createKpiTableHeads(this.selectedtype.toLowerCase());
+                        
                         let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
                         if(projectLevel){
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
@@ -485,7 +505,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     for(let j = 0; j < this.sonarKpiData['kpi17']?.trendValueList[i]?.value?.length; j++){
                         let obj = {
                             'filter':this.sonarKpiData['kpi17']?.trendValueList[i]?.filter,
-                            'value':this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]?.value
+                            ...this.sonarKpiData['kpi17']?.trendValueList[i]?.value[j]
                         }
                         overallObj['value'].push(obj);
                     }
@@ -901,6 +921,131 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
         }
         this.createTrendsData(kpiId);
+        this.handleMaturityTableLoader();
+    }
+
+    /**To create KPI table headings */
+    createKpiTableHeads(selectedType){
+        this.kpiTableHeadingArr = [];
+        if(selectedType == 'kanban'){
+            this.noOfDataPoints = this.filterApplyData['ids']?.[0];
+        }
+        if(this.noOfDataPoints){
+            this.kpiTableHeadingArr?.push({'field': 'kpiName', 'header': 'Kpi Name'});
+            this.kpiTableHeadingArr?.push({'field': 'frequency', 'header': 'Frequency'});
+            for(let i = 0; i < this.noOfDataPoints; i++){
+                this.kpiTableHeadingArr?.push({'field':i+1, 'header': i+1});
+            }
+            this.kpiTableHeadingArr?.push({'field': 'trend', 'header': 'Trend'});
+            this.kpiTableHeadingArr?.push({'field': 'maturity', 'header': 'Maturity'});
+        }
+    }
+
+    /** to prepare table data */
+    getTableData(kpiId, idx, enabledKpi){
+        let trendValueList = [];
+        if(idx >= 0){
+            trendValueList = this.allKpiArray[idx]?.trendValueList;
+        }else{
+            trendValueList = this.allKpiArray?.filter((x) => x[kpiId] == kpiId)[0]?.trendValueList;
+        }
+        if(trendValueList?.length > 0){
+            let selectedIdx:number = -1;
+            let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
+            let trendVals = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');           
+            if(trendVals){
+                if(kpiId == 'kpi17'){
+                    selectedIdx = trendValueList?.findIndex(x => x['filter']?.toLowerCase() == 'average coverage');
+                }else if(kpiId == 'kpi72'){
+                    selectedIdx = trendValueList?.findIndex(x => x['filter1']?.toLowerCase() == 'initial commitment (story points)' &&  x['filter2']?.toLowerCase() == 'overall');
+                }else{
+                    selectedIdx = trendValueList?.findIndex(x => x['filter']?.toLowerCase() == 'overall');
+                    if(selectedIdx < 0){
+                        selectedIdx = 0;
+                    }
+                }
+                iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+            }
+            let filtersApplied = Object.keys(this.colorObj);
+            
+            filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+            
+            filtersApplied.forEach((hierarchyName) => {
+                let obj = {
+                    'kpiId': kpiId,
+                    'kpiName': this.allKpiArray[idx]?.kpiName,
+                    'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                    'show': enabledKpi?.isEnabled && enabledKpi?.shown,
+                    'hoverText': [],
+                    'order': enabledKpi?.order
+                }
+                let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
+                
+                let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyName']?.toLowerCase() == hierarchyName?.toLowerCase())[0];
+                obj['latest'] = trendData?.value || '-';
+                obj['trend'] = trendData?.trend || '-';
+                obj['maturity'] = trendData?.maturity || '-';
+                for(let i=0; i<this.noOfDataPoints;i++){
+                    let item = chosenItem?.value[i];
+                    if(item){
+                        obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
+                        ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
+                        let val = item?.lineValue >=0 ? item?.lineValue : item?.value;
+                        obj[i+1] = val > 0 ? 
+                        (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
+                        : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
+                        if(kpiId === 'kpi153'){
+                            obj[i+1] = item?.dataValue.find(pdata=> pdata['name'] === 'Achieved Value').value || '-';
+                        }
+                    }else{
+                        obj[i+1] = '-';
+                    }
+                    
+                }
+                let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+                if(kpiIndex > -1){
+                    this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+                }
+                if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                    this.kpiTableDataObj[hierarchyName] = [...this.kpiTableDataObj[hierarchyName], obj];
+                }
+                this.sortingRowsInTable(hierarchyName);
+            })
+        }else{
+            /** when no data available */
+            if(this.allKpiArray[idx]?.kpiName){
+                let obj = {
+                    'kpiId': kpiId,
+                    'kpiName': this.allKpiArray[idx]?.kpiName,
+                    'frequency': enabledKpi?.kpiDetail?.xaxisLabel,
+                    'show': enabledKpi?.isEnabled && enabledKpi?.shown,
+                    'hoverText': [],
+                    'order': enabledKpi?.order
+                }
+                for(let i=0; i<this.noOfDataPoints;i++){
+                    obj[i+1] = '-';
+                }
+                obj['latest'] = '-';
+                obj['trend'] = '-';
+                obj['maturity'] = '-';
+                for(let hierarchyName in this.kpiTableDataObj){
+                    if(enabledKpi?.isEnabled && enabledKpi?.shown){
+                        let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
+                        if(kpiIndex > -1){
+                            this.kpiTableDataObj[hierarchyName]?.splice(kpiIndex, 1);
+                        }
+                        this.kpiTableDataObj[hierarchyName]?.push(obj)
+                        this.sortingRowsInTable(hierarchyName);
+                    }
+                }
+            }
+        }
+        if(!this.maturityTableKpiList.includes(kpiId)){
+            this.maturityTableKpiList.push(kpiId);
+        }
+    }
+    sortingRowsInTable(hierarchyName){
+        this.kpiTableDataObj[hierarchyName]?.sort((a, b) => a.order - b.order);
     }
 
     createCombinations(arr1, arr2) {
@@ -933,7 +1078,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 if (formType?.toLowerCase() == 'radiobutton') {
                     this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
                 } else if (formType?.toLowerCase() == 'dropdown') {
-                    this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+                    // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
                     this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
                     let initialC= trendValueList[0].filter1;
                     if(data[key]?.kpiId ==="kpi72"){
@@ -1235,8 +1380,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }else{
                 let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
                 let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
-                console.log('lastVal', lastVal, 'secondLastVal',secondLastVal);
-
                 let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
                 if(secondLastVal > lastVal && !isPositive){
                     trend = '+ve';
@@ -1253,7 +1396,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }else{
             trend = 'NA';
         }
-        console.log([latest, trend, unit]);
         return [latest, trend, unit];
       }
 
@@ -1262,7 +1404,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let trend:string = '';
         if(item?.value?.length > 0){
             let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
+            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
         if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
@@ -1304,26 +1446,45 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let enabledKpiObj = this.updatedConfigGlobalData?.filter(x => x.kpiId == kpiId)[0];
         if(enabledKpiObj && Object.keys(enabledKpiObj)?.length != 0){
             this.kpiTrendsObj[kpiId] = [];
-            for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
-                if(this.kpiChartData[kpiId][i]?.value?.length > 0){
+            if(kpiId != 'kpi17'){
+                for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
+                    if(this.kpiChartData[kpiId][i]?.value?.length > 0){
+                        let trendObj = {};
+                        const [latest, trend,unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValueForKpi(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                        trendObj = {
+                            "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                            "value": latest,
+                            "trend": trend,
+                            "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
+                                        this.checkMaturity(this.kpiChartData[kpiId][i])
+                                        : 'M'+this.kpiChartData[kpiId][i]?.maturity,
+                            "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
+                            "kpiUnit" : unit
+                        };
+                        if(kpiId === 'kpi997'){
+                            trendObj['value'] = 'NA';
+                        }
+                        this.kpiTrendsObj[kpiId]?.push(trendObj);
+                    }
+                }
+            }else{
+                let averageCoverageIdx = this.kpiChartData[kpiId]?.findIndex((x)=>x['filter']?.toLowerCase() == 'average coverage');
+                if(averageCoverageIdx > -1){
                     let trendObj = {};
-                    const [latest, trend,unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValueForKpi(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                    const [latest, trend,unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][averageCoverageIdx]);
                     trendObj = {
-                        "hierarchyName": this.kpiChartData[kpiId][i]?.data,
+                        "hierarchyName": this.kpiChartData[kpiId][averageCoverageIdx]?.data,
                         "value": latest,
                         "trend": trend,
-                        "maturity": kpiId != 'kpi3' && kpiId != 'kpi53' ?
-                                    this.checkMaturity(this.kpiChartData[kpiId][i])
-                                    : 'M'+this.kpiChartData[kpiId][i]?.maturity,
-                        "maturityValue":this.kpiChartData[kpiId][i]?.maturityValue,
+                        "maturity": this.checkMaturity(this.kpiChartData[kpiId][averageCoverageIdx]),
+                        "maturityValue":this.kpiChartData[kpiId][averageCoverageIdx]?.maturityValue,
                         "kpiUnit" : unit
                     };
-                    if(kpiId === 'kpi997'){
-                        trendObj['value'] = 'NA';
-                    }
                     this.kpiTrendsObj[kpiId]?.push(trendObj);
                 }
             }
+            let idx = this.allKpiArray.findIndex((x) => x.kpiId == kpiId);
+            this.getTableData(kpiId, idx, enabledKpiObj);
         }
       }
 
@@ -1393,4 +1554,21 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    handleMaturityTableLoader() {
+        const currentMaturityTableKpiList = this.kpiTableDataObj[Object.keys(this.kpiTableDataObj)[0]]?.map(data=>data.kpiId)
+        let loader  = true;
+        this.maturityTableKpiList?.forEach(kpi => {
+            const idx = this.ifKpiExist(kpi);
+            const idx2 = currentMaturityTableKpiList?.findIndex(kpi=>kpi === kpi);
+            if(idx2 === -1 || idx === -1){
+                loader = false;
+            }
+        });
+        if(currentMaturityTableKpiList && currentMaturityTableKpiList.length > 0 && loader){
+            this.service.setMaturiyTableLoader(false);
+        }else{
+            this.service.setMaturiyTableLoader(true);
+        }
+      }
 }

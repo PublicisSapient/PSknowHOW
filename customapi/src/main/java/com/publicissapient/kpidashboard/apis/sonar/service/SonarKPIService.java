@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -296,5 +297,23 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 		}
 		week[1] = sunday;
 		return week;
+	}
+
+	/**
+	 * create sonar kpis data count obj
+	 * @param value
+	 * @param hoverValues
+	 * @param projectName
+	 * @param date
+	 * @return
+	 */
+	public DataCount getDataCountObject(Long value, Map<String, Object> hoverValues, String projectName, String date) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(value));
+		dataCount.setSProjectName(projectName);
+		dataCount.setDate(date);
+		dataCount.setValue(value);
+		dataCount.setHoverValue(hoverValues);
+		return dataCount;
 	}
 }

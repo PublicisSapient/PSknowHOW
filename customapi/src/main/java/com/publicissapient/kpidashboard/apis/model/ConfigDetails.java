@@ -29,6 +29,7 @@ public class ConfigDetails {
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
 
+	private int noOfDataPoints;
 	public DateRangeFilter getDateRangeFilter() {
 		return dateRangeFilter;
 	}
@@ -83,4 +84,7 @@ public class ConfigDetails {
 		this.hierarchySelectionCount = hierarchySelectionCount;
 	}
 
+	public void setNoOfDataPoints(int noOfDataPoints) {
+		this.noOfDataPoints = noOfDataPoints;
+	}
 }

@@ -50,6 +50,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setPercentile(customApiConfig.getPercentileValue());
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());
 		configDetails.setDateRangeFilter(dateRangeFilter);
+		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
 		return configDetails;
 	}
 
