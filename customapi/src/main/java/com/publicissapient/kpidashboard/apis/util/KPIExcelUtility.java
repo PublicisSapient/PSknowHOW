@@ -1600,6 +1600,47 @@ public class KPIExcelUtility {
 		}
 	}
 
+	public static void populateIterationReadinessExcelData(List<JiraIssue> jiraIssues,
+														   List<KPIExcelData> kpiExcelData, FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.stream().forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				excelData.setSprintName(jiraIssue.getSprintName());
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				String date = Constant.EMPTY_STRING;
+				if (!jiraIssue.getSprintBeginDate().isEmpty()) {
+					date = DateUtil.dateTimeConverter(jiraIssue.getSprintBeginDate(), ITERATION_DATE_FORMAT,
+							DateUtil.DISPLAY_DATE_FORMAT);
+				}
+				excelData.setSprintStartDate(date);
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(roundingOff.toString());
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					Double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+							+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
 	public static void populateLeadTimeForChangeExcelData(String projectName,
 			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, List<KPIExcelData> kpiExcelData , Boolean leadTimeConfigRepoTool) {
 

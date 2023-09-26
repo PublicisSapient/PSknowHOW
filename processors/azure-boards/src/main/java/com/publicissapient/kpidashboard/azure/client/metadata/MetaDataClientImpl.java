@@ -244,7 +244,18 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-		fieldMapping.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+		fieldMapping
+				.setJiraIssueTypeNamesAVR(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNamesKPI161(
+				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI151(
+				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI152(
+				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI146(
+				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI148(
+				issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 		List<String> firstStatusList = workflowMap.get(CommonConstant.FIRST_STATUS);
 		fieldMapping.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 		fieldMapping.setEpicJobSize(customField.get(CommonConstant.JOB_SIZE));
@@ -328,9 +339,11 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setResolutionTypeForRejectionKPI82(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI135(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI133(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setResolutionTypeForRejectionRCAKPI36(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping
+				.setResolutionTypeForRejectionRCAKPI36(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setResolutionTypeForRejectionKPI14(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
-		fieldMapping.setResolutionTypeForRejectionQAKPI111(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
+		fieldMapping
+				.setResolutionTypeForRejectionQAKPI111(valuesToIdentifyMap.get(CommonConstant.REJECTION_RESOLUTION));
 		fieldMapping.setJiraQAKPI111IssueType(issueTypeMap.get(CommonConstant.STORY));
 
 		if (projectConfig.isKanban()) {
