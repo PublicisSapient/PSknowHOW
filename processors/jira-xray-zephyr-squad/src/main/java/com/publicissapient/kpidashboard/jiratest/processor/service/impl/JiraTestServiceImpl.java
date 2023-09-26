@@ -671,12 +671,23 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	public ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping) {
-		Optional<Connection> jiraTestConn = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
+		Optional<Connection> connection = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
 		String username = "";
 		String password = "";
-		if (jiraTestConn.isPresent()) {
-			Connection conn = jiraTestConn.get();
-			if (conn.getIsOAuth()) {
+		if (connection.isPresent()) {
+			Connection conn = connection.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider
+						.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+					client = jiraRestClientFactory.getJiraClient(
+							JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+									.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+				}
+			}
+			else if (conn.getIsOAuth()) {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
 				client = jiraRestClientFactory.getJiraOAuthClient(
@@ -838,32 +849,43 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection connection)
+	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection httpURLConnection)
 			throws IOException {
+		String username = null;
+		String password = null;
 		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
 		if (connectionOptional.isPresent() && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
-			HttpUriRequest request = RequestBuilder.get().setUri(connection.getURL().toString())
+			HttpUriRequest httpUriRequest = RequestBuilder.get().setUri(httpURLConnection.getURL().toString())
 					.setHeader(HttpHeaders.ACCEPT, "application/json")
 					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
-			return krb5Client.getResponse(request);
-		} else {
-			HttpURLConnection request = connection;
-
-			String username = processorToolConnection.getUsername();
-			String password = decryptJiraPassword(processorToolConnection.getPassword());
-			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-			request.connect();
-			StringBuilder sb = new StringBuilder();
-			try (InputStream in = (InputStream) request.getContent(); BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
-				int cp;
-				while ((cp = inReader.read()) != -1) {
-					sb.append((char) cp);
-				}
-			} catch (IOException ie) {
-				log.error("Read exception when connecting to server {}", ie);
-			}
-			return sb.toString();
+			return krb5Client.getResponse(httpUriRequest);
 		}
+		else if (connectionOptional.isPresent() && connectionOptional.map(Connection:: isBearerToken).orElse(false)) {
+			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
+			httpURLConnection.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
+		}
+		else if(connectionOptional.isPresent() && connectionOptional.map(Connection:: isVault).orElse(false)){
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(connectionOptional.get().getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+		} else {
+			username = connectionOptional.map(Connection::getUsername).orElse(null);
+			password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password));
+		}
+		httpURLConnection.connect();
+		StringBuilder sb = new StringBuilder();
+		try (InputStream in = (InputStream) httpURLConnection.getContent(); BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+			int cp;
+			while ((cp = inReader.read()) != -1) {
+				sb.append((char) cp);
+			}
+		} catch (IOException ie) {
+			log.error("Read exception when connecting to server {}", ie);
+		}
+		return sb.toString();
 	}
 
 	private String encodeCredentialsToBase64(String username, String password) {
