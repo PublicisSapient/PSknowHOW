@@ -614,3 +614,12 @@ db.field_mapping_structure.deleteMany({
         $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
     }
 });
+
+
+//  rollback reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi72" }, { $set: { "groupId": 2 } })
