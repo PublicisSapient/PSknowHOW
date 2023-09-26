@@ -34,8 +34,9 @@
                     </button>
                 </div>
             </div>
-            <button pButton pRipple type="button" icon="pi {{displayModal ? 'pi-minus' : 'pi-plus'}}"
-            class="p-button-rounded p-ml-3" (click)="handleViewExpandCollapse()"></button>
+            <button class="assignee p-ml-3" (click)="handleViewExpandCollapse()">
+                <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
+            </button>
         </div>
     </section>
 

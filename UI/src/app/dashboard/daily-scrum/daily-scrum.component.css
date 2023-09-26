@@ -59,7 +59,7 @@
 }
 
 /* user button css */
-.user-filter button.assignee{
+button.assignee{
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -70,7 +70,7 @@
     display: inline-block;
 }
 
-.user-filter button.assignee.selected-user{
+button.assignee.selected-user{
     background: #437495 !important;
     color: white !important;
     font-weight: bold;
