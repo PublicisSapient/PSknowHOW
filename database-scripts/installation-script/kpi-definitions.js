@@ -2763,7 +2763,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "dropDown",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -8294,6 +8294,61 @@ db.getCollection('field_mapping_structure').insertMany(
 			"definition": "All issue types that are used as/equivalent to Story.",
 
 		}
-	}
-]
+	},
+{
+    "fieldName": "jiraIssueTypeNamesKPI161",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI148",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI151",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI152",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+}
+    ]
 );

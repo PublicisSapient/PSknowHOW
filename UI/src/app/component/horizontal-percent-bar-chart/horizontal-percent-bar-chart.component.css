@@ -1,4 +1,4 @@
-#chart{
+#chart, #chart2{
     position: relative;
     height: 290px;
     width: 100%;
@@ -25,7 +25,6 @@
 
 :host::ng-deep .legend_item {
     margin-right: 10px;
-    margin-top: 8px;
     display: flex;
     align-items: center;
   }
@@ -41,4 +40,17 @@
     font-size: 12px;
     color: var(--color-gray-34);
     position: absolute !important;
+  }
+
+  .tooltip-chart-container {
+    background-color: #fff;
+    border: 2px solid #BDBDBD;
+    border-radius: 5px;
+    display: none;
+  }
+
+  #back_icon {
+    display: none;
+    margin: 10px;
+    cursor: pointer;
   }
