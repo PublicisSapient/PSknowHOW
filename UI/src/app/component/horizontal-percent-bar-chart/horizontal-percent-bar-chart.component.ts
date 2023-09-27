@@ -30,15 +30,17 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (!this.isDrilledDown) {
-        this.data = this.data[0]['value'];
-        this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
+      if (this.data[0]['value']) {
+        if (!this.isDrilledDown) {
+          this.data = this.data[0]['value'];
+          this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
+        }
+        this.draw(this.data);
       }
-      this.draw(this.data);
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
 
-    if(changes['filter']) {
+    if (changes['filter']) {
       d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
     }
   }
@@ -173,22 +175,22 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         return color(d.key);
       })
       .on('click', (event, d) => {
-        if (!self.isDrilledDown) {
+        if (!self.isDrilledDown && event.target.__data__.data && event.target.__data__.data.kpiGroup) {
           self.isDrilledDown = true;
           let key = d['key'];
           let kpiGroup = event.target.__data__.data.kpiGroup;
           let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
           data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
           if (data && data.length && data[0]) {
-          data.kpiGroup = key;
-          this.draw(data, selectedNode);
-          d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
-            .on('click', (event, d) => {
-              this.isDrilledDown = false;
-              this.draw(this.unmodifiedDataCopy);
-              d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
-            });
-        }
+            data.kpiGroup = key;
+            this.draw(data, selectedNode);
+            d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
+              .on('click', (event, d) => {
+                this.isDrilledDown = false;
+                this.draw(this.unmodifiedDataCopy);
+                d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
+              });
+          }
         }
       })
       .selectAll('rect')
