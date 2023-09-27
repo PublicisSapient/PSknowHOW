@@ -18,7 +18,6 @@
 package com.publicissapient.kpidashboard.jira.service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 import com.atlassian.jira.rest.client.api.RestClientException;
@@ -28,7 +27,6 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchEpicData {
-
 	/**
 	 *
 	 * @param projectConfig
