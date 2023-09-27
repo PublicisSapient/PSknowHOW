@@ -66,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is a service to compute unite coverage for kanban.
- * 
+ *
  * @author shichand0
  *
  */
@@ -236,19 +236,6 @@ public class UnitCoverageKanbanServiceimpl
 		return range;
 	}
 
-	private Map<String, ValidationData> populateValidationDataObjectForCoverage(String requestTrackerId,
-			List<String> projectList, List<String> debtList, List<String> versionDate, Node node) {
-		Map<String, ValidationData> validationDataMap = new HashMap<>();
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			ValidationData validationData = new ValidationData();
-			validationData.setWeeksList(versionDate);
-			validationData.setJobName(projectList);
-			validationData.setCoverageList(debtList);
-			validationDataMap.put(node.getProjectFilter().getName(), validationData);
-		}
-		return validationDataMap;
-	}
-
 	private Map<String, Object> prepareCoverageList(Map<String, SonarHistory> history, String date,
 			String projectNodeId, List<String> projectList, List<String> debtList,
 			Map<String, List<DataCount>> projectWiseDataMap, List<String> versionDate) {
@@ -262,7 +249,7 @@ public class UnitCoverageKanbanServiceimpl
 			final Double coverageValue = getCoverageValue(metricMap.get(MATRIC_NAME_COVERAGE));
 			if (coverageValue != -1l) {
 
-				DataCount dcObj = getDataCountObject(coverageValue, projectName, date, projectNodeId);
+				DataCount dcObj = getDataCountObject(coverageValue.longValue(), new HashMap<>(), projectName, date);
 				projectWiseDataMap.computeIfAbsent(keyName, k -> new LinkedList<>()).add(dcObj);
 				projectList.add(keyName);
 				versionDate.add(date);
@@ -271,23 +258,11 @@ public class UnitCoverageKanbanServiceimpl
 			}
 		});
 		DataCount dcObj = getDataCountObject(
-				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()), projectName,
-				date, projectNodeId);
+				calculateKpiValue(dateWiseCoverageList, KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId()).longValue(),
+				new HashMap<>(), projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 
 		return key;
-	}
-
-	private DataCount getDataCountObject(Double value, String projectName, String date, String projectNodeId) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(value));
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
-		dataCount.setValue(value);
-		dataCount.setHoverValue(new HashMap<>());
-		return dataCount;
 	}
 
 	private Double getCoverageValue(Object coverage) {

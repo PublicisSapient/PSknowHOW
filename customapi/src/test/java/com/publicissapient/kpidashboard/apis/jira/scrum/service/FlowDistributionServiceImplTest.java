@@ -24,8 +24,14 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -66,8 +72,11 @@ public class FlowDistributionServiceImplTest {
 	private FlowDistributionServiceImpl flowDistributionService;
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+	@Mock
+	private ConfigHelperService configHelperService;
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 
 	@Before
 	public void setUp() throws ApplicationException {
@@ -80,6 +89,12 @@ public class FlowDistributionServiceImplTest {
 
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		customHistoryList = JiraIssueHistoryDataFactory.newInstance().getJiraIssueCustomHistory();
+
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(new ObjectId("6335363749794a18e8a4479b"), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 
 	@Test
@@ -96,6 +111,7 @@ public class FlowDistributionServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(customHistoryList);
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 		customHistoryList.get(0).setCreatedDate(DateTime.now());
 		try {

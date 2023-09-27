@@ -299,6 +299,16 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap
 				.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNamesKPI161(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI151(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI152(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI146(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI148(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTCAPACITYISSUETYPEKPI46, new ArrayList<>()));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(
@@ -505,6 +515,16 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+			fieldMapping.setJiraIssueTypeNamesKPI161(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI151(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI152(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI146(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI148(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 			fieldMapping.setJiraIssueTypeNamesAVR(
 					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 
@@ -664,6 +684,16 @@ public class CreateMetadataImpl implements CreateMetadata {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI164(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI161(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI151(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI152(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI146(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI148(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {

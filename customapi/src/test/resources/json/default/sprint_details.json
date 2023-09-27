@@ -9,240 +9,242 @@
     "endDate": "2022-09-27T17:00:00.000Z",
     "completeDate": "2022-09-28T02:52:29.666Z",
     "activatedDate": "2022-09-07T14:08:51.092Z",
-    "originBoardId": [ "11856" ],
+    "originBoardId": [
+      "11856"
+    ],
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues" : [
+    "completedIssues": [
       {
-        "number" : "TEST-17768",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-17768",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-17908",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17908",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18379",
-        "priority" : "P4 - Minor",
-        "status" : "Dropped",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18379",
+        "priority": "P4 - Minor",
+        "status": "Dropped",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18392",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18392",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18525",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18525",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18547",
-        "priority" : "P4 - Minor",
-        "status" : "Live",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18547",
+        "priority": "P4 - Minor",
+        "status": "Live",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18556",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18556",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18637",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18637",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18696",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18696",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18783",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18783",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18881",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18881",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18906",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18906",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18937",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18937",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18987",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18987",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19035",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-19035",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19036",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-19036",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "notCompletedIssues" : [
+    "notCompletedIssues": [
       {
-        "number" : "TEST-16349",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "86400.0",
-        "storyPoints" : 3
+        "number": "TEST-16349",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "86400.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-16627",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "remainingEstimate" : "28800",
-        "storyPoints" : 1
+        "number": "TEST-16627",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "remainingEstimate": "28800",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17768",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect",
+        "number": "TEST-17768",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect",
         "storyPoints": 1,
         "remainingEstimate": 28800
       },
       {
-        "number" : "TEST-17918",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17918",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-17919",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17919",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18215",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Enabler Story"
+        "number": "TEST-18215",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Enabler Story"
       },
       {
-        "number" : "TEST-18419",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18419",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18557",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18557",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18780",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
+        "number": "TEST-18780",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
         "storyPoints": 1,
         "remainingEstimate": 28800
       },
       {
-        "number" : "TEST-18903",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18903",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19003",
-        "priority" : "P4 - Minor",
-        "status" : "In Investigation",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-19003",
+        "priority": "P4 - Minor",
+        "status": "In Investigation",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "puntedIssues" : [
+    "puntedIssues": [
       {
-        "number" : "TEST-17135",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "28800.0"
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "28800.0"
       }
     ],
-    "completedIssuesAnotherSprint" : [
+    "completedIssuesAnotherSprint": [
       {
-        "number" : "TEST-18621",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18621",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18868",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18868",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "addedIssues" : [
+    "addedIssues": [
       "TEST-18937",
       "TEST-18906",
       "TEST-18903",
@@ -252,215 +254,215 @@
       "TEST-19003",
       "TEST-19036"
     ],
-    "totalIssues" : [
+    "totalIssues": [
       {
-        "number" : "TEST-16048",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-16048",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-17908",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17908",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18379",
-        "priority" : "P4 - Minor",
-        "status" : "Dropped",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18379",
+        "priority": "P4 - Minor",
+        "status": "Dropped",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18392",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18392",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18525",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18525",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18547",
-        "priority" : "P4 - Minor",
-        "status" : "Live",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18547",
+        "priority": "P4 - Minor",
+        "status": "Live",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18556",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18556",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18637",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18637",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18696",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18696",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18783",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18783",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18881",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18881",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18906",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18906",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18937",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18937",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18987",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18987",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19035",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-19035",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19036",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-19036",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-16349",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "86400.0",
-        "storyPoints" : 3
+        "number": "TEST-16349",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "86400.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-16627",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "remainingEstimate" : "28800",
-        "storyPoints" : 1
+        "number": "TEST-16627",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "remainingEstimate": "28800",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17768",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect",
+        "number": "TEST-17768",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect",
         "storyPoints": 1,
         "remainingEstimate": 28800
       },
       {
-        "number" : "TEST-17918",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17918",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17919",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17919",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18215",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Enabler Story"
+        "number": "TEST-18215",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Enabler Story"
       },
       {
-        "number" : "TEST-18419",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18419",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18557",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18557",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18780",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
+        "number": "TEST-18780",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
         "storyPoints": 1,
         "remainingEstimate": 28800
       },
       {
-        "number" : "TEST-18903",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18903",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18475",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18475",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-19003",
-        "priority" : "P4 - Minor",
-        "status" : "In Investigation",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-19003",
+        "priority": "P4 - Minor",
+        "status": "In Investigation",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
@@ -475,268 +477,270 @@
     "endDate": "2022-09-27T15:30:00.000Z",
     "completeDate": "2022-09-28T02:53:13.284Z",
     "activatedDate": "2022-09-14T07:43:00.031Z",
-    "originBoardId": [ "11856"],
+    "originBoardId": [
+      "11856"
+    ],
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues" : [
+    "completedIssues": [
       {
-        "number" : "TEST-18906",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18906",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18637",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-18637",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18937",
-        "originBoardId" : "11856",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "storyPoints" : "2",
-        "remainingEstimate" : "0"
+        "number": "TEST-18937",
+        "originBoardId": "11856",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "storyPoints": "2",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18556",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18556",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18525",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18525",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18547",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Live",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18547",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Live",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18987",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18987",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18783",
-        "originBoardId" : "11856",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18783",
+        "originBoardId": "11856",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19036",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-19036",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18696",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18696",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-16048",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "8",
-        "remainingEstimate" : "0"
+        "number": "TEST-16048",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "8",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18379",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Dropped",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18379",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Dropped",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18881",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18881",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19035",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-19035",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18392",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18392",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17908",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-17908",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       }
     ],
-    "notCompletedIssues" : [
+    "notCompletedIssues": [
       {
-        "number" : "TEST-16627",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "28800"
+        "number": "TEST-16627",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "28800"
       },
       {
-        "number" : "TEST-18780",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-18780",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-16349",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "storyPoints" : "3",
-        "remainingEstimate" : "0"
+        "number": "TEST-16349",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "storyPoints": "3",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17768",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "More info",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-17768",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "More info",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17918",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-17918",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18419",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18419",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18903",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18903",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18215",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Enabler Story"
+        "number": "TEST-18215",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Enabler Story"
       },
       {
-        "number" : "TEST-18557",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18557",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17919",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-17919",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19003",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Investigation",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-19003",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Investigation",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       }
     ],
-    "puntedIssues" : [
+    "puntedIssues": [
       {
-        "number" : "TEST-17908",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "remainingEstimate" : "28800"
+        "number": "TEST-17908",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "remainingEstimate": "28800"
       }
     ],
-    "completedIssuesAnotherSprint" : [
+    "completedIssuesAnotherSprint": [
       {
-        "number" : "TEST-18868",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18868",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18621",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18621",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       }
     ],
-    "addedIssues" : [
+    "addedIssues": [
       "TEST-18937",
       "TEST-18906",
       "TEST-18903",
@@ -746,243 +750,243 @@
       "TEST-19003",
       "TEST-19036"
     ],
-    "totalIssues" : [
+    "totalIssues": [
       {
-        "number" : "TEST-9485",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "remainingEstimate" : "28800"
+        "number": "TEST-9485",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "remainingEstimate": "28800"
       },
       {
-        "number" : "TEST-16627",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "28800"
+        "number": "TEST-16627",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "28800"
       },
       {
-        "number" : "TEST-18906",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18906",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-16349",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "storyPoints" : "3",
-        "remainingEstimate" : "0"
+        "number": "TEST-16349",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "storyPoints": "3",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17918",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-17918",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18903",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18903",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18525",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18525",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18547",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Live",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18547",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Live",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18987",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18987",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18783",
-        "originBoardId" : "11856",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18783",
+        "originBoardId": "11856",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19036",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-19036",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-16048",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "8",
-        "remainingEstimate" : "0"
+        "number": "TEST-16048",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "8",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18392",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18392",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17919",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-17919",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17768",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "More info",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-17768",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "More info",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18637",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-18637",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18419",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18419",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18937",
-        "originBoardId" : "11856",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "storyPoints" : "2",
-        "remainingEstimate" : "0"
+        "number": "TEST-18937",
+        "originBoardId": "11856",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "storyPoints": "2",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18556",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18556",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18215",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Enabler Story"
+        "number": "TEST-18215",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Enabler Story"
       },
       {
-        "number" : "TEST-18557",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "storyPoints" : "5",
-        "remainingEstimate" : "0"
+        "number": "TEST-18557",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "storyPoints": "5",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19003",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "In Investigation",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-19003",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "In Investigation",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18696",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "remainingEstimate" : "0"
+        "number": "TEST-18696",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18379",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Dropped",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18379",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Dropped",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18780",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-18780",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-18881",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-18881",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-19035",
-        "originBoardId" : "11856",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "remainingEstimate" : "0"
+        "number": "TEST-19035",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "remainingEstimate": "0"
       },
       {
-        "number" : "TEST-17908",
-        "originBoardId" : "11856",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "storyPoints" : "1",
-        "remainingEstimate" : "0"
+        "number": "TEST-17908",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "storyPoints": "1",
+        "remainingEstimate": "0"
       }
     ],
-    "_class" : "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
   {
     "_id": "6335e3724fd2f76a821115de",
@@ -994,198 +998,200 @@
     "endDate": "2022-09-13T15:30:00.000Z",
     "completeDate": "2022-09-14T04:40:29.169Z",
     "activatedDate": "2022-09-01T03:05:24.853Z",
-    "originBoardId": [ "11856"],
+    "originBoardId": [
+      "11856"
+    ],
     "goal": "",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues" : [
+    "completedIssues": [
       {
-        "number" : "TEST-18495",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18495",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18698",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18698",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18699",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-18699",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18706",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18706",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18709",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18709",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18712",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18712",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18717",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18717",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18722",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18722",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18875",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18875",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       }
     ],
-    "notCompletedIssues" : [
+    "notCompletedIssues": [
       {
-        "number" : "TEST-18516",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-18516",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18561",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18561",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18562",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18562",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18700",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18700",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18708",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18708",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18710",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18710",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18711",
-        "priority" : "P4 - Minor",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18711",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18714",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18714",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18715",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18715",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18716",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18716",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18721",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18721",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18723",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18723",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18895",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18895",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18916",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18916",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "puntedIssues" : [ ],
-    "completedIssuesAnotherSprint" : [ ],
-    "addedIssues" : [
+    "puntedIssues": [],
+    "completedIssuesAnotherSprint": [],
+    "addedIssues": [
       "TEST-18916",
       "TEST-18561",
       "TEST-18516",
@@ -1195,190 +1201,190 @@
       "TEST-18562",
       "TEST-18895"
     ],
-    "totalIssues" : [
+    "totalIssues": [
       {
-        "number" : "TEST-18495",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18495",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18698",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18698",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18699",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-18699",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18706",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18706",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18709",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18709",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18712",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18712",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18717",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18717",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18722",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18722",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18875",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18875",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18516",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-18516",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18561",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18561",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18562",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18562",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18700",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18700",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18708",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18708",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18710",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18710",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18711",
-        "priority" : "P4 - Minor",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18711",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18714",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18714",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18715",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18715",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18716",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18716",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18721",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18721",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18723",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18723",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18895",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18895",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18916",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18916",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "_class" : "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
   },
   {
     "_id": "6335e3724fd2f76a821115e0",
@@ -1390,531 +1396,533 @@
     "endDate": "2022-09-07T10:23:00.000Z",
     "completeDate": "2022-09-07T01:20:28.387Z",
     "activatedDate": "2022-08-24T10:23:27.440Z",
-    "originBoardId": ["11856"],
+    "originBoardId": [
+      "11856"
+    ],
     "goal": "1. Release 5.1.0 2. Hotfix to GS 3. Delete Project data and users 4. Nissan enhancements",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues" : [
+    "completedIssues": [
       {
-        "number" : "TEST-14604",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-14612",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-14685",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17292",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17292",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17490",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17495",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17496",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17926",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17967",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18198",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18206",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18224",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18224",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18232",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18232",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18252",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18342",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Enabler Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18378",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18389",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18447",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18447",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18452",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18476",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18545",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18545",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18615",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18615",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18616",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18616",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18622",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18622",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18629",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18629",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18631",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18631",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18634",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18634",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18636",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18636",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18639",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18639",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18641",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18641",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18650",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18650",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18656",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18656",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18662",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18662",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18664",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18664",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18666",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18666",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18667",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18667",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18668",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18668",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18674",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18674",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18694",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18694",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18724",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18724",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18736",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18736",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18745",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18745",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18748",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18748",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18754",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18754",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18756",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18756",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18759",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18759",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18760",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18760",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "notCompletedIssues" : [
+    "notCompletedIssues": [
       {
-        "number" : "TEST-16048",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-16048",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18480",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "28800.0",
-        "storyPoints" : 1
+        "number": "TEST-18480",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "28800.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18525",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18525",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18547",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18547",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18556",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18556",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18557",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18557",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18749",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect"
+        "number": "TEST-18749",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18783",
-        "priority" : "P2 - Critical",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18783",
+        "priority": "P2 - Critical",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "puntedIssues" : [
+    "puntedIssues": [
       {
-        "number" : "TEST-17135",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "28800.0"
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "28800.0"
       },
       {
-        "number" : "TEST-18516",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-18516",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18637",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18637",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18663",
-        "priority" : "P4 - Minor",
-        "status" : "In Investigation",
-        "typeName" : "Defect"
+        "number": "TEST-18663",
+        "priority": "P4 - Minor",
+        "status": "In Investigation",
+        "typeName": "Defect"
       }
     ],
-    "completedIssuesAnotherSprint" : [
+    "completedIssuesAnotherSprint": [
       {
-        "number" : "TEST-17491",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17491",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17492",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17492",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17494",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "10800.0",
-        "storyPoints" : 1
+        "number": "TEST-17494",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "10800.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17770",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "14400.0",
-        "storyPoints" : 3
+        "number": "TEST-17770",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "14400.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17949",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17949",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-17972",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17972",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18453",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18453",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18486",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18486",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18491",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18491",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18493",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18493",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "addedIssues" : [
+    "addedIssues": [
       "TEST-18636",
       "TEST-18615",
       "TEST-18637",
@@ -1946,415 +1954,415 @@
       "TEST-18663",
       "TEST-18664"
     ],
-    "totalIssues" : [
+    "totalIssues": [
       {
-        "number" : "TEST-14604",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-14612",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-14685",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17292",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17292",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17490",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17495",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17496",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17926",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17967",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18198",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18206",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18224",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18224",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18232",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18232",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18252",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18342",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Enabler Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18378",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18389",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18447",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18447",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18452",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18476",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18545",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18545",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18615",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18615",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18616",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18616",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18622",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18622",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18629",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18629",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18631",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18631",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18634",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18634",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18636",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18636",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18639",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18639",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18641",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18641",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18650",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18650",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18656",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18656",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18662",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18662",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18664",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18664",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18666",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18666",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18667",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18667",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18668",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18668",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18674",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18674",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18694",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18694",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18724",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18724",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18736",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18736",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18745",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18745",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18748",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18748",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18754",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18754",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18756",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18756",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18759",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18759",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18760",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18760",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-16048",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 8
+        "number": "TEST-16048",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 8
       },
       {
-        "number" : "TEST-18480",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "28800.0",
-        "storyPoints" : 1
+        "number": "TEST-18480",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "28800.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18525",
-        "priority" : "P4 - Minor",
-        "status" : "Code Review",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18525",
+        "priority": "P4 - Minor",
+        "status": "Code Review",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18547",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18547",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18556",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18556",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18557",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18557",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18749",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Defect"
+        "number": "TEST-18749",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18783",
-        "priority" : "P2 - Critical",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18783",
+        "priority": "P2 - Critical",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
@@ -2369,495 +2377,497 @@
     "endDate": "2022-08-24T09:47:00.000Z",
     "completeDate": "2022-08-24T03:35:24.843Z",
     "activatedDate": "2022-08-10T09:47:13.639Z",
-    "originBoardId": ["11856"],
+    "originBoardId": [
+      "11856"
+    ],
     "goal": "",
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "processorId": "632902802757f265fcb6c452",
-    "completedIssues" : [
+    "completedIssues": [
       {
-        "number" : "TEST-14606",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-14606",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-14822",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14822",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17208",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17208",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17210",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17210",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17274",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17274",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17291",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-17291",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17488",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17488",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17493",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17493",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17779",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-17779",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17942",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17942",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18242",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18242",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18267",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18267",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18299",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18299",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18328",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18328",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18342",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Enabler Story",
-        "estimate" : "0.0"
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18350",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18350",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18362",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18362",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18365",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18365",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18375",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18375",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18428",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18428",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18429",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18429",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18432",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18432",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18433",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18433",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18434",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18434",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18446",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18446",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18448",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18448",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18449",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect"
+        "number": "TEST-18449",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18451",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect"
+        "number": "TEST-18451",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18468",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18468",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18474",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18474",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18475",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18475",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18477",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18477",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18478",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18478",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18479",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18479",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "notCompletedIssues" : [
+    "notCompletedIssues": [
       {
-        "number" : "TEST-14604",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-14612",
-        "priority" : "P4 - Minor",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-14685",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17135",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "28800.0"
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "28800.0"
       },
       {
-        "number" : "TEST-17490",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17491",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17491",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17492",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17492",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17494",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "10800.0",
-        "storyPoints" : 1
+        "number": "TEST-17494",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "10800.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17495",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17496",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17770",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "14400.0",
-        "storyPoints" : 3
+        "number": "TEST-17770",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "14400.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17926",
-        "priority" : "P2 - Critical",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17949",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17949",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-17967",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17972",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17972",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18198",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18206",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18252",
-        "priority" : "P3 - Major",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18378",
-        "priority" : "P3 - Major",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18389",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18452",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18476",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18486",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18486",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18491",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18491",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18493",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18493",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "puntedIssues" : [
+    "puntedIssues": [
       {
-        "number" : "TEST-17209",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17209",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18379",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18379",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18388",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18388",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       }
     ],
-    "completedIssuesAnotherSprint" : [
+    "completedIssuesAnotherSprint": [
       {
-        "number" : "TEST-17803",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17803",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17938",
-        "priority" : "P1 - Blocker",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-17938",
+        "priority": "P1 - Blocker",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
-    "addedIssues" : [
+    "addedIssues": [
       "TEST-18379",
       "TEST-18434",
       "TEST-18478",
@@ -2887,445 +2897,1521 @@
       "TEST-18451",
       "TEST-18491"
     ],
-    "totalIssues" : [
+    "totalIssues": [
       {
-        "number" : "TEST-14606",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-14606",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-14822",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14822",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17208",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17208",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17210",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17210",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17274",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17274",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17291",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-17291",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17488",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17488",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17493",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17493",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17779",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-17779",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17942",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17942",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18242",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18242",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18267",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18267",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18299",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18299",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18328",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18328",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18342",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Enabler Story",
-        "estimate" : "0.0"
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18350",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 3
+        "number": "TEST-18350",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-18362",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18362",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18365",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18365",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18375",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18375",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18428",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18428",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18429",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18429",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18432",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18432",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18433",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18433",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18434",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18434",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18446",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18446",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18448",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18448",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18449",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect"
+        "number": "TEST-18449",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18451",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect"
+        "number": "TEST-18451",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
       },
       {
-        "number" : "TEST-18468",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18468",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18474",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18474",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18475",
-        "priority" : "P2 - Critical",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18475",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18477",
-        "priority" : "P3 - Major",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18477",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18478",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18478",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18479",
-        "priority" : "P4 - Minor",
-        "status" : "Closed",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18479",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-14604",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-14612",
-        "priority" : "P4 - Minor",
-        "status" : "Ready for Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-14685",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17135",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "28800.0"
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "28800.0"
       },
       {
-        "number" : "TEST-17490",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17491",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17491",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17492",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17492",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17494",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Story",
-        "estimate" : "10800.0",
-        "storyPoints" : 1
+        "number": "TEST-17494",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "10800.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17495",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17496",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-17770",
-        "priority" : "P4 - Minor",
-        "status" : "In Testing",
-        "typeName" : "Story",
-        "estimate" : "14400.0",
-        "storyPoints" : 3
+        "number": "TEST-17770",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "14400.0",
+        "storyPoints": 3
       },
       {
-        "number" : "TEST-17926",
-        "priority" : "P2 - Critical",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-17949",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-17949",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-17967",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-17972",
-        "priority" : "P4 - Minor",
-        "status" : "On Hold",
-        "typeName" : "Defect",
-        "estimate" : "0.0",
-        "storyPoints" : 1
+        "number": "TEST-17972",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
       },
       {
-        "number" : "TEST-18198",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 2
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
       },
       {
-        "number" : "TEST-18206",
-        "priority" : "P4 - Minor",
-        "status" : "In Development",
-        "typeName" : "Story",
-        "estimate" : "0.0",
-        "storyPoints" : 5
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
       },
       {
-        "number" : "TEST-18252",
-        "priority" : "P3 - Major",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18378",
-        "priority" : "P3 - Major",
-        "status" : "Open",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18389",
-        "priority" : "P4 - Minor",
-        "status" : "Open",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18452",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18476",
-        "priority" : "P4 - Minor",
-        "status" : "In Analysis",
-        "typeName" : "Story",
-        "estimate" : "0.0"
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18486",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18486",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18491",
-        "priority" : "P3 - Major",
-        "status" : "Ready for Testing",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18491",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
       },
       {
-        "number" : "TEST-18493",
-        "priority" : "P3 - Major",
-        "status" : "In Development",
-        "typeName" : "Defect",
-        "estimate" : "0.0"
+        "number": "TEST-18493",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+  },
+  {
+    "_id": "649ab123c2dc03570b2d5798",
+    "sprintID": "47357_KnowHOW_6335363749794a18e8a4479b",
+    "sprintName": "KnowHOW | PI_14| ITR_Dummy",
+    "originalSprintId": "47357",
+    "state": "FUTURE",
+    "startDate": "2022-08-10T09:47:00.000Z",
+    "endDate": "2022-08-24T09:47:00.000Z",
+    "completeDate": "2022-08-24T03:35:24.843Z",
+    "activatedDate": "2022-08-10T09:47:13.639Z",
+    "originBoardId": [
+      "11856"
+    ],
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "processorId": "5ea7d218e4b098dbe79d7aa2",
+    "completedIssues": [],
+    "notCompletedIssues": [
+      {
+        "number": "DTS-24677",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 2
+      },
+      {
+        "number": "DTS-22440",
+        "originBoardId": "11856",
+        "priority": "P1 - Blocker",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 8
+      },
+      {
+        "number": "DTS-26220",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 5
+      },
+      {
+        "number": "DTS-26120",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 1
+      },
+      {
+        "number": "DTS-25752",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story"
+      }
+    ],
+    "puntedIssues": [],
+    "completedIssuesAnotherSprint": [],
+    "addedIssues": [],
+    "totalIssues": [
+      {
+        "number": "DTS-24677",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 2
+      },
+      {
+        "number": "DTS-22440",
+        "originBoardId": "11856",
+        "priority": "P1 - Blocker",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 8
+      },
+      {
+        "number": "DTS-26220",
+        "originBoardId": "11856",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 5
+      },
+      {
+        "number": "DTS-26120",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "storyPoints": 1
+      },
+      {
+        "number": "DTS-25752",
+        "originBoardId": "11856",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story"
+      }
+    ],
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
+  },
+  {
+    "_id": "6335e38f4fd2f76a82111623",
+    "sprintID": "38294_Scrum Project_6335363749794a18e8a4479b",
+    "sprintName": "KnowHOW|PI_10|ITR_4| 10th Aug",
+    "originalSprintId": "38294",
+    "state": "FUTURE",
+    "startDate": "2022-08-10T09:47:00.000Z",
+    "endDate": "2022-08-24T09:47:00.000Z",
+    "completeDate": "2022-08-24T03:35:24.843Z",
+    "activatedDate": "2022-08-10T09:47:13.639Z",
+    "originBoardId": [
+      "11856"
+    ],
+    "goal": "",
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "processorId": "632902802757f265fcb6c452",
+    "completedIssues": [
+      {
+        "number": "TEST-14606",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-14822",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17208",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17210",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17274",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17291",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17488",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17493",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17779",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17942",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18242",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18267",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18299",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18328",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18350",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-18362",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18365",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18375",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18428",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18429",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18432",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18433",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18434",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18446",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18448",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18449",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
+      },
+      {
+        "number": "TEST-18451",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
+      },
+      {
+        "number": "TEST-18468",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18474",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18475",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18477",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18478",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18479",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      }
+    ],
+    "notCompletedIssues": [
+      {
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "28800.0"
+      },
+      {
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17491",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17492",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17494",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "10800.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17770",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "14400.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17949",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17972",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18486",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18491",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18493",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      }
+    ],
+    "puntedIssues": [
+      {
+        "number": "TEST-17209",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18379",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18388",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      }
+    ],
+    "completedIssuesAnotherSprint": [
+      {
+        "number": "TEST-17803",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17938",
+        "priority": "P1 - Blocker",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      }
+    ],
+    "addedIssues": [
+      "TEST-18379",
+      "TEST-18434",
+      "TEST-18478",
+      "TEST-18479",
+      "TEST-18375",
+      "TEST-18452",
+      "TEST-18474",
+      "TEST-18475",
+      "TEST-18432",
+      "TEST-18476",
+      "TEST-18378",
+      "TEST-18433",
+      "TEST-18477",
+      "TEST-18362",
+      "TEST-18449",
+      "TEST-18428",
+      "TEST-18429",
+      "TEST-18446",
+      "TEST-18468",
+      "TEST-18448",
+      "TEST-18365",
+      "TEST-18486",
+      "TEST-18388",
+      "TEST-18389",
+      "TEST-18350",
+      "TEST-18493",
+      "TEST-18451",
+      "TEST-18491"
+    ],
+    "totalIssues": [
+      {
+        "number": "TEST-14606",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-14822",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17208",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17210",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17274",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17291",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17488",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17493",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17779",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17942",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18242",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18267",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18299",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18328",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18342",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Enabler Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18350",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-18362",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18365",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18375",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18428",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18429",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18432",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18433",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18434",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18446",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18448",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18449",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
+      },
+      {
+        "number": "TEST-18451",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect"
+      },
+      {
+        "number": "TEST-18468",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18474",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18475",
+        "priority": "P2 - Critical",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18477",
+        "priority": "P3 - Major",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18478",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18479",
+        "priority": "P4 - Minor",
+        "status": "Closed",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-14604",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-14612",
+        "priority": "P4 - Minor",
+        "status": "Ready for Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-14685",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17135",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "28800.0"
+      },
+      {
+        "number": "TEST-17490",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17491",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17492",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17494",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Story",
+        "estimate": "10800.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17495",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17496",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-17770",
+        "priority": "P4 - Minor",
+        "status": "In Testing",
+        "typeName": "Story",
+        "estimate": "14400.0",
+        "storyPoints": 3
+      },
+      {
+        "number": "TEST-17926",
+        "priority": "P2 - Critical",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-17949",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-17967",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-17972",
+        "priority": "P4 - Minor",
+        "status": "On Hold",
+        "typeName": "Defect",
+        "estimate": "0.0",
+        "storyPoints": 1
+      },
+      {
+        "number": "TEST-18198",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 2
+      },
+      {
+        "number": "TEST-18206",
+        "priority": "P4 - Minor",
+        "status": "In Development",
+        "typeName": "Story",
+        "estimate": "0.0",
+        "storyPoints": 5
+      },
+      {
+        "number": "TEST-18252",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18378",
+        "priority": "P3 - Major",
+        "status": "Open",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18389",
+        "priority": "P4 - Minor",
+        "status": "Open",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18452",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18476",
+        "priority": "P4 - Minor",
+        "status": "In Analysis",
+        "typeName": "Story",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18486",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18491",
+        "priority": "P3 - Major",
+        "status": "Ready for Testing",
+        "typeName": "Defect",
+        "estimate": "0.0"
+      },
+      {
+        "number": "TEST-18493",
+        "priority": "P3 - Major",
+        "status": "In Development",
+        "typeName": "Defect",
+        "estimate": "0.0"
       }
     ],
     "_class": "com.publicissapient.kpidashboard.common.model.jira.SprintDetails"
