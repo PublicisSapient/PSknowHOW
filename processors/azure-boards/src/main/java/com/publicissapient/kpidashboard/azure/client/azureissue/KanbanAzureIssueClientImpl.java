@@ -609,11 +609,11 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		KanbanJiraIssue jiraIssues = kanbanJiraRepo
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		if (StringUtils.isNotEmpty(jiraIssues.getIssueId())) {
-			return jiraIssues;
+		if (ObjectUtils.allNull(jiraIssues)) {
+			return null;
 		}
 
-		return null;
+		return jiraIssues;
 	}
 
 	/**

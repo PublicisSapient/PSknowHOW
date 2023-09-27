@@ -110,8 +110,7 @@ public class AzureProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		modeBasedProcessors.add(onlineDataProcessor);
+		MockitoAnnotations.openMocks(this);
 
 		projectToolConfigList = new ArrayList();
 		scrumJiraIssueClient = new ScrumAzureIssueClientImpl();
