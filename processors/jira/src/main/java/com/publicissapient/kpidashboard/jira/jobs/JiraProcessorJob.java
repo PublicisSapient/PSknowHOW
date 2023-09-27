@@ -217,7 +217,7 @@ public class JiraProcessorJob {
 	@Bean
 	public Job fetchIssueKanbanJqlJob() {
 		return jobBuilderFactory.get("FetchIssueKanban JQL Job").incrementer(new RunIdIncrementer())
-				.start(metaDataStep()).next(processProjectStatusStep()).next(fetchIssueKanbanJqlChunkStep())
+				.start(metaDataStep()).next(fetchIssueKanbanJqlChunkStep())
 				.next(kanbanReleaseDataStep()).listener(jobListenerKanban).build();
 	}
 
