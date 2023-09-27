@@ -19,12 +19,16 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -354,16 +358,19 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					&& isMappingUpdated(fieldMapping, existingFieldMapping, fieldNameList))
 					|| (projectBasicConfig.getIsKanban()
 							&& isKanbanMappingUpdated(fieldMapping, existingFieldMapping, fieldNameListKanban))) {
-				Optional<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
-						.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
-								basicProjectConfigId.toHexString());
-				ProcessorExecutionTraceLog processorExecutionTraceLog = null;
+				List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+						.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+								Collections.singletonList(basicProjectConfigId.toHexString()));
 
-				if (traceLogs.isPresent()) {
-					processorExecutionTraceLog = traceLogs.get();
-					processorExecutionTraceLog.setLastSuccessfulRun(null);
-					processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
-					processorExecutionTraceLogRepository.save(processorExecutionTraceLog);
+				for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+					if (traceLog != null) {
+						traceLog.setLastSuccessfulRun(null);
+						traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+					}
+				}
+
+				if (!traceLogs.isEmpty()) {
+					processorExecutionTraceLogRepository.saveAll(traceLogs);
 				}
 
 				saveTemplateCode(projectBasicConfig, projectToolConfigOpt);

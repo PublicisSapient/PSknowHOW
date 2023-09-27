@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.basic.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,8 +32,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -129,6 +134,10 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	@Autowired
 	private TestExecutionService testExecutionService;
 
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+
 	/**
 	 * method to save basic configuration
 	 *
@@ -201,6 +210,22 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
+				if(isAssigneeUpdated(basicConfig,savedConfig)){
+					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+							.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+									Collections.singletonList(basicConfigId));
+
+					for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+						if (traceLog != null) {
+							traceLog.setLastSuccessfulRun(null);
+							traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+						}
+					}
+
+					if (!traceLogs.isEmpty()) {
+						processorExecutionTraceLogRepository.saveAll(traceLogs);
+					}
+				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
@@ -213,6 +238,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			response = new ServiceResponse(false, "Basic Config with id " + basicConfigId + " not present.", null);
 		}
 		return response;
+	}
+
+	private boolean isAssigneeUpdated(ProjectBasicConfig unsavedBasicConfig, ProjectBasicConfig savedConfig) {
+
+		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
 	}
 
 	/**
