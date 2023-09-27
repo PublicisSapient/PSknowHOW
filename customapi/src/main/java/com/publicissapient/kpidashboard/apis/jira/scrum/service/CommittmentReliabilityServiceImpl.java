@@ -248,7 +248,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
 					.collect(Collectors.toList());
-			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalSumIssues);
+			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
 			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
 					totalPresentCompletedIssue);
 			Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(totalPresentInitialIssue);
@@ -257,14 +257,19 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			Map<String, Long> commitmentMap = null;
 			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 			for (String issueType : uniqueIssues) {
+				Map<String, Double> issueTypeWiseHowerMap = new HashMap<>();
 				commitmentMap = getCommitmentMap(totalPresentJiraIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()), commitmentHowerMap,
-						fieldMapping, totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+						issueTypeWiseHowerMap, fieldMapping,
+						totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
 						totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
-				prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
+				prepareDataCount(issueTypeWiseHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
+				commitmentHowerMap.putAll(issueTypeWiseHowerMap);
 			}
-			commitmentMap = getCommitmentMap(new ArrayList<>(totalPresentJiraIssue), new ArrayList<>(totalPresentCompletedIssue), commitmentHowerMap,
-					fieldMapping, new ArrayList<>(totalPresentInitialIssue), new ArrayList<>(totalPresentCompltdInitialIssue), CommonConstant.OVERALL);
+			commitmentMap = getCommitmentMap(new ArrayList<>(totalPresentJiraIssue),
+					new ArrayList<>(totalPresentCompletedIssue), commitmentHowerMap, fieldMapping,
+					new ArrayList<>(totalPresentInitialIssue), new ArrayList<>(totalPresentCompltdInitialIssue),
+					CommonConstant.OVERALL);
 			CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
 			reliabilityValidationData.setTotalIssueNumbers(totalPresentJiraIssue);
 			reliabilityValidationData.setCompletedIssueNumber(totalPresentCompletedIssue);
@@ -466,60 +471,53 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			List<JiraIssue> totalPresentCompltdInitialIssue, String issues) {
 
 		Map<String, Long> commitmentResult = new LinkedHashMap<>();
-		long issueCount = 0L;
-		long storyCount = 0L;
-		long totalHours = 0L;
-		long initialIssueCount = 0l;
-		long initialStoryCount = 0l;
-		long initialTotalHours = 0L;
-		if (CollectionUtils.isNotEmpty(totalJiraIssue)) {
-			double sprintSize = totalJiraIssue.size();
-			double completedSize = completed.size();
-			double initialIssueSize = totalPresentInitialIssue.size();
-			double initialCompltdIssueSize = totalPresentCompltdInitialIssue.size();
-			issueCount = (long) ((completedSize / sprintSize) * 100);
-			initialIssueCount = (long) ((initialCompltdIssueSize / initialIssueSize) * 100);
 
-			double totalSum = getTotalSum(totalJiraIssue);
-			double completedSum = getTotalSum(completed);
-			double initialIssueSum = getTotalSum(totalPresentInitialIssue);
-			double initialCompltdIssueSum = getTotalSum(totalPresentCompltdInitialIssue);
+		double sprintSize = totalJiraIssue.size();
+		double completedSize = completed.size();
+		long issueCount = (long) ((completedSize / sprintSize) * 100);
+		double totalSum = getTotalSum(totalJiraIssue);
+		double completedSum = getTotalSum(completed);
+		double totalOriginalEstimate = totalJiraIssue.stream()
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+		double completedOriginalEstimate = completed.stream()
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 
-			double totalOriginalEstimate = totalJiraIssue.stream()
-					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
-			double completedOriginalEstimate = completed.stream()
-					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
-			double initialIssueOriginalEstimate = totalPresentInitialIssue.stream()
-					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
-			double initialCompltdIssueOriginalEstimate = totalPresentCompltdInitialIssue.stream()
-					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+		double initialIssueSize = totalPresentInitialIssue.size();
+		double initialCompltdIssueSize = totalPresentCompltdInitialIssue.size();
+		long initialIssueCount = (long) ((initialCompltdIssueSize / initialIssueSize) * 100);
 
-			storyCount = (long) ((completedSum / totalSum) * 100);
-			initialStoryCount = (long) ((initialCompltdIssueSum / initialIssueSum) * 100);
-			Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-			Double completedOriginalEstimateInHours = completedOriginalEstimate / 60;
-			Double initialOriginalEstimateInHours = initialIssueOriginalEstimate / 60;
-			Double initialCompltdOriginalEstimateInHours = initialCompltdIssueOriginalEstimate / 60;
-			totalHours = (long) ((completedOriginalEstimateInHours / totalOriginalEstimateInHours) * 100);
-			initialTotalHours = (long) ((initialCompltdOriginalEstimateInHours / initialOriginalEstimateInHours) * 100);
-			commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimateInHours);
-			commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimateInHours);
-			commitmentHowerMap.put(INITIALISSUE_ORIGINAL_ESTIMATE, initialOriginalEstimateInHours);
-			commitmentHowerMap.put(INITIALCMPLTD_ORIGINAL_ESTIMATE, initialCompltdOriginalEstimateInHours);
-			commitmentHowerMap.put(TOTAL_ISSUE_SIZE, sprintSize);
-			commitmentHowerMap.put(COMPLETED_ISSUE_SIZE, completedSize);
-			commitmentHowerMap.put(INITIAL_ISSUE_SIZE, initialIssueSize);
-			commitmentHowerMap.put(INITIALCMPLTD_ISSUE_SIZE, initialCompltdIssueSize);
-			commitmentHowerMap.put(TOTAL_STORY_POINTS, totalSum);
-			commitmentHowerMap.put(COMPLETED_STORY_POINTS, completedSum);
-			commitmentHowerMap.put(INITIALISSUE_STORY_POINTS, initialIssueSum);
-			commitmentHowerMap.put(INITIALCMPLTDISSUE_STORY_POINTS, initialCompltdIssueSum);
+		double initialIssueSum = getTotalSum(totalPresentInitialIssue);
+		double initialCompltdIssueSum = getTotalSum(totalPresentCompltdInitialIssue);
+		double initialIssueOriginalEstimate = totalPresentInitialIssue.stream()
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+		double initialCompltdIssueOriginalEstimate = totalPresentCompltdInitialIssue.stream()
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
 
-		}
+		long storyCount = (long) ((completedSum / totalSum) * 100);
+		long initialStoryCount = (long) ((initialCompltdIssueSum / initialIssueSum) * 100);
+		Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+		Double completedOriginalEstimateInHours = completedOriginalEstimate / 60;
+		Double initialOriginalEstimateInHours = initialIssueOriginalEstimate / 60;
+		Double initialCompltdOriginalEstimateInHours = initialCompltdIssueOriginalEstimate / 60;
+		long totalHours = (long) ((completedOriginalEstimateInHours / totalOriginalEstimateInHours) * 100);
+		long initialTotalHours = (long) ((initialCompltdOriginalEstimateInHours / initialOriginalEstimateInHours)
+				* 100);
+		commitmentHowerMap.put(TOTAL_ORIGINAL_ESTIMATE, totalOriginalEstimateInHours);
+		commitmentHowerMap.put(COMPLETED_ORIGINAL_ESTIMATE, completedOriginalEstimateInHours);
+		commitmentHowerMap.put(INITIALISSUE_ORIGINAL_ESTIMATE, initialOriginalEstimateInHours);
+		commitmentHowerMap.put(INITIALCMPLTD_ORIGINAL_ESTIMATE, initialCompltdOriginalEstimateInHours);
+		commitmentHowerMap.put(TOTAL_ISSUE_SIZE, sprintSize);
+		commitmentHowerMap.put(COMPLETED_ISSUE_SIZE, completedSize);
+		commitmentHowerMap.put(INITIAL_ISSUE_SIZE, initialIssueSize);
+		commitmentHowerMap.put(INITIALCMPLTD_ISSUE_SIZE, initialCompltdIssueSize);
+		commitmentHowerMap.put(TOTAL_STORY_POINTS, totalSum);
+		commitmentHowerMap.put(COMPLETED_STORY_POINTS, completedSum);
+		commitmentHowerMap.put(INITIALISSUE_STORY_POINTS, initialIssueSum);
+		commitmentHowerMap.put(INITIALCMPLTDISSUE_STORY_POINTS, initialCompltdIssueSum);
 
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
