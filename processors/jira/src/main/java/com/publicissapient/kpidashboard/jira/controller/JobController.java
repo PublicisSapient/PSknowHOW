@@ -18,10 +18,9 @@
 package com.publicissapient.kpidashboard.jira.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +33,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +47,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,8 +86,8 @@ public class JobController {
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Autowired
 	private FetchProjectConfiguration fetchProjectConfiguration;
-	// Create a map to track ongoing executions
-	private Map<String, Boolean> ongoingExecutions = new HashMap<>();
+	@Autowired
+	private OngoingExecutionsService ongoingExecutionsService;
 
 	/**
 	 * This method is used to start job for the Scrum projects with board setup
@@ -244,6 +245,7 @@ public class JobController {
 	 *            sprintId
 	 * @return ResponseEntity
 	 */
+	@Async
 	@PostMapping("/startfetchsprintjob")
 	public ResponseEntity<String> startFetchSprintJob(@RequestBody String sprintId) {
 		log.info("Request coming for fetching sprint job");
@@ -270,6 +272,72 @@ public class JobController {
 	 * @return ResponseEntity
 	 */
 
+	// @Async
+	// @PostMapping("/startprojectwiseissuejob")
+	// public ResponseEntity<String> startProjectWiseIssueJob(
+	// @RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
+	// log.info("Request coming for fetching issue job");
+	//
+	// String basicProjectConfigId =
+	// processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
+	//
+	// if (ongoingExecutionsService.isExecutionInProgress(basicProjectConfigId)) {
+	// log.error("An execution is already in progress");
+	// return ResponseEntity.badRequest()
+	// .body("An execution is already in progress for BasicProjectConfigId: " +
+	// basicProjectConfigId);
+	// }
+	// // Mark the execution as in progress
+	// ongoingExecutionsService.markExecutionInProgress(basicProjectConfigId);
+	//
+	// JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+	//
+	// jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
+	// jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+	// JobParameters params = jobParametersBuilder.toJobParameters();
+	// try {
+	// Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
+	// .findById(new ObjectId(basicProjectConfigId));
+	// if (projBasicConfOpt.isPresent()) {
+	// ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
+	// List<ProjectToolConfig> projectToolConfigs = toolRepository
+	// .findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA,
+	// projectBasicConfig.getId());
+	// if (projectBasicConfig.isKanban()) {
+	// // Project is kanban
+	// if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+	// ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+	// if (projectToolConfig.isQueryEnabled()) {
+	// // JQL is setup for the project
+	// jobLauncher.run(fetchIssueKanbanJqlJob, params);
+	// } else {
+	// // Board is setup for the project
+	// jobLauncher.run(fetchIssueKanbanBoardJob, params);
+	// }
+	// }
+	// } else {
+	// // Project is Scrum
+	// if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+	// ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+	// if (projectToolConfig.isQueryEnabled()) {
+	// // JQL is setup for the project
+	// jobLauncher.run(fetchIssueScrumJqlJob, params);
+	// } else {
+	// // Board is setup for the project
+	// jobLauncher.run(fetchIssueScrumBoardJob, params);
+	// }
+	// }
+	// }
+	// }
+	// } catch (Exception e) {
+	// log.info("Jira fetch failed for BasicProjectConfigId : {}",
+	// params.getString(PROJECT_ID));
+	// e.printStackTrace();
+	// }
+	// return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " +
+	// basicProjectConfigId);
+	// }
+
 	@PostMapping("/startprojectwiseissuejob")
 	public ResponseEntity<String> startProjectWiseIssueJob(
 			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
@@ -277,61 +345,63 @@ public class JobController {
 
 		String basicProjectConfigId = processorExecutionBasicConfig.getProjectBasicConfigIds().get(0);
 
-		// Check if an execution is already in progress for the same
-		// BasicProjectConfigId
-		if (ongoingExecutions.putIfAbsent(basicProjectConfigId, true) != null) {
+		if (ongoingExecutionsService.isExecutionInProgress(basicProjectConfigId)) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
 					.body("An execution is already in progress for BasicProjectConfigId: " + basicProjectConfigId);
 		}
 
-		JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+		// Mark the execution as in progress before starting the job asynchronously
+		ongoingExecutionsService.markExecutionInProgress(basicProjectConfigId);
 
-		jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
-		jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
-		JobParameters params = jobParametersBuilder.toJobParameters();
-		try {
-			Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
-					.findById(new ObjectId(basicProjectConfigId));
-			if (projBasicConfOpt.isPresent()) {
-				ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
-				List<ProjectToolConfig> projectToolConfigs = toolRepository
-						.findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA, projectBasicConfig.getId());
-				if (projectBasicConfig.isKanban()) {
-					// Project is kanban
-					if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
-						ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-						if (projectToolConfig.isQueryEnabled()) {
-							// JQL is setup for the project
-							jobLauncher.run(fetchIssueKanbanJqlJob, params);
-						} else {
-							// Board is setup for the project
-							jobLauncher.run(fetchIssueKanbanBoardJob, params);
+		// Start the job asynchronously
+		CompletableFuture.runAsync(() -> {
+			JobParametersBuilder jobParametersBuilder = new JobParametersBuilder();
+			jobParametersBuilder.addString(PROJECT_ID, basicProjectConfigId);
+			jobParametersBuilder.addLong(CURRENTTIME, System.currentTimeMillis());
+			JobParameters params = jobParametersBuilder.toJobParameters();
+
+			try {
+				Optional<ProjectBasicConfig> projBasicConfOpt = projectConfigRepository
+						.findById(new ObjectId(basicProjectConfigId));
+
+				if (projBasicConfOpt.isPresent()) {
+					ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
+					List<ProjectToolConfig> projectToolConfigs = toolRepository
+							.findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA, projectBasicConfig.getId());
+
+					if (projectBasicConfig.isKanban()) {
+						// Project is kanban
+						if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+							ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+
+							if (projectToolConfig.isQueryEnabled()) {
+								// JQL is setup for the project
+								jobLauncher.run(fetchIssueKanbanJqlJob, params);
+							} else {
+								// Board is setup for the project
+								jobLauncher.run(fetchIssueKanbanBoardJob, params);
+							}
 						}
-					}
-				} else {
-					// Project is Scrum
-					if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
-						ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-						if (projectToolConfig.isQueryEnabled()) {
-							// JQL is setup for the project
-							jobLauncher.run(fetchIssueScrumJqlJob, params);
-						} else {
-							// Board is setup for the project
-							jobLauncher.run(fetchIssueScrumBoardJob, params);
+					} else {
+						// Project is Scrum
+						if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+							ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+
+							if (projectToolConfig.isQueryEnabled()) {
+								// JQL is setup for the project
+								jobLauncher.run(fetchIssueScrumJqlJob, params);
+							} else {
+								// Board is setup for the project
+								jobLauncher.run(fetchIssueScrumBoardJob, params);
+							}
 						}
 					}
 				}
+			} catch (Exception e) {
+				log.error("Jira fetch failed for BasicProjectConfigId : {}", params.getString(PROJECT_ID), e);
 			}
-		} catch (Exception e) {
-			log.info("Jira fetch failed for BasicProjectConfigId : {}", params.getString(PROJECT_ID));
-			e.printStackTrace();
-		} finally {
-			// After the job is complete, remove the flag to allow the same
-			// BasicProjectConfigId to be executed again
-			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
-			ongoingExecutions.remove(basicProjectConfigId);
-		}
+		});
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
 	}
 

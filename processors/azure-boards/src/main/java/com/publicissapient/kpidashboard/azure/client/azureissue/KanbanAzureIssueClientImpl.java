@@ -630,11 +630,11 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		KanbanIssueCustomHistory jiraIssues = kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(issueId,
 				basicProjectConfigId);
 
-		if (StringUtils.isNotEmpty(jiraIssues.getStoryID())) {
-			return jiraIssues;
+		if (ObjectUtils.allNull(jiraIssues)) {
+			return null;
 		}
 
-		return null;
+		return jiraIssues;
 	}
 
 	/**

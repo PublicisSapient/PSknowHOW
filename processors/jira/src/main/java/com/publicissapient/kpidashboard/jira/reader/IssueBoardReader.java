@@ -190,9 +190,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 					log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
 				}
 				throw e;
-			} catch (InterruptedException e) {
-				log.error("Interrupted exception thrown.", e);
-				throw e;
 			} catch (Exception e) {
 				log.error("Exception while fetching issues for project: {} boardid: {}, page No: {}",
 						projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize, e);
@@ -277,9 +274,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				log.info("Reading epics for project: {} boardid: {}", projectConfFieldMapping.getProjectName(),
 						boardId);
 				epicIssues = fetchEpicData.fetchEpic(projectConfFieldMapping, boardId, client, krb5Client);
-			} catch (RestClientException rce) {
-				log.error("Client exception when loading epic data", rce);
-				throw rce;
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(JiraConstants.ERROR_MSG_401);
+				} else {
+					log.error(JiraConstants.ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+				throw e;
 			} catch (Exception e) {
 				log.error("Exception occurred while fetching epic issues:", e);
 				throw e;

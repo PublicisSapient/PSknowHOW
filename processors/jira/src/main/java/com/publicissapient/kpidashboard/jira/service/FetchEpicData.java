@@ -17,8 +17,11 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
@@ -41,5 +44,5 @@ public interface FetchEpicData {
 	 *             InterruptedException
 	 */
 	List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId, ProcessorJiraRestClient clientIncoming,
-			KerberosClient krb5Client) throws InterruptedException;
+			KerberosClient krb5Client) throws InterruptedException, RestClientException, IOException;
 }

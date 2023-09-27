@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -55,6 +56,9 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
 
 	@Autowired
+	private OngoingExecutionsService ongoingExecutionsService;
+
+	@Autowired
 	public JobListenerScrum(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
 	}
@@ -87,5 +91,8 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 						projectId);
 			}
 		}
+		log.info("removing project with basicProjectConfigId {}", projectId);
+		// Mark the execution as completed
+		ongoingExecutionsService.markExecutionAsCompleted(projectId);
 	}
 }
