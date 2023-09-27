@@ -3118,7 +3118,7 @@ db.getCollection('kpi_master').insertMany(
 	"defaultOrder": Double("30"),
 	"kpiSource": "Jira",
 	"groupId": Double("4"),
-	"thresholdValue": "85",
+	"thresholdValue": "10",
 	"kanban": false,
 	"chartType": "line",
 	"kpiInfo": {
@@ -3138,11 +3138,12 @@ db.getCollection('kpi_master').insertMany(
 	},
 	"xAxisLabel": "Sprints",
 	"yAxisLabel": "Percentage",
-	"isPositiveTrend": true,
+	"isPositiveTrend": false,
 	"showTrend": true,
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
+	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  }
 ]
 );
