@@ -91,6 +91,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 						projectId);
 			}
 		}
+
 		log.info("removing project with basicProjectConfigId {}", projectId);
 		// Mark the execution as completed
 		ongoingExecutionsService.markExecutionAsCompleted(projectId);
