@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -387,7 +386,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueTypeKPI156;
 
 	@Builder.Default
-	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
+	private String leadTimeConfigRepoTool = "Jira";
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";

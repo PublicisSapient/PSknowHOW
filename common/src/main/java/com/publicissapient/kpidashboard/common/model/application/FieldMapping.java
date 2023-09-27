@@ -28,11 +28,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -389,7 +386,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueTypeKPI156;
 
 	@Builder.Default
-	private Boolean leadTimeConfigRepoTool = Boolean.FALSE;
+	private String leadTimeConfigRepoTool = CommonConstant.JIRA;
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";

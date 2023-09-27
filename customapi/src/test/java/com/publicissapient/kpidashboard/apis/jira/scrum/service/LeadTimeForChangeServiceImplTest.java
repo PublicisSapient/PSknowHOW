@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -49,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.data.MergeRequestDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -59,15 +61,18 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.model.scm.MergeRequests;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.repository.scm.MergeRequestRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LeadTimeForChangeServiceImplTest {
@@ -79,7 +84,7 @@ public class LeadTimeForChangeServiceImplTest {
 	private ConfigHelperService configHelperService;
 
 	@Mock
-	private DeploymentRepository deploymentRepository;
+	private MergeRequestRepository mergeRequestRepository;
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
@@ -108,6 +113,8 @@ public class LeadTimeForChangeServiceImplTest {
 
 	private List<JiraIssueCustomHistory> issueCustomHistoryList = new ArrayList<>();
 
+	private List<MergeRequests> mergeRequestsList = new ArrayList<>();
+
 	@Before
 	public void setup() {
 
@@ -127,6 +134,9 @@ public class LeadTimeForChangeServiceImplTest {
 		jiraIssueList = jiraIssueDataFactory.getJiraIssues();
 		JiraIssueHistoryDataFactory issueHistoryFactory = JiraIssueHistoryDataFactory.newInstance();
 		issueCustomHistoryList = issueHistoryFactory.getJiraIssueCustomHistory();
+
+		MergeRequestDataFactory mergeRequestDataFactory = MergeRequestDataFactory.newInstance();
+		mergeRequestsList = mergeRequestDataFactory.getMergeRequestList();
 
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -172,7 +182,7 @@ public class LeadTimeForChangeServiceImplTest {
 	}
 
 	@Test
-	public void getLeadTimeForChange() throws ApplicationException {
+	public void getLeadTimeForChangeForJiraData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -183,6 +193,40 @@ public class LeadTimeForChangeServiceImplTest {
 		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
+		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
+		try {
+			KpiElement kpiElement = leadTimeForChangeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("Lead time for change TrendValue :", ((List<DataCount>) kpiElement.getTrendValueList()).size(),
+					equalTo(1));
+		} catch (Exception exception) {
+		}
+	}
+
+	@Test
+	public void getLeadTimeForChangeForRepoData() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setLeadTimeConfigRepoTool(CommonConstant.REPO);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		configHelperService.setFieldMappingMap(fieldMappingMap);
+		when(configHelperService.getFieldMapping(new ObjectId("6335363749794a18e8a4479b"))).thenReturn(fieldMapping);
+
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(jiraIssueRepository.findByRelease(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any(), any()))
+				.thenReturn(issueCustomHistoryList);
+		List<String> issueIdList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
+
+		when(mergeRequestRepository.findMergeRequestListBasedOnBasicProjectConfigId(
+				new ObjectId("6335363749794a18e8a4479b"), CommonUtils.convertTestFolderToPatternList(issueIdList),
+				"master")).thenReturn(mergeRequestsList);
 		when(leadTimeForChangeService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(customApiSetting.getJiraXaxisMonthCount()).thenReturn(8);
 		try {

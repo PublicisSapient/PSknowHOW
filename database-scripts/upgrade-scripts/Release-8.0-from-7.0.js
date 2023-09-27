@@ -4184,30 +4184,29 @@ db.kpi_master.bulkWrite([{ // adding kpi category dora
 
 // fieldMapping Structure fields for Lead time for changes in DORA tab
 db.getCollection('field_mapping_structure').insertMany([{
-	"fieldName": "leadTimeConfigRepoTool",
-	"fieldLabel": "Lead Time KPI calculation logic",
-	"fieldType": "toggle",
-	"toggleLabel": "Calculation based on Repo Data",
-	"section": "Custom Fields Mapping",
-	"processorCommon": false,
-	"tooltip": {
-		"definition": "Disable State (Calculation is based on Jira Issues and Releases).",
-		"toggleDefinition": "Enable State (Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.)"
-	}
-}, {
-	"fieldName": "toBranchForMRKPI156",
-	"fieldLabel": "Production Branch Name",
-	"fieldType": "text",
-	"section": "Custom Fields Mapping",
-	"tooltip": {
-		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
-	}
-}, {
+            "fieldName": "leadTimeConfigRepoTool",
+            "fieldLabel": "Lead Time KPI calculation logic",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
+            },
+            "options": [{
+                    "label": "Jira",
+                    "value": "Jira"
+                },
+                {
+                    "label": "Repo",
+                    "value": "Repo"
+                }
+            ],
+            "nestedFields": [
+{
 	"fieldName": "jiraIssueTypeKPI156",
 	"fieldLabel": "Issue type to be included",
 	"fieldType": "chips",
 	"fieldCategory": "Issue_Type",
-	"section": "Issue Types Mapping",
+	 "filterGroup": ["Jira"],
 	"tooltip": {
 		"definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
 	}
@@ -4216,10 +4215,19 @@ db.getCollection('field_mapping_structure').insertMany([{
 	"fieldLabel": "Status to identify DOD",
 	"fieldType": "chips",
 	"fieldCategory": "workflow",
-	"section": "WorkFlow Status Mapping",
+	"filterGroup": ["Jira"],
 	"tooltip": {
 		"definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
 	}
+},{
+	"fieldName": "toBranchForMRKPI156",
+	"fieldLabel": "Production Branch Name",
+	"fieldType": "text",
+	"filterGroup": ["Repo"],
+	"tooltip": {
+		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+	}
+}]
 }]);
 
 db.getCollection('metadata_identifier').updateMany(

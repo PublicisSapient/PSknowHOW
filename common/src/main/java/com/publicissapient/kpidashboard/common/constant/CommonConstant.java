@@ -313,6 +313,10 @@ public final class CommonConstant {
 	public static final String JIRATECHDEBTISSUETYPE="jiraTechDebtIssueType";
 	public static final String ACTIVE = "ACTIVE";
 
+	public static final String JIRA = "Jira";
+
+	public static final String REPO = "Repo";
+
 	private CommonConstant() {
 
 	}

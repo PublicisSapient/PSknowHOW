@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -51,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
@@ -1653,7 +1653,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateLeadTimeForChangeExcelData(String projectName,
-			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, List<KPIExcelData> kpiExcelData , Boolean leadTimeConfigRepoTool) {
+			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, List<KPIExcelData> kpiExcelData , String leadTimeConfigRepoTool) {
 
 		if (MapUtils.isNotEmpty(leadTimeMapTimeWise)) {
 			leadTimeMapTimeWise.forEach((weekOrMonthName, leadTimeListCurrentTime) -> {
@@ -1661,7 +1661,7 @@ public class KPIExcelUtility {
 					KPIExcelData excelData = new KPIExcelData();
 					excelData.setProjectName(projectName);
 					excelData.setDate(weekOrMonthName);
-					if(leadTimeConfigRepoTool) {
+					if(CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
 						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
 						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
 						excelData.setBranch(leadTimeChangeData.getFromBranch());

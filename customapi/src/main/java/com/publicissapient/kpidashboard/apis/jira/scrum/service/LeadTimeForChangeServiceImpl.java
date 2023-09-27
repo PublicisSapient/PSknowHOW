@@ -172,7 +172,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMapFH = new HashMap<>();
 		Map<String, String> toBranchForMRList = new HashMap<>();
-		Map<String, Boolean> projectWiseLeadTimeConfigRepoTool = new HashMap<>();
+		Map<String, String> projectWiseLeadTimeConfigRepoTool = new HashMap<>();
 		Map<String, List<String>> projectWiseDodStatus = new HashMap<>();
 
 		Map<String, List<String>> sortedReleaseListProjectWise = getProjectWiseSortedReleases();
@@ -287,7 +287,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 */
 	private void setFieldMappingForRepoTools(Map<String, String> toBranchForMRList, ObjectId basicProjectConfigId,
 			FieldMapping fieldMapping) {
-		if (Boolean.TRUE.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
+		if (CommonConstant.REPO.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
 			if (Optional.ofNullable(fieldMapping.getToBranchForMRKPI156()).isPresent()) {
 				toBranchForMRList.put(basicProjectConfigId.toString(), fieldMapping.getToBranchForMRKPI156());
 			}
@@ -308,10 +308,10 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 *            merge Request list
 	 */
 	private void findMergeRequestList(Map<String, String> toBranchForMRList,
-			Map<String, Boolean> projectWiseLeadTimeConfigRepoTool, List<String> issueIdList,
+			Map<String, String> projectWiseLeadTimeConfigRepoTool, List<String> issueIdList,
 			Map<String, List<MergeRequests>> projectWiseMergeRequestList) {
 		projectWiseLeadTimeConfigRepoTool.forEach((projectBasicConfigId, leadTimeConfigRepoTool) -> {
-			if (Boolean.TRUE.equals(leadTimeConfigRepoTool)) {
+			if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
 				String toBranchForMRKPI156 = toBranchForMRList.get(projectBasicConfigId);
 				List<MergeRequests> mergeRequestList = mergeRequestRepository
 						.findMergeRequestListBasedOnBasicProjectConfigId(new ObjectId(projectBasicConfigId),
@@ -384,7 +384,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			List<JiraIssueCustomHistory> historyDataList = (List<JiraIssueCustomHistory>) resultMap
 					.get(JIRA_HISTORY_DATA);
 			List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(JIRA_DATA);
-			Map<String, Boolean> projectWiseLeadTimeConfigRepoTool = (Map<String, Boolean>) resultMap
+			Map<String, String> projectWiseLeadTimeConfigRepoTool = (Map<String, String>) resultMap
 					.get(LEAD_TIME_CONFIG_REPO_TOOL);
 			Map<String, List<MergeRequests>> projectWiseMergeRequestList = (Map<String, List<MergeRequests>>) resultMap
 					.get(MERGE_REQUEST_DATA);
@@ -399,7 +399,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 				String trendLineName = node.getProjectFilter().getName();
 				String basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId().toString();
 
-				Boolean leadTimeConfigRepoTool = projectWiseLeadTimeConfigRepoTool.get(basicProjectConfigId);
+				String leadTimeConfigRepoTool = projectWiseLeadTimeConfigRepoTool.get(basicProjectConfigId);
 				List<JiraIssueCustomHistory> jiraIssueHistoryDataList = projectWiseJiraIssueHistoryDataList
 						.get(basicProjectConfigId);
 				List<JiraIssue> jiraIssueDataList = projectWiseJiraIssueList.get(basicProjectConfigId);
@@ -416,7 +416,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 							.collect(Collectors.toMap(JiraIssue::getNumber, Function.identity()));
 					List<DataCount> dataCountList = new ArrayList<>();
 
-					if (Boolean.TRUE.equals(leadTimeConfigRepoTool)) {
+					if (CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
 						List<MergeRequests> mergeRequestList = projectWiseMergeRequestList.get(basicProjectConfigId);
 						findLeadTimeChangeForRepoTool(mergeRequestList, weekOrMonth, leadTimeMapTimeWise, jiraIssueMap);
 					} else {
@@ -454,7 +454,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 *            lead time in days
 	 */
 	private void populateLeadTimeExcelData(List<KPIExcelData> excelData, String requestTrackerId, String trendLineName,
-			Boolean leadTimeConfigRepoTool, Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise) {
+			String leadTimeConfigRepoTool, Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateLeadTimeForChangeExcelData(trendLineName, leadTimeMapTimeWise, excelData,
 					leadTimeConfigRepoTool);
@@ -558,7 +558,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		double leadTimeChangeDoubleValue = (double) leadTimeChange / 60 / 24;
 		if (leadTimeChangeDoubleValue > 0) {
 			String formattedValue = df.format(leadTimeChangeDoubleValue);
-			return Double.parseDouble(formattedValue);
+			double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
+			int weekendsCount = KpiDataHelper.countSaturdaysAndSundays(closedTicketDate.get(), releaseDate.get());
+			return leadTimeChangeIncluded - weekendsCount;
 		} else {
 			return 0.0;
 		}
@@ -631,7 +633,6 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			AtomicReference<JiraIssue> matchJiraIssue) {
 		if (closedTicketDate.get() != null && releaseDate.get() != null) {
 			double leadTimeChange = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
-
 			String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
 
 			LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();
