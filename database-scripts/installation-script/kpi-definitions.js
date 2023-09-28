@@ -3118,7 +3118,7 @@ db.getCollection('kpi_master').insertMany(
 	"defaultOrder": Double("30"),
 	"kpiSource": "Jira",
 	"groupId": Double("4"),
-	"thresholdValue": "85",
+	"thresholdValue": "10",
 	"kanban": false,
 	"chartType": "line",
 	"kpiInfo": {
@@ -3138,11 +3138,12 @@ db.getCollection('kpi_master').insertMany(
 	},
 	"xAxisLabel": "Sprints",
 	"yAxisLabel": "Percentage",
-	"isPositiveTrend": true,
+	"isPositiveTrend": false,
 	"showTrend": true,
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
+	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  }
 ]
 );
@@ -8365,6 +8366,61 @@ db.getCollection('field_mapping_structure').insertMany(
 			"definition": "All issue types that are used as/equivalent to Story.",
 
 		}
-	}
-]
+	},
+{
+    "fieldName": "jiraIssueTypeNamesKPI161",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI148",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI151",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI152",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+}
+    ]
 );
