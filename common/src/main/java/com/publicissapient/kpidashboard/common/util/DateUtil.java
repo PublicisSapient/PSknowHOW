@@ -163,8 +163,7 @@ public class DateUtil {
 			org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
 			DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
 			org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
-			String formattedDateTime = parsedDateTime.toString(targetFormatter);
-			return formattedDateTime;
+			return parsedDateTime.toString(targetFormatter);
 		} catch (IllegalArgumentException e) {
 			log.error("error while parse date", e);
 			return null;
@@ -312,7 +311,7 @@ public class DateUtil {
 			int daysPart = (int) valueInDays;
 
 			// Calculate the remaining fractional part as hours and minutes
-			double fractionalPart = (valueInDays - daysPart) * 24;
+			double fractionalPart = (valueInDays - daysPart) * 8;
 			int hoursPart = (int) fractionalPart;
 			int minutesPart = (int) ((fractionalPart - hoursPart) * 60);
 

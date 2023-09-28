@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +41,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -118,8 +116,6 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	private static final String STATUS_FIELD = "statusUpdationLog.story.changedTo";
 
 	private static final String STORY_ID = "storyID";
-
-	private static final DecimalFormat df = new DecimalFormat(".##");
 
 	@Override
 	public String getQualifierType() {
@@ -287,10 +283,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 	 */
 	private void setFieldMappingForRepoTools(Map<String, String> toBranchForMRList, ObjectId basicProjectConfigId,
 			FieldMapping fieldMapping) {
-		if (CommonConstant.REPO.equals(fieldMapping.getLeadTimeConfigRepoTool())) {
-			if (Optional.ofNullable(fieldMapping.getToBranchForMRKPI156()).isPresent()) {
-				toBranchForMRList.put(basicProjectConfigId.toString(), fieldMapping.getToBranchForMRKPI156());
-			}
+		if (CommonConstant.REPO.equals(fieldMapping.getLeadTimeConfigRepoTool())
+				&& Optional.ofNullable(fieldMapping.getToBranchForMRKPI156()).isPresent()) {
+			toBranchForMRList.put(basicProjectConfigId.toString(), fieldMapping.getToBranchForMRKPI156());
 		}
 	}
 
@@ -494,7 +489,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			}
 
 			if (closedTicketDate.get() != null && releaseDate.get() != null) {
-				double leadTimeChangeInDays = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
+
+				double leadTimeChangeInDays = KpiDataHelper.calWeekDaysExcludingWeekends(closedTicketDate.get(),
+						releaseDate.get());
 
 				String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
 
@@ -540,30 +537,6 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			leadTimeChangeListCurrentTime.add(leadTimeChangeData);
 			return leadTimeChangeListCurrentTime;
 		});
-	}
-
-	/**
-	 * get diff b/w closed vs release date in days
-	 * 
-	 * @param closedTicketDate
-	 *            closed date
-	 * @param releaseDate
-	 *            release date
-	 * @return double
-	 */
-	private double getLeadTimeChangeInDays(AtomicReference<DateTime> closedTicketDate,
-			AtomicReference<DateTime> releaseDate) {
-		Duration duration = new Duration(closedTicketDate.get(), releaseDate.get());
-		long leadTimeChange = duration.getStandardMinutes();
-		double leadTimeChangeDoubleValue = (double) leadTimeChange / 60 / 24;
-		if (leadTimeChangeDoubleValue > 0) {
-			String formattedValue = df.format(leadTimeChangeDoubleValue);
-			double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
-			int weekendsCount = KpiDataHelper.countSaturdaysAndSundays(closedTicketDate.get(), releaseDate.get());
-			return leadTimeChangeIncluded - weekendsCount;
-		} else {
-			return 0.0;
-		}
 	}
 
 	/**
@@ -632,7 +605,9 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 			AtomicReference<DateTime> closedTicketDate, AtomicReference<DateTime> releaseDate,
 			AtomicReference<JiraIssue> matchJiraIssue) {
 		if (closedTicketDate.get() != null && releaseDate.get() != null) {
-			double leadTimeChange = getLeadTimeChangeInDays(closedTicketDate, releaseDate);
+			double leadTimeChange = KpiDataHelper.calWeekDaysExcludingWeekends(closedTicketDate.get(),
+					releaseDate.get());
+
 			String weekOrMonthName = getDateFormatted(weekOrMonth, releaseDate.get());
 
 			LeadTimeChangeData leadTimeChangeData = new LeadTimeChangeData();

@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Duration;
 import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -83,6 +85,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	private static final DecimalFormat df = new DecimalFormat(".##");
 
 	private KpiDataHelper() {
 	}
@@ -805,6 +808,29 @@ public final class KpiDataHelper {
 			return String.valueOf(res);
 		}
 		return DateUtil.NOT_APPLICABLE;
+	}
+
+	/**
+	 *
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @return
+	 */
+
+	public static double calWeekDaysExcludingWeekends(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			Duration duration = new Duration(startDateTime, endDateTime);
+			long leadTimeChangeInMin = duration.getStandardMinutes();
+			double leadTimeChangeInFullDay = (double) leadTimeChangeInMin / 60 / 24;
+			if (leadTimeChangeInFullDay > 0) {
+				String formattedValue = df.format(leadTimeChangeInFullDay);
+				double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
+				int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+				double leadTimeChangeExcluded = leadTimeChangeIncluded - weekendsCount;
+				return leadTimeChangeExcluded;
+			}
+		}
+		return 0.0d;
 	}
 
 	/**
