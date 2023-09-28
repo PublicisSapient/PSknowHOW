@@ -8445,16 +8445,6 @@ db.getCollection('field_mapping_structure').insertMany(
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
   }
-},
-{
-  "fieldName":"jiraStoryIdentificationKPI164",
-  "fieldLabel":"Issue type to identify Story",
-  "fieldType":"chips",
-  "fieldCategory":"Issue_Type",
-  "section":"Issue Types Mapping",
-  "tooltip":{
-    "definition":"All issue types that are used as/equivalent to Story."
-  }
 }
     ]
 );
