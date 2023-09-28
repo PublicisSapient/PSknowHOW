@@ -81,8 +81,7 @@ public class NotificationHandler {
 	 *            projectBasicConfigId
 	 */
 	public void sendEmailToProjectAdmin(String value, String projectBasicConfigId) {
-		List<String> emailAddresses = new ArrayList<>();
-		emailAddresses.add("guptapurushottam123@gmail.com");
+		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
