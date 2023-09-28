@@ -27,6 +27,7 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 public interface FetchEpicData {
+
 	/**
 	 *
 	 * @param projectConfig
@@ -40,6 +41,10 @@ public interface FetchEpicData {
 	 * @return List of Issue
 	 * @throws InterruptedException
 	 *             InterruptedException
+	 * @throws RestClientException
+	 *             RestClientException
+	 * @throws IOException
+	 *             IOException
 	 */
 	List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId, ProcessorJiraRestClient clientIncoming,
 			KerberosClient krb5Client) throws InterruptedException, RestClientException, IOException;

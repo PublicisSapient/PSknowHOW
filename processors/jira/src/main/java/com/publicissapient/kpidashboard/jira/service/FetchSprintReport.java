@@ -37,6 +37,8 @@ public interface FetchSprintReport {
 	 *            sprintDetailsSet
 	 * @param krb5Client
 	 *            krb5Client
+	 * @param isSprintFetch
+	 *            isSprintFetch
 	 * @return Set of SprintDetails
 	 * @throws InterruptedException
 	 *             InterruptedException

@@ -45,7 +45,9 @@ public class JiraProcessorCacheEvictor {
 
 	/**
 	 * @param cacheEndPoint
+	 *            cacheEndPoint
 	 * @param cacheName
+	 *            cacheName
 	 * @return boolean
 	 */
 	public boolean evictCache(String cacheEndPoint, String cacheName) {

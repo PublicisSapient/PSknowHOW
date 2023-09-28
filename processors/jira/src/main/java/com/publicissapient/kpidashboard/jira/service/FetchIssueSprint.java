@@ -36,6 +36,8 @@ public interface FetchIssueSprint {
 	 * @param sprintId
 	 *            sprintId
 	 * @return List of Issue
+	 * @throws InterruptedException
+	 *             InterruptedException
 	 */
 	List<Issue> fetchIssuesSprintBasedOnJql(ProjectConfFieldMapping projectConfig, ProcessorJiraRestClient client,
 			int pageNumber, String sprintId) throws InterruptedException;

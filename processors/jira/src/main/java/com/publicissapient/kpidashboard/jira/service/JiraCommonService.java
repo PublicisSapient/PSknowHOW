@@ -188,6 +188,8 @@ public class JiraCommonService {
 	 * @param deltaDate
 	 *            deltaDate
 	 * @return List of Issue
+	 * @throws InterruptedException
+	 *             InterruptedException
 	 */
 	public List<Issue> fetchIssuesBasedOnJql(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String deltaDate) throws InterruptedException {
