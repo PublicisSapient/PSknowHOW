@@ -78,7 +78,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	JiraProcessorConfig jiraProcessorConfig;
 	@Autowired
 	FetchEpicData fetchEpicData;
-	int pageSize = 50;
+	int pageSize = jiraProcessorConfig.getPageSize();
 	int pageNumber = 0;
 	String boardId = "";
 	List<Issue> issues = new ArrayList<>();
