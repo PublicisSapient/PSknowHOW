@@ -97,15 +97,15 @@
                                           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList"
                                           [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId" [legendType]="'normal'">
                                         </app-group-bar-chart>
-                                        <app-piechart *ngSwitchCase="'pieChart'"
-                                          [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
+
+
+                                        <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
                                           <app-horizontal-percent-bar-chart *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId][0]['value'];else noDataForKPI"
                                             [data]="kpiChartData[kpi?.kpiId]">
                                           </app-horizontal-percent-bar-chart>
                                         </ng-container>
-                                        <app-multiline *ngSwitchDefault
-                                          [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                        <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                           [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                           [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [name]="kpi?.kpiName"
@@ -126,8 +126,7 @@
                             </div>
                           </ng-template>
                           <ng-template #noData>
-                            <div class="overlay"
-                              *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
+                            <div class="overlay" *ngIf="(kpiChartData[kpi.kpiId] && kpiChartData[kpi.kpiId]?.length)|| kpiLoader">
 
                               <div class="loading-img"></div>
                             </div>
