@@ -4149,11 +4149,7 @@ fieldMappings.forEach(function(fm) {
 });
 
 
-//For DTS-27550 making release Progress filter to dropdown
-db.kpi_master.updateOne(
-  { "kpiId": "kpi147" },
-  { $set: { "kpiFilter": "dropDown" } }
-);
+//DSV S2 Changes
 db.getCollection('field_mapping_structure').insertMany([
     {
         "fieldName": "jiraStatusStartDevelopmentKPI154",
