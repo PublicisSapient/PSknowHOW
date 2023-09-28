@@ -98,3 +98,9 @@ button.assignee.selected-user{
 .selected-user-info p{
     color: var(--color-green);
 }
+
+@media (max-width: 1920px) {
+  :host .container, :host .p-component {
+    font-size: 10px !important;
+   }
+}

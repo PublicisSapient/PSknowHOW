@@ -2,7 +2,7 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <div class="p-d-flex p-align-center p-jc-start">
+        <div class="p-d-flex p-align-center p-jc-between">
             <ng-container *ngIf="selectedUser === 'Overall' else assignee">
                 <ng-container *ngFor="let filter of filterData">
                     <ng-container [ngSwitch]="filter?.filterType">
@@ -25,7 +25,7 @@
             </ng-template>
 
             <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
-                <div class="p-d-block" style="max-width:90vw; max-height: 50px;">
+                <div class="p-d-flex" style="width: 75vw; max-height: 50px;">
                     <button *ngFor="let assignee of assigneeList"
                         (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
                         [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
