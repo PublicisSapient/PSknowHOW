@@ -625,3 +625,30 @@ db.getCollection('metadata_identifier').updateMany(
         }
     }
 );
+
+//--- DTS-28864 ---
+db.kpi_master.updateOne(
+    {
+        "kpiId": "kpi120"
+    },
+    {
+        $set: { "kpiWidth": 50 }
+    }
+);
+
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi161" }
+);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
+    }
+});

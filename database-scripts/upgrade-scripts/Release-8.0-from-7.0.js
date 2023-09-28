@@ -4138,3 +4138,142 @@ db.getCollection('metadata_identifier').updateMany(
         }
     }
 );
+
+//--- DTS-28864 ---
+db.kpi_master.updateOne(
+    {
+        "kpiId": "kpi120"
+    },
+    {
+        $set: { "kpiWidth": 100 }
+    }
+);
+
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//--- For DTS-27550 making release Progress filter to dropdown
+//--- DTS-27490 Iteration Readiness KPI for Backlog Dashboard
+//--- DTS-28878 scope churn defect fix
+db.kpi_master.bulkWrite([
+  {
+    updateOne: {
+      filter: { "kpiId": "kpi147" },
+      update: { $set: { "kpiFilter": "dropDown" } }
+    }
+  },
+  {
+    updateOne: {
+      filter: { "kpiId": "kpi164" },
+      update: {
+        $set: {
+          "thresholdValue": "10",
+          "isPositiveTrend": "false",
+          "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+        }
+      }
+    }
+  },
+  {
+    insertOne: {
+      document: {
+        "kpiId": "kpi161",
+        "kpiName": "Iteration Readiness",
+        "maxValue": "",
+        "kpiUnit": "Count",
+        "isDeleted": "False",
+        "defaultOrder": 5,
+        "kpiCategory": "Backlog",
+        "kpiSource": "Jira",
+        "groupId": 11,
+        "thresholdValue": "",
+        "kanban": false,
+        "chartType": "stackedColumn",
+        "kpiInfo": {
+          "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+        },
+        "xAxisLabel": "Sprint",
+        "yAxisLabel": "Count",
+        "isPositiveTrend": true,
+        "showTrend": false,
+        "isAdditionalFilterSupport": false,
+        "kpiFilter": "",
+        "boxType": "chart",
+        "calculateMaturity": false
+      }
+    }
+  }
+]);
+
+db.getCollection('field_mapping_structure').insertMany(
+	[{
+    "fieldName": "jiraIssueTypeNamesKPI161",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI148",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI151",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI152",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+}
+	]
+)
+
+const fieldMappings = db.field_mapping.find({});
+fieldMappings.forEach(function(fm) {
+	db.field_mapping.updateOne({
+		"_id": fm._id
+	}, {
+		$set: {
+			"jiraIssueTypeNamesKPI161": ["Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"],
+			"jiraIssueTypeNamesKPI151": ["Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"],
+			"jiraIssueTypeNamesKPI152": ["Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"],
+			"jiraIssueTypeNamesKPI146": ["Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"],
+			"jiraIssueTypeNamesKPI148": ["Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"]
+		}
+	});
+});
+

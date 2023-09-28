@@ -115,7 +115,7 @@ export class MilestoneComponent implements OnInit {
       {'label':'Release Progress', 'count': 0,kpis : [],width :'full'},
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-    /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
+     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);

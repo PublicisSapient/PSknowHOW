@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -374,8 +373,7 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private String notificationEnabler="On";
-
+	private String notificationEnabler = "On";
 	private List<String> jiraIssueEpicTypeKPI153;
 
 	// DTS-26150 start
@@ -386,6 +384,13 @@ public class FieldMapping extends BasicModel {
 	private String testingPhaseDefectComponentValue;
 	private List<String> jiraDodKPI163;
 	// DTS-26150 end
+
+	private List<String> jiraIssueTypeNamesKPI161;
+	private List<String> jiraIssueTypeNamesKPI146;
+	private List<String> jiraIssueTypeNamesKPI148;
+	private List<String> jiraIssueTypeNamesKPI151;
+	private List<String> jiraIssueTypeNamesKPI152;
+
 
 	/**
 	 * Get jira issue type names string [ ].
