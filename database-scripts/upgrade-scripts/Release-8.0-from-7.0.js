@@ -4148,3 +4148,20 @@ fieldMappings.forEach(function(fm) {
 	});
 });
 
+// --- DTS-28845 - kpiCategoryID introduced to make Boards dynamic -------
+
+db.kpi_master.updateMany({"kpiCategory" : "Iteration"},  {
+        $set: { "kpiCategoryID": "iteration" }
+    });
+db.kpi_master.updateMany({"kpiCategory" : "Release"},  {
+        $set: { "kpiCategoryID": "release" }
+    });
+db.kpi_master.updateMany({"kpiCategory" : "Dora"},  {
+        $set: { "kpiCategoryID": "dora" }
+    });
+db.kpi_master.updateMany({"kpiCategory" : "Backlog"},  {
+        $set: { "kpiCategoryID": "backlog" }
+    });
+db.kpi_master.updateMany({"kpiCategory" : "Kpi Maturity"},  {
+        $set: { "kpiCategoryID": "maturity" }
+    });

@@ -363,6 +363,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
+	 * This method is used to set user board information
 	 *
 	 * @param kpiCategoryBoardId
 	 *            kpiCategoryBoardId is used to set the board order
