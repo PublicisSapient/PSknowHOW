@@ -42,8 +42,6 @@ public class JiraProcessorConfig {
 	// it is required
 
 	private int pageSize;
-	private String startDate;
-	private long minsToReduce;
 	private String customApiBaseUrl;
 	private Integer socketTimeOut;
 	private int threadPoolSize;

@@ -180,22 +180,6 @@ public class JiraHelper {
 		return capturedDate;
 	}
 
-	public static void setStartDate(JiraProcessorConfig jiraProcessorConfig) {
-		LocalDateTime localDateTime = null;
-		if (jiraProcessorConfig.isConsiderStartDate()) {
-			try {
-				localDateTime = DateUtil.stringToLocalDateTime(jiraProcessorConfig.getStartDate(), QUERYDATEFORMAT);
-			} catch (DateTimeParseException ex) {
-				log.error("exception while parsing start date provided from property file picking last 6 months data.."
-						+ ex.getMessage());
-				localDateTime = LocalDateTime.now().minusMonths(6);
-			}
-		} else {
-			localDateTime = LocalDateTime.now().minusMonths(6);
-		}
-		jiraProcessorConfig.setStartDate(DateUtil.dateTimeFormatter(localDateTime, QUERYDATEFORMAT));
-	}
-
 	public static String hash(String input) {
 		return String.valueOf(Objects.hash(input));
 	}

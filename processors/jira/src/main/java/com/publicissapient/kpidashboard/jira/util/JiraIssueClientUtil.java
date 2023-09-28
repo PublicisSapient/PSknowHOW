@@ -99,21 +99,6 @@ public final class JiraIssueClientUtil {
 	}
 
 	/**
-	 * Gets a ISODate into a date/time string.
-	 *
-	 * @param changeDateISO
-	 *            ISO date String
-	 * @param jiraProcessorConfig
-	 *            Jira Processor Configuration
-	 * @return return Adjusted Date Time string
-	 */
-	public static String getChangeDateMinutePrior(String changeDateISO, JiraProcessorConfig jiraProcessorConfig) {
-		int priorMinutes = (int) jiraProcessorConfig.getMinsToReduce();
-		return JiraProcessorUtil.getFormattedDateString(JiraProcessorUtil
-				.getTimeAdjustedDate(JiraProcessorUtil.getFormattedDateTime(changeDateISO), priorMinutes));
-	}
-
-	/**
 	 * Builds Filed Map
 	 *
 	 * @param fields
