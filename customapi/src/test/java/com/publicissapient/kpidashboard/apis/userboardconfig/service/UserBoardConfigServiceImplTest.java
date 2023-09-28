@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -29,7 +28,9 @@ import static org.testng.AssertJUnit.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -45,6 +46,7 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.KpiCategoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiCategoryMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
@@ -93,14 +95,29 @@ public class UserBoardConfigServiceImplTest {
 
 	@Mock
 	private CacheService cacheService;
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	private List<KpiCategory> kpiCategoryList;
 	private List<KpiCategoryMapping> kpiCategoryMappingList;
+
+	private List<String> scrumKanbanBoardNameList = Arrays.asList("Iteration");;
+	private List<String> othersBoardNameList = Arrays.asList("Release", "Backlog", "Dora", "Kpi Maturity");
+	private List<String> defaultKpiCategory = new ArrayList<>();
+	private Map<String, String> boardWiseCategoryID = new HashMap<>();
 
 	@Before
 	public void setUp() {
 		kpiCategoryList = KpiCategoryDataFactory.newInstance().getKpiCategoryList();
 		kpiCategoryMappingList = KpiCategoryMappingDataFactory.newInstance().getKpiCategoryMappingList();
+
+		defaultKpiCategory.addAll(scrumKanbanBoardNameList);
+		defaultKpiCategory.addAll(othersBoardNameList);
+		boardWiseCategoryID.put("Iteration", "iteration");
+		boardWiseCategoryID.put("Release", "release");
+		boardWiseCategoryID.put("Dora", "dora");
+		boardWiseCategoryID.put("Backlog", "backlog");
+		boardWiseCategoryID.put("KpiMaturity", "maturity");
 	}
 
 	@Test
@@ -216,8 +233,9 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(customApiConfig.getScrumKanbanBoardNames()).thenReturn(scrumKanbanBoardNameList);
+		when(customApiConfig.getOtherBoardNames()).thenReturn(othersBoardNameList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getOthers().size(), 4);
 		assertNotNull(userBoardConfigDTO);
@@ -261,7 +279,6 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban(anyString(), anyBoolean())).thenReturn(filteredMaster);
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 6);
@@ -287,17 +304,20 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("maturity", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("backlog", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(customApiConfig.getOtherBoardNames()).thenReturn(othersBoardNameList);
+		when(customApiConfig.getScrumKanbanBoardNames()).thenReturn(scrumKanbanBoardNameList);
+		when(customApiConfig.getBoards()).thenReturn(boardWiseCategoryID);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
@@ -322,17 +342,20 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("maturity", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("backlog", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(customApiConfig.getOtherBoardNames()).thenReturn(othersBoardNameList);
+		when(customApiConfig.getScrumKanbanBoardNames()).thenReturn(scrumKanbanBoardNameList);
+		when(customApiConfig.getBoards()).thenReturn(boardWiseCategoryID);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 6");
 		assertNotNull(userBoardConfigDTO);
@@ -357,17 +380,20 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("maturity", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("backlog", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(customApiConfig.getOtherBoardNames()).thenReturn(othersBoardNameList);
+		when(customApiConfig.getScrumKanbanBoardNames()).thenReturn(scrumKanbanBoardNameList);
+		when(customApiConfig.getBoards()).thenReturn(boardWiseCategoryID);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 6");
 		assertNotNull(userBoardConfigDTO);
@@ -392,16 +418,19 @@ public class UserBoardConfigServiceImplTest {
 				.filter(master -> (!master.getKanban() && !kpiCategoryList.contains(master.getKpiCategory())))
 				.collect(Collectors.toList());
 		when(kpiMasterRepository.findByKanbanAndKpiCategoryNotIn(anyBoolean(), anyList())).thenReturn(filteredMaster);
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Iteration", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("iteration", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Iteration".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Kpi Maturity", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("maturity", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Kpi Maturity".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
-		when(kpiMasterRepository.findByKpiCategoryAndKanban("Backlog", false)).thenReturn(kpiMasters.stream()
+		when(kpiMasterRepository.findByKpiCategoryIDAndKanban("backlog", false)).thenReturn(kpiMasters.stream()
 				.filter(master -> (!master.getKanban() && "Backlog".equalsIgnoreCase(master.getKpiCategory())))
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
+		when(customApiConfig.getOtherBoardNames()).thenReturn(othersBoardNameList);
+		when(customApiConfig.getScrumKanbanBoardNames()).thenReturn(scrumKanbanBoardNameList);
+		when(customApiConfig.getBoards()).thenReturn(boardWiseCategoryID);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
 		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);

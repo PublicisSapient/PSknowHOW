@@ -40,6 +40,7 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
@@ -66,10 +67,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String ITERATION = "Iteration";
-	private static final String BACKLOG = "Backlog";
-	private static final String RELEASE = "Release";
-	private static final String DORA = "Dora";
-	private static final String KPI_MATURITY = "Kpi Maturity";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
@@ -87,6 +84,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * .This method return user board config if present in db else return a default
@@ -168,11 +167,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName)
 				.collect(Collectors.toList());
-		defaultKpiCategory.add(ITERATION);
-		defaultKpiCategory.add(RELEASE);
-		defaultKpiCategory.add(DORA);
-		defaultKpiCategory.add(BACKLOG);
-		defaultKpiCategory.add(KPI_MATURITY);
+		defaultKpiCategory.addAll(customApiConfig.getScrumKanbanBoardNames());
+		defaultKpiCategory.addAll(customApiConfig.getOtherBoardNames());
 		return (!new HashSet<>(defaultKpiCategory).containsAll(existingCategories));
 	}
 
@@ -337,41 +333,52 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		AtomicReference<Integer> kpiCategoryBoardId = new AtomicReference<>(1);
 		newUserBoardConfig.setUsername(authenticationService.getLoggedInUser());
 		List<BoardDTO> scrumBoards = new ArrayList<>();
+		List<BoardDTO> kanbanBoards = new ArrayList<>();
+		List<BoardDTO> otherBoards = new ArrayList<>();
+		List<String> scrumKanbanBoardNameList = customApiConfig.getScrumKanbanBoardNames();
+		List<String> otherBoardNameList = customApiConfig.getOtherBoardNames();
 		List<String> defaultKpiCategory = new ArrayList<>();
-		defaultKpiCategory.add(ITERATION);
-		defaultKpiCategory.add(RELEASE);
-		defaultKpiCategory.add(DORA);
-		defaultKpiCategory.add(BACKLOG);
-		defaultKpiCategory.add(KPI_MATURITY);
+		defaultKpiCategory.addAll(scrumKanbanBoardNameList);
+		defaultKpiCategory.addAll(otherBoardNameList);
+
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), false,
 				defaultKpiCategory, scrumBoards);
 		if (CollectionUtils.isNotEmpty(kpiCategoryList)) {
 			setAsPerCategoryMappingBoardInfo(kpiCategoryBoardId, kpiCategoryList, kpiMasterMap, scrumBoards, false);
 		}
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), ITERATION,
-				scrumBoards, false);
-		newUserBoardConfig.setScrum(scrumBoards);
+		setUserBoardInfo(kpiCategoryBoardId, scrumKanbanBoardNameList, scrumBoards, false);
 
-		List<BoardDTO> kanbanBoards = new ArrayList<>();
 		setDefaultBoardInfoFromKpiMaster(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), true,
 				defaultKpiCategory, kanbanBoards);
 		if (CollectionUtils.isNotEmpty(kpiCategoryList)) {
 			setAsPerCategoryMappingBoardInfo(kpiCategoryBoardId, kpiCategoryList, kpiMasterMap, kanbanBoards, true);
 		}
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), ITERATION,
-				kanbanBoards, true);
-		newUserBoardConfig.setKanban(kanbanBoards);
+		setUserBoardInfo(kpiCategoryBoardId, scrumKanbanBoardNameList, kanbanBoards, true);
 
-		List<BoardDTO> otherBoards = new ArrayList<>();
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), RELEASE,
-				otherBoards, false);
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), DORA,
-				otherBoards, false);
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), BACKLOG,
-				otherBoards, false);
-		setBoardInfoAsPerDefaultKpiCategory(kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), KPI_MATURITY,
-				otherBoards, false);
+		setUserBoardInfo(kpiCategoryBoardId, otherBoardNameList, otherBoards, false);
+
+		newUserBoardConfig.setScrum(scrumBoards);
+		newUserBoardConfig.setKanban(kanbanBoards);
 		newUserBoardConfig.setOthers(otherBoards);
+	}
+
+	/**
+	 *
+	 * @param kpiCategoryBoardId
+	 *            kpiCategoryBoardId is used to set the board order
+	 * @param otherBoardNameList
+	 *            this contains board name list
+	 * @param otherBoards
+	 *            otherBoards
+	 * @param value
+	 *            value
+	 */
+	private void setUserBoardInfo(AtomicReference<Integer> kpiCategoryBoardId, List<String> otherBoardNameList,
+			List<BoardDTO> otherBoards, boolean value) {
+
+		otherBoardNameList.forEach(board -> setBoardInfoAsPerDefaultKpiCategory(
+				kpiCategoryBoardId.getAndSet(kpiCategoryBoardId.get() + 1), board, otherBoards, value));
+
 	}
 
 	/**
@@ -447,11 +454,14 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 */
 	private void setBoardInfoAsPerDefaultKpiCategory(int boardId, String boardName,
 			List<BoardDTO> asPerCategoryBoardList, boolean kanban) {
+		Map<String, String> boardWiseCategoryID = customApiConfig.getBoards();
+		String result = boardName.replace(" ", "");
+		String categoryID = boardWiseCategoryID.get(result);
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
-		kpiMasterRepository.findByKpiCategoryAndKanban(boardName, kanban).stream()
+		kpiMasterRepository.findByKpiCategoryIDAndKanban(categoryID, kanban).stream()
 				.sorted(Comparator.comparing(KpiMaster::getDefaultOrder))
 				.forEach(kpiMaster -> setKpiUserBoardDefaultFromKpiMaster(boardKpisList, kpiMaster));
 		asPerCategoryBoard.setKpis(boardKpisList);
