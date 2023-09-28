@@ -3144,6 +3144,32 @@ db.getCollection('kpi_master').insertMany(
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
 	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ },
+ {
+    "kpiId":"kpi167",
+    "kpiName":"Pending Release Scope",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":8,
+    "kpiCategory":"Release",
+    "kpiSubCategory":"Release Review",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":null,
+    "kpiInfo":{
+       "definition":"Pending issues in a release"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"multiSelectDropDown",
+    "boxType":"3_column",
+    "calculateMaturity":false
  }
 ]
 );
@@ -8349,6 +8375,16 @@ db.getCollection('field_mapping_structure').insertMany(
     "section": "Issue Types Mapping",
     "tooltip": {
         "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName":"jiraReleaseIssueTypeKPI167",
+    "fieldLabel":"Issue type to be included",
+    "fieldType":"chips",
+    "fieldCategory":"workflow",
+    "section":"WorkFlow Status Mapping",
+    "tooltip":{
+        "definition":"All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
     }
 }
     ]

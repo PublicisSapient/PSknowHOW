@@ -4148,3 +4148,43 @@ fieldMappings.forEach(function(fm) {
 	});
 });
 
+//DTS-27551 start
+db.getCollection('kpi_master').insertOne({
+    "kpiId": "kpi167",
+    "kpiName": "Pending Release Scope",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": null,
+    "kpiInfo": {
+	"definition": "Pending issues in a release"},
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "3_column",
+    "calculateMaturity": false
+  });
+
+  db.getCollection('field_mapping_structure').insertOne(
+  {
+     "fieldName": "jiraReleaseIssueTypeKPI167",
+     "fieldLabel": "Issue type to be included",
+     "fieldType": "chips",
+     "fieldCategory": "workflow",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+        "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+     }
+  });
+  //DTS-27551 end
+

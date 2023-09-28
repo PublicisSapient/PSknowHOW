@@ -435,7 +435,14 @@ public enum KPICode {
     /**
      * Backlog - Iteration Readiness kpi
      */
-    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name());
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name()),
+    //DTS-27551 start
+    /**
+     *Pending Release Scope kpi
+     */
+    PENDING_RELEASE_SCOPE("kpi155", KPISource.JIRA.name());
+    //DTS-27551 end
+
 
 
 	// @formatter:on

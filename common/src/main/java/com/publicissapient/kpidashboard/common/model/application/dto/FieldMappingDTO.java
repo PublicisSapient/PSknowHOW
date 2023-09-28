@@ -380,6 +380,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueTypeNamesKPI148;
 	private List<String> jiraIssueTypeNamesKPI151;
 	private List<String> jiraIssueTypeNamesKPI152;
+	private List<String> jiraReleaseIssueTypeKPI167;
 
 
 	/**

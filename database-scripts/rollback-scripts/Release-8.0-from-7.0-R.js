@@ -614,3 +614,14 @@ db.field_mapping_structure.deleteMany({
         $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
     }
 });
+//DTS-27551 start
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi167" }
+);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["jiraReleaseIssueTypeKPI167"]
+    }
+});
+//DTS-27551 start
