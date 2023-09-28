@@ -941,7 +941,7 @@ public final class KpiDataHelper {
 	 */
 	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
 		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
-		int value = 5; // Default value for 'value'
+		int value = 8; // Default value for 'value'
 		String duration = CommonConstant.WEEK; // Default value for 'duration'
 		LocalDateTime startDateTime = null;
 
