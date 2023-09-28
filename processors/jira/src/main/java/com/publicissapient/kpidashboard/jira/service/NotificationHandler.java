@@ -73,8 +73,6 @@ public class NotificationHandler {
 
 	/**
 	 *
-	 * @param key
-	 *            key
 	 * @param value
 	 *            value
 	 * @param projectBasicConfigId
