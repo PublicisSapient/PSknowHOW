@@ -32,12 +32,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -63,6 +59,8 @@ import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -74,6 +72,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -136,7 +135,6 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
-
 
 	/**
 	 * method to save basic configuration
@@ -210,19 +208,17 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
-				if(isAssigneeUpdated(basicConfig,savedConfig)){
+				if (isAssigneeUpdated(basicConfig, savedConfig)) {
 					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
 							.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
 									Collections.singletonList(basicConfigId));
-
-					for (ProcessorExecutionTraceLog traceLog : traceLogs) {
-						if (traceLog != null) {
-							traceLog.setLastSuccessfulRun(null);
-							traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
-						}
-					}
-
 					if (!traceLogs.isEmpty()) {
+						for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+							if (traceLog != null) {
+								traceLog.setLastSuccessfulRun(null);
+								traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+							}
+						}
 						processorExecutionTraceLogRepository.saveAll(traceLogs);
 					}
 				}

@@ -168,7 +168,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
-		// DTS-26153,fetching all the release versions from history whereever an issue
+		//fetching all the release versions from history whereever an issue
 		// was tagged
 		Set<String> releaseVersions = jiraIssueCustomHistoryRepository
 				.findByBasicProjectConfigIdIn(projectBasicConfig.getId().toString()).stream()
