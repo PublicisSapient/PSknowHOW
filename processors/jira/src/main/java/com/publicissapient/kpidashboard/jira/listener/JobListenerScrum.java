@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -32,6 +31,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -84,8 +84,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
 			if (fieldMapping.getNotificationEnabler()) {
-				handler.sendEmailToProjectAdmin(jobExecution.getJobInstance().getJobName(),
-						String.valueOf(jobExecution.getFailureExceptions()), projectId);
+				handler.sendEmailToProjectAdmin("Error in job "+jobExecution.getJobInstance().getJobName()+":"+ jobExecution.getFailureExceptions(), projectId);
 			} else {
 				log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin",
 						projectId);

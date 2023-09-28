@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -79,14 +80,14 @@ public class NotificationHandler {
 	 * @param projectBasicConfigId
 	 *            projectBasicConfigId
 	 */
-	public void sendEmailToProjectAdmin(String key, String value, String projectBasicConfigId) {
-		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-
+	public void sendEmailToProjectAdmin(String value, String projectBasicConfigId) {
+		List<String> emailAddresses = new ArrayList<>();
+		emailAddresses.add("guptapurushottam123@gmail.com");
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
 			Map<String, String> customData = new HashMap<>();
-			customData.put(key, value);
+			customData.put(NOTIFICATION_KEY, value);
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = jiraProcessorConfig.getMailTemplate()
