@@ -946,7 +946,7 @@ public final class KpiDataHelper {
 		LocalDateTime startDateTime = null;
 
 		if (filterDuration != null) {
-			value = (int) filterDuration.getOrDefault("value", 5);
+			value = (int) filterDuration.getOrDefault("value", 8);
 			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
 		}
 
