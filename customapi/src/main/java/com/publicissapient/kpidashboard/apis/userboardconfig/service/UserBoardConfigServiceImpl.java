@@ -169,7 +169,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName)
 				.collect(Collectors.toList());
 		defaultKpiCategory.addAll(UserBoardConfigEnum.SCRUM_KANBAN_BOARD.getBoardName());
-		defaultKpiCategory.addAll(UserBoardConfigEnum.SCRUM_KANBAN_BOARD.getBoardName());
+		defaultKpiCategory.addAll(UserBoardConfigEnum.OTHER_BOARD.getBoardName());
 		return (!new HashSet<>(defaultKpiCategory).containsAll(existingCategories));
 	}
 
