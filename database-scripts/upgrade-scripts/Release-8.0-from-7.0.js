@@ -4020,7 +4020,7 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
 //--- For DTS-27550 making release Progress filter to dropdown
 //--- DTS-27490 Iteration Readiness KPI for Backlog Dashboard
 //--- DTS-28878 scope churn defect fix
