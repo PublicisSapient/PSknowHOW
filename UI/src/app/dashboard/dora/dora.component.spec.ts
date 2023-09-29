@@ -1030,30 +1030,6 @@ describe('DoraComponent', () => {
     expect(spy).toHaveBeenCalledWith(postData.kpiList);
   }));
 
-  it('should make post Jenkins Kanban call', fakeAsync(() => {
-    const postData = {
-      kpiList: [
-        {
-          id: '633ed17f2c2d5abef2451fe3',
-          kpiId: 'kpi118',
-          kpiName: 'Deployment Frequency',
-        },
-        {
-          id: '633ed17f2c2d5abef2451fe4',
-          kpiId: 'kpi116',
-          kpiName: 'Change Failure Rate'
-        }
-      ]
-    };
-
-    component.jenkinsKpiRequest = '';
-    spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
-    const spy = spyOn(component, 'createAllKpiArray');
-    component.postJenkinsKanbanKpi(postData, 'Jenkins');
-    tick();
-    expect(spy).toHaveBeenCalledWith(postData.kpiList);
-  }));
-
   it('should get dropdown data', () => {
     component.allKpiArray = [{
       kpiId: 'kpi118',

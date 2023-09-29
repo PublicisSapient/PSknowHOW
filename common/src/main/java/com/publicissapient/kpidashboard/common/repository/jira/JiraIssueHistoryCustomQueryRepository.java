@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -42,7 +43,7 @@ public interface JiraIssueHistoryCustomQueryRepository {
 	 * @return the list
 	 */
 	List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap);
+			Map<String, Map<String, Object>> uniqueProjectMap , Sort.Direction sortMethod);
 
 	/**
 	 * find jira issue based on filter and date
