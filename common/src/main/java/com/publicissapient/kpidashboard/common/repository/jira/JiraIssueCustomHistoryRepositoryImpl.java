@@ -86,7 +86,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<JiraIssueCustomHistory> findFeatureCustomHistoryStoryProjectWise(Map<String, List<String>> mapOfFilters,
-			Map<String, Map<String, Object>> uniqueProjectMap) {
+			Map<String, Map<String, Object>> uniqueProjectMap , Sort.Direction sortMethod) {
 
 		List<AggregationOperation> list = new ArrayList<>();
 		Criteria criteria = new Criteria();
@@ -127,8 +127,8 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 				.orOperator(storyStatuscriteriaList.toArray(new Criteria[0]));
 		list.add(Aggregation.match(criteriaAggregatedAtProjectLevelForStatus));
 
-		list.add(Aggregation.sort(Sort.Direction.DESC, UPDATED_ON));
-		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID).push(STATUS_CHANGE_LOG).as(STATUS_CHANGE_LOG));
+		list.add(Aggregation.sort(sortMethod, UPDATED_ON));
+		list.add(Aggregation.group(STORY_ID, BASIC_PROJ_CONF_ID, URL).push(STATUS_CHANGE_LOG).as(STATUS_CHANGE_LOG));
 		list.add(Aggregation.project(STATUS_CHANGE_LOG));
 		TypedAggregation<JiraIssueCustomHistory> agg = Aggregation.newAggregation(JiraIssueCustomHistory.class, list);
 
@@ -142,6 +142,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			history.setStoryID(result.getId().getStoryID());
 			history.setBasicProjectConfigId(result.getId().getBasicProjectConfigId());
 			history.setStatusUpdationLog(result.getStatusUpdationLog());
+			history.setUrl(result.getId().getUrl());
 			resultList.add(history);
 		});
 		return resultList;
@@ -209,7 +210,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 			}
 			projectCriteriaList.add(projectCriteria);
 		});
-        Query query;
+		Query query;
 		if (CollectionUtils.isEmpty(projectCriteriaList)) {
 			query = new Query(criteria);
 		} else {

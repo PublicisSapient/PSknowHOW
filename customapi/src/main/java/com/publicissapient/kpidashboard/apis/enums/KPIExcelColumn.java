@@ -272,6 +272,9 @@ public enum KPIExcelColumn {
 	//DTS-26123 end
 	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
 
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
+			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
+
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
 			"Sprint Name", "Assignee", "Issue Status"));
 

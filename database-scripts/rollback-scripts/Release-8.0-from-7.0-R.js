@@ -636,7 +636,7 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
 //Reversing DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
@@ -652,3 +652,27 @@ db.field_mapping_structure.deleteMany({
         $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
     }
 });
+
+// delete lead time for change
+db.kpi_master.deleteOne({
+      "kpiId": "kpi156"
+    });
+
+// fieldMapping Structure fields for Lead time for changes in DORA tab
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodKPI156" , "jiraIssueTypeKPI156"]
+    }
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI156"
+      },
+      "issues" : {
+       "type": "jiraIssueTypeKPI156"
+      }
+   }}
+);

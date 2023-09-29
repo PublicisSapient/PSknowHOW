@@ -391,6 +391,15 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueTypeNamesKPI152;
 
 
+	private List<String> jiraDodKPI156;
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private String leadTimeConfigRepoTool = "Jira";
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *

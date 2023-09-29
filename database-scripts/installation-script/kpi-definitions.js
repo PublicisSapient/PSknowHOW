@@ -738,6 +738,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -1183,6 +1184,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -3153,6 +3155,39 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "dropdown",
     "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
+    "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
   {
@@ -8425,6 +8460,52 @@ db.getCollection('field_mapping_structure').insertMany(
     }
 },
 {
+            "fieldName": "leadTimeConfigRepoTool",
+            "fieldLabel": "Lead Time KPI calculation logic",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
+            },
+            "options": [{
+                    "label": "Jira",
+                    "value": "Jira"
+                },
+                {
+                    "label": "Repo",
+                    "value": "Repo"
+                }
+            ],
+            "nestedFields": [
+{
+	"fieldName": "jiraIssueTypeKPI156",
+	"fieldLabel": "Issue type to be included",
+	"fieldType": "chips",
+	"fieldCategory": "Issue_Type",
+	 "filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
+	}
+}, {
+	"fieldName": "jiraDodKPI156",
+	"fieldLabel": "Status to identify DOD",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+	}
+},{
+	"fieldName": "toBranchForMRKPI156",
+	"fieldLabel": "Production Branch Name",
+	"fieldType": "text",
+	"filterGroup": ["Repo"],
+	"tooltip": {
+		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+	}
+}]
+},
+{
   "fieldName":"testingPhaseDefectsIdentifier",
   "fieldLabel":"Testing phase defects identification",
   "fieldType":"radiobutton",
@@ -8494,5 +8575,4 @@ db.getCollection('field_mapping_structure').insertMany(
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
   }
 }
-    ]
-);
+]);

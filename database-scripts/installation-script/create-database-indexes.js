@@ -69,6 +69,12 @@ db.getCollection("sprint_details").createIndex({ "sprintID": 1 }, {
     "unique": true
 })
 
+// merge Request index
+db.merge_requests.createIndex({"processorItemId":1,"createdDate":1, "fromBranch":1, "closedDate":1})
+
+//processor items index
+db.processor_items.createIndex({"toolConfigId":1})
+
 
 
 

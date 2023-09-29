@@ -50,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
@@ -466,6 +467,10 @@ public class KPIExcelUtility {
 		if (object instanceof IssueDetails) {
 			IssueDetails issueDetails = (IssueDetails) object;
 			url = StringUtils.isEmpty(issueDetails.getUrl()) ? Constant.EMPTY_STRING : issueDetails.getUrl();
+		}
+		if (object instanceof LeadTimeChangeData) {
+			LeadTimeChangeData leadTimeChangeData = (LeadTimeChangeData) object;
+			url = StringUtils.isEmpty(leadTimeChangeData.getUrl()) ? Constant.EMPTY_STRING : leadTimeChangeData.getUrl();
 		}
 		return url;
 
@@ -1321,9 +1326,9 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
-		modalValues.add(jiraIssueModalObject);
-		overAllModalValues.add(jiraIssueModalObject);
-	}
+			modalValues.add(jiraIssueModalObject);
+			overAllModalValues.add(jiraIssueModalObject);
+		}
 
 	/**
 	 * This Method is used to populate Excel Data for Rejection Refinement KPI
@@ -1662,6 +1667,33 @@ public class KPIExcelUtility {
 							+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
 				kpiExcelData.add(excelData);
+			});
+		}
+	}
+
+	public static void populateLeadTimeForChangeExcelData(String projectName,
+			Map<String, List<LeadTimeChangeData>> leadTimeMapTimeWise, List<KPIExcelData> kpiExcelData , String leadTimeConfigRepoTool) {
+
+		if (MapUtils.isNotEmpty(leadTimeMapTimeWise)) {
+			leadTimeMapTimeWise.forEach((weekOrMonthName, leadTimeListCurrentTime) -> {
+				leadTimeListCurrentTime.stream().forEach(leadTimeChangeData -> {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setDate(weekOrMonthName);
+					if(CommonConstant.REPO.equals(leadTimeConfigRepoTool)) {
+						excelData.setMergeDate(leadTimeChangeData.getClosedDate());
+						excelData.setMergeRequestId(leadTimeChangeData.getMergeID());
+						excelData.setBranch(leadTimeChangeData.getFromBranch());
+					} else {
+						excelData.setCompletionDate(leadTimeChangeData.getClosedDate());
+					}
+					Map<String, String> issueDetails = new HashMap<>();
+					issueDetails.put(leadTimeChangeData.getStoryID(), checkEmptyURL(leadTimeChangeData));
+					excelData.setStoryId(issueDetails);
+					excelData.setLeadTime(leadTimeChangeData.getLeadTimeInDays());
+					excelData.setReleaseDate(leadTimeChangeData.getReleaseDate());
+					kpiExcelData.add(excelData);
+				});
 			});
 		}
 	}

@@ -133,6 +133,8 @@ public final class CommonConstant {
 	public static final String COMPONENT = "Component";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String CACHE_AGG_CRITERIA = "cache_aggregation_criteria";
+
+	public static final String CACHE_AGG_CIRCLE_CRITERIA = "cache_aggregation_circle_criteria";
 	public static final String CACHE_MATURITY_RANGE = "cache_maturity_range";
 
 	public static final String COMPLETED_ISSUES = "completedIssues";
@@ -311,6 +313,10 @@ public final class CommonConstant {
 	public static final String SPRINTNAME="sprintName";
 	public static final String JIRATECHDEBTISSUETYPE="jiraTechDebtIssueType";
 	public static final String ACTIVE = "ACTIVE";
+
+	public static final String JIRA = "Jira";
+
+	public static final String REPO = "Repo";
 
 	private CommonConstant() {
 

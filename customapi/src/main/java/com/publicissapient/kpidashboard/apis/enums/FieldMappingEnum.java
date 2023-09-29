@@ -183,7 +183,11 @@ public enum FieldMappingEnum {
 			"Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16")), KPI161(
 					"Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161")), KPI164(
 							"Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164")),
+
+	KPI156("Lead Time For Change", KPISource.JIRA.name(),
+			Arrays.asList("leadTimeConfigRepoTool", "toBranchForMRKPI156" , "jiraDodKPI156" , "jiraIssueTypeKPI156")),
 	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI163"));
+
 	private List<String> fields;
 	private String kpiName;
 	private String kpiSource;

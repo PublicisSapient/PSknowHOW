@@ -15,11 +15,14 @@ export class DoraComponent implements OnInit {
   masterData;
   filterData = [];
   jenkinsKpiData = {};
+  jiraKpiData = {};
   filterApplyData;
   kpiJenkins;
+  kpiJira;
   loaderJenkins = false;
   subscriptions: any[] = [];
   jenkinsKpiRequest;
+  jiraKpiRequest;
   tooltip;
   selectedtype = 'Scrum';
   configGlobalData;
@@ -27,7 +30,7 @@ export class DoraComponent implements OnInit {
   serviceObject = {};
   allKpiArray: any = [];
   colorObj = {};
-  chartColorList:object = {};
+  chartColorList: object = {};
   kpiSelectedFilterObj = {};
   kpiChartData = {};
   noKpis = false;
@@ -59,16 +62,7 @@ export class DoraComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   noOfFilterSelected = 0;
   selectedJobFilter = 'Select';
-  summaryObj = {
-    'kpi116': {
-      'label': 'Change Failure Rate',
-      'value': '0-15%'
-    },
-    'kpi118': {
-      'label': 'Deployment Frequency',
-      'value': 'Daily'
-    },
-  };
+  loaderJiraArray = [];
   updatedConfigDataObj: object = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
@@ -92,41 +86,22 @@ export class DoraComponent implements OnInit {
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'dora')[0]?.kpis;
       this.processKpiConfigData();
     }));
-
-    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
-      if (Object.keys(x).length > 0) {
-        console.log(x);
-        
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          for (const key in this.kpiChartData) {
-            this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-          }
-        }
-        this.trendBoxColorObj = { ...x };
-        for (const key in this.trendBoxColorObj) {
-          const idx = key.lastIndexOf('_');
-          const nodeName = key.slice(0, idx);
-          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-        }
-      }
-      return this.service.passDataToDashboard;
-    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
-      // used to get all filter data when user click on apply button in filter
-      if (sharedobject?.filterData?.length) {
-        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-        this.receiveSharedData(sharedobject);
-        this.noTabAccess = false;
-      } else {
-        this.noTabAccess = true;
-      }
-    }));
   }
 
   ngOnInit(): void {
-    if (this.service.getFilterObject()) {
-      this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
-    }
+    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+          this.trendBoxColorObj = { ...x };
+          for (const key in this.trendBoxColorObj) {
+            const idx = key.lastIndexOf('_');
+            const nodeName = key.slice(0, idx);
+            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          }
+        }
+      }
+    }));
 
     this.httpService.getTooltipData().subscribe(filterData => {
       if (filterData[0] !== 'error') {
@@ -230,6 +205,7 @@ export class DoraComponent implements OnInit {
       // call kpi request according to tab selected
       if (this.masterData && Object.keys(this.masterData).length) {
         this.groupJenkinsKpi(kpiIdsForCurrentBoard);
+        this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
     } else {
@@ -249,16 +225,52 @@ export class DoraComponent implements OnInit {
 
   // Used for grouping all Jenkins kpi from master data and calling jenkins kpi.
   groupJenkinsKpi(kpiIdsForCurrentBoard) {
-    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', 'dora');
-    if (this.kpiJenkins?.kpiList?.length > 0) {
-      for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
-        this.kpiJenkins.kpiList[i]['filterDuration'] = {
-          duration: 'WEEKS',
-          value: 5
+    // creating a set of unique group Ids
+    const groupIdSet = new Set();
+    this.masterData?.kpiList.forEach((obj) => {
+      if (!obj.kanban && obj.kpiSource === 'Jenkins' && obj.kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj.groupId);
+      }
+    });
+
+    // sending requests after grouping the the KPIs according to group Id
+    groupIdSet.forEach((groupId) => {
+      if (groupId) {
+        this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'dora');
+        if (this.kpiJenkins?.kpiList?.length > 0) {
+          for (let i = 0; i < this.kpiJenkins?.kpiList?.length; i++) {
+            this.kpiJenkins.kpiList[i]['filterDuration'] = {
+              duration: 'WEEKS',
+              value: 8
+            }
+          }
+          this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
         }
       }
-      this.postJenkinsKpi(this.kpiJenkins, 'jenkins');
-    }
+    });
+  }
+
+  // Used for grouping all Jira kpi from master data and calling Jira kpi.
+  groupJiraKpi(kpiIdsForCurrentBoard) {
+    this.jiraKpiData = {};
+    // creating a set of unique group Ids
+    const groupIdSet = new Set();
+    this.masterData?.kpiList.forEach((obj) => {
+      if (!obj.kanban && obj.kpiSource === 'Jira' && obj.kpiCategory?.toLowerCase() == 'dora') {
+        groupIdSet.add(obj.groupId);
+      }
+    });
+
+    // sending requests after grouping the the KPIs according to group Id
+    groupIdSet.forEach((groupId) => {
+      if (groupId) {
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Dora');
+        if (this.kpiJira?.kpiList?.length > 0) {
+          this.postJiraKpi(this.kpiJira, 'jira');
+        }
+      }
+    });
+
   }
 
   // calling post request of Jenkins of scrum and storing in jenkinsKpiData id wise
@@ -278,30 +290,33 @@ export class DoraComponent implements OnInit {
       });
   }
 
-  // Used for grouping all Jenkins kpi of kanban from master data and calling jenkins kpi.
-  groupJenkinsKanbanKpi(kpiIdsForCurrentBoard) {
-    this.kpiJenkins = this.helperService.groupKpiFromMaster('Jenkins', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, '', '');
-    if (this.kpiJenkins?.kpiList?.length > 0) {
-      this.postJenkinsKanbanKpi(this.kpiJenkins, 'jenkins');
-    }
-  }
+  // post request of Jira(scrum)
+  postJiraKpi(postData, source): void {
 
-  // calling post request of Jenkins of Kanban and storing in jenkinsKpiData id wise
-  postJenkinsKanbanKpi(postData, source): void {
-    this.loaderJenkins = true;
-    if (this.jenkinsKpiRequest && this.jenkinsKpiRequest !== '') {
-      this.jenkinsKpiRequest.unsubscribe();
-    }
-    this.jenkinsKpiRequest = this.httpService.postKpiKanban(postData, source)
+    postData.kpiList.forEach(element => {
+      this.loaderJiraArray.push(element.kpiId);
+    });
+
+    this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
-        this.loaderJenkins = false;
-        // move Overall to top of trendValueList
-        if (getData !== null) { // && getData[0] !== 'error') {
-          this.jenkinsKpiData = getData;
-          this.createAllKpiArray(this.jenkinsKpiData);
+        if (getData !== null && getData[0] !== 'error' && !getData['error']) {
+          // creating array into object where key is kpi id
+          const localVariable = this.helperService.createKpiWiseId(getData);
+          for (const kpi in localVariable) {
+            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
+          }
+          this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
+          this.createAllKpiArray(localVariable);
+        } else {
+          this.jiraKpiData = getData;
+          postData.kpiList.forEach(element => {
+            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
+          });
         }
+        this.kpiLoader = false;
       });
   }
+
 
   ifKpiExist(kpiId) {
     const id = this.allKpiArray?.findIndex((kpi) => kpi.kpiId == kpiId);
@@ -345,16 +360,16 @@ export class DoraComponent implements OnInit {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
           tempArr[this.kpiSelectedFilterObj[kpiId][i]] = (trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value);
-          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.aggregationValue;
+          tempArr[this.kpiSelectedFilterObj[kpiId][i]][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][i])[0]?.value[0]?.aggregationValue;
         }
         this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
       } else {
         if (this.kpiSelectedFilterObj[kpiId]?.length > 0) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
-          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.aggregationValue;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value[0]?.aggregationValue;
         } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
-          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.aggregationValue;
+          this.kpiChartData[kpiId][0]['aggregationValue'] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value[0]?.aggregationValue;
         }
       }
     }
@@ -439,5 +454,23 @@ export class DoraComponent implements OnInit {
     this.sharedObject = null;
     this.globalConfig = null;
   }
+
+   reloadKPI(event) {
+          const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+          if(idx !== -1){
+              this.allKpiArray.splice(idx,1);
+          }
+          const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+          if (currentKPIGroup?.kpiList?.length > 0) {
+              const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+                  switch (kpiSource) {
+                      case 'jenkins':
+                          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+                          break;
+                      default:
+                          this.postJiraKpi(currentKPIGroup, 'jira');
+              }
+          }
+      }
 
 }
