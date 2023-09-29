@@ -376,6 +376,15 @@ public class FieldMapping extends BasicModel {
 	private String notificationEnabler = "On";
 	private List<String> jiraIssueEpicTypeKPI153;
 
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
+	// DTS-26150 end
+
 	private List<String> jiraIssueTypeNamesKPI161;
 	private List<String> jiraIssueTypeNamesKPI146;
 	private List<String> jiraIssueTypeNamesKPI148;

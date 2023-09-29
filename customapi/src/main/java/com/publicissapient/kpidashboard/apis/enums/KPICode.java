@@ -428,6 +428,10 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
     //DTS-26123 end
+	/**
+	 * Release defect by test phase
+	 */
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name()),
     /**
      * Scope Churn
      */

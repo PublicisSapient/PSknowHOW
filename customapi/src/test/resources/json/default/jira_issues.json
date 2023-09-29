@@ -3655,6 +3655,7 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2022-09-07T12:22:50.0000000",
+    "escapedDefectGroup" : [ "coding", "Done"],
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   }
 ]
