@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.publicissapient.kpidashboard.apis.enums.UserBoardConfigEnum;
 import org.apache.commons.collections4.CollectionUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,8 +168,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 		List<String> defaultKpiCategory = kpiCategoryList.stream().map(KpiCategory::getCategoryName)
 				.collect(Collectors.toList());
-		defaultKpiCategory.addAll(customApiConfig.getScrumKanbanBoardNames());
-		defaultKpiCategory.addAll(customApiConfig.getOtherBoardNames());
+		defaultKpiCategory.addAll(UserBoardConfigEnum.SCRUM_KANBAN_BOARD.getBoardName());
+		defaultKpiCategory.addAll(UserBoardConfigEnum.SCRUM_KANBAN_BOARD.getBoardName());
 		return (!new HashSet<>(defaultKpiCategory).containsAll(existingCategories));
 	}
 
@@ -335,8 +336,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		List<BoardDTO> scrumBoards = new ArrayList<>();
 		List<BoardDTO> kanbanBoards = new ArrayList<>();
 		List<BoardDTO> otherBoards = new ArrayList<>();
-		List<String> scrumKanbanBoardNameList = customApiConfig.getScrumKanbanBoardNames();
-		List<String> otherBoardNameList = customApiConfig.getOtherBoardNames();
+		List<String> scrumKanbanBoardNameList = UserBoardConfigEnum.SCRUM_KANBAN_BOARD.getBoardName();
+		List<String> otherBoardNameList = UserBoardConfigEnum.OTHER_BOARD.getBoardName();
 		List<String> defaultKpiCategory = new ArrayList<>();
 		defaultKpiCategory.addAll(scrumKanbanBoardNameList);
 		defaultKpiCategory.addAll(otherBoardNameList);
@@ -455,14 +456,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 */
 	private void setBoardInfoAsPerDefaultKpiCategory(int boardId, String boardName,
 			List<BoardDTO> asPerCategoryBoardList, boolean kanban) {
-		Map<String, String> boardWiseCategoryID = customApiConfig.getBoards();
-		String result = boardName.replace(" ", "");
-		String categoryID = boardWiseCategoryID.get(result);
 		BoardDTO asPerCategoryBoard = new BoardDTO();
 		asPerCategoryBoard.setBoardId(boardId);
 		asPerCategoryBoard.setBoardName(boardName);
 		List<BoardKpisDTO> boardKpisList = new ArrayList<>();
-		kpiMasterRepository.findByKpiCategoryIDAndKanban(categoryID, kanban).stream()
+		kpiMasterRepository.findByKpiCategoryAndKanban(boardName, kanban).stream()
 				.sorted(Comparator.comparing(KpiMaster::getDefaultOrder))
 				.forEach(kpiMaster -> setKpiUserBoardDefaultFromKpiMaster(boardKpisList, kpiMaster));
 		asPerCategoryBoard.setKpis(boardKpisList);

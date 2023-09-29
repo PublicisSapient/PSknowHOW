@@ -51,15 +51,6 @@ public class CustomApiConfig {// NOPMD
 
 	// priority kpi wise. Key : priority. Value: priority value
 	private Map<String, List<String>> priority;
-
-	// Boards kpiCategoryID wise. Key : boardName. Value: Category ID
-	private Map<String, String> boards;
-
-	@Value("${scrum_kanban.boards.name}")
-	private List<String> scrumKanbanBoardNames;
-	@Value("${other.boards.name}")
-	private List<String> otherBoardNames;
-
 	// Defect Aging x axis values list
 	private List<String> totalDefectCountAgingXAxisRange;
 
@@ -916,18 +907,6 @@ public class CustomApiConfig {// NOPMD
 		return priority;
 	}
 
-	public Map<String, String> getBoards() {
-		return boards;
-	}
-
-	public List<String> getScrumKanbanBoardNames() {
-		return scrumKanbanBoardNames;
-	}
-
-	public List<String> getOtherBoardNames() {
-		return otherBoardNames;
-	}
-
 	/**
 	 * set priority
 	 *
@@ -937,15 +916,7 @@ public class CustomApiConfig {// NOPMD
 	public void setPriority(Map<String, List<String>> priority) {
 		this.priority = priority;
 	}
-	public void setBoards(Map<String, String> boards) {
-		this.boards = boards;
-	}
-	public void setScrumKanbanBoardNames (List<String> scrumKanbanBoardNames) {
-		this.scrumKanbanBoardNames = scrumKanbanBoardNames;
-	}
-	public void setOtherBoardNames( List<String> otherBoardNames) {
-		this.otherBoardNames = otherBoardNames;
-	}
+
 	public int getNumberOfPastWeeksForKanbanCapacity() {
 		return numberOfPastWeeksForKanbanCapacity;
 	}
