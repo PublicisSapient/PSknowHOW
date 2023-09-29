@@ -55,6 +55,8 @@ public class KpiMaster extends BasicModel {
 	private String kpiBaseLine;
 	private String kpiUnit;
 	private String chartType;
+	private String upperThresholdBG;
+	private String lowerThresholdBG;
 	private String xAxisLabel;
 	private String yAxisLabel;
 	private boolean showTrend;

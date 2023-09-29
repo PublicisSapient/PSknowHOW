@@ -4148,7 +4148,25 @@ fieldMappings.forEach(function(fm) {
 	});
 });
 
+// -- DTS-28610 (Defect)
 
+db.kpi_master.updateMany(
+{
+"kpiId": { $in: ["kpi14", "kpi111", "kpi35", "kpi37", "kpi28", "kpi36", "kpi116", "kpi84", "kpi8", "kpi64", "kpi67", "kpi164"] }
+},
+{
+$set: { "upperThresholdBG": "red", "lowerThresholdBG" : "white" }
+}
+);
+
+db.kpi_master.updateMany(
+{
+"kpiId": { $in: ["kpi82", "kpi34", "kpi126", "kpi42", "kpi16", "kpi70", "kpi72", "kpi11", "kpi118", "kpi73", "kpi113", "kpi62"]}
+},
+{
+$set: { "upperThresholdBG": "white", "lowerThresholdBG" : "red" }
+}
+);
 
 // KPI add Lead time for changes in DORA tab
 db.kpi_master.bulkWrite([{ // adding kpi category dora

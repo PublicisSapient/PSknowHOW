@@ -53,6 +53,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -102,6 +104,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -152,6 +156,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -201,6 +207,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -250,6 +258,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -299,6 +309,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -343,6 +355,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -381,6 +395,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -413,6 +429,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
@@ -479,6 +497,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -528,6 +548,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -708,6 +730,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -749,6 +773,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "lineLegend": "Passed",
@@ -833,6 +859,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -1016,6 +1044,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count(Hours)",
     "isPositiveTrend": false,
@@ -1057,6 +1087,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Days",
     "yAxisLabel": "Count",
     "lineLegend": "Merge Requests",
@@ -1100,6 +1132,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count(Mins)",
     "isPositiveTrend": false,
@@ -1142,6 +1176,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
@@ -1188,6 +1224,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Months",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
@@ -1225,6 +1263,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Months",
     "yAxisLabel": "Count(Days)",
     "isPositiveTrend": true,
@@ -1550,6 +1590,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -1596,6 +1638,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -1634,6 +1678,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
     "isPositiveTrend": false,
@@ -3171,6 +3217,8 @@ db.getCollection('kpi_master').insertMany(
 			}
 		}]
 	},
+	"upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
 	"xAxisLabel": "Sprints",
 	"yAxisLabel": "Percentage",
 	"isPositiveTrend": false,
