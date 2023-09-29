@@ -26,6 +26,10 @@ export class StackedAreaChartComponent implements OnInit {
   }
 
   draw() {
+    /** Preventing Drop event for Bubbling */ 
+    d3.select(this.elem).select('#stacked-area').on('mousedown', (event) => {
+      event.stopPropagation();
+    });
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
     let kpiId = this.kpiId;
     let keys = Object.keys(this.data[0]?.value);
@@ -283,6 +287,8 @@ export class StackedAreaChartComponent implements OnInit {
 
     
   }
+  
+  
 
   ngOnDestroy(){
     d3.select(this.elem).select('#stacked-area').select('svg').remove();

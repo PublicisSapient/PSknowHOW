@@ -55,6 +55,9 @@ export class MultilineComponent implements OnChanges {
   sliderLimit = <any>'750';
   sprintList : Array<any> = [];
   @Input() viewType :string = 'chart'
+  @Input() lowerThresholdBG : string;
+  @Input() upperThresholdBG : string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
@@ -251,9 +254,9 @@ export class MultilineComponent implements OnChanges {
           let cssClass = 'tooltip2';
           let value = Math.round(d.value * 100) / 100;
           if(thresholdValue && thresholdValue !==0  && value < this.thresholdValue){
-            cssClass += ' below-thresold';
+            cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
           } else {
-            cssClass += ' above-thresold';
+            cssClass += (this.upperThresholdBG === 'red' && thresholdValue) ? ' red-bg' : ' white-bg';
           }
           return cssClass;
         })

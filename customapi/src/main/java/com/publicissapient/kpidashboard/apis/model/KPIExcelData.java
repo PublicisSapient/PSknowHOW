@@ -353,4 +353,16 @@ public class KPIExcelData {
 	private String scopeChange;
 
 
+	@JsonProperty("Completion Date")
+	private String completionDate;
+
+	@JsonProperty("Merge Date")
+	private String mergeDate;
+
+	@JsonProperty("Release Date")
+	private String releaseDate;
+
+	@JsonProperty("Merge Request Id")
+	private String mergeRequestId;
+
 }

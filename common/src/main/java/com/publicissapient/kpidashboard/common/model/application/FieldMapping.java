@@ -28,23 +28,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
@@ -389,6 +382,14 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueTypeNamesKPI151;
 	private List<String> jiraIssueTypeNamesKPI152;
 
+	private List<String> jiraDodKPI156;
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private String leadTimeConfigRepoTool = CommonConstant.JIRA;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].
