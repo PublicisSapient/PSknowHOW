@@ -23,8 +23,8 @@ import java.util.List;
  * @author aksshriv1
  */
 public enum UserBoardConfigEnum {
-	SCRUM_KANBAN_BOARD(Arrays.asList("Iteration")), OTHER_BOARD(
-			Arrays.asList("Release", "Dora", "Backlog", "Kpi Maturity"));
+	SCRUM_KANBAN_BOARD(Arrays.asList("Iteration")),
+	OTHER_BOARD(Arrays.asList("Release", "Dora", "Backlog", "Kpi Maturity"));
 
 	private final List<String> boardName;
 
