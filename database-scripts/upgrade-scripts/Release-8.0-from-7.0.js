@@ -4423,3 +4423,10 @@ db.merge_requests.createIndex({"processorItemId":1,"createdDate":1, "fromBranch"
 
 //processor items index
 db.processor_items.createIndex({"toolConfigId":1})
+
+
+//  reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi72", "kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 4 } } // Set the new value for groupId
+)
