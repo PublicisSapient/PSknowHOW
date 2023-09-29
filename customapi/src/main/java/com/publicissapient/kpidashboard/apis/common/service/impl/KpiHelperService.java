@@ -46,6 +46,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -416,7 +417,7 @@ public class KpiHelperService { // NOPMD
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
 		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH , Sort.Direction.DESC);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 		sprintWiseStoryList.stream().forEach(story -> {
@@ -506,7 +507,7 @@ public class KpiHelperService { // NOPMD
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
 		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH , Sort.Direction.DESC);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 

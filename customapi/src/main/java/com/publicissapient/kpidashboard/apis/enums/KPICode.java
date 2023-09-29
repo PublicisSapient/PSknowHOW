@@ -435,10 +435,15 @@ public enum KPICode {
     /**
      * Backlog - Iteration Readiness kpi
      */
-    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name());
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Change DORA  kpi code
+     */
+    LEAD_TIME_FOR_CHANGE("kpi156", KPISource.JIRA.name());
 
 
-	// @formatter:on
+    // @formatter:on
 
 	private final String kpiId;
 

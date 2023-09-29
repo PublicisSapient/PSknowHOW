@@ -46,6 +46,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldLabel;
 	private String fieldType;
 	private String fieldCategory;
+	private String toggleLabel;
 	private String section;
 	private boolean processorCommon;
 	private MappingToolTip tooltip;
@@ -58,6 +59,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	class MappingToolTip {
 		String definition;
 		String kpiImpacted;
+		String toggleDefinition;
 	}
 
 	@Data
