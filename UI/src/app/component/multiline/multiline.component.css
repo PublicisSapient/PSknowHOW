@@ -178,12 +178,12 @@
   width: max-content;
 }
 
-:host ::ng-deep.below-thresold{
+:host ::ng-deep.red-bg{
   color: white;
   background: rgb(210, 22, 22)
 }
 
-:host ::ng-deep.above-thresold{
+:host ::ng-deep.white-bg{
   color: var(--color-gray-34);
   background: rgba(255, 255, 255, 0.95);
 }

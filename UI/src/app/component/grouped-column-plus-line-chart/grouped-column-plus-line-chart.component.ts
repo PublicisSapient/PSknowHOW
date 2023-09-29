@@ -52,6 +52,8 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   unmodifiedData: any = [];
   sprintList : Array<any> = [];
   @Input() viewType :string = 'chart'
+  @Input() lowerThresholdBG : string;
+  @Input() upperThresholdBG : string;
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -656,9 +658,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               let cssClass = 'tooltip2';
               let value = d.lineValue;
               if(this.thresholdValue && this.thresholdValue !==0  && value < this.thresholdValue){
-                cssClass += ' below-thresold';
+                cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
               } else {
-                cssClass += ' above-thresold';
+                cssClass += (this.upperThresholdBG === 'red' && this.thresholdValue) ? ' red-bg' : ' white-bg';
               }
               return cssClass;
             })
