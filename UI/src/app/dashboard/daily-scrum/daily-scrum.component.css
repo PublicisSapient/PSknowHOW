@@ -1,4 +1,4 @@
-.container{
+.container {
     background: #fff;
     border-radius: 5px;
     opacity: 1;
@@ -8,13 +8,14 @@
     overflow-y: scroll;
 }
 
-.filter-header, .show-more{
+.filter-header,
+.show-more {
     display: flex;
     flex-wrap: wrap;
     padding: 0.5rem 1rem;
 }
 
-.user-filter{
+.user-filter {
     padding: 0px;
     margin-left: 2rem;
     max-width: calc(75%);
@@ -22,7 +23,7 @@
     display: inline-block;
 }
 
-.filter-header{
+.filter-header {
     justify-content: space-between;
     position: sticky;
     top: 0;
@@ -30,14 +31,14 @@
     background-color: #fff;
 }
 
-.user-filter.show-less{
+.user-filter.show-less {
     height: 62px;
     overflow: hidden;
     padding-bottom: 1rem;
     width: 85% !important;
 }
 
-.show-more{
+.show-more {
     height: 62px;
     width: 15%;
 }
@@ -48,59 +49,82 @@
     background: #EFEFEF;
 } */
 
-:host::ng-deep .p-button:enabled:focus, :host::ng-deep.p-button:enabled:hover{
+:host::ng-deep .p-button:enabled:focus,
+:host::ng-deep.p-button:enabled:hover {
     background: #EFEFEF;
     color: black;
 }
 
-:host ::ng-deep .p-button.p-button-rounded{
-    border-radius: 2.5rem;
-    font-size: 10px;
-}
-
 /* user button css */
-button.assignee{
+button.assignee {
     width: 40px;
-    height: 40px;
+    height: 36px;
     border-radius: 50%;
     background-color: white;
     cursor: pointer;
-    margin: 0.15rem;
     font-weight: bold;
     display: inline-block;
+    padding: 0;
+    align-items: flex-end;
+    margin-left: 4px;
 }
 
-button.assignee.selected-user{
+button.assignee.selected-user {
     background: #437495 !important;
     color: white !important;
     font-weight: bold;
     border: none;
 }
+
 /* user info table css */
-:host::ng-deep .p-datatable{
+:host::ng-deep .p-datatable {
     border: 1px solid var(--color-gray-c6);
 }
 
-:host::ng-deep.p-datatable-thead tr:nth-child(2) th{
+:host::ng-deep.p-datatable-thead tr:nth-child(2) th {
     padding: 0.5rem 1rem;
     background-color: #EFEFEF;
 }
 
-:host::ng-deep .p-datatable tr td .user-name{
+:host::ng-deep .p-datatable tr td .user-name {
     font-weight: bold;
 }
 
-.selected-user-info{
+.selected-user-info {
     display: flex;
     margin-left: 1rem;
 }
 
-.selected-user-info p{
+.selected-user-info p {
     color: var(--color-green);
 }
 
 @media (max-width: 1920px) {
-  :host .container, :host .p-component {
-    font-size: 10px !important;
-   }
+
+    :host .container,
+    :host::ng-deep .container .p-component,
+    .button.assignee,:host::ng-deep .legends-button {
+        font-size: 10px !important;
+        font-family: var(--font-regular) !important;
+    }
+
+    :host .button.assignee {
+        width: 40px;
+        height: 36px;
+    }
+}
+
+@media (min-width: 1921px) {
+
+    :host .container,
+    :host::ng-deep .container .p-component,
+    .button.assignee,:host::ng-deep .legends-button {
+        font-size: 16px !important;
+        font-family: var(--font-regular) !important;
+    }
+
+    :host .button.assignee {
+        width: 40px;
+        height: 36px;
+    }
 }

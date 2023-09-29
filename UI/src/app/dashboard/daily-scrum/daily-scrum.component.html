@@ -25,7 +25,7 @@
             </ng-template>
 
             <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
-                <div class="p-d-flex" style="width: 75vw; max-height: 50px;">
+                <div class="p-d-flex" style="width: 70vw; max-height: 50px;">
                     <button *ngFor="let assignee of assigneeList"
                         (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
                         [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
@@ -34,7 +34,7 @@
                     </button>
                 </div>
             </div>
-            <button class="assignee p-ml-3" (click)="handleViewExpandCollapse()">
+            <button class="assignee" (click)="handleViewExpandCollapse()">
                 <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
             </button>
         </div>

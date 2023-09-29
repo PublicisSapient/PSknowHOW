@@ -109,6 +109,11 @@ export class DailyScrumGraphComponent implements OnChanges,OnDestroy {
         .style('font-weight','bold');
     }
 
+    svg
+        .select('.xAxis')
+        .selectAll(`.tick text`)
+        .style('font-size','10px');
+
       //draw line for todays date if it exist
     if (typeof this.currentDayIndex === 'number') {
       const line = svg
