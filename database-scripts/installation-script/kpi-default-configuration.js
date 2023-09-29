@@ -737,6 +737,13 @@
                             "Tech Story",
                             "Change request"
                         ]
+                  },
+                  {
+                    "type":"jiraDodKPI163",
+                    "value":[
+                      "Closed",
+                      "Done"
+                    ]
                   }
         ]
                                         },
