@@ -4177,6 +4177,31 @@
     "calculateMaturity": false
   },
   {
+    "kpiId":"kpi163",
+    "kpiName":"Defect by Testing Phase",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":7,
+    "kpiCategory":"Release",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":"horizontalPercentBarChart",
+    "kpiInfo":{
+      "definition":" It gives a breakup of escaped defects by testing phase"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"multiSelectDropDown",
+    "boxType":"chart",
+    "calculateMaturity":false
+  },
+  {
     "kpiId" : "kpi164",
     "kpiName" : "Scope Churn",
     "maxValue" : "200",
@@ -4216,5 +4241,37 @@
     "isAdditionalFilterSupport" : true,
     "calculateMaturity" : true,
     "maturityRange" : [ "-40", "40-60", "60-75", "75-90", "90-" ]
+  },
+  {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change commit and its deployable state."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   }
 ]

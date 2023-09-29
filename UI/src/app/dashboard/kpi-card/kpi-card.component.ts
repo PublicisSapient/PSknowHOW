@@ -204,7 +204,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
         if(selectedProjectTrend.value[0]?.dataValue?.length > 0){
           this.columnList = [  { field: 'duration', header: 'Duration'  }];
-         selectedProjectTrend.value[0].dataValue.forEach(d => { 
+         selectedProjectTrend.value[0].dataValue.forEach(d => {
             this.columnList.push({ field: d.name+' value', header: d.name+' KPI Value', unit : 'unit' });
             this.columnList.push({ field: d.name+' params', header: d.name+' Calculation Details', unit : 'unit' });
           });
@@ -269,7 +269,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1  && selectedTab !== 'release') {
+    if (selectedType === 'scrum' && selectedTrend.length == 1  || (selectedTab === 'release' && this.kpiData?.kpiId === 'kpi163')) {
       this.loading = true;
       this.noData = false;
       this.displayConfigModel = true;

@@ -828,6 +828,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 				.orOperator(projectCriteriaList.toArray(new Criteria[0]));
 		Criteria criteriaProjectLevelAdded = new Criteria().andOperator(criteria, criteriaAggregatedAtProjectLevel);
 		Query query = new Query(criteriaProjectLevelAdded);
+		// add projection
 		return operations.find(query, JiraIssue.class);
 
 	}

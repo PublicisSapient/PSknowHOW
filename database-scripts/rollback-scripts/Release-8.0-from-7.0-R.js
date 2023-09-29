@@ -534,6 +534,44 @@ db.getCollection('field_mapping_structure').bulkWrite([
     }
 ]);
 
+
+//  rollback reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi72" }, { $set: { "groupId": 2 } })
+
+
+
+
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
+//DTS-26150 start
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["testingPhaseDefectsIdentifier", "jiraDodKPI163"]}
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI163"
+      }
+   }}
+);
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi163" }
+);
+//DTS-26150 end
+
 // delete Scope Churn kpi
 //DTS-28198 remove radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -598,7 +636,7 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
 //Reversing DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
@@ -615,11 +653,26 @@ db.field_mapping_structure.deleteMany({
     }
 });
 
+// delete lead time for change
+db.kpi_master.deleteOne({
+      "kpiId": "kpi156"
+    });
 
-//  rollback reorder kpi group for performance
-db.kpi_master.updateMany(
-   { "kpiId": { $in: ["kpi111", "kpi82"] } }, // Match documents with specified kpiId values
-   { $set: { "groupId": 1 } } // Set the new value for groupId
-)
+// fieldMapping Structure fields for Lead time for changes in DORA tab
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodKPI156" , "jiraIssueTypeKPI156"]
+    }
+});
 
-db.kpi_master.updateOne({ "kpiId": "kpi72" }, { $set: { "groupId": 2 } })
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI156"
+      },
+      "issues" : {
+       "type": "jiraIssueTypeKPI156"
+      }
+   }}
+);

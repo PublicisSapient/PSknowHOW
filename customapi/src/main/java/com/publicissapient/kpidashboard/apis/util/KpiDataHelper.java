@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -46,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Duration;
 import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -83,6 +85,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class KpiDataHelper {
 	private static final String CLOSED = "closed";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	private static final DecimalFormat df = new DecimalFormat(".##");
 
 	private KpiDataHelper() {
 	}
@@ -808,6 +811,29 @@ public final class KpiDataHelper {
 	}
 
 	/**
+	 *
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @return
+	 */
+
+	public static double calWeekDaysExcludingWeekends(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			Duration duration = new Duration(startDateTime, endDateTime);
+			long leadTimeChangeInMin = duration.getStandardMinutes();
+			double leadTimeChangeInFullDay = (double) leadTimeChangeInMin / 60 / 24;
+			if (leadTimeChangeInFullDay > 0) {
+				String formattedValue = df.format(leadTimeChangeInFullDay);
+				double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
+				int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+				double leadTimeChangeExcluded = leadTimeChangeIncluded - weekendsCount;
+				return leadTimeChangeExcluded;
+			}
+		}
+		return 0.0d;
+	}
+
+	/**
 	 * Cal time with 8hr in a day
 	 *
 	 * @param timeInHours
@@ -915,12 +941,12 @@ public final class KpiDataHelper {
 	 */
 	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
 		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
-		int value = 5; // Default value for 'value'
+		int value = 8; // Default value for 'value'
 		String duration = CommonConstant.WEEK; // Default value for 'duration'
 		LocalDateTime startDateTime = null;
 
 		if (filterDuration != null) {
-			value = (int) filterDuration.getOrDefault("value", 5);
+			value = (int) filterDuration.getOrDefault("value", 8);
 			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
 		}
 
