@@ -114,8 +114,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .call(d3.axisLeft(y).tickSize(0));
 
     yAxis.selectAll('text')
-      .style('font-size', '14px')
-      .style('font-weight', 'bold');
+      .style('font-size', '12px')
+      .style('font-weight', 'bold')
+      .call(this.wrap, 75);
 
     yAxis.select('path')
       .style('display', 'none')
@@ -315,5 +316,15 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     const popupComponentRef = this.popupHost.createComponent(HorizontalPercentBarChartComponent);
     popupComponentRef.setInput('data', [d]);
     popupComponentRef.setInput('isOnTooltip', true);
+  }
+
+  wrap(text, wrapWidth){
+    console.log(text)
+    text.each(function () {
+      let text = d3.select(this);
+      if (text.text().length > 10) {
+          text.text(text.text().substring(0, 10) + '...');
+        }
+    });
   }
 }
