@@ -2094,6 +2094,15 @@ export class JiraConfigComponent implements OnInit {
                 show: true,
                 isLoading: false,
               },
+              {
+                type: 'textarea',
+                label: 'JQL Query',
+                id: 'boardQuery',
+                validators: [],
+                containerClass: 'p-sm-6',
+                disabled: false,
+                show: true,
+              },
             ],
           };
         }
