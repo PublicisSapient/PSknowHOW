@@ -30,11 +30,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (!this.isDrilledDown) {
-        this.data = this.data[0]['value'];
-        this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
+      if (this.data[0]['value']) {
+        if (!this.isDrilledDown) {
+          this.data = this.data[0]['value'];
+          this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
+        }
+        this.draw(this.data);
       }
-      this.draw(this.data);
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
 
@@ -173,7 +175,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         return color(d.key);
       })
       .on('click', (event, d) => {
-        if (!self.isDrilledDown) {
+        if (!self.isDrilledDown && event.target.__data__.data && event.target.__data__.data.kpiGroup) {
           self.isDrilledDown = true;
           let key = d['key'];
           let kpiGroup = event.target.__data__.data.kpiGroup;
@@ -253,7 +255,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       });
     } else {
       subgroups.forEach((d, i) => {
-        htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-size: 10px; font-weight:bold;">: ${d} 
+        htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> <span class="p-m-1" style="font-size: 10px; font-weight:bold;">: ${d}
         (${data[0].filter((val) => val.subFilter === d)[0]['value']} | <span style="font-weight:bold">${data[0][d].toFixed(2).replace(/\.00$/, '')}%</span>)
         </span></div>`;
       });

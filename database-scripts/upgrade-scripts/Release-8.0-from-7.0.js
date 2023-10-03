@@ -3850,6 +3850,135 @@ db.getCollection('field_mapping_structure').bulkWrite([
   }
 ]);
 
+);
+
+//  reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi72", "kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 4 } } // Set the new value for groupId
+);
+
+//For DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "dropDown" } }
+);
+
+//DTS-26150 start
+db.getCollection('field_mapping_structure').insertOne(
+{
+  "fieldName": "testingPhaseDefectsIdentifier",
+  "fieldLabel": "Testing phase defects identification",
+  "fieldType": "radiobutton",
+  "section": "Defects Mapping",
+  "tooltip": {
+    "definition": "This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+  },
+  "options": [
+    {
+      "label": "CustomField",
+      "value": "CustomField"
+    },
+    {
+      "label": "Labels",
+      "value": "Labels"
+    },
+    {
+      "label": "Component",
+      "value": "Component"
+    }
+  ],
+  "nestedFields": [
+    {
+      "fieldName": "testingPhaseDefectCustomField",
+      "fieldLabel": "Testing Phase Defect CustomField",
+      "fieldType": "text",
+      "fieldCategory": "fields",
+      "filterGroup": [
+        "CustomField"
+      ],
+      "tooltip": {
+        "definition": " Provide customfield name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName": "testingPhaseDefectValue",
+      "fieldLabel": "Testing Phase Defect Values",
+      "fieldType": "chips",
+      "filterGroup": [
+        "CustomField",
+        "Labels"
+      ],
+      "tooltip": {
+        "definition": "Provide label name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName": "testingPhaseDefectComponentValue",
+      "fieldLabel": "Component",
+      "fieldType": "text",
+      "filterGroup": [
+        "Component"
+      ],
+      "tooltip": {
+        "definition": "Provide label name to identify testing phase defects."
+      }
+    }
+  ]
+});
+
+db.getCollection('kpi_master').insertOne(
+{
+    "kpiId":"kpi163",
+    "kpiName":"Defect by Testing Phase",
+    "maxValue":"",
+    "kpiUnit":"Count",
+    "isDeleted":"False",
+    "defaultOrder":7,
+    "kpiCategory":"Release",
+    "kpiSource":"Jira",
+    "groupId":9,
+    "thresholdValue":"",
+    "kanban":false,
+    "chartType":"horizontalPercentBarChart",
+    "kpiInfo":{
+        "definition":" It gives a breakup of escaped defects by testing phase"
+    },
+    "xAxisLabel":"",
+    "yAxisLabel":"",
+    "isPositiveTrend":true,
+    "showTrend":false,
+    "isAdditionalFilterSupport":false,
+    "kpiFilter":"radioButton",
+    "boxType":"chart",
+    "calculateMaturity":false,
+    "kpiSubCategory": "Release Review"
+});
+db.getCollection('field_mapping_structure').insertOne(
+{
+	"fieldName": "jiraDodKPI163",
+	"fieldLabel": "DOD Status",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"section": "WorkFlow Status Mapping",
+	"tooltip": {
+		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+	}
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI163",
+                "value":[
+                    "Closed",
+                    "Done"
+                ]
+            }
+   }}
+);
+//DTS-26150 end
 // scope churn kpi_master
 //DTS-28198 added radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -4020,7 +4149,7 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
 //--- For DTS-27550 making release Progress filter to dropdown
 //--- DTS-27490 Iteration Readiness KPI for Backlog Dashboard
 //--- DTS-28878 scope churn defect fix
@@ -4148,3 +4277,149 @@ fieldMappings.forEach(function(fm) {
 	});
 });
 
+// -- DTS-28610 (Defect)
+
+db.kpi_master.updateMany(
+{
+"kpiId": { $in: ["kpi14", "kpi111", "kpi35", "kpi37", "kpi28", "kpi36", "kpi116", "kpi84", "kpi8", "kpi64", "kpi67", "kpi164"] }
+},
+{
+$set: { "upperThresholdBG": "red", "lowerThresholdBG" : "white" }
+}
+);
+
+db.kpi_master.updateMany(
+{
+"kpiId": { $in: ["kpi82", "kpi34", "kpi126", "kpi42", "kpi16", "kpi70", "kpi72", "kpi11", "kpi118", "kpi73", "kpi113", "kpi62"]}
+},
+{
+$set: { "upperThresholdBG": "white", "lowerThresholdBG" : "red" }
+}
+);
+
+// KPI add Lead time for changes in DORA tab
+db.kpi_master.bulkWrite([{ // adding kpi category dora
+  updateMany: {
+    filter: {
+      kpiId: {
+        $in: ["kpi116", "kpi118"]
+      }
+    },
+    update: {
+      $set: {
+    "aggregationCircleCriteria" : "average"
+      }
+    }
+  }
+}, {
+   insertOne: {
+     document: {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+ }
+   }
+ }]);
+
+// fieldMapping Structure fields for Lead time for changes in DORA tab
+db.getCollection('field_mapping_structure').insertMany([{
+            "fieldName": "leadTimeConfigRepoTool",
+            "fieldLabel": "Lead Time KPI calculation logic",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
+            },
+            "options": [{
+                    "label": "Jira",
+                    "value": "Jira"
+                },
+                {
+                    "label": "Repo",
+                    "value": "Repo"
+                }
+            ],
+            "nestedFields": [
+{
+	"fieldName": "jiraIssueTypeKPI156",
+	"fieldLabel": "Issue type to be included",
+	"fieldType": "chips",
+	"fieldCategory": "Issue_Type",
+	 "filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
+	}
+}, {
+	"fieldName": "jiraDodKPI156",
+	"fieldLabel": "Status to identify DOD",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+	}
+},{
+	"fieldName": "toBranchForMRKPI156",
+	"fieldLabel": "Production Branch Name",
+	"fieldType": "text",
+	"filterGroup": ["Repo"],
+	"tooltip": {
+		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+	}
+}]
+}]);
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI156",
+                "value":[
+                    "Closed"
+                ]
+            },
+   "issues" : {
+                      "type": "jiraIssueTypeKPI156",
+                      "value": [
+                          "Story",
+                          "Enabler Story",
+                          "Tech Story",
+                          "Change request"
+                      ]
+}
+   }}
+);
+
+// merge Request index
+db.merge_requests.createIndex({"processorItemId":1,"createdDate":1, "fromBranch":1, "closedDate":1})
+
+//processor items index
+db.processor_items.createIndex({"toolConfigId":1})

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.repository.jira;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -76,7 +77,6 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	List<JiraIssueCustomHistory> findByStoryIDInAndBasicProjectConfigIdIn(List<String> storyID,
 			List<String> basicProjectConfigId);
 
-	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1, 'createdDate' : 1,'statusUpdationLog':1, 'fixVersionUpdationLog':1}")
+	@Query(value = "{ 'basicProjectConfigId' : ?0  }", fields = "{ 'storyType' : 1 , 'createdDate' : 1,'statusUpdationLog':1, 'fixVersionUpdationLog':1}")
 	List<JiraIssueCustomHistory> findByBasicProjectConfigIdIn(String basicProjectConfigId);
-
 }

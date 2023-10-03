@@ -275,6 +275,14 @@ public class ConfigHelperService {
 	}
 
 	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_AGG_CIRCLE_CRITERIA)
+	public Map<String, String> calculateCriteriaForCircleKPI() {
+		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
+		return masterList.stream().filter(d -> d.getAggregationCircleCriteria() != null)
+				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCircleCriteria));
+	}
+
+	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_BASIC_TREE)
 	public ProjectBasicConfigNode loadProjectBasicTree() {
 		log.info("loading Project Basic Tree");

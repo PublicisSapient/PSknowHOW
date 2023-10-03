@@ -361,8 +361,9 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.JIRADODQAKPI111));
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.JIRADODKPI3));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.JIRADODKPI37));
+		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.JIRADODKPI155));
+		fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.JIRADODKPI163));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.JIRADODKPI127));
-		// fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.JIRADODKPI163));
 		fieldMapping.setJiraLiveStatusKPI152(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152))
 						? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152).get(0)
@@ -558,7 +559,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
-			// fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 
 			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
@@ -716,7 +718,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
-			// fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatusKPI152(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI151(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI3(workflowMap.getOrDefault(CommonConstant.CLOSED, new ArrayList<>()));
@@ -884,6 +887,9 @@ public class CreateMetadataImpl implements CreateMetadata {
 			} else if (identifier.getType().equals(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE)) {
 				List<String> uatList = createFieldList(allIssueTypes, identifier);
 				issueTypeMap.put(CommonConstant.KANBAN_TECH_DEBT_ISSUE_TYPE, uatList);
+			} else if (identifier.getType().equals(CommonConstant.TICKET_COUNT_ISSUE_TYPE)) {
+				List<String> ticketCountList = createFieldList(allIssueTypes, identifier);
+				issueTypeMap.put(CommonConstant.TICKET_COUNT_ISSUE_TYPE, ticketCountList);
 			}
 		}
 		return issueTypeMap;
@@ -953,6 +959,11 @@ public class CreateMetadataImpl implements CreateMetadata {
 			case CommonConstant.JIRA_BLOCKED_STATUS: {
 				List<String> list = createFieldList(allworkflow, identifier);
 				workflowMap.put(CommonConstant.JIRA_BLOCKED_STATUS, list);
+				break;
+			}
+			case CommonConstant.REJECTION_RESOLUTION: {
+				List<String> list = createFieldList(allworkflow, identifier);
+				workflowMap.put(CommonConstant.REJECTION_RESOLUTION, list);
 				break;
 			}
 			case CommonConstant.JIRA_WAIT_STATUS: {

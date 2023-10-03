@@ -136,7 +136,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 			List<String> versionDate = new ArrayList<>();
 			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(projectData)) {
-				LocalDate endDateTime = LocalDate.now();
+				LocalDate endDateTime = LocalDate.now().minusWeeks(1);
 				for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
 					LocalDate[] weeks = getWeeks(endDateTime);
 					LocalDate monday = weeks[0];

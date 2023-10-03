@@ -134,6 +134,8 @@ public final class CommonConstant {
 	public static final String COMPONENT = "Component";
 	public static final String CUSTOM_FIELD = "CustomField";
 	public static final String CACHE_AGG_CRITERIA = "cache_aggregation_criteria";
+
+	public static final String CACHE_AGG_CIRCLE_CRITERIA = "cache_aggregation_circle_criteria";
 	public static final String CACHE_MATURITY_RANGE = "cache_maturity_range";
 
 	public static final String COMPLETED_ISSUES = "completedIssues";
@@ -213,12 +215,14 @@ public final class CommonConstant {
 	public static final String JIRADODKPI152="jiraDodKPI152";
 	public static final String JIRADODKPI151="jiraDodKPI151";
 	public static final String JIRADODKPI37="jiraDodKPI37";
-	public static final String JIRASTARTDEVKPI54="jiraStatusStartDevelopmentKPI154";
+	public static final String JIRADODKPI155="jiraDodKPI155";
+	public static final String JIRADODKPI163="jiraDodKPI163";
 	public static final String JIRAISSUETYPEKPI35="jiraIssueTypeKPI35";
 	public static final String JIRADEFECTREMOVALISSUETYPEKPI34="jiraDefectRemovalIssueTypeKPI34";
 	public static final String JIRATESTAUTOMATIONISSUETYPE="jiraTestAutomationIssueType";
 	public static final String JIRASPRINTVELOCITYISSUETYPEKPI138="jiraSprintVelocityIssueTypeKPI138";
 	public static final String JIRASPRINTCAPACITYISSUETYPEKPI46="jiraSprintCapacityIssueTypeKpi46";
+	public static final String JIRAISSUETYPEKPI37="jiraIssueTypeKPI37";
 	public static final String JIRADEFECTCOUNTLISSUETYPEKPI28="jiraDefectCountlIssueTypeKPI28";
 	public static final String JIRADEFECTCOUNTLISSUETYPEKPI36="jiraDefectCountlIssueTypeKPI36";
 	public static final String JIRAQAKPI111ISSUETYPE="jiraQAKPI111IssueType";
@@ -299,7 +303,6 @@ public final class CommonConstant {
 	public static final String JIRASTATUSFORINPROGRESSKPI128="jiraStatusForInProgressKPI128";
 	public static final String JIRASTATUSFORINPROGRESSKPI123="jiraStatusForInProgressKPI123";
 	public static final String JIRASTATUSFORINPROGRESSKPI119="jiraStatusForInProgressKPI119";
-	public static final String JIRASTATUSFORINPROGRESSKPI154="jiraStatusForInProgressKPI154";
 
 	public static final String JIRASTORYPOINTSCUSTOMFIELD="jiraStoryPointsCustomField";
 	public static final String EPICCOSTOFDELAY="epicCostOfDelay";
@@ -311,6 +314,10 @@ public final class CommonConstant {
 	public static final String SPRINTNAME="sprintName";
 	public static final String JIRATECHDEBTISSUETYPE="jiraTechDebtIssueType";
 	public static final String ACTIVE = "ACTIVE";
+
+	public static final String JIRA = "Jira";
+
+	public static final String REPO = "Repo";
 
 	private CommonConstant() {
 
