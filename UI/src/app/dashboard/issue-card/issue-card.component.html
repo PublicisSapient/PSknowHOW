@@ -2,7 +2,7 @@
 
     <div >
         <h1 class="font-bold p-mb-2">{{issueData['Issue Id']}} <span><a target="_blank" [href]="issueData['Issue URL']"><i class="pi pi-window-maximize" [style]="{'font-size': '1rem','font-weight':'bold','color':'black'}"></i></a></span></h1>
-        <h5 class="font-grey p-mt-2 p-mb-2">{{issueData['Issue Description']}}</h5>
+        <h3 class="font-grey p-mt-2 p-mb-2">{{issueData['Issue Description']}}</h3>
         <h5 class="font-bold p-mt-2 p-mb-2" *ngIf="issueData['epicName']">{{issueData['epicName']}}</h5>
         <h5 class="font-grey p-mt-2 p-mb-2">Fix Version: {{issueData['Release Name']}}</h5>
     </div>

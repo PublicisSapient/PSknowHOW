@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SortEvent } from 'primeng/api';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-daily-scrum',
@@ -28,7 +29,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
   selectedUserInfo;
   currentAssigneeissueData= [];
 
-  constructor() { }
+  constructor(private service: SharedService) { }
 
   ngOnInit(): void {
     this.filterData?.forEach(filter =>{
@@ -56,6 +57,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
     this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === assigneeId);
     this.onSelectedUserChange.emit(assigneeId);
     this.getCurrentAssigneeIssueData(assigneeName);
+    this.service.setIssueData({});
   }
 
   setShowLess(){

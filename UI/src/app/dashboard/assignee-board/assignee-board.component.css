@@ -1,24 +1,21 @@
 .container{
     min-height: 400px;
     display: flex;
-    justify-content:flex-start;
-    width: 100%;
     padding: 0.25rem;
     box-sizing: border-box;
     position: relative;
 }
 
 .graph-container{
-    flex-basis: 75%;
     border: 1px solid #c0c0c0;
     margin-right: 0.25rem;
-    width: 75%;
+    flex-basis: 75%;
+    flex: 1 1 auto;
 }
 
 .issue-card-container{
     flex-basis: 24%;
     border: 1px solid #c0c0c0;
-    width: 24%;
 }
 
 .issue-nav{

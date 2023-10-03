@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
   selector: 'app-issue-card',
@@ -157,7 +158,11 @@ export class IssueCardComponent implements OnChanges {
   //   };
 
   isOverViewSelected = true;
-  constructor() { }
+  constructor(private service: SharedService) {
+    this.service.currentData.subscribe(data => {
+      this.issueData = data;
+    });
+   }
 
   ngOnChanges(changes: SimpleChanges){
     console.log(this.issueData);
