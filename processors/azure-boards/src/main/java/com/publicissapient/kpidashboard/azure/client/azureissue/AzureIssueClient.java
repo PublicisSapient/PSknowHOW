@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,12 +30,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -45,6 +42,7 @@ import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -53,11 +51,12 @@ import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedT
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemCreatedBy;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public abstract class AzureIssueClient {// NOPMD //NOSONAR
@@ -408,7 +407,8 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 			ProjectConfFieldMapping projectConfig) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
-			jiraIssue.setAssigneeName(setAssigneeName(jiraIssue.getAssigneeId(),projectConfig.getBasicProjectConfigId().toString(),assigneeSetToSave));
+			jiraIssue.setAssigneeName(setAssigneeName(jiraIssue.getAssigneeId(),
+					projectConfig.getBasicProjectConfigId().toString(), assigneeSetToSave));
 		} else {
 			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
 		}

@@ -39,7 +39,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
@@ -447,8 +446,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssue corresponding to provided IssueId in DB
 	 */
 	private JiraIssue findOneAzureIssue(String issueId, String basicProjectConfigId) {
-		JiraIssue jiraIssues = jiraIssueRepository
-				.findByIssueIdAndBasicProjectConfigId(issueId, basicProjectConfigId);
+		JiraIssue jiraIssues = jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(issueId, basicProjectConfigId);
 
 		if (ObjectUtils.allNull(jiraIssues)) {
 			return null;
@@ -1185,24 +1183,24 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void saveAssigneeDetailsToDb(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave,
 			AssigneeDetails assigneeDetails) {
-			if (assigneeDetails == null) {
-				assigneeDetails = new AssigneeDetails();
-				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-				assigneeDetails.setSource(ProcessorConstants.AZURE);
-				assigneeDetails.setAssignee(assigneeSetToSave);
-				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					assigneeDetails.setAssigneeSequence(2);
-				}
-			} else {
-				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
-				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
-				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
-				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
-				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
-					assigneeDetails.setAssigneeSequence(updatedAssigneeSetToSave.size()+1);
-				}
+		if (assigneeDetails == null) {
+			assigneeDetails = new AssigneeDetails();
+			assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+			assigneeDetails.setSource(ProcessorConstants.AZURE);
+			assigneeDetails.setAssignee(assigneeSetToSave);
+			if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+				assigneeDetails.setAssigneeSequence(2);
 			}
-			assigneeDetailsRepository.save(assigneeDetails);
+		} else {
+			Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
+			updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
+			updatedAssigneeSetToSave.addAll(assigneeSetToSave);
+			assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+			if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+				assigneeDetails.setAssigneeSequence(updatedAssigneeSetToSave.size() + 1);
+			}
+		}
+		assigneeDetailsRepository.save(assigneeDetails);
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
