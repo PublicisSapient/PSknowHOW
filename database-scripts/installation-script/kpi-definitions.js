@@ -594,6 +594,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "yAxisLabel": "Percentage",
     "xAxisLabel": "Weeks",
     "isPositiveTrend": true,
@@ -640,6 +642,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -678,6 +682,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
     "isPositiveTrend": false,
