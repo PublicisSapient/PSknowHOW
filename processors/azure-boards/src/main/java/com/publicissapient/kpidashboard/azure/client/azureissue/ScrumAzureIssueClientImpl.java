@@ -1185,20 +1185,24 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void saveAssigneeDetailsToDb(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave,
 			AssigneeDetails assigneeDetails) {
-		if (CollectionUtils.isNotEmpty(assigneeSetToSave)) {
 			if (assigneeDetails == null) {
 				assigneeDetails = new AssigneeDetails();
 				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
 				assigneeDetails.setSource(ProcessorConstants.AZURE);
 				assigneeDetails.setAssignee(assigneeSetToSave);
+				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					assigneeDetails.setAssigneeSequence(2);
+				}
 			} else {
 				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
 				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
 				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
 				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+				if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+					assigneeDetails.setAssigneeSequence(updatedAssigneeSetToSave.size()+1);
+				}
 			}
 			assigneeDetailsRepository.save(assigneeDetails);
-		}
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {
