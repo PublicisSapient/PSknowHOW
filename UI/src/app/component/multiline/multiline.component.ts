@@ -127,9 +127,19 @@ export class MultilineComponent implements OnChanges {
     const kpiId = this.kpiId;
     const showPercent = false;
     const showWeek = false;
-    const showUnit = this.unit;
+    const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
     const board = this.board;
     const sprintList = data[0].value.map(details=>details.date || details?.sortSprint);
+    const unitAbbs = {
+      'hours' : 'Hrs',
+      'sp' : 'SP',
+      'days' : 'Day',
+      'mrs' : 'MRs',
+      'min' : 'Min',
+      '%' : '%',
+      'check-ins' : 'CI',
+      'tickets' : 'T'
+    }
 
     // width = $('#multiLineChart').width();
     width =
@@ -272,7 +282,7 @@ export class MultilineComponent implements OnChanges {
         .style('top', d => {
           return yScale(Math.round(d.value * 100) / 100)+10 + 'px'
         })
-        .text(d => Math.round(d.value * 100) / 100)
+        .text(d => Math.round(d.value * 100) / 100 + ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
         .transition()
         .duration(500)
         .style('display', 'block')

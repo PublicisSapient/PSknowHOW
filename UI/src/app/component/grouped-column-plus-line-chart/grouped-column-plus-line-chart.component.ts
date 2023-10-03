@@ -138,6 +138,16 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   }
 
   draw2(data) {
+    const unitAbbs = {
+      'hours' : 'Hrs',
+      'sp' : 'SP',
+      'days' : 'Day',
+      'mrs' : 'MRs',
+      'min' : 'Min',
+      '%' : '%',
+      'check-ins' : 'CI',
+      'tickets' : 'T'
+    }
     let sprintList = [];
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -675,7 +685,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .style('top', d => {
               return yScale(d.lineValue) - 25 + 'px'
             })
-            .text(d => d.lineValue)
+            .text(d => d.lineValue+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
             .transition()
             .duration(500)
             .style('display', 'block')
