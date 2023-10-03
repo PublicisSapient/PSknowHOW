@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { SharedService } from 'src/app/services/shared.service';
 import { DailyScrumComponent } from './daily-scrum.component';
 
 describe('DailyScrumComponent', () => {
@@ -8,7 +8,8 @@ describe('DailyScrumComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DailyScrumComponent]
+      declarations: [DailyScrumComponent],
+      providers: [SharedService]
     })
       .compileComponents();
 
