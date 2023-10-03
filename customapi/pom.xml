@@ -439,24 +439,6 @@
 				</plugins>
 			</build>
 		</profile>
-		<profile>
-			<id>dataValidation</id>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>${maven-surefire-plugin.version}</version>
-						<configuration>
-							<suiteXmlFiles>
-								<suiteXmlFile>${suiteXmlFile}</suiteXmlFile>
-							</suiteXmlFiles>
-						</configuration>
-					</plugin>
-
-				</plugins>
-			</build>
-		</profile>
 	</profiles>
 
 	<scm>
