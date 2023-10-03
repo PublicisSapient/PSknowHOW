@@ -66,10 +66,12 @@ import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
@@ -135,6 +137,9 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	/**
 	 * method to save basic configuration
@@ -220,6 +225,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 							}
 						}
 						processorExecutionTraceLogRepository.saveAll(traceLogs);
+					}
+					AssigneeDetails assigneeDetails = assigneeDetailsRepository
+							.findByBasicProjectConfigId(basicConfigId);
+					if (assigneeDetails != null) {
+						assigneeDetailsRepository.delete(assigneeDetails);
 					}
 				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
