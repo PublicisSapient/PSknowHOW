@@ -3550,7 +3550,7 @@ db.getCollection('kpi_master').insertMany(
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
-    "maturityRange": ["-50", "30-50", "20-30", "10-20", "10-"]
+    "maturityRange": ["-50", "50-30", "30-20", "20-10", "10-"]
  },
  {
      "kpiId":"kpi163",

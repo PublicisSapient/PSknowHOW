@@ -4051,7 +4051,7 @@ db.kpi_master.bulkWrite([
         $set: {
           "thresholdValue": "20",
           "isPositiveTrend": "false",
-          "maturityRange": ["-50", "30-50", "20-30", "10-20", "10-"]
+          "maturityRange": ["-50", "50-30", "30-20", "20-10", "10-"]
         }
       }
     }
