@@ -3523,7 +3523,7 @@ db.getCollection('kpi_master').insertMany(
 	"defaultOrder": Double("30"),
 	"kpiSource": "Jira",
 	"groupId": Double("4"),
-	"thresholdValue": "10",
+	"thresholdValue": "20",
 	"kanban": false,
 	"chartType": "line",
 	"kpiInfo": {
@@ -3550,6 +3550,7 @@ db.getCollection('kpi_master').insertMany(
 	"aggregationCriteria": "average",
 	"isAdditionalFilterSupport": true,
 	"calculateMaturity": true,
+    "maturityRange": ["-50", "30-50", "20-30", "10-20", "10-"]
  },
  {
      "kpiId":"kpi163",
