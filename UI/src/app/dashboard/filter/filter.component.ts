@@ -386,7 +386,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
 
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
