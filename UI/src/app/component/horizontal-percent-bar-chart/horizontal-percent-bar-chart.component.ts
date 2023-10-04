@@ -44,8 +44,6 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   draw(data, selectedNode = '') {
-    console.log("data", data);
-    
     let self = this;
     const elem = this.elem;
     self.selectedNode = selectedNode;
