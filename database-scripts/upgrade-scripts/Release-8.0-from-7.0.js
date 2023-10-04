@@ -4049,9 +4049,9 @@ db.kpi_master.bulkWrite([
       filter: { "kpiId": "kpi164" },
       update: {
         $set: {
-          "thresholdValue": "10",
+          "thresholdValue": "20",
           "isPositiveTrend": "false",
-          "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+          "maturityRange": ["-50", "50-30", "30-20", "20-10", "10-"]
         }
       }
     }
