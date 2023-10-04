@@ -44,6 +44,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   draw(data, selectedNode = '') {
+    console.log("data", data);
+    
     let self = this;
     const elem = this.elem;
     self.selectedNode = selectedNode;
@@ -54,7 +56,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     chart.select('.chart-container').remove();
     const margin = { top: 10, right: 22, bottom: 20, left: 100 };
     const width = chartContainerWidth - margin.left - margin.right;
-    const height = !this.isDrilledDown ? 180 - margin.top - margin.bottom : 100;
+    const barsTotalWidth = data.length > 3 ? data.length*40 : 180;
+    const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
 
     // append the svg object to the body of the page
     const svg = chart
@@ -116,7 +119,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     yAxis.selectAll('text')
       .style('font-size', '12px')
       .style('font-weight', 'bold')
-      .call(this.wrap, 75);
+      .call(this.wrap, 100);
 
     yAxis.select('path')
       .style('display', 'none')
@@ -318,13 +321,34 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     popupComponentRef.setInput('isOnTooltip', true);
   }
 
-  wrap(text, wrapWidth){
-    console.log(text)
+  wrap(text, width) {
     text.each(function () {
       let text = d3.select(this);
-      if (text.text().length > 10) {
-          text.text(text.text().substring(0, 10) + '...');
+      if (text.text().length > 15) {
+          text.text(text.text().substring(0, 12) + '...');
         }
     });
+  
+    // text.each(function() {
+    //   var text = d3.select(this),
+    //       words = text.text().split(/\s+/).reverse(),
+    //       word,
+    //       line = [],
+    //       lineNumber = 0,
+    //       lineHeight = 1, // ems
+    //       y = text.attr("y"),
+    //       dy = parseFloat(text.attr("dy")),
+    //       tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+    //   while (word = words.pop()) {
+    //     line.push(word)
+    //     tspan.text(line.join(" "))
+    //     if (tspan.node().getComputedTextLength() > (width-5)) {
+    //       line.pop()
+    //       tspan.text(line.join(" "))
+    //       line = [word]
+    //       tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+    //     }
+    //   }
+    // })
   }
 }
