@@ -3863,122 +3863,6 @@ db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
   { $set: { "kpiFilter": "dropDown" } }
 );
-
-//DTS-26150 start
-db.getCollection('field_mapping_structure').insertOne(
-{
-  "fieldName": "testingPhaseDefectsIdentifier",
-  "fieldLabel": "Testing phase defects identification",
-  "fieldType": "radiobutton",
-  "section": "Defects Mapping",
-  "tooltip": {
-    "definition": "This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
-  },
-  "options": [
-    {
-      "label": "CustomField",
-      "value": "CustomField"
-    },
-    {
-      "label": "Labels",
-      "value": "Labels"
-    },
-    {
-      "label": "Component",
-      "value": "Component"
-    }
-  ],
-  "nestedFields": [
-    {
-      "fieldName": "testingPhaseDefectCustomField",
-      "fieldLabel": "Testing Phase Defect CustomField",
-      "fieldType": "text",
-      "fieldCategory": "fields",
-      "filterGroup": [
-        "CustomField"
-      ],
-      "tooltip": {
-        "definition": " Provide customfield name to identify testing phase defects."
-      }
-    },
-    {
-      "fieldName": "testingPhaseDefectValue",
-      "fieldLabel": "Testing Phase Defect Values",
-      "fieldType": "chips",
-      "filterGroup": [
-        "CustomField",
-        "Labels"
-      ],
-      "tooltip": {
-        "definition": "Provide label name to identify testing phase defects."
-      }
-    },
-    {
-      "fieldName": "testingPhaseDefectComponentValue",
-      "fieldLabel": "Component",
-      "fieldType": "text",
-      "filterGroup": [
-        "Component"
-      ],
-      "tooltip": {
-        "definition": "Provide label name to identify testing phase defects."
-      }
-    }
-  ]
-});
-
-db.getCollection('kpi_master').insertOne(
-{
-    "kpiId":"kpi163",
-    "kpiName":"Defect by Testing Phase",
-    "maxValue":"",
-    "kpiUnit":"Count",
-    "isDeleted":"False",
-    "defaultOrder":7,
-    "kpiCategory":"Release",
-    "kpiSource":"Jira",
-    "groupId":9,
-    "thresholdValue":"",
-    "kanban":false,
-    "chartType":"horizontalPercentBarChart",
-    "kpiInfo":{
-        "definition":" It gives a breakup of escaped defects by testing phase"
-    },
-    "xAxisLabel":"",
-    "yAxisLabel":"",
-    "isPositiveTrend":true,
-    "showTrend":false,
-    "isAdditionalFilterSupport":false,
-    "kpiFilter":"radioButton",
-    "boxType":"chart",
-    "calculateMaturity":false,
-    "kpiSubCategory": "Release Review"
-});
-db.getCollection('field_mapping_structure').insertOne(
-{
-	"fieldName": "jiraDodKPI163",
-	"fieldLabel": "DOD Status",
-	"fieldType": "chips",
-	"fieldCategory": "workflow",
-	"section": "WorkFlow Status Mapping",
-	"tooltip": {
-		"definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-	}
-});
-
-db.getCollection('metadata_identifier').updateMany(
-   { "templateCode": { $in: ["7"] } },
-   { $push: {
-   "workflow": {
-                "type":"jiraDodKPI163",
-                "value":[
-                    "Closed",
-                    "Done"
-                ]
-            }
-   }}
-);
-//DTS-26150 end
 // scope churn kpi_master
 //DTS-28198 added radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -4200,66 +4084,166 @@ db.kpi_master.bulkWrite([
         "calculateMaturity": false
       }
     }
+  },
+  {
+      "insertOne":{
+          "document":{
+              "kpiId":"kpi163",
+              "kpiName":"Defect by Testing Phase",
+              "maxValue":"",
+              "kpiUnit":"Count",
+              "isDeleted":"False",
+              "defaultOrder":7,
+              "kpiCategory":"Release",
+              "kpiSource":"Jira",
+              "groupId":9,
+              "thresholdValue":"",
+              "kanban":false,
+              "chartType":"horizontalPercentBarChart",
+              "kpiInfo":{
+                  "definition":" It gives a breakup of escaped defects by testing phase"
+              },
+              "xAxisLabel":"",
+              "yAxisLabel":"",
+              "isPositiveTrend":true,
+              "showTrend":false,
+              "isAdditionalFilterSupport":false,
+              "kpiFilter":"radioButton",
+              "boxType":"chart",
+              "calculateMaturity":false,
+              "kpiSubCategory":"Release Review"
+          }
+      }
   }
 ]);
 
 db.getCollection('field_mapping_structure').insertMany(
-	[{
-    "fieldName": "jiraIssueTypeNamesKPI161",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
+    [{
+        "fieldName": "jiraIssueTypeNamesKPI161",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI148",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI146",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI151",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI152",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "testingPhaseDefectsIdentifier",
+        "fieldLabel": "Testing phase defects identification",
+        "fieldType": "radiobutton",
+        "section": "Defects Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+        },
+        "options": [
+            {
+                "label": "CustomField",
+                "value": "CustomField"
+            },
+            {
+                "label": "Labels",
+                "value": "Labels"
+            },
+            {
+                "label": "Component",
+                "value": "Component"
+            }
+        ],
+        "nestedFields": [
+            {
+                "fieldName": "testingPhaseDefectCustomField",
+                "fieldLabel": "Testing Phase Defect CustomField",
+                "fieldType": "text",
+                "fieldCategory": "fields",
+                "filterGroup": [
+                    "CustomField"
+                ],
+                "tooltip": {
+                    "definition": " Provide customfield name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName": "testingPhaseDefectValue",
+                "fieldLabel": "Testing Phase Defect Values",
+                "fieldType": "chips",
+                "filterGroup": [
+                    "CustomField",
+                    "Labels"
+                ],
+                "tooltip": {
+                    "definition": "Provide label name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName": "testingPhaseDefectComponentValue",
+                "fieldLabel": "Component",
+                "fieldType": "text",
+                "filterGroup": [
+                    "Component"
+                ],
+                "tooltip": {
+                    "definition": "Provide label name to identify testing phase defects."
+                }
+            }
+        ]
+    },
+    {
+        "fieldName": "jiraDodKPI163",
+        "fieldLabel": "DOD Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+        }
     }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI148",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI146",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI151",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI152",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-}
-	]
+    ]
 )
 
 const fieldMappings = db.field_mapping.find({});
@@ -5017,3 +5001,17 @@ db.repo_tools_provider.insertMany([
 //remove bitbucket kpis from speed
 db.kpi_category_mapping.deleteMany(
   { "kpiId": { $in: ["kpi84", "kpi65", "kpi11"] } });
+
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $push: {
+   "workflow": {
+                "type":"jiraDodKPI163",
+                "value":[
+                    "Closed",
+                    "Done"
+                ]
+            }
+   }}
+);
