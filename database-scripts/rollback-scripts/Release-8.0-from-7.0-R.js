@@ -688,8 +688,8 @@ db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158
 db.getCollection("kpi_master").updateMany(
 { kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
 { $unset: {
-          isRepoToolKpi: "",
-          kpiCategory: "",
+          "isRepoToolKpi": "",
+          "kpiCategory": "",
           } }
 );
 
