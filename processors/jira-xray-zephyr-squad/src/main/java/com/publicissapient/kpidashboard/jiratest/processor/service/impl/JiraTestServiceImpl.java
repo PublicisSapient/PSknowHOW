@@ -1,5 +1,7 @@
 package com.publicissapient.kpidashboard.jiratest.processor.service.impl;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -24,11 +27,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,15 +57,17 @@ import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.google.common.collect.Lists;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.tracelog.PSLogData;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
@@ -69,6 +75,7 @@ import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetails
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jiratest.adapter.helper.JiraRestClientFactory;
 import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jiratest.config.JiraTestProcessorConfig;
@@ -97,6 +104,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
+	public static final String FALSE = "false";
+	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
+	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
 	@Autowired
@@ -120,8 +130,19 @@ public class JiraTestServiceImpl implements JiraTestService {
 	@Autowired
 	private TestCaseDetailsRepository testCaseDetailsRepository;
 	private ProcessorJiraRestClient client;
-
 	private KerberosClient krb5Client;
+
+	@Override
+	public int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline) {
+		log.info("Start Processing Jira Issues");
+		if (Objects.nonNull(projectConfig.getProcessorToolConnection())
+				&& StringUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+			return processesJiraIssuesJQL(projectConfig);
+		} else {
+			processesJiraIssues(projectConfig);
+		}
+		return 0;
+	}
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
@@ -131,17 +152,17 @@ public class JiraTestServiceImpl implements JiraTestService {
 	 *            Project Configuration Mapping
 	 * @return Count of Jira Issues processed for scrum project
 	 */
-	@Override
 	public int processesJiraIssues(ProjectConfFieldMapping projectConfig) {
-
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban(FALSE);
 		int savedIsuesCount = 0;
 		int total = 0;
-
 		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 				projectConfig.getBasicProjectConfigId().toHexString());
-
+		boolean processorFetchingComplete = false;
 		try {
 			client = getProcessorJiraRestClient(projectConfig);
 
@@ -158,11 +179,9 @@ public class JiraTestServiceImpl implements JiraTestService {
 			});
 			int pageSize = getPageSize();
 
-			boolean hasMore = true;
-
 			String userTimeZone = getUserTimeZone(projectConfig);
 
-			for (int i = 0; hasMore; i += pageSize) {
+			for (int i = 0; true; i += pageSize) {
 				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
 						userTimeZone, i, dataExist, client);
 				List<Issue> issues = getIssuesFromResult(searchResult);
@@ -187,22 +206,27 @@ public class JiraTestServiceImpl implements JiraTestService {
 					break;
 				}
 			}
+			processorFetchingComplete = true;
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in scrum client", e);
 			lastSavedJiraIssueChangedDateByType.clear();
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete, psLogData);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 			}
-			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess);
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
+					projectConfig.getProjectBasicConfig());
 		}
 
 		return savedIsuesCount;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount) {
-		return savedCount > 0 && total == savedCount;
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete,
+			PSLogData psLogData) {
+		psLogData.setTotalFetchedIssues(String.valueOf(total));
+		psLogData.setTotalSavedIssues(String.valueOf(savedCount));
+		return savedCount > 0 && total == savedCount && processorFetchingComplete;
 	}
 
 	private List<Issue> getIssuesFromResult(SearchResult searchResult) {
@@ -228,7 +252,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	private void saveExecutionTraceLog(ProcessorExecutionTraceLog processorExecutionTraceLog,
-			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, boolean isSuccess) {
+			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType, boolean isSuccess,
+			ProjectBasicConfig projectBasicConfig) {
 
 		if (lastSavedJiraIssueChangedDateByType.isEmpty()) {
 			processorExecutionTraceLog.setLastSavedEntryUpdatedDateByType(null);
@@ -434,7 +459,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 			testCaseDetail.setTestAutomated(finalMap.getOrDefault(AUTOMATED_VALUE, testAutomated));// THE VALUE
 			testCaseDetail.setIsTestAutomated(finalMap.getOrDefault(TEST_AUTOMATED_FLAG, testAutomatedValue));// THE
-																											  // VALUE
+			// VALUE
 			testCaseDetail.setIsTestCanBeAutomated(
 					finalMap.getOrDefault(TEST_CAN_BE_AUTOMATED_FLAG, testCanBeAutomatedValue));
 
@@ -671,39 +696,38 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	public ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping) {
-		Optional<Connection> connection = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
+		Optional<Connection> connection = connectionRepository
+				.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
 		String username = "";
 		String password = "";
 		if (connection.isPresent()) {
 			Connection conn = connection.get();
 			if (conn.isVault()) {
-				ToolCredential toolCredential = toolCredentialProvider
-						.findCredential(conn.getUsername());
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(conn.getUsername());
 				if (toolCredential != null) {
 					username = toolCredential.getUsername();
 					password = toolCredential.getPassword();
-					client = jiraRestClientFactory.getJiraClient(
-							JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-									.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+					client = jiraRestClientFactory
+							.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+									.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 				}
-			}
-			else if (conn.getIsOAuth()) {
+			} else if (conn.getIsOAuth()) {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
-				client = jiraRestClientFactory.getJiraOAuthClient(
-						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-								.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
-								.jiraConfigProxyPort(null).build());
+				client = jiraRestClientFactory
+						.getJiraOAuthClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+								.password(password).jiraConfigAccessToken(conn.getAccessToken())
+								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 			} else if (conn.isJaasKrbAuth()) {
-				krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
-						conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+				krb5Client = new KerberosClient(conn.getJaasConfigFilePath(), conn.getKrb5ConfigFilePath(),
+						conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
 				client = jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
 			} else {
 				username = conn.getUsername();
 				password = decryptJiraPassword(conn.getPassword());
-				client = jiraRestClientFactory.getJiraClient(
-						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
-								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+				client = jiraRestClientFactory
+						.getJiraClient(JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username)
+								.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 			}
 		}
 		return client;
@@ -849,35 +873,37 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection httpURLConnection)
-			throws IOException {
+	private String getDataFromServer(ProcessorToolConnection processorToolConnection,
+			HttpURLConnection httpURLConnection) throws IOException {
 		String username = null;
 		String password = null;
-		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
+		Optional<Connection> connectionOptional = connectionRepository
+				.findById(processorToolConnection.getConnectionId());
 		if (connectionOptional.isPresent() && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
 			HttpUriRequest httpUriRequest = RequestBuilder.get().setUri(httpURLConnection.getURL().toString())
 					.setHeader(HttpHeaders.ACCEPT, "application/json")
 					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
 			return krb5Client.getResponse(httpUriRequest);
-		}
-		else if (connectionOptional.isPresent() && connectionOptional.map(Connection:: isBearerToken).orElse(false)) {
+		} else if (connectionOptional.isPresent() && connectionOptional.map(Connection::isBearerToken).orElse(false)) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			httpURLConnection.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
-		}
-		else if(connectionOptional.isPresent() && connectionOptional.map(Connection:: isVault).orElse(false)){
-				ToolCredential toolCredential = toolCredentialProvider.findCredential(connectionOptional.get().getUsername());
-				if (toolCredential != null) {
-					username = toolCredential.getUsername();
-					password = toolCredential.getPassword();
-				}
+		} else if (connectionOptional.isPresent() && connectionOptional.map(Connection::isVault).orElse(false)) {
+			ToolCredential toolCredential = toolCredentialProvider
+					.findCredential(connectionOptional.get().getUsername());
+			if (toolCredential != null) {
+				username = toolCredential.getUsername();
+				password = toolCredential.getPassword();
+			}
 		} else {
 			username = connectionOptional.map(Connection::getUsername).orElse(null);
 			password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password));
+			httpURLConnection.setRequestProperty("Authorization",
+					"Basic " + encodeCredentialsToBase64(username, password));
 		}
 		httpURLConnection.connect();
 		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) httpURLConnection.getContent(); BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+		try (InputStream in = (InputStream) httpURLConnection.getContent();
+				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -921,4 +947,163 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 		}
 	}
+
+	private int processesJiraIssuesJQL(ProjectConfFieldMapping projectConfig) {
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban(FALSE);
+		int savedIssuesCount = 0;
+		int total = 0;
+		Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType = new HashMap<>();
+		setStartDate(jiraTestProcessorConfig);
+		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+				projectConfig.getBasicProjectConfigId().toHexString());
+		boolean processorFetchingComplete = false;
+		try {
+			boolean dataExist = (testCaseDetailsRepository
+					.findTopByBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString()) != null);
+			Map<String, LocalDateTime> maxChangeDatesByIssueType = getLastChangedDatesByIssueType(projectConfig);
+			Map<String, LocalDateTime> maxChangeDatesByIssueTypeWithAddedTime = new HashMap<>();
+			maxChangeDatesByIssueType.forEach((k, v) -> {
+				long extraMinutes = jiraTestProcessorConfig.getMinsToReduce();
+				maxChangeDatesByIssueTypeWithAddedTime.put(k, v.minusMinutes(extraMinutes));
+			});
+			int pageSize = getPageSize();
+			String userTimeZone = getUserTimeZone(projectConfig);
+			for (int i = 0; true; i += pageSize) {
+				SearchResult searchResult = getIssues(projectConfig, maxChangeDatesByIssueTypeWithAddedTime,
+						userTimeZone, i, dataExist);
+				List<Issue> issues = getIssuesFromResult(searchResult);
+				if (total == 0) {
+					total = getTotal(searchResult);
+					psLogData.setTotalFetchedIssues(String.valueOf(total));
+				}
+				// in case of offline method issues size can be greater than
+				// pageSize, increase page size so that same issues not read
+				if (issues.size() >= pageSize) {
+					pageSize = issues.size() + 1;
+				}
+				if (CollectionUtils.isNotEmpty(issues)) {
+					List<TestCaseDetails> testCaseDetailsList = prepareTestCaseDetails(issues, projectConfig);
+					testCaseDetailsRepository.saveAll(testCaseDetailsList);
+					findLastSavedTestCaseDetailsByType(testCaseDetailsList, lastSavedJiraIssueChangedDateByType);
+					savedIssuesCount += issues.size();
+				}
+				MDC.put("JiraTimeZone", String.valueOf(userTimeZone));
+				MDC.put("IssueCount", String.valueOf(issues.size()));
+				// will result in an extra call if number of results == pageSize
+				// but I would rather do that then complicate the jira client
+				// implementation
+				if (issues.size() < pageSize) {
+					break;
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraTestProcessorConfig.getSubsequentApiCallDelayInMilli());
+			}
+			processorFetchingComplete = true;
+		} catch (JSONException e) {
+			log.error("Error while updating Story information in scrum client", e,
+					kv(CommonConstant.PSLOGDATA, psLogData));
+			lastSavedJiraIssueChangedDateByType.clear();
+		} catch (InterruptedException e) {
+			log.error("Interrupted exception thrown.", e, kv(CommonConstant.PSLOGDATA, psLogData));
+			lastSavedJiraIssueChangedDateByType.clear();
+			Thread.currentThread().interrupt();
+		} finally {
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIssuesCount, processorFetchingComplete, psLogData);
+			psLogData.setAction(CommonConstant.PROJECT_EXECUTION_STATUS);
+			if (!isAttemptSuccess) {
+				lastSavedJiraIssueChangedDateByType.clear();
+				processorExecutionTraceLog.setLastSuccessfulRun(null);
+				psLogData.setProjectExecutionStatus(String.valueOf(isAttemptSuccess));
+				log.error("Error in Fetching Issues through JQL", kv(CommonConstant.PSLOGDATA, psLogData));
+			} else {
+				processorExecutionTraceLog
+						.setLastSuccessfulRun(DateUtil.dateTimeFormatter(LocalDateTime.now(), DATE_TIME_FORMAT));
+			}
+			saveExecutionTraceLog(processorExecutionTraceLog, lastSavedJiraIssueChangedDateByType, isAttemptSuccess,
+					projectConfig.getProjectBasicConfig());
+		}
+
+		return savedIssuesCount;
+	}
+
+	public void setStartDate(JiraTestProcessorConfig jiraTestProcessorConfig) {
+		LocalDateTime localDateTime = null;
+		if (jiraTestProcessorConfig.isConsiderStartDate()) {
+			try {
+				localDateTime = DateUtil.stringToLocalDateTime(jiraTestProcessorConfig.getStartDate(),
+						JiraConstants.SETTING_TEST_CASE_START_DATE_FORMAT);
+			} catch (DateTimeParseException ex) {
+				log.error("exception while parsing start date provided from property file picking last 12 months data.."
+						+ ex.getMessage());
+				localDateTime = LocalDateTime.now().minusMonths(jiraTestProcessorConfig.getPrevMonthCountToFetchData());
+			}
+		} else {
+			localDateTime = LocalDateTime.now().minusMonths(jiraTestProcessorConfig.getPrevMonthCountToFetchData());
+		}
+		jiraTestProcessorConfig.setStartDate(
+				DateUtil.dateTimeFormatter(localDateTime, JiraConstants.SETTING_TEST_CASE_START_DATE_FORMAT));
+	}
+
+	public SearchResult getIssues(ProjectConfFieldMapping projectConfig,
+			Map<String, LocalDateTime> startDateTimeByIssueType, String userTimeZone, int pageStart, boolean dataExist)
+			throws InterruptedException {
+		client = getProcessorJiraRestClient(projectConfig);
+		SearchResult searchResult = null;
+		PSLogData psLogData = new PSLogData();
+		psLogData.setProjectName(projectConfig.getProjectName());
+		psLogData.setKanban(FALSE);
+		if (client == null) {
+			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
+		} else if (StringUtils.isEmpty(projectConfig.getProcessorToolConnection().getProjectKey())
+				|| StringUtils.isEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+			log.info("Either Project key is empty or boardQuery not provided. key {} boardquery {}",
+					projectConfig.getProcessorToolConnection().getProjectKey(),
+					projectConfig.getProcessorToolConnection().getBoardQuery());
+		} else {
+			StringBuilder query = new StringBuilder("project in (")
+					.append(projectConfig.getProcessorToolConnection().getProjectKey()).append(") AND ");
+			try {
+				Map<String, String> startDateTimeStrByIssueType = new HashMap<>();
+
+				startDateTimeByIssueType.forEach((type, localDateTime) -> {
+					ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of(userTimeZone));
+					DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+					String dateTimeStr = zonedDateTime.format(formatter);
+					startDateTimeStrByIssueType.put(type, dateTimeStr);
+
+				});
+				query.append(JiraProcessorUtil.processJql(projectConfig.getProcessorToolConnection().getBoardQuery(),
+						startDateTimeStrByIssueType, dataExist, projectConfig));
+				psLogData.setUserTimeZone(userTimeZone);
+				psLogData.setSprintId(null);
+				psLogData.setJql(query.toString());
+				Instant start = Instant.now();
+				Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
+						jiraTestProcessorConfig.getPageSize(), pageStart, ISSUE_FIELD_SET);
+				searchResult = promisedRs.claim();
+				psLogData.setTimeTaken(String.valueOf(Duration.between(start, Instant.now()).toMillis()));
+				log.debug("jql query processed for JQL", kv(CommonConstant.PSLOGDATA, psLogData));
+				if (searchResult != null) {
+					psLogData.setTotalFetchedIssues(String.valueOf(searchResult.getTotal()));
+					psLogData.setAction(CommonConstant.FETCHING_ISSUE);
+					log.info(String.format(PROCESSING_ISSUES_PRINT_LOG, pageStart,
+							Math.min(pageStart + getPageSize() - 1, searchResult.getTotal()), searchResult.getTotal()),
+							kv(CommonConstant.PSLOGDATA, psLogData));
+				}
+				TimeUnit.MILLISECONDS.sleep(jiraTestProcessorConfig.getSubsequentApiCallDelayInMilli());
+			} catch (RestClientException e) {
+				if (e.getStatusCode().isPresent() && e.getStatusCode().get() == 401) {
+					log.error(ERROR_MSG_401);
+				} else {
+					log.info(NO_RESULT_QUERY, query);
+					log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
+				}
+			}
+
+		}
+
+		return searchResult;
+	}
+
 }

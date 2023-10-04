@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.jiratest.model;
 
-import org.bson.types.ObjectId;
+import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,24 +30,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- * The type Project conf field mapping.
- */
-
-@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProjectConfFieldMapping {
+public class JiraToolConfig {
 
+	private String basicProjectConfigId;
+	private Optional<Connection> connection;
+	private String projectId;
 	private String projectKey;
-	private String projectName;
-	private ProcessorToolConnection processorToolConnection;
-	private ObjectId basicProjectConfigId;
-	private boolean isKanban;
-	private ProjectBasicConfig projectBasicConfig;
+	private FieldMapping fieldMapping;
+	private String createdAt;
+	private String updatedAt;
+	private boolean queryEnabled;
+	private String boardQuery;
 
 }

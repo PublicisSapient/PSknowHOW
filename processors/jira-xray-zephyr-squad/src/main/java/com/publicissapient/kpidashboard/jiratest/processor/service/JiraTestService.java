@@ -18,7 +18,7 @@ public interface JiraTestService {
 	 * @param projectConfig
 	 *            Project Configuration Mapping
 	 */
-	int processesJiraIssues(ProjectConfFieldMapping projectConfig);
+	int processesJiraIssues(ProjectConfFieldMapping projectConfig, boolean isOffline);
 
 	/**
 	 * Purges the issues provided
