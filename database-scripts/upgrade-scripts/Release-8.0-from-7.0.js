@@ -5002,7 +5002,7 @@ db.repo_tools_provider.insertMany([
 db.kpi_category_mapping.deleteMany(
   { "kpiId": { $in: ["kpi84", "kpi65", "kpi11"] } });
 
-// Note : below code only For Opensource project
+
 db.getCollection('metadata_identifier').updateMany(
    { "templateCode": { $in: ["7"] } },
    { $push: {
