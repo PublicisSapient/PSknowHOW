@@ -32,7 +32,9 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Date;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -55,11 +57,15 @@ public class DateUtil {
 
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
 
+	public static final String TIME_FORMAT_WITH_SEC_ZONE = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+
 	public static final String TIME_FORMAT_WITH_SEC_DATE = "yyyy-MM-dd'T'HH:mm:ssX";
 
 	public static final String ZERO_TIME_ZONE_FORMAT = "T00:00:00.000Z";
 
 	public static final String DISPLAY_DATE_FORMAT = "dd-MMM-yyyy";
+
+	public static final String DISPLAY_DATE_TIME_FORMAT = "dd-MMM-yyyy HH:mm:ss";
 
 	public static final String DATE_FORMAT = "yyyy-MM-dd";
 
@@ -141,6 +147,29 @@ public class DateUtil {
 		return strDate;
 	}
 
+	/**
+	 *
+	 * @param dateTime
+	 *            dateTime
+	 * @param fromFormat
+	 *            fromFormat
+	 * @param toFormat
+	 *            toFormat
+	 * @return converted date
+	 */
+	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
+			final String toFormat) {
+		try {
+			org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
+			DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
+			org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
+			return parsedDateTime.toString(targetFormatter);
+		} catch (IllegalArgumentException e) {
+			log.error("error while parse date", e);
+			return null;
+		}
+	}
+
 	public static LocalDateTime stringToLocalDateTime(String time, String format) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
 		return LocalDateTime.parse(time, formatter);
@@ -165,7 +194,8 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
-	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate, LocalDateTime endDate) {
+	public static boolean isWithinDateTimeRange(LocalDateTime targetDate, LocalDateTime startDate,
+			LocalDateTime endDate) {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
@@ -257,6 +287,49 @@ public class DateUtil {
 		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
 
 		return formattedMonday + " to " + formattedSunday;
+	}
+
+	public static String getWeekRangeUsingDateTime(DateTime currentDate) {
+		DateTime monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
+		DateTime sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);
+
+		String formattedMondayDate = DateTimeFormat.forPattern(D_MMM).print(monday);
+		String formattedSundayDate = DateTimeFormat.forPattern(D_MMM_YY).print(sunday);
+
+		return formattedMondayDate + " to " + formattedSundayDate;
+	}
+
+	/**
+	 *
+	 * @param valueInDays
+	 * @return
+	 */
+	public static String convertDoubleToDaysAndHoursString(double valueInDays) {
+		// Extract the integer part as days
+		String result = "";
+		if (valueInDays > 0) {
+			int daysPart = (int) valueInDays;
+
+			// Calculate the remaining fractional part as hours and minutes
+			double fractionalPart = (valueInDays - daysPart) * 8;
+			int hoursPart = (int) fractionalPart;
+			int minutesPart = (int) ((fractionalPart - hoursPart) * 60);
+
+			if (daysPart > 0) {
+				result = daysPart + " Days ";
+			}
+
+			if (hoursPart > 0) {
+				result += hoursPart + " Hours ";
+			}
+
+			if (minutesPart > 0 && ObjectUtils.defaultIfNull(daysPart, 0) == 0) {
+				result += minutesPart + " Min";
+			}
+		} else {
+			result = "NA";
+		}
+		return result;
 	}
 
 }

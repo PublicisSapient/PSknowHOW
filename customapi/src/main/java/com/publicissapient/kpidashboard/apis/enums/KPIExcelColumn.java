@@ -264,17 +264,24 @@ public enum KPIExcelColumn {
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
 
-	DAILY_STANDUP_VIEW("kpi154",
-			Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")), PICKUP_TIME("kpi160",
-					Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-							"Pickup Time (In Hours)")), PR_SIZE("kpi162",
-									Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-											"PR Size (No. of lines)")),
-	// DTS-26123 start
-	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Issue Status",
-			"Sprint Name", "Priority", "Created Date", "Updated Date", "Assignee")),
-	// DTS-26123 end
-	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status"));
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
+
+	//DTS-26123 start
+	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
+	//DTS-26123 end
+	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
+
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
+			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
+
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
+			"Sprint Name", "Assignee", "Issue Status")),
+	PICKUP_TIME("kpi160",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"PR Size (No. of lines)"));
 
 	// @formatter:on
 

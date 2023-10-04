@@ -212,7 +212,7 @@ public class KpiHelperServiceTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_INJECTION_RATE.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
 
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() , any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesByType(any())).thenReturn(bugList);
 
@@ -232,7 +232,7 @@ public class KpiHelperServiceTest {
 
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.DEFECT_DENSITY.getKpiId());
 		when(jiraIssueRepository.findIssuesGroupBySprint(any(), any(), any(), any())).thenReturn(sprintWiseStoryList);
-		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any()))
+		when(jiraIssueCustomHistoryRepository.findFeatureCustomHistoryStoryProjectWise(any(), any() ,any()))
 				.thenReturn(issueCustomHistoryList);
 		when(jiraIssueRepository.findIssuesBySprintAndType(any(), any())).thenReturn(bugList);
 

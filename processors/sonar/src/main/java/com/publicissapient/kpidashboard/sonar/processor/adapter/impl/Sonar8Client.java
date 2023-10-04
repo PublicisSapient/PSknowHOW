@@ -520,7 +520,7 @@ public class Sonar8Client implements SonarClient {
 				}
 			} while (pageIndex < 100);
 
-		} catch (java.text.ParseException | ParseException | RestClientException | NullPointerException ex) {
+		} catch (ParseException | RestClientException | NullPointerException ex) {
 			log.error("Unable to Parse Response for url: {}", url);
 			log.error(ex.getMessage(), ex);
 		}
@@ -553,8 +553,7 @@ public class Sonar8Client implements SonarClient {
 	 *            the sonar history
 	 */
 	private void populateCodeQualityHistory(List<SonarMeasureData> qualityList, int singleHistory,
-			SonarHistory sonarHistory) throws java.text.ParseException {
-		log.info("SONAR MEASURE DATA {}", sonarHistory);
+			SonarHistory sonarHistory) {
 		for (SonarMeasureData sonarMeasureData : qualityList) {
 			SonarMetric metric = new SonarMetric(sonarMeasureData.getMetric());
 			if (!CollectionUtils.isEmpty(sonarMeasureData.getHistory())
@@ -562,14 +561,6 @@ public class Sonar8Client implements SonarClient {
 				metric.setMetricValue(sonarMeasureData.getHistory().get(singleHistory).getValue());
 				sonarHistory
 						.setDate(new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
-				log.info("SONAR HISTORY DATE OLD {} -- {}",
-						new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()),
-						new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
-				log.info("SONAR HISTORY DATE NEW {} -- {}",
-						new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
-								.parse(sonarMeasureData.getHistory().get(singleHistory).getDate()),
-						new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
-								.parse(sonarMeasureData.getHistory().get(singleHistory).getDate()).getTime());
 				sonarHistory.setTimestamp(
 						new DateTime(sonarMeasureData.getHistory().get(singleHistory).getDate()).getMillis());
 			}
