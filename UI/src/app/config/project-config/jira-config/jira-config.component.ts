@@ -1968,7 +1968,7 @@ export class JiraConfigComponent implements OnInit {
             elements: [
               {
                 type: 'textarea',
-                label: 'JQL Query (Optional)',
+                label: 'JQL Query to fetch Test Cases (Optional)',
                 id: 'boardQuery',
                 validators: [],
                 containerClass: 'p-sm-12',
