@@ -23,6 +23,9 @@ import java.net.URI;
 import java.util.Base64;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -59,10 +62,14 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
+	private static final String APPICATION_JSON = "application/json";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private RepoToolsProviderRepository repoToolsProviderRepository;
+
 
 	@Override
 	public ServiceResponse validateConnection(Connection connection, String toolName) {
@@ -125,6 +132,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				statusCode = validateTestConn(connection, apiUrl, password, toolName);
 			}
 			break;
+			case Constant.REPO_TOOLS:
+				apiUrl = getApiForRepoTool(connection);
+				statusCode = validateTestConn(connection, apiUrl, password, toolName);
+			break;
 		default:
 			return new ServiceResponse(false, "Invalid Toolname", HttpStatus.NOT_FOUND);
 		}
@@ -138,6 +149,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
+	}
+
+	private String getApiForRepoTool(Connection connection) {
+		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
+				.findByToolName(connection.getRepoToolProvider());
+		return repoToolsProvider.getTestApiUrl();
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -219,13 +236,27 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			} else {
-				isValid = testConnection(connection, toolName, apiUrl, password, false);
+		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
+				isValid = testConnectionForRepoTools(apiUrl, password, connection);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 			}
+		else {
+			isValid = testConnection(connection, toolName, apiUrl, password, false);
+			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+		}
 
 		}
 		return statusCode;
+	}
+
+	private boolean testConnectionForRepoTools(String apiUrl, String password, Connection connection) {
+
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
+			return testConnectionForGitHub(apiUrl, connection.getUsername(), password);
+		else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
+			return testConnection(connection, Constant.TOOL_BITBUCKET, apiUrl, password, false);
+		else
+			return testConnectionForTools(apiUrl, password);
 	}
 
 	private boolean testConnectionForGitHub(String apiUrl, String username, String password) {
@@ -349,7 +380,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + pat);
 		headers.add(HttpHeaders.ACCEPT, "*/*");
-		headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+		headers.add(HttpHeaders.CONTENT_TYPE, APPICATION_JSON);
 		headers.set("Cookie", "");
 		return headers;
 	}
@@ -420,8 +451,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private HttpResponse getApiResponseWithKerbAuth(KerberosClient client, String apiUrl) {
 		HttpUriRequest request = RequestBuilder.get().setUri(apiUrl)
-				.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
-				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json").build();
+				.setHeader(org.apache.http.HttpHeaders.ACCEPT, APPICATION_JSON)
+				.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, APPICATION_JSON).build();
 		try {
 			return client.getHttpResponse(request);
 		} catch (IOException e) {
@@ -510,6 +541,10 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
+		}
+		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) &&
+				StringUtils.isNotEmpty(connection.getAccessToken())) {
+			return connection.getAccessToken();
 		}
 		return connection.getPassword() != null ? connection.getPassword() : connection.getApiKey();
 	}

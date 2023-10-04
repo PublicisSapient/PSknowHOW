@@ -156,7 +156,6 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-
 				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())

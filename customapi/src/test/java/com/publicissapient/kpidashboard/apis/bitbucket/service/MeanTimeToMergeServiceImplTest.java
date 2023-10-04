@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -91,6 +93,10 @@ public class MeanTimeToMergeServiceImplTest {
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi84");
+		Map<String, List<String>> selectedMap = kpiRequest.getSelectedMap();
+		selectedMap.put(CommonConstant.date, Arrays.asList("DAYS"));
+		kpiRequest.setSelectedMap(selectedMap);
+		kpiRequest.setLabel("Project");
 		kpiRequest.setLabel("PROJECT");
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
@@ -195,7 +201,6 @@ public class MeanTimeToMergeServiceImplTest {
 		when(mergeRequestRepository.findMergeRequestList(any(), any(), any(), any())).thenReturn(mergeRequestsList);
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(customApiConfig.getRepoXAxisCount()).thenReturn(5);
 
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);

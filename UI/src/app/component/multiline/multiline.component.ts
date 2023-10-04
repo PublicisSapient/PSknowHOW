@@ -74,7 +74,8 @@ export class MultilineComponent implements OnChanges {
 
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban') {
+    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer') 
+    {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
@@ -246,7 +247,7 @@ export class MultilineComponent implements OnChanges {
       .domain([0, maxYValue])
       .range([height - margin, 0]);
   
-    if (selectedProjectCount === 1 && board === 'executive') {
+    if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer')) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       /** Adding tooltip container */
@@ -329,7 +330,9 @@ export class MultilineComponent implements OnChanges {
     const xAxis = d3.axisBottom(xScale);
     /*var xAxis = d3.axisBottom(xScale).ticks(7);
      */
-    const yAxis = d3.axisLeft(yScale).ticks(5);
+    const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function(tickval) {
+      return tickval >= 1000 ? tickval/1000 + "k" : tickval;
+    });
 
     const XCaptionSVG = d3
       .select(this.elem)
