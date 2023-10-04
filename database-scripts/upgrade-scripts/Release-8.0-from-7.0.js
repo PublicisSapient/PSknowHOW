@@ -4442,9 +4442,9 @@ db.getCollection("kpi_master").bulkWrite([
       },
     },
   },
-  {
-    insertMany: [
-      {
+{
+    insertOne: {
+      document: {
               kpiId: "kpi157",
               kpiName: "Check-Ins & Merge Requests",
               maxValue: "10",
@@ -4514,7 +4514,11 @@ db.getCollection("kpi_master").bulkWrite([
               isRepoToolKpi: true,
               kpiCategory: "Developer",
             },
-            {
+    },
+  },
+  {
+    insertOne: {
+      document: {
               kpiId: "kpi158",
               kpiName: "Mean Time To Merge",
               maxValue: "10",
@@ -4587,7 +4591,11 @@ db.getCollection("kpi_master").bulkWrite([
               isRepoToolKpi: true,
               kpiCategory: "Developer",
             },
-            {
+    },
+  },
+  {
+    insertOne: {
+      document: {
               kpiId: "kpi159",
               kpiName: "Number of Check-ins",
               maxValue: "10",
@@ -4660,7 +4668,11 @@ db.getCollection("kpi_master").bulkWrite([
               isRepoToolKpi: true,
               kpiCategory: "Developer",
             },
-            {
+    },
+  },
+  {
+    insertOne: {
+      document: {
               kpiId: "kpi160",
               kpiName: "Pickup Time",
               maxValue: "10",
@@ -4733,7 +4745,11 @@ db.getCollection("kpi_master").bulkWrite([
               isRepoToolKpi: true,
               kpiCategory: "Developer",
             },
-            {
+    },
+  },
+  {
+    insertOne: {
+      document: {
               kpiId: "kpi162",
               kpiName: "PR Size",
               maxValue: "10",
@@ -4761,7 +4777,8 @@ db.getCollection("kpi_master").bulkWrite([
               isRepoToolKpi: true,
               kpiCategory: "Developer",
             },
-    ]
+    },
+  }
 ]);
 
 
