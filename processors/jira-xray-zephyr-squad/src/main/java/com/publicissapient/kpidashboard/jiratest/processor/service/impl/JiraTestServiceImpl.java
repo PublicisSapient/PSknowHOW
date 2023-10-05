@@ -28,9 +28,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.logging.log4j.util.Strings;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -55,7 +59,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
@@ -116,6 +119,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	@Autowired
 	private TestCaseDetailsRepository testCaseDetailsRepository;
 	private ProcessorJiraRestClient client;
+
 
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
@@ -665,7 +669,30 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	public ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping) {
-		ProcessorToolConnection processorToolConnection = projectConfFieldMapping.getProcessorToolConnection();
+		Optional<Connection> jiraTestConn = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
+		String username = "";
+		String password = "";
+		if (jiraTestConn != null && jiraTestConn.isPresent()) {
+			Connection conn = jiraTestConn.get();
+			if (conn.isVault()) {
+				username = conn.getUsername();
+				password = decryptJiraPassword(conn.getPassword());
+			} else if (conn.getIsOAuth()) {
+				client = jiraRestClientFactory.getJiraOAuthClient(
+						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+								.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
+								.jiraConfigProxyPort(null).build());
+			} else if (conn.isJaasKrbAuth()) {
+				KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
+						conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+				client = jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
+			} else {
+				client = jiraRestClientFactory.getJiraClient(
+						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+			}
+		}
+		/*ProcessorToolConnection processorToolConnection = projectConfFieldMapping.getProcessorToolConnection();
 		String username = "";
 		String password = "";
 		if (processorToolConnection.isVault()) {
@@ -701,7 +728,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
 							.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
 
-		}
+		}*/
 		return client;
 	}
 
@@ -875,25 +902,38 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection connection)
 			throws IOException {
-		HttpURLConnection request = connection;
 
-		String username = processorToolConnection.getUsername();
-		String password = decryptJiraPassword(processorToolConnection.getPassword());
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		request.connect();
-		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
-			int cp;
-			while ((cp = inReader.read()) != -1) {
-				sb.append((char) cp);
+		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
+		if (connectionOptional!=null && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
+			Connection conn = connectionOptional.get();
+			KerberosClient krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
+					conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(),
+					conn.getBaseUrl());
+			HttpUriRequest request = RequestBuilder.get().setUri(connection.getURL().toString())
+					.setHeader(HttpHeaders.ACCEPT, "application/json")
+					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
+			return krb5Client.getResponse(request);
+		} else {
+			HttpURLConnection request = connection;
+
+			String username = processorToolConnection.getUsername();
+			String password = decryptJiraPassword(processorToolConnection.getPassword());
+			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+			request.connect();
+			StringBuilder sb = new StringBuilder();
+			try (InputStream in = (InputStream) request.getContent();
+					BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+				int cp;
+				while ((cp = inReader.read()) != -1) {
+					sb.append((char) cp);
+				}
+			} catch (IOException ie) {
+				log.error("Read exception when connecting to server {}", ie);
 			}
-		} catch (IOException ie) {
-			log.error("Read exception when connecting to server {}", ie);
+			return sb.toString();
 		}
-		return sb.toString();
-	}
 
+	}
 	private String encodeCredentialsToBase64(String username, String password) {
 		String cred = username + ":" + password;
 		return Base64.getEncoder().encodeToString(cred.getBytes());
