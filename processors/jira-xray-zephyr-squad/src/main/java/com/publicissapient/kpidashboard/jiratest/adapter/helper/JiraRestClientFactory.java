@@ -283,6 +283,7 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 
 		return client;
 	}
+
 	public com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient getSpnegoSamlClient(
 			KerberosClient kerberosClient) {
 		com.publicissapient.kpidashboard.jiratest.adapter.impl.async.ProcessorJiraRestClient client = null;

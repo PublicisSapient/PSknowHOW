@@ -66,7 +66,6 @@ public class ProcessorAsynchJiraRestClientFactory extends AsynchronousJiraRestCl
 			final String password, JiraTestProcessorConfig jiraTestProcessorConfig) {
 		return create(serverUri, new BasicHttpAuthenticationHandler(username, password), jiraTestProcessorConfig);
 	}
-
 	public ProcessorJiraRestClient createWithAuthenticationCookies(final URI serverUri, final String authCookies,
 			JiraTestProcessorConfig jiraTestProcessorConfig) {
 		return create(serverUri, new SpnegoAuthenticationHandler(authCookies), jiraTestProcessorConfig);
