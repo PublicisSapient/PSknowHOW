@@ -1259,7 +1259,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'branch', header: 'Branch', class: 'long-text' },
             { field: 'gitLabSdmID', header: 'SDM ID', class: 'long-text' },
           ];
-          
+
           this.formTemplate = {
             group: 'Sonar',
             elements: [
@@ -2170,7 +2170,7 @@ export class JiraConfigComponent implements OnInit {
           }else{
             validatorArr.push(Validators.pattern(element.value));
           }
-          
+
         });
 
         group[inputTemplate.id] = new UntypedFormControl('', validatorArr);
@@ -2624,5 +2624,5 @@ export class JiraConfigComponent implements OnInit {
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
      }
-  }  
+  }
 }

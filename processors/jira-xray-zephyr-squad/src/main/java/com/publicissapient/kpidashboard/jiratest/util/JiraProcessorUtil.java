@@ -23,7 +23,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
 
+import com.publicissapient.kpidashboard.jiratest.model.ProjectConfFieldMapping;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -88,7 +90,8 @@ public final class JiraProcessorUtil {
 		return "";
 	}
 
-	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
+	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType,
+								   ProjectConfFieldMapping projectConfig) {
 
 		if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
 			return "";
@@ -96,8 +99,13 @@ public final class JiraProcessorUtil {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("project IN ('");
 		stringBuilder.append(projectKey);
-		stringBuilder.append("') AND (");
-
+		stringBuilder.append("') AND ");
+		if (Objects.nonNull(projectConfig.getProcessorToolConnection())
+				&& StringUtils.isNotEmpty(projectConfig.getProcessorToolConnection().getBoardQuery())) {
+			stringBuilder.append(projectConfig.getProcessorToolConnection().getBoardQuery());
+			stringBuilder.append(" AND");
+		}
+		stringBuilder.append(" (");
 		int size = startDateTimeStrByIssueType.entrySet().size();
 		int count = 0;
 		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
