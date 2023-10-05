@@ -230,10 +230,11 @@ public class MetaDataClientImpl implements MetadataClient {
 		List<Identifier> issueList = metadataIdentifier.getIssues();
 		List<Identifier> customFieldList = metadataIdentifier.getCustomfield();
 		List<Identifier> workflowList = metadataIdentifier.getWorkflow();
-		FieldMapping fieldMapping=null;
+		FieldMapping fieldMapping = null;
 		Map<String, String> allCustomField = new HashMap<>();
 		List<Metadata> metadataList = boardMetadata.getMetadata();
-		metadataList.forEach(metadata -> metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData())));
+		metadataList.forEach(
+				metadata -> metadata.getValue().stream().forEach(mv -> allCustomField.put(mv.getKey(), mv.getData())));
 
 		if (metadataIdentifier.getTool().equalsIgnoreCase(AZURE) || projectConfig.isKanban()) {
 			if (templateName.equalsIgnoreCase(STANDARD_TEMPLATE)) {
@@ -246,7 +247,8 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			for (Metadata metadata : metadataList) {
 				if (metadata.getType().equals(CommonConstant.META_ISSUE_TYPE)) {
-					allIssueTypes = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
+					allIssueTypes = metadata.getValue().stream().map(MetadataValue::getData)
+							.collect(Collectors.toSet());
 				} else if (metadata.getType().equals(CommonConstant.META_WORKFLOW)) {
 					allWorkflow = metadata.getValue().stream().map(MetadataValue::getData).collect(Collectors.toSet());
 				}
@@ -254,18 +256,18 @@ public class MetaDataClientImpl implements MetadataClient {
 			Map<String, List<String>> issueTypeMap = compareIssueType(issueList, allIssueTypes);
 			Map<String, List<String>> workflowMap = compareWorkflow(workflowList, allWorkflow);
 			Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
-			fieldMapping=mapFieldMapping(issueTypeMap, workflowMap, customField, valuesToIdentifyMap, projectConfig,
+			fieldMapping = mapFieldMapping(issueTypeMap, workflowMap, customField, valuesToIdentifyMap, projectConfig,
 					templateName);
 		} else {
 
 			Map<String, List<String>> issueTypeMap = new HashMap<>();
 			issueList.forEach(identifier -> issueTypeMap.put(identifier.getType(),
-					CollectionUtils.isNotEmpty(identifier.getValue())?identifier.getValue():null));
+					CollectionUtils.isNotEmpty(identifier.getValue()) ? identifier.getValue() : null));
 			Map<String, List<String>> workflowMap = new HashMap<>();
 			workflowList.forEach(identifier1 -> workflowMap.put(identifier1.getType(),
-					CollectionUtils.isNotEmpty(identifier1.getValue())?identifier1.getValue():null));
+					CollectionUtils.isNotEmpty(identifier1.getValue()) ? identifier1.getValue() : null));
 			Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
-			fieldMapping=mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig);
+			fieldMapping = mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig);
 		}
 
 		return fieldMapping;
@@ -293,6 +295,16 @@ public class MetaDataClientImpl implements MetadataClient {
 
 		fieldMapping.setJiraIssueTypeNames(issueTypeMap
 				.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()).stream().toArray(String[]::new));
+		fieldMapping.setJiraIssueTypeNamesKPI161(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI151(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI152(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI146(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+		fieldMapping.setJiraIssueTypeNamesKPI148(
+				issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 		fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTCAPACITYISSUETYPEKPI46, new ArrayList<>()));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(
@@ -346,6 +358,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.JIRADODKPI3));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.JIRADODKPI37));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.JIRADODKPI155));
+		fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.JIRADODKPI163));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.JIRADODKPI127));
 		fieldMapping.setJiraLiveStatusKPI152(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRALIVESTATUSKPI152))
@@ -496,6 +509,16 @@ public class MetaDataClientImpl implements MetadataClient {
 
 			fieldMapping
 					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
+			fieldMapping.setJiraIssueTypeNamesKPI161(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI151(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI152(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI146(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI148(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 			fieldMapping.setJiraIssueTypeNamesAVR(
 					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
 
@@ -533,6 +556,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 
 			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
@@ -652,6 +676,16 @@ public class MetaDataClientImpl implements MetadataClient {
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI164(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI161(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI151(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI152(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI146(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
+			fieldMapping.setJiraIssueTypeNamesKPI148(
+					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
 			fieldMapping
 					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
 			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {
@@ -681,6 +715,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatusKPI152(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI151(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI3(workflowMap.getOrDefault(CommonConstant.CLOSED, new ArrayList<>()));

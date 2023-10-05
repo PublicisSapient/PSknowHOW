@@ -26,7 +26,6 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -136,7 +135,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 			List<String> versionDate = new ArrayList<>();
 			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
 			if (CollectionUtils.isNotEmpty(projectData)) {
-				LocalDate endDateTime = LocalDate.now();
+				LocalDate endDateTime = LocalDate.now().minusWeeks(1);
 				for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
 					LocalDate[] weeks = getWeeks(endDateTime);
 					LocalDate monday = weeks[0];
@@ -252,8 +251,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 					.mapToLong(val -> val).sum();
 
 			String keyName = prepareSonarKeyName(projectNodeId, sonarDetails.getName(), sonarDetails.getBranch());
-			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date,
-					projectNodeId);
+			DataCount dcObj = getDataCountObject(sonarViolations, sonarViolationsHowerMap, projectName, date);
 			projectWiseDataMap.computeIfAbsent(keyName, k -> new ArrayList<>()).add(dcObj);
 			projectList.add(keyName);
 			versionDate.add(date);
@@ -263,56 +261,10 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		DataCount dcObj = getDataCountObject(
 				calculateKpiValue(dateWiseViolationsList, KPICode.SONAR_VIOLATIONS.getKpiId()),
 				calculateKpiValueForIntMap(globalSonarViolationsHowerMap, KPICode.SONAR_VIOLATIONS.getKpiId()),
-				projectName, date, projectNodeId);
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
-	private Map<String, SonarHistory> prepareEmptyJobWiseHistoryMap(List<SonarHistory> sonarHistoryList, Long end) {
-
-		List<SonarMetric> metricsList = new ArrayList<>();
-		Map<String, SonarHistory> historyMap = new HashMap<>();
-		SonarHistory refHistory = sonarHistoryList.get(0);
-
-		SonarMetric sonarMetric = SonarMetric.builder().metricName(Constant.CRITICAL_VIOLATIONS).metricValue("0")
-				.build();
-		SonarMetric sonarMetric1 = SonarMetric.builder().metricName(Constant.BLOCKER_VIOLATIONS).metricValue("0")
-				.build();
-		SonarMetric sonarMetric2 = SonarMetric.builder().metricName(Constant.MAJOR_VIOLATIONS).metricValue("0").build();
-		SonarMetric sonarMetric3 = SonarMetric.builder().metricName(Constant.MINOR_VIOLATIONS).metricValue("0").build();
-		SonarMetric sonarMetric4 = SonarMetric.builder().metricName(Constant.INFO_VIOLATIONS).metricValue("0").build();
-
-		metricsList.add(sonarMetric);
-		metricsList.add(sonarMetric1);
-		metricsList.add(sonarMetric2);
-		metricsList.add(sonarMetric3);
-		metricsList.add(sonarMetric4);
-
-		List<String> uniqueKeys = sonarHistoryList.stream().map(SonarHistory::getKey).distinct()
-				.collect(Collectors.toList());
-		uniqueKeys.forEach(keys -> {
-			SonarHistory sonarHistory = SonarHistory.builder().processorItemId(refHistory.getProcessorItemId())
-					.date(end).timestamp(end).key(keys).name(keys).branch(refHistory.getBranch()).metrics(metricsList)
-					.build();
-			historyMap.put(keys, sonarHistory);
-		});
-
-		return historyMap;
-	}
-
-	private DataCount getDataCountObject(Long sonarViolations, Map<String, Object> sonarViolationsHowerMap,
-			String projectName, String date, String projectNodeId) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(sonarViolations));
-		dataCount.setSSprintID(date);
-		dataCount.setSSprintName(date);
-		dataCount.setSProjectName(projectName);
-		dataCount.setDate(date);
-		dataCount.setSprintIds(new ArrayList<>(Arrays.asList(projectNodeId)));
-		dataCount.setSprintNames(new ArrayList<>(Arrays.asList(projectName)));
-		dataCount.setValue(sonarViolations);
-		dataCount.setHoverValue(sonarViolationsHowerMap);
-		return dataCount;
-	}
 
 	/**
 	 * Gets KPICode's <tt>SONAR_VIOLATIONS</tt> enum
@@ -341,7 +293,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		} else if (violations instanceof String) {
 			valueMap.put(key, (Integer.parseInt(violations.toString())));
 		} else {
-			valueMap.put(key, (Integer) violations);
+			valueMap.put(key, violations);
 		}
 	}
 

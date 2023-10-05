@@ -143,6 +143,14 @@ if (db.processor.countDocuments({}) === 0) {
                             "errors": [],
                             "isLastSuccess": false,
                             "_class": "com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor"
-                          }
+                          },
+                          {
+                            "processorName": "RepoTool",
+                            "processorType": "SCM",
+                            "isActive": true,
+                            "isOnline": true,
+                            "errors": [],
+                            "isLastSuccess": false,
+                        },
                         ]);
 }

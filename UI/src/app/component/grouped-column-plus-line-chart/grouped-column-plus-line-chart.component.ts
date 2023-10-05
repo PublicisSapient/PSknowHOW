@@ -52,6 +52,8 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   unmodifiedData: any = [];
   sprintList : Array<any> = [];
   @Input() viewType :string = 'chart'
+  @Input() lowerThresholdBG : string;
+  @Input() upperThresholdBG : string;
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -62,7 +64,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
    }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban') {
+    if (this.selectedtype?.toLowerCase() === 'kanban'|| this.service.getSelectedTab().toLowerCase() === 'developer') {
       this.xCaption = this.service.getSelectedDateFilter();
     }
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -136,6 +138,16 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   }
 
   draw2(data) {
+    const unitAbbs = {
+      'hours' : 'Hrs',
+      'sp' : 'SP',
+      'days' : 'Day',
+      'mrs' : 'MRs',
+      'min' : 'Min',
+      '%' : '%',
+      'check-ins' : 'CI',
+      'tickets' : 'T'
+    }
     let sprintList = [];
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;
@@ -653,9 +665,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               let cssClass = 'tooltip2';
               let value = d.lineValue;
               if(this.thresholdValue && this.thresholdValue !==0  && value < this.thresholdValue){
-                cssClass += ' below-thresold';
+                cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
               } else {
-                cssClass += ' above-thresold';
+                cssClass += (this.upperThresholdBG === 'red' && this.thresholdValue) ? ' red-bg' : ' white-bg';
               }
               return cssClass;
             })
@@ -670,7 +682,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             .style('top', d => {
               return yScale(d.lineValue) - 25 + 'px'
             })
-            .text(d => d.lineValue)
+            .text(d => d.lineValue+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
             .transition()
             .duration(500)
             .style('display', 'block')

@@ -22,7 +22,7 @@ import { ExecutiveComponent } from '../dashboard/executive/executive.component';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
 import { IterationComponent } from '../dashboard/iteration/iteration.component';
-
+import { DeveloperComponent } from '../dashboard/developer/developer.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { AuthGuard } from '../services/auth.guard';
 import { Logged } from '../services/logged.guard';
@@ -57,6 +57,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'iteration', pathMatch: 'full'},
       { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
       { path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },

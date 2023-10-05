@@ -55,6 +55,9 @@ export class MultilineComponent implements OnChanges {
   sliderLimit = <any>'750';
   sprintList : Array<any> = [];
   @Input() viewType :string = 'chart'
+  @Input() lowerThresholdBG : string;
+  @Input() upperThresholdBG : string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
@@ -70,7 +73,8 @@ export class MultilineComponent implements OnChanges {
 
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban') {
+    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer')
+    {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
@@ -123,9 +127,19 @@ export class MultilineComponent implements OnChanges {
     const kpiId = this.kpiId;
     const showPercent = false;
     const showWeek = false;
-    const showUnit = this.unit;
+    const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
     const board = this.board;
     const sprintList = data[0].value.map(details=>details.date || details?.sortSprint);
+    const unitAbbs = {
+      'hours' : 'Hrs',
+      'sp' : 'SP',
+      'days' : 'Day',
+      'mrs' : 'MRs',
+      'min' : 'Min',
+      '%' : '%',
+      'check-ins' : 'CI',
+      'tickets' : 'T'
+    }
 
     // width = $('#multiLineChart').width();
     width =
@@ -178,6 +192,7 @@ export class MultilineComponent implements OnChanges {
         .domain(sprintList)
         .range([0, width - margin])
         .padding(0)
+
     }else{
       xScale = d3
       .scaleBand()
@@ -230,7 +245,8 @@ export class MultilineComponent implements OnChanges {
       .scaleLinear()
       .domain([0, maxYValue])
       .range([height - margin, 0]);
-    if (selectedProjectCount === 1 && board === 'executive') {
+
+    if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer')) {
       d3.select(this.elem).select('#horizontalSVG').select('div').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
       /** Adding tooltip container */
@@ -248,9 +264,9 @@ export class MultilineComponent implements OnChanges {
           let cssClass = 'tooltip2';
           let value = Math.round(d.value * 100) / 100;
           if(thresholdValue && thresholdValue !==0  && value < this.thresholdValue){
-            cssClass += ' below-thresold';
+            cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
           } else {
-            cssClass += ' above-thresold';
+            cssClass += (this.upperThresholdBG === 'red' && thresholdValue) ? ' red-bg' : ' white-bg';
           }
           return cssClass;
         })
@@ -261,11 +277,12 @@ export class MultilineComponent implements OnChanges {
           }else{
             return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
           }
+
         })
         .style('top', d => {
           return yScale(Math.round(d.value * 100) / 100)+10 + 'px'
         })
-        .text(d => Math.round(d.value * 100) / 100)
+        .text(d => Math.round(d.value * 100) / 100 + ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
         .transition()
         .duration(500)
         .style('display', 'block')
@@ -312,7 +329,9 @@ export class MultilineComponent implements OnChanges {
     const xAxis = d3.axisBottom(xScale);
     /*var xAxis = d3.axisBottom(xScale).ticks(7);
      */
-    const yAxis = d3.axisLeft(yScale).ticks(5);
+    const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function(tickval) {
+      return tickval >= 1000 ? tickval/1000 + "k" : tickval;
+    });
 
     const XCaptionSVG = d3
       .select(this.elem)
@@ -624,12 +643,14 @@ export class MultilineComponent implements OnChanges {
         .select('.x')
         .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
       }
+
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
       const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
         .attr('id', 'legendContainer')
         .style('margin-left', 60 + 'px')
         .append('div');
+
       legendDiv.transition()
         .duration(200)
         .style('display', 'block')
@@ -645,10 +666,14 @@ export class MultilineComponent implements OnChanges {
 
       if(colorArr?.length>0){
         let htmlString = '<div class="legend_item" style="display:flex; align-items:center;"><div>';
+
+
         colorArr.forEach((d, i) => {
           htmlString += `<div class="legend_color_indicator" style="margin:0 5px 2px 0;width:15px; border-width:2px; border-style:dashed; border-color: ${color[i]}"></div>`;
         });
+
         htmlString += '</div><div class="font-small"> Average Coverage</div></div>'
+
         legendDiv.html(htmlString);
       }
     }

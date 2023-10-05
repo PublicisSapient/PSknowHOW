@@ -251,7 +251,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
                     });
                 });
             }
-        }
+          }
+          // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
+          //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
+          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -360,11 +363,13 @@ export class BacklogComponent implements OnInit, OnDestroy{
     } else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
-      } else {
+      } else if(trendValueList?.hasOwnProperty('value')){
+        this.kpiChartData[kpiId] = [...trendValueList?.value];
+      }else{
         this.kpiChartData[kpiId] = [];
       }
-    }
 
+    }
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     }
@@ -827,7 +832,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
     const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+        this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
