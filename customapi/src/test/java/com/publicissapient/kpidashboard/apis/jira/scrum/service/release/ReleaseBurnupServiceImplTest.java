@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -13,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +43,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
@@ -40,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -144,6 +162,44 @@ public class ReleaseBurnupServiceImplTest {
 			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
 				node.getAccountHierarchy().setBeginDate("2023-05-25T15:53:00.0000000");
 				node.getAccountHierarchy().setEndDate(null);
+			});
+			return true;
+		}).collect(Collectors.toList());
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
+		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
+		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		assertNotNull(kpiElement.getTrendValueList());
+	}
+	@Test
+	public void getKpiData_bad_scenario() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(new ArrayList<>());
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(new ArrayList<>());
+		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
+		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		assertNotNull(kpiElement.getTrendValueList());
+	}
+
+	@Test
+	public void test_prediction_Data() throws ApplicationException {
+		accountHierarchyDataList = accountHierarchyDataList.stream().filter(data -> {
+			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
+				node.getAccountHierarchy().setBeginDate(null);
+				node.getAccountHierarchy().setEndDate(null);
+				node.getAccountHierarchy().setReleaseState("unreleased");
 			});
 			return true;
 		}).collect(Collectors.toList());

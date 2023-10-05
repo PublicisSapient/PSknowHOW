@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
 import java.time.DayOfWeek;
@@ -23,6 +41,7 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -69,6 +88,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final String BAR_GRAPH_TYPE = "bar";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public static final String RELEASE_PREDICTION = "Release Prediction";
+	public static final String AVG_ISSUE_COUNT = "avgIssueCount";
+	public static final String AVG_STORY_POINT = "avgStoryPoint";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -230,7 +252,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (latestRelease != null) {
 			String startDate = latestRelease.getReleaseFilter().getStartDate();
 			String endDate = latestRelease.getReleaseFilter().getEndDate();
-
+			String releaseState = Optional.ofNullable(latestRelease.getAccountHierarchy().getReleaseState()).orElse("");
 			Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
 
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
@@ -268,13 +290,16 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 				range = durationRangeMap.values().stream().findFirst().orElse(0L);
 				completedReleaseMap = prepareCompletedIssueMap(completedReleaseMap, startLocalDate);
-
+				Map<String, Object> averageMap = getAvgData(releaseState, fieldMapping, startLocalDate, startDate,
+						completedReleaseMap, range);
+				long avgIssueCount = (long) averageMap.getOrDefault(AVG_ISSUE_COUNT, 0L);
+				double avgStoryPoint = (double) averageMap.getOrDefault(AVG_STORY_POINT, 0d);
 				tempStartDate = LocalDate.parse(startLocalDate.toString());
 				List<JiraIssue> overallIssues = new ArrayList<>();
 				List<JiraIssue> overallCompletedIssues = new ArrayList<>();
 				List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
 				List<DataCountGroup> issueSizeCountDataGroup = new ArrayList<>();
-				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
+				for (int i = 1; i <= range && !startLocalDate.isAfter(endLocalDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
@@ -287,6 +312,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration,
 							fieldMapping);
 					startLocalDate = getNextRangeDate(duration, startLocalDate);
+					addPredictionData(releaseState, issueCount, avgIssueCount, i, issueSize, avgStoryPoint);
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
@@ -344,8 +370,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		Map<String, Long> map = new HashMap<>();
 		long range;
 		String duration;
+		// representing in months if week count > 20
+		if (ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) > 20) {
+			range = ChronoUnit.MONTHS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
+			duration = CommonConstant.MONTH;
+		}
 		// added+1 to add the end date as well
-		if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > 15) {
+		else if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > 15) {
 			range = ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.WEEK;
 		} else {
@@ -366,23 +397,25 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		List<JiraIssue> issuesRemoved = filterWiseGroupedMap.getOrDefault(SCOPE_REMOVED, new ArrayList<>());
 		List<JiraIssue> completedIssues = filterWiseGroupedMap.getOrDefault(RELEASE_PROGRESS, new ArrayList<>());
 		// do not change the order, as it will impact the UI coloration
-		createDataCount((long) issuesAdded.size(), BAR_GRAPH_TYPE, SCOPE_ADDED, issueCountDataList, issuesAdded);
-		createDataCount((long) issuesRemoved.size(), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueCountDataList, issuesRemoved);
-		createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList, overallIssues);
+		/*createDataCount((long) issuesAdded.size(), BAR_GRAPH_TYPE, SCOPE_ADDED, issueCountDataList, issuesAdded, null);
+		createDataCount((long) issuesRemoved.size(), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueCountDataList, issuesRemoved,
+				null);*/
+		createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList, overallIssues,
+				CommonConstant.SOLID_LINE_TYPE);
 		createDataCount((long) completedIssues.size(), LINE_GRAPH_TYPE, RELEASE_PROGRESS, issueCountDataList,
-				completedIssues);
+				completedIssues, CommonConstant.SOLID_LINE_TYPE);
 		issueCount.setFilter(date);
 		issueCount.setDuration(duration);
 		issueCount.setValue(issueCountDataList);
 
-		createDataCount(getStoryPoint(issuesAdded, fieldMapping), BAR_GRAPH_TYPE, SCOPE_ADDED, issueSizeDataList,
-				issuesAdded);
+		/*createDataCount(getStoryPoint(issuesAdded, fieldMapping), BAR_GRAPH_TYPE, SCOPE_ADDED, issueSizeDataList,
+				issuesAdded, null);
 		createDataCount(getStoryPoint(issuesRemoved, fieldMapping), BAR_GRAPH_TYPE, SCOPE_REMOVED, issueSizeDataList,
-				issuesRemoved);
+				issuesRemoved, null);*/
 		createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueSizeDataList,
-				overallIssues);
+				overallIssues, CommonConstant.SOLID_LINE_TYPE);
 		createDataCount(getStoryPoint(completedIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_PROGRESS,
-				issueSizeDataList, completedIssues);
+				issueSizeDataList, completedIssues, CommonConstant.SOLID_LINE_TYPE);
 		issueSize.setFilter(date);
 		issueSize.setDuration(duration);
 		issueSize.setValue(issueSizeDataList);
@@ -416,12 +449,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private DataCount createDataCount(Object value, String graphType, String label, List<DataCount> issueCountDataList,
-			List<JiraIssue> orDefault) {
+			List<JiraIssue> orDefault, String lineCategory) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(value));
 		dataCount.setKpiGroup(label);
 		dataCount.setValue(value);
 		dataCount.setGraphType(graphType);
+		dataCount.setLineCategory(lineCategory);
 		if (graphType.equalsIgnoreCase(BAR_GRAPH_TYPE)) {
 			dataCount.setHoverValue(createHoverMap(orDefault));
 		}
@@ -485,7 +519,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	private String getRange(CustomDateRange dateRange, String range) {
 		String date = null;
-		if (range.equalsIgnoreCase(CommonConstant.WEEK)) {
+		if (range.equalsIgnoreCase(CommonConstant.MONTH)) {
+			LocalDate dateValue = dateRange.getStartDate();
+			date = dateValue.getYear() + Constant.DASH + dateValue.getMonthValue();
+		} else if (range.equalsIgnoreCase(CommonConstant.WEEK)) {
 			LocalDate endDate = dateRange.getEndDate();
 			while (!endDate.getDayOfWeek().equals(DayOfWeek.FRIDAY)) {
 				endDate = endDate.minusDays(1);
@@ -516,12 +553,134 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
-		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+		if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			currentDate = currentDate.plusMonths(1);
+		} else if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 			currentDate = currentDate.plusWeeks(1);
 		} else {
 			currentDate = currentDate.plusDays(1);
 		}
 		return currentDate;
+	}
+
+	/**
+	 * To find the Avg issueCount/Sp during selected prediction duration for
+	 * unreleased
+	 * 
+	 * @param releaseState
+	 *            state of release
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param startLocalDate
+	 *            start date of x-axis
+	 * @param startDate
+	 *            start date of release
+	 * @param completedReleaseMap
+	 *            Map<LocalDate,JiraIssue>
+	 * @param range
+	 *            range of x-axis
+	 * @return Map<String,Object> containing avg of IssueCount/Sp.
+	 */
+	private Map<String, Object> getAvgData(String releaseState, FieldMapping fieldMapping, LocalDate startLocalDate,
+			String startDate, Map<LocalDate, List<JiraIssue>> completedReleaseMap, long range) {
+		Map<String, Object> averageMap = new HashMap<>();
+		if (!releaseState.equalsIgnoreCase(CommonConstant.UNRELEASED)) {
+			return averageMap; // only cal avg issueCount/Sp in case of Unreleased
+		}
+
+		String startDateCount = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse("");
+		LocalDate predictionStartDate = calculatePredictionStartDate(startDateCount, startLocalDate, startDate,
+				completedReleaseMap);
+
+		List<JiraIssue> completedIssues = calculateCompletedIssues(predictionStartDate, completedReleaseMap);
+
+		if (range != 0 && CollectionUtils.isNotEmpty(completedIssues)) {
+			long avgIssueCount = completedIssues.size() / range;
+			double avgStoryPoint = roundingOff(getStoryPoint(completedIssues, fieldMapping) / range);
+			averageMap.put(AVG_ISSUE_COUNT, avgIssueCount);
+			averageMap.put(AVG_STORY_POINT, avgStoryPoint);
+		}
+
+		return averageMap;
+	}
+
+	/**
+	 * To calculate the prediction start Date
+	 * 
+	 * @param startDateCount
+	 *            days to inc from fieldMapping
+	 * @param startLocalDate
+	 * @param startDate
+	 *            start Date of release
+	 * @param completedReleaseMap
+	 *            Map<LocalDate,JiraIssue> completed release issue
+	 * @return StartDate of Prediction
+	 */
+	private LocalDate calculatePredictionStartDate(String startDateCount, LocalDate startLocalDate, String startDate,
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+		if (StringUtils.isNotEmpty(startDateCount)) {
+			return Objects.requireNonNull(startLocalDate).plusDays(Long.parseLong(startDateCount));
+		} else {
+			return StringUtils.isEmpty(startDate) ? completedReleaseMap.keySet().stream().filter(Objects::nonNull)
+					.min(LocalDate::compareTo).orElse(null)
+					: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
+		}
+	}
+
+	/**
+	 * Method to calculate completed issue during prediction duration
+	 * 
+	 * @param predictionStartDate
+	 *            prediction start date
+	 * @param completedReleaseMap
+	 *            Map<LocalDate,JiraIssue > Map of completed issue
+	 * @return List<JiraIssue> completed during prediction duration
+	 */
+	private List<JiraIssue> calculateCompletedIssues(LocalDate predictionStartDate,
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+		List<JiraIssue> completedIssues = new ArrayList<>();
+		if (predictionStartDate == null) {
+			return completedIssues; // Return an empty list if predictionStartDate is null
+		}
+		LocalDate currentDate = predictionStartDate;
+		// completed issue between prediction start and end Date both inclusive
+		while (!currentDate.isBefore(predictionStartDate) && !LocalDate.now().isBefore(currentDate)) {
+			completedIssues.addAll(completedReleaseMap.getOrDefault(currentDate, new ArrayList<>()));
+			currentDate = currentDate.plusDays(1);
+		}
+
+		return completedIssues;
+	}
+
+	/**
+	 * Method to add the prediction data for unreleased state
+	 * 
+	 * @param releaseState
+	 *            state of release
+	 * @param issueCount
+	 *            DataCountGroup for issueCount
+	 * @param avgIssueCount
+	 *            Avg. Issue Count value
+	 * @param index
+	 *            index for x-axis range
+	 * @param issueSize
+	 *            DataCountGroup for issueSize
+	 * @param avgStoryPoint
+	 *            Avg. Story Point
+	 */
+	private void addPredictionData(String releaseState, DataCountGroup issueCount, long avgIssueCount, int index,
+			DataCountGroup issueSize, double avgStoryPoint) {
+		if (releaseState.equalsIgnoreCase(CommonConstant.UNRELEASED)) {
+			List<DataCount> issueCountDataList = issueCount.getValue();
+			createDataCount(avgIssueCount * index, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueCountDataList, null,
+					CommonConstant.DOTTED_LINE_TYPE);
+			issueCount.setValue(issueCountDataList);
+
+			List<DataCount> issueSizeDataList = issueSize.getValue();
+			createDataCount(avgStoryPoint * index, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueSizeDataList, null,
+					CommonConstant.DOTTED_LINE_TYPE);
+			issueSize.setValue(issueSizeDataList);
+		}
 	}
 
 }
