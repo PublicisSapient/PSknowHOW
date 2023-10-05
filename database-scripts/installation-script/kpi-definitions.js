@@ -744,7 +744,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -1194,7 +1194,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -3198,7 +3198,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
@@ -3512,7 +3512,6 @@ db.getCollection('kpi_master').insertMany(
         "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
         "isRepoToolKpi": true,
         "kpiCategory": "Developer"
-      }
   },
   {
 	"kpiId": "kpi164",
@@ -3575,9 +3574,55 @@ db.getCollection('kpi_master').insertMany(
      "isAdditionalFilterSupport":false,
      "kpiFilter":"radioButton",
      "boxType":"chart",
-     "calculateMaturity":false
+     "calculateMaturity":false,
   	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
- }
+ },
+ {
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"]
+  }
 ]
 );
 
@@ -3701,6 +3746,12 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi27",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 14,
+		"kanban": false
+	},
+    {
+		"kpiId": "kpi168",
+		"categoryId": "categoryTwo",
+		"kpiOrder": 15,
 		"kanban": false
 	},
 	{

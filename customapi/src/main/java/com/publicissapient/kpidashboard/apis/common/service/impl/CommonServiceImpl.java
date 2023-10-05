@@ -223,7 +223,7 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private boolean hasSingleValueList(String type) {
-		return KPICode.CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
+		return KPICode.SONAR_CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
 				|| KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
 	}
 

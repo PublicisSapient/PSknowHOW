@@ -357,14 +357,14 @@ public class KPIExcelUtility {
 				if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId())) {
 					excelData.setUnitCoverage(kpiSpecificDataList.get(i));
-				}
-				if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				}
-				if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId())) {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+					excelData.setCodeQuality(kpiSpecificDataList.get(i));
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
@@ -373,12 +373,12 @@ public class KPIExcelUtility {
 	}
 
 	private static void setSonarKpiWeekDayMonthColumn(String versionDate, KPIExcelData excelData, String kpiId) {
-
 		if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())) {
 			excelData.setWeeks(versionDate);
-
+		} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+			excelData.setMonth(versionDate);
 		} else {
 			excelData.setDayWeekMonth(versionDate);
 		}

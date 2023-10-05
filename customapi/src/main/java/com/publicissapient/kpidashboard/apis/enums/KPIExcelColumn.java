@@ -277,11 +277,13 @@ public enum KPIExcelColumn {
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
 			"Sprint Name", "Assignee", "Issue Status")),
+	
 	PICKUP_TIME("kpi160",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
-			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-					"PR Size (No. of lines)"));
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "Pickup Time (In Hours)")), PR_SIZE(
+					"kpi162",
+					Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks", "PR Size (No. of lines)")),
+
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month"));
 
 	// @formatter:on
 

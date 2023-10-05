@@ -140,7 +140,8 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		getSonarHistoryForAllProjects(pList, null, false).forEach((projectNodeId, projectData) -> {
+		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK))
+				.forEach((projectNodeId, projectData) -> {
 			List<String> projectList = new ArrayList<>();
 			List<String> coverageList = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
