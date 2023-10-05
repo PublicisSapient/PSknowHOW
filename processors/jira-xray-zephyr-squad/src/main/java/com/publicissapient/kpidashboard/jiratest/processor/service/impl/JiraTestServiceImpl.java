@@ -740,7 +740,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 				});
 
-				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType);
+				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType, projectConfig);
 				log.info("jql= " + query);
 				Instant start = Instant.now();
 
