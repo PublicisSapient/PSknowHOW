@@ -42,7 +42,6 @@ public class ReaderRetryHelper {
 		FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
 		backOffPolicy.setBackOffPeriod(TIME_INTERVAL_BETWEEN_RETRY);
 		retryTemplate.setBackOffPolicy(backOffPolicy);
-
 		return retryTemplate.execute(context -> operation.execute());
 	}
 
