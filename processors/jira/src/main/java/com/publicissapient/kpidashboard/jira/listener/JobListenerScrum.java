@@ -80,11 +80,6 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRA_KPI_CACHE);
-
-		log.info("removing project with basicProjectConfigId {}", projectId);
-		// Mark the execution as completed
-		ongoingExecutionsService.markExecutionAsCompleted(projectId);
-
 		if (jobExecution.getStatus() == BatchStatus.FAILED) {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
@@ -95,5 +90,8 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 						projectId);
 			}
 		}
+		log.info("removing project with basicProjectConfigId {}", projectId);
+		// Mark the execution as completed
+		ongoingExecutionsService.markExecutionAsCompleted(projectId);
 	}
 }
