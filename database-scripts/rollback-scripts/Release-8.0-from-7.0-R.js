@@ -726,7 +726,6 @@ db.getCollection('kpi_master').deleteOne(
   { "kpiId": "kpi168" }
 );
 
-//------------------------------Release 8.0-----------------------------------------
 // delete kpi_category_mapping for Sonar Code Quality
 db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi168"

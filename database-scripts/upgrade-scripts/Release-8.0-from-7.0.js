@@ -5023,7 +5023,7 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
-
+//------------------------------Release 8.0-----------------------------------------
 //-------------Sonar Code Quality---------
 db.getCollection('kpi_master').insertOne(
 {
@@ -5073,7 +5073,7 @@ db.getCollection('kpi_master').insertOne(
     "maturityRange": ["5", "4", "3", "2", "1"]
   }
 );
-//------------------------------Release 8.0-----------------------------------------
+
 // Note : below code only For Opensource project
 // Sonar Code Quality KPI category mapping
 db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
