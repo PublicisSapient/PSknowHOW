@@ -17,6 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import static com.publicissapient.kpidashboard.jira.listener.JobListenerKanban.convertDateToCustomFormat;
+
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -84,7 +86,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
 			if (fieldMapping.getNotificationEnabler()) {
-				handler.sendEmailToProjectAdmin("Error in job "+jobExecution.getJobInstance().getJobName()+":"+ jobExecution.getFailureExceptions(), projectId);
+				handler.sendEmailToProjectAdmin(convertDateToCustomFormat(jobExecution.getEndTime()), projectId);
 			} else {
 				log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin",
 						projectId);

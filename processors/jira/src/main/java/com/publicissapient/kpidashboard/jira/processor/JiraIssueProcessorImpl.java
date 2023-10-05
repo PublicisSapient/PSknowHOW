@@ -32,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -746,16 +747,20 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					}
 
 				}
-				jiraIssue.setEscapedDefectGroup(testPhasesList);
-			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject) {
+				if (Objects.nonNull(jiraIssue)) {
+					jiraIssue.setEscapedDefectGroup(testPhasesList);
+				}
+			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
+					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
+					.get(JiraConstants.VALUE).toString().toLowerCase())) {
+				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString().toLowerCase();
-
-				if (lowerCaseBugRaisedValue.contains(testPhase)) {
+				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue)) {
 					jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
-					isRaisedByThirdParty = true;
 				}
 			}
+
 		} catch (org.json.simple.parser.ParseException | JSONException e) {
 			log.error("JIRA Processor | Error while parsing third party field {}", e);
 		}

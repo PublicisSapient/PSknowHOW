@@ -17,6 +17,9 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -63,13 +66,21 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 		this.projectId = projectId;
 	}
 
+	public static String convertDateToCustomFormat(Date inputDate) {
+		SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy, EEEE, hh:mm:ss a");
+
+		String outputStr = outputFormat.format(inputDate);
+
+		return outputStr;
+	}
+
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.batch.core.listener.JobExecutionListenerSupport#afterJob(
 	 * org.springframework.batch.core.JobExecution)
@@ -85,7 +96,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
 			if (fieldMapping.getNotificationEnabler()) {
-				handler.sendEmailToProjectAdmin(jobExecution.getJobInstance().getJobName(), projectId);
+				handler.sendEmailToProjectAdmin(convertDateToCustomFormat(jobExecution.getEndTime()), projectId);
 			} else {
 				log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin",
 						projectId);
