@@ -139,7 +139,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 				projectConfig.getBasicProjectConfigId().toHexString());
-
+		boolean processorFetchingComplete = false;
 		try {
 			client = getProcessorJiraRestClient(projectConfig);
 
@@ -185,11 +185,12 @@ public class JiraTestServiceImpl implements JiraTestService {
 					break;
 				}
 			}
+			processorFetchingComplete = true;
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in scrum client", e);
 			lastSavedJiraIssueChangedDateByType.clear();
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 			}
@@ -199,8 +200,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return savedIsuesCount;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount) {
-		return savedCount > 0 && total == savedCount;
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
+		return savedCount > 0 && total == savedCount && processorFetchingComplete;
 	}
 
 	private List<Issue> getIssuesFromResult(SearchResult searchResult) {
@@ -790,7 +791,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 				});
 
-				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType);
+				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType, projectConfig);
 				log.info("jql= " + query);
 				Instant start = Instant.now();
 
