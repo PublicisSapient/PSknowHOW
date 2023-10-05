@@ -371,7 +371,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		long range;
 		String duration;
 		// representing in months if week count > 20
-		if (ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) > 20) {
+/*		if (ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) > 20) {
 			range = ChronoUnit.MONTHS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.MONTH;
 		}
@@ -382,7 +382,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		} else {
 			range = DAYS_RANGE;
 			duration = CommonConstant.DAYS;
-		}
+		}*/
+		range = ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
+		duration = CommonConstant.DAYS;
 		map.put(duration, range);
 		return map;
 	}
