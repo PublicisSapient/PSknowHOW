@@ -723,6 +723,18 @@ db.kpi_category_mapping.insertMany(
 
 //---------Release 8.0.0----------------
 //deleting kpi 165
-db.getCollection('kpi_master').deleteOne(
-  { "kpiId": "kpi165" }
-);
+// Reverting Backlog kpiCategory changes
+
+db.kpi_master.bulkWrite([
+    {
+        deleteMany: {
+            filter: { kpiId: { $in: ["kpi165"] } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { kpiId: { $in: ["kpi152", "kpi155", "kpi151", "kpi139", "kpi138", "kpi127", "kpi137", "kpi129", "kpi3", "kpi148", "kpi146"] } },
+            update: { $unset: { kpiSubCategory: "" } }
+        }
+    },
+]);

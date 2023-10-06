@@ -1194,7 +1194,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -2563,6 +2563,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "",
     "boxType": "3_column",
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2587,6 +2588,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2611,6 +2613,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2659,6 +2662,7 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "hideOverallFilter": true,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2889,6 +2893,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2940,6 +2945,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": true,
   },
   {
@@ -2964,6 +2970,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -2988,6 +2995,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -3068,6 +3076,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3092,6 +3101,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3167,6 +3177,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "dropdown",
     "boxType": "chart",
+    "kpiSubCategory": "Summary",
     "calculateMaturity": false
   },
   {
@@ -3198,7 +3209,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
@@ -3512,7 +3523,6 @@ db.getCollection('kpi_master').insertMany(
         "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
         "isRepoToolKpi": true,
         "kpiCategory": "Developer"
-      }
   },
   {
 	"kpiId": "kpi164",
@@ -3575,8 +3585,8 @@ db.getCollection('kpi_master').insertMany(
      "isAdditionalFilterSupport":false,
      "kpiFilter":"radioButton",
      "boxType":"chart",
-     "calculateMaturity":false
-  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+     "calculateMaturity":false,
+  	 "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  },
   {
     "kpiId": "kpi165",
@@ -6845,8 +6855,6 @@ db.kpi_column_configs.insertMany([
                                         },
                                       ],
                                     },
-                                 ]);
-                                 	},
                                  	{
                                     	basicProjectConfigId: null,
                                     	kpiId: 'kpi164',
