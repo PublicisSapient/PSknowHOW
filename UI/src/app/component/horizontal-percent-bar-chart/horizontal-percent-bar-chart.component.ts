@@ -19,6 +19,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   popupHost!: ViewContainerRef;
   elem: any;
   selectedNode: {};
+  @Input() kpiWidth:string = '50';
+  @Input() kpiId:string = '';
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
@@ -46,15 +48,20 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   draw(data, selectedNode = '') {
+    
     let self = this;
+    let kpiWidth = self.kpiWidth;
     const elem = this.elem;
     self.selectedNode = selectedNode;
-    let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ? document.getElementById('chart')?.offsetWidth : 485);
+    const margin = { top: 10, right: 22, bottom: 20, left: 100 };
+    
+    let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
+    let chartContainerWidth = tempWidth;
+    
     chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
-    const chart = d3.select(elem).select('#chart');
+    const chart = d3.select(elem).select('#chart-'+this.kpiId);
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
-    const margin = { top: 10, right: 22, bottom: 20, left: 100 };
     const width = chartContainerWidth - margin.left - margin.right;
     const barsTotalWidth = data.length > 3 ? data.length*40 : 180;
     const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
@@ -204,13 +211,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         this.selectedGroup = d.data.kpiGroup;
         if (!this.isDrilledDown) {
           const tooltipData = data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+          d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer').selectAll('div').remove();
           this.showTooltip(subgroups, width, margin, color, tooltipData, elem, height);
         }
       })
       .on('mouseout', (event, d) => {
         if (!this.isDrilledDown) {
-          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+          d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer').selectAll('div').remove();
           this.showLegend(subgroups, width, margin, color, elem, data, height);
         }
       })
@@ -237,7 +244,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   showLegend(subgroups, width, margin, color, elem, data, height) {
     let legendDiv;
-    legendDiv = d3.select(elem).select('#chart').select('#legendContainer');
+    legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
       .style('margin-top', '20px')
@@ -268,7 +275,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
-    const legendDiv = d3.select(elem).select('#chart').select('#legendContainer')
+    const legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer')
       .style('margin-top', '20px')
       .attr('width', 'auto')
       .style('margin-left', 50 + 'px');
@@ -278,9 +285,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .style('display', 'block')
       .style('opacity', 1)
       .style('width', 'auto')
-      .attr('class', 'p-d-flex p-flex-wrap normal-legend');
+      .attr('class', 'normal-legend');
 
-    let htmlString = '';
+    let htmlString = `<div class="p-text-center">${tooltipData.kpiGroup}</div><div class="p-d-flex p-flex-wrap">`;
 
     subgroups.forEach((d, i) => {
       htmlString += `<div class="legend_item" style="flex-direction:column; align-items:start; margin-right:1.5rem">
@@ -289,11 +296,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
                       </div>
                       <span class="p-m-1" style="font-weight:bold">: ${d}</span>
                     </div>
-                    <div style="font-size: 0.75rem;">${tooltipData.kpiGroup}: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'].filter((x) => x.subFilter === d)[0]['value']}</span></div>
+                    <div style="font-size: 0.75rem;">Value: <span style="color:${color(d)}; font-weight:bold">${tooltipData['value'].filter((x) => x.subFilter === d)[0]['value']}</span></div>
                     <div style="font-size: 0.75rem;">Percentage: <span style="color:${color(d)} ; font-weight:bold">${tooltipData[d].toFixed(2).replace(/\.00$/, '')}%</span></div>
                     </div>`;
     });
-
+    htmlString += '</div>'
     legendDiv.html(htmlString)
       .style('bottom', 40 + 'px');
   }
