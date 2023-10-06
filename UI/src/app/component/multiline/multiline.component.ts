@@ -639,11 +639,11 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
-      if(board == 'dora'){
-        svgX
-        .select('.x')
-        .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
-      }
+      // if(board == 'dora'){
+      //   svgX
+      //   .select('.x')
+      //   .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
+      // }
       
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
