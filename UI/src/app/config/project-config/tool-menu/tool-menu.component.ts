@@ -216,6 +216,15 @@ export class ToolMenuComponent implements OnInit {
             queryParams1: 'GitHubAction',
             index: 11
           },
+          {
+            toolName: 'RepoTool',
+            category: 'ABC',
+            description: '-',
+            icon: '',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'RepoTool',
+            index: 12
+          }
 
 
         ];

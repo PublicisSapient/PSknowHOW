@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.net.URI;
 
-import org.apache.commons.validator.routines.UrlValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,9 +39,6 @@ public class TestConnectionServiceImplTest {
 
 	@Mock
 	CustomApiConfig customApiConfig;
-
-	@Mock
-	UrlValidator urlValidator;
 
 	@Mock
 	RestTemplate restTemplate;

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -68,9 +69,9 @@ public class ProjectToolConfigServiceImplTest {
 	ProjectToolConfig listProjectTool = new ProjectToolConfig();
 	ProjectToolConfig listProjectTool1 = new ProjectToolConfig();
 	ProjectToolConfig listProjectTool2 = new ProjectToolConfig();
+	Connection connection = new Connection();
 	String testId;
 	String toolName;
-	String toolType;
 	@InjectMocks
 	private ProjectToolConfigServiceImpl projectToolServiceImpl;
 	@Mock
@@ -117,6 +118,9 @@ public class ProjectToolConfigServiceImplTest {
 		listProjectTool2.setJobName(null);
 		listProjectTool.setBasicProjectConfigId(new ObjectId("5fb364612064a31c9ccd517a"));
 		listProjectTool2.setProjectId(null);
+
+		connection.setConnectionName("TestConn");
+		connection.setId(new ObjectId("5fb3a6412064a35b8069930a"));
 
 	}
 
@@ -330,6 +334,8 @@ public class ProjectToolConfigServiceImplTest {
 				.collect(Collectors.toList());
 		when(subProjectRepository.findBytoolConfigIdIn(toolConfiragrationIds)).thenReturn(subProjectList);
 		when(toolRepositroy.findAll()).thenReturn(projectToolConfigDataList);
+		when(connectionRepository.findById(new ObjectId("5fb3a6412064a35b8069930a")))
+				.thenReturn(Optional.ofNullable(connection));
 		ServiceResponse response = projectToolServiceImpl.getAllProjectTool();
 		assertThat("status : ", response.getSuccess(), equalTo(true));
 		assertThat("Data should exist: ", response.getData(), equalTo(projectToolConfigDataList));
@@ -380,6 +386,8 @@ public class ProjectToolConfigServiceImplTest {
 		String toolType = "GitLab";
 		when(toolRepositroy.findByToolName(toolType)).thenReturn(projectToolConfigDataList);
 		when(subProjectRepository.findBytoolConfigIdIn(toolConfiragrationIds)).thenReturn(subProjectList);
+		when(connectionRepository.findById(new ObjectId("5fb3a6412064a35b8069930a")))
+				.thenReturn(Optional.ofNullable(connection));
 		ServiceResponse response = projectToolServiceImpl.getProjectToolByType(toolType);
 		assertThat("status: ", response.getSuccess(), equalTo(true));
 
@@ -446,6 +454,8 @@ public class ProjectToolConfigServiceImplTest {
 				.collect(Collectors.toList());
 		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId(basicProjectConfigId)))
 				.thenReturn(projectToolConfigDataList);
+		when(connectionRepository.findById(new ObjectId("5fb3a6412064a35b8069930a")))
+				.thenReturn(Optional.ofNullable(connection));
 
 		when(subProjectRepository.findBytoolConfigIdIn(toolConfiragrationIds)).thenReturn(subProjectList);
 		List<ProjectToolConfigDTO> response = projectToolServiceImpl.getProjectToolConfigs(basicProjectConfigId);
@@ -463,7 +473,8 @@ public class ProjectToolConfigServiceImplTest {
 		String toolId = "5fc4d61f80b6350f048a93e3";
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 
-		when(toolRepositroy.findById(toolId)).thenReturn(findToolById(toolId));
+		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
+				.thenReturn(createMockTools());
 		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
 		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
 		doNothing().when(sonarDataCleanUpService).clean(toolId);
@@ -475,7 +486,7 @@ public class ProjectToolConfigServiceImplTest {
 		String toolId = "5fc4d61f80b6350f048a93e5";
 		String basicProjectId = "5fc4d61e80b6350f048a9381";
 		assertThrows(ToolNotFoundException.class, () -> {
-			when(toolRepositroy.findById(toolId)).thenReturn(findToolById(toolId));
+			when(toolRepositroy.findByBasicProjectConfigId(new ObjectId(basicProjectId))).thenReturn(createMockTools());
 
 			assertTrue(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
 		});

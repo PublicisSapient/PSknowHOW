@@ -365,4 +365,13 @@ public class KPIExcelData {
 	@JsonProperty("Merge Request Id")
 	private String mergeRequestId;
 
+	@JsonProperty("Pickup Time (In Hours)")
+	private String pickupTime;
+
+	@JsonProperty("PR Size (No. of lines)")
+	private String prSize;
+
+	@JsonProperty("Days/Weeks")
+	private String daysWeeks;
+
 }

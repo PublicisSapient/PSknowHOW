@@ -244,7 +244,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
-			String userName = request.getHeader("username") != null ? request.getHeader("username")
+			String userName = request.getHeader(USER_NAME) != null ? request.getHeader(USER_NAME)
 					: authentication.getName();
 			List<UserTokenData> userTokenDataList = userTokenReopository.findAllByUserName(userName);
 			UserTokenData userTokenData = getLatestUser(userTokenDataList);

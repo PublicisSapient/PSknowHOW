@@ -123,7 +123,7 @@ export class SharedService {
     this.selectedtype = selectedType;
   }
 
-  // getter for type i.e scrum or kanban
+  // getter for tab i.e Executive/ Iteration/ Developer
   getSelectedTab() {
     return this.selectedTab;
   }
