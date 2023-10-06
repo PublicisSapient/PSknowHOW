@@ -115,7 +115,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 				} catch (HttpClientErrorException ex) {
 					statuscode = ex.getStatusCode().value();
 					isSuccess = false;
-					body = ex.getMessage().split(":")[1].trim().replaceAll("\"", "");
+					body = getBody(ex);
 				} catch (ResourceAccessException ex) {
 					isSuccess = false;
 					body = "Error in running " + processorName + " processor. Please try after some time.";
@@ -127,6 +127,17 @@ public class ProcessorServiceImpl implements ProcessorService {
 			}
 		}
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, body);
+	}
+
+	private String getBody(HttpClientErrorException ex) {
+		String msg = ex.getMessage();
+
+		if (msg != null) {
+			String[] parts = msg.split(":");
+			return (parts.length > 1) ? parts[1].trim().replaceAll("\"", "") : "";
+		} else {
+			return "";
+		}
 	}
 
 	@Override
