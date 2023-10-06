@@ -5019,7 +5019,8 @@ db.getCollection('metadata_identifier').updateMany(
 db.kpi_master.bulkWrite([
     {
         insertOne: {
-            "document": {
+            "document":
+            {
                 "kpiId": "kpi165",
                 "kpiName": "Epic Progress",
                 "maxValue": "",
@@ -5048,6 +5049,38 @@ db.kpi_master.bulkWrite([
         }
     },
     {
+        insertOne: {
+            "document":
+            {
+                "kpiId": "kpi169",
+                "kpiName": "Epic Progress",
+                "maxValue": "",
+                "kpiUnit": "Count",
+                "isDeleted": "False",
+                "defaultOrder": 5,
+                "kpiCategory": "Backlog",
+                "kpiSource": "Jira",
+                "groupId": 9,
+                "thresholdValue": "",
+                "kanban": false,
+                "chartType": "horizontalPercentBarChart",
+                "kpiInfo": {
+                    "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+                },
+                "xAxisLabel": "",
+                "yAxisLabel": "",
+                "isPositiveTrend": true,
+                "showTrend": false,
+                "isAdditionalFilterSupport": false,
+                "kpiFilter": "multiSelectDropDown",
+                "boxType": "chart",
+                "calculateMaturity": false,
+                "kpiSubCategory": "Epic View"
+            }
+
+        }
+    },
+    {
         updateMany: {
             filter: { "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] } },
             update: { $set: { "kpiSubCategory": "Summary" } }
@@ -5058,12 +5091,6 @@ db.kpi_master.bulkWrite([
             filter: { "kpiId": { $in: ["kpi139", "kpi138", "kpi127", "kpi137", "kpi129"] } },
             update: { $set: { "kpiSubCategory": "Health" } }
         }
-    },
-    {
-        updateMany: {
-            filter: { "kpiId": { $in: ["kpi169"] } },
-            update: { $set: { "kpiSubCategory": "Epic View" } }
-        },
     },
     {
         updateMany: {

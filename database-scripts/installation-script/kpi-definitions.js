@@ -3588,7 +3588,7 @@ db.getCollection('kpi_master').insertMany(
      "calculateMaturity":false,
   	 "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  },
-  {
+ {
     "kpiId": "kpi165",
     "kpiName": "Epic Progress",
     "maxValue": "",
@@ -3613,7 +3613,33 @@ db.getCollection('kpi_master').insertMany(
     "kpiFilter": "multiSelectDropDown",
     "boxType": "chart",
     "calculateMaturity": false
-  }
+  },
+{
+      "kpiId": "kpi169",
+      "kpiName": "Epic Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 5,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+        "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiSubCategory": "Epic View"
+    }
 ]
 );
 

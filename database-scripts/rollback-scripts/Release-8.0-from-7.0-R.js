@@ -722,13 +722,13 @@ db.kpi_category_mapping.insertMany(
 
 
 //---------Release 8.0.0----------------
-//deleting kpi 165
+//deleting kpi 165, 169
 // Reverting Backlog kpiCategory changes
 
 db.kpi_master.bulkWrite([
     {
         deleteMany: {
-            filter: { kpiId: { $in: ["kpi165"] } }
+            filter: { kpiId: { $in: ["kpi165","kpi169"] } }
         }
     },
     {
