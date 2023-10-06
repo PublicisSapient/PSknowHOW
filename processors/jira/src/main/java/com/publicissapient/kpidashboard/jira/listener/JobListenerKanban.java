@@ -18,8 +18,11 @@
 package com.publicissapient.kpidashboard.jira.listener;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -30,9 +33,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
@@ -54,6 +60,9 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 
 	@Autowired
 	private FieldMappingRepository fieldMappingRepository;
+
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
 	@Autowired
 	private JiraProcessorCacheEvictor jiraProcessorCacheEvictor;
@@ -94,16 +103,31 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 		// sending notification in case of job failure
 		if (jobExecution.getStatus() == BatchStatus.FAILED) {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
-			FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-			if (fieldMapping.getNotificationEnabler()) {
-				handler.sendEmailToProjectAdmin(convertDateToCustomFormat(jobExecution.getEndTime()), projectId);
-			} else {
-				log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin",
-						projectId);
-			}
+			setExecutionSuccessFalse();
+			sendNotification(jobExecution);
 		}
 		log.info("removing project with basicProjectConfigId {}", projectId);
 		// Mark the execution as completed
 		ongoingExecutionsService.markExecutionAsCompleted(projectId);
+	}
+
+	private void sendNotification(JobExecution jobExecution) {
+		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
+		if (fieldMapping.getNotificationEnabler()) {
+			handler.sendEmailToProjectAdmin(convertDateToCustomFormat(jobExecution.getEndTime()), projectId);
+		} else {
+			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
+		}
+	}
+
+	private void setExecutionSuccessFalse() {
+		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
+		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
+			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
+				processorExecutionTraceLog.setExecutionSuccess(false);
+			}
+			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
+		}
 	}
 }

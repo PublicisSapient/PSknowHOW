@@ -752,7 +752,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				}
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
 					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
-					.get(JiraConstants.VALUE).toString().toLowerCase())) {
+							.get(JiraConstants.VALUE).toString().toLowerCase())) {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString().toLowerCase();
@@ -863,6 +863,18 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		double costOfDelay = jiraIssue.getBusinessValue() + jiraIssue.getRiskReduction()
 				+ jiraIssue.getTimeCriticality();
 		jiraIssue.setCostOfDelay(costOfDelay);
+
+		if (fields.get(fieldMapping.getEpicPlannedValue()) != null
+				&& fields.get(fieldMapping.getEpicPlannedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicPlannedValue(), fields);
+			jiraIssue.setEpicPlannedValue(Double.parseDouble(fieldValue));
+		}
+
+		if (fields.get(fieldMapping.getEpicAchievedValue()) != null
+				&& fields.get(fieldMapping.getEpicAchievedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicAchievedValue(), fields);
+			jiraIssue.setEpicAchievedValue(Double.parseDouble(fieldValue));
+		}
 
 	}
 

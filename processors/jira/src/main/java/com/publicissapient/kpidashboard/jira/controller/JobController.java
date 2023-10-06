@@ -281,7 +281,7 @@ public class JobController {
 		if (ongoingExecutionsService.isExecutionInProgress(basicProjectConfigId)) {
 			log.error("An execution is already in progress");
 			return ResponseEntity.badRequest()
-					.body("An execution is already in progress for BasicProjectConfigId: " + basicProjectConfigId);
+					.body("Jira processor run is already in progress for this project. Please try after some time.");
 		}
 
 		// Mark the execution as in progress before starting the job asynchronously
@@ -315,6 +315,10 @@ public class JobController {
 								// Board is setup for the project
 								jobLauncher.run(fetchIssueKanbanBoardJob, params);
 							}
+						} else {
+							log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+							// Mark the execution as completed
+							ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 						}
 					} else {
 						// Project is Scrum
@@ -328,6 +332,10 @@ public class JobController {
 								// Board is setup for the project
 								jobLauncher.run(fetchIssueScrumBoardJob, params);
 							}
+						} else {
+							log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+							// Mark the execution as completed
+							ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 						}
 					}
 				}

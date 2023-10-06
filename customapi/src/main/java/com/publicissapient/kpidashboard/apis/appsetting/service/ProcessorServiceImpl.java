@@ -24,10 +24,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,9 +39,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,16 +64,15 @@ public class ProcessorServiceImpl implements ProcessorService {
 	@Context
 	HttpServletRequest httpServletRequest;
 	@Autowired
+	SprintTraceLogRepository sprintTraceLogRepository;
+	@Autowired
 	private ProcessorRepository<Processor> processorRepository;
 	@Autowired
 	private RestTemplate restTemplate;
 	@Autowired
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
-	SprintTraceLogRepository sprintTraceLogRepository;
-	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
-
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -94,11 +93,13 @@ public class ProcessorServiceImpl implements ProcessorService {
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
 		int statuscode = HttpStatus.NOT_FOUND.value();
+		String body = "";
 		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
 			statuscode = repoToolsConfigService
 					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
 		} else {
-			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
 			String token = httpServletRequest.getHeader(AUTHORIZATION);
 			token = CommonUtils.handleCrossScriptingTaintedValue(token);
 			if (StringUtils.isNotEmpty(url)) {
@@ -106,28 +107,33 @@ public class ProcessorServiceImpl implements ProcessorService {
 					HttpHeaders headers = new HttpHeaders();
 					headers.add(AUTHORIZATION, token);
 
-					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
-					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(
+							processorExecutionBasicConfig, headers);
+					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+							String.class);
 					statuscode = resp.getStatusCode().value();
 				} catch (HttpClientErrorException ex) {
 					statuscode = ex.getStatusCode().value();
 					isSuccess = false;
+					body = ex.getMessage().split(":")[1].trim().replaceAll("\"", "");
 				} catch (ResourceAccessException ex) {
 					isSuccess = false;
+					body = "Error in running " + processorName + " processor. Please try after some time.";
 				}
 			}
 			if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
 				isSuccess = false;
+				body = "Error in running " + processorName + " processor. Please try after some time.";
 			}
 		}
-		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
+		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, body);
 	}
 
 	@Override
 	public ServiceResponse fetchActiveSprint(String sprintId) {
 
-		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA).replaceFirst("/startprojectwiseissuejob",
-				"/startfetchsprintjob");
+		String url = processorUrlConfig.getProcessorUrl(ProcessorConstants.JIRA)
+				.replaceFirst("/startprojectwiseissuejob", "/startfetchsprintjob");
 
 		boolean isSuccess = true;
 
@@ -155,7 +161,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 		}
 
 		// setting the fetchStatus as false for the fetch sprint
-		if (HttpStatus.OK.value() == statuscode){
+		if (HttpStatus.OK.value() == statuscode) {
 			SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
 			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
 			sprintTrace.setSprintId(sprintId);
