@@ -234,15 +234,14 @@ export class AdvancedSettingsComponent implements OnInit {
     this.httpService.runProcessor(runProcessorInput)
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error && response.success) {
-          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
-            this.messageService.add({ severity: 'success', summary: response.message });
-          }else{
-            this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
-          }
+          this.messageService.add({ severity: 'success', summary: `${runProcessorInput['processor']} started successfully.` });
         } else {
+          if(runProcessorInput['processor'].toLowerCase() === 'jira'){
+            this.messageService.add({ severity: 'error', summary: response.data });
+          }else{
             this.messageService.add({ severity: 'error', summary: `Error in running ${runProcessorInput['processor']} processor. Please try after some time.` });
+          }
         }
-
       });
   }
 
