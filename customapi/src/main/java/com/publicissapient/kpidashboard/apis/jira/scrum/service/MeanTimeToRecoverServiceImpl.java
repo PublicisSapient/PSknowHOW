@@ -23,7 +23,6 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -137,15 +136,10 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraStoryIdentificationKPI166())) {
-				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentificationKPI166()));
-			} else {
-				List<String> defaultIssueTypes = Arrays.stream(fieldMapping.getJiraIssueTypeNames())
-						.collect(Collectors.toList());
-				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(defaultIssueTypes));
-			}
+			mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(ObjectUtils
+							.defaultIfNull(fieldMapping.getJiraStoryIdentificationKPI166(), new ArrayList<>())));
+
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraDodKPI166())) {
 
 				projectWiseDodStatus.put(basicProjectConfigId.toString(),
