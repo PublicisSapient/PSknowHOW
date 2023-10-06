@@ -351,11 +351,11 @@ export class GroupBarChartComponent implements OnChanges {
     var counter = 0;
     subgroups.forEach((d, i) => {
       counter = i;
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${colorList[i]}"></div> : ${d}</div>`;
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${colorList[i]}"></div> : ${d}</div>`;
     });
     counter ++
     this.lineGroups.forEach((d, i) => {
-      htmlString += `<div class="legend_item"><div class="legend_color_indicator line-indicator" style="background-color: ${colorList[counter]}"></div> : ${d}</div>`;
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${colorList[counter]}"></div> : ${d}</div>`;
       counter ++;
     })
 

@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -431,10 +428,44 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
     //DTS-26123 end
+	/**
+	 * Release defect by test phase
+	 */
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name()),
     /**
      * Scope Churn
      */
     SCOPE_CHURN("kpi164", KPISource.JIRA.name()),
+    /**
+     * Backlog - Iteration Readiness kpi
+     */
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Change DORA  kpi code
+     */
+    LEAD_TIME_FOR_CHANGE("kpi156", KPISource.JIRA.name()),
+
+    /**
+     * Mean Time To Merge
+     */
+    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", KPISource.BITBUCKET.name()),
+    /**
+     * Number of Check-ins
+     */
+    REPO_TOOL_NUMBER_OF_CHECK_INS("kpi159", KPISource.BITBUCKETKANBAN.name()),
+    /**
+     * Check-Ins & Merge Requests
+     */
+    REPO_TOOL_CODE_COMMIT("kpi157", KPISource.BITBUCKET.name()),
+    /**
+     * Pickup Time
+     */
+    PICKUP_TIME("kpi160", KPISource.BITBUCKET.name()),
+    /**
+     * PR Size
+     */
+    PR_SIZE("kpi162", KPISource.BITBUCKET.name()),
     /**
      * DTS-27553
      * Epic Progress
@@ -444,14 +475,14 @@ public enum KPICode {
 
     // @formatter:on
 
-    private String kpiId;
+	private final String kpiId;
 
-    private String source;
+	private String source;
 
-    KPICode(String kpiID, String source) {
-        this.kpiId = kpiID;
-        this.setSource(source);
-    }
+	KPICode(String kpiID, String source) {
+		this.kpiId = kpiID;
+		this.setSource(source);
+	}
 
     /**
      * Gets kpi.

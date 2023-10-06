@@ -88,6 +88,7 @@ export class SharedService {
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
+  maturityTableLoader = new Subject<boolean>();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -122,7 +123,7 @@ export class SharedService {
     this.selectedtype = selectedType;
   }
 
-  // getter for type i.e scrum or kanban
+  // getter for tab i.e Executive/ Iteration/ Developer
   getSelectedTab() {
     return this.selectedTab;
   }
@@ -355,6 +356,10 @@ export class SharedService {
 
   getFieldMappingMetaData(){
     return this.fieldMappingOptionsMetaData;
+  }
+
+  setMaturiyTableLoader(value){
+    this.maturityTableLoader.next(value)
   }
 }
 

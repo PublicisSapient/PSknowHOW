@@ -534,6 +534,44 @@ db.getCollection('field_mapping_structure').bulkWrite([
     }
 ]);
 
+
+//  rollback reorder kpi group for performance
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi111", "kpi82"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi72" }, { $set: { "groupId": 2 } })
+
+
+
+
+//Reversing DTS-27550 making release Progress filter to dropdown
+db.kpi_master.updateOne(
+  { "kpiId": "kpi147" },
+  { $set: { "kpiFilter": "multiSelectDropDown" } }
+);
+
+//DTS-26150 start
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["testingPhaseDefectsIdentifier", "jiraDodKPI163"]}
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI163"
+      }
+   }}
+);
+
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi163" }
+);
+//DTS-26150 end
+
 // delete Scope Churn kpi
 //DTS-28198 remove radio button filter to release kpis
 db.getCollection("kpi_master").bulkWrite(
@@ -598,13 +636,92 @@ db.kpi_master.updateOne(
     }
 );
 
-//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+//------------------------- 7.10.0 changes----------------------------------------------------------------------------------
 //Reversing DTS-27550 making release Progress filter to dropdown
 db.kpi_master.updateOne(
   { "kpiId": "kpi147" },
   { $set: { "kpiFilter": "multiSelectDropDown" } }
 );
 
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi161" }
+);
+
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueTypeNamesKPI161", "jiraIssueTypeNamesKPI151", "jiraIssueTypeNamesKPI152", "jiraIssueTypeNamesKPI146", "jiraIssueTypeNamesKPI148"]
+    }
+});
+
+// delete lead time for change
+db.kpi_master.deleteOne({
+      "kpiId": "kpi156"
+    });
+
+// fieldMapping Structure fields for Lead time for changes in DORA tab
+db.field_mapping_structure.deleteMany({
+    "fieldName": {
+        $in: ["leadTimeConfigRepoTool", "toBranchForMRKPI156", "jiraDodKPI156" , "jiraIssueTypeKPI156"]
+    }
+});
+
+db.getCollection('metadata_identifier').updateMany(
+   { "templateCode": { $in: ["7"] } },
+   { $pull: {
+      "workflow": {
+         "type":"jiraDodKPI156"
+      },
+      "issues" : {
+       "type": "jiraIssueTypeKPI156"
+      }
+   }}
+);
+
+//revert RepoTool - DTS-27526 remove repo tool changes
+// Revert changes to kpi_master collection
+db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+
+// Revert changes to kpi_column_configs collection
+db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+
+// Revert changes to kpi_master collection (if kpiIdsToUpdate were updated)
+db.getCollection("kpi_master").updateMany(
+{ kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
+{ $unset: {
+          "isRepoToolKpi": "",
+          "kpiCategory": "",
+          } }
+);
+
+// Revert changes to repo_tools_provider collection
+db.getCollection("repo_tools_provider").remove({});
+
+// Revert changes to processor collection
+db.getCollection("processor").remove({ processorName: "RepoTool" });
+
+// Added bitbucket kpis to speed
+db.kpi_category_mapping.insertMany(
+{
+"kpiId" : "kpi65",
+"categoryId" : "speed",
+"kpiOrder" : Double("4"),
+"kanban" : true
+},
+{
+"kpiId" : "kpi11",
+"categoryId" : "speed",
+"kpiOrder" : Double("8"),
+"kanban" : false
+},
+{
+"kpiId" : "kpi84",
+"categoryId" : "speed",
+"kpiOrder" : Double("7"),
+"kanban" : false
+})
+
+
+//---------Release 8.0.0----------------
 //deleting kpi 165
 db.getCollection('kpi_master').deleteOne(
   { "kpiId": "kpi165" }

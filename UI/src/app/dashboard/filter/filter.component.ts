@@ -97,7 +97,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   processorName = ['jira', 'azure'];
   heirarchyCount: number;
   dateRangeFilter: any;
-  selectedDayType = 'Weeks';
+  selectedDayType;
   selectedDays: any;
   previousType = false; // to check if Scrum/Kanban selection has changed
   takeFiltersFromPreviousTab: boolean; // to check if previous tab was following the same filter format
@@ -113,7 +113,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   isTooltip = false;
   projectIndex = 0;
   notificationList = [];
-  items: MenuItem[]  = [
+  items: MenuItem[] = [
   ];
   username: string;
   isGuest = false;
@@ -130,11 +130,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   ssoLogin = environment.SSO_LOGIN;
   lastSyncData: object = {};
   commentList: Array<object> = [];
-  showCommentPopup:boolean = false;
+  showCommentPopup: boolean = false;
   showSpinner: boolean = false;
-  kpiObj:object = {};
-  totalProjectSelected : number = 1;
-  selectedLevelValue : string = 'project';
+  kpiObj: object = {};
+  totalProjectSelected: number = 1;
+  selectedLevelValue: string = 'project';
   displayModal: boolean = false;
 
   constructor(
@@ -175,10 +175,10 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.service.onTypeOrTabRefresh.subscribe(data => {
-        this.lastSyncData ={};
+        this.lastSyncData = {};
         this.subject.next(true);
         this.selectedTab = data.selectedTab;
-        if(this.toggleDropdown['commentSummary']){
+        if (this.toggleDropdown['commentSummary']) {
           this.toggleDropdown['commentSummary'] = false;
         }
         if (this.selectedTab?.toLowerCase() === 'iteration') {
@@ -187,18 +187,50 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.projectIndex = 0;
         this.selectedType(data.selectedType);
 
-        if(this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase()  === 'backlog' || this.selectedTab.toLowerCase()  === 'release' ||  this.selectedTab.toLowerCase()  === 'dora'){
+        if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release' || this.selectedTab.toLowerCase() === 'dora') {
           this.showChart = 'chart';
           this.selectedLevelValue = 'project';
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
-        if(this.selectedTab.toLowerCase() === 'maturity'){
+        if (this.selectedTab.toLowerCase() === 'maturity') {
           this.showChart = 'chart';
           this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase()
           this.totalProjectSelected = 1;
           this.service.setShowTableView(this.showChart);
         }
+
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          this.selectedDayType = 'Days';
+          // different date filter for developer tab
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+            ],
+            "counts": [
+              5,
+              10
+            ]
+          }
+        } else {
+          this.selectedDayType = 'Weeks';
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+              "Months"
+            ],
+            "counts": [
+              5,
+              10,
+              15
+            ]
+          }
+        }
+        this.service.setSelectedDateFilter(this.selectedDayType);
+        this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
       }),
 
       this.service.mapColorToProjectObs.subscribe((x) => {
@@ -228,7 +260,24 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+        if (this.selectedTab.toLowerCase() === 'developer') {
+          this.selectedDayType = 'Days';
+          // different date filter for developer tab
+          this.dateRangeFilter = {
+            "types": [
+              "Days",
+              "Weeks",
+            ],
+            "counts": [
+              5,
+              10
+            ]
+          }
+        }
+        // this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.service.setSelectedDateFilter(this.selectedDayType);
         this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+        this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
       }
     });
 
@@ -280,8 +329,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   toggleFilter() {
     // getting document click event from dashboard and check if it is outside click of the filter and if filter is open then closing it
     this.service.getClickedItem().subscribe((target) => {
-      for(let key in this.toggleDropdown){
-        if(target && target !== this[key]?.nativeElement && target?.closest('.'+key+'Ddn') !== this[key+'Ddn']?.nativeElement){
+      for (let key in this.toggleDropdown) {
+        if (target && target !== this[key]?.nativeElement && target?.closest('.' + key + 'Ddn') !== this[key + 'Ddn']?.nativeElement) {
           this.toggleDropdown[key] = false;
         }
       }
@@ -336,7 +385,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedType(type) {
     this.selectedFilterArray = [];
     this.tempParentArray = [];
-    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'dora') {
+
+    if (this.selectedTab?.toLowerCase() === 'iteration' || this.selectedTab?.toLowerCase() === 'backlog' || this.selectedTab?.toLowerCase() === 'maturity' || this.selectedTab?.toLowerCase() === 'release' || this.selectedTab?.toLowerCase() === 'dora' || this.selectedTab?.toLowerCase() === 'mydashboard' || this.selectedTab?.toLowerCase() === 'developer') {
       this.allowMultipleSelection = false;
     } else {
       this.allowMultipleSelection = true;
@@ -367,13 +417,12 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   makeUniqueArrayList(arr) {
-
     let uniqueArray = [];
     for (let i = 0; i < arr?.length; i++) {
       const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
       if (idx == -1) {
         uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']] ;
+        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
         uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
       } else {
         uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
@@ -490,6 +539,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     } else if (this.selectedTab?.toLowerCase() === 'release') {
       this.projectIndex = 0;
       this.handleMilestoneFilter('project');
+    } else if (this.selectedTab?.toLowerCase() === 'developer') {
+      this.selectedDayType = 'Days';
+      this.applyChanges();
     } else {
       this.applyChanges();
     }
@@ -575,7 +627,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (isAdditionalFilter?.length > 0) {
         for (let i = 0; i < Object.keys(this.additionalFiltersDdn)?.length; i++) {
           const additionalFilterFormVal = this.filterForm?.get(Object.keys(this.additionalFiltersDdn)[i])?.value;
-          if(additionalFilterFormVal){
+          if (additionalFilterFormVal) {
             if (typeof additionalFilterFormVal === 'object' && Object.keys(additionalFilterFormVal)?.length > 0) {
               const selectedAdditionalFilter = this.additionalFiltersDdn[Object.keys(this.additionalFiltersDdn)[i]]?.filter((x) => additionalFilterFormVal[x['nodeId']] == true);
               for (let j = 0; j < selectedAdditionalFilter?.length; j++) {
@@ -599,7 +651,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (!applySource) {
         this.filterAdditionalFilters();
       }
-      if (applySource?.toLowerCase() == 'date' && this.kanban) {
+      if ((applySource?.toLowerCase() == 'date' || this.selectedTab.toLowerCase() === 'developer')) {
         this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
         this.service.setSelectedDateFilter(this.selectedDayType);
         this.toggleDateDropdown = false;
@@ -647,7 +699,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
     const dateFilter = this.filterForm?.get('date')?.value;
-    if (dateFilter != '' && this.kanban) {
+    if ((dateFilter != '' && this.kanban) || (dateFilter != '' && (this.selectedTab && this.selectedTab.length && this.selectedTab.toLowerCase() === 'developer'))) {
       this.filterApplyData['ids'] = [];
       this.filterApplyData['selectedMap']['date']?.push(this.selectedDayType.toUpperCase());
       this.filterApplyData['ids'].push(this.filterForm?.get('date')?.value);
@@ -738,6 +790,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         case 'release':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'release')?.[0]?.kpis;
           break;
+        // case 'developer':
+        //   this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'developer')?.[0]?.kpis;
+        //   break;
         case 'dora':
           this.kpiList = this.kpiListData['others'].filter((item) => item.boardName.toLowerCase() == 'dora')?.[0]?.kpis;
           break;
@@ -889,6 +944,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setDashConfigData(null);
     this.service.selectedtype = '';
     this.initializeFilterForm();
+
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -927,7 +983,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.additionalFiltersArr?.length; i++) {
       this.filterApplyData['selectedMap'][this.additionalFiltersArr[i]['hierarchyLevelId']] = [];
     }
-    if (this.kanban) {
+    if (this.kanban || this.selectedTab.toLowerCase() === 'developer') {
       this.filterApplyData['selectedMap']['date'] = [];
     }
   }
@@ -1094,7 +1150,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     1: onload
     2: onchange */
   handleIterationFilters(level) {
-    this.lastSyncData={};
+    this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
       this.service.setNoSprints(false);
@@ -1219,8 +1275,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     } else {
       this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
-   }
-  this.fetchActiveIterationStatus();
+    }
+    this.fetchActiveIterationStatus();
   }
   setSelectedDateType(label: string) {
     this.selectedDayType = label;
@@ -1353,6 +1409,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
         this.navigateToSelectedTab();
       });
+
+      // reset date filter
+      this.selectedDayType = 'Days';
+      this.service.setSelectedDateFilter(this.selectedDayType);
+      this.filterForm?.get('date')?.setValue(this.dateRangeFilter?.counts?.[0]);
+      this.selectedDateFilter = `${this.filterForm?.get('date')?.value} ${this.selectedDayType}`;
     });
   }
 
@@ -1424,7 +1486,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   findLatestPassedRelease(releaseList) {
     const currentDate = new Date();
-    const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate );
+    const passedReleases = releaseList.filter((release) => release.releaseEndDate && new Date(release.releaseEndDate) < currentDate);
     passedReleases.sort((a, b) => new Date(b.releaseEndDate).getTime() - new Date(a.releaseEndDate).getTime());
     return passedReleases.length > 0 ? passedReleases : null;
   }
@@ -1471,7 +1533,7 @@ export class FilterComponent implements OnInit, OnDestroy {
                 this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
                 this.selectedProjectLastSyncStatus = 'SUCCESS';
                 this.subject.next(true);
-              }else if(response['data']?.errorInFetch){
+              } else if (response['data']?.errorInFetch) {
                 this.lastSyncData = {};
                 this.selectedProjectLastSyncDate = response['data'].lastSyncDateTime;
                 this.selectedProjectLastSyncStatus = 'FAILURE';
@@ -1496,34 +1558,34 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onUpdateKPI(){
-    this.lastSyncData ={};
+  onUpdateKPI() {
+    this.lastSyncData = {};
     this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
   }
 
-  getRecentComments(){
+  getRecentComments() {
     this.showSpinner = true;
     let reqObj = {
       "level": this.filterApplyData?.['level'],
       "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
       "kpiIds": this.showKpisList?.map((item) => item.kpiId),
-      "nodes":[]
+      "nodes": []
     }
 
     this.showKpisList.forEach(x => {
       this.kpiObj[x.kpiId] = x.kpiName;
     });
 
-    if(this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release'){
+    if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
       reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
-    }else{
+    } else {
       reqObj['nodes'] = [...this.filterApplyData?.['selectedMap']['project']];
     }
 
     this.httpService.getCommentSummary(reqObj).subscribe((response) => {
-      if(response['success']){
+      if (response['success']) {
         this.commentList = response['data'];
-      }else{
+      } else {
         this.commentList = [];
       }
       this.showSpinner = false;
@@ -1534,13 +1596,13 @@ export class FilterComponent implements OnInit, OnDestroy {
     })
   }
 
-  getNodeName(nodeId){
+  getNodeName(nodeId) {
     return this.trendLineValueList.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
   }
 
-  handleBtnClick(){
+  handleBtnClick() {
     this.toggleDropdown['commentSummary'] = !this.toggleDropdown['commentSummary'];
-    if(this.toggleDropdown['commentSummary']){
+    if (this.toggleDropdown['commentSummary']) {
       this.getRecentComments();
     }
   }
@@ -1559,12 +1621,12 @@ export class FilterComponent implements OnInit, OnDestroy {
             let selected = this.filterData.filter((x) => x.nodeId == y)[0];
             pathData[catArr[i]] = selected?.nodeName;
           })
-            obj = {
-              'name': item.additionalFilters[i].nodeName,
-              'id': item.additionalFilters[i].nodeId,
-              'level': item.additionalFilters[i].labelName,
-              ...pathData,
-            }
+          obj = {
+            'name': item.additionalFilters[i].nodeName,
+            'id': item.additionalFilters[i].nodeId,
+            'level': item.additionalFilters[i].labelName,
+            ...pathData,
+          }
         }
       } else {
         let pathArr = item?.path[0]?.split('###');
@@ -1595,10 +1657,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedType = this.kanban ? 'kanban' : 'scrum';
     const levelDEtails = JSON.parse(localStorage.getItem('completeHierarchyData'))[selectedType];
     const currentLevel = this.service.getSelectedLevel();
-    const oneLevelUp = levelDEtails.filter(hier=> hier.level === (currentLevel['level'] -1))[0];
+    const oneLevelUp = levelDEtails.filter(hier => hier.level === (currentLevel['level'] - 1))[0];
     const sortName = `_${oneLevelUp['hierarchyLevelId']}`;
     const longName = ` ${oneLevelUp['hierarchyLevelName']}`;
-    const final = pId.replace(sortName,longName);
+    const final = pId.replace(sortName, longName);
     return final;
   }
 }

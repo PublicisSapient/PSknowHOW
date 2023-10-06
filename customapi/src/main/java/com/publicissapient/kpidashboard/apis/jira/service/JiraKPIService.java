@@ -31,7 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -327,20 +326,8 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return filteredJiraIssue;
 	}
 
-	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass(Map<String, Set<String>> projectWiseDefectTypes) {
-		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
-		List<JiraIssue> jiraIssuesForCurrentSprint = jiraService.getJiraIssuesForCurrentSprint();
-		if (MapUtils.isNotEmpty(projectWiseDefectTypes) && CollectionUtils.isNotEmpty(jiraIssuesForCurrentSprint)) {
-			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
-			projectWiseDefectTypes.forEach((project,
-					values) -> finalFilteredJiraIssue.addAll(jiraIssuesForCurrentSprint.stream()
-							.filter(jiraIssue -> values.contains(jiraIssue.getTypeName())
-									&& project.equalsIgnoreCase(jiraIssue.getBasicProjectConfigId()))
-							.collect(Collectors.toList())));
-
-		} else
-			filteredJiraIssue = jiraIssuesForCurrentSprint;
-		return filteredJiraIssue;
+	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass() {
+		return jiraService.getJiraIssuesForCurrentSprint();
 	}
 
 	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {

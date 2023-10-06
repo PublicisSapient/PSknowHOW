@@ -2017,3 +2017,9 @@ p-dialog .p-button-cancel.p-button-secondary {
       width: 100%;
   }
 }
+.legend_item {
+  padding-bottom: 10px;
+  padding-right: 10px;
+  text-transform: capitalize;
+  font-size: 10px;
+}

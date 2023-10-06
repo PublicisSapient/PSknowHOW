@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
+import static com.publicissapient.kpidashboard.apis.constant.Constant.REPO_TOOLS;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZURE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREPIPELINE;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_AZUREREPO;
@@ -208,6 +209,8 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
+				if(conn.getType().equals(REPO_TOOLS))
+					conn.setBaseUrl(conn.getHttpUrl());
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -290,6 +293,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case TOOL_ZEPHYR:
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
+			break;
+		case REPO_TOOLS:
+			if(inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
+				existingConnection = currConn;
 			break;
 		default:
 			existingConnection = new Connection();
@@ -490,6 +497,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setJaasUser(connection.getJaasUser());
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
+		existingConnection.setSshUrl(connection.getSshUrl());
+		existingConnection.setHttpUrl(connection.getHttpUrl());
+		existingConnection.setEmail(connection.getEmail());
 	}
 
 	private void saveConnection(Connection conn) {

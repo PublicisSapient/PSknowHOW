@@ -19,7 +19,7 @@
 <div *ngIf="!noKpis else noKpiTemplate">
   <div id="message"></div>
   <div class="{{selectedtype}}" id="{{selectedtype}}">
-    <div class="clearfix">
+    <div class="clearfix" *ngIf="showChart !== 'table'">
       <div class="right-container col">
         <div class="p-grid justify-content-start p-pt-3 p-pl-2 p-pr-2">
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
@@ -53,7 +53,8 @@
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-                              [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'">
+                              [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'" 
+                              [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                             </app-multiline>
                             <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -66,7 +67,7 @@
                               [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
                               [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
-                              [selectedtype]="selectedtype" [viewType]="showChart">
+                              [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                             </app-grouped-column-plus-line-chart>
                           </ng-container>
                         </ng-container>
@@ -93,6 +94,7 @@
                     </ng-template>
                   </ng-container>
                 </app-kpi-card>
+                
               </div>
             </ng-container>
             <ng-template #noDataAccess>
@@ -104,6 +106,7 @@
         </div>
       </div>
     </div>
+    <app-kpi-table *ngIf="showChart === 'table'" [kpiConfigData]="kpiConfigData" [cols]="kpiTableHeadingArr" [kpiData]="kpiTableDataObj" [colorObj]="colorObj"></app-kpi-table>
   </div>
 </div>
 <ng-template #noKpiTemplate>
