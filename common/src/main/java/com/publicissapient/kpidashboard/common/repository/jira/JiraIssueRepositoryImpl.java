@@ -32,9 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationExpression;
-import org.springframework.data.mongodb.core.aggregation.ComparisonOperators;
-import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
@@ -422,6 +419,23 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(ROOT_CAUSE);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+
+		return operations.find(query, JiraIssue.class);
+
+	}
+	@Override
+	public List<JiraIssue> findIssuesWithTrueField(Map<String, List<String>> mapOfFilters, String fieldName) {
+
+		Criteria criteria = new Criteria();
+
+		// map of common filters Project
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+
+		// field to check for true
+		criteria = criteria.and(fieldName).is(Boolean.TRUE);
+
+		Query query = new Query(criteria);
+		query.fields().include(NUMBER);
 
 		return operations.find(query, JiraIssue.class);
 

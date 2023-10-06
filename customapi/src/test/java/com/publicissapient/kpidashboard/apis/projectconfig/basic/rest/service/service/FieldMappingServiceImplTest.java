@@ -361,6 +361,7 @@ public class FieldMappingServiceImplTest {
 
 		fieldMapping.setJiraBugRaisedByIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
+		fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
 		// techDebt
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraTechDebtValue(Arrays.asList("Story"));

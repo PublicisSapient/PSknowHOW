@@ -465,7 +465,12 @@ public enum KPICode {
     /**
      * PR Size
      */
-    PR_SIZE("kpi162", KPISource.BITBUCKET.name());
+    PR_SIZE("kpi162", KPISource.BITBUCKET.name()),
+    /**
+     *  Mean time to Recover
+     */
+    MEAN_TIME_TO_RECOVER("kpi166",KPISource.JIRA.name());
+
 
 
 

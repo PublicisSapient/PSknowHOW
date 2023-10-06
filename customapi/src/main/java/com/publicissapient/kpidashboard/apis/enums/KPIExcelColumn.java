@@ -281,7 +281,9 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-					"PR Size (No. of lines)"));
+					"PR Size (No. of lines)")),
+	MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
+			"Created Date", "Completion Date", "Time to Recover (In Hours)"));
 
 	// @formatter:on
 

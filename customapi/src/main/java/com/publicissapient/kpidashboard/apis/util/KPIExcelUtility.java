@@ -51,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.model.DeploymentFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
+import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
@@ -1742,5 +1743,40 @@ public class KPIExcelUtility {
 				});
 			});
 		}
+	}
+
+	/**
+	 * Method to populate Modal Window of Mean Time to Recover
+	 * 
+	 * @param projectName
+	 *            Name of Project
+	 * @param meanTimeRecoverMapTimeWise
+	 *            Map<String, List<MeanTimeRecoverData>>
+	 * @param kpiExcelData
+	 *            List<KPIExcelData>
+	 */
+	public static void populateMeanTimeToRecoverExcelData(String projectName,
+			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise, List<KPIExcelData> kpiExcelData) {
+		if (MapUtils.isNotEmpty(meanTimeRecoverMapTimeWise)) {
+			meanTimeRecoverMapTimeWise.forEach((weekOrMonthName, meanRecoverListCurrentTime) -> {
+				meanRecoverListCurrentTime.stream().forEach(meanTimeRecoverData -> {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProjectName(projectName);
+					excelData.setDate(weekOrMonthName);
+					Map<String, String> issueDetails = new HashMap<>();
+					issueDetails.put(meanTimeRecoverData.getStoryID(),
+							StringUtils.isEmpty(meanTimeRecoverData.getUrl()) ? Constant.EMPTY_STRING
+									: meanTimeRecoverData.getUrl());
+					excelData.setStoryId(issueDetails);
+					excelData.setIssueType(meanTimeRecoverData.getIssueType());
+					excelData.setIssueDesc(meanTimeRecoverData.getDesc());
+					excelData.setCompletionDate(meanTimeRecoverData.getClosedDate());
+					excelData.setCreatedDate(meanTimeRecoverData.getCreatedDate());
+					excelData.setTimeToRecover(meanTimeRecoverData.getTimeToRecover());
+					kpiExcelData.add(excelData);
+				});
+			});
+		}
+
 	}
 }

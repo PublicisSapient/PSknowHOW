@@ -400,6 +400,13 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
 
+	// Production Incident Mapping
+	private String jiraProductionIncidentIdentification;
+	private String jiraProdIncidentRaisedByCustomField;
+	private List<String> jiraProdIncidentRaisedByValue;
+
+	private List<String> jiraStoryIdentificationKPI166;
+	private List<String> jiraDodKPI166;
 	/**
 	 * Get jira issue type names string [ ].
 	 *

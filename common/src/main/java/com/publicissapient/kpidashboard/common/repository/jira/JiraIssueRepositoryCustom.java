@@ -113,6 +113,17 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 */
 	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
 
+	/**
+	 * Find issues with boolean field
+	 * 
+	 * @param mapOfFilters
+	 *            the map of filters
+	 * @param fieldName
+	 *            name of field
+	 * @return List of Issues
+	 */
+	List<JiraIssue> findIssuesWithTrueField(Map<String, List<String>> mapOfFilters, String fieldName);
+
 	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
 
 	/**

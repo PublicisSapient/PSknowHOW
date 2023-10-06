@@ -4273,5 +4273,42 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi166",
+    "kpiName": "Mean Time to Recover",
+    "maxValue": "100",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "For all the production incident tickets raised during a time period, the time between start date and closed date of the incident ticket will be calculated."
+        },
+        {
+          "type": "paragraph",
+          "value": "The average of all such tickets will be shown."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Hours",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   }
 ]

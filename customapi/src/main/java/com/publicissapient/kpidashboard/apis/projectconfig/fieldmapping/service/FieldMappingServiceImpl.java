@@ -241,6 +241,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			isUpdated = checkFieldsForUpdation(unsaved, saved, productionDefectFieldList);
 		}
 
+		if (!isUpdated
+				&& CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraProductionIncidentIdentification())) {
+			List<String> productionIncidentFieldList = Arrays.asList("jiraProdIncidentRaisedByCustomField",
+					"jiraProdIncidentRaisedByValue");
+			isUpdated = checkFieldsForUpdation(unsaved, saved, productionIncidentFieldList);
+		}
+
 		return isUpdated;
 	}
 
@@ -455,6 +462,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDodKPI152",
 			"jiraDodKPI151",
 			"jiraDodKPI37",
+			"jiraDodKPI166",
 
 			"jiraDefectCreatedStatusKPI14",
 
@@ -500,6 +508,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraStoryIdentificationKpi40",
 			"jiraStoryIdentificationKPI164",
 			"jiraStoryIdentificationKPI129",
+			"jiraStoryIdentificationKPI166",
 
 			"jiraLiveStatusKPI3",
 			"jiraLiveStatusLTK",

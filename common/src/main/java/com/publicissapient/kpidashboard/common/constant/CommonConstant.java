@@ -227,6 +227,7 @@ public final class CommonConstant {
 	public static final String JIRADEFECTCOUNTLISSUETYPEKPI36="jiraDefectCountlIssueTypeKPI36";
 	public static final String JIRAQAKPI111ISSUETYPE="jiraQAKPI111IssueType";
 	public static final String JIRASTORYIDENTIFICATIONKPI129="jiraStoryIdentificationKPI129";
+	public static final String JIRASTORYIDENTIFICATIONKPI166="jiraStoryIdentificationKPI166";
 	public static final String JIRASTORYIDENTIFICATIONKPI40="jiraStoryIdentificationKpi40";
 	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
@@ -318,6 +319,7 @@ public final class CommonConstant {
 	public static final String JIRA = "Jira";
 
 	public static final String REPO = "Repo";
+	public static final String JIRADODKPI166="jiraDodKPI166";
 
 	private CommonConstant() {
 
