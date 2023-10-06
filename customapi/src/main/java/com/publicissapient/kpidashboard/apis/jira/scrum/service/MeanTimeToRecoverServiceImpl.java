@@ -159,6 +159,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 		List<JiraIssue> jiraIssueList = jiraIssueRepository.findIssuesWithTrueField(mapOfFilters, PRODUCTION_INCIDENT);
 
 		if (CollectionUtils.isEmpty(jiraIssueList)) {
+			//fetching history for selected story type
 			historyDataList = jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(mapOfFiltersFH,
 					uniqueProjectMapFH, startDate, endDate);
 		}
@@ -166,6 +167,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 			List<String> issueIdList = jiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
 
 			mapOfFiltersFH.put(STORY_ID, issueIdList);
+			//fetching history for the production incident tickets
 			historyDataList = jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(mapOfFiltersFH,
 					uniqueProjectMapFH, startDate, endDate);
 		}
