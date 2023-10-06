@@ -113,6 +113,7 @@ export class MilestoneComponent implements OnInit {
     this.navigationTabs = [
       {'label':'Release Review', 'count': 0,kpis : [],width : 'half'},
       {'label':'Release Progress', 'count': 0,kpis : [],width :'full'},
+      {'label':'Epic Progress', 'count': 0,kpis : [],width :'full'},
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
