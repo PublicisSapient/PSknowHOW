@@ -676,3 +676,46 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
+
+//revert RepoTool - DTS-27526 remove repo tool changes
+// Revert changes to kpi_master collection
+db.getCollection("kpi_master").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+
+// Revert changes to kpi_column_configs collection
+db.getCollection("kpi_column_configs").remove({ kpiId: { $in: ["kpi157", "kpi158", "kpi159", "kpi160"] } });
+
+// Revert changes to kpi_master collection (if kpiIdsToUpdate were updated)
+db.getCollection("kpi_master").updateMany(
+{ kpiId: { $in: ["kpi84", "kpi11", "kpi65"] } },
+{ $unset: {
+          "isRepoToolKpi": "",
+          "kpiCategory": "",
+          } }
+);
+
+// Revert changes to repo_tools_provider collection
+db.getCollection("repo_tools_provider").remove({});
+
+// Revert changes to processor collection
+db.getCollection("processor").remove({ processorName: "RepoTool" });
+
+// Added bitbucket kpis to speed
+db.kpi_category_mapping.insertMany(
+{
+"kpiId" : "kpi65",
+"categoryId" : "speed",
+"kpiOrder" : Double("4"),
+"kanban" : true
+},
+{
+"kpiId" : "kpi11",
+"categoryId" : "speed",
+"kpiOrder" : Double("8"),
+"kanban" : false
+},
+{
+"kpiId" : "kpi84",
+"categoryId" : "speed",
+"kpiOrder" : Double("7"),
+"kanban" : false
+})

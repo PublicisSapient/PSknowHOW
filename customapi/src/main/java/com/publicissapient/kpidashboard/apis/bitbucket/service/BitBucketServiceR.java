@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.bitbucket.factory.BitBucketKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -64,9 +63,6 @@ public class BitBucketServiceR {
 
 	@Autowired
 	private CacheService cacheService;
-
-	@Autowired
-	private CustomApiConfig customApiConfig;
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
@@ -110,7 +106,8 @@ public class BitBucketServiceR {
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
 						filterHelperService.getHierarchyIdLevelMap(false)
 								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
-
+				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
 
 					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
@@ -134,6 +131,26 @@ public class BitBucketServiceR {
 		return responseList;
 	}
 
+	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+
+		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
+
+		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+
+		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
+
+		long startTime = System.currentTimeMillis();
+
+		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
+				.clone(treeAggregatorDetail);
+		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+
+		long processTime = System.currentTimeMillis() - startTime;
+		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
+
+	}
+
 	/**
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
@@ -149,41 +166,8 @@ public class BitBucketServiceR {
 	}
 
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-		String[] projectKeyCache;
 
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
-		} else {
-			projectKeyCache = kpiRequest.getIds();
-		}
-
-		return projectKeyCache;
-	}
-
-	/**
-	 * Calculates aggregate metrics.
-	 * 
-	 * @param kpiRequest
-	 * @param responseList
-	 * @param kpiElement
-	 * @param treeAggregatorDetail
-	 * @throws ApplicationException
-	 */
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
-		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
-		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
-
-		long startTime = System.currentTimeMillis();
-
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
-
-		long procesTime = System.currentTimeMillis() - startTime;
-		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), procesTime);
+		return authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 
 	}
 
@@ -206,5 +190,4 @@ public class BitBucketServiceR {
 					kpiRequest.getSprintIncluded());
 		}
 	}
-
 }

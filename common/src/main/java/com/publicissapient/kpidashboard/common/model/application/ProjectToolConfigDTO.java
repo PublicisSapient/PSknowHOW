@@ -52,6 +52,7 @@ public class ProjectToolConfigDTO {
 	private String jobName;
 	private String jobType;
 	private String branch;
+	private String defaultBranch;
 	private String env;
 	private String repositoryName;
 	private String repoSlug;
@@ -106,4 +107,9 @@ public class ProjectToolConfigDTO {
 	// jiraIterationCompletionStatusCustomField field mapping update identifier
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
+
+	private Boolean isNew;
+
+	private String repoCloningEnabled;
+	private String scanningBranch;
 }

@@ -502,15 +502,18 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 *            kpiMaster
 	 */
 	private void setKpiUserBoardDefaultFromKpiMaster(List<BoardKpisDTO> boardKpisList, KpiMaster kpiMaster) {
-		BoardKpisDTO boardKpis = new BoardKpisDTO();
-		boardKpis.setKpiId(kpiMaster.getKpiId());
-		boardKpis.setKpiName(kpiMaster.getKpiName());
-		boardKpis.setShown(true);
-		boardKpis.setIsEnabled(true);
-		boardKpis.setOrder(kpiMaster.getDefaultOrder());
-		boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
-		boardKpis.setKpiDetail(kpiMaster);
-		boardKpisList.add(boardKpis);
+		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable();
+		if ((kpiMaster.getIsRepoToolKpi() == null) || (kpiMaster.getIsRepoToolKpi().equals(isRepoToolFlag))) {
+			BoardKpisDTO boardKpis = new BoardKpisDTO();
+			boardKpis.setKpiId(kpiMaster.getKpiId());
+			boardKpis.setKpiName(kpiMaster.getKpiName());
+			boardKpis.setShown(true);
+			boardKpis.setIsEnabled(true);
+			boardKpis.setOrder(kpiMaster.getDefaultOrder());
+			boardKpis.setSubCategoryBoard(kpiMaster.getKpiSubCategory());
+			boardKpis.setKpiDetail(kpiMaster);
+			boardKpisList.add(boardKpis);
+		}
 	}
 
 	/**

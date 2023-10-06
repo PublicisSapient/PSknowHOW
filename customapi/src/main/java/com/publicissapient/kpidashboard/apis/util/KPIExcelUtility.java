@@ -954,8 +954,54 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setWeeks(m.getKey());
+					excelData.setDaysWeeks(m.getKey());
 					excelData.setMeanTimetoMerge(m.getValue().toString());
+					kpiExcelData.add(excelData);
+				}
+
+			}
+		}
+
+	}
+
+	public static void populatePickupTimeExcelData(String projectName, List<Map<String, Double>> repoWiseMRList,
+			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
+			for (int i = 0; i < repoWiseMRList.size(); i++) {
+				Map<String, Double> repoWiseMap = repoWiseMRList.get(i);
+				for (Map.Entry<String, Double> m : repoWiseMap.entrySet()) {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProject(projectName);
+					Map<String, String> repoUrl = new HashMap<>();
+					repoUrl.put(repoList.get(i), repoList.get(i));
+					excelData.setRepositoryURL(repoUrl);
+					excelData.setBranch(branchList.get(i));
+					excelData.setWeeks(m.getKey());
+					excelData.setPickupTime(m.getValue().toString());
+					kpiExcelData.add(excelData);
+				}
+
+			}
+		}
+
+	}
+
+	public static void populatePRSizeExcelData(String projectName, List<Map<String, Long>> repoWiseMRList,
+												   List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+
+		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
+			for (int i = 0; i < repoWiseMRList.size(); i++) {
+				Map<String, Long> repoWiseMap = repoWiseMRList.get(i);
+				for (Map.Entry<String, Long> m : repoWiseMap.entrySet()) {
+					KPIExcelData excelData = new KPIExcelData();
+					excelData.setProject(projectName);
+					Map<String, String> repoUrl = new HashMap<>();
+					repoUrl.put(repoList.get(i), repoList.get(i));
+					excelData.setRepositoryURL(repoUrl);
+					excelData.setBranch(branchList.get(i));
+					excelData.setWeeks(m.getKey());
+					excelData.setPrSize(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
 
@@ -983,7 +1029,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setDays(date);
+					excelData.setDaysWeeks(date);
 					excelData.setNumberOfCommit(commitHours.toString());
 					excelData.setNumberOfMerge(mergeHours.toString());
 					kpiExcelData.add(excelData);

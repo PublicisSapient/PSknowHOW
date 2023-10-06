@@ -27,6 +27,7 @@ import javax.ws.rs.core.Context;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -70,6 +71,9 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	SprintTraceLogRepository sprintTraceLogRepository;
+	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
@@ -89,29 +93,32 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		String url = processorUrlConfig.getProcessorUrl(processorName);
 		boolean isSuccess = true;
-
-		httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-		String token = httpServletRequest.getHeader(AUTHORIZATION);
-		token = CommonUtils.handleCrossScriptingTaintedValue(token);
 		int statuscode = HttpStatus.NOT_FOUND.value();
-		if (StringUtils.isNotEmpty(url)) {
-			try {
-				HttpHeaders headers = new HttpHeaders();
-				headers.add(AUTHORIZATION, token);
+		if (processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
+			statuscode = repoToolsConfigService
+					.triggerScanRepoToolProject(processorExecutionBasicConfig.getProjectBasicConfigIds());
+		} else {
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			String token = httpServletRequest.getHeader(AUTHORIZATION);
+			token = CommonUtils.handleCrossScriptingTaintedValue(token);
+			if (StringUtils.isNotEmpty(url)) {
+				try {
+					HttpHeaders headers = new HttpHeaders();
+					headers.add(AUTHORIZATION, token);
 
-				HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(
-						processorExecutionBasicConfig, headers);
-				ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-				statuscode = resp.getStatusCode().value();
-			} catch (HttpClientErrorException ex) {
-				statuscode = ex.getStatusCode().value();
-				isSuccess = false;
-			} catch (ResourceAccessException ex) {
+					HttpEntity<ProcessorExecutionBasicConfig> requestEntity = new HttpEntity<>(processorExecutionBasicConfig, headers);
+					ResponseEntity<String> resp = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+					statuscode = resp.getStatusCode().value();
+				} catch (HttpClientErrorException ex) {
+					statuscode = ex.getStatusCode().value();
+					isSuccess = false;
+				} catch (ResourceAccessException ex) {
+					isSuccess = false;
+				}
+			}
+			if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
 				isSuccess = false;
 			}
-		}
-		if (HttpStatus.NOT_FOUND.value() == statuscode || HttpStatus.INTERNAL_SERVER_ERROR.value() == statuscode) {
-			isSuccess = false;
 		}
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}

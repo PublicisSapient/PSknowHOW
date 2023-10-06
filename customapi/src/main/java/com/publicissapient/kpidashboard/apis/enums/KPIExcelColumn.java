@@ -35,11 +35,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit",
+									Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repository Url", "Branch", "Weeks",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
@@ -161,7 +161,7 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -276,7 +276,12 @@ public enum KPIExcelColumn {
 			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
-			"Sprint Name", "Assignee", "Issue Status"));
+			"Sprint Name", "Assignee", "Issue Status")),
+	PICKUP_TIME("kpi160",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"PR Size (No. of lines)"));
 
 	// @formatter:on
 
