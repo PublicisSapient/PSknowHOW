@@ -5028,7 +5028,7 @@ db.kpi_master.bulkWrite([
                 "isDeleted": "False",
                 "defaultOrder": 5,
                 "kpiCategory": "Release",
-                "kpiSubCategory": "Release Review",
+                "kpiSubCategory": "Value",
                 "kpiSource": "Jira",
                 "groupId": 9,
                 "thresholdValue": "",
@@ -5097,5 +5097,16 @@ db.kpi_master.bulkWrite([
             filter: { "kpiId": { $in: ["kpi3", "kpi148", "kpi146"] } },
             update: { $set: { "kpiSubCategory": "Flow KPIs" } }
         }
+    }, {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi147", "kpi150"] } },
+            update: { $set: { "kpiSubCategory": "Speed" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi163"] } },
+            update: { $set: { "kpiSubCategory": "Quality" } }
+        },
     }
 ]);
