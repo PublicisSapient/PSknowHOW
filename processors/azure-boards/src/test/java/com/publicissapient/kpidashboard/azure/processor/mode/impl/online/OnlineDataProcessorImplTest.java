@@ -202,9 +202,9 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5f0c1e1c204347d129590ef8"));
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
 		when(azureIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
-				.thenReturn(new ArrayList<JiraIssue>().get(0));
+				.thenReturn(new JiraIssue());
 		when(azureIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(), any()))
-				.thenReturn(new ArrayList<JiraIssueCustomHistory>().get(0));
+				.thenReturn(new JiraIssueCustomHistory());
 
 		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId("Project",
 				scrumProjectList.get(0).getId())).thenReturn(Arrays.asList(accountHierarchy));
