@@ -229,8 +229,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 				if (CollectionUtils.isNotEmpty(jiraIssueHistoryDataList)) {
 					List<DataCount> dataCountList = new ArrayList<>();
 
-					findMeanTimeToRecover(jiraIssueHistoryDataList, weekOrMonth, meanTimeRecoverMapTimeWise,
-							 dodStatus);
+					findMeanTimeToRecover(jiraIssueHistoryDataList, weekOrMonth, meanTimeRecoverMapTimeWise, dodStatus);
 
 					meanTimeRecoverMapTimeWise.forEach((weekOrMonthName, meanTimeRecoverListCurrentTime) -> {
 						DataCount dataCount = createDataCount(trendLineName, weekOrMonthName,
@@ -304,14 +303,11 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 *            date of x axis
 	 * @param meanTimeRecoverMapTimeWise
 	 *            mean time in days
-	 * @param jiraIssueMap
-	 *            map of jira issues
 	 * @param dodStatus
 	 *            dod status
 	 */
 	private void findMeanTimeToRecover(List<JiraIssueCustomHistory> jiraIssueHistoryDataList, String weekOrMonth,
-			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise,
-			List<String> dodStatus) {
+			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise, List<String> dodStatus) {
 		jiraIssueHistoryDataList.forEach(jiraIssueHistoryData -> {
 			DateTime ticketClosedDate = null;
 			DateTime ticketCreatedDate = null;
