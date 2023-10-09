@@ -86,36 +86,34 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
+		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
+			if (Filters.getFilter(k) == Filters.PROJECT) {
+				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("EpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("BacklogEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	/**
-	 * release wise processing
+	 * project wise processing
 	 * 
-	 * @param releaseLeafNodeList
-	 *            releaseLeafNodeList
+	 * @param leafNodeList
+	 *            leafNodeList
 	 * @param kpiElement
 	 *            kpiElement
 	 * @param kpiRequest
 	 *            kpiElement
 	 */
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-		if (latestRelease != null) {
-			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
+		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		if (leafNode != null) {
+			Object basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 			List<JiraIssue> totalIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			Set<JiraIssue> epicIssues = (Set<JiraIssue>) resultMap.get(EPIC_LINKED);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
@@ -127,7 +125,7 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 				Map<String, String> epicWiseIssueSize = createDataCountGroupMap(totalIssues, jiraIssueReleaseStatus,
 						epicIssues, fieldMapping, filterDataList);
 				populateExcelDataObject(requestTrackerId, excelData, epicWiseIssueSize, epicIssues);
-				kpiElement.setSprint(latestRelease.getName());
+				kpiElement.setSprint(leafNode.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.BACKLOG_EPIC_PROGRESS.getColumns());
 				kpiElement.setExcelColumns(KPIExcelColumn.BACKLOG_EPIC_PROGRESS.getColumns());
 				kpiElement.setExcelData(excelData);
