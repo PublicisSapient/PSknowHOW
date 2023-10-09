@@ -66,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String EPIC_LINKED = "epicLinked";
@@ -91,7 +91,7 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("EpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("ReleaseEpicProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -299,7 +299,7 @@ public class EpicProgressServiceImpl extends JiraKPIService<Integer, List<Object
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(epicWiseIssueSize)) {
 			Map<String, JiraIssue> epicWiseJiraIssue = epicIssues.stream()
-					.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue -> JiraIssue));
+					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
 			epicWiseJiraIssue.put(Constant.DASH,
 					JiraIssue.builder().number(Constant.DASH).name("None").status(Constant.DASH).build());
 			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);

@@ -5088,8 +5088,8 @@ db.kpi_master.bulkWrite([
     },
     {
         updateMany: {
-            filter: { "kpiId": { $in: ["kpi139", "kpi138", "kpi127", "kpi137", "kpi129"] } },
-            update: { $set: { "kpiSubCategory": "Health" } }
+            filter: { "kpiId": { $in: ["kpi139", "kpi138", "kpi127", "kpi137", "kpi129", "kpi161"] } },
+            update: { $set: { "kpiSubCategory": "Backlog Health" } }
         }
     },
     {
