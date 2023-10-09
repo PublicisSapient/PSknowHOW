@@ -230,6 +230,8 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	//to find the linkage of subTasks with parentStory
 	private Set<String> parentStoryId;
 
+	private List<String> escapedDefectGroup;
+
 	public boolean isDefectRaisedByQA() {
 		return defectRaisedByQA;
 	}

@@ -428,6 +428,10 @@ public enum KPICode {
      */
     DEFECT_COUNT_BY_TYPE("kpi155", KPISource.JIRA.name()),
     //DTS-26123 end
+	/**
+	 * Release defect by test phase
+	 */
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", KPISource.JIRA.name()),
     /**
      * Scope Churn
      */
@@ -435,10 +439,37 @@ public enum KPICode {
     /**
      * Backlog - Iteration Readiness kpi
      */
-    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name());
+    ITERATION_READINESS_KPI("kpi161", KPISource.JIRA.name()),
+
+    /**
+     * Lead Time Change DORA  kpi code
+     */
+    LEAD_TIME_FOR_CHANGE("kpi156", KPISource.JIRA.name()),
+
+    /**
+     * Mean Time To Merge
+     */
+    REPO_TOOL_MEAN_TIME_TO_MERGE("kpi158", KPISource.BITBUCKET.name()),
+    /**
+     * Number of Check-ins
+     */
+    REPO_TOOL_NUMBER_OF_CHECK_INS("kpi159", KPISource.BITBUCKETKANBAN.name()),
+    /**
+     * Check-Ins & Merge Requests
+     */
+    REPO_TOOL_CODE_COMMIT("kpi157", KPISource.BITBUCKET.name()),
+    /**
+     * Pickup Time
+     */
+    PICKUP_TIME("kpi160", KPISource.BITBUCKET.name()),
+    /**
+     * PR Size
+     */
+    PR_SIZE("kpi162", KPISource.BITBUCKET.name());
 
 
-	// @formatter:on
+
+    // @formatter:on
 
 	private final String kpiId;
 

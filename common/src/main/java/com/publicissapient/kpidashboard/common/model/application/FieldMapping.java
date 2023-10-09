@@ -29,7 +29,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -378,12 +377,29 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
 
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
+	// DTS-26150 end
+
 	private List<String> jiraIssueTypeNamesKPI161;
 	private List<String> jiraIssueTypeNamesKPI146;
 	private List<String> jiraIssueTypeNamesKPI148;
 	private List<String> jiraIssueTypeNamesKPI151;
 	private List<String> jiraIssueTypeNamesKPI152;
 
+	private List<String> jiraDodKPI156;
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private String leadTimeConfigRepoTool = CommonConstant.JIRA;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

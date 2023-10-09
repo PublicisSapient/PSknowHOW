@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -216,7 +217,7 @@ public class ScrumJiraIssueClientImplTest {
 	@Test
 	public void isBugRaisedByValueMatchesRaisedByCustomFieldTest() {
 		boolean flag = scrumJiraIssueClient.isBugRaisedByValueMatchesRaisedByCustomField(Arrays.asList("2", "3"),
-				new Object());
+				new Object(), null);
 		assertEquals(false, flag);
 	}
 
@@ -228,6 +229,10 @@ public class ScrumJiraIssueClientImplTest {
 		srs[0] = "TestHOW";
 		srs[1] = "TestHOW1";
 		fieldMapping.setJiraIssueTypeNames(srs);
+		fieldMapping.setJiradefecttype(Arrays.asList("Defect", "Bug"));
+		fieldMapping.setTestingPhaseDefectsIdentifier("Labels");
+		fieldMapping.setTestingPhaseDefectCustomField("CustomField");
+		fieldMapping.setTestingPhaseDefectValue(Arrays.asList("Bug", "TestHOW"));
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
 		BoardDetails board = new BoardDetails();
@@ -304,5 +309,85 @@ public class ScrumJiraIssueClientImplTest {
 				new Status(null, null, "TestHOW", null, null, null), "description", null, null, null, null, null,
 				DateTime.now(), DateTime.now(), null, null, null, null, null, null, null, null, null, null, null, null,
 				null, null, null, null, null);
+	}
+
+	@Test
+	public void processesJiraIssuesTest() throws InterruptedException, URISyntaxException {
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		String[] srs = new String[2];
+		srs[0] = "TestHOW";
+		srs[1] = "TestHOW1";
+		fieldMapping.setJiraIssueTypeNames(srs);
+		BasicComponent basicComponent = new BasicComponent(null, 123l, "customField", "CustomField");
+		BasicComponent basicComponent2 = new BasicComponent(null, 12l, "customField", "CustomField");
+		List<BasicComponent> basicComponentList = new ArrayList<>();
+		basicComponentList.add(basicComponent);
+		basicComponentList.add(basicComponent2);
+		fieldMapping.setJiradefecttype(Arrays.asList("Defect", "Bug"));
+		fieldMapping.setTestingPhaseDefectsIdentifier("Component");
+		fieldMapping.setTestingPhaseDefectCustomField("CustomField");
+		fieldMapping.setTestingPhaseDefectComponentValue("customField");
+		fieldMapping.setTestingPhaseDefectValue(Arrays.asList("Bug", "TestHOW"));
+		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
+		projectToolConfig.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		BoardDetails board = new BoardDetails();
+		board.setBoardId("1111");
+		board.setBoardName("test board");
+		List<BoardDetails> boardList = new ArrayList<>();
+		boardList.add(board);
+		projectToolConfig.setBoards(boardList);
+		ProjectBasicConfig projectBasicConfig = new ProjectBasicConfig();
+		projectBasicConfig.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		projectBasicConfig.setSaveAssigneeDetails(true);
+		JiraToolConfig jiraToolConfig = getJiraToolConfig(fieldMapping);
+		Set<String> stringSet = new HashSet<>();
+		stringSet.add("Bug");
+		stringSet.add("TestHOW");
+		ArrayList<Version> alVersion = new ArrayList<>();
+		Version version = null;
+		alVersion.add(version);
+		ChangelogItem changelogItem = new ChangelogItem(null, "", "", "", "", "");
+		List<ChangelogItem> itemList = new ArrayList<>();
+		itemList.add(changelogItem);
+		List<ChangelogGroup> grouplist = new ArrayList<>();
+		grouplist.add(new ChangelogGroup(null, DateTime.now(), itemList));
+		BasicProject project = new BasicProject(null, "key", null, null);
+		Map<String, URI> userAvtar = new HashMap<>();
+		userAvtar.put("48x48", new URI("https://test.com/jira/secure/useravatar?avatarId=10122"));
+		User user1 = new User(new URI("https://test.com/jira/rest/api/2/user?username=testUser"), "TestUser", "User",
+				"llid", true, new ExpandableProperty<>(0), userAvtar, "");
+		Issue issue = new Issue("summary", null, "key", 121L, project,
+				new IssueType(null, 11L, "Defect", true, "Description", null),
+				new Status(null, null, "TestHOW", null, null, null), "description",
+				null, null, null, null, user1,
+				DateTime.now(), DateTime.now(), null, null, null, basicComponentList, null,
+				null, null, null, null, null, null, null,
+				null, null, grouplist, null, stringSet);
+		Iterable<Issue> iterable = Arrays.asList(issue);
+		SearchResult searchResult = new SearchResult(0, 0, 1, iterable);
+		JiraAdapter jiraAdapter = new OfflineAdapter(jiraProcessorConfig, searchResult, alVersion);
+		JiraProcessor jiraProcessor = new JiraProcessor();
+		jiraProcessor.setId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		List<HierarchyLevel> hierarchyLevelList = new ArrayList<>();
+		HierarchyLevel hierarchyLevel = new HierarchyLevel();
+		hierarchyLevel.setHierarchyLevelId("121");
+		hierarchyLevelList.add(hierarchyLevel);
+		List<AccountHierarchy> accountHierarchyList = new ArrayList<>();
+		AccountHierarchy accountHierarchy = new AccountHierarchy();
+		accountHierarchy.setBasicProjectConfigId(new ObjectId("632eb205e0fd283f9bb747ad"));
+		accountHierarchyList.add(accountHierarchy);
+		Set<SprintDetails> sprintDetailsSet = new LinkedHashSet<>();
+		when(jiraProcessorConfig.getStartDate()).thenReturn("2022-09-28 10:22");
+		when(jiraProcessorConfig.getPageSize()).thenReturn(2);
+		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevelList);
+		when(jiraProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(jiraProcessor);
+		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchyList);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
+		doNothing().when(processorExecutionTraceLogService).save(Mockito.any());
+		assertEquals(1,
+				scrumJiraIssueClient.processesJiraIssues(
+						getProjectConfFieldMapping(fieldMapping, projectToolConfig, projectBasicConfig, jiraToolConfig),
+						jiraAdapter, true));
 	}
 }

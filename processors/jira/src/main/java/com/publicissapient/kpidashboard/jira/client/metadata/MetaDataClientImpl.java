@@ -362,6 +362,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.JIRADODKPI3));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.JIRADODKPI37));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.JIRADODKPI155));
+		fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.JIRADODKPI163));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.JIRADODKPI127));
 		fieldMapping.setJiraStatusStartDevelopmentKPI154(workflowMap.get(CommonConstant.JIRASTARTDEVKPI54));
 		fieldMapping.setJiraLiveStatusKPI152(
@@ -565,6 +566,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraStatusStartDevelopmentKPI154(workflowMap.get(CommonConstant.FIRST_DEV_STATUS));
 			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraTechDebtIssueType(issueTypeMap.get(CommonConstant.STORY));
 
 			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
@@ -727,6 +729,7 @@ public class MetaDataClientImpl implements MetadataClient {
 			fieldMapping.setJiraStatusStartDevelopmentKPI154(workflowMap.getOrDefault(CommonConstant.FIRST_DEV_STATUS,new ArrayList<>()));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraLiveStatusKPI152(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI151(CommonConstant.CLOSED);
 			fieldMapping.setJiraLiveStatusKPI3(workflowMap.getOrDefault(CommonConstant.CLOSED, new ArrayList<>()));
