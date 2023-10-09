@@ -187,11 +187,11 @@ public class ReleaseEpicProgressServiceImplTest {
 	public void testGetStatusWiseCountListPositive() {
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
 				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
-		assertThat(dataCount.getData()).isEqualTo("43");
-		assertThat(dataCount.getSize()).isEqualTo("58.0");
+		assertThat(dataCount.getData()).isEqualTo("44");
+		assertThat(dataCount.getSize()).isEqualTo("60.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
-		assertThat(toDoCount.getValue()).isEqualTo(4L);
-		assertThat(toDoCount.getSize()).isEqualTo(2.0);
+		assertThat(toDoCount.getValue()).isEqualTo(5L);
+		assertThat(toDoCount.getSize()).isEqualTo(4.0);
 		assertThat(toDoCount.getSubFilter()).isEqualTo(TO_DO);
 		DataCount inProgressCount = ((List<DataCount>) dataCount.getValue()).get(1);
 		assertThat(inProgressCount.getValue()).isEqualTo(0L);
@@ -228,7 +228,7 @@ public class ReleaseEpicProgressServiceImplTest {
 				jiraIssueReleaseStatusList.get(0), epicIssues, fieldMapping, iterationKpiValues);
 
 		assertThat(epicWiseSize).hasSize(1);
-		assertThat(epicWiseSize.get("-")).isEqualTo("58.0");
+		assertThat(epicWiseSize.get("-")).isEqualTo("60.0");
 		assertThat(iterationKpiValues).hasSize(1);
 		assertThat(iterationKpiValues.get(0).getValue()).hasSize(1);
 	}
