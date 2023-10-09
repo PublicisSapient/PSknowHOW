@@ -2624,10 +2624,5 @@ export class JiraConfigComponent implements OnInit {
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
      }
-  }
-
-  ngOnDestroy() {
-    this.toolForm.reset();
-  }
-  
+  }  
 }
