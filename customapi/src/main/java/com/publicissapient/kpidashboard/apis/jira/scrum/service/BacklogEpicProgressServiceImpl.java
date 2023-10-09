@@ -295,7 +295,7 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& MapUtils.isNotEmpty(epicWiseIssueSize)) {
 			Map<String, JiraIssue> epicWiseJiraIssue = epicIssues.stream()
-					.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue -> JiraIssue));
+					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
 			epicWiseJiraIssue.put(Constant.DASH,
 					JiraIssue.builder().number(Constant.DASH).name("None").status(Constant.DASH).build());
 			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);
