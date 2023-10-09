@@ -2625,5 +2625,9 @@ export class JiraConfigComponent implements OnInit {
       self.tool['projectKey'].enable();
      }
   }
+
+  ngOnDestroy() {
+    this.toolForm.reset();
+  }
   
 }
