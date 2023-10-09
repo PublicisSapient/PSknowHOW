@@ -744,7 +744,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -1194,7 +1194,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -3198,7 +3198,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
@@ -3512,7 +3512,6 @@ db.getCollection('kpi_master').insertMany(
         "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
         "isRepoToolKpi": true,
         "kpiCategory": "Developer"
-      }
   },
   {
 	"kpiId": "kpi164",
@@ -3575,8 +3574,45 @@ db.getCollection('kpi_master').insertMany(
      "isAdditionalFilterSupport":false,
      "kpiFilter":"radioButton",
      "boxType":"chart",
-     "calculateMaturity":false
-  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+     "calculateMaturity":false,
+  	 "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ },
+ {
+    "kpiId": "kpi166",
+    "kpiName": "Mean Time to Recover",
+    "maxValue": "100",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+        "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+        "details": [
+            {
+                "type": "paragraph",
+                "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+            },
+            {
+                "type": "paragraph",
+                "value": "The average of all such tickets will be shown."
+            }
+        ],
+        "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Hours",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
  }
 ]
 );
@@ -6819,8 +6855,6 @@ db.kpi_column_configs.insertMany([
                                         },
                                       ],
                                     },
-                                 ]);
-                                 	},
                                  	{
                                     	basicProjectConfigId: null,
                                     	kpiId: 'kpi164',
@@ -6865,8 +6899,62 @@ db.kpi_column_configs.insertMany([
                                     		isShown: true,
                                     		isDefault: false
                                     	}]
+                                    },
+                                    {
+                                        "basicProjectConfigId": null,
+                                        "kpiId": "kpi166",
+                                        "kpiColumnDetails": [
+                                            {
+                                                "columnName": "Project Name",
+                                                "order": 0,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Date",
+                                                "order": 1,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Story ID",
+                                                "order": 2,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Issue Type",
+                                                "order": 3,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Issue Description",
+                                                "order": 4,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Created Date",
+                                                "order": 5,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Completion Date",
+                                                "order": 6,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            },
+                                            {
+                                                "columnName": "Time to Recover (In Hours)",
+                                                "order": 7,
+                                                "isShown": true,
+                                                "isDefault": true
+                                            }
+                                        ]
                                     }
-                                   ]);
+                                 ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
@@ -9069,5 +9157,66 @@ db.getCollection('field_mapping_structure').insertMany(
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
   }
+},
+{
+    "fieldName": "jiraStoryIdentificationKPI166",
+    "fieldLabel": "Issue type to identify Production incidents",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All issue types that are used as/equivalent to Production incidents.",
+
+    }
+},
+{
+    "fieldName": "jiraProductionIncidentIdentification",
+    "fieldLabel": "Production incidents identification",
+    "fieldType": "radiobutton",
+    "section": "Defects Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify if a production incident is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: PROD_DEFECT (This has to be one value).<hr>"
+    },
+    "options": [{
+        "label": "CustomField",
+        "value": "CustomField"
+    },
+    {
+        "label": "Labels",
+        "value": "Labels"
+    }
+    ],
+    "nestedFields": [
+
+        {
+            "fieldName": "jiraProdIncidentRaisedByCustomField",
+            "fieldLabel": "Production Incident Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+                "definition": "Provide customfield name to identify Production Incident. <br> Example: customfield_13907<hr>"
+            }
+        },
+        {
+            "fieldName": "jiraProdIncidentRaisedByValue",
+            "fieldLabel": "Production Incident Values",
+            "fieldType": "chips",
+            "filterGroup": ["CustomField", "Labels"],
+            "tooltip": {
+                "definition": "Provide label name to identify Production IncidentProduction IncideProd_Incidentxample: Clone_by_QA <hr>"
+            }
+        }
+    ]
+},
+{
+    "fieldName": "jiraDodKPI166",
+    "fieldLabel": "DOD Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+    }
 }
 ]);
