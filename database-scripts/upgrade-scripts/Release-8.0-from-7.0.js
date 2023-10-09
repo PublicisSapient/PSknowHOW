@@ -5015,3 +5015,12 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
+
+//DTS-29115 Prod fix
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi40", "kpi46", "kpi164"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 5 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 3 } })
+db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 16 } })
