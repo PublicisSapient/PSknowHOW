@@ -676,6 +676,10 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
+  handleTabChange(event){
+    this.activeIndex = event.index;
+  }
+
   /** unsubscribing all Kpi Request  */
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());

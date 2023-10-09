@@ -19,8 +19,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   popupHost!: ViewContainerRef;
   elem: any;
   selectedNode: {};
-  @Input() kpiWidth:string = '50';
   @Input() kpiId:string = '';
+  @Input() activeTab: number = 0;
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
@@ -41,16 +41,22 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       }
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
-
+    if(changes['activeTab']?.currentValue != changes['activeTab']?.previousValue){
+      this.draw(this.data);
+    }
     if (changes['filter']) {
       d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
     }
   }
 
+  
+  ngAfterViewInit(){
+    this.draw(this.data);
+  }
+
   draw(data, selectedNode = '') {
     
     let self = this;
-    let kpiWidth = self.kpiWidth;
     const elem = this.elem;
     self.selectedNode = selectedNode;
     const margin = { top: 10, right: 22, bottom: 20, left: 100 };
@@ -58,7 +64,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
     let chartContainerWidth = tempWidth;
     
-    chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
+    // chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
     const chart = d3.select(elem).select('#chart-'+this.kpiId);
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
@@ -102,6 +108,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // Add X axis
     const xAxis = svg.append('g')
       .attr('transform', `translate(10, ${height})`)
+      .attr('class', 'xAxis')
       .call(d3.axisBottom(x).tickSize(0).tickFormat(d => d + '%').ticks(6));
     xAxis.selectAll('path')
       .style('display', 'none');
@@ -177,6 +184,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // Show the bars
     svg.append('g')
       .attr('transform', `translate(10, 0)`)
+      .attr('class', 'bars')
       .selectAll('g')
       .data(stackedData)
       .join('g')
@@ -271,7 +279,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     }
 
     legendDiv.html(htmlString)
-    legendDiv.style('bottom', 60 + 'px');
+    legendDiv.style('bottom', 40 + 'px');
   }
 
   showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
@@ -302,7 +310,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 40 + 'px');
+      .style('bottom', 20 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
