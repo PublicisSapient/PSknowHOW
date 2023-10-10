@@ -180,16 +180,22 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           let key = d['key'];
           let kpiGroup = event.target.__data__.data.kpiGroup;
           let selectedNode = d.filter((x) => x.data['kpiGroup'] === kpiGroup)[0];
-          data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
-          if (data && data.length && data[0]) {
-            data.kpiGroup = key;
-            this.draw(data, selectedNode);
-            d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
-              .on('click', (event, d) => {
-                this.isDrilledDown = false;
-                this.draw(this.unmodifiedDataCopy);
-                d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
-              });
+          if (selectedNode) {
+            data = [selectedNode.data.value.filter((val) => val.subFilter === key)[0].drillDown];
+            if (data && data.length && data[0]) {
+              data.kpiGroup = key;
+              this.draw(data, selectedNode);
+              
+              d3.select(elem).select('#back_icon').attr('class', 'p-d-flex')
+                .on('click', (event, d) => {
+                  this.isDrilledDown = false;
+                  this.draw(this.unmodifiedDataCopy);
+                  d3.select(elem).select('#back_icon').attr('class', 'p-d-none');
+                });
+            } else {
+              event.preventDefault();
+              event.stopPropagation();
+            }
           }
         }
       })
@@ -200,15 +206,17 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .attr('y', d => y(d.data.kpiGroup))
       .on('mouseover', (event, d) => {
         this.selectedGroup = d.data.kpiGroup;
-        if (!this.isDrilledDown) {
-          const tooltipData = data.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
+        if (d.data && d.data && d.data.kpiGroup) {
+          let toolTipDataCollection = JSON.parse(JSON.stringify(self.data));
+          const tooltipData = toolTipDataCollection.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
           d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
           this.showTooltip(subgroups, width, margin, color, tooltipData, elem, height);
         }
       })
       .on('mouseout', (event, d) => {
-        if (!this.isDrilledDown) {
-          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+        // if (!this.isDrilledDown) 
+        {
+          d3.select(elem).select('#legendContainer').selectAll('div').remove();
           this.showLegend(subgroups, width, margin, color, elem, data, height);
         }
       })
@@ -240,7 +248,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv
       .style('margin-top', '20px')
       .attr('width', 'auto')
-      .style('margin-left', 50 + 'px')
+      .style('margin-left', 10 + 'px')
       .transition()
       .duration(200)
       .style('display', 'block')
@@ -262,7 +270,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     }
 
     legendDiv.html(htmlString)
-    legendDiv.style('bottom', 60 + 'px');
+    legendDiv.style('bottom', 50 + 'px');
   }
 
   showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
@@ -293,7 +301,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
 
     legendDiv.html(htmlString)
-      .style('bottom', 60 + 'px');
+      .style('bottom', 10 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
