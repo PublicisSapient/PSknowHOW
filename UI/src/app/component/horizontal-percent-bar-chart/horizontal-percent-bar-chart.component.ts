@@ -62,14 +62,17 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     let self = this;
     const elem = this.elem;
     self.selectedNode = selectedNode;
-    let chartContainerWidth = (document.getElementById('chart')?.offsetWidth ? document.getElementById('chart')?.offsetWidth : 485);
-    chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
-    const chart = d3.select(elem).select('#chart');
+    const margin = { top: 10, right: 22, bottom: 20, left: this.kpiWidth == '100' ? 260 : 100};
+    let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
+    let chartContainerWidth = tempWidth;
+    
+    // chartContainerWidth = chartContainerWidth <= 490 ? chartContainerWidth : chartContainerWidth - 70;
+    const chart = d3.select(elem).select('#chart-'+this.kpiId);
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
-    const margin = { top: 10, right: 22, bottom: 20, left: 100 };
     const width = chartContainerWidth - margin.left - margin.right;
-    const height = !this.isDrilledDown ? 180 - margin.top - margin.bottom : 100;
+    const barsTotalWidth = data.length > 3 ? data.length*30 : 180;
+    const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
 
     // append the svg object to the body of the page
     const svg = chart
@@ -107,6 +110,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // Add X axis
     const xAxis = svg.append('g')
       .attr('transform', `translate(10, ${height})`)
+      .attr('class', 'xAxis')
       .call(d3.axisBottom(x).tickSize(0).tickFormat(d => d + '%').ticks(6));
     xAxis.selectAll('path')
       .style('display', 'none');
@@ -129,8 +133,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .call(d3.axisLeft(y).tickSize(0));
 
     yAxis.selectAll('text')
-      .style('font-size', '14px')
-      .style('font-weight', 'bold');
+      .style('font-size', '10px')
+      .call(this.wrap, this.kpiWidth);
 
     yAxis.select('path')
       .style('display', 'none')
@@ -181,6 +185,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     // Show the bars
     svg.append('g')
       .attr('transform', `translate(10, 0)`)
+      .attr('class', 'bars')
       .selectAll('g')
       .data(stackedData)
       .join('g')
@@ -221,7 +226,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
         if (d.data && d.data && d.data.kpiGroup) {
           let toolTipDataCollection = JSON.parse(JSON.stringify(self.data));
           const tooltipData = toolTipDataCollection.filter(tooltip => tooltip.kpiGroup === this.selectedGroup)[0];
-          d3.select(elem).select('#chart').select('#legendContainer').selectAll('div').remove();
+          d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer').selectAll('div').remove();
           this.showTooltip(subgroups, width, margin, color, tooltipData, elem, height);
         }
       })
@@ -257,9 +262,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
-      .style('margin-top', '20px')
-      .attr('width', 'auto')
-      .style('margin-left', 50 + 'px')
+      .style('width', '100%')
+      .style('margin', '0 auto')  
       .transition()
       .duration(200)
       .style('opacity', 1)
@@ -279,7 +283,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     }
 
     legendDiv.html(htmlString)
-    legendDiv.style('bottom', 60 + 'px');
+    legendDiv.style('bottom', 40 + 'px');
   }
 
   showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
@@ -307,7 +311,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 60 + 'px');
+      .style('bottom', 15 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
@@ -344,27 +348,5 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           text.text(text.text().substring(0, textLength) + '...');
         }
     });
-  
-    // text.each(function() {
-    //   var text = d3.select(this),
-    //       words = text.text().split(/\s+/).reverse(),
-    //       word,
-    //       line = [],
-    //       lineNumber = 0,
-    //       lineHeight = 1, // ems
-    //       y = text.attr("y"),
-    //       dy = parseFloat(text.attr("dy")),
-    //       tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
-    //   while (word = words.pop()) {
-    //     line.push(word)
-    //     tspan.text(line.join(" "))
-    //     if (tspan.node().getComputedTextLength() > (width-5)) {
-    //       line.pop()
-    //       tspan.text(line.join(" "))
-    //       line = [word]
-    //       tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
-    //     }
-    //   }
-    // })
   }
 }
