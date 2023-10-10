@@ -108,14 +108,17 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * get Sonar kpi data
 	 * 
 	 * @param pList
+	 *            prpjectlIST
 	 * @param tempMap
+	 *            tempMap
 	 * @param kpiElement
+	 *            kpiElement
 	 */
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.MONTH))
-				.forEach((projectNodeId, projectData) -> {
+		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.MONTH,
+				Long.valueOf(customApiConfig.getSonarMonthCount()))).forEach((projectNodeId, projectData) -> {
 					List<String> projectList = new ArrayList<>();
 					List<String> debtList = new ArrayList<>();
 					List<String> versionDate = new ArrayList<>();
@@ -166,8 +169,10 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * prepare dummy data for empty responses
 	 * 
 	 * @param sonarHistoryList
+	 *            sonarHistoryList
 	 * @param end
-	 * @return
+	 *            endDate
+	 * @return map
 	 */
 	public Map<String, SonarHistory> prepareEmptyJobWiseHistoryMap(List<SonarHistory> sonarHistoryList, Long end) {
 		Map<String, SonarHistory> historyMap = new HashMap<>();
@@ -197,19 +202,26 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * create data count values
 	 * 
 	 * @param history
+	 *            sonarhistory
 	 * @param date
+	 *            node date
 	 * @param projectNodeId
+	 *            projectNodeId
 	 * @param projectList
+	 *            projectList
 	 * @param debtList
+	 *            db debtList
 	 * @param projectWiseDataMap
+	 *            projectWiseDataMap
 	 * @param versionDate
+	 *            versionDate
 	 */
 	private void prepareSqualeList(Map<String, SonarHistory> history, String date, String projectNodeId,
 			List<String> projectList, List<String> debtList, Map<String, List<DataCount>> projectWiseDataMap,
 			List<String> versionDate) {
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseDebtList = new ArrayList<>();
-		history.values().stream().forEach(sonarDetails -> {
+		history.values().forEach(sonarDetails -> {
 
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
@@ -225,17 +237,19 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 			debtList.add(String.valueOf(squaleRatingValue));
 
 		});
-		DataCount dcObj = getDataCount(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_CODE_QUALITY.getKpiId()), projectName, date);
+		DataCount dcObj = getDataCount(calculateKpiValue(dateWiseDebtList, KPICode.SONAR_CODE_QUALITY.getKpiId()),
+				projectName, date);
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
 	/**
 	 *
 	 * @param sqlIndex
+	 *            sqlIndex
 	 * @return squale Value
 	 */
 	public Long getSqualeRatingValue(Object sqlIndex) {
-		Long squaleValue = 0L;
+		long squaleValue = 0L;
 		if (sqlIndex != null) {
 			if (sqlIndex instanceof Double) {
 				squaleValue = ((Double) sqlIndex).longValue();
@@ -250,11 +264,14 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 
 	/**
 	 * create sonar kpis data count obj
+	 * 
 	 * @param value
-	 * @param hoverValues
+	 *            value
 	 * @param projectName
+	 *            projectName
 	 * @param date
-	 * @return
+	 *            date
+	 * @return datacpunt
 	 */
 	public DataCount getDataCount(Long value, String projectName, String date) {
 		DataCount dataCount = new DataCount();
@@ -270,9 +287,13 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	 * Not used as data is not being calculated sprintwise
 	 * 
 	 * @param leafNodeList
+	 *            leafNodeList
 	 * @param startDate
+	 *            startDate
 	 * @param endDate
+	 *            endDate
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @return {@code Map<ObjectId, List<SonarDetails>>}
 	 */
 	@Override
@@ -297,8 +318,8 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	}
 
 	/**
-	 * Get all the sonar tech debt data in form of key as sonar-project and value as
-	 * techDebt sqale_index value
+	 * Get all the code quality debt data in form of key as sonar-project and value
+	 * as techDebt sqale_index value
 	 *
 	 * @param pList
 	 *            : project list of nodes

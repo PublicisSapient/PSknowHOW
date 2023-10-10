@@ -227,15 +227,19 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 
 	/**
 	 * get start date to fetch from db for scrum
-	 * 
 	 * @param duration
+	 * 			day/week/month
+	 * @param value
+	 * 		value of how many days/week/months
 	 * @return
 	 */
-	public LocalDate getScrumCurrentDateToFetchFromDb(String duration) {
+	public LocalDate getScrumCurrentDateToFetchFromDb(String duration, Long value) {
 		if (duration.equalsIgnoreCase(CommonConstant.WEEK))
-			return LocalDate.now().minusWeeks(customApiConfig.getSonarWeekCount() + 1L);
+			return LocalDate.now().minusWeeks(value + 1L);
 		else if (duration.equalsIgnoreCase(CommonConstant.MONTH))
-			return LocalDate.now().minusMonths(customApiConfig.getSonarMonthCount() + 1L);
+			return LocalDate.now().minusMonths(value + 1L);
+		else if (duration.equalsIgnoreCase(CommonConstant.DAYS))
+			return LocalDate.now().minusDays(value + 1L);
 		return LocalDate.now();
 	}
 	

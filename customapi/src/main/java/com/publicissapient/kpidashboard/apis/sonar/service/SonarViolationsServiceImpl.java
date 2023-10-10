@@ -16,9 +16,6 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -81,10 +78,14 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	 * Gets KPI Data
 	 * 
 	 * @param kpiRequest
+	 *            kpiRequest
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param treeAggregatorDetail
-	 * @return KpiElement
+	 *            treeAggregatorDetail
+	 * @return KpiElement KpiElement
 	 * @throws ApplicationException
+	 *             throw error
 	 */
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -116,8 +117,10 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 	/**
 	 * @param projectList
+	 *            projectList
 	 * @param kpiElement
-	 * @return
+	 *            kpiElement
+	 * @return map
 	 */
 	@Override
 	public Map<String, Object> getSonarJobWiseKpiData(final List<Node> projectList, Map<String, Node> tempMap,
@@ -129,39 +132,44 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK))
-				.forEach((projectNodeId, projectData) -> {
-			List<String> projectList = new ArrayList<>();
-			List<String> violations = new ArrayList<>();
-			List<String> versionDate = new ArrayList<>();
-			Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
-			if (CollectionUtils.isNotEmpty(projectData)) {
-				LocalDate endDateTime = LocalDate.now().minusWeeks(1);
-				for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
-					LocalDate[] weeks = getWeeks(endDateTime);
-					LocalDate monday = weeks[0];
-					LocalDate sunday = weeks[1];
+		getSonarHistoryForAllProjects(pList,
+				getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
+						.forEach((projectNodeId, projectData) -> {
+							List<String> projectList = new ArrayList<>();
+							List<String> violations = new ArrayList<>();
+							List<String> versionDate = new ArrayList<>();
+							Map<String, List<DataCount>> projectWiseDataMap = new HashMap<>();
+							if (CollectionUtils.isNotEmpty(projectData)) {
+								LocalDate endDateTime = LocalDate.now().minusWeeks(1);
+								for (int i = 0; i < customApiConfig.getSonarWeekCount(); i++) {
+									LocalDate[] weeks = getWeeks(endDateTime);
+									LocalDate monday = weeks[0];
+									LocalDate sunday = weeks[1];
 
-					String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
-							DateUtil.DISPLAY_DATE_FORMAT) + " to "
-							+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
-									DateUtil.DISPLAY_DATE_FORMAT);
-					Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
-					Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
-					Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms, endms,
-							projectNodeId);
-					prepareViolationsList(history, date, projectNodeId, projectList, violations, projectWiseDataMap,
-							versionDate);
+									String date = DateUtil.dateTimeConverter(monday.toString(), DateUtil.DATE_FORMAT,
+											DateUtil.DISPLAY_DATE_FORMAT) + " to "
+											+ DateUtil.dateTimeConverter(sunday.toString(), DateUtil.DATE_FORMAT,
+													DateUtil.DISPLAY_DATE_FORMAT);
+									Long startms = monday.atStartOfDay(ZoneId.systemDefault()).toInstant()
+											.toEpochMilli();
+									Long endms = sunday.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant()
+											.toEpochMilli();
+									Map<String, SonarHistory> history = prepareJobwiseHistoryMap(projectData, startms,
+											endms, projectNodeId);
+									prepareViolationsList(history, date, projectNodeId, projectList, violations,
+											projectWiseDataMap, versionDate);
 
-					endDateTime = endDateTime.minusWeeks(1);
-				}
-				tempMap.get(projectNodeId).setValue(projectWiseDataMap);
-				if (getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					KPIExcelUtility.populateSonarKpisExcelData(tempMap.get(projectNodeId).getProjectFilter().getName(),
-							projectList, violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS.getKpiId());
-				}
-			}
-		});
+									endDateTime = endDateTime.minusWeeks(1);
+								}
+								tempMap.get(projectNodeId).setValue(projectWiseDataMap);
+								if (getRequestTrackerId().toLowerCase()
+										.contains(KPISource.EXCEL.name().toLowerCase())) {
+									KPIExcelUtility.populateSonarKpisExcelData(
+											tempMap.get(projectNodeId).getProjectFilter().getName(), projectList,
+											violations, versionDate, excelData, KPICode.SONAR_VIOLATIONS.getKpiId());
+								}
+							}
+						});
 
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SONAR_VIOLATIONS.getColumns());
@@ -171,10 +179,14 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	 * Segregate data week wise
 	 *
 	 * @param sonarHistoryList
+	 *            sonarHistoryList
 	 * @param start
+	 *            startdate
 	 * @param end
+	 *            enddate
 	 * @param projectNodeId
-	 * @return
+	 *            projectNodeId
+	 * @return map
 	 */
 	private Map<String, SonarHistory> prepareJobwiseHistoryMap(List<SonarHistory> sonarHistoryList, Long start,
 			Long end, String projectNodeId) {
@@ -230,7 +242,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		String projectName = projectNodeId.substring(0, projectNodeId.lastIndexOf(CommonConstant.UNDERSCORE));
 		List<Long> dateWiseViolationsList = new ArrayList<>();
 		List<Map<String, Object>> globalSonarViolationsHowerMap = new ArrayList<>();
-		history.values().stream().forEach(sonarDetails -> {
+		history.values().forEach(sonarDetails -> {
 			Map<String, Object> metricMap = sonarDetails.getMetrics().stream()
 					.filter(metricValue -> metricValue.getMetricValue() != null)
 					.collect(Collectors.toMap(SonarMetric::getMetricName, SonarMetric::getMetricValue));
@@ -266,7 +278,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		projectWiseDataMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dcObj);
 	}
 
-
 	/**
 	 * Gets KPICode's <tt>SONAR_VIOLATIONS</tt> enum
 	 */
@@ -277,6 +288,7 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 	/**
 	 * @param sonarDetailsMap
+	 *            sonarDetailsMap
 	 */
 	@Override
 	public Long calculateKPIMetrics(Map<ObjectId, List<SonarDetails>> sonarDetailsMap) {
@@ -285,8 +297,11 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 
 	/**
 	 * @param violations
+	 *            violations
 	 * @param valueMap
+	 *            valueMap
 	 * @param key
+	 *            key
 	 */
 	private void evaluateViolations(Object violations, Map<String, Object> valueMap, String key) {
 		if (violations instanceof Double) {

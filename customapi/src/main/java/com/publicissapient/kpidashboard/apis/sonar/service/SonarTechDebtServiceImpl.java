@@ -130,7 +130,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK))
+		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
 				.forEach((projectNodeId, projectData) -> {
 			List<String> projectList = new ArrayList<>();
 			List<String> debtList = new ArrayList<>();
