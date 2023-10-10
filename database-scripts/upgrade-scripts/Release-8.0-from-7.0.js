@@ -5015,3 +5015,100 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+db.kpi_master.bulkWrite([
+    {
+        insertOne: {
+            "document":
+            {
+                "kpiId": "kpi165",
+                "kpiName": "Epic Progress",
+                "maxValue": "",
+                "kpiUnit": "Count",
+                "isDeleted": "False",
+                "defaultOrder": 5,
+                "kpiCategory": "Release",
+                "kpiSubCategory": "Value",
+                "kpiSource": "Jira",
+                "groupId": 9,
+                "thresholdValue": "",
+                "kanban": false,
+                "chartType": "horizontalPercentBarChart",
+                "kpiInfo": {
+                    "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+                },
+                "xAxisLabel": "",
+                "yAxisLabel": "",
+                "kpiWidth": 100,
+                "isPositiveTrend": true,
+                "showTrend": false,
+                "isAdditionalFilterSupport": false,
+                "kpiFilter": "multiSelectDropDown",
+                "boxType": "chart",
+                "calculateMaturity": false
+            }
+        }
+    },
+    {
+        insertOne: {
+            "document":
+            {
+                "kpiId": "kpi169",
+                "kpiName": "Epic Progress",
+                "maxValue": "",
+                "kpiUnit": "Count",
+                "isDeleted": "False",
+                "defaultOrder": 5,
+                "kpiCategory": "Backlog",
+                "kpiSource": "Jira",
+                "groupId": 9,
+                "thresholdValue": "",
+                "kanban": false,
+                "chartType": "horizontalPercentBarChart",
+                "kpiInfo": {
+                    "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+                },
+                "xAxisLabel": "",
+                "yAxisLabel": "",
+                "kpiWidth": 100,
+                "isPositiveTrend": true,
+                "showTrend": false,
+                "isAdditionalFilterSupport": false,
+                "kpiFilter": "multiSelectDropDown",
+                "boxType": "chart",
+                "calculateMaturity": false,
+                "kpiSubCategory": "Epic View"
+            }
+
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] } },
+            update: { $set: { "kpiSubCategory": "Summary" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi139", "kpi138", "kpi127", "kpi137", "kpi129", "kpi161"] } },
+            update: { $set: { "kpiSubCategory": "Backlog Health" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi3", "kpi148", "kpi146"] } },
+            update: { $set: { "kpiSubCategory": "Flow KPIs" } }
+        }
+    }, {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi147", "kpi150"] } },
+            update: { $set: { "kpiSubCategory": "Speed" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi163"] } },
+            update: { $set: { "kpiSubCategory": "Quality" } }
+        },
+    }
+]);

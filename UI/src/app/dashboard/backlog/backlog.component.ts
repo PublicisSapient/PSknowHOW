@@ -59,7 +59,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   kpiCommentsCountObj: object = {};
   kpiSpecificLoader =[];
   durationFilter='Past 2 Weeks';
-  kpiPart1 : any = [] 
+  kpiPart1 : any = []
   kpiPart2 : any = []
   leadTime : object;
   dragableConfigGlobalData;
@@ -149,8 +149,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
       this.leadTime = undefined;
     }
     this.dragableConfigGlobalData = this.updatedConfigGlobalData.filter(kpi=>kpi?.kpiId !== 'kpi3')
-    
- 
+
+
     // Divide into two parts
     const dataLength = this.dragableConfigGlobalData.length;
     const middleIndex = Math.floor(dataLength / 2);
@@ -368,7 +368,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }else{
         this.kpiChartData[kpiId] = [];
       }
-      
+
     }
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
@@ -629,7 +629,8 @@ export class BacklogComponent implements OnInit, OnDestroy{
         });
 
         kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
-        
+        console.log(kpi3preAggregatedValues);
+
         kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
         this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {

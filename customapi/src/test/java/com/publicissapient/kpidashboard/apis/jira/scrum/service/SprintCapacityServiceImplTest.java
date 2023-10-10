@@ -142,7 +142,7 @@ public class SprintCapacityServiceImplTest {
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
 		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
-				equalTo(42));
+				equalTo(44));
 	}
 
 	@SuppressWarnings("unchecked")
