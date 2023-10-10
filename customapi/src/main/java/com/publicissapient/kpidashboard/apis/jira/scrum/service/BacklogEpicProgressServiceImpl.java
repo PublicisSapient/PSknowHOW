@@ -176,8 +176,9 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 			JiraIssueReleaseStatus jiraIssueReleaseStatus, Set<JiraIssue> epicIssues, FieldMapping fieldMapping,
 			List<IterationKpiValue> iterationKpiValues) {
 
-		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream().collect(Collectors
-				.groupingBy(jiraIssue -> Optional.ofNullable(jiraIssue.getEpicLinked()).orElse(Constant.DASH)));
+		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream()
+				.filter(jiraIssue -> jiraIssue.getEpicLinked()!=null).collect(Collectors
+						.groupingBy(JiraIssue::getEpicLinked));
 		Map<String, String> epicIssueMap = epicIssues.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 
@@ -296,8 +297,6 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 				&& MapUtils.isNotEmpty(epicWiseIssueSize)) {
 			Map<String, JiraIssue> epicWiseJiraIssue = epicIssues.stream()
 					.collect(Collectors.toMap(JiraIssue::getNumber, jiraIssue -> jiraIssue));
-			epicWiseJiraIssue.put(Constant.DASH,
-					JiraIssue.builder().number(Constant.DASH).name("None").status(Constant.DASH).build());
 			KPIExcelUtility.populateEpicProgessExcelData(epicWiseIssueSize, epicWiseJiraIssue, excelData);
 		}
 	}
