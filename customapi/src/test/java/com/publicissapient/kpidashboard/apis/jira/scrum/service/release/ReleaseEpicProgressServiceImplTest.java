@@ -220,15 +220,17 @@ public class ReleaseEpicProgressServiceImplTest {
 	 */
 	@Test
 	public void testCreateDataCountGroupMapPositiveScenario() {
+		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
+				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-2"));
 		Set<JiraIssue> epicIssues = jiraIssueArrayList.stream()
 				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
 
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
 		Map<String, String> epicWiseSize = epicProgressService.createDataCountGroupMap(jiraIssueArrayList,
 				jiraIssueReleaseStatusList.get(0), epicIssues, fieldMapping, iterationKpiValues);
-
 		assertThat(epicWiseSize).hasSize(1);
-		assertThat(epicWiseSize.get("-")).isEqualTo("60.0");
+		assertThat(epicWiseSize.get("-")).isEqualTo(null);
+		assertThat(epicWiseSize.get("EPIC-2")).isEqualTo("57.0");
 		assertThat(iterationKpiValues).hasSize(1);
 		assertThat(iterationKpiValues.get(0).getValue()).hasSize(1);
 	}
@@ -249,6 +251,8 @@ public class ReleaseEpicProgressServiceImplTest {
 		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
 				.thenReturn(epic);
 		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
+		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
+				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
