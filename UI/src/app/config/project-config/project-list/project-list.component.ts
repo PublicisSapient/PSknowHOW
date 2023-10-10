@@ -64,6 +64,7 @@ export class ProjectListComponent implements OnInit {
     this.getData();
     this.roleAccessAssign();
     this.getHierarchy();
+    this.sharedService.setSelectedToolConfig(null);
   }
 
   /* Assign role along with project Id */
