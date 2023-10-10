@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -105,8 +104,7 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	 * @param kpiRequest
 	 *            kpiElement
 	 */
-	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
@@ -177,8 +175,8 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 			List<IterationKpiValue> iterationKpiValues) {
 
 		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssue.getEpicLinked()!=null).collect(Collectors
-						.groupingBy(JiraIssue::getEpicLinked));
+				.filter(jiraIssue -> jiraIssue.getEpicLinked() != null)
+				.collect(Collectors.groupingBy(JiraIssue::getEpicLinked));
 		Map<String, String> epicIssueMap = epicIssues.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 
