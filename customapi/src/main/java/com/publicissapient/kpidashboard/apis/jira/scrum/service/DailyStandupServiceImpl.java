@@ -73,6 +73,7 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDela
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
@@ -102,7 +103,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final String SPRINT = "sprint";
 	private static final String ISSUES = "issues";
 	private static final String CLOSE_STATUS = "close status";
-	private static final String IN_PROGRESS_CATEGORY = "inProgress Status Category";
+	private static final String STATUS_CATEGORY = "status category";
 	public static final String NOT_COMPLETED_JIRAISSUE = "notCompletedJiraIssue";
 	public static final String ASSIGNEE_DETAILS = "AssigneeDetails";
 	public static final String REMAINING_CAPACITY = "Remaining Capacity";
@@ -115,7 +116,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	private static final String EPICS = "epics";
 	private static final String FILTER_BUTTON = "button";
 	private static final String FILTER_INPROGRESS_SCR2 = "In Progress";
+	private static final String FILTER_CLOSED_SCR2 = "Done";
 	private static final String FILTER_OPEN_SCR2 = "Open";
+	private static final String FILTER_ONHOLD_SCR2 = "on Hold";
 
 	@Autowired
 	private ConfigHelperService configHelperService;
@@ -171,7 +174,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
-			List<String> statusCategoryInprogress = (List<String>) resultMap.get(IN_PROGRESS_CATEGORY);
+			JiraIssueReleaseStatus statusCategory = (JiraIssueReleaseStatus) resultMap.get(STATUS_CATEGORY);
 			resultMap.put(CLOSE_STATUS, getClosedStatus(fieldMapping, sprintDetails));
 			Map<String, Set<String>> parentChildRelation = findLinkedSubTasks(totalIssueList, fieldMapping);
 
@@ -244,7 +247,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				userWiseCardDetails.add(userWiseCardDetail);
 			}
 			// set filter on Second Screen
-			setFilters(kpiElement, fieldMapping, allRoles, statusCategoryInprogress);
+			setFilters(kpiElement, fieldMapping, allRoles, statusCategory);
 			kpiElement.setIssueData(new HashSet<>(mapOfModalObject.values()));
 			userWiseCardDetails.sort(Comparator.comparing(UserWiseCardDetail::getAssigneeName));
 			kpiElement.setModalHeads(KPIExcelColumn.DAILY_STANDUP_VIEW.getColumns());
@@ -324,9 +327,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					// to get the capacity of assignees(Screen-1)
 					resultListMap.put(ASSIGNEE_DETAILS, capacityKpiDataRepository.findBySprintIDAndBasicProjectConfigId(
 							sprintDetails.getSprintID(), sprintDetails.getBasicProjectConfigId()));
-					// DTS-28440, provide status category inprogress list for (Screen-2 filter)
-					resultListMap.put(IN_PROGRESS_CATEGORY, new ArrayList<>(jiraIssueReleaseStatusRepository
-							.findByBasicProjectConfigId(basicProjectConfigId.toString()).getInProgressList().values()));
+					//release status category for status filters
+					resultListMap.put(STATUS_CATEGORY, jiraIssueReleaseStatusRepository
+							.findByBasicProjectConfigId(basicProjectConfigId.toString()));
 
 				}
 			}
@@ -707,7 +710,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * filter Status on Second Screen
 	 */
 	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles,
-			List<String> statusCategoryInprogress) {
+			JiraIssueReleaseStatus statusCategory) {
 		List<Filter> firstScreenFilter = new ArrayList<>();
 		// Role Filter on First Screen
 		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
@@ -715,21 +718,35 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		firstScreenFilter.add(filter);
 
 		// Filters on Second Screen
+		// In progress Filters
 		List<Filter> secondScreenFilters = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(statusCategoryInprogress)) {
-			Filter inProgressFilters = new Filter(FILTER_INPROGRESS_SCR2, statusCategoryInprogress, FILTER_BUTTON, true,
-					1);
-			secondScreenFilters.add(inProgressFilters);
+		if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
+			secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2,
+					new ArrayList<>(statusCategory.getInProgressList().values()), FILTER_BUTTON, true, 1));
 		}
+
+		//closed filters
+		if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
+			secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2,
+					new ArrayList<>(statusCategory.getClosedList().values()), FILTER_BUTTON, true, 2));
+		}
+		// Open Filters
 		Filter openFilter;
+		List<String> openStatus = new ArrayList<>(statusCategory.getToDoList().values());
 		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
-			openFilter = new Filter(FILTER_OPEN_SCR2, fieldMapping.getStoryFirstStatusKPI154(), FILTER_BUTTON, false,
-					null);
+			openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
 		} else {
-			openFilter = new Filter(FILTER_OPEN_SCR2, Arrays.asList(fieldMapping.getStoryFirstStatus()), FILTER_BUTTON,
-					false, null);
+			openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
 		}
+		openFilter = new Filter(FILTER_OPEN_SCR2, openStatus, FILTER_BUTTON, false, null);
 		secondScreenFilters.add(openFilter);
+
+		//On Hold Status configured
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
+			secondScreenFilters.add(new Filter(FILTER_ONHOLD_SCR2,
+					fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
+		}
+
 		kpiElement.setFilterData(firstScreenFilter);
 		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}

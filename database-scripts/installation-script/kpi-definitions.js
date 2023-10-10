@@ -8908,6 +8908,17 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
+        "fieldName": "jiraOnHoldStatusKPI154",
+        "fieldLabel": "Status when issue type is put on Hold",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify hold/blocked statuses.",
+
+        }
+    },
+    {
        "fieldName":"jiraDefectRejectionStatusKPI155",
        "fieldLabel":"Ticket Rejected/Dropped Status",
        "fieldType":"text",

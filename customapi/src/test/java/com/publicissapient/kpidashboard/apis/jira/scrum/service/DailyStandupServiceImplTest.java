@@ -152,6 +152,8 @@ public class DailyStandupServiceImplTest {
 
 		JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
 		jiraIssueReleaseStatus.setInProgressList(jiraIssueReleaseStatusList.get(0).getInProgressList());
+		jiraIssueReleaseStatus.setClosedList(jiraIssueReleaseStatusList.get(0).getClosedList());
+		jiraIssueReleaseStatus.setToDoList(jiraIssueReleaseStatusList.get(0).getToDoList());
 		return jiraIssueReleaseStatus;
 	}
 
@@ -280,6 +282,7 @@ public class DailyStandupServiceImplTest {
 				Arrays.asList("In Analysis, In Development", "In Testing", "Ready for Testing", "Deployed"));
 		fieldMapping.setJiraIterationCompletionStatusKPI154(Arrays.asList("Closed", "Dropped", "Live"));
 		fieldMapping.setStoryFirstStatusKPI154(Arrays.asList("Open"));
+		fieldMapping.setJiraOnHoldStatusKPI154(Arrays.asList("On Hold"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}

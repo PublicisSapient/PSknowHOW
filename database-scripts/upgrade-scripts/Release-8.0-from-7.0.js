@@ -5087,6 +5087,17 @@ db.getCollection('field_mapping_structure').insertMany([
             "definition": "All issue types that identify with a Story.",
 
         }
+    },
+    {
+        "fieldName": "jiraOnHoldStatusKPI154",
+        "fieldLabel": "Status when issue type is put on Hold",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify hold/blocked statuses.",
+
+        }
     }
 ])
 // Initialize an array to store the bulk write operations

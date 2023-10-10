@@ -314,6 +314,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDevDoneStatusKPI128;
 	private List<String> jiraDevDoneStatusKPI154;
 	private List<String> jiraQADoneStatusKPI154;
+	private List<String> jiraOnHoldStatusKPI154;
 
 	// For DTS_21154 - field for Team refinement status
 	private List<String> jiraRejectedInRefinement;
