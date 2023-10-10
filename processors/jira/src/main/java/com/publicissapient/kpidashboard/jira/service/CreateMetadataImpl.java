@@ -92,7 +92,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 						CommonConstant.CACHE_PROJECT_CONFIG_MAP);
 			}
-			log.info("Fetched metadata", String.valueOf(isSuccess));
+			log.info("Fetched metadata: {}", isSuccess);
 		} else {
 			log.info("metadata already present for the project : {} so not fetching again ",
 					projectConfig.getProjectName());

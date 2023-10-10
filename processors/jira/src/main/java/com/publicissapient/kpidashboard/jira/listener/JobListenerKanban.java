@@ -75,7 +75,8 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 		this.projectId = projectId;
 	}
 
-	public static String convertDateToCustomFormat(Date inputDate) {
+	public static String convertDateToCustomFormat(long currentTimeMillis) {
+		Date inputDate = new Date(currentTimeMillis);
 		SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy, EEEE, hh:mm:ss a");
 
 		String outputStr = outputFormat.format(inputDate);
@@ -114,7 +115,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 	private void sendNotification(JobExecution jobExecution) {
 		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
 		if (fieldMapping.getNotificationEnabler()) {
-			handler.sendEmailToProjectAdmin(convertDateToCustomFormat(jobExecution.getEndTime()), projectId);
+			handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()), projectId);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
