@@ -28,7 +28,7 @@
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined && activeIndex!==2">
                   <div class="p-grid p-pr-2 p-pl-2 iteration-dashboard">
                     <ng-container *ngIf="board.width === 'half'">
-                      
+
                       <!-- full width kpi render start -->
                       <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.fullWidthKpis">
                         <ng-container *ngFor="let kpi of board.fullWidthKpis">
@@ -154,7 +154,7 @@
                                 </ng-container>
                               </app-kpi-card>
                             </div>
-                      
+
                             <!--chart container-->
                             <ng-template #chart>
                               <div class="p-sm-12 p-pl-0 p-pr-0 iteration-chart p-pt-0 p-pb-0">
@@ -182,13 +182,13 @@
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
-                      
+
                                           <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [kpiId]="kpi.kpiId"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [data]="kpiChartData[kpi?.kpiId]">
                                           </app-cumulative-line-chart>
-                      
-                      
+
+
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -199,7 +199,7 @@
                                         </ng-container>
                                       </div>
                                     </ng-container>
-                      
+
                                   </ng-container>
                                 </app-kpi-card>
                               </div>
@@ -277,7 +277,7 @@
                                 </ng-container>
                               </app-kpi-card>
                             </div>
-                      
+
                             <!--chart container-->
                             <ng-template #chart>
                               <div class="p-sm-12 p-pl-0 p-pr-0 iteration-chart p-pt-0 p-pb-0">
@@ -305,13 +305,13 @@
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
-                      
+
                                           <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [kpiId]="kpi.kpiId"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [data]="kpiChartData[kpi?.kpiId]">
                                           </app-cumulative-line-chart>
-                      
-                      
+
+
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -322,7 +322,7 @@
                                         </ng-container>
                                       </div>
                                     </ng-container>
-                      
+
                                   </ng-container>
                                 </app-kpi-card>
                               </div>
@@ -400,7 +400,7 @@
                                 </ng-container>
                               </app-kpi-card>
                             </div>
-                      
+
                             <!--chart container-->
                             <ng-template #chart>
                               <div class="p-sm-12 p-pl-0 p-pr-0 iteration-chart p-pt-0 p-pb-0">
@@ -428,13 +428,13 @@
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
-                      
+
                                           <app-cumulative-line-chart *ngSwitchCase="'CumulativeMultilineChart'" [kpiId]="kpi.kpiId"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [data]="kpiChartData[kpi?.kpiId]">
                                           </app-cumulative-line-chart>
-                      
-                      
+
+
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -445,7 +445,7 @@
                                         </ng-container>
                                       </div>
                                     </ng-container>
-                      
+
                                   </ng-container>
                                 </app-kpi-card>
                               </div>
@@ -468,8 +468,8 @@
                         </ng-container>
                       </div>
                     </ng-container>
-                    
-                      
+
+
                     <ng-template #noDataAccess>
                       <div class="min-ht">
                         <div class="err"> No Data Available</div>
@@ -478,8 +478,8 @@
                   </div>
                 </ng-container>
                 <ng-container *ngIf="activeIndex === 2">
-                  <app-daily-scrum-tab 
-                    [assigneeList]="kpiChartData['kpi154']" 
+                  <app-daily-scrum-tab
+                    [assigneeList]="kpiChartData['kpi154']"
                     [columns]="jiraKpiData['kpi154']?.modalHeads"
                     [filterData]="jiraKpiData['kpi154']?.filterData">
                   </app-daily-scrum-tab>

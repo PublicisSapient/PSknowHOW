@@ -196,7 +196,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     }else{
       x0.domain(categoriesNames);
     }
-    
     x1.domain(rateNames)
       .range([0, x0.bandwidth()]); //.padding(0.0);
 
@@ -402,7 +401,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         }else{
           return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x1(d.rate) + barWidth / 1.5 : x1(d.rate)
         }
-        
       })
       .style('fill', (d) => color(d.rate))
       .attr('y', (d) => y(0))
@@ -510,7 +508,6 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
         })
         const newRawData = unFormatedData;
          const colorArr = this.color;
-      
         /* Add line into SVG acoording to data */
         let maxObjectNo = 0;
         let maxXValueCount = 0;
