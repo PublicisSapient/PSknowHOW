@@ -57,3 +57,7 @@
     margin: 10px;
     cursor: pointer;
   }
+
+  :host::ng-deep .legend_item {
+    padding: 0;
+  } 
