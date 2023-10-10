@@ -94,13 +94,15 @@ export class IterationComponent implements OnInit, OnDestroy {
   markerInfo=[];
   globalConfig;
   sharedObject;
-  navigationTabs:Array<object> = [
-    {'label':'Iteration Review', 'count': 0},
-    {'label':'Iteration Progress', 'count': 0}
+  activeIndex = 0;
+  navigationTabs:Array<object> =[
+    {'label':'Iteration Review', 'count': 0,width : 'half',kpis : []},
+    {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
+  currentSelectedSprint;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -144,25 +146,64 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   processKpiConfigData() {
+    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
+        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+        {'label':'Daily Standup','count':1 , width : 'full',kpis : []}
+      ];
+    }else{
+      this.navigationTabs =  [
+        {'label':'Iteration Review', 'count': 0 , width : 'half',kpis : [],fullWidthKpis:[]},
+        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+      ];
+    }
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
-    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121' && kpi.kpiId !== 'kpi120');
+    this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
+    
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      return { ...x, count: 0}
-    })
+      if(x['label'] === 'Daily Standup'){
+        return x;
+      }
+      return { ...x, count: 0};
+    });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if(idx != -1) this.navigationTabs[idx]['count']++;
+      if(idx != -1) {
+        this.navigationTabs[idx]['count']++;
+        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+      }
     }
     if(this.commitmentReliabilityKpi?.isEnabled){
       this.navigationTabs[0]['count']++;
     }
+
+    this.navigationTabs.map(tabDetails => {
+      if(tabDetails['width'] === 'half'){
+        let fullWidthKPis = [];
+        let halfWithKpis = []
+        tabDetails['kpis'].forEach(kpiDetails=>{
+          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+            fullWidthKPis = fullWidthKPis.concat(kpiDetails);
+          }else{
+            halfWithKpis = halfWithKpis.concat(kpiDetails);
+          }
+        }) 
+        const dataLength = halfWithKpis.length;
+        const middleIndex = Math.floor(dataLength / 2);
+        tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
+        tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
+        tabDetails['fullWidthKpis'] = fullWidthKPis;
+      }
+      return tabDetails;
+    })
 
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
@@ -187,6 +228,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
@@ -295,6 +337,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         }
       }
     }));
+
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
@@ -873,16 +916,24 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>,tab) {
     if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(this.upDatedConfigData, event.previousIndex, event.currentIndex);
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      if(tab.width === 'half'){
+        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+      }
+      this.upDatedConfigData = [];
+      this.navigationTabs.forEach(tabs=>{
+        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
+      })
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
       hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
       const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
-      if (capacityKpi) {
+     if (capacityKpi) {
         this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
       }
     }
@@ -897,7 +948,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
     const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+        this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
@@ -921,4 +972,5 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
 
   }
+
 }

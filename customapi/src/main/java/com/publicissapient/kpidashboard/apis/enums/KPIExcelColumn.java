@@ -35,11 +35,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project Name", "Job Name", "Start Time", "End Time", "Duration", "Build Status", "Build Url",
 					"Weeks")), ISSUE_COUNT("kpi40",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description")), CODE_COMMIT("kpi11",
-									Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit",
+									Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit",
 											"No. of Merge")),
 
 	MEAN_TIME_TO_MERGE("kpi84",
-			Arrays.asList("Project", "Repository Url", "Branch", "Weeks",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"Mean Time To Merge (In Hours)")), AVERAGE_RESOLUTION_TIME(
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
@@ -113,7 +113,7 @@ public enum KPIExcelColumn {
 	RELEASE_FREQUENCY("kpi73",
 			Arrays.asList("Project Name", "Release Name", "Release Description", "Release End Date", "Month")),
 
-	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Month", "Environment")),
+	DEPLOYMENT_FREQUENCY("kpi118", Arrays.asList("Project Name", "Date", "Job Name", "Weeks", "Environment")),
 
 	DEFECTS_WITHOUT_STORY_LINK("kpi80",
 			Arrays.asList("Project Name", "Priority", "Defects Without Story Link", "Issue Description")),
@@ -161,7 +161,7 @@ public enum KPIExcelColumn {
 			"Build Status", "Build Url")),
 
 	CODE_COMMIT_MERGE_KANBAN("kpi65",
-			Arrays.asList("Project Name", "Repository Url", "Branch", "Day", "No. Of Commit")),
+			Arrays.asList("Project Name", "Repository Url", "Branch", "Days/Weeks", "No. Of Commit")),
 
 	TEAM_CAPACITY_KANBAN("kpi58",
 			Arrays.asList("Project Name", "Start Date", "End Date", "Estimated Capacity (in hours)")),
@@ -234,6 +234,8 @@ public enum KPIExcelColumn {
 			"Issue Status", "Root Cause", "Priority", "Assignee")),
 	BACKLOG_COUNT_BY_STATUS("kpi151", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
+	ITERATION_READINESS("kpi161", Arrays.asList("Issue ID", "Issue Description", "Sprint Name", "Sprint Start Date", "Issue Type",
+			"Issue Status", "Size(story point/hours)")),
 	BACKLOG_COUNT_BY_ISSUE_TYPE("kpi152", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
 			"Issue Status", "Priority","Created Date","Updated Date", "Assignee")),
 
@@ -257,7 +259,29 @@ public enum KPIExcelColumn {
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
-			"Priority", "Assignee", "Issue Status"));
+			"Priority", "Assignee", "Issue Status")),
+
+	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
+			"Planned Value", "Achieved Value")),
+
+	DAILY_STANDUP_VIEW("kpi154", Arrays.asList("Remaining Capacity", "Remaining Estimate", "Remaining Work", "Delay")),
+
+	//DTS-26123 start
+	DEFECT_COUNT_BY_TYPE("kpi155", Arrays.asList("Issue ID", "Issue Description", "Issue Type",
+			"Issue Status", "Sprint Name", "Priority","Created Date","Updated Date", "Assignee")),
+	//DTS-26123 end
+	SCOPE_CHURN("kpi164", Arrays.asList("Sprint Name","Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)","Scope Change Date","Scope Change (Added/Removed)","Issue Status")),
+
+	LEAD_TIME_FOR_CHANGE("Kpi156", Arrays.asList("Project Name", "Date", "Story ID", "Lead Time (In Days)",
+			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
+
+	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
+			"Sprint Name", "Assignee", "Issue Status")),
+	PICKUP_TIME("kpi160",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
+					"PR Size (No. of lines)"));
 
 	// @formatter:on
 

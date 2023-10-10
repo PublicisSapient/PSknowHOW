@@ -289,6 +289,9 @@ public class KPIExcelData {
 	@JsonProperty("Start Date")
 	private String startDate;
 
+	@JsonProperty("Sprint Start Date")
+	private String sprintStartDate;
+
 	@JsonProperty("End Date")
 	private String endDate;
 
@@ -333,5 +336,42 @@ public class KPIExcelData {
 
 	@JsonProperty("Initial Commitment")
 	private String initialCommited;
+
+	@JsonProperty("PI Name")
+	private String piName;
+
+	@JsonProperty("Planned Value")
+	private String plannedValue;
+
+	@JsonProperty("Achieved Value")
+	private String achievedValue;
+
+	@JsonProperty("Scope Change Date")
+	private String scopeChangeDate;
+
+	@JsonProperty("Scope Change (Added/Removed)")
+	private String scopeChange;
+
+
+	@JsonProperty("Completion Date")
+	private String completionDate;
+
+	@JsonProperty("Merge Date")
+	private String mergeDate;
+
+	@JsonProperty("Release Date")
+	private String releaseDate;
+
+	@JsonProperty("Merge Request Id")
+	private String mergeRequestId;
+
+	@JsonProperty("Pickup Time (In Hours)")
+	private String pickupTime;
+
+	@JsonProperty("PR Size (No. of lines)")
+	private String prSize;
+
+	@JsonProperty("Days/Weeks")
+	private String daysWeeks;
 
 }

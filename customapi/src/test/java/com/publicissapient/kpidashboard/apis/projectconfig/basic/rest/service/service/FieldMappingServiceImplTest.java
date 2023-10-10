@@ -333,8 +333,6 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraIssueTypeKPI35(Arrays.asList("Story"));
 		fieldMapping.setJiraQAKPI111IssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(Arrays.asList("Story"));
-		fieldMapping.setJiraDefectRemovalIssueTypeKPI34(Arrays.asList("Story"));
-		fieldMapping.setJiraIssueTypeKPI37(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(Arrays.asList("Story"));
 		fieldMapping.setJiraTestAutomationIssueType(Arrays.asList("Story"));
 		fieldMapping.setJiraIssueTypeKPI3(Arrays.asList("Story", "Defect"));
@@ -345,7 +343,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
-		fieldMapping.setJiraDorKPI3("In Analysis");
+		fieldMapping.setJiraDorKPI3(Arrays.asList("In Analysis"));
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Closed");
 		fieldMapping.setJiraDodKPI3(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed", "Ready for Delivery"));

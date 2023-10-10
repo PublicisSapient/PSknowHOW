@@ -48,12 +48,14 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
+import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -147,9 +149,15 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				sprintDetails=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						fieldMapping.getJiraIterationIssuetypeKPI125(),
-						fieldMapping.getJiraIterationCompletionStatusKPI125(), null).get(0);
+				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
+				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
+				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
+						.collect(Collectors.toSet());
+
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
+						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
+						fieldMapping.getJiraIterationCompletionStatusKPI125(),
+						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
@@ -171,8 +179,10 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
 					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, sprintIssues, getJiraIssuesFromBaseClass(allIssues));
-					List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass(allIssues);
+							sprintDetails, sprintIssues,
+							IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList));
+					List<JiraIssueCustomHistory> allIssuesHistory = IterationKpiHelper
+							.getFilteredJiraIssueHistory(allIssues, totalHistoryList);
 					Map<LocalDate, List<JiraIssue>> fullSprintIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> addedIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> removedIssues = new HashMap<>();
@@ -362,7 +372,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param sprintLeafNodeList
 	 * @param kpiElement
 	 * @param kpiRequest
@@ -380,19 +390,20 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
-		Map<LocalDate, List<JiraIssue>> fullSprintIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(FULL_SPRINT_ISSUES);
-		Map<LocalDate, List<JiraIssue>> removedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.PUNTED_ISSUES);
-		Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.ADDED_ISSUES);
-		Map<LocalDate, List<JiraIssue>> completedIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
-				.get(CommonConstant.COMPLETED_ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
-		Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
-				.get(REMOVED_FROM_CLOSED);
-		List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
 		if (ObjectUtils.isNotEmpty(sprintDetails)) {
+			Map<LocalDate, List<JiraIssue>> fullSprintIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(FULL_SPRINT_ISSUES);
+			Map<LocalDate, List<JiraIssue>> removedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.PUNTED_ISSUES);
+			Map<LocalDate, List<JiraIssue>> addedIssuesMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.ADDED_ISSUES);
+			Map<LocalDate, List<JiraIssue>> completedIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+					.get(CommonConstant.COMPLETED_ISSUES);
+			Map<LocalDate, Set<JiraIssue>> removedFromClosed = (Map<LocalDate, Set<JiraIssue>>) resultMap
+					.get(REMOVED_FROM_CLOSED);
+			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
+
 			log.info("Iteration Burnups -> request id : {} total jira Issues : {}", requestTrackerId,
 					fullSprintIssuesMap.size());
 			List<String> totalSprintDetailsIssues = sprintDetails.getTotalIssues().stream().map(SprintIssue::getNumber)
@@ -548,7 +559,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * with assignees criteria calculating potential delay for inprogress and open
 	 * issues and without assignees calculating potential delay for inprogress
 	 * stories
-	 * 
+	 *
 	 * @param sprintDetails
 	 * @param allIssues
 	 * @param fieldMapping
@@ -565,7 +576,8 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			assigneeWiseJiraIssue.forEach((assignee, jiraIssues) -> {
 				List<JiraIssue> inProgressIssues = new ArrayList<>();
 				List<JiraIssue> openIssues = new ArrayList<>();
-				KpiDataHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI125(), jiraIssues, inProgressIssues, openIssues);
+				CalculatePCDHelper.arrangeJiraIssueList(fieldMapping.getJiraStatusForInProgressKPI125(), jiraIssues,
+						inProgressIssues, openIssues);
 				iterationPotentialDelayList
 						.addAll(sprintWiseDelayCalculation(inProgressIssues, openIssues, sprintDetails));
 			});

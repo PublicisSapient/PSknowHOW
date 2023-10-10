@@ -241,6 +241,23 @@ export class TestConnectionService {
     );
   }
 
+  testRepoTool(httpUrl, repoToolProvider, username, accessToken, email): Observable<any> {
+    let postData = {};
+
+    postData = {
+      httpUrl,
+      repoToolProvider,
+      username, 
+      accessToken,
+      email
+    };
+    let headers: HttpHeaders = new HttpHeaders();
+    headers = headers.append('requestArea', 'thirdParty');
+    return this.http.post(environment.baseUrl + '/api/testconnection/repotool', postData
+      , { headers }
+    );
+  }
+
 
 
 }

@@ -23,17 +23,12 @@ import { FormControl, FormGroup } from '@angular/forms';
   templateUrl: './rating.component.html',
   styleUrls: ['./rating.component.css']
 })
-export class RatingComponent implements OnInit , OnChanges{
+export class RatingComponent implements OnChanges{
   @Input() editable=false;
   @Input() currentAssignee;
   form= new FormGroup({
     happinessRating: new FormControl()
   });
-
-  constructor() { }
-
-  ngOnInit(): void {
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     this.form.controls['happinessRating'].setValue(String(this.currentAssignee.happinessRating));

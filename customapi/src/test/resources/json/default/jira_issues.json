@@ -96,6 +96,91 @@
     "_id": "6335e31c4fd2f76a821114c7",
     "processorId": "632902802757f265fcb6c452",
     "issueId": "15598467",
+    "number": "TEST-287044",
+    "name": "pscode repository and add dummy script",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Open",
+    "state": "Closed",
+    "estimate": "2.0",
+    "storyPoints": "2",
+    "isDeleted": "False",
+    "priority": "P4 - Minor",
+    "labels": [
+      "DevOps",
+      "ScriptRunner",
+      "Core"
+    ],
+    "createdDate": "2022-08-31T10:25:07.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "testUser1"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "testUser1"
+    ],
+    "ownersFullName": [
+      "testUser1"
+    ],
+    "ownersShortName": [
+      "testUser1"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "FUTURE",
+    "sprintEndDate": "2023-09-27T21:00:00.0000000",
+    "sprintBeginDate": "2023-09-14T09:00:00.0000000",
+    "sprintName": "TEST| KnowHOW|PI_10|Opensource",
+    "sprintID": "40345_Scrum Project_6335363749794a18e8a4479b",
+    "sprintIdList": [
+      "40345"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "Scrum Project",
+    "projectID": "Scrum Project_6335363749794a18e8a4479b",
+    "projectKey": "TEST",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [],
+    "assigneeId": "testUser1",
+    "assigneeName": "testUser1",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 480,
+    "basicProjectConfigId": "6335363749794a18e8a4479b",
+    "releaseVersions": [
+      {
+        "releaseName": "KnowHOW v5.2.0",
+        "releaseDate": "2022-10-07T00:00:00.000+05:30"
+      }
+    ],
+    "defectRaisedByQA": false,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2022-09-27T16:22:33.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  },
+  {
+    "_id": "6335e31c4fd2f76a821114c7",
+    "processorId": "632902802757f265fcb6c452",
+    "issueId": "15598467",
     "number": "TEST-187048",
     "name": "Separate mongo scripts in pscode repository and add dummy script",
     "typeId": "7",
@@ -3509,8 +3594,9 @@
     "name" : "On Lead Time kpi if sprints are selected it showing Undefined name instead of Project Name",
     "typeId" : "1",
     "typeName" : "Bug",
-    "status" : "Closed",
-    "state" : "Closed",
+    "originalType" : "Defect",
+    "status" : "Open",
+    "state" : "Open",
     "estimate" : "0",
     "storyPoints" : "0",
     "changeDate" : "2022-09-07T12:22:50.0000000",
@@ -3528,7 +3614,7 @@
     "ownersShortName" : [ "testUser3" ],
     "sprintIsDeleted" : "False",
     "sprintChangeDate" : "",
-    "sprintAssetState" : "CLOSED",
+    "sprintAssetState" : "ACTIVE",
     "sprintEndDate" : "2022-09-27T17:00:00.0000000",
     "sprintBeginDate" : "2022-09-07T14:08:00.0000000",
     "sprintName" : "KnowHOW|PI_10|ITR_6| 07th Sep",
@@ -3555,7 +3641,7 @@
     "assigneeId" : "testUser3",
     "assigneeName" : "testUser3",
     "defectRaisedBy" : "",
-    "jiraStatus" : "Closed",
+    "jiraStatus" : "Open",
     "defectStoryID" : [ "TEST-16048" ],
     "timeSpentInMinutes" : 0,
     "basicProjectConfigId" : "6335363749794a18e8a4479b",
@@ -3569,6 +3655,7 @@
     "remainingEstimateMinutes" : 0,
     "productionDefect" : false,
     "updateDate" : "2022-09-07T12:22:50.0000000",
+    "escapedDefectGroup" : [ "coding", "Done"],
     "_class" : "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
   }
 ]

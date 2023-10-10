@@ -78,6 +78,10 @@ export class HelperService {
                 condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
+            if(kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId){
+                condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
+            }
+
             if (condition) {
                 if (obj.videoLink) {
                     delete obj.videoLink;
@@ -391,6 +395,7 @@ export class HelperService {
         let aggArr = [];
         aggArr = arr?.map(item => ({
             ...item,
+            aggregationValue: item?.hasOwnProperty('aggregationValue') ? [] : null,
             value: item.value.map(x => ({
                 ...x,
                 value: (typeof x.value === 'object') ? {} : [],
@@ -403,6 +408,10 @@ export class HelperService {
         for (const key in obj) {
             for (let i = 0; i < obj[key]?.length; i++) {
                 const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
+                if(aggArr[idx].hasOwnProperty('aggregationValue') && obj[key][i]?.hasOwnProperty('aggregationValue')){
+                    let tempArr = aggArr[idx]['aggregationValue'] ? [...aggArr[idx]['aggregationValue'], obj[key][i]['aggregationValue']] : [obj[key][i]['aggregationValue']]
+                    aggArr[idx]['aggregationValue'] = [...tempArr];
+                }
                 if (idx != -1) {
                     for (let j = 0; j < obj[key][i]?.value?.length; j++) {
                         if (!Array.isArray(aggArr[idx]?.value[j]?.value)) {
@@ -443,6 +452,10 @@ export class HelperService {
 
             if (aggregationType?.toLowerCase() == 'sum') {
                 for (let i = 0; i < aggArr?.length; i++) {
+                    if(aggArr[i]?.hasOwnProperty('aggregationValue')){
+                        aggArr[i]['aggregationValue'] = aggArr[i]['aggregationValue']?.reduce((partialSum, a) => (partialSum + parseFloat(a)), 0);
+                        
+                    }
                     aggArr[i].value?.map(x => {
                         x.value = (x.value?.reduce((partialSum, a) => partialSum + a, 0));
                         x.data = x.value;

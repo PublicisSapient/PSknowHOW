@@ -220,7 +220,7 @@ public class CapacityMasterServiceImplTest {
 
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335363749794a18e8a4479b");
 
-		assertEquals(5, capacities.size());
+		assertEquals(7, capacities.size());
 	}
 
 	@Test
@@ -282,7 +282,7 @@ public class CapacityMasterServiceImplTest {
 		when(happinessKpiDataRepository.findBySprintIDIn(Mockito.any())).thenReturn(new ArrayList<>());
 		when(capacityKpiDataRepository.findBySprintIDIn(anyList())).thenReturn(collect);
 		List<CapacityMaster> capacities = capacityMasterServiceImpl.getCapacities("6335363749794a18e8a4479b");
-		assertEquals(2,
+		assertEquals(4,
 				capacities.stream()
 						.filter(capacityMaster -> CollectionUtils.isNotEmpty(capacityMaster.getAssigneeCapacity()))
 						.collect(Collectors.toList()).size());

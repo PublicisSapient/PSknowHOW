@@ -41,6 +41,7 @@ import { ButtonModule } from 'primeng/button';
 import { ChipsModule } from 'primeng/chips';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
+import { InputSwitchModule } from 'primeng/inputswitch';
 
 @NgModule({
   imports: [
@@ -60,7 +61,8 @@ import { AdditionalFilterFieldComponent } from './additional-filter-field/additi
     InputTextModule,
     ButtonModule,
     ChipsModule,
-    RadioButtonModule
+    RadioButtonModule,
+    InputSwitchModule,
   ],
   exports: [
     NgSelectModule,

@@ -63,7 +63,7 @@ export class SharedService {
   changedMainDashboardValueSub = new Subject<any>();
   changedMainDashboardValueObs = this.changedMainDashboardValueSub.asObservable();
   currentSelectedSprintSub = new Subject<any>();
-  currentSelectedSprintObs = this.currentSelectedSprintSub.asObservable();
+  currentSelectedSprint;
   mapColorToProject = new BehaviorSubject<any>({});
   mapColorToProjectObs = this.mapColorToProject.asObservable();
   selectedFilterOption = new BehaviorSubject<any>({});
@@ -72,7 +72,7 @@ export class SharedService {
   noSprintsObs = this.noSprints.asObservable();
   noProjects = new BehaviorSubject<boolean>(false);
   noProjectsObs = this.noProjects.asObservable();
-  showTableView = new BehaviorSubject<boolean>(true);
+  showTableView = new BehaviorSubject<string>('chart');
   showTableViewObs = this.showTableView.asObservable();
   setNoData = new Subject<boolean>();
   clickedItem = new Subject<any>();
@@ -87,6 +87,8 @@ export class SharedService {
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
   fieldMappingOptionsMetaData : any = []
+  kpiCardView : string = "chart";
+  maturityTableLoader = new Subject<boolean>();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -100,6 +102,11 @@ export class SharedService {
 
 
   ngOnInit() {
+  }
+
+  setCurrentSelectedSprint(selectedSprint){
+    this.currentSelectedSprint = selectedSprint;
+    this.currentSelectedSprintSub.next(selectedSprint);
   }
 
   setSelectedTypeOrTabRefresh(selectedTab, selectedType) {
@@ -116,7 +123,7 @@ export class SharedService {
     this.selectedtype = selectedType;
   }
 
-  // getter for type i.e scrum or kanban
+  // getter for tab i.e Executive/ Iteration/ Developer
   getSelectedTab() {
     return this.selectedTab;
   }
@@ -285,7 +292,11 @@ export class SharedService {
     return this.xLabelValue;
   }
   setShowTableView(val){
+    this.kpiCardView = val;
     this.showTableView.next(val);
+  }
+  getKPICardView(){
+    return this.kpiCardView;
   }
 
   clearAllCookies() {
@@ -345,6 +356,10 @@ export class SharedService {
 
   getFieldMappingMetaData(){
     return this.fieldMappingOptionsMetaData;
+  }
+
+  setMaturiyTableLoader(value){
+    this.maturityTableLoader.next(value)
   }
 }
 

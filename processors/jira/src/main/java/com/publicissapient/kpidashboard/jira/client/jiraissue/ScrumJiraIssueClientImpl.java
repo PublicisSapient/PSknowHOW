@@ -37,9 +37,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
@@ -690,6 +692,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				// Type
 				jiraIssue.setTypeId(JiraProcessorUtil.deodeUTF8String(issueType.getId()));
 				jiraIssue.setTypeName(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+				jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
+
+				setEpicLinked(fieldMapping, jiraIssue, fields);
 
 				setDefectIssueType(jiraIssue, issueType, fieldMapping);
 
@@ -709,6 +714,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 				setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 
+				// Testing phase defect identification
+				setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
 				setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 				jiraIssue.setAffectedVersions(JiraIssueClientUtil.getAffectedVersions(issue));
 				setIssueEpics(issueEpics, epic, jiraIssue);
@@ -725,7 +732,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 
 				// setting filter data from JiraIssue to
 				// jira_issue_custom_history
-				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields );
+				setJiraIssueHistory(jiraIssueHistory, jiraIssue, issue, projectConfig, fields);
 				if (StringUtils.isNotBlank(jiraIssue.getProjectID())) {
 					jiraIssuesToSave.add(jiraIssue);
 					jiraIssueHistoryToSave.add(jiraIssueHistory);
@@ -736,9 +743,9 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		// Saving back to MongoDB
 		jiraIssueRepository.saveAll(jiraIssuesToSave);
 		jiraIssueCustomHistoryRepository.saveAll(jiraIssueHistoryToSave);
-		if(!isSprintFetch){
-		saveAccountHierarchy(jiraIssuesToSave, projectConfig);
-		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
+		if (!isSprintFetch) {
+			saveAccountHierarchy(jiraIssuesToSave, projectConfig, sprintDetailsSet);
+			saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		}
 		if (!dataFromBoard) {
 			sprintClient.processSprints(projectConfig, sprintDetailsSet, jiraAdapter, false);
@@ -748,6 +755,14 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.filter(sprint -> !sprint.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_FUTURE))
 				.collect(Collectors.toSet()));
 		return jiraIssuesToSave;
+	}
+
+	private void setEpicLinked(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
+		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink())
+				&& fields.get(fieldMapping.getEpicLink()) != null
+				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
+			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
 	}
 
 	/**
@@ -969,7 +984,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()) != null
 						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraBugRaisedByQAValue(),
-								fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue())) {
+								fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue(), null)) {
 					feature.setDefectRaisedByQA(true);
 				} else {
 					feature.setDefectRaisedByQA(false);
@@ -1001,7 +1016,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()) != null
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getProductionDefectValue(),
-								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue())) {
+								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue(), null)) {
 					feature.setProductionDefect(true);
 				} else if (null != featureConfig.getProductionDefectIdentifier()
 						&& featureConfig.getProductionDefectIdentifier().trim()
@@ -1133,7 +1148,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue() != null
 					&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByValue(),
-							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue())) {
+							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue(), null)) {
 				jiraIssue.setDefectRaisedBy(NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue());
 			} else {
 				jiraIssue.setDefectRaisedBy("");
@@ -1151,7 +1166,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            Issue Field Value Object
 	 * @return boolean
 	 */
-	public boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue) {
+	public boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue,
+			JiraIssue jiraIssue) {
 		List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		JSONParser parser = new JSONParser();
@@ -1161,22 +1177,30 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		try {
 			if (issueFieldValue instanceof org.codehaus.jettison.json.JSONArray) {
 				array = (JSONArray) parser.parse(issueFieldValue.toString());
+				ArrayList<String> testPhasesList = new ArrayList<>();
 				for (int i = 0; i < array.size(); i++) {
 
 					jsonObject = (org.json.simple.JSONObject) parser.parse(array.get(i).toString());
 					if (lowerCaseBugRaisedValue
 							.contains(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase())) {
+						testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase());
 						isRaisedByThirdParty = true;
 						break;
 					}
-
+				}
+				if (Objects.nonNull(jiraIssue)) {
+					jiraIssue.setEscapedDefectGroup(testPhasesList);
 				}
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
 					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
 							.get(JiraConstants.VALUE).toString().toLowerCase())) {
 				isRaisedByThirdParty = true;
+				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
+						.toString().toLowerCase();
+				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue)) {
+					jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
+				}
 			}
-
 		} catch (org.json.simple.parser.ParseException | JSONException e) {
 			log.error("JIRA Processor | Error while parsing third party field {}", e);
 		}
@@ -1227,7 +1251,12 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			for (SprintDetails sprint : sprints) {
 				sprintsList.add(sprint.getOriginalSprintId());
 				jiraIssue.setSprintIdList(sprintsList);
+				sprint.setSprintID(
+						sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName()
+								+ JiraConstants.COMBINE_IDS_SYMBOL + projectConfig.getBasicProjectConfigId());
+				sprint.setBasicProjectConfigId(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 			}
+			sprintDetailsSet.addAll(sprints);
 			// Use the latest sprint
 			// if any sprint date is blank set that sprint to JiraIssue
 			// because this sprint is
@@ -1235,20 +1264,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			// sprint
 			SprintDetails sprint = sprints.stream().filter(s -> StringUtils.isBlank(s.getStartDate())).findFirst()
 					.orElse(sprints.get(sprints.size() - 1));
-			String sprintId = sprint.getOriginalSprintId() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ jiraIssue.getProjectName() + JiraConstants.COMBINE_IDS_SYMBOL
-					+ projectConfig.getBasicProjectConfigId();
 
 			jiraIssue.setSprintName(sprint.getSprintName() == null ? StringUtils.EMPTY : sprint.getSprintName());
-			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprintId);
+			jiraIssue.setSprintID(sprint.getOriginalSprintId() == null ? StringUtils.EMPTY : sprint.getSprintID());
 			jiraIssue.setSprintBeginDate(sprint.getStartDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getStartDate()));
 			jiraIssue.setSprintEndDate(sprint.getEndDate() == null ? StringUtils.EMPTY
 					: JiraProcessorUtil.getFormattedDate(sprint.getEndDate()));
 			jiraIssue.setSprintAssetState(sprint.getState() == null ? StringUtils.EMPTY : sprint.getState());
 
-			sprint.setSprintID(sprintId);
-			sprintDetailsSet.add(sprint);
 		} else {
 			log.error("JIRA Processor | Failed to obtain sprint data for {}", sValue);
 		}
@@ -1395,13 +1419,15 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	 *            list of jira issues
 	 * @param projectConfig
 	 *            Project Configuration Map
+	 * @param sprintDetailsSet
 	 */
-	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig) {
+	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig,
+			Set<SprintDetails> sprintDetailsSet) {
 
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
 				.getFullHierarchyLevels(projectConfig.isKanban());
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, Function.identity()));
 
 		HierarchyLevel sprintHierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
 
@@ -1409,30 +1435,49 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				.getAccountHierarchy(accountHierarchyRepository);
 
 		Set<AccountHierarchy> setToSave = new HashSet<>();
+		Map<ObjectId, AccountHierarchy> projectDataMap = new HashMap<>();
+
 		for (JiraIssue jiraIssue : jiraIssueList) {
-			if (StringUtils.isNotBlank(jiraIssue.getProjectName()) && StringUtils.isNotBlank(jiraIssue.getSprintName())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintBeginDate())
-					&& StringUtils.isNotBlank(jiraIssue.getSprintEndDate())) {
 
-				AccountHierarchy projectData = accountHierarchyRepository
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								new ObjectId(jiraIssue.getBasicProjectConfigId()))
-						.get(0);
+			String projectName = jiraIssue.getProjectName();
+			String sprintName = jiraIssue.getSprintName();
+			String sprintBeginDate = jiraIssue.getSprintBeginDate();
+			String sprintEndDate = jiraIssue.getSprintEndDate();
 
-				AccountHierarchy sprintHierarchy = createHierarchyForSprint(jiraIssue,
-						projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
-
-				setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
-
-				List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(jiraIssue,
-						sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
-				additionalFiltersHierarchies.forEach(
-						accountHierarchy -> setToSaveAccountHierarchy(setToSave, accountHierarchy, existingHierarchy));
-
+			if (StringUtils.isBlank(projectName) || StringUtils.isBlank(sprintName)
+					|| StringUtils.isBlank(sprintBeginDate) || StringUtils.isBlank(sprintEndDate)) {
+				continue; // Skip this Jira issue if any of the required fields are blank
 			}
 
+			ObjectId basicProjectConfigId = new ObjectId(jiraIssue.getBasicProjectConfigId());
+			Map<String, SprintDetails> sprintDetailsMap = sprintDetailsSet.stream()
+					.filter(sprintDetails -> sprintDetails.getBasicProjectConfigId().equals(basicProjectConfigId))
+					.collect(Collectors.toMap(sprintDetails -> sprintDetails.getSprintID().split("_")[0],
+							sprintDetails -> sprintDetails));
+
+			AccountHierarchy projectData = projectDataMap.computeIfAbsent(basicProjectConfigId, id -> {
+				List<AccountHierarchy> projectDataList = accountHierarchyRepository
+						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, id);
+				return projectDataList.isEmpty() ? null : projectDataList.get(0);
+			});
+
+			for (String sprintId : jiraIssue.getSprintIdList()) {
+				SprintDetails sprintDetails = sprintDetailsMap.get(sprintId);
+				if (sprintDetails != null) {
+					AccountHierarchy sprintHierarchy = createHierarchyForSprint(sprintDetails,
+							projectConfig.getProjectBasicConfig(), projectData, sprintHierarchyLevel);
+
+					setToSaveAccountHierarchy(setToSave, sprintHierarchy, existingHierarchy);
+
+					List<AccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
+							jiraIssue, sprintHierarchy, sprintHierarchyLevel, hierarchyLevelList);
+					additionalFiltersHierarchies.forEach(accountHierarchy -> setToSaveAccountHierarchy(setToSave,
+							accountHierarchy, existingHierarchy));
+				}
+			}
 		}
-		if (CollectionUtils.isNotEmpty(setToSave)) {
+
+		if (!setToSave.isEmpty()) {
 			accountHierarchyRepository.saveAll(setToSave);
 		}
 	}
@@ -1455,8 +1500,8 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		}
 	}
 
-	private AccountHierarchy createHierarchyForSprint(JiraIssue jiraIssue, ProjectBasicConfig projectBasicConfig,
-			AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
+	private AccountHierarchy createHierarchyForSprint(SprintDetails sprintDetails,
+			ProjectBasicConfig projectBasicConfig, AccountHierarchy projectHierarchy, HierarchyLevel hierarchyLevel) {
 		AccountHierarchy accountHierarchy = null;
 		try {
 
@@ -1464,14 +1509,17 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 			accountHierarchy.setBasicProjectConfigId(projectBasicConfig.getId());
 			accountHierarchy.setIsDeleted(JiraConstants.FALSE);
 			accountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
-			String sprintName = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintName");
-			String sprintId = (String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintID");
+
+			String sprintName = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintName");
+			String sprintId = (String) PropertyUtils.getSimpleProperty(sprintDetails, "sprintID");
 
 			accountHierarchy.setNodeId(sprintId);
-			accountHierarchy.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + jiraIssue.getProjectName());
+			accountHierarchy
+					.setNodeName(sprintName + JiraConstants.COMBINE_IDS_SYMBOL + projectBasicConfig.getProjectName());
 
-			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintBeginDate"));
-			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(jiraIssue, "sprintEndDate"));
+			accountHierarchy.setBeginDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "startDate"));
+			accountHierarchy.setEndDate((String) PropertyUtils.getSimpleProperty(sprintDetails, "endDate"));
+
 			accountHierarchy.setPath(new StringBuffer(56).append(projectHierarchy.getNodeId())
 					.append(CommonConstant.ACC_HIERARCHY_PATH_SPLITTER).append(projectHierarchy.getPath()).toString());
 			accountHierarchy.setParentId(projectHierarchy.getNodeId());
@@ -1558,6 +1606,18 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				+ jiraIssue.getTimeCriticality();
 		jiraIssue.setCostOfDelay(costOfDelay);
 
+		if (fields.get(fieldMapping.getEpicPlannedValue()) != null
+				&& fields.get(fieldMapping.getEpicPlannedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicPlannedValue(), fields);
+			jiraIssue.setEpicPlannedValue(Double.parseDouble(fieldValue));
+		}
+
+		if (fields.get(fieldMapping.getEpicAchievedValue()) != null
+				&& fields.get(fieldMapping.getEpicAchievedValue()).getValue() != null) {
+			String fieldValue = getFieldValue(fieldMapping.getEpicAchievedValue(), fields);
+			jiraIssue.setEpicAchievedValue(Double.parseDouble(fieldValue));
+		}
+
 	}
 
 	private void setEstimates(JiraIssue jiraIssue, Issue issue) {
@@ -1583,14 +1643,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 				}
 			}
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
-			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
-			}
-		}
+		setDevDueDates(jiraIssue, issue, fields, fieldMapping);
 	}
 
 	/**
@@ -1647,7 +1700,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 	}
 
 	// for fetch, parse & update based on issuesKeys
-	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, //NOSONAR
+	public int processesJiraIssuesSprintFetch(ProjectConfFieldMapping projectConfig, JiraAdapter jiraAdapter, // NOSONAR
 			boolean isOffline, List<String> issueKeys) {
 		PSLogData psLogData = new PSLogData();
 		psLogData.setProjectName(projectConfig.getProjectName());
@@ -1711,7 +1764,7 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in sprintFetch", e,
 					kv(CommonConstant.PSLOGDATA, psLogData));
-		} catch (InterruptedException e) { //NOSONAR
+		} catch (InterruptedException e) { // NOSONAR
 			log.error("Interrupted exception thrown during sprintFetch", e, kv(CommonConstant.PSLOGDATA, psLogData));
 			processorFetchingComplete = false;
 		} finally {
@@ -1727,4 +1780,72 @@ public class ScrumJiraIssueClientImpl extends JiraIssueClient {// NOPMD
 		return savedIssuesCount;
 	}
 
+	private static void setDevDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			if (fieldMapping.getJiraDevDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
+					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
+				jiraIssue.setDevDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
+			} else if (ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
+				IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
+					jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method sets the escape defects values to jira issues based on
+	 * configuration in field mapping
+	 */
+	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
+				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+			if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+				setTestPhaseDefectsList(issue, fieldMapping, jiraIssue);
+			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier()
+					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim()
+							.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
+					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
+					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
+				isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
+						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue);
+			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
+					.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT)) {
+				setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
+			}
+		}
+	}
+
+	private static void setTestPhaseDefectsList(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue) {
+		List<String> commonLabel = issue.getLabels().stream()
+				.filter(x -> fieldMapping.getTestingPhaseDefectValue().contains(x)).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(commonLabel)) {
+			jiraIssue.setEscapedDefectGroup(commonLabel);
+		}
+	}
+
+	private static void setTestPhaseDefectsListForComponent(Issue issue, FieldMapping fieldMapping,
+															JiraIssue jiraIssue) {
+		Iterable<BasicComponent> components = issue.getComponents();
+		List<BasicComponent> componentList = new ArrayList<>();
+		components.forEach(componentList::add);
+		if (CollectionUtils.isNotEmpty(componentList)) {
+			List<String> componentNameList = componentList.stream().map(BasicComponent::getName)
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(componentNameList) && componentNameList.stream()
+					.anyMatch(fieldMapping.getTestingPhaseDefectComponentValue()::equalsIgnoreCase)) {
+				List<String> commonLabel = componentNameList.stream()
+						.filter(x -> fieldMapping.getTestingPhaseDefectComponentValue().contains(x))
+						.collect(Collectors.toList());
+				if (CollectionUtils.isNotEmpty(commonLabel)) {
+					jiraIssue.setEscapedDefectGroup(commonLabel);
+				}
+			}
+		}
+	}
 }

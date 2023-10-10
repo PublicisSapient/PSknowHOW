@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -27,23 +26,16 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class FieldMappingDTO extends BasicModel {
 
 	private ObjectId projectToolConfigId;
@@ -53,6 +45,8 @@ public class FieldMappingDTO extends BasicModel {
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private String epicLink;
+	private List<String> jiraSubTaskDefectType;
 
 	// defectPriority
 	private List<String> defectPriority;
@@ -91,6 +85,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDodQAKPI111;
 	private List<String> jiraDodKPI3;
 	private List<String> jiraDodKPI127;
+	private List<String> jiraDodKPI37;
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;
@@ -104,7 +99,6 @@ public class FieldMappingDTO extends BasicModel {
 	private String jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
-	private String jiraDefectRejectionStatusKPI34;
 	private String jiraDefectRejectionStatusKPI37;
 	private String jiraDefectRejectionStatusKPI35;
 	private String jiraDefectRejectionStatusKPI82;
@@ -123,11 +117,9 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalStatusKPI34;
 	private List<String> jiraDefectRemovalIssueType;
-	private List<String> jiraDefectRemovalIssueTypeKPI34;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
-
 
 	private String jiraStoryPointsCustomField;
 	// parent issue type for the test
@@ -141,7 +133,6 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraSprintCapacityIssueTypeKpi46;
 
 	private List<String> jiraDefectRejectionlIssueType;
-	private List<String> jiraIssueTypeKPI37;
 
 	private List<String> jiraDefectCountlIssueType;
 	private List<String> jiraDefectCountlIssueTypeKPI28;
@@ -154,28 +145,29 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
-private String jiraDor;
-private String jiraDorKPI3;
+	private String jiraDor;
+	private List<String> jiraDorKPI3;
 
-private List<String> jiraIntakeToDorIssueType;
-private List<String> jiraIssueTypeKPI3;
+	private List<String> jiraIntakeToDorIssueType;
+	private List<String> jiraIssueTypeKPI3;
 
-private List<String> jiraStoryIdentification;
-private List<String> jiraStoryIdentificationKPI129;
-private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentification;
+	private List<String> jiraStoryIdentificationKPI129;
+	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentificationKPI164;
 
-private String jiraLiveStatus;
-private String jiraLiveStatusKPI152;
-private String jiraLiveStatusKPI151;
-private String jiraLiveStatusKPI3;
-private String jiraLiveStatusLTK;
-private String jiraLiveStatusNOPK;
-private String jiraLiveStatusNOSK;
-private String jiraLiveStatusNORK;
-private String jiraLiveStatusOTA;
-private String jiraLiveStatusKPI127;
+	private String jiraLiveStatus;
+	private String jiraLiveStatusKPI152;
+	private String jiraLiveStatusKPI151;
+	private List<String> jiraLiveStatusKPI3;
+	private String jiraLiveStatusLTK;
+	private String jiraLiveStatusNOPK;
+	private String jiraLiveStatusNOSK;
+	private String jiraLiveStatusNORK;
+	private String jiraLiveStatusOTA;
+	private String jiraLiveStatusKPI127;
 
 	private List<String> ticketCountIssueType;
 
@@ -217,7 +209,6 @@ private String jiraLiveStatusKPI127;
 	private List<String> resolutionTypeForRejection;
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionKPI28;
-	private List<String> resolutionTypeForRejectionKPI34;
 	private List<String> resolutionTypeForRejectionKPI37;
 	private List<String> resolutionTypeForRejectionKPI35;
 	private List<String> resolutionTypeForRejectionKPI82;
@@ -229,13 +220,13 @@ private String jiraLiveStatusKPI127;
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
+	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
 	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
 	private List<String> jiraDefectDroppedStatusKPI127;
-
 
 	// Epic custom Field mapping
 	private String epicCostOfDelay;
@@ -244,6 +235,8 @@ private String jiraLiveStatusKPI127;
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	private String atmSubprojectField;
 
@@ -311,6 +304,7 @@ private String jiraLiveStatusKPI127;
 	@Builder.Default
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateField = CommonConstant.DEV_DUE_DATE;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 	private List<String> jiraDevDoneStatusKPI119;
@@ -321,11 +315,9 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraRejectedInRefinement;
 	private List<String> jiraRejectedInRefinementKPI139;
 
-
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraAcceptedInRefinement;
 	private List<String> jiraAcceptedInRefinementKPI139;
-
 
 	// For DTS_21154 - field for Stakeholder refinement status
 	private List<String> jiraReadyForRefinement;
@@ -372,7 +364,41 @@ private String jiraLiveStatusKPI127;
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
-	private LocalDateTime createdDate;
+	private List<String> jiraIterationIssuetypeKPI39;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
+	@Builder.Default
+	private String notificationEnabler = "On";
+	private List<String> jiraIssueEpicTypeKPI153;
+
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
+	// DTS-26150 end
+
+	private List<String> jiraIssueTypeNamesKPI161;
+	private List<String> jiraIssueTypeNamesKPI146;
+	private List<String> jiraIssueTypeNamesKPI148;
+	private List<String> jiraIssueTypeNamesKPI151;
+	private List<String> jiraIssueTypeNamesKPI152;
+
+
+	private List<String> jiraDodKPI156;
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private String leadTimeConfigRepoTool = "Jira";
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

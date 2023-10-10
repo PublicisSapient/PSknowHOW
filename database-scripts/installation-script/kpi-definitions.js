@@ -53,6 +53,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -102,6 +104,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -152,6 +156,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -201,6 +207,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -250,6 +258,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -285,7 +295,7 @@ db.getCollection('kpi_master').insertMany(
           "operator": "division",
           "operands": [
             "No. of defects rejected in a sprint",
-            "Total no. of defects reported in a sprint"
+            "Total no. of defects Closed in a sprint"
           ]
         }
       ],
@@ -299,6 +309,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
@@ -343,6 +355,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -381,6 +395,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -413,6 +429,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
@@ -479,6 +497,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -528,6 +548,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -572,6 +594,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "yAxisLabel": "Percentage",
     "xAxisLabel": "Weeks",
     "isPositiveTrend": true,
@@ -618,6 +642,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -656,6 +682,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
     "isPositiveTrend": false,
@@ -676,12 +704,13 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi116",
     "kpiName": "Change Failure Rate",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "%",
     "isDeleted": "False",
     "defaultOrder": 15,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -707,12 +736,15 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": false,
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -747,6 +779,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "lineLegend": "Passed",
@@ -831,6 +865,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Sprints",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -904,7 +940,6 @@ db.getCollection('kpi_master').insertMany(
     "groupId": 2,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "grouped_column_plus_line",
     "kpiInfo": {
       "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
       "details": [
@@ -1015,6 +1050,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count(Hours)",
     "isPositiveTrend": false,
@@ -1024,6 +1061,8 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
+    "isRepoToolKpi": false,
+    "kpiCategory": "Developer",
     "maturityRange": [
       "-48",
       "48-16",
@@ -1056,6 +1095,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Days",
     "yAxisLabel": "Count",
     "lineLegend": "Merge Requests",
@@ -1067,6 +1108,8 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
+    "isRepoToolKpi": false,
+    "kpiCategory": "Developer",
     "maturityRange": [
       "-2",
       "2-4",
@@ -1099,6 +1142,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count(Mins)",
     "isPositiveTrend": false,
@@ -1119,12 +1164,13 @@ db.getCollection('kpi_master').insertMany(
   {
     "kpiId": "kpi118",
     "kpiName": "Deployment Frequency",
+    "kpiCategory": "Dora",
     "maxValue": "100",
     "kpiUnit": "Number",
     "isDeleted": "False",
     "defaultOrder": 25,
     "kpiSource": "Jenkins",
-    "groupId": 1,
+    "groupId": 14,
     "thresholdValue": 0,
     "kanban": false,
     "chartType": "line",
@@ -1140,12 +1186,15 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    "xAxisLabel": "Months",
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -1185,6 +1234,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Months",
     "yAxisLabel": "Count",
     "isPositiveTrend": true,
@@ -1222,6 +1273,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Months",
     "yAxisLabel": "Count(Days)",
     "isPositiveTrend": true,
@@ -1547,6 +1600,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Percentage",
     "isPositiveTrend": true,
@@ -1593,6 +1648,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Count",
     "isPositiveTrend": false,
@@ -1631,6 +1688,8 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
+    "upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
     "isPositiveTrend": false,
@@ -1833,6 +1892,8 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
+    "isRepoToolKpi": false,
+    "kpiCategory": "Developer",
     "maturityRange": [
       "-2",
       "2-4",
@@ -2264,6 +2325,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
+    "kpiWidth": 100,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
     "calculateMaturity": false
@@ -2589,7 +2651,7 @@ db.getCollection('kpi_master').insertMany(
     "thresholdValue": "",
     "kanban": false,
     "kpiInfo": {
-      "definition": "It shows number of defects reopened in a given span of time in comparison to the total defects raised. For all the reopened defects, the average time to reopen is also available."
+      "definition": "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
     },
     "isPositiveTrend": false,
     "kpiFilter": "dropdown",
@@ -2607,6 +2669,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2632,6 +2695,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2645,7 +2709,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2657,6 +2721,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 3,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2670,7 +2735,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2682,6 +2747,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2695,7 +2761,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter" : "radioButton",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2743,6 +2809,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 5,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Review",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2756,7 +2823,7 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "dropDown",
     "boxType": "chart",
     "calculateMaturity": false
   },
@@ -2961,6 +3028,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 6,
     "kpiCategory": "Release",
+    "kpiSubCategory": "Release Progress",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -3025,7 +3093,491 @@ db.getCollection('kpi_master').insertMany(
       "kpiFilter": "dropdown",
       "boxType": "chart",
       "calculateMaturity": false
-  }
+  },
+  {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "maxValue": "200",
+      "kpiUnit": "",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiSource": "Jira",
+      "groupId": 4,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "multipleline",
+      "kpiInfo": {
+        "definition": "PI predictability is calculated by the sum of the actual value achieved against the planned value at the beginning of the PI",
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            }
+          }
+        ]
+      },
+      "xAxisLabel": "PIs",
+      "yAxisLabel": "Business Value",
+      "isPositiveTrend": true,
+      "showTrend": true,
+      "aggregationCriteria": "sum",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi154",
+    "kpiName": "Daily Standup View",
+    "maxValue": "",
+    "isDeleted": "False",
+    "defaultOrder": 8,
+    "kpiCategory": "Iteration",
+    "kpiSubCategory": "Daily Standup",
+    "kpiSource": "Jira",
+    "groupId": 13,
+    "thresholdValue": "",
+    "kanban": false,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiselectdropdown",
+    "kpiWidth": 100,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi155",
+    "kpiName": "Defect Count By Type",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 11,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "pieChart",
+    "kpiInfo": {
+      "definition": "Total count of issues in the backlog with a breakup by defect type."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average"
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi157",
+    "kpiName": "Check-Ins & Merge Requests",
+    "maxValue": 10,
+    "kpiUnit": "MRs",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiSource": "BitBucket",
+    "groupId": 1,
+    "thresholdValue": 55,
+    "kanban": false,
+    "chartType": "grouped_column_plus_line",
+    "kpiInfo": {
+      "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down. NUMBER OF MERGE REQUESTS when looked at along with commits highlights the efficiency of the review process",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
+        },
+        {
+          "type": "paragraph",
+          "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
+        }
+      ],
+      "maturityLevels": [
+        {
+          "level": "M5",
+          "bgColor": "#6cab61",
+          "range": "> 16"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#AEDB76",
+          "range": "8-16"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#eff173",
+          "range": "4-8"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#ffc35b",
+          "range": "2-4"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#F06667",
+          "range": "0-2"
+        }
+      ]
+    },
+    "xAxisLabel": "Days",
+    "yAxisLabel": "Count",
+    "lineLegend": "Merge Requests",
+    "barLegend": "Commits",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": [
+      -2,
+      "2-4",
+      "4-8",
+      "8-16",
+      "16-"
+    ],
+    "isRepoToolKpi": true,
+    "kpiCategory": "Developer"
+  },
+    {
+      "kpiId": "kpi158",
+      "kpiName": "Mean Time To Merge",
+      "maxValue": "10",
+      "kpiUnit": "Hours",
+      "isDeleted": "False",
+      "defaultOrder": 2,
+      "groupId": 1,
+      "kpiSource": "BitBucket",
+      "thresholdValue": "55",
+      "kanban": false,
+      "chartType": "line",
+      "kpiInfo": {
+        "definition":
+          "MEAN TIME TO MERGE measures the efficiency of the code review process in a team",
+        "details": [
+          {
+            "type": "paragraph",
+            "value":
+              "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’",
+          },
+          {
+            "type": "paragraph",
+            "value":
+              "A progress indicator shows trend of Mean time to merge in last 2 weeks. A downward trend is considered positive",
+          },
+          {
+            "type": "paragraph",
+            "value":
+              "Maturity of the KPI is calculated based on the average of the last 5 weeks",
+          },
+        ],
+        "maturityLevels": [
+          {
+            "level": "M5",
+            "bgColor": "#6cab61",
+            "range": "<4 Hours",
+          },
+          {
+            "level": "M4",
+            "bgColor": "#AEDB76",
+            "range": "4-8 Hours",
+          },
+          {
+            "level": "M3",
+            "bgColor": "#eff173",
+            "range": "8-16 Hours",
+          },
+          {
+            "level": "M2",
+            "bgColor": "#ffc35b",
+            "range": "16-48 Hours",
+          },
+          {
+            "level": "M1",
+            "bgColor": "#F06667",
+            "range": ">48 Hours",
+          },
+        ],
+      },
+      "xAxisLabel": "Weeks",
+      "yAxisLabel": "Count(Hours)",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "dropDown",
+      "aggregationCriteria": "average",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": true,
+      "hideOverallFilter": true,
+      "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
+      "isRepoToolKpi": true,
+      "kpiCategory": "Developer",
+    },
+    {
+        "kpiId": "kpi159",
+        "kpiName": "Number of Check-ins",
+        "maxValue": 10,
+        "kpiUnit": "check-ins",
+        "isDeleted": false,
+        "defaultOrder": 1,
+        "groupId": 1,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 55,
+        "kanban": true,
+        "chartType": "line",
+        "kpiInfo": {
+          "definition": "NUMBER OF CHECK-INS helps in measuring the transparency as well the how well the tasks have been broken down.",
+          "details": [
+            {
+              "type": "paragraph",
+              "value": "It is calculated as a Count. Higher the count better is the ‘Speed’"
+            },
+            {
+              "type": "paragraph",
+              "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive."
+            },
+            {
+              "type": "paragraph",
+              "value": "Maturity of the KPI is calculated based on the latest value"
+            }
+          ],
+          "maturityLevels": [
+            {
+              "level": "M5",
+              "bgColor": "#6cab61",
+              "range": ">16"
+            },
+            {
+              "level": "M4",
+              "bgColor": "#AEDB76",
+              "range": "8-16"
+            },
+            {
+              "level": "M3",
+              "bgColor": "#eff173",
+              "range": "4-8"
+            },
+            {
+              "level": "M2",
+              "bgColor": "#ffc35b",
+              "range": "2-4"
+            },
+            {
+              "level": "M1",
+              "bgColor": "#F06667",
+              "range": "0-2"
+            }
+          ]
+        },
+        "xAxisLabel": "Weeks",
+        "yAxisLabel": "Count",
+        "isPositiveTrend": true,
+        "showTrend": true,
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "sum",
+        "isAdditionalFilterSupport": false,
+        "calculateMaturity": true,
+        "hideOverallFilter": true,
+        "maturityRange": ["-2", "2-4", "4-8", "8-16", "16-"],
+        "isRepoToolKpi": true,
+        "kpiCategory": "Developer"
+      },
+      {
+        "kpiId": "kpi160",
+        "kpiName": "Pickup Time",
+        "maxValue": 10,
+        "kpiUnit": "Hours",
+        "isDeleted": false,
+        "defaultOrder": 3,
+        "groupId": 1,
+        "kpiSource": "BitBucket",
+        "thresholdValue": 20,
+        "kanban": false,
+        "chartType": "line",
+        "kpiInfo": {
+          "definition": "Pickup time measures the time a pull request waits for someone to start reviewing it. Low pickup time represents strong teamwork and a healthy review",
+          "details": [
+            {
+              "type": "paragraph",
+              "value": "It is calculated in ‘Hours’. Fewer the Hours better is the ‘Speed’"
+            },
+            {
+              "type": "paragraph",
+              "value": "A progress indicator shows trend of Pickup Time in the last 2 weeks. A downward trend is considered positive"
+            },
+            {
+              "type": "paragraph",
+              "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+            }
+          ],
+          "maturityLevels": [
+            {
+              "level": "M5",
+              "bgColor": "#6cab61",
+              "range": "<4 Hours"
+            },
+            {
+              "level": "M4",
+              "bgColor": "#AEDB76",
+              "range": "4-8 Hours"
+            },
+            {
+              "level": "M3",
+              "bgColor": "#eff173",
+              "range": "8-16 Hours"
+            },
+            {
+              "level": "M2",
+              "bgColor": "#ffc35b",
+              "range": "16-48 Hours"
+            },
+            {
+              "level": "M1",
+              "bgColor": "#F06667",
+              "range": ">48 Hours"
+            }
+          ]
+        },
+        "xAxisLabel": "Weeks",
+        "yAxisLabel": "Count (Hours)",
+        "isPositiveTrend": false,
+        "showTrend": true,
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "isAdditionalFilterSupport": false,
+        "calculateMaturity": true,
+        "hideOverallFilter": true,
+        "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
+        "isRepoToolKpi": true,
+        "kpiCategory": "Developer"
+      },
+      {
+        "kpiId": "kpi162",
+        "kpiName": "PR Size",
+        "maxValue": 10,
+        "kpiUnit": "Lines",
+        "isDeleted": false,
+        "defaultOrder": 4,
+        "groupId": 1,
+        "kpiSource": "BitBucket",
+        "kanban": false,
+        "chartType": "line",
+        "kpiInfo": {
+          "definition": "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time."
+        },
+        "xAxisLabel": "Weeks",
+        "yAxisLabel": "Count (No. of Lines)",
+        "isPositiveTrend": false,
+        "showTrend": true,
+        "kpiFilter": "dropDown",
+        "aggregationCriteria": "average",
+        "isAdditionalFilterSupport": false,
+        "calculateMaturity": true,
+        "hideOverallFilter": true,
+        "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
+        "isRepoToolKpi": true,
+        "kpiCategory": "Developer"
+      }
+  },
+  {
+	"kpiId": "kpi164",
+	"kpiName": "Scope Churn",
+	"maxValue": "200",
+	"kpiUnit": "%",
+	"isDeleted": "False",
+	"defaultOrder": Double("30"),
+	"kpiSource": "Jira",
+	"groupId": Double("4"),
+	"thresholdValue": "20",
+	"kanban": false,
+	"chartType": "line",
+	"kpiInfo": {
+		"definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
+		"formula": [{
+			"lhs": "Scope Churn",
+			"operator": "division",
+			"operands": ["Count of Stories added + Count of Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start"]
+		}],
+		"details": [{
+			"type": "link",
+			"kpiLinkDetail": {
+				"text": "Detailed Information at",
+				"link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+			}
+		}]
+	},
+	"upperThresholdBG" : "red",
+    "lowerThresholdBG" : "white",
+	"xAxisLabel": "Sprints",
+	"yAxisLabel": "Percentage",
+	"isPositiveTrend": false,
+	"showTrend": true,
+	"aggregationCriteria": "average",
+	"isAdditionalFilterSupport": true,
+	"calculateMaturity": true,
+    "maturityRange": ["-50", "50-30", "30-20", "20-10", "10-"]
+ },
+ {
+     "kpiId":"kpi163",
+     "kpiName":"Defect by Testing Phase",
+     "maxValue":"",
+     "kpiUnit":"Count",
+     "isDeleted":"False",
+     "defaultOrder":7,
+     "kpiCategory":"Release",
+     "kpiSource":"Jira",
+     "groupId":9,
+     "thresholdValue":"",
+     "kanban":false,
+     "chartType":"horizontalPercentBarChart",
+     "kpiInfo":{
+       "definition":" It gives a breakup of escaped defects by testing phase"
+     },
+     "xAxisLabel":"",
+     "yAxisLabel":"",
+     "isPositiveTrend":true,
+     "showTrend":false,
+     "isAdditionalFilterSupport":false,
+     "kpiFilter":"radioButton",
+     "boxType":"chart",
+     "calculateMaturity":false
+  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ }
 ]
 );
 
@@ -3059,18 +3611,6 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi46",
 		"categoryId": "categoryOne",
 		"kpiOrder": 5,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi84",
-		"categoryId": "categoryOne",
-		"kpiOrder": 6,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi11",
-		"categoryId": "categoryOne",
-		"kpiOrder": 7,
 		"kanban": false
 	},
 	{
@@ -3164,21 +3704,9 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kanban": false
 	},
 	{
-		"kpiId": "kpi116",
-		"categoryId": "categoryTwo",
-		"kpiOrder": 15,
-		"kanban": false
-	},
-	{
 		"kpiId": "kpi70",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 16,
-		"kanban": false
-	},
-	{
-		"kpiId": "kpi118",
-		"categoryId": "categoryThree",
-		"kpiOrder": 1,
 		"kanban": false
 	},
 	{
@@ -3191,6 +3719,12 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi113",
 		"categoryId": "categoryThree",
 		"kpiOrder": 3,
+		"kanban": false
+	},
+    {
+		"kpiId": "kpi153",
+		"categoryId": "categoryThree",
+		"kpiOrder": 4,
 		"kanban": false
 	},
 	{
@@ -3209,12 +3743,6 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi66",
 		"categoryId": "categoryOne",
 		"kpiOrder": 3,
-		"kanban": true
-	},
-	{
-		"kpiId": "kpi65",
-		"categoryId": "categoryOne",
-		"kpiOrder": 4,
 		"kanban": true
 	},
 	{
@@ -3300,12 +3828,19 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"categoryId": "categoryThree",
 		"kpiOrder": 2,
 		"kanban": true
-	}
+	},
+    {
+    	"kpiId": "kpi164",
+    	"categoryId": "categoryOne",
+    	"kpiOrder": 9,
+    	"kanban": false
+    }
 ]);
 
 
 //Fields, used on issue details for KPI issue lists
-db.kpi_column_configs.insertMany([{
+db.kpi_column_configs.insertMany([
+{
                                  		basicProjectConfigId: null,
                                  		kpiId: 'kpi8',
                                  		kpiColumnDetails: [{
@@ -5265,21 +5800,33 @@ db.kpi_column_configs.insertMany([{
                                  			isShown: true,
                                  			isDefault: true
                                  		}, {
-                                 			columnName: 'Linked Stories',
+                                 			columnName: 'Linked Defect',
                                  			order: 5,
                                  			isShown: true,
                                  			isDefault: false
-                                 		}, {
-                                 			columnName: 'Linked Stories Size',
-                                 			order: 6,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}, {
-                                 			columnName: 'Assignee',
-                                 			order: 7,
-                                 			isShown: true,
-                                 			isDefault: false
-                                 		}]
+                                 		},{
+                                            columnName: 'Size(story point/hours)',
+                                            order: 6,
+                                            isShown: true,
+                                            isDefault: true
+                                        },{
+                                            columnName : "DIR",
+                                            order : Double("7"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Defect Density",
+                                            order : Double("8"),
+                                            isShown : true,
+                                            isDefault : false
+                                        },
+                                        {
+                                            columnName : "Assignee",
+                                            order : Double("9"),
+                                            isShown : true,
+                                            isDefault : false
+                                        }]
                                  	},
 
                                  	{
@@ -6045,8 +6592,281 @@ db.kpi_column_configs.insertMany([{
                                       isShown: true,
                                       isDefault: true
                                     }]
-                                  }
+                                  },
+                                   {
+                                 		basicProjectConfigId: null,
+                                 		kpiId: 'kpi153',
+                                 		kpiColumnDetails: [{
+                                 			columnName: 'Project Name',
+                                 			order: 0,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		},  {
+                                 			columnName: 'Epic ID',
+                                 			order: 2,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Epic Name',
+                                 			order: 3,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Status',
+                                 			order: 4,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'PI Name',
+                                 			order: 5,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Planned Value',
+                                 			order: 6,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		}, {
+                                 			columnName: 'Achieved Value',
+                                 			order: 7,
+                                 			isShown: true,
+                                 			isDefault: false
+                                 		 }]
+                                 	},
+                                 	{
+                                          basicProjectConfigId: null,
+                                          kpiId: "kpi157",
+                                          kpiColumnDetails: [
+                                            {
+                                              columnName: "Project Name",
+                                              order: 0,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                            {
+                                              columnName: "Repository Url",
+                                              order: 1,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                            {
+                                              columnName: "Branch",
+                                              order: 2,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                            {
+                                              columnName: "Day",
+                                              order: 3,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                            {
+                                              columnName: "No. Of Commit",
+                                              order: 4,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                            {
+                                              columnName: "No. of Merge",
+                                              order: 5,
+                                              isShown: true,
+                                              isDefault: true,
+                                            },
+                                          ],
+                                        },
+                                    {
+                                      basicProjectConfigId: null,
+                                      kpiId: "kpi158",
+                                      kpiColumnDetails: [
+                                        {
+                                          columnName: "Project Name",
+                                          order: 0,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Repository Url	",
+                                          order: 1,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Branch",
+                                          order: 2,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Weeks",
+                                          order: 3,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Mean Time To Merge (In Hours)",
+                                          order: 4,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      basicProjectConfigId: null,
+                                      kpiId: "kpi159",
+                                      kpiColumnDetails: [
+                                        {
+                                          columnName: "Project Name",
+                                          order: 0,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Repository Url	",
+                                          order: 1,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Branch",
+                                          order: 2,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Days",
+                                          order: 3,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "No. Of Commit",
+                                          order: 4,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      basicProjectConfigId: null,
+                                      kpiId: "kpi160",
+                                      kpiColumnDetails: [
+                                        {
+                                          columnName: "Project Name",
+                                          order: 0,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Repository Url	",
+                                          order: 1,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Branch",
+                                          order: 2,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Weeks",
+                                          order: 3,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Pickup Time (In Hours)",
+                                          order: 4,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                      ],
+                                    },
+                                    {
+                                      basicProjectConfigId: null,
+                                      kpiId: "kpi162",
+                                      kpiColumnDetails: [
+                                        {
+                                          columnName: "Project Name",
+                                          order: 0,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Repository Url	",
+                                          order: 1,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Branch",
+                                          order: 2,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "Weeks",
+                                          order: 3,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                        {
+                                          columnName: "PR Size",
+                                          order: 4,
+                                          isShown: true,
+                                          isDefault: true,
+                                        },
+                                      ],
+                                    },
                                  ]);
+                                 	},
+                                 	{
+                                    	basicProjectConfigId: null,
+                                    	kpiId: 'kpi164',
+                                    	kpiColumnDetails: [{
+                                    		columnName: 'Sprint Name',
+                                    		order: 0,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue ID',
+                                    		order: 2,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Type',
+                                    		order: 3,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Description',
+                                    		order: 4,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Size(story point/hours)',
+                                    		order: 5,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Scope Change Date',
+                                    		order: 6,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Scope Change (Added/Removed)',
+                                    		order: 7,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}, {
+                                    		columnName: 'Issue Status',
+                                    		order: 8,
+                                    		isShown: true,
+                                    		isDefault: false
+                                    	}]
+                                    }
+                                   ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
@@ -6224,6 +7044,16 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
+        "fieldName": "jiraIterationIssuetypeKPI39",
+        "fieldLabel": "Issue type to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All issues types added will only be included in showing closures (Note: If nothing is added then all issue types by default will be considered)"
+        }
+    },
+    {
         "fieldName": "jiraSprintVelocityIssueTypeBR",
         "fieldLabel": "Sprint Velocity - Issue Types with Linked Defect",
         "fieldType": "chips",
@@ -6277,27 +7107,15 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI28",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by Priority' calculation"
         }
     },
     {
-        "fieldName": "resolutionTypeForRejectionKPI34",
-        "fieldLabel": "Resolution type to be excluded",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "Resolutions for defects which are to be excluded from 'Defect Removal Efficiency' calculation."
-        }
-    },
-    {
         "fieldName": "resolutionTypeForRejectionKPI37",
         "fieldLabel": "Resolution type to be included",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Rejection Rate' calculation."
@@ -6307,7 +7125,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionDSR",
         "fieldLabel": "Resolution Type for Rejection",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolution type to identify rejected defects. <br>"
@@ -6317,7 +7134,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI82",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6327,7 +7143,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI135",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'FTPR' calculation"
@@ -6337,7 +7152,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI133",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Quality Status' calculation"
@@ -6347,7 +7161,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionRCAKPI36",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect count by RCA' calculation."
@@ -6357,7 +7170,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI14",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Injection rate' calculation <br>"
@@ -6367,7 +7179,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionQAKPI111",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Density' calculation."
@@ -6376,16 +7187,6 @@ db.getCollection('field_mapping_structure').insertMany(
 
     {
         "fieldName": "jiraDefectRejectionStatusKPI28",
-        "fieldLabel": "Status to be excluded",
-        "fieldType": "text",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": "All statuses which are considered for Rejecting defects."
-        }
-    },
-    {
-        "fieldName": "jiraDefectRejectionStatusKPI34",
         "fieldLabel": "Status to be excluded",
         "fieldType": "text",
         "fieldCategory": "workflow",
@@ -6516,22 +7317,22 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiraDorKPI3",
-        "fieldLabel": "Status to Identify Development Status",
-        "fieldType": "text",
+        "fieldLabel": "DOR status",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Definition of Readiness. Provide any status from workflow on which DOR is considered."
+            "definition": "Status/es that identify that an issue is ready to be taken in the sprint."
         }
     },
     {
         "fieldName": "jiraIssueTypeKPI3",
-        "fieldLabel": "Lead time issue type",
+        "fieldLabel": "Issue type to be included",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
         "tooltip": {
-            "definition": "The issue type which is to be considered while calculating lead time KPIs, i.e. intake to DOR and DOR and DOD."
+            "definition": "All issue types that should be included in Lead time calculation."
         }
     },
     {
@@ -6556,11 +7357,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI135",
-        "fieldLabel": "Defect priority exclusion from Quality KPIs",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+            "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6586,11 +7387,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI14",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Defect Injection rate' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6616,11 +7417,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityQAKPI111",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Defect Density' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6646,11 +7447,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI82",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'FTPR' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6676,11 +7477,11 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "defectPriorityKPI133",
-        "fieldLabel": "Priority to be included",
+        "fieldLabel": "Priority to be excluded",
         "fieldType": "multiselect",
         "section": "Defects Mapping",
         "tooltip": {
-            "definition": "Priority values of defects which are to be considered in 'Quality Status' calculation"
+            "definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
         },
         "options": [{
                 "label": "p1",
@@ -6770,16 +7571,6 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraDod",
-        "fieldLabel": "Status to identify DOD",
-        "fieldType": "chips",
-        "fieldCategory": "workflow",
-        "section": "WorkFlow Status Mapping",
-        "tooltip": {
-            "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered."
-        }
-    },
-    {
         "fieldName": "jiraDodKPI14",
         "fieldLabel": "Status considered for defect closure",
         "fieldType": "chips",
@@ -6826,7 +7617,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "......."
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
     },
     {
@@ -6836,7 +7627,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "......."
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
         }
     },
     {
@@ -6857,26 +7648,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Issue Types Mapping",
         "tooltip": {
             "definition": "Issue type that will have defects linked to them."
-        }
-    },
-    {
-        "fieldName": "jiraDefectRemovalIssueTypeKPI34",
-        "fieldLabel": "Issue type to be included.",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Issue types that are considered as defects in Jira."
-        }
-    },
-    {
-        "fieldName": "jiraIssueTypeKPI37",
-        "fieldLabel": "Issue type to be included",
-        "fieldType": "chips",
-        "fieldCategory": "Issue_Type",
-        "section": "Issue Types Mapping",
-        "tooltip": {
-            "definition": "Issue types that are considered as defects in Jira"
         }
     },
     {
@@ -6914,7 +7685,6 @@ db.getCollection('field_mapping_structure').insertMany(
         "fieldName": "resolutionTypeForRejectionKPI35",
         "fieldLabel": "Resolution type to be excluded",
         "fieldType": "chips",
-        "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
             "definition": "Resolutions for defects which are to be excluded from 'Defect Seepage rate' calculation."
@@ -7182,11 +7952,11 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "jiraLiveStatusKPI3",
         "fieldLabel": "Live Status - Lead Time",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Provide any status from workflow on which Live is considered."
+            "definition": "Status/es that identify that an issue is LIVE in Production."
         }
     },
     {
@@ -7251,7 +8021,7 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiradefecttype",
-        "fieldLabel": "Status to identify defects",
+        "fieldLabel": "Issue Type to identify defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Defects Mapping",
@@ -7591,7 +8361,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     }, {
         "fieldName": "jiraDefectCountlIssueTypeKPI28",
-        "fieldLabel": "Issue type to be included",
+        "fieldLabel": "Issue types which will have linked defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
@@ -7600,7 +8370,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     }, {
         "fieldName": "jiraDefectCountlIssueTypeKPI36",
-        "fieldLabel": "Issue type to be included",
+        "fieldLabel": "Issue types which will have linked defects",
         "fieldType": "chips",
         "fieldCategory": "Issue_Type",
         "section": "Issue Types Mapping",
@@ -7723,7 +8493,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "readyForDevelopmentStatusKPI138",
         "fieldLabel": "Status to identify issues Ready for Development ",
-        "fieldType": "text",
+        "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -7760,16 +8530,39 @@ db.getCollection('field_mapping_structure').insertMany(
             }
         }
     ]
-}, {
-    "fieldName": "jiraDevDueDateCustomField",
-    "fieldLabel": "Dev Due Date",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track dev due date of issues tagged in the iteration."
-    }
-}, {
+    }, {
+     "fieldName": "jiraDevDueDateField",
+     "fieldLabel": "Dev Due Date",
+     "fieldType": "radiobutton",
+     "section": "Custom Fields Mapping",
+     "tooltip": {
+       "definition": "This field is to track dev due date of issues tagged in the iteration."
+     },
+     "options": [
+       {
+         "label": "Custom Field",
+         "value": "CustomField"
+       },
+       {
+         "label": "Due Date",
+         "value": "Due Date"
+       }
+     ],
+     "nestedFields": [
+       {
+         "fieldName": "jiraDevDueDateCustomField",
+         "fieldLabel": "Dev Due Date Custom Field",
+         "fieldType": "text",
+         "fieldCategory": "fields",
+         "filterGroup": [
+           "CustomField"
+         ],
+         "tooltip": {
+           "definition": "This field is to track dev due date of issues tagged in the iteration."
+         }
+       }
+     ]
+   }, {
     "fieldName": "jiraIssueEpicType",
     "fieldLabel": "Epic Issue Type",
     "fieldType": "chips",
@@ -7806,31 +8599,13 @@ db.getCollection('field_mapping_structure').insertMany(
         "definition": "",
     }
 }, {
-    "fieldName": "jiraStoryIdentification",
-    "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "Value to identify kind of stories which are used for identification for story count.",
-    }
-}, {
-    "fieldName": "jiraDefectDroppedStatus",
-    "fieldLabel": "Defect Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "All issue types with which defect is linked.",
-    }
-}, {
     "fieldName": "jiraDefectDroppedStatusKPI127",
     "fieldLabel": "Defect Dropped Status",
     "fieldType": "chips",
     "fieldCategory": "workflow",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
-        "definition": "All issue types with which defect is linked.",
+        "definition": "All statuses with which defect is linked.",
     }
 }, {
     "fieldName": "productionDefectIdentifier",
@@ -7963,6 +8738,336 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
     }
+  },
+  {
+    "fieldName": "jiraDodKPI37",
+    "fieldLabel": "Status to identify completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+    }
+   },
+   {
+    "fieldName": "sprintName",
+    "fieldLabel": "Sprint Name",
+    "fieldType": "text",
+    "fieldCategory": "fields",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+        "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+    }
+},{
+        "fieldName": "notificationEnabler",
+        "fieldLabel": "Processor Failure Notification",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "On/Off notification in case processor failure."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
+    },
+    {
+        "fieldName": "epicPlannedValue",
+        "fieldLabel": "Custom field for Epic Planned Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+        "fieldName": "epicAchievedValue",
+        "fieldLabel": "Custom field for Epic Achieved Value",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
+    }
+    },
+    {
+    "fieldName": "jiraIssueEpicTypeKPI153",
+    "fieldLabel": "Epic Issue Type",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify Epic Issue type.",
+    }
+    },
+    {
+        "fieldName": "jiraItrQSIssueTypeKPI133",
+        "fieldLabel": "Issue types which will have linked defects",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Consider issue types which have defects tagged to them"
+        }
+    },
+    {
+        "fieldName": "epicLink",
+        "fieldLabel": "Custom field for Epic Link",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields.Provide value of Epic Linkage to the story/defect<br />Example:customfield_11111<hr>"
+        }
+    },
+    {
+      "fieldName": "jiraSubTaskDefectType",
+      "fieldLabel": "Issue type for sub-task defect",
+      "fieldType": "chips",
+      "fieldCategory": "Issue_Type",
+      "section": "Issue Types Mapping",
+      "tooltip": {
+           "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+      }
+    },
+    {
+       "fieldName":"jiraDefectRejectionStatusKPI155",
+       "fieldLabel":"Ticket Rejected/Dropped Status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status from workflow on which ticket is considered as Rejected/Dropped."
+       }
+    },
+    {
+       "fieldName":"jiraDodKPI155",
+       "fieldLabel":"DOD Status",
+       "fieldType":"chips",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+       }
+    },
+    {
+       "fieldName":"jiraLiveStatusKPI155",
+       "fieldLabel":"Status to identify Live status",
+       "fieldType":"text",
+       "fieldCategory":"workflow",
+       "section":"WorkFlow Status Mapping",
+       "tooltip":{
+          "definition":"Provide any status from workflow on which Live is considered."
+       }
+    },
+    {
+    	"fieldName": "uploadDataKPI42",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
+    },
+    {
+    	"fieldName": "uploadDataKPI16",
+    	"fieldLabel": "KPI calculation logic",
+    	"fieldType": "toggle",
+    	"toggleLabel": "Upload Data",
+    	"section": "WorkFlow Status Mapping",
+    	"processorCommon": false,
+    	"tooltip": {
+    		"definition": "Enabled State (Kpi from data on Upload data screen)"
+    	}
+    },
+    {
+		"fieldName": "jiraStoryIdentificationKPI164",
+		"fieldLabel": "Issue type to identify Story",
+		"fieldType": "chips",
+		"fieldCategory": "Issue_Type",
+		"section": "Issue Types Mapping",
+		"tooltip": {
+			"definition": "All issue types that are used as/equivalent to Story.",
+
+		}
+	},
+{
+    "fieldName": "jiraIssueTypeNamesKPI161",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI146",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI148",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI151",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+    "fieldName": "jiraIssueTypeNamesKPI152",
+    "fieldLabel": "Issue types to be included",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "processorCommon": false,
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All the issue types used by a project in Jira."
+    }
+},
+{
+            "fieldName": "leadTimeConfigRepoTool",
+            "fieldLabel": "Lead Time KPI calculation logic",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
+            },
+            "options": [{
+                    "label": "Jira",
+                    "value": "Jira"
+                },
+                {
+                    "label": "Repo",
+                    "value": "Repo"
+                }
+            ],
+            "nestedFields": [
+{
+	"fieldName": "jiraIssueTypeKPI156",
+	"fieldLabel": "Issue type to be included",
+	"fieldType": "chips",
+	"fieldCategory": "Issue_Type",
+	 "filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
+	}
+}, {
+	"fieldName": "jiraDodKPI156",
+	"fieldLabel": "Status to identify DOD",
+	"fieldType": "chips",
+	"fieldCategory": "workflow",
+	"filterGroup": ["Jira"],
+	"tooltip": {
+		"definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+	}
+},{
+	"fieldName": "toBranchForMRKPI156",
+	"fieldLabel": "Production Branch Name",
+	"fieldType": "text",
+	"filterGroup": ["Repo"],
+	"tooltip": {
+		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+	}
+}]
+},
+{
+  "fieldName":"testingPhaseDefectsIdentifier",
+  "fieldLabel":"Testing phase defects identification",
+  "fieldType":"radiobutton",
+  "section":"Defects Mapping",
+  "tooltip":{
+    "definition":"This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+  },
+  "options":[
+    {
+      "label":"CustomField",
+      "value":"CustomField"
+    },
+    {
+      "label":"Labels",
+      "value":"Labels"
+    },
+    {
+      "label":"Component",
+      "value":"Component"
+    }
+  ],
+  "nestedFields":[
+    {
+      "fieldName":"testingPhaseDefectCustomField",
+      "fieldLabel":"Testing Phase Defect CustomField",
+      "fieldType":"text",
+      "fieldCategory":"fields",
+      "filterGroup":[
+        "CustomField"
+      ],
+      "tooltip":{
+        "definition":" Provide customfield name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName":"testingPhaseDefectValue",
+      "fieldLabel":"Testing Phase Defect Values",
+      "fieldType":"chips",
+      "filterGroup":[
+        "CustomField",
+        "Labels"
+      ],
+      "tooltip":{
+        "definition":"Provide label name to identify testing phase defects."
+      }
+    },
+    {
+      "fieldName":"testingPhaseDefectComponentValue",
+      "fieldLabel":"Component",
+      "fieldType":"text",
+      "filterGroup":[
+        "Component"
+      ],
+      "tooltip":{
+        "definition":"Provide label name to identify testing phase defects."
+      }
+    }
+  ]
+},
+{
+  "fieldName":"jiraDodKPI163",
+  "fieldLabel":"DOD Status",
+  "fieldType":"chips",
+  "fieldCategory":"workflow",
+  "section":"WorkFlow Status Mapping",
+  "tooltip":{
+    "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+  }
 }
-]
-);
+]);

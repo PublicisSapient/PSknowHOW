@@ -214,9 +214,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraTechDebtIssueType(jiraType);
 		fieldMapping.setJiraIssueTypeKPI35(jiraType);
 		fieldMapping.setJiraDefectRemovalStatusKPI34(jiraType);
-		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraTestAutomationIssueType(jiraType);
-		fieldMapping.setJiraIssueTypeKPI37(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI36(jiraType);
 		fieldMapping.setJiraDefectCountlIssueTypeKPI28(jiraType);
 		fieldMapping.setJiraIssueTypeKPI3(jiraType);
@@ -232,7 +230,6 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI28("Dropped");
-		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI35("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");
@@ -273,7 +270,7 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
-		fieldMapping.setJiraDorKPI3("In Progress");
+		fieldMapping.setJiraDorKPI3(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
@@ -322,7 +319,6 @@ public class KanbanJiraIssueClientImplTest {
 		fieldMapping.setJiraDefectRejectionStatusKPI14("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusAVR("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI28("Dropped");
-		fieldMapping.setJiraDefectRejectionStatusKPI34("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI35("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI82("Dropped");
 		fieldMapping.setJiraDefectRejectionStatusKPI135("Dropped");

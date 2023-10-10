@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
 public abstract class ToolsKPIService<R, S> {
@@ -40,7 +41,7 @@ public abstract class ToolsKPIService<R, S> {
 
 	private Set<String> reverseTrendList = new HashSet<>(Arrays.asList(KPICode.CODE_COMMIT.name(),
 			KPICode.MEAN_TIME_TO_MERGE.name(), KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.name(),
-			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name()));
+			KPICode.OPEN_TICKET_AGING_BY_PRIORITY.name(), KPICode.PI_PREDICTABILITY.name()));
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -171,6 +172,57 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
+	 * Calculates the aggregated value for the nodes in the bottom-up fashion.
+	 * nodeWiseKPIValue is added explicitly to contain the values of each node to
+	 * serve the excel data API's and other use case where all the node details
+	 * needed.
+	 *
+	 * @param node
+	 *            node
+	 * @param nodeWiseKPIValue
+	 *            nodeWiseKPIValue
+	 * @param kpiCode
+	 *            kpiCode
+	 * @return value of node
+	 */
+	public Object calculateAggregatedMultipleValueGroup(Node node, Map<Pair<String, String>, Node> nodeWiseKPIValue,
+			KPICode kpiCode) {
+
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
+
+		if (node == null || null == node.getValue()) {
+			DataCount dataCount = new DataCount();
+			dataCount.setData("0");
+			dataCount.setValue(0);
+			return dataCount;
+		}
+
+		List<Node> children = node.getChildren();
+		if (CollectionUtils.isEmpty(node.getChildren())) {
+			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
+			return node.getValue();
+		}
+
+		List<DataCount> aggregatedValueList = new ArrayList<>();
+
+		for (Node child : children) {
+			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
+			Object obj = calculateAggregatedMultipleValueGroup(child, nodeWiseKPIValue, kpiCode);
+			List<DataCount> value = obj instanceof List<?> ? ((List<DataCount>) obj) : null;
+			if (value != null) {
+				aggregatedValueList.addAll(value);
+			}
+		}
+		if (CollectionUtils.isNotEmpty(aggregatedValueList)) {
+			node.setValue(calculateAggregatedMultipleValueGroup(kpiName, aggregatedValueList, node, kpiId));
+			nodeWiseKPIValue.put(Pair.of(node.getGroupName().toUpperCase(), node.getId()), node);
+		}
+		return node.getValue();
+
+	}
+
+	/**
 	 * This method set Data count
 	 *
 	 * @param aggregatedValueList
@@ -196,6 +248,7 @@ public abstract class ToolsKPIService<R, S> {
 				dataCount.setData(dc.getData());
 				dataCount.setHoverValue(dc.getHoverValue());
 				dataCount.setDate(dc.getDate() == null ? kpiName : dc.getDate());
+				dataCount.setDataValue(dc.getDataValue());
 				aggregatedDataCount.add(dataCount);
 			});
 		}
@@ -259,22 +312,136 @@ public abstract class ToolsKPIService<R, S> {
 		return aggregatedDataCount;
 	}
 
-	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc) {
-		if (MapUtils.isNotEmpty(dc.getHoverValue())) {
-			Map<String, Object> hoverValuee = new LinkedHashMap<>(dc.getHoverValue());
+	/**
+	 * calculate Aggregated MultipleValue based on projects and sprints wise data
+	 * 
+	 * @param kpiName
+	 * @param aggregatedValueList
+	 * @param node
+	 * @param kpiId
+	 * @return
+	 */
+	public List<DataCount> calculateAggregatedMultipleValueGroup(String kpiName, List<DataCount> aggregatedValueList,
+			Node node, String kpiId) {
+
+		Map<String, List<DataCount>> projectWiseDataCount = aggregatedValueList.stream()
+				.collect(Collectors.groupingBy(DataCount::getSProjectName, Collectors.toList()));
+		String howerKpiName = prepareHowerValue(kpiName);
+
+		List<DataCount> aggregatedDataCount = new ArrayList<>();
+		if (projectWiseDataCount.size() <= 1) {
+			setDataCountWithoutAggregation(aggregatedValueList, node, aggregatedDataCount, howerKpiName);
+		} else {
+			List<List<DataCount>> indexWiseValuesList = aggregateIndexedValues(projectWiseDataCount);
+			for (int i = 0; i < indexWiseValuesList.size(); i++) {
+				StringBuilder projectName = new StringBuilder();
+				DataCount dataCount = new DataCount();
+				List<String> sprintIds = new ArrayList<>();
+				List<String> sprintNames = new ArrayList<>();
+				List<String> projectNames = new ArrayList<>();
+				String hoverIdentifier = null;
+				Map<String, List<DataValue>> valueMultiLine = new HashMap<>();
+				for (DataCount dc : indexWiseValuesList.get(i)) {
+					if (CollectionUtils.isNotEmpty(dc.getSprintIds())) {
+						sprintIds.addAll(dc.getSprintIds());
+						sprintNames.addAll(dc.getSprintNames());
+					}
+					projectNames.add(dc.getSProjectName());
+					projectName.append(dc.getSProjectName());
+					hoverIdentifier = dc.getDate();
+					collectAggregatedDataBasedOnLineType(valueMultiLine, dc);
+				}
+				setDataCountValueBasedOnLineType(kpiId, dataCount, valueMultiLine);
+				dataCount.setSprintIds(sprintIds);
+				dataCount.setSprintNames(sprintNames);
+				dataCount.setProjectNames(projectNames);
+				dataCount.setSProjectName(node.getName());
+				dataCount.setDate(hoverIdentifier == null ? howerKpiName : hoverIdentifier);
+				aggregatedDataCount.add(i, dataCount);
+			}
+		}
+		return aggregatedDataCount;
+	}
+
+	/**
+	 * aggregated Data Values based on multi line chart
+	 * 
+	 * @param kpiId
+	 * @param dataCount
+	 * @param valueMultiLine
+	 */
+	private void setDataCountValueBasedOnLineType(String kpiId, DataCount dataCount,
+			Map<String, List<DataValue>> valueMultiLine) {
+		if (MapUtils.isNotEmpty(valueMultiLine)) {
+			List<DataValue> aggregatedDataValueList = new ArrayList<>();
+			for (Map.Entry<String, List<DataValue>> entry : valueMultiLine.entrySet()) {
+				DataValue aggregatedDataValue = new DataValue();
+				Map<String, Object> aggregatedHoverValue = new HashMap<>();
+				List<R> aggregatedValues = new ArrayList<>();
+				String lineType = entry.getKey();
+
+				List<DataValue> dataValueList = entry.getValue();
+				dataValueList.stream().forEach(dataValue -> {
+					aggregatedValues.add((R) dataValue.getValue());
+					aggregatedDataValue.setName(dataValue.getName());
+					collectHoverDataBaseOnLineType(dataValue.getHoverValue(), aggregatedHoverValue);
+				});
+				R aggregatedValue = calculateKpiValue(aggregatedValues, kpiId);
+				aggregatedDataValue.setData(aggregatedValue.toString());
+				aggregatedDataValue.setHoverValue(aggregatedHoverValue);
+				aggregatedDataValue.setLineType(lineType);
+				aggregatedDataValue.setValue(aggregatedValue);
+				aggregatedDataValueList.add(aggregatedDataValue);
+			}
+			dataCount.setDataValue(aggregatedDataValueList);
+		}
+	}
+
+	/**
+	 * Collect Hover data based On chart Type
+	 *
+	 * @param dataValue
+	 * @param aggregatedHoverValue
+	 */
+	private void collectHoverDataBaseOnLineType(Map<String, Object> dataValue,
+			Map<String, Object> aggregatedHoverValue) {
+		if (MapUtils.isNotEmpty(dataValue)) {
+			Map<String, Object> hoverValuee = new LinkedHashMap<>(dataValue);
 			if (MapUtils.isNotEmpty(hoverValuee)) {
 				hoverValuee.forEach((key, value) -> {
 					if (value instanceof Integer) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Integer) v + (Integer) value);
 					} else if (value instanceof Double) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Double) v + (Double) value);
 					} else if (value instanceof Long) {
-						hoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
+						aggregatedHoverValue.computeIfPresent(key, (k, v) -> (Long) v + (Long) value);
 					}
-					hoverValue.putIfAbsent(key, value);
+					aggregatedHoverValue.putIfAbsent(key, value);
 				});
 			}
 		}
+	}
+
+	/**
+	 * Collect Aggregated Data based on multi Line chart type
+	 * 
+	 * @param valueMultiLine
+	 * @param dc
+	 */
+	private void collectAggregatedDataBasedOnLineType(Map<String, List<DataValue>> valueMultiLine, DataCount dc) {
+		dc.getDataValue().stream().forEach(dataValue -> {
+			valueMultiLine.computeIfPresent(dataValue.getLineType(), (k, v) -> {
+				v.add(dataValue);
+				return v;
+			});
+			List<DataValue> values = new ArrayList<>();
+			values.add(dataValue);
+			valueMultiLine.putIfAbsent(dataValue.getLineType(), values);
+		});
+	}
+
+	private void collectHoverData(Map<String, Object> hoverValue, DataCount dc) {
+		collectHoverDataBaseOnLineType(dc.getHoverValue(), hoverValue);
 	}
 
 	private String prepareHowerValue(String kpiName) {
@@ -392,10 +559,7 @@ public abstract class ToolsKPIService<R, S> {
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
 
-					Pair<String, String> maturityValue = null;
-					if (null != configHelperService.calculateMaturity().get(kpiId)) {
-						maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
-					}
+					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					String aggregateValue = null;
 					String maturity = null;
 					if (maturityValue != null) {
@@ -409,6 +573,59 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		}
 		return trendValues;
+	}
+
+	/**
+	 * This method return trend value for simple non filter and circle KPI (like
+	 * DORA KPI)
+	 *
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @param nodeWiseKPIValue
+	 *            nodeWiseKPIValue
+	 * @return trend values
+	 */
+	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,
+			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
+		List<DataCount> trendValues = new ArrayList<>();
+
+		Set<String> selectedIds = getSelectedIds(kpiRequest);
+
+		for (String selectedId : selectedIds) {
+			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
+			if (null != node) {
+				Object obj = node.getValue();
+
+				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
+				if (CollectionUtils.isNotEmpty(dataCounts)) {
+
+					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
+					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
+							.map(val -> (R) val.getValue()).collect(Collectors.toList());
+					R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
+					String aggregateValue = null;
+					String maturity = null;
+					if (maturityValue != null) {
+						aggregateValue = maturityValue.getValue();
+						maturity = maturityValue.getKey();
+					}
+					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
+							getList(dataCounts, kpiName), calculatedAggValue));
+
+				}
+			}
+		}
+		return trendValues;
+	}
+
+	private Pair<String, String> getMaturityValuePair(String kpiName, String kpiId, List<DataCount> dataCounts) {
+		Pair<String, String> maturityValue = null;
+		if (null != configHelperService.calculateMaturity().get(kpiId)) {
+			maturityValue = collectValuesForMaturity(dataCounts, kpiName, kpiId);
+		}
+		return maturityValue;
 	}
 
 	/**
@@ -439,10 +656,7 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						Pair<String, String> maturityValue = null;
-						if (null != configHelperService.calculateMaturity().get(kpiId)) {
-							maturityValue = collectValuesForMaturity(value, kpiName, kpiId);
-						}
+						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						String aggregateValue = null;
 						String maturity = null;
 						if (maturityValue != null) {
@@ -451,6 +665,56 @@ public abstract class ToolsKPIService<R, S> {
 						}
 						trendValues
 								.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName)));
+						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
+
+					});
+				}
+			}
+		}
+		return commonService.sortTrendValueMap(trendMap);
+	}
+
+	/**
+	 * This method return trend value for KPIs containing filter or map as value and
+	 * circle KPI (like DORA KPI)
+	 *
+	 * @param kpiRequest
+	 *            kpiRequest
+	 * @param nodeWiseKPIValue
+	 *            nodeWiseKPIValue
+	 * @return map of string and list of trendvalue
+	 */
+	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,
+			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
+		String kpiName = kpiCode.name();
+		String kpiId = kpiCode.getKpiId();
+		Map<String, List<DataCount>> trendMap = new HashMap<>();
+
+		Set<String> selectedIds = getSelectedIds(kpiRequest);
+
+		for (String selectedId : selectedIds) {
+			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
+			if (null != node) {
+				Object obj = node.getValue();
+				Map<String, List<DataCount>> valueMap = obj instanceof Map<?, ?> ? (Map<String, List<DataCount>>) obj
+						: new HashMap<>();
+				if (MapUtils.isNotEmpty(valueMap)) {
+					valueMap.remove(Constant.DEFAULT);
+					valueMap.forEach((key, value) -> {
+						List<DataCount> trendValues = new ArrayList<>();
+
+						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
+						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
+								.map(val -> (R) val.getValue()).collect(Collectors.toList());
+						R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
+						String aggregateValue = null;
+						String maturity = null;
+						if (maturityValue != null) {
+							aggregateValue = maturityValue.getValue();
+							maturity = maturityValue.getKey();
+						}
+						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName),
+								calculatedAggValue));
 						trendMap.computeIfAbsent(key, k -> new ArrayList<>()).addAll(trendValues);
 
 					});
@@ -654,17 +918,22 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	public Double calculateKpiValueForDouble(List<Double> valueList, String kpiId) {
 		Double calculatedValue = 0.0;
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.PERCENTILE
+						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				calculatedValue = AggregationUtils.percentiles(valueList, 90.0D);
 			} else {
 				calculatedValue = AggregationUtils.percentiles(valueList, customApiConfig.getPercentileValue());
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = AggregationUtils.median(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = AggregationUtils.average(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
 		}
 		return round(calculatedValue);
@@ -680,19 +949,24 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return result
 	 */
 	public Long calculateKpiValueForLong(List<Long> valueList, String kpiId) {
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.PERCENTILE
+						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
 			} else {
 				Double percentile = customApiConfig.getPercentileValue();
 				return AggregationUtils.percentilesLong(valueList, percentile);
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			return AggregationUtils.getMedianForLong(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
-			return AggregationUtils.sumLong(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			return AggregationUtils.averageLong(valueList);
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
+				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			return AggregationUtils.sumLong(valueList);
 		}
 		return AggregationUtils.percentilesLong(valueList, 90d);
 	}

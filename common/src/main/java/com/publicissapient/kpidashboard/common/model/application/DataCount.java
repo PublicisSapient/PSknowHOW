@@ -57,6 +57,7 @@ public class DataCount implements Serializable {
 	private String sSprintName;
 	private String sRootCause;
 	private transient Object value;
+	private transient Object drillDown;
 	private String kanbanDate;
 	private Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
@@ -77,10 +78,14 @@ public class DataCount implements Serializable {
 	private String groupBy;
 	private String maturity;
 	private transient Object maturityValue;
+	//dora dashboard
+	private transient Object aggregationValue;
 	private transient Object lineValue;
 
 	private transient Map<String, Object> subfilterValues;
 	private String graphType;// for non-clustered bar and line graph
+
+	private List<DataValue> dataValue; // for multiple line graph
 
 	/**
 	 * Instantiates a new Data count.
@@ -109,6 +114,22 @@ public class DataCount implements Serializable {
 	}
 
 	/**
+	 * Instantiates a drill down data count
+	 * 
+	 * @param subFilter
+	 *            the subFilter
+	 * @param value
+	 *            the value
+	 * @param drillDown
+	 *            the drillDown
+	 */
+	public DataCount(String subFilter, Object value, Object drillDown) {
+		this.subFilter = subFilter;
+		this.value = value;
+		this.drillDown = drillDown;
+	}
+
+	/**
 	 * Instantiates a new Data count.
 	 *
 	 * @param data
@@ -126,10 +147,10 @@ public class DataCount implements Serializable {
 
 	/**
 	 *
-	 * @param data
-	 * @param maturity
-	 * @param maturityValue
-	 * @param value
+	 * @param data the data
+	 * @param maturity maturity
+	 * @param maturityValue maturity value
+	 * @param value value
 	 */
 	public DataCount(String data, String maturity, Object maturityValue, Object value) {
 		this.data = data;
@@ -137,6 +158,22 @@ public class DataCount implements Serializable {
 		this.maturityValue = maturityValue;
 		this.value = value;
 
+	}
+
+	/**
+	 *
+	 * @param data data
+	 * @param maturity maturity
+	 * @param maturityValue maturity value
+	 * @param value value
+	 * @param aggregationValue aggregation Value
+	 */
+	public DataCount(String data, String maturity, Object maturityValue, Object value, Object aggregationValue) {
+		this.data = data;
+		this.maturity = maturity;
+		this.maturityValue = maturityValue;
+		this.value = value;
+		this.aggregationValue = aggregationValue;
 	}
 
 	public String getsSprintID() {

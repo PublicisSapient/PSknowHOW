@@ -799,7 +799,8 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 }
 
 .filter-date {
-  height: 135px;
+  height: auto;
+  padding-bottom: 10px;
   border-bottom: 1px solid #cacaca;
 }
 
@@ -892,7 +893,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .remove-node {
   color: var(--color-cyan-blue);
   border: none;
-  font-size: 0.75rem;
+  font-size: 1.25rem;
   margin-left: 0.5rem;
   padding-bottom: 0.5rem;
 }
@@ -1094,7 +1095,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   color: var(--color-white);
   background: var(--color-cyan-blue);
   border-radius: 3px;
-  font-size: .85rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 .fail-state{
@@ -1140,4 +1141,10 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .comment-msg{
   color: #666666;
   font-size: .8rem; 
+}
+.large-view-disabled{
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0,0,0,0.2) !important;
+  opacity: 0.6;
 }

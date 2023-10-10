@@ -43,7 +43,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectToolConf
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +65,9 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	public static final String EPIC_WSJF = "epicWsjf";
 	public static final String EPIC_TIME_CRITICALITY = "epicTimeCriticality";
 	public static final String EPIC_JOB_SIZE = "epicJobSize";
+	public static final String EPIC_PLANNED_VALUE = "epicPlannedValue";
+
+	public static final String EPIC_ACHIEVED_VALUE = "epicAchievedValue";
 	public static final String READY_FOR_DEVELOPMENT_STATUS = "readyForDevelopmentStatusKPI138";
 	public static final String ESTIMATION_CRITERIA = "estimationCriteria";
 	public static final String JIRA_ISSUE_EPIC_TYPE = "jiraIssueEpicType";
@@ -200,6 +202,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void clearCache() {
 		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 	}
 
 	/**
@@ -337,7 +340,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					ROOT_CAUSE, JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, EPIC_COST_OF_DELAY, EPIC_RISK_REDUCTION,
 					EPIC_USER_BUSINESS_VALUE, EPIC_WSJF, EPIC_TIME_CRITICALITY, EPIC_JOB_SIZE,
 					READY_FOR_DEVELOPMENT_STATUS, "additionalFilterConfig", "jiraDueDateField",
-					"jiraDueDateCustomField");
+					"jiraDueDateCustomField", EPIC_PLANNED_VALUE , EPIC_ACHIEVED_VALUE);
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS);
@@ -396,10 +399,12 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			Optional<ProjectToolConfig> projectToolConfigOpt) {
 		if (projectToolConfigOpt.isPresent()) {
 			ProjectToolConfig projectToolConfig = projectToolConfigOpt.get();
-			if (projectBasicConfig.getIsKanban()) {
+			if (projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("9");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
-			} else {
+			} else if (!projectBasicConfig.getIsKanban()
+					&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)) {
 				projectToolConfig.setMetadataTemplateCode("10");
 				cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG);
 			}
@@ -449,6 +454,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraDodPDA",
 			"jiraDodKPI152",
 			"jiraDodKPI151",
+			"jiraDodKPI37",
 
 			"jiraDefectCreatedStatusKPI14",
 
@@ -478,8 +484,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraSprintCapacityIssueTypeKpi46",
 
-			"jiraIssueTypeKPI37",
-
 			"jiraDefectCountlIssueTypeKPI28",
 			"jiraDefectCountlIssueTypeKPI36",
 
@@ -494,6 +498,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIssueTypeKPI3",
 			"jiraStoryIdentification",
 			"jiraStoryIdentificationKpi40",
+			"jiraStoryIdentificationKPI164",
 			"jiraStoryIdentificationKPI129",
 
 			"jiraLiveStatusKPI3",
@@ -525,6 +530,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 			"jiraQAKPI111IssueType",
 			"jiraDefectDroppedStatusKPI127",
+			"jiraItrQSIssueTypeKPI133",
 
 			EPIC_COST_OF_DELAY,
 			EPIC_RISK_REDUCTION,
@@ -604,7 +610,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			"jiraIterationIssuetypeKPI123",
 			"jiraIterationIssuetypeKPI125",
 			"jiraIterationIssuetypeKPI120",
-			"jiraIterationIssuetypeKPI124");
+			"jiraIterationIssuetypeKPI124",
+			"jiraIterationIssuetypeKPI39");
 
 			List<String> fieldNameListKanban = Arrays.asList(JIRA_STORY_POINTS_CUSTOM_FIELD, ROOT_CAUSE,
 					JIRA_ISSUE_TYPE_NAMES, STORY_FIRST_STATUS, "ticketDeliverdStatus", "jiraTicketTriagedStatus",

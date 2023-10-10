@@ -1,0 +1,340 @@
+[
+    {
+        "data": "KnowHOW",
+        "value": [
+            {
+                "data": 0,
+                "sSprintID": "27-Feb-2023 to 05-Mar-2023",
+                "sSprintName": "27-Feb-2023 to 05-Mar-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "27-Feb-2023 to 05-Mar-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "sprintNames": [
+                    "27-Feb-2023 to 05-Mar-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "27-Feb-2023 to 05-Mar-2023",
+                "xName": 1,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "06-Mar-2023 to 12-Mar-2023",
+                "sSprintName": "06-Mar-2023 to 12-Mar-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "06-Mar-2023 to 12-Mar-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "06-Mar-2023 to 12-Mar-2023"
+                ],
+                "sprintNames": [
+                    "06-Mar-2023 to 12-Mar-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "06-Mar-2023 to 12-Mar-2023",
+                "xName": 2,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "13-Mar-2023 to 19-Mar-2023",
+                "sSprintName": "13-Mar-2023 to 19-Mar-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "13-Mar-2023 to 19-Mar-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "13-Mar-2023 to 19-Mar-2023"
+                ],
+                "sprintNames": [
+                    "13-Mar-2023 to 19-Mar-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "13-Mar-2023 to 19-Mar-2023",
+                "xName": 3,
+                "lineValue": null
+            },
+            {
+                "data": 2,
+                "sSprintID": "20-Mar-2023 to 26-Mar-2023",
+                "sSprintName": "20-Mar-2023 to 26-Mar-2023",
+                "value": 2,
+                "hoverValue": {
+                    "81.200.188.111": 1,
+                    "81.200.188.112": 1
+                },
+                "date": "20-Mar-2023 to 26-Mar-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "20-Mar-2023 to 26-Mar-2023"
+                ],
+                "sprintNames": [
+                    "20-Mar-2023 to 26-Mar-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "20-Mar-2023 to 26-Mar-2023",
+                "xName": 4,
+                "lineValue": null
+            },
+            {
+                "data": 1,
+                "sSprintID": "27-Mar-2023 to 02-Apr-2023",
+                "sSprintName": "27-Mar-2023 to 02-Apr-2023",
+                "value": 1,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 1
+                },
+                "date": "27-Mar-2023 to 02-Apr-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "27-Mar-2023 to 02-Apr-2023"
+                ],
+                "sprintNames": [
+                    "27-Mar-2023 to 02-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "27-Mar-2023 to 02-Apr-2023",
+                "xName": 5,
+                "lineValue": null
+            },
+            {
+                "data": 4,
+                "sSprintID": "03-Apr-2023 to 09-Apr-2023",
+                "sSprintName": "03-Apr-2023 to 09-Apr-2023",
+                "value": 4,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 4
+                },
+                "date": "03-Apr-2023 to 09-Apr-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "03-Apr-2023 to 09-Apr-2023"
+                ],
+                "sprintNames": [
+                    "03-Apr-2023 to 09-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "03-Apr-2023 to 09-Apr-2023",
+                "xName": 6,
+                "lineValue": null
+            },
+            {
+                "data": 5,
+                "sSprintID": "10-Apr-2023 to 16-Apr-2023",
+                "sSprintName": "10-Apr-2023 to 16-Apr-2023",
+                "value": 5,
+                "hoverValue": {
+                    "81.200.188.111": 1,
+                    "81.200.188.112": 4
+                },
+                "date": "10-Apr-2023 to 16-Apr-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "10-Apr-2023 to 16-Apr-2023"
+                ],
+                "sprintNames": [
+                    "10-Apr-2023 to 16-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "10-Apr-2023 to 16-Apr-2023",
+                "xName": 7,
+                "lineValue": null
+            },
+            {
+                "data": 5,
+                "sSprintID": "17-Apr-2023 to 23-Apr-2023",
+                "sSprintName": "17-Apr-2023 to 23-Apr-2023",
+                "value": 5,
+                "hoverValue": {
+                    "81.200.188.111": 1,
+                    "81.200.188.112": 4
+                },
+                "date": "17-Apr-2023 to 23-Apr-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "17-Apr-2023 to 23-Apr-2023"
+                ],
+                "sprintNames": [
+                    "17-Apr-2023 to 23-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "17-Apr-2023 to 23-Apr-2023",
+                "xName": 8,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "24-Apr-2023 to 30-Apr-2023",
+                "sSprintName": "24-Apr-2023 to 30-Apr-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "24-Apr-2023 to 30-Apr-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "24-Apr-2023 to 30-Apr-2023"
+                ],
+                "sprintNames": [
+                    "24-Apr-2023 to 30-Apr-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "24-Apr-2023 to 30-Apr-2023",
+                "xName": 9,
+                "lineValue": null
+            },
+            {
+                "data": 1,
+                "sSprintID": "01-May-2023 to 07-May-2023",
+                "sSprintName": "01-May-2023 to 07-May-2023",
+                "value": 1,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 1
+                },
+                "date": "01-May-2023 to 07-May-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "01-May-2023 to 07-May-2023"
+                ],
+                "sprintNames": [
+                    "01-May-2023 to 07-May-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "01-May-2023 to 07-May-2023",
+                "xName": 10,
+                "lineValue": null
+            },
+            {
+                "data": 1,
+                "sSprintID": "08-May-2023 to 14-May-2023",
+                "sSprintName": "08-May-2023 to 14-May-2023",
+                "value": 1,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 1
+                },
+                "date": "08-May-2023 to 14-May-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "08-May-2023 to 14-May-2023"
+                ],
+                "sprintNames": [
+                    "08-May-2023 to 14-May-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "08-May-2023 to 14-May-2023",
+                "xName": 11,
+                "lineValue": null
+            },
+            {
+                "data": 4,
+                "sSprintID": "15-May-2023 to 21-May-2023",
+                "sSprintName": "15-May-2023 to 21-May-2023",
+                "value": 4,
+                "hoverValue": {
+                    "81.200.188.111": 2,
+                    "81.200.188.112": 2
+                },
+                "date": "15-May-2023 to 21-May-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "15-May-2023 to 21-May-2023"
+                ],
+                "sprintNames": [
+                    "15-May-2023 to 21-May-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "15-May-2023 to 21-May-2023",
+                "xName": 12,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "22-May-2023 to 28-May-2023",
+                "sSprintName": "22-May-2023 to 28-May-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "22-May-2023 to 28-May-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "22-May-2023 to 28-May-2023"
+                ],
+                "sprintNames": [
+                    "22-May-2023 to 28-May-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "22-May-2023 to 28-May-2023",
+                "xName": 13,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "29-May-2023 to 04-Jun-2023",
+                "sSprintName": "29-May-2023 to 04-Jun-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "29-May-2023 to 04-Jun-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "29-May-2023 to 04-Jun-2023"
+                ],
+                "sprintNames": [
+                    "29-May-2023 to 04-Jun-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "29-May-2023 to 04-Jun-2023",
+                "xName": 14,
+                "lineValue": null
+            },
+            {
+                "data": 0,
+                "sSprintID": "05-Jun-2023 to 11-Jun-2023",
+                "sSprintName": "05-Jun-2023 to 11-Jun-2023",
+                "value": 0,
+                "hoverValue": {
+                    "81.200.188.111": 0,
+                    "81.200.188.112": 0
+                },
+                "date": "05-Jun-2023 to 11-Jun-2023",
+                "kpiGroup": "81.200.188.111",
+                "sprintIds": [
+                    "05-Jun-2023 to 11-Jun-2023"
+                ],
+                "sprintNames": [
+                    "05-Jun-2023 to 11-Jun-2023"
+                ],
+                "sprojectName": "KnowHOW",
+                "sortSprint": "05-Jun-2023 to 11-Jun-2023",
+                "xName": 15,
+                "lineValue": null
+            }
+        ],
+        "maturity": "1",
+        "maturityValue": "0",
+        "percentile90": 5
+    }
+]

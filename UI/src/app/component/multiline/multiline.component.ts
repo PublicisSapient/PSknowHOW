@@ -50,8 +50,14 @@ export class MultilineComponent implements OnChanges {
   @Input() unit?: string;
   @Input() color?: Array<string>;
   @Input() selectedtype: string;
+  @Input() board:string = '';
   elem;
   sliderLimit = <any>'750';
+  sprintList : Array<any> = [];
+  @Input() viewType :string = 'chart'
+  @Input() lowerThresholdBG : string;
+  @Input() upperThresholdBG : string;
+
   constructor(
     private viewContainerRef: ViewContainerRef,
     private service: SharedService,
@@ -59,20 +65,23 @@ export class MultilineComponent implements OnChanges {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
   }
+  
+  ngOnInit(): void {
+    this.service.showTableViewObs.subscribe(view => {
+      this.viewType = view;
+     });
+  }
 
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
-    if (this.selectedtype?.toLowerCase() === 'kanban') {
+    if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer') 
+    {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
-      if (changes['data']) {
-        if (!changes['data'].firstChange) {
-          this.draw('update');
-        } else {
-          this.draw('new');
-        }
-      }
+        d3.select(this.elem).select('svg').remove();
+        d3.select(this.elem).select('.bstimeslider').remove();
+        this.draw('update');
     } else {
       d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.bstimeslider').remove();
@@ -85,12 +94,22 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
-    
+    d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    const formatedData = this?.data[0]?.value.map(details=>{
+      const XValue = details.date || details.sSprintName;
+      const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+      const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+       return {...details,sortSprint:removeProject};
+    })
+    const isAllBelowFromThreshold = this.data[0].value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
+    this.data[0].value = formatedData;
+    const viewType = this.viewType;
+    const selectedProjectCount = this.service.getSelectedTrends().length;
     const data = this.data;
     const thresholdValue = this.thresholdValue;
     const elem = this.elem;
     let width = 450;
-    const height = 190;
+    const height = (viewType === 'large' && selectedProjectCount === 1) ? 240 : 190;
     const margin = 50;
     const duration = 250;
     const lineOpacity = '1';
@@ -109,7 +128,19 @@ export class MultilineComponent implements OnChanges {
     const kpiId = this.kpiId;
     const showPercent = false;
     const showWeek = false;
-    const showUnit = this.unit;
+    const showUnit = this.unit?.toLowerCase() !== 'number' ? this.unit : '';
+    const board = this.board;
+    const sprintList = data[0].value.map(details=>details.date || details?.sortSprint);
+    const unitAbbs = {
+      'hours' : 'Hrs',
+      'sp' : 'SP',
+      'days' : 'Day',
+      'mrs' : 'MRs',
+      'min' : 'Min',
+      '%' : '%',
+      'check-ins' : 'CI',
+      'tickets' : 'T'
+    }
 
     // width = $('#multiLineChart').width();
     width =
@@ -154,15 +185,32 @@ export class MultilineComponent implements OnChanges {
       });
     });
 
-    const xScale = d3
+    let xScale;
+
+    if (viewType === 'large' && selectedProjectCount === 1) {
+      xScale = d3
+        .scaleBand()
+        .domain(sprintList)
+        .range([0, width - margin])
+        .padding(0)
+        
+    }else{
+      xScale = d3
       .scaleBand()
       .rangeRound([0, width - margin])
       .padding(0)
       .domain(
         data[maxObjectNo].value.map(function (d, i) {
-          return i + 1;
+          let returnObj = '';
+          if(board == 'dora'){
+            returnObj = d.date;
+          }else{
+            returnObj = i + 1;
+          }
+          return returnObj;
         }),
       );
+    }
 
     let divisor = 10;
     let power = 1;
@@ -186,6 +234,10 @@ export class MultilineComponent implements OnChanges {
       maxYValue += divisor;
     }
 
+    if(this.thresholdValue && this.thresholdValue !==0 && isAllBelowFromThreshold && viewType === 'large' && selectedProjectCount === 1){
+      maxYValue = this.thresholdValue + 5;
+    }
+
     if (this.kpiId === 'kpi149') {
       maxYValue = 5;
     }
@@ -194,6 +246,53 @@ export class MultilineComponent implements OnChanges {
       .scaleLinear()
       .domain([0, maxYValue])
       .range([height - margin, 0]);
+  
+    if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer')) {
+      d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+      /** Adding tooltip container */
+      const tooltipContainer = d3.select(this.elem).select('#horizontalSVG').
+        append('div')
+        .attr('class', 'tooltip-container')
+        .attr('height', height + 35 + 'px')
+        .attr('width', width + 'px')
+
+        tooltipContainer
+        .selectAll('div')
+        .data(data[0].value)
+        .join('div')
+        .attr('class', d=>{
+          let cssClass = 'tooltip2';
+          let value = Math.round(d.value * 100) / 100;
+          if(thresholdValue && thresholdValue !==0  && value < this.thresholdValue){
+            cssClass += this.lowerThresholdBG === 'red' ? ' red-bg' : ' white-bg';
+          } else {
+            cssClass += (this.upperThresholdBG === 'red' && thresholdValue) ? ' red-bg' : ' white-bg';
+          }
+          return cssClass;
+        })
+        .style('left', (d,i) => {
+          let left = d.date || d.sortSprint;
+          if(viewType === 'large'){
+            return xScale(left) + xScale.bandwidth() / 2 + 'px';
+          }else{
+            return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
+          }
+          
+        })
+        .style('top', d => {
+          return yScale(Math.round(d.value * 100) / 100)+10 + 'px'
+        })
+        .text(d => Math.round(d.value * 100) / 100 + ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
+        .transition()
+        .duration(500)
+        .style('display', 'block')
+        .style('opacity', 1);
+    }else{
+      d3.select(this.elem).select('#horizontalSVG').select('div').remove();
+      d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
+    }
+
     /* Add SVG */
 
     const svgX = d3
@@ -231,7 +330,9 @@ export class MultilineComponent implements OnChanges {
     const xAxis = d3.axisBottom(xScale);
     /*var xAxis = d3.axisBottom(xScale).ticks(7);
      */
-    const yAxis = d3.axisLeft(yScale).ticks(5);
+    const yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function(tickval) {
+      return tickval >= 1000 ? tickval/1000 + "k" : tickval;
+    });
 
     const XCaptionSVG = d3
       .select(this.elem)
@@ -242,7 +343,9 @@ export class MultilineComponent implements OnChanges {
       .append('g')
       .attr('class', 'x axis')
       .attr('transform', `translate(0, ${height - margin})`)
-      .call(xAxis);
+      .call(xAxis)
+      .selectAll(".tick text")
+      .call(this.wrap, xScale.bandwidth());
 
     const XCaption = XCaptionSVG.append('text')
       .attr('x', width / 2 - 24)
@@ -324,10 +427,19 @@ export class MultilineComponent implements OnChanges {
     /* Add line into SVG acoording to data */
     const line = d3
       .line()
-      .x((d, i) => xScale(i + 1))
+      .x((d, i) => {
+        if(board == 'dora'){
+          return xScale(d.date)
+        }else if(viewType  === 'large' && selectedProjectCount === 1){
+          return xScale(d.date || d.sortSprint)
+        }else{
+          return xScale(i+1)
+        }
+      })
       .y((d) => yScale(d.value));
 
-    const lines = svgX.append('g').attr('class', 'lines');
+    const lines = svgX.append('g').attr('class', 'lines')
+    .attr('transform', `translate(${xScale.bandwidth()/2}, ${0})`);
 
     function tweenDash() {
       const l = this.getTotalLength();
@@ -465,7 +577,14 @@ export class MultilineComponent implements OnChanges {
       })
       .append('circle')
       .attr('cx', function (d, i) {
-        return xScale(i + 1);
+
+        if(board == 'dora'){
+           return xScale(d.date);
+        }else if(viewType  === 'large' && selectedProjectCount === 1){
+          return xScale(d.date || d.sortSprint)
+        }else{
+          return xScale(i+1)
+        }
       })
       .attr('cy', (d) => yScale(d.value))
       .attr('r', circleRadius)
@@ -485,22 +604,22 @@ export class MultilineComponent implements OnChanges {
     svgX
       .select('.x')
       .selectAll('.tick')
-      .each(function (dataObj) {
+      .each(function (dataObj, index) {
         const tick = d3.select(this);
-        if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick) {
+        if (data[0]?.value[0] && data[0]?.value[0]?.xAxisTick &&  !(viewType === 'large' && selectedProjectCount === 1)) {
           const textElement = this.getElementsByTagName('text');
           textElement[0].textContent = data[0].value[dataObj - 1]?.xAxisTick;
         }
         const string = tick.attr('transform');
         const translate = string
-          .substring(string.indexOf('(') + 1, string.indexOf(')'))
-          .split(',');
+        .substring(string.indexOf('(') + 1, string.indexOf(')'))
+        .split(',');
         translate[0] = parseInt(translate[0], 10);
         tick.attr(
           'transform',
           'translate(' + translate[0] + ',' + translate[1] + ')',
         );
-        if (dataObj === 1) {
+        if (index === 0) {
           // if (maxXValueCount === 1) {
           //     translate[0] = parseInt(translate[0], 10) - 36;
           // } else if (maxXValueCount === 2) {
@@ -520,6 +639,12 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
+      if(board == 'dora'){
+        svgX
+        .select('.x')
+        .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
+      }
+      
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
       const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
@@ -555,6 +680,31 @@ export class MultilineComponent implements OnChanges {
     }
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
+  }
+
+
+  wrap(text, width) {
+    text.each(function() {
+      var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+      while (word = words.pop()) {
+        line.push(word)
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > (width-5)) {
+          line.pop()
+          tspan.text(line.join(" "))
+          line = [word]
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        }
+      }
+    })
   }
 
   ngOnDestroy() {

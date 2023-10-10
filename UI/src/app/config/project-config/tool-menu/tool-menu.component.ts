@@ -72,28 +72,26 @@ export class ToolMenuComponent implements OnInit {
       this.dataLoading = true;
       this.http.getAllToolConfigs(this.selectedProject.id).subscribe(response => {
         this.dataLoading = false;
-        if (response && response['success']) {
+        if (response && response['success'] && response['data']?.length) {
           this.sharedService.setSelectedToolConfig(response['data']);
           this.selectedTools = response['data'];
-          if (response['data'] && response['data'].length) {
-            const jiraOrAzure = response['data'].filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
-            if (jiraOrAzure.length) {
-              const fakeEvent = {
-                value: {
-                  value: jiraOrAzure[0].toolName === 'Azure'
-                }
-              };
-              this.projectTypeChange(fakeEvent, false);
-              this.selectedType = jiraOrAzure[0].toolName === 'Azure';
-              this.disableSwitch = true;
-              this.http.getFieldMappings(jiraOrAzure[0].id).subscribe(mappings => {
-                if (mappings && mappings['success']) {
-                  this.sharedService.setSelectedFieldMapping(mappings['data']);
-                } else {
-                  this.sharedService.setSelectedFieldMapping(null);
-                }
-              });
-            }
+          const jiraOrAzure = response['data']?.filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
+          if (jiraOrAzure.length) {
+            const fakeEvent = {
+              value: {
+                value: jiraOrAzure[0].toolName === 'Azure'
+              }
+            };
+            this.projectTypeChange(fakeEvent, false);
+            this.selectedType = jiraOrAzure[0].toolName === 'Azure';
+            this.disableSwitch = true;
+            this.http.getFieldMappings(jiraOrAzure[0].id).subscribe(mappings => {
+              if (mappings && mappings['success']) {
+                this.sharedService.setSelectedFieldMapping(mappings['data']);
+              } else {
+                this.sharedService.setSelectedFieldMapping(null);
+              }
+            });
           }
         }
       });
@@ -218,6 +216,15 @@ export class ToolMenuComponent implements OnInit {
             queryParams1: 'GitHubAction',
             index: 11
           },
+          {
+            toolName: 'RepoTool',
+            category: 'ABC',
+            description: '-',
+            icon: '',
+            routerLink: '/dashboard/Config/JiraConfig',
+            queryParams1: 'RepoTool',
+            index: 12
+          }
 
 
         ];

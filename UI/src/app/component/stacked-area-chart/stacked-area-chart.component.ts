@@ -26,6 +26,10 @@ export class StackedAreaChartComponent implements OnInit {
   }
 
   draw() {
+    /** Preventing Drop event for Bubbling */ 
+    d3.select(this.elem).select('#stacked-area').on('mousedown', (event) => {
+      event.stopPropagation();
+    });
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
     let kpiId = this.kpiId;
     let keys = Object.keys(this.data[0]?.value);
@@ -240,7 +244,7 @@ export class StackedAreaChartComponent implements OnInit {
       // Add one dot in the legend for each name.
       const foreignObject = svg.append("foreignObject")
       .attr("width", width)
-      .attr("height", 60)
+      .attr("height", 40)
       .style('overflow-y', 'scroll')
       .attr("transform", `translate(0,${(height+60)})`)
       .append("xhtml:div")
@@ -249,7 +253,7 @@ export class StackedAreaChartComponent implements OnInit {
 
       keys.forEach((x) => {
         foreignObject.append('div')
-          .attr('class', 'p-d-flex p-align-center p-mr-3 font-small')
+          .attr('class', 'p-d-flex p-align-center legend_item')
           .html(`<span class='rect' style='display:inline-block;width:10px; height:10px; margin: 0 5px 0 0; vertical-align: middle; background:${color(x)}'></span>
           <span style="text-transform: capitalize;">${x}</span>`)
           .on("mouseover", (event) => {highlight(event, x)})
@@ -283,6 +287,8 @@ export class StackedAreaChartComponent implements OnInit {
 
     
   }
+  
+  
 
   ngOnDestroy(){
     d3.select(this.elem).select('#stacked-area').select('svg').remove();

@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HIERARCHY_LEVEL_ID_PROJECT;
@@ -9,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +38,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,7 +82,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List<Object>, Map<ObjectId, List<Build>>> {
 
 	private static final DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-	private static final long DAYS_IN_WEEKS = 7;
 	private static final String TOTAL_CHANGES = "Total number of Changes";
 	private static final String FAILED_CHANGES = "Failed Changes";
 
@@ -97,7 +118,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CHANGE_FAILURE_RATE);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, nodeWiseKPIValue,
 				KPICode.CHANGE_FAILURE_RATE);
 		Map<String, Map<String, List<DataCount>>> jobNameKeyProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {
@@ -113,6 +134,11 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
+			List<DataCount> dataCountValues = dataList.stream().map(dataCount -> (List<DataCount>) dataCount.getValue())
+					.flatMap(List::stream).collect(Collectors.toList());
+			List<Double> values = dataCountValues.stream().map(dataCount -> (Double) dataCount.getValue())
+					.collect(Collectors.toList());
+			dataCountGroup.setAggregationValue(String.valueOf(AggregationUtils.percentiles(values, 90.0D)));
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
@@ -156,8 +182,8 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			List<Node> projectLeafNodeList) {
 
 		String requestTrackerId = getRequestTrackerId();
-		LocalDateTime localStartDate = LocalDateTime.now()
-				.minusDays(customApiConfig.getJenkinsWeekCount() * DAYS_IN_WEEKS);
+		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);
+		LocalDateTime localStartDate = (LocalDateTime) durationFilter.get(Constant.DATE);
 		LocalDateTime localEndDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtil.TIME_FORMAT);
 		String startDate = localStartDate.format(formatter);
@@ -174,7 +200,7 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 			Map<String, List<DataCount>> trendValueMap = new HashMap<>();
 			String trendLineName = node.getProjectFilter().getName();
 			ChangeFailureRateInfo changeFailureRateInfo = new ChangeFailureRateInfo();
-			LocalDateTime end = localEndDate;
+
 			ObjectId basicProjectConfigId = node.getProjectFilter().getBasicProjectConfigId();
 
 			List<Build> buildListProjectWise = buildGroup.get(basicProjectConfigId);
@@ -198,8 +224,8 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 						jobName = entry.getKey();
 					}
 					aggBuildList.addAll(buildList);
-					prepareInfoForBuild(changeFailureRateInfo, end, buildList, trendLineName, trendValueMap, jobName,
-							dataCountAggList);
+					prepareInfoForBuildTimeWise(changeFailureRateInfo, buildList, trendLineName, trendValueMap, jobName,
+							dataCountAggList, durationFilter);
 				}
 			}
 			if (CollectionUtils.isEmpty(aggBuildList)) {
@@ -228,65 +254,91 @@ public class ChangeFailureRateServiceImpl extends JenkinsKPIService<Double, List
 
 	/**
 	 * Sets build info to holder object and duration list
-	 *
+	 * 
 	 * @param changeFailureRateInfo
-	 * @param endTime
 	 * @param buildList
 	 * @param trendLineName
 	 * @param trendValueMap
 	 * @param jobName
 	 * @param dataCountAggList
+	 * @param durationFilter
 	 */
-	private void prepareInfoForBuild(ChangeFailureRateInfo changeFailureRateInfo, LocalDateTime endTime,
-			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
-			List<DataCount> dataCountAggList) {
-		LocalDate endDateTime = endTime.toLocalDate();
+	private void prepareInfoForBuildTimeWise(ChangeFailureRateInfo changeFailureRateInfo, List<Build> buildList,
+			String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
+			List<DataCount> dataCountAggList, Map<String, Object> durationFilter) {
+
+		String weekOrMonth = (String) durationFilter.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		int previousTimeCount = (int) durationFilter.getOrDefault(Constant.COUNT, 5);
+		LocalDate endDateTime = LocalDate.now();
 		List<DataCount> dataCountList = new ArrayList<>();
-		for (int i = 0; i < customApiConfig.getJenkinsWeekCount(); i++) {
+
+		for (int i = 0; i < previousTimeCount; i++) {
 			Double failureBuildCount = 0.0d;
 			Double buildFailurePercentage = 0.0d;
 			Double totalBuildCount = 0.0d;
-			LocalDate monday = endDateTime;
-			while (monday.getDayOfWeek() != DayOfWeek.MONDAY) {
-				monday = monday.minusDays(1);
+
+			LocalDate currentDate = endDateTime;
+			if (weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK)) {
+				currentDate = currentDate.minusWeeks(i);
+			} else if (weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH)) {
+				currentDate = currentDate.minusMonths(i);
 			}
-			LocalDate sunday = endDateTime;
-			while (sunday.getDayOfWeek() != DayOfWeek.SUNDAY) {
-				sunday = sunday.plusDays(1);
-			}
+
 			for (Build build : buildList) {
-				if (checkDateIsInWeeks(monday, sunday, build)) {
+				if ((weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK) && checkDateIsInWeeks(currentDate, build))
+						|| (weekOrMonth.equalsIgnoreCase(CommonConstant.MONTH)
+								&& checkDateIsInMonth(currentDate, build))) {
+
 					failureBuildCount = getFailureBuildCount(failureBuildCount, build);
 					totalBuildCount = getTotalBuildCount(totalBuildCount, build);
 				}
 			}
+
 			if (totalBuildCount > 0 && failureBuildCount > 0) {
 				buildFailurePercentage = Double
 						.parseDouble(decimalFormat.format(failureBuildCount / totalBuildCount * 100));
 			}
-			String date = DateUtil.localDateTimeConverter(monday) + " to " + DateUtil.localDateTimeConverter(sunday);
+
+			String date = getDateFormatted(weekOrMonth, currentDate);
+
 			DataCount dataCount = createDataCount(trendLineName, buildFailurePercentage, date,
 					totalBuildCount.intValue(), failureBuildCount.intValue(), jobName);
 			setChangeFailureRateInfoForExcel(changeFailureRateInfo, jobName, totalBuildCount, failureBuildCount,
 					buildFailurePercentage, date);
+
 			dataCountList.add(dataCount);
-			endDateTime = endDateTime.minusWeeks(1);
 		}
+
 		trendValueMap.putIfAbsent(jobName + CommonConstant.ARROW + trendLineName, new ArrayList<>());
 		trendValueMap.get(jobName + CommonConstant.ARROW + trendLineName).addAll(dataCountList);
 		dataCountAggList.addAll(dataCountList);
 	}
 
+	private String getDateFormatted(String weekOrMonth, LocalDate currentDate) {
+		if (weekOrMonth.equalsIgnoreCase(CommonConstant.WEEK)) {
+			return DateUtil.getWeekRange(currentDate);
+		} else {
+			return currentDate.getYear() + Constant.DASH + currentDate.getMonthValue();
+		}
+	}
+
+	private boolean checkDateIsInMonth(LocalDate currentDate, Build build) {
+		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		return currentDate.getYear() == buildTime.getYear() && currentDate.getMonth() == buildTime.getMonth();
+	}
+
 	/**
 	 * check build date is between given weeks or not
-	 *
-	 * @param monday
-	 * @param sunday
+	 * 
+	 * @param currentDate
 	 * @param build
-	 * @return double
+	 * @return
 	 */
-	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
+	private boolean checkDateIsInWeeks(LocalDate currentDate, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
 		return (buildTime.isAfter(monday) || buildTime.isEqual(monday))
 				&& (buildTime.isBefore(sunday) || buildTime.isEqual(sunday));
 	}

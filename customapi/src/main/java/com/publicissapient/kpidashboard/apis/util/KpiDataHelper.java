@@ -18,16 +18,19 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +47,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Duration;
 import org.joda.time.Hours;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -51,13 +55,16 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.excel.KanbanCapacity;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
+import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
@@ -76,8 +83,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class KpiDataHelper {
-	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final String CLOSED = "closed";
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	private static final DecimalFormat df = new DecimalFormat(".##");
 
 	private KpiDataHelper() {
 	}
@@ -460,7 +468,7 @@ public final class KpiDataHelper {
 	/**
 	 * if remaining time is 0 and sprint is closed, then PCD is sprint end time
 	 * otherwise will create PCD
-	 * 
+	 *
 	 * @param sprintDetails
 	 * @param pivotPCD
 	 * @param estimatedTime
@@ -480,6 +488,8 @@ public final class KpiDataHelper {
 		iterationPotentialDelay.setPotentialDelay((sprintClosed && remainingEstimateTime == 0) ? 0 : potentialDelay);
 		iterationPotentialDelay.setDueDate(dueDate.toString());
 		iterationPotentialDelay.setPredictedCompletedDate(potentialClosedDate.toString());
+		iterationPotentialDelay.setAssigneeId(issue.getAssigneeId());
+		iterationPotentialDelay.setStatus(issue.getStatus());
 		return iterationPotentialDelay;
 
 	}
@@ -487,7 +497,7 @@ public final class KpiDataHelper {
 	/**
 	 * if due date is less than potential closed date, then potential delay will be
 	 * negative
-	 * 
+	 *
 	 * @param dueDate
 	 * @param potentialClosedDate
 	 * @return
@@ -571,33 +581,6 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 * setting in progress and open issues
-	 * 
-	 * @param fieldMapping
-	 * @param allIssues
-	 * @param inProgressIssues
-	 * @param openIssues
-	 * @return
-	 */
-	public static void arrangeJiraIssueList(List<String> fieldMapping, List<JiraIssue> allIssues,
-			List<JiraIssue> inProgressIssues, List<JiraIssue> openIssues) {
-		List<JiraIssue> jiraIssuesWithDueDate = allIssues.stream()
-				.filter(issue -> StringUtils.isNotEmpty(issue.getDueDate())).collect(Collectors.toList());
-		if (null != fieldMapping && CollectionUtils
-				.isNotEmpty(fieldMapping)) {
-			inProgressIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-			openIssues.addAll(jiraIssuesWithDueDate.stream()
-					.filter(jiraIssue -> !fieldMapping.contains(jiraIssue.getStatus()))
-					.collect(Collectors.toList()));
-		} else {
-			openIssues.addAll(jiraIssuesWithDueDate);
-		}
-
-	}
-
-	/**
 	 * To collect originalEstimate
 	 * 
 	 * @param overAllOriginalEstimate
@@ -669,52 +652,55 @@ public final class KpiDataHelper {
 				.collect(Collectors.toMap(JiraIssue::getNumber, issue -> new IterationKpiModalValue()));
 	}
 
-	public static List<SprintDetails> processSprintBasedOnFieldMappings(List<SprintDetails> dbSprintDetails,
+	public static SprintDetails processSprintBasedOnFieldMappings(SprintDetails dbSprintDetail,
 			List<String> fieldMappingCompletionType, List<String> fieldMappingCompletionStatus,
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate) {
-		List<SprintDetails> updatedSprintDetails = new ArrayList<>(dbSprintDetails);
-		if (CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus)) {
-			updatedSprintDetails.forEach(dbSprintDetail -> {
-				if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
-						|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
-					dbSprintDetail.setCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getCompletedIssues());
-					dbSprintDetail.setNotCompletedIssues(
-							CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
-									: dbSprintDetail.getNotCompletedIssues());
-					Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail,
-							fieldMappingCompletionType, fieldMappingCompletionStatus);
-					newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus, projectWiseDuplicateIssuesWithMinCloseDate);
-					dbSprintDetail.setCompletedIssues(newCompletedSet);
-					dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
-					Set<SprintIssue> totalIssue = new HashSet<>();
-					totalIssue.addAll(dbSprintDetail.getCompletedIssues());
-					totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
-					dbSprintDetail.setTotalIssues(totalIssue);
-				}
-			});
+		if ((CollectionUtils.isNotEmpty(fieldMappingCompletionType)
+				|| CollectionUtils.isNotEmpty(fieldMappingCompletionStatus))) {
+			dbSprintDetail
+					.setCompletedIssues(CollectionUtils.isEmpty(dbSprintDetail.getCompletedIssues()) ? new HashSet<>()
+							: dbSprintDetail.getCompletedIssues());
+			dbSprintDetail.setNotCompletedIssues(
+					CollectionUtils.isEmpty(dbSprintDetail.getNotCompletedIssues()) ? new HashSet<>()
+							: dbSprintDetail.getNotCompletedIssues());
+			Set<SprintIssue> newCompletedSet = filteringByFieldMapping(dbSprintDetail, fieldMappingCompletionType,
+					fieldMappingCompletionStatus);
+			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+			// filtering by minimum closed date, if an issue is originally in RFT in jira
+			// report, and spilled in the same status through fieldmapping we changed RFT as
+			// closed, then the first sprint in which it appeared in RFT should be
+			// considered as the only sprint when it was closed, and not in further sprint,
+			// as it changes the velocity of each sprint
+			newCompletedSet = changeSprintDetails(dbSprintDetail, newCompletedSet, fieldMappingCompletionStatus,
+					projectWiseDuplicateIssuesWithMinCloseDate);
+			dbSprintDetail.setCompletedIssues(newCompletedSet);
+			dbSprintDetail.getNotCompletedIssues().removeAll(newCompletedSet);
+			Set<SprintIssue> totalIssue = new HashSet<>();
+			totalIssue.addAll(dbSprintDetail.getCompletedIssues());
+			totalIssue.addAll(dbSprintDetail.getNotCompletedIssues());
+			dbSprintDetail.setTotalIssues(totalIssue);
 		}
-		return updatedSprintDetails;
+		return dbSprintDetail;
 	}
 
 	public static Set<SprintIssue> changeSprintDetails(SprintDetails sprintDetail, Set<SprintIssue> completedIssues,
-													   List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
+			List<String> customCompleteStatus, Map<ObjectId, Map<String, List<LocalDateTime>>> issueWiseMinimumDates) {
 		if (CollectionUtils.isNotEmpty(customCompleteStatus) && CollectionUtils.isNotEmpty(completedIssues)
 				&& MapUtils.isNotEmpty(issueWiseMinimumDates)) {
 			ObjectId projectId = sprintDetail.getBasicProjectConfigId();
 			Map<String, List<LocalDateTime>> stringListMap = issueWiseMinimumDates.get(projectId);
 			if (MapUtils.isNotEmpty(stringListMap)) {
+				LocalDateTime endLocalDate = sprintDetail.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)
+						? LocalDateTime.now()
+						: LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
+								ZoneId.systemDefault());
 				return completedIssues.stream().filter(completedIssue -> {
 					List<LocalDateTime> issueDateMap = stringListMap.get(completedIssue.getNumber());
 					if (CollectionUtils.isNotEmpty(issueDateMap)) {
 						return issueDateMap.stream()
-								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime,
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getStartDate()),
-												ZoneId.systemDefault()),
-										LocalDateTime.ofInstant(Instant.parse(sprintDetail.getCompleteDate()),
-												ZoneId.systemDefault())));
+								.anyMatch(dateTime -> DateUtil.isWithinDateTimeRange(dateTime, LocalDateTime
+										.ofInstant(Instant.parse(sprintDetail.getStartDate()), ZoneId.systemDefault()),
+										endLocalDate));
 					}
 					return true;
 				}).collect(Collectors.toSet());
@@ -722,7 +708,6 @@ public final class KpiDataHelper {
 		}
 		return completedIssues;
 	}
-
 
 	private static Set<SprintIssue> getCombinationalCompletedSet(Set<SprintIssue> typeWiseIssues,
 			Set<SprintIssue> statusWiseIssues) {
@@ -826,7 +811,31 @@ public final class KpiDataHelper {
 	}
 
 	/**
-	 *  Cal time with 8hr in a day
+	 *
+	 * @param startDateTime
+	 * @param endDateTime
+	 * @return
+	 */
+
+	public static double calWeekDaysExcludingWeekends(DateTime startDateTime, DateTime endDateTime) {
+		if (startDateTime != null && endDateTime != null) {
+			Duration duration = new Duration(startDateTime, endDateTime);
+			long leadTimeChangeInMin = duration.getStandardMinutes();
+			double leadTimeChangeInFullDay = (double) leadTimeChangeInMin / 60 / 24;
+			if (leadTimeChangeInFullDay > 0) {
+				String formattedValue = df.format(leadTimeChangeInFullDay);
+				double leadTimeChangeIncluded = Double.parseDouble(formattedValue);
+				int weekendsCount = countSaturdaysAndSundays(startDateTime, endDateTime);
+				double leadTimeChangeExcluded = leadTimeChangeIncluded - weekendsCount;
+				return leadTimeChangeExcluded;
+			}
+		}
+		return 0.0d;
+	}
+
+	/**
+	 * Cal time with 8hr in a day
+	 *
 	 * @param timeInHours
 	 * @return
 	 */
@@ -853,4 +862,183 @@ public final class KpiDataHelper {
 		}
 		return count;
 	}
+
+	/**
+	 * Get completed subtask of sprint
+	 *
+	 * @param totalSubTask
+	 * @param subTaskHistory
+	 * @param sprintDetail
+	 * @param fieldMappingDoneStatus
+	 * @return
+	 */
+	public static List<JiraIssue> getCompletedSubTasksByHistory(List<JiraIssue> totalSubTask,
+			List<JiraIssueCustomHistory> subTaskHistory, SprintDetails sprintDetail,
+			List<String> fieldMappingDoneStatus) {
+		List<JiraIssue> resolvedSubtaskForSprint = new ArrayList<>();
+		LocalDateTime sprintEndDateTime = sprintDetail.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetail.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDateTime = sprintDetail.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetail.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetail.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+
+		totalSubTask.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> issueSprint = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateTimeRange(jiraIssueSprint.getUpdatedOn(),
+							sprintStartDateTime, sprintEndDateTime))
+					.reduce((a, b) -> b);
+			if (issueSprint.isPresent()
+					&& fieldMappingDoneStatus.contains(issueSprint.get().getChangedTo().toLowerCase()))
+				resolvedSubtaskForSprint.add(jiraIssue);
+		});
+		return resolvedSubtaskForSprint;
+	}
+
+	/**
+	 * Get total subtask of sprint
+	 *
+	 * @param allSubTasks
+	 * @param sprintDetails
+	 * @param subTaskHistory
+	 * @param fieldMappingDoneStatus
+	 * @return
+	 */
+	public static List<JiraIssue> getTotalSprintSubTasks(List<JiraIssue> allSubTasks, SprintDetails sprintDetails,
+			List<JiraIssueCustomHistory> subTaskHistory, List<String> fieldMappingDoneStatus) {
+		LocalDateTime sprintEndDate = sprintDetails.getCompleteDate() != null
+				? LocalDateTime.parse(sprintDetails.getCompleteDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getEndDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		LocalDateTime sprintStartDate = sprintDetails.getActivatedDate() != null
+				? LocalDateTime.parse(sprintDetails.getActivatedDate().split("\\.")[0], DATE_TIME_FORMATTER)
+				: LocalDateTime.parse(sprintDetails.getStartDate().split("\\.")[0], DATE_TIME_FORMATTER);
+		List<JiraIssue> subTaskTaggedWithSprint = new ArrayList<>();
+
+		allSubTasks.forEach(jiraIssue -> {
+			JiraIssueCustomHistory jiraIssueCustomHistory = subTaskHistory.stream().filter(
+					issueCustomHistory -> issueCustomHistory.getStoryID().equalsIgnoreCase(jiraIssue.getNumber()))
+					.findFirst().orElse(new JiraIssueCustomHistory());
+			Optional<JiraHistoryChangeLog> jiraHistoryChangeLog = jiraIssueCustomHistory.getStatusUpdationLog().stream()
+					.filter(changeLog -> fieldMappingDoneStatus.contains(changeLog.getChangedTo().toLowerCase())
+							&& changeLog.getUpdatedOn().isAfter(sprintStartDate))
+					.findFirst();
+			if (jiraHistoryChangeLog.isPresent() && sprintEndDate
+					.isAfter(LocalDateTime.parse(jiraIssue.getCreatedDate().split("\\.")[0], DATE_TIME_FORMATTER)))
+				subTaskTaggedWithSprint.add(jiraIssue);
+
+		});
+		return subTaskTaggedWithSprint;
+	}
+
+	/**
+	 * Return the duration filter details for dora dashboard
+	 * 
+	 * @param kpiElement
+	 * @return
+	 */
+	public static Map<String, Object> getDurationFilter(KpiElement kpiElement) {
+		LinkedHashMap<String, Object> filterDuration = (LinkedHashMap<String, Object>) kpiElement.getFilterDuration();
+		int value = 8; // Default value for 'value'
+		String duration = CommonConstant.WEEK; // Default value for 'duration'
+		LocalDateTime startDateTime = null;
+
+		if (filterDuration != null) {
+			value = (int) filterDuration.getOrDefault("value", 8);
+			duration = (String) filterDuration.getOrDefault(Constant.DURATION, CommonConstant.WEEK);
+		}
+
+		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
+			startDateTime = LocalDateTime.now().minusWeeks(value);
+		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
+			startDateTime = LocalDateTime.now().minusMonths(value);
+		}
+
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put(Constant.DATE, startDateTime);
+		resultMap.put(Constant.DURATION, duration);
+		resultMap.put(Constant.COUNT, value);
+		return resultMap;
+	}
+
+	public static void getMiniDateOfCompleteCycle(List<String> completionStatus,
+			List<JiraHistoryChangeLog> statusUpdationLog, Map<String, LocalDateTime> minimumCompletedStatusWiseMap,
+			List<LocalDateTime> minimumDate) {
+		for (JiraHistoryChangeLog log : statusUpdationLog) {
+			String changedTo = log.getChangedTo();
+			if (completionStatus.contains(changedTo)) {
+				LocalDateTime updatedOn = log.getUpdatedOn();
+				minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
+			} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
+				// if found a status which is not among closed statuses, then save the minimum
+				// date and clear the map
+				LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream().min(LocalDateTime::compareTo)
+						.orElse(null);
+				if (minDate != null) {
+					minimumDate.add(minDate);
+					minimumCompletedStatusWiseMap.clear();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Calculate sum of storyPoint/OriginalEstimate for list of JiraIssue
+	 *
+	 * @param jiraIssueList
+	 *            list of Jira Issue
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return sum of storyPoint/OriginalEstimate
+	 */
+	public static double calculateStoryPoints(List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+		boolean isStoryPoint = StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT);
+		return jiraIssueList.stream().mapToDouble(jiraIssue -> {
+			if (isStoryPoint) {
+				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
+			} else {
+				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				int inHours = timeInMin / 60;
+				return inHours / fieldMapping.getStoryPointToHourMapping();
+			}
+		}).sum();
+	}
+
+
+	/**
+	 * To calculate the added/removed date of sprint change for JiraIssues
+	 *
+	 * @param issues
+	 *            list of jiraIssue
+	 * @param sprint
+	 *            name of sprint
+	 * @param issueWiseHistoryMap
+	 *            Map of issueKey vs sprintUpdateLog
+	 * @param changeType
+	 *            add/remove
+	 * @return Map<issueKey, Date>
+	 */
+	public static Map<String, String> processSprintIssues(List<JiraIssue> issues, String sprint,
+			Map<String, List<JiraHistoryChangeLog>> issueWiseHistoryMap, String changeType) {
+		Map<String, String> issueDateMap = new HashMap<>();
+
+		issues.stream().map(JiraIssue::getNumber).forEach(issueKey -> {
+			List<JiraHistoryChangeLog> sprintUpdateLog = issueWiseHistoryMap.get(issueKey);
+
+			sprintUpdateLog.stream()
+					.filter(sprintUpdate -> changeType.equals(CommonConstant.ADDED)
+							? sprintUpdate.getChangedTo().equalsIgnoreCase(sprint)
+							: changeType.equals(CommonConstant.REMOVED)
+									&& sprintUpdate.getChangedFrom().equalsIgnoreCase(sprint))
+					.forEach(sprintUpdate -> issueDateMap.put(issueKey,
+							DateUtil.dateTimeConverter(sprintUpdate.getUpdatedOn().toString(), DateUtil.DATE_FORMAT,
+									DateUtil.DISPLAY_DATE_FORMAT)));
+		});
+
+		return issueDateMap;
+	}
+
 }

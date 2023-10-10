@@ -106,11 +106,11 @@ public class ReleaseDefectCountByAssigneeServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByAssigneeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
+		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();
 		assertEquals(value, expectedResult(bugList));
 	}
@@ -124,11 +124,11 @@ public class ReleaseDefectCountByAssigneeServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(bugList);
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByAssigneeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(0).getValue()
+		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();
 		assertEquals(value, expectedResult(bugList));
 	}

@@ -18,10 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.rest;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.util.FieldMappingUtil;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import java.util.List;
+import java.util.Optional;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,17 +33,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.abac.ContextAwarePolicyEnforcement;
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.FieldMappingService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappingDTO;
 
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Optional;
 
 /**
  * @author anisingh4
@@ -114,14 +114,19 @@ public class FieldMappingController {
 		boolean result = fieldMappingService.compareMappingOnSave(projectToolConfigId, fieldMapping);
 
 		ServiceResponse response;
-		if (result && projectToolConfig != null &&
-				(projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
-						|| projectToolConfig.getMetadataTemplateCode().equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
+		if (result && projectToolConfig != null
+				&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA)
+				&& (projectToolConfig.getMetadataTemplateCode()
+						.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_SCRUM)
+						|| projectToolConfig.getMetadataTemplateCode()
+								.equalsIgnoreCase(CommonConstant.CUSTOM_TEMPLATE_CODE_KANBAN))) {
+			response = new ServiceResponse(true, "changes are made in customize mappings", false);
+		} else if (result && projectToolConfig != null
+				&& projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.AZURE)) {
 			response = new ServiceResponse(true, "changes are made in customize mappings", false);
 		} else {
 			response = new ServiceResponse(true, "mappings are " + (result ? "not " : "") + "same as "
 					+ (projectToolConfig != null ? "already maintained" : "default") + " mapping", result);
-
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
@@ -137,7 +142,6 @@ public class FieldMappingController {
 		if (null != resultFieldMapping && null != resultFieldMapping.getId()) {
 			log.info("getFieldMapping resultFieldMapping : {}", resultFieldMapping.toString());
 			result = new ModelMapper().map(resultFieldMapping, FieldMappingDTO.class);
-			FieldMappingUtil.updateFieldMapping(result);
 		}
 		log.info("getFieldMapping result : {}", result);
 		ServiceResponse response = null;

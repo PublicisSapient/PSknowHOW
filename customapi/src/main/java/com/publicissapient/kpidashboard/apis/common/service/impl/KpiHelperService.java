@@ -38,7 +38,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +46,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -89,6 +89,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -415,7 +417,7 @@ public class KpiHelperService { // NOPMD
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
 		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH , Sort.Direction.DESC);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 		sprintWiseStoryList.stream().forEach(story -> {
@@ -505,7 +507,7 @@ public class KpiHelperService { // NOPMD
 		sprintWiseStoryList.forEach(s -> storyIdList.addAll(s.getStoryList()));
 		mapOfFiltersFH.put("storyID", storyIdList);
 		List<JiraIssueCustomHistory> storyDataList = jiraIssueCustomHistoryRepository
-				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH);
+				.findFeatureCustomHistoryStoryProjectWise(mapOfFiltersFH, uniqueProjectMapFH , Sort.Direction.DESC);
 		List<String> dodStoryIdList = storyDataList.stream().map(JiraIssueCustomHistory::getStoryID)
 				.collect(Collectors.toList());
 
@@ -567,7 +569,7 @@ public class KpiHelperService { // NOPMD
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 					.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
 
-			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseDuplicateIssueInSprintDetails(
+			Map<ObjectId, Set<String>> duplicateIssues = getProjectWiseTotalSprintDetail(
 					projectWiseTotalSprintDetails);
 			Map<ObjectId, Map<String, List<LocalDateTime>>> projectWiseDuplicateIssuesWithMinCloseDate = null;
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
@@ -589,9 +591,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = fieldMappingMap
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
-						new ArrayList<>(),
-						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate).get(0);
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
+						fieldMapping.getJiraIterationIssuetypeKPI39(),
+						fieldMapping.getJiraIterationCompletionStatusKpi39(), finalProjectWiseDuplicateIssuesWithMinCloseDate);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -658,9 +660,9 @@ public class KpiHelperService { // NOPMD
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 						.get(dbSprintDetail.getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
-				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(Collections.singletonList(dbSprintDetail),
+				SprintDetails sprintDetail=KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI138(),
-						fieldMapping.getJiraIterationCompletionStatusKPI138(), null).get(0);
+						fieldMapping.getJiraIterationCompletionStatusKPI138(), null);
 				if (CollectionUtils.isNotEmpty(sprintDetail.getCompletedIssues())) {
 					List<String> sprintWiseIssueIds = KpiDataHelper
 							.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.COMPLETED_ISSUES);
@@ -1505,23 +1507,21 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * get duplicate issues from all the sprints selected
+	 * when multiple sprints are selected from knowHow dashboard, duplicate issues
+	 * present in total sprintdetails section should be used to find minimum closed
+	 * dates
+	 *
 	 * @param projectWiseTotalSprintDetails
 	 * @return
 	 */
-	public Map<ObjectId, Set<String>> getProjectWiseDuplicateIssueInSprintDetails(
+	public Map<ObjectId, Set<String>> getProjectWiseTotalSprintDetail(
 			Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails) {
 		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
 		projectWiseTotalSprintDetails.forEach((projectId, sprintDetails) -> {
-			List<String> allIssues = sprintDetails.stream().flatMap(
-							sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
-					.map(SprintIssue::getNumber).collect(Collectors.toList());
-
-			Set<String> duplicate = allIssues.stream()
-					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting())).entrySet().stream()
-					.filter(m -> m.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toSet());
-
-			duplicateIssues.put(projectId, duplicate);
+			Set<String> allIssues = sprintDetails.stream().flatMap(
+					sprint -> Optional.ofNullable(sprint.getTotalIssues()).orElse(Collections.emptySet()).stream())
+					.map(SprintIssue::getNumber).collect(Collectors.toSet());
+			duplicateIssues.put(projectId, allIssues);
 		});
 		return duplicateIssues;
 	}
@@ -1545,7 +1545,7 @@ public class KpiHelperService { // NOPMD
 
 		duplicateIssues.forEach((objectId, issues) -> {
 			List<String> customFields = customFieldMapping.getOrDefault(objectId, Collections.emptyList());
-			if (!customFields.isEmpty()) {
+			if (CollectionUtils.isNotEmpty(customFields)) {
 				Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
 				for (String issue : issues) {
 					List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
@@ -1563,20 +1563,7 @@ public class KpiHelperService { // NOPMD
 						Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
 						List<LocalDateTime> minimumDate = new ArrayList<>();
 
-						for (JiraHistoryChangeLog log : statusUpdationLog) {
-							String changedTo = log.getChangedTo();
-							if (customFields.contains(changedTo)) {
-								LocalDateTime updatedOn = log.getUpdatedOn();
-								minimumCompletedStatusWiseMap.putIfAbsent(changedTo, updatedOn);
-							} else if (!minimumCompletedStatusWiseMap.isEmpty()) {
-								LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
-										.min(LocalDateTime::compareTo).orElse(null);
-								if (minDate != null) {
-									minimumDate.add(minDate);
-									minimumCompletedStatusWiseMap.clear();
-								}
-							}
-						}
+						KpiDataHelper.getMiniDateOfCompleteCycle(customFields, statusUpdationLog, minimumCompletedStatusWiseMap, minimumDate);
 
 						//if some status is left in the last cycle then that has to added in the minimum set
 						if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {

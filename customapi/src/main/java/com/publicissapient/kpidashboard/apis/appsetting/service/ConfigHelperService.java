@@ -48,6 +48,7 @@ import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.stream.Collectors;
 
 /**
@@ -245,6 +246,7 @@ public class ConfigHelperService {
 		return kpiMasterRepository.findAll();
 	}
 
+
 	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {
@@ -271,6 +273,14 @@ public class ConfigHelperService {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
 		return masterList.stream().filter(d -> d.getAggregationCriteria() != null)
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCriteria));
+	}
+
+	@PostConstruct
+	@Cacheable(CommonConstant.CACHE_AGG_CIRCLE_CRITERIA)
+	public Map<String, String> calculateCriteriaForCircleKPI() {
+		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
+		return masterList.stream().filter(d -> d.getAggregationCircleCriteria() != null)
+				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCircleCriteria));
 	}
 
 	@PostConstruct

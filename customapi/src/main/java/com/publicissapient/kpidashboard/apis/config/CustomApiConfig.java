@@ -219,6 +219,107 @@ public class CustomApiConfig {// NOPMD
 	private String samlUrlEndString;
 	// repo x axis count days rangeForCheckInsAndMergeRequests
 	private Integer repoXAxisCountForCheckInsAndMergeRequests;
+	private String repoToolAPIKey;
+	private String repoToolURL;
+	private Boolean isRepoToolEnable;
+	private String repoToolCodeCommmitsUrl;
+	private String repoToolDeleteProjectUrl;
+	private String repoToolDeleteRepoUrl;
+	private String repoToolTriggerScan;
+
+	private String repoToolEnrollProjectUrl;
+	private String repoToolPRSizeUrl;
+	private String repoToolPickupTimeUrl;
+	private String repoToolMeanTimeToMergeUrl;
+
+	public void setRepoToolAPIKey(String repoToolAPIKey) {
+		this.repoToolAPIKey = repoToolAPIKey;
+	}
+
+	public void setRepoToolURL(String repoToolURL) {
+		this.repoToolURL = repoToolURL;
+	}
+
+	public void setRepoToolPRSizeUrl(String repoToolPRSizeUrl) {
+		this.repoToolPRSizeUrl = repoToolPRSizeUrl;
+	}
+
+	public void setRepoToolPickupTimeUrl(String repoToolPickupTimeUrl) {
+		this.repoToolPickupTimeUrl = repoToolPickupTimeUrl;
+	}
+
+	public void setRepoToolMeanTimeToMergeUrl(String repoToolMeanTimeToMergeUrl) {
+		this.repoToolMeanTimeToMergeUrl = repoToolMeanTimeToMergeUrl;
+	}
+
+	public void setRepoToolCodeCommmitsUrl(String repoToolCodeCommmitsUrl) {
+		this.repoToolCodeCommmitsUrl = repoToolCodeCommmitsUrl;
+	}
+
+	public void setRepoToolDeleteProjectUrl(String repoToolDeleteProjectUrl) {
+		this.repoToolDeleteProjectUrl = repoToolDeleteProjectUrl;
+	}
+
+	public void setRepoToolDeleteRepoUrl(String repoToolDeleteRepoUrl) {
+		this.repoToolDeleteRepoUrl = repoToolDeleteRepoUrl;
+	}
+
+	public void setRepoToolTriggerScan(String repoToolTriggerScan) {
+		this.repoToolTriggerScan = repoToolTriggerScan;
+	}
+
+	public void setRepoToolEnrollProjectUrl(String repoToolEnrollProjectUrl) {
+		this.repoToolEnrollProjectUrl = repoToolEnrollProjectUrl;
+	}
+
+	public String getRepoToolTriggerScan() {
+		return repoToolTriggerScan;
+	}
+
+	public String getRepoToolEnrollProjectUrl() {
+		return repoToolEnrollProjectUrl;
+	}
+
+	public String getRepoToolPRSizeUrl() {
+		return repoToolPRSizeUrl;
+	}
+
+	public String getRepoToolPickupTimeUrl() {
+		return repoToolPickupTimeUrl;
+	}
+
+	public String getRepoToolMeanTimeToMergeUrl() {
+		return repoToolMeanTimeToMergeUrl;
+	}
+
+	public String getRepoToolCodeCommmitsUrl() {
+		return repoToolCodeCommmitsUrl;
+	}
+
+	public String getRepoToolDeleteProjectUrl() {
+		return repoToolDeleteProjectUrl;
+	}
+
+	public String getRepoToolDeleteRepoUrl() {
+		return repoToolDeleteRepoUrl;
+	}
+
+
+	public Boolean getIsRepoToolEnable() {
+		return isRepoToolEnable;
+	}
+
+	public void setIsRepoToolEnable(Boolean isRepoToolEnable) {
+		this.isRepoToolEnable = isRepoToolEnable;
+	}
+
+	public String getRepoToolAPIKey() {
+		return repoToolAPIKey;
+	}
+
+	public String getRepoToolURL() {
+		return repoToolURL;
+	}
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;

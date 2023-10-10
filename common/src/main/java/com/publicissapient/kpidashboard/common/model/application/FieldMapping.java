@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
-
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -29,32 +28,29 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
 @SuppressWarnings("PMD.TooManyFields")
-@Data
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "field_mapping")
 public class FieldMapping extends BasicModel {
 
+	public static final String READY_FOR_TESTING = "Ready For Testing";
+	public static final String IN_TESTING = "In Testing";
 	private ObjectId projectToolConfigId;
 	private ObjectId basicProjectConfigId;
 	private String projectId;
 	private String sprintName;
 	private String epicName;
 	private List<String> jiradefecttype;
+	private String epicLink;
+	private List<String> jiraSubTaskDefectType;
 
 	// defectPriority
 	private List<String> defectPriority;
@@ -75,13 +71,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
 	@Builder.Default
-	private List<String> jiraStatusForQa = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI148 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI135 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	@Builder.Default
-	private List<String> jiraStatusForQaKPI82 = Arrays.asList("Ready For Testing", "In Testing");
+	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
 	private List<String> jiraDefectInjectionIssueTypeKPI14;
@@ -93,6 +89,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDodQAKPI111;
 	private List<String> jiraDodKPI3;
 	private List<String> jiraDodKPI127;
+	private List<String> jiraDodKPI37;
 
 	private String jiraDefectCreatedStatus;
 	private String jiraDefectCreatedStatusKPI14;
@@ -106,7 +103,6 @@ public class FieldMapping extends BasicModel {
 	private String jiraDefectRejectionStatusKPI151;
 	private String jiraDefectRejectionStatusAVR;
 	private String jiraDefectRejectionStatusKPI28;
-	private String jiraDefectRejectionStatusKPI34;
 	private String jiraDefectRejectionStatusKPI37;
 	private String jiraDefectRejectionStatusKPI35;
 	private String jiraDefectRejectionStatusKPI82;
@@ -126,7 +122,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDefectRemovalStatus;
 	private List<String> jiraDefectRemovalStatusKPI34;
 	private List<String> jiraDefectRemovalIssueType;
-	private List<String> jiraDefectRemovalIssueTypeKPI34;
 	// Added for Defect Reopen Rate KPI.
 	private List<String> jiraDefectClosedStatus;
 	private List<String> jiraDefectClosedStatusKPI137;
@@ -143,7 +138,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraSprintCapacityIssueTypeKpi46;
 
 	private List<String> jiraDefectRejectionlIssueType;
-	private List<String> jiraIssueTypeKPI37;
 
 	private List<String> jiraDefectCountlIssueType;
 	private List<String> jiraDefectCountlIssueTypeKPI28;
@@ -156,10 +150,10 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueDeliverdStatusKPI82;
 
 	private String readyForDevelopmentStatus;
-	private String readyForDevelopmentStatusKPI138;
+	private List<String> readyForDevelopmentStatusKPI138;
 
 	private String jiraDor;
-	private String jiraDorKPI3;
+	private List<String> jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;
 	private List<String> jiraIssueTypeKPI3;
@@ -167,11 +161,12 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStoryIdentification;
 	private List<String> jiraStoryIdentificationKPI129;
 	private List<String> jiraStoryIdentificationKpi40;
+	private List<String> jiraStoryIdentificationKPI164;
 
 	private String jiraLiveStatus;
 	private String jiraLiveStatusKPI152;
 	private String jiraLiveStatusKPI151;
-	private String jiraLiveStatusKPI3;
+	private List<String> jiraLiveStatusKPI3;
 	private String jiraLiveStatusLTK;
 	private String jiraLiveStatusNOPK;
 	private String jiraLiveStatusNOSK;
@@ -218,7 +213,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> resolutionTypeForRejection;
 	private List<String> resolutionTypeForRejectionAVR;
 	private List<String> resolutionTypeForRejectionKPI28;
-	private List<String> resolutionTypeForRejectionKPI34;
 	private List<String> resolutionTypeForRejectionKPI37;
 	private List<String> resolutionTypeForRejectionKPI35;
 	private List<String> resolutionTypeForRejectionKPI82;
@@ -230,6 +224,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraQADefectDensityIssueType;
 	private List<String> jiraQAKPI111IssueType;
+	private List<String> jiraItrQSIssueTypeKPI133;
 
 	private String jiraBugRaisedByQACustomField;
 	private String jiraBugRaisedByQAIdentification;
@@ -244,6 +239,8 @@ public class FieldMapping extends BasicModel {
 	private String epicWsjf;
 	private String epicTimeCriticality;
 	private String epicJobSize;
+	private String epicPlannedValue;
+	private String epicAchievedValue;
 
 	// Squad Mapping
 	private String squadIdentifier;
@@ -306,6 +303,7 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String jiraDueDateField = CommonConstant.DUE_DATE;
 	private String jiraDueDateCustomField;
+	private String jiraDevDueDateField = CommonConstant.DEV_DUE_DATE;
 	private String jiraDevDueDateCustomField;
 	private List<String> jiraDevDoneStatus;
 	private List<String> jiraDevDoneStatusKPI119;
@@ -364,7 +362,43 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationIssuetypeKPI125;
 	private List<String> jiraIterationIssuetypeKPI120;
 	private List<String> jiraIterationIssuetypeKPI124;
+	private List<String> jiraIterationIssuetypeKPI39;
+
+	private boolean uploadData;
+	private boolean uploadDataKPI42;
+	private boolean uploadDataKPI16;
 	private LocalDateTime createdDate;
+	private String jiraDefectRejectionStatusKPI155;
+	private List<String> jiraDodKPI155;
+	private String jiraLiveStatusKPI155;
+
+	@Builder.Default
+	private String notificationEnabler = "On";
+	private List<String> jiraIssueEpicTypeKPI153;
+
+	// DTS-26150 start
+	// Testing Phase Defect Mapping
+	private String testingPhaseDefectCustomField;
+	private String testingPhaseDefectsIdentifier;
+	private List<String> testingPhaseDefectValue;
+	private String testingPhaseDefectComponentValue;
+	private List<String> jiraDodKPI163;
+	// DTS-26150 end
+
+	private List<String> jiraIssueTypeNamesKPI161;
+	private List<String> jiraIssueTypeNamesKPI146;
+	private List<String> jiraIssueTypeNamesKPI148;
+	private List<String> jiraIssueTypeNamesKPI151;
+	private List<String> jiraIssueTypeNamesKPI152;
+
+	private List<String> jiraDodKPI156;
+	private List<String> jiraIssueTypeKPI156;
+
+	@Builder.Default
+	private String leadTimeConfigRepoTool = CommonConstant.JIRA;
+
+	@Builder.Default
+	private String toBranchForMRKPI156 = "master";
 
 	/**
 	 * Get jira issue type names string [ ].

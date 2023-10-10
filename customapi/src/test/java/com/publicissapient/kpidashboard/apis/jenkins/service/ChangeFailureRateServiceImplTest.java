@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,6 +75,7 @@ public class ChangeFailureRateServiceImplTest {
 	private Map<String, List<String>> maturityRangeMap = new HashMap<>();
 	private List<DataCount> trendValues = new ArrayList<>();
 	private Map<String, List<DataCount>> trendValueMap = new LinkedHashMap<>();
+	Map<String, Object> durationFilter =  new LinkedHashMap<>();
 	@Mock
 	private CommonService commonService;
 
@@ -126,14 +129,40 @@ public class ChangeFailureRateServiceImplTest {
 	}
 
 	@Test
-	public void testGetChangeFailureRate() throws Exception {
-
+	public void testGetChangeFailureRateWeek() throws Exception {
+		durationFilter.put(Constant.DURATION,CommonConstant.WEEK);
+		durationFilter.put(Constant.COUNT,14);
+		kpiElement.setFilterDuration(durationFilter);
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
 		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
 
-		when(customApiConfig.getJenkinsWeekCount()).thenReturn(5);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+
+		String kpiRequestTrackerId = "Excel-JENKINS-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
+
+		try {
+
+			KpiElement kpiElement = changeFailureRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertThat("CHANGE-FAILURE-RATE :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+		} catch (Exception e) {
+		}
+
+	}
+	@Test
+	public void testGetChangeFailureRateMonth() throws Exception {
+		durationFilter.put(Constant.DURATION,CommonConstant.MONTH);
+		durationFilter.put(Constant.COUNT,20);
+		kpiElement.setFilterDuration(durationFilter);
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		when(buildRepository.findBuildList(any(), any(), any(), any())).thenReturn(buildList);
 
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 

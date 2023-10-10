@@ -106,6 +106,8 @@ private setting = {
           return new FormControl('');
         case 'radiobutton':
           return new FormControl('');
+        case 'toggle':
+          return new FormControl(false);
         default:
           return new FormControl([]);
       }
@@ -123,7 +125,8 @@ private setting = {
       }
     }
      if (!this.form.invalid) {
-      const submitData = {...this.formData,...this.selectedFieldMapping}
+      this.formData = {...this.formData,...this.selectedFieldMapping};
+      const submitData = {...this.formData};
       submitData['basicProjectConfigId'] = this.selectedConfig.id;
       delete submitData.id;
       this.saveFieldMapping(submitData);
