@@ -174,7 +174,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.subCategoryBoard;
+      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
       if(idx != -1) {
         this.navigationTabs[idx]['count']++;

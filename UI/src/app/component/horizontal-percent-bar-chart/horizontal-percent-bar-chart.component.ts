@@ -21,6 +21,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   selectedNode: {};
   @Input() kpiId:string = '';
   @Input() activeTab: number = 0;
+  @Input() kpiWidth:string = '';
   constructor(public viewContainerRef: ViewContainerRef) { }
 
   @HostListener('window:resize')
@@ -60,7 +61,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     const elem = this.elem;
     self.selectedNode = selectedNode;
     const margin = { top: 10, right: 22, bottom: 20, left: 100 };
-    
+    let minusVal = this.kpiWidth == '100' ? 250 : 0
     let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
     let chartContainerWidth = tempWidth;
     
@@ -69,7 +70,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     chart.select('.chart-container').select('svg').remove();
     chart.select('.chart-container').remove();
     const width = chartContainerWidth - margin.left - margin.right;
-    const barsTotalWidth = data.length > 3 ? data.length*40 : 180;
+    const barsTotalWidth = data.length > 3 ? data.length*30 : 180;
     const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
 
     // append the svg object to the body of the page
@@ -87,7 +88,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     const groups = this.isDrilledDown ? [data.kpiGroup] : data.map(d => d.kpiGroup);
     let subgroups = [];
     if (!this.isDrilledDown) {
-      data[0]['value'].forEach((element) => {
+      data[0]['value']?.forEach((element) => {
         subgroups.push(element['subFilter']);
       });
     } else {
@@ -131,9 +132,8 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       .call(d3.axisLeft(y).tickSize(0));
 
     yAxis.selectAll('text')
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .call(this.wrap, 100);
+      .style('font-size', '10px')
+      .call(this.wrap, this.kpiWidth);
 
     yAxis.select('path')
       .style('display', 'none')
@@ -255,14 +255,12 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
-      .style('margin-top', '20px')
       .attr('width', 'auto')
-      .style('margin-left', 50 + 'px')
+      .style('margin', '20px 0 0 50px')
       .transition()
       .duration(200)
       .style('display', 'block')
       .style('opacity', 1)
-      .style('width', 'auto')
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
@@ -284,16 +282,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   showTooltip(subgroups, width, margin, color, tooltipData, elem, height) {
     const legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer')
-      .style('margin-top', '20px')
-      .attr('width', 'auto')
-      .style('margin-left', 50 + 'px');
+      .style('margin', '0 auto')
+      .style('width', '95%');
 
     legendDiv.transition()
       .duration(200)
-      .style('display', 'block')
       .style('opacity', 1)
-      .style('width', 'auto')
-      .attr('class', 'normal-legend');
+      .attr('class', 'p-d-flex p-flex-column p-align-center normal-legend');
 
     let htmlString = `<div class="p-text-center">${tooltipData.kpiGroup}</div><div class="p-d-flex p-flex-wrap">`;
 
@@ -336,11 +331,17 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     popupComponentRef.setInput('isOnTooltip', true);
   }
 
-  wrap(text, width) {
+  wrap(text, kpiWidth) {
+    console.log(kpiWidth);
+    
+    let textLength = 15;
+    if(kpiWidth == '100'){
+      textLength = 15;
+    }
     text.each(function () {
       let text = d3.select(this);
-      if (text.text().length > 15) {
-          text.text(text.text().substring(0, 12) + '...');
+      if (text.text().length > textLength) {
+          text.text(text.text().substring(0, textLength) + '...');
         }
     });
   
