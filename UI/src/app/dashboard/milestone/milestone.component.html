@@ -101,7 +101,7 @@
 
                                         <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                          <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId][0]['value'];else noDataForKPI"
+                                          <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" [kpiWidth]="kpi?.kpiDetail?.kpiWidth" *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId][0]['value'];else noDataForKPI"
                                             [data]="kpiChartData[kpi?.kpiId]" [activeTab]="activeIndex">
                                           </app-horizontal-percent-bar-chart>
                                         </ng-container>
@@ -232,7 +232,7 @@
                                         <app-piechart *ngSwitchCase="'pieChart'"
                                           [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
                                           <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
-                                            <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId][0]['value'];else noDataForKPI"
+                                            <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" [kpiWidth]="kpi?.kpiDetail?.kpiWidth" *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined && kpiChartData[kpi?.kpiId][0]['value'];else noDataForKPI"
                                               [data]="kpiChartData[kpi?.kpiId]" [activeTab]="activeIndex">
                                             </app-horizontal-percent-bar-chart>
                                           </ng-container>
@@ -366,7 +366,7 @@
 
                                         <app-piechart *ngSwitchCase="'pieChart'"
                                           [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
-                                        <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" *ngSwitchCase="'horizontalPercentBarChart'"
+                                        <app-horizontal-percent-bar-chart [kpiId]="kpi?.kpiId" [kpiWidth]="kpi?.kpiDetail?.kpiWidth" *ngSwitchCase="'horizontalPercentBarChart'"
                                           [data]="kpiChartData[kpi?.kpiId]" [activeTab]="activeIndex">
                                         </app-horizontal-percent-bar-chart>
                                         <app-multiline *ngSwitchDefault
