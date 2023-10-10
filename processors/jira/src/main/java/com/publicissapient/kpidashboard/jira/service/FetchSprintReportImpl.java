@@ -160,7 +160,10 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig, String boardId,
 			SprintDetails dbSprintDetails, KerberosClient krb5Client) {
-		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null) {
+		if (sprint.getOriginalSprintId() != null &&
+				sprint.getOriginBoardId() != null &&
+				sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
+			// If there's at least one non-null and non-empty string in the list, the condition is true.
 			getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails, krb5Client);
 		}
 	}
