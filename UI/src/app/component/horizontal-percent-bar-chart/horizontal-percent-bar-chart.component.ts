@@ -42,8 +42,11 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       }
       d3.select(this.elem).select('.tooltip-chart-container').select('app-horizontal-percent-bar-chart').remove();
     }
-    if(changes['activeTab']?.currentValue != changes['activeTab']?.previousValue){
-      this.draw(this.data);
+    if(changes['activeTab']){
+      /** settimeout applied because dom is loading late */
+      setTimeout(() => {
+        this.draw(this.data);
+      }, 0);
     }
     if (changes['filter']) {
       d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
@@ -60,8 +63,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     let self = this;
     const elem = this.elem;
     self.selectedNode = selectedNode;
-    const margin = { top: 10, right: 22, bottom: 20, left: 100 };
-    let minusVal = this.kpiWidth == '100' ? 250 : 0
+    const margin = { top: 10, right: 22, bottom: 20, left: this.kpiWidth == '100' ? 260 : 100};
     let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
     let chartContainerWidth = tempWidth;
     
@@ -255,13 +257,12 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
-      .attr('width', 'auto')
-      .style('margin', '20px 0 0 50px')
+      .style('width', '100%')
+      .style('margin', '0 auto')
       .transition()
       .duration(200)
-      .style('display', 'block')
       .style('opacity', 1)
-      .attr('class', 'p-d-flex p-flex-wrap normal-legend');
+      .attr('class', 'p-d-flex p-flex-wrap p-justify-center normal-legend');
 
     let htmlString = '';
     if (!this.isDrilledDown) {
@@ -305,7 +306,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 20 + 'px');
+      .style('bottom', 15 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
@@ -332,11 +333,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   }
 
   wrap(text, kpiWidth) {
-    console.log(kpiWidth);
-    
     let textLength = 15;
     if(kpiWidth == '100'){
-      textLength = 15;
+      textLength = 50;
     }
     text.each(function () {
       let text = d3.select(this);
