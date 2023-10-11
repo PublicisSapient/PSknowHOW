@@ -642,7 +642,7 @@ export class MilestoneComponent implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       if(tab.width === 'half'){
         const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2']];
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
       }
       this.upDatedConfigData = [];
       this.navigationTabs.forEach(tabs=>{
