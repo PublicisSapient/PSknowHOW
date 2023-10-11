@@ -49,6 +49,10 @@
         </p-multiSelect>
     </div>
 
+    <div *ngSwitchCase="'number'">
+        <input type="number" id="fieldConfig?.fieldName" [(ngModel)]="value" (change)="setValue()"  pInputText class="form-control p-p-2 mb-2 mr-sm-2" (keydown)="enterNumericValue($event)">
+    </div>
+
     <div *ngSwitchCase="'toggle'">
             <p-inputSwitch  id="fieldConfig?.fieldName" [(ngModel)]="value" (onChange)="setValue()">
             </p-inputSwitch>
