@@ -111,8 +111,9 @@ export class MilestoneComponent implements OnInit {
 
   processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Release Review', 'count': 0,kpis : [],width : 'half'},
-      {'label':'Release Progress', 'count': 0,kpis : [],width :'full'},
+      {'label':'Speed', 'count': 0,kpis : [],width : 'half'},
+      {'label':'Quality', 'count': 0,kpis : [],width :'half'},
+      {'label':'Value', 'count': 0,kpis : [],width :'full'},
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
      /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
@@ -673,6 +674,10 @@ export class MilestoneComponent implements OnInit {
     if (currentKPIGroup?.kpiList?.length > 0) {
         this.postJiraKpi(this.kpiJira, 'jira');
     }
+  }
+
+  handleTabChange(event){
+    this.activeIndex = event.index;
   }
 
   /** unsubscribing all Kpi Request  */

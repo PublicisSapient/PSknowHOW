@@ -65,7 +65,6 @@ export class MultilineComponent implements OnChanges {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
   }
-
   ngOnInit(): void {
     this.service.showTableViewObs.subscribe(view => {
       this.viewType = view;
