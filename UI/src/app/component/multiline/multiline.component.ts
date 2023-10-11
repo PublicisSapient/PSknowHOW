@@ -94,7 +94,9 @@ export class MultilineComponent implements OnChanges {
     //   this.draw('new');
     // }
     if(changes['activeTab']){
-      this.draw();
+      setTimeout(() => {
+       this.draw();
+      }, 0);
     }
   }
 
@@ -154,7 +156,7 @@ export class MultilineComponent implements OnChanges {
     // width = $('#multiLineChart').width();
     width =
       data[0].value.length <= 5
-        ? document.getElementById('multiLineChart').offsetWidth - 70
+        ? document.getElementById('multiLineChart'+this.kpiId).offsetWidth - 70
         : data[0].value.length * 20 * 8;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
@@ -329,7 +331,7 @@ export class MultilineComponent implements OnChanges {
     // Define the div for the tooltip
     const div = d3
       .select(this.elem)
-      .select('#multiLineChart')
+      .select('#multiLineChart'+this.kpiId)
       .append('div')
       .attr('class', 'tooltip')
       .style('display', 'none')
@@ -656,7 +658,7 @@ export class MultilineComponent implements OnChanges {
 
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
-      const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
+      const legendDiv = d3.select(this.elem).select('#multiLineChart'+this.kpiId).append('div')
         .attr('id', 'legendContainer')
         .style('margin-left', 60 + 'px')
         .append('div');
