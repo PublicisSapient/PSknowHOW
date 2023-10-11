@@ -10,7 +10,7 @@
 :host ::ng-deep.chart-container{
   position: relative;
   height: 200px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
