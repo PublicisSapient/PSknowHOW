@@ -281,7 +281,11 @@ public enum KPIExcelColumn {
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-					"PR Size (No. of lines)"));
+					"PR Size (No. of lines)")),
+
+	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+
+	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status"));
 
 	// @formatter:on
 
