@@ -15,7 +15,7 @@
                     <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.fullWidthKpis">
                       <ng-container *ngFor="let kpi of board.fullWidthKpis">
-                        <div class="card-type-1" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag>
+                        <div class="card-type-1" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi.kpiId]"
@@ -72,7 +72,7 @@
                         </div>
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
-                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
@@ -153,7 +153,7 @@
                     <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpiPart1">
                       <ng-container *ngFor="let kpi of board.kpiPart1">
-                        <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag>
+                        <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
@@ -210,7 +210,7 @@
                         </div>
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
-                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
@@ -291,7 +291,7 @@
                     <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpiPart2">
                       <ng-container *ngFor="let kpi of board.kpiPart2">
-                        <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag>
+                        <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
@@ -348,7 +348,7 @@
                         </div>
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
-                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
@@ -431,7 +431,7 @@
                     <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
                       [cdkDropListData]="board.kpis">
                       <ng-container *ngFor="let kpi of board.kpis">
-                        <div class="card-type-1 p-sm-12" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag>
+                        <div class="card-type-1 p-sm-12" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                           <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi.kpiId]"
@@ -488,7 +488,7 @@
                         </div>
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
-                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                            [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
