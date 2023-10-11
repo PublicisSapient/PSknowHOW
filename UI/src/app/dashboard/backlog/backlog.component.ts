@@ -202,8 +202,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
     } else {
         this.noKpis = false;
     }
-    console.log(this.navigationTabs);
-    
   }
 /**
     Used to receive all filter data from filter component when user
@@ -419,8 +417,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
         this.showKpiTrendIndicator[kpiId] = false;
       }
     });
-    console.log(kpiId, this.kpiChartData[kpiId]);
-    
 
   }
 
