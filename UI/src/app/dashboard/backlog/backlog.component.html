@@ -79,7 +79,7 @@
             <div class="subKPi p-sm-6" *ngIf="kpiPart1.length > 0" cdkDropList (cdkDropListDropped)="drop($event,'l1')"
               [cdkDropListData]="kpiPart1">
               <ng-container *ngFor="let kpi of kpiPart1; let i = index;">
-                <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag>
+                <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
                   <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                     (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                     [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOptionForCard($event, kpi)"
@@ -131,7 +131,7 @@
                 </div>
                 <ng-template #showGraph>
                   <div class="backlog-chart p-pb-3"
-                    [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                    [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" [trendData]="kpiChartData[kpi?.kpiId]"
                       (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                       [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
@@ -200,7 +200,7 @@
             <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,'l1')" [cdkDropListData]="kpiPart2">
               <ng-container *ngFor="let kpi of kpiPart2; let j = index;">
                 <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph"
-                  [ngClass]="{'p-w-100': kpi.kpiId == 'kpi3'}" cdkDrag>
+                  [ngClass]="{'p-w-100': kpi.kpiId == 'kpi3'}" cdkDrag cdkDragLockAxis="y">
                   <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                     (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                     [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOptionForCard($event, kpi)"
@@ -252,7 +252,7 @@
                 </div>
                 <ng-template #showGraph>
                   <div class="backlog-chart p-pb-3"
-                    [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag>
+                    [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                     <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" [trendData]="kpiChartData[kpi?.kpiId]"
                       (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                       [dropdownArr]="kpiDropdowns[kpi?.kpiId]" (optionSelected)="handleSelectedOption($event, kpi)"
