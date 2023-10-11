@@ -5110,5 +5110,11 @@ db.kpi_master.bulkWrite([
             filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi163"] } },
             update: { $set: { "kpiSubCategory": "Quality" } }
         },
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150","kpi147"] } },
+            update: { $set: { "kpiWidth": 100 } }
+        },
     }
 ]);
