@@ -10,6 +10,7 @@ export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
   elem;
   @Input() kpiId:string = ''; 
+  @Input() activeTab?: number = 0;
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {}
@@ -22,7 +23,9 @@ export class StackedAreaChartComponent implements OnInit {
         this.draw();
       }
     }
-
+    if(changes['activeTab']){
+      this.draw();
+    }
   }
 
   draw() {

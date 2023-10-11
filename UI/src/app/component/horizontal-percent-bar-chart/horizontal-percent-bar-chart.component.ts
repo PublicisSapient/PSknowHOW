@@ -20,7 +20,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   elem: any;
   selectedNode: {};
   @Input() kpiId:string = '';
-  @Input() activeTab: number = 0;
+  @Input() activeTab?: number = 0;
   @Input() kpiWidth:string = '';
   constructor(public viewContainerRef: ViewContainerRef) { }
 

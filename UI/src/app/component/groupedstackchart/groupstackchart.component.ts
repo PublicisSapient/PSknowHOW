@@ -46,6 +46,7 @@ export class GroupstackchartComponent implements OnChanges {
   maxYValue: any;
   dataPoints = 2;
   dataLength = 0;
+  @Input() activeTab?: number = 0;
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -53,20 +54,27 @@ export class GroupstackchartComponent implements OnChanges {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     // only run when property "data" changed
-    if (changes['data']) {
-      this.dataPoints = this.data.length;
-      this.dataLength = this.dataPoints; //Object.keys(this.data[0]?.value)?.length;
-      this.elem = this.viewContainerRef.element.nativeElement;
-      if (!changes['data'].firstChange) {
-        this.draw('update');
-      } else {
-        this.draw('new');
+    if (Object.keys(changes)?.length > 0) {
+      if (changes['data']) {
+        this.dataPoints = this.data.length;
+        this.dataLength = this.dataPoints; //Object.keys(this.data[0]?.value)?.length;
+        this.elem = this.viewContainerRef.element.nativeElement;
+        // this.draw();
+        if (!changes['data'].firstChange) {
+          this.draw();
+        } else {
+          this.draw();
+        }
       }
+    }
+    if(changes['activeTab']){
+      setTimeout(() => {
+        this.draw();
+      }, 0);
     }
   }
 
-
-  draw(status) {
+  draw() {
     const elem = this.elem;
     const self = this;
     d3.select(elem).select('svg').remove();
@@ -84,6 +92,8 @@ export class GroupstackchartComponent implements OnChanges {
     // const thresholdValue = this.thresholdValue;
     // const barWidth = 20;
     // let width = this.dataLength * barWidth * 8;
+    console.log(this.kpiId, document.getElementById('groupstackchart').offsetWidth);
+    
     const width = this.dataPoints <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * 20 * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     // const spacingVariable = 20;
