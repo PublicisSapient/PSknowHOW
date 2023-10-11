@@ -33,8 +33,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +54,9 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
@@ -234,12 +234,12 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		Map<String, List<Deployment>> deploymentMapEnvWise = deploymentListProjectWise.stream()
 				.collect(Collectors.groupingBy(Deployment::getEnvName, Collectors.toList()));
 
-		Map<String, List<Deployment>> deploymentMapTimeWise = duration.equalsIgnoreCase(CommonConstant.WEEK)
-				? getLastNWeek(previousTimeCount)
-				: getLastNMonth(previousTimeCount);
-
 		deploymentMapEnvWise.forEach((envName, deploymentListEnvWise) -> {
 			if (StringUtils.isNotEmpty(envName) && CollectionUtils.isNotEmpty(deploymentListEnvWise)) {
+
+				Map<String, List<Deployment>> deploymentMapTimeWise = duration.equalsIgnoreCase(CommonConstant.WEEK)
+						? getLastNWeek(previousTimeCount)
+						: getLastNMonth(previousTimeCount);
 				List<DataCount> dataCountList = new ArrayList<>();
 
 				for (Deployment deployment : deploymentListEnvWise) {
