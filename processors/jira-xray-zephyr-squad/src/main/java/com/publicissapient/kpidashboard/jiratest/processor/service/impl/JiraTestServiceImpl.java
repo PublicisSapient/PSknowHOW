@@ -97,6 +97,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
+	private static final String TEST_AUTOMATED_FIELD_PARSING_ERROR = "JIRA Processor |Error while parsing test automated field";
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
 	@Autowired
@@ -441,7 +442,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 			setRegressionLabel(jiraTestToolInfo, fields, testCaseDetail);
 		} catch (Exception e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 	}
 
@@ -558,7 +559,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 		return automationFlag;
 	}
@@ -592,7 +593,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 		return fetchedValueFromJson;
 	}
@@ -874,7 +875,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 		} else {
 			username = connectionOptional.map(Connection::getUsername).orElse(null);
 			password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
-			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password));
+			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
 		}
 		httpURLConnection.connect();
 		StringBuilder sb = new StringBuilder();

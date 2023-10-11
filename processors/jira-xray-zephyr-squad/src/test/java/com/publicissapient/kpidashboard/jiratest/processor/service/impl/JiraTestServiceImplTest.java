@@ -1,22 +1,52 @@
 package com.publicissapient.kpidashboard.jiratest.processor.service.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.jiratest.adapter.impl.async.impl.ProcessorAsynchSearchRestClient;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,6 +77,7 @@ import com.publicissapient.kpidashboard.jiratest.oauth.JiraOAuthProperties;
 import com.publicissapient.kpidashboard.jiratest.repository.JiraTestProcessorRepository;
 
 import io.atlassian.util.concurrent.Promise;
+import org.springframework.web.client.RestClientException;
 
 @ExtendWith(SpringExtension.class)
 class JiraTestServiceImplTest {
@@ -80,6 +111,16 @@ class JiraTestServiceImplTest {
 
 	@Mock
 	private ConnectionRepository connectionRepository;
+	@Mock
+	private ProjectConfFieldMapping projectConfig;
+	@Mock
+	private ProcessorToolConnection processorToolConnection;
+	@Mock
+	private ProcessorAsynchSearchRestClient processorSearchClient;
+	@Mock
+	private Map<String, IssueField> customFieldMap;
+	@Mock
+	private ProcessorToolConnection jiraTestToolInfo;
 
 	private static ProjectConfFieldMapping getProjectConfFieldMapping() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
@@ -226,6 +267,198 @@ class JiraTestServiceImplTest {
 			}
 		};
 		SearchResult searchResult = new SearchResult(0, 0, 1, issueIterable);
+	}
+
+	@Test
+	void testGetUserTimeZoneRestClientException() {
+		// Mock the behavior of projectConfig
+		when(projectConfig.getProcessorToolConnection()).thenReturn(processorToolConnection);
+
+		// Mock RestClientException behavior
+		when(processorToolConnection.getUrl()).thenThrow(new RestClientException("Rest client error"));
+
+		// Call the method you want to test, and expect an exception
+		RestClientException exception = assertThrows(RestClientException.class, () -> {
+			jiraTestServiceImpl.getUserTimeZone(projectConfig);
+		});
+
+		// Optionally, you can assert on the exception message or other details
+		Assertions.assertEquals("Rest client error", exception.getMessage());
+
+		// Verify that expected methods were called with the expected arguments
+		verify(projectConfig, times(1)).getProcessorToolConnection();
+	}
+
+	@Test
+	public void testGetIssues() {
+
+		// Create a sample ProjectConfFieldMapping
+		ProjectConfFieldMapping projectConfig = new ProjectConfFieldMapping();
+		projectConfig.setProjectKey("YourProjectKey");
+
+		// Create a sample startDateTimeByIssueType map
+		Map<String, LocalDateTime> startDateTimeByIssueType = new HashMap<>();
+		LocalDateTime localDateTime = LocalDateTime.now();
+		startDateTimeByIssueType.put("issueType1", localDateTime);
+
+		// Create a sample userTimeZone
+		String userTimeZone = "UTC";
+
+		// Mock the behavior of client and related objects
+		when(client.getProcessorSearchClient()).thenReturn(processorSearchClient);
+		when(processorSearchClient.searchJql(anyString(), anyInt(), anyInt(), any())).thenReturn(promisedRs);
+
+		// Call the method you want to test
+		SearchResult searchResult = jiraTestServiceImpl.getIssues(projectConfig, startDateTimeByIssueType, userTimeZone, 0, false, client);
+		// Verify that expected methods were called with the expected arguments
+		verify(client, times(1)).getProcessorSearchClient();
+		verify(processorSearchClient, times(1)).searchJql(anyString(), anyInt(), anyInt(), any());
+	}
+
+	@Test
+	public void testGetIssuesRestClientException() {
+
+		// Create a sample ProjectConfFieldMapping
+		ProjectConfFieldMapping projectConfig = new ProjectConfFieldMapping();
+		projectConfig.setProjectKey("YourProjectKey");
+
+		// Create a sample startDateTimeByIssueType map
+		Map<String, LocalDateTime> startDateTimeByIssueType = new HashMap<>();
+		java.time.LocalDateTime localDateTime = LocalDateTime.now();
+		startDateTimeByIssueType.put("issueType1", localDateTime);
+
+		// Create a sample userTimeZone
+		String userTimeZone = "UTC";
+
+		// Mock the behavior of client to throw a RestClientException
+		when(client.getProcessorSearchClient()).thenThrow(new RestClientException("Rest client error"));
+
+		// Call the method you want to test, and expect an exception
+		RestClientException exception = assertThrows(RestClientException.class, () -> {
+			jiraTestServiceImpl.getIssues(projectConfig, startDateTimeByIssueType, userTimeZone, 0, false, client);
+		});
+
+		// Optionally, you can assert on the exception message or other details
+		assertEquals("Rest client error", exception.getMessage());
+
+		// Verify that expected methods were called with the expected arguments
+		verify(client, times(1)).getProcessorSearchClient();
+	}
+
+	private SearchResult createSampleSearchResult() {
+		// Create and return a sample SearchResult object for testing
+		// You can customize this based on your test case
+		return new SearchResult(0, 0, 1, issueIterable);
+	}
+
+	@Test
+	public void testSetRegressionLabel() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+		// Create a sample TestCaseDetails object
+		TestCaseDetails testCaseDetails = new TestCaseDetails();
+		testCaseDetails.setLabels(Collections.singletonList("existingLabel"));
+
+		// Mock the behavior of jiraTestToolInfo
+		List<String> testRegressionValue = new ArrayList<>();
+		testRegressionValue.add("RegressionLabel");
+		when(jiraTestToolInfo.getJiraRegressionTestValue()).thenReturn(testRegressionValue);
+		when(jiraTestToolInfo.getTestRegressionByCustomField()).thenReturn("customField");
+
+		// Create an instance of the private method using reflection
+		Method setRegressionLabelMethod = JiraTestServiceImpl.class.getDeclaredMethod("setRegressionLabel",
+				ProcessorToolConnection.class, Map.class, TestCaseDetails.class);
+		setRegressionLabelMethod.setAccessible(true);
+
+		// Invoke the private method
+		setRegressionLabelMethod.invoke(jiraTestServiceImpl, getJiraToolConfig(), customFieldMap, testCaseDetails);
+
+		// Perform assertions based on your expected behavior
+		List<String> expectedLabels = Arrays.asList("existingLabel", "value1", "value2");
+		Assertions.assertNotNull(testCaseDetails.getLabels());
+	}
+
+	@Test
+	public void testEncodeCredentialsToBase64() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		// Define test input values
+		String username = "testUsername";
+		String password = "testPassword";
+
+		// Create an instance of the private method using reflection
+		Method encodeCredentialsToBase64Method = JiraTestServiceImpl.class.getDeclaredMethod("encodeCredentialsToBase64",
+				String.class, String.class);
+		encodeCredentialsToBase64Method.setAccessible(true);
+
+		// Invoke the private method
+		String encodedCredentials = (String) encodeCredentialsToBase64Method.invoke(jiraTestServiceImpl, username, password);
+
+		// Perform assertions based on your expected behavior
+		String expectedEncodedCredentials = Base64.getEncoder().encodeToString((username + ":" + password).getBytes());
+		Assertions.assertEquals(expectedEncodedCredentials, encodedCredentials);
+	}
+
+	@Test
+	public void testFindLastSavedTestCaseDetailsByType() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		// Define test input values
+		List<TestCaseDetails> testCaseDetails = new ArrayList<>();
+		// Add test data to testCaseDetails as needed
+
+		Map<String, LocalDateTime> lastSavedTestCasesChangedDateByType = new HashMap<>();
+		// Add test data to lastSavedTestCasesChangedDateByType as needed
+
+		// Create an instance of the private method using reflection
+		Method findLastSavedTestCaseDetailsByTypeMethod = JiraTestServiceImpl.class.getDeclaredMethod("findLastSavedTestCaseDetailsByType",
+				List.class, Map.class);
+		findLastSavedTestCaseDetailsByTypeMethod.setAccessible(true);
+
+		// Invoke the private method
+		findLastSavedTestCaseDetailsByTypeMethod.invoke(jiraTestServiceImpl, testCaseDetails, lastSavedTestCasesChangedDateByType);
+
+		// Perform assertions based on your expected behavior
+		// Modify this assertion based on your actual requirements
+		Assertions.assertNotNull(lastSavedTestCasesChangedDateByType);
+
+		// Verify that expected methods were called with the expected arguments
+		// Add verification steps as needed
+	}
+
+	@Test
+	public void testUpdatedDateToSave() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+		// Define test input values
+		LocalDateTime capturedDate = LocalDateTime.of(2023, 8, 16, 12, 0); // Example date
+		LocalDateTime currentIssueDate = LocalDateTime.of(2023, 8, 17, 12, 0); // Example date
+
+		// Create an instance of the private method using reflection
+		Method updatedDateToSaveMethod = JiraTestServiceImpl.class.getDeclaredMethod("updatedDateToSave",
+				LocalDateTime.class, LocalDateTime.class);
+		updatedDateToSaveMethod.setAccessible(true);
+
+		// Invoke the private method
+		LocalDateTime result = (LocalDateTime) updatedDateToSaveMethod.invoke(jiraTestServiceImpl, capturedDate, currentIssueDate);
+
+		// Perform assertions based on your expected behavior
+		// Modify this assertion based on your actual requirements
+		Assertions.assertEquals(currentIssueDate, result);
+
+		// Verify that expected methods were called with the expected arguments
+		// Add verification steps as needed
+	}
+	@Test
+	public void testPurgeJiraIssues() {
+		// Define test input values
+		List<Issue> purgeIssuesList = Collections.emptyList();
+		ProjectConfFieldMapping projectConfig = new ProjectConfFieldMapping();
+
+		List<TestCaseDetails> testCaseDetailsList = Collections.emptyList();
+
+		// Mock the behavior of the testCaseDetailsRepository
+		when(testCaseDetailsRepository.findByNumberAndBasicProjectConfigId(anyString(), anyString())).thenReturn(testCaseDetailsList);
+
+		// Call the method to be tested
+		jiraTestServiceImpl.purgeJiraIssues(purgeIssuesList, projectConfig);
+
+		// Verify that the method calls and interactions occurred as expected
+		verify(testCaseDetailsRepository, times(0)).delete(any(TestCaseDetails.class));
 	}
 
 }
