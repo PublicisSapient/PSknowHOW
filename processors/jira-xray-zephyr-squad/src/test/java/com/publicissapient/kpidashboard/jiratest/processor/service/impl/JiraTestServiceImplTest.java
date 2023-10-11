@@ -342,8 +342,7 @@ class JiraTestServiceImplTest {
 	}
 
 	@Test
-	void testSetRegressionLabel()
-			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	void testSetRegressionLabel() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
 		// Create a sample TestCaseDetails object
 		TestCaseDetails testCaseDetails = new TestCaseDetails();
@@ -417,8 +416,7 @@ class JiraTestServiceImplTest {
 	}
 
 	@Test
-	void testUpdatedDateToSave()
-			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	void testUpdatedDateToSave() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
 		// Define test input values
 		LocalDateTime capturedDate = LocalDateTime.of(2023, 8, 16, 12, 0); // Example date
@@ -469,7 +467,9 @@ class JiraTestServiceImplTest {
 		testCaseDetail.setDefectStoryID(defectStoryID);
 
 		// Mock the behavior of jiraTestProcessorConfig
-		Mockito.when(jiraTestProcessorConfig.getExcludeLinks()).thenReturn(List.of("SomeLinkType"));
+		List<String> excludeLinksList = new ArrayList<>();
+		excludeLinksList.add("SomeLinkType");
+		Mockito.when(jiraTestProcessorConfig.getExcludeLinks()).thenReturn(excludeLinksList);
 
 		// Create an instance of the private method using reflection
 		Method setStoryLinkWithDefectMethod = JiraTestServiceImpl.class.getDeclaredMethod("setStoryLinkWithDefect",
@@ -503,7 +503,6 @@ class JiraTestServiceImplTest {
 		setStoryLinkWithDefectMethod.invoke(jiraTestServiceImpl, issue1, testCaseDetail);
 
 		// Verify that the method worked as expected
-		Set<String> expectedDefectStorySet = Set.of("DEFECT-123", "DEFECT-456");
 		Assertions.assertNotNull(testCaseDetail.getDefectStoryID());
 	}
 
