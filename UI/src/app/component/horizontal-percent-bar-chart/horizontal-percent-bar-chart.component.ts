@@ -73,7 +73,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       chart.select('.chart-container').select('svg').remove();
       chart.select('.chart-container').remove();
       const width = chartContainerWidth - margin.left - margin.right;
-      const barsTotalWidth = data.length > 3 ? data.length*30 : 180;
+      const barsTotalWidth = data.length > 7 ? data.length*30 : 180;
       const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
   
       // append the svg object to the body of the page
