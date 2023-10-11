@@ -73,8 +73,7 @@ public class DateUtil {
 
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	public static final String NOT_APPLICABLE = "NA";
-	public static final String D_MMM = "d-MMM";
-	public static final String D_MMM_YY = "d-MMM yy";
+	public static final String DD_MM = "dd/MM";
 
 	private DateUtil() {
 		// to prevent creation on object
@@ -283,20 +282,20 @@ public class DateUtil {
 		LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 		LocalDate sunday = currentDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
-		String formattedMonday = monday.format(DateTimeFormatter.ofPattern(D_MMM));
-		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(D_MMM_YY));
+		String formattedMonday = monday.format(DateTimeFormatter.ofPattern(DD_MM));
+		String formattedSunday = sunday.format(DateTimeFormatter.ofPattern(DD_MM));
 
-		return formattedMonday + " to " + formattedSunday;
+		return formattedMonday + " - " + formattedSunday;
 	}
 
 	public static String getWeekRangeUsingDateTime(DateTime currentDate) {
 		DateTime monday = currentDate.withDayOfWeek(DateTimeConstants.MONDAY);
 		DateTime sunday = currentDate.withDayOfWeek(DateTimeConstants.SUNDAY);
 
-		String formattedMondayDate = DateTimeFormat.forPattern(D_MMM).print(monday);
-		String formattedSundayDate = DateTimeFormat.forPattern(D_MMM_YY).print(sunday);
+		String formattedMondayDate = DateTimeFormat.forPattern(DD_MM).print(monday);
+		String formattedSundayDate = DateTimeFormat.forPattern(DD_MM).print(sunday);
 
-		return formattedMondayDate + " to " + formattedSundayDate;
+		return formattedMondayDate + " - " + formattedSundayDate;
 	}
 
 	/**
