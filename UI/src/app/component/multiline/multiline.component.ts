@@ -190,13 +190,13 @@ export class MultilineComponent implements OnChanges {
       xScale = d3
         .scaleBand()
         .domain(sprintList)
-        .range([0, width - margin])
+        .range([0, width])
         .padding(0)
 
     }else{
       xScale = d3
       .scaleBand()
-      .rangeRound([0, width - margin])
+      .rangeRound([0, width])
       .padding(0)
       .domain(
         data[maxObjectNo].value.map(function (d, i) {
