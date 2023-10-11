@@ -24,6 +24,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.jiratest.model.ProjectConfFieldMapping;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -37,6 +38,8 @@ public final class JiraProcessorUtil {
 
 	private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
 	private static final String NULL_STR = "null";
+	public static final String ORDER_BY = "order by";
+	public static final String UPDATED_DATE = "updateddate";
 
 	private JiraProcessorUtil() {
 		// Default
@@ -129,6 +132,77 @@ public final class JiraProcessorUtil {
 		sb.append(preQuery);
 		sb.append(" ");
 		sb.append(postQuery);
+		sb.append(" ORDER BY updated DESC");
+		return sb.toString();
+	}
+
+	/**
+	 * process jql
+	 *
+	 * @param query
+	 *            jqlquery
+	 * @param startDateTimeStrByIssueType
+	 *            datewise issuetype map
+	 * @param dataExist
+	 *            data already exist in db or not
+	 * @return processed JQL
+	 */
+	public static String processJql(String query, Map<String, String> startDateTimeStrByIssueType, boolean dataExist,
+									ProjectConfFieldMapping projectConfig) {
+
+		String finalQuery = StringUtils.EMPTY;
+		if (StringUtils.isEmpty(query) || startDateTimeStrByIssueType == null) {
+			return finalQuery;
+		}
+		query = query.toLowerCase().split(ORDER_BY)[0];
+		String[] testCaseTypes = projectConfig.getProcessorToolConnection().getJiraTestCaseType();
+		StringBuilder queryWithIssueTypes = new StringBuilder(query);
+		for (String testCaseType : testCaseTypes) {
+			queryWithIssueTypes.append(" AND issuetype = '").append(testCaseType).append("'");
+		}
+		StringBuilder issueTypeDateQuery = new StringBuilder();
+		int size = startDateTimeStrByIssueType.entrySet().size();
+		int count = 0;
+		issueTypeDateQuery.append(" (");
+		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
+			count++;
+			String type = entry.getKey();
+			String dateTime = entry.getValue();
+
+			issueTypeDateQuery.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
+			if (count < size) {
+				issueTypeDateQuery.append(" OR ");
+			}
+		}
+
+		issueTypeDateQuery.append(") ");
+
+		if (dataExist) {
+			if (StringUtils.containsIgnoreCase(queryWithIssueTypes, UPDATED_DATE)) {
+				finalQuery = replaceDateQuery(queryWithIssueTypes.toString(), issueTypeDateQuery.toString());
+			} else {
+				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + queryWithIssueTypes);
+			}
+		} else {
+			if (StringUtils.containsIgnoreCase(queryWithIssueTypes.toString(), UPDATED_DATE)) {
+				finalQuery = appendDateQuery(queryWithIssueTypes.toString(), "");
+			} else {
+				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + queryWithIssueTypes);
+			}
+		}
+		return finalQuery;
+	}
+
+	/**
+	 * replace updated date
+	 *
+	 * @param preQuery
+	 * @param postQuery
+	 * @return replaced query
+	 */
+	private static String replaceDateQuery(String preQuery, String postQuery) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(preQuery.replace(UPDATED_DATE, postQuery));
 		sb.append(" ORDER BY updated DESC");
 		return sb.toString();
 	}

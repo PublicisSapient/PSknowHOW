@@ -202,7 +202,7 @@
                                     <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                     <textarea pInputTextarea id="{{form_elem.id}}" formControlName="{{form_elem.id}}"
                                         [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors}"
-                                        [attr.disabled]="!this[form_elem.disabled] ? true : null"></textarea>
+                                        [attr.disabled]="!this[form_elem?.disabled] && this[form_elem?.disabled]!=undefined? true : null"></textarea>
                                 </ng-container>
                             </div>
                             <div *ngSwitchCase="'basicDropdown'" class="p-mb-3">
