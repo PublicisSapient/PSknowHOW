@@ -141,11 +141,11 @@ export class MultilineComponent implements OnChanges {
       'tickets' : 'T'
     }
 
-    // width = $('#multiLineChart').width();
-    width =
-      data[0].value.length <= 5
-        ? document.getElementById('multiLineChart').offsetWidth - 70
-        : data[0].value.length * 20 * 8;
+    // width =
+    //   data[0].value.length <= 5
+    //     ? document.getElementById('multiLineChart').offsetWidth - 70
+    //     : data[0].value.length * 20 * 8;
+    width = document.getElementById('multiLineChart').offsetWidth - 70;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis
@@ -190,13 +190,13 @@ export class MultilineComponent implements OnChanges {
       xScale = d3
         .scaleBand()
         .domain(sprintList)
-        .range([0, width - margin])
+        .range([0, width])
         .padding(0)
 
     }else{
       xScale = d3
       .scaleBand()
-      .rangeRound([0, width - margin])
+      .rangeRound([0, width])
       .padding(0)
       .domain(
         data[maxObjectNo].value.map(function (d, i) {
@@ -638,11 +638,6 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
-      //if(board == 'dora'){
-      //  svgX
-      //  .select('.x')
-      //  .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
-      //}
 
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
