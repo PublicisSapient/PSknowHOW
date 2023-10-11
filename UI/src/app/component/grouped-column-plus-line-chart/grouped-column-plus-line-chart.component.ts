@@ -257,8 +257,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .axisLeft(y)
       // .orient('left')
       .ticks(5)
-      .tickSize(-height, 0, 0);
-    // .tickPadding(15);
+      .tickSize(-height, 0, 0).tickFormat(function(tickval) {
+        return tickval >= 1000 ? tickval/1000 + "k" : tickval;
+      });
 
     const color = d3.scaleOrdinal().range(this.color);
 
