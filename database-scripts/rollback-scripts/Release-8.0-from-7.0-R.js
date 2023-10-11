@@ -754,5 +754,11 @@ db.kpi_master.bulkWrite([
             filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi147", "kpi163"] } },
             update: { $set: { "kpiSubCategory": "Release Review" } }
         }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150", "kpi147"] } },
+            update: { $unset: { "kpiWidth": "" } }
+        }
     }
 ]);
