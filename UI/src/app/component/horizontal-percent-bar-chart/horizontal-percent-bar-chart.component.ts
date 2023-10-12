@@ -265,7 +265,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
-      .style('width', '100%')
+      .style('width', '95%')
       .style('margin', '0 auto')  
       .transition()
       .duration(200)

@@ -47,6 +47,7 @@ export class GroupstackchartComponent implements OnChanges {
   dataPoints = 2;
   dataLength = 0;
   @Input() activeTab?: number = 0;
+  elemObserver = new ResizeObserver(() => {console.log("hi");this.draw()});
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -74,6 +75,10 @@ export class GroupstackchartComponent implements OnChanges {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.elemObserver.observe(this.elem);
+  }
+
   draw() {
     const elem = this.elem;
     const self = this;
@@ -86,14 +91,7 @@ export class GroupstackchartComponent implements OnChanges {
     d3.select(elem).select('#svgLegend').select('div').remove();
     // d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
-
-    const data = this.formatData();
-
-    // const thresholdValue = this.thresholdValue;
-    // const barWidth = 20;
-    // let width = this.dataLength * barWidth * 8;
-    console.log(this.kpiId, document.getElementById('groupstackchart').offsetWidth);
-    
+    const data = this.formatData(this.data);
     const width = this.dataPoints <= 5 ? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * 20 * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     // const spacingVariable = 20;
@@ -130,15 +128,6 @@ export class GroupstackchartComponent implements OnChanges {
     // }
 
     const x1 = d3.scaleBand();
-
-    // let divisor = 10;
-    // let power = 1;
-    // let quotient = this.maxYValue;
-    // while (quotient > 1) {
-    //   quotient = quotient / Math.pow(divisor, power);
-    //   ++power;
-    // }
-    // divisor = Math.pow(10, power > 1 ? power - 1 : 1);
 
 
 
@@ -204,13 +193,7 @@ export class GroupstackchartComponent implements OnChanges {
     groupData = Array.from(groupData).map(function (d) {
       return d[1];
     });
-    // for(let i = 0; i<groupData?.length; i++){
-    //   for(let j = 0; j < actualTypes.length; j++){
-    //     if(!groupData[i].hasOwnProperty(actualTypes[j])){
-    //       groupData[i][actualTypes[j]] = 0;
-    //     }
-    //   }
-    // }
+    
 
     const stackData = stack
       .keys(keys)(groupData);
@@ -232,20 +215,6 @@ export class GroupstackchartComponent implements OnChanges {
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
     const xTick = self.dataPoints === 1 ? width > 1600 ? 20 : width > 1500 ? -20 : width > 1000 ? 20 : 10 : 0;
-
-    // svgX
-    //   .select('.xAxis')
-    //   .selectAll('.tick text')
-    //   .attr('x', xTick)
-    //   .attr('y', 15);
-    // svgX
-    //   .select('.xAxis')
-    //   .selectAll('line')
-    //   .attr('x1', xTick)
-    //   .attr('x2', xTick)
-    //   .attr('y1', 0)
-    //   .attr('y2', 10)
-    //   .style('stroke', '#333333');
 
     svgY.append('g')
       .attr('class', 'yAxis')
@@ -356,57 +325,9 @@ export class GroupstackchartComponent implements OnChanges {
           .style('opacity', 0);
 
       });
-    // if (this.kpiId != 'kpi125' && this.kpiId != 'kpi127') {
-    //   const serie2 = svgX.selectAll('.serie2')
-    //     .data(stackData)
-    //     .enter().append('g')
-    //     .attr('class', 'serie2')
-    //     .attr('fill', function (d) {
-    //       return z(d.key);
-    //     });
-
-    //   const triangle = d3.symbol().type(d3.symbolTriangle);
-    //   const dim = barWidth * 5;
-    //   serie2.selectAll('.path_triangle')
-    //     .data(function (d) {
-    //       return d;
-    //     })
-    //     .enter()
-    //     .append('path')
-    //     .attr('d', triangle.size(dim))
-    //     .attr('opacity', 1)
-    //     .attr('class', 'path_triangle')
-    //     .attr('transform', function (d) {
-    //       return 'translate(' + x0(d?.data?.xName) + ',0)';
-    //     })
-    //     .attr('transform', function (d, i) {
-    //       const xVal = self.dataPoints === 1 ? spacingVariable + x1(d.data.sprojectName) + x0(d?.data?.xName) : x1(d.data.sprojectName) + x0(d?.data?.xName);
-    //       return 'translate(' + (xVal + 8) + ',' + (y(0) + 10) + ')';
-    //     })
-    //     .attr('fill', function (d) {
-    //       return z2(d?.data?.sprojectName);
-    //     });
-    // }
 
     /** legend code */
     const legendDiv = d3.select(this.elem).select('#svgLegend').append('div');
-
-    // const svgLegend = d3
-    //   .select(this.elem)
-    //   .select('#svgLegend')
-    //   .append('svg')
-    //   .attr('width', width)
-    //   .attr('height', 50)
-    //   .append('g');
-
-    // const legend = svgLegend.selectAll('.d3-legend')
-    //   .data(actualTypes)
-    //   .enter()
-    //   .append('g')
-    //   .attr('class', 'd3-legend')
-    //   .attr('transform', function (d, i) {
-    //     return 'translate(40, 10)';
-    //   });
 
     if (this.legendType == 'normal') {
       legendDiv.transition()
@@ -427,104 +348,23 @@ export class GroupstackchartComponent implements OnChanges {
       legendDiv.html(htmlString);
 
     }
-    // else {
-    //   legendDiv.attr('class', 'legend-tooltip')
-    //     .style('display', 'none')
-    //     .style('opacity', 0);
-
-    // legend.append('rect')
-    //   .attr('width', 12)
-    //   .attr('height', 12)
-    //   .attr('x', 0)
-    //   .attr('y', -7)
-    //   .style('fill', function (d, i) {
-    //     return '#DF9292';
-    //   });
-
-    // legend.append('text')
-    //   .attr('x', 18)
-    //   .attr('y', -6)
-    //   .attr('dy', '.85em')
-    //   .style('text-anchor', 'start')
-    //   .style('font-size', 10)
-    //   .text(function (d) {
-    //     return 'Legend';
-    //   });
-
-    // legend
-    //   .on('mouseover', function () {
-    //     const topValue = 30;
-
-    //     legendDiv.transition()
-    //       .duration(200)
-    //       .style('display', 'block')
-    //       .style('opacity', 1);
-
-    //     let htmlString = '';
-
-    //     stackData.forEach((key, i) => {
-    //       if (stackColorsList[i]) {
-    //         htmlString += `<div class="legend_item"><div class="legend_color_indicator" style="background-color: ${stackColorsList[i]}"></div> : ${key['key']}</div>`;
-    //       }
-    //     });
-
-    //     legendDiv.html(htmlString)
-    //       .style('left', 70 + 'px')
-    //       .style('top', y[0] - topValue + 'px');
-    //   })
-    //   .on('mouseout', function () {
-    //     legendDiv.transition()
-    //       .duration(500)
-    //       .style('display', 'none')
-    //       .style('opacity', 0);
-
-    //   });
-    // }
-
-    // }
-
-    // wrap legend text
-    // legend.selectAll('text').call(wrap, 30);
-
-
-
-
+    
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
   }
 
-  // padData(data){
-  //   let tempArr = [];
-  //   if(data?.length < 3){
-  //     for(let i = 3; i>data.length;i--){
-  //       let obj = JSON.parse(JSON.stringify(data[0]));
-  //       obj.data = obj.data+i;
-  //       obj.value.forEach(x => {
-  //         x.value = {test:0};
-  //       })
-  //       tempArr.push(obj);
-  //     }
-  //   }
-  //   return tempArr.length ? data?.length == 1 ? [tempArr[0], ...data, tempArr[1]]: [tempArr[0], ...data] : data;
-  // }
 
-  formatData() {
-    if (this.data?.length > 0) {
-      // this.data = this.padData(this.data);
+  formatData(dataObj) {
+    
+    if (dataObj?.length > 0) {
+      // dataObj = this.padData(dataObj);
       let max = 0;
       const targetList = [];
-      this.data.forEach((item, index) => {
-        // pro.value?.forEach((item, index) => {
-
-        // obj['sprojectName'] = pro.data;
-        // if (item.hoverValue) {
-        //   obj['hoverValue'] = item.hoverValue;
-        //   obj['sSprintName'] = item.sSprintName;
-        // }
+      dataObj.forEach((item, index) => {
         const sprintValue = index + 1;
         if (typeof (item.value) === 'object' && Object.keys(item.value)?.length > 0) {
           const types = Object.keys(item.value);
-          // if (types.length >= 1) {
+          // if (types.length >= 1) {      
           types?.forEach(function (type) {
             const obj = {};
             obj['group'] = item.sSprintName;
@@ -550,68 +390,11 @@ export class GroupstackchartComponent implements OnChanges {
             targetList.push(obj);
           }
 
-
-        // if (item.xAxisTick) {
-        //   this.xCaption = 'Months';
-        // }
-        // });
       });
       this.maxYValue = max * 1.07;
-      return this.data = targetList;
+      return targetList;
     }
   }
-
-  // wrap(text, textWidth) {
-  //   text.each(function () {
-  //     const textContent = d3.select(this);
-  //     const words = textContent.text().trim().split(/\s+/).reverse();
-  //     let word;
-  //     let line = [];
-  //     let lineNumber = 0;
-  //     const lineHeight = 1.1; // ems
-  //     const yPosition = textContent.attr('y');
-  //     const dy = parseFloat(textContent.attr('dy'));
-  //     let tspan = textContent
-  //       .text(null)
-  //       .append('tspan')
-  //       .attr('x', 10)
-  //       .attr('y', yPosition)
-  //       .attr('dy', dy + 'em');
-
-  //     if (words.length > 1) {
-  //       while ((word = words.pop())) {
-  //         line.push(word);
-  //         tspan.text(line.join(' '));
-  //         if (tspan.node().getComputedTextLength() > textWidth) {
-  //           line.pop();
-  //           tspan.text(line.join(' '));
-  //           line = [word];
-  //           tspan = textContent
-  //             .append('tspan')
-  //             .attr('x', 0)
-  //             .attr('y', yPosition)
-  //             .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-  //             .text(word);
-  //         }
-  //       }
-  //     } else {
-  //       tspan.text(words[0]);
-  //       let i = 0;
-  //       while (tspan.node().getComputedTextLength() > textWidth && i <= 4) {
-  //         i = 2;
-  //         word = words[0].substring(0, words[0].length / i);
-  //         tspan = textContent
-  //           .append('tspan')
-  //           .attr('x', 0)
-  //           .attr('y', yPosition)
-  //           .attr('dy', ++lineNumber * lineHeight + dy + 'em')
-  //           .text(word);
-
-  //         ++i;
-  //       }
-  //     }
-  //   });
-  // }
 
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
@@ -651,6 +434,12 @@ export class GroupstackchartComponent implements OnChanges {
       }
     });
     return 0;
+  }
+
+  ngOnDestroy(){
+    d3.select(this.elem).select('#groupstackchart').select('svg').remove();
+    this.data = [];
+    this.elemObserver.unobserve(this.elem);
   }
 
 }

@@ -58,6 +58,7 @@ export class MultilineComponent implements OnChanges {
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
   @Input() activeTab?: number = 0;
+  elemObserver = new ResizeObserver(() => {console.log("hi");this.draw()});
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -72,6 +73,10 @@ export class MultilineComponent implements OnChanges {
      });
   }
 
+  ngAfterViewInit(): void {
+    this.elemObserver.observe(this.elem);
+  }
+
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer')
@@ -79,23 +84,18 @@ export class MultilineComponent implements OnChanges {
       this.xCaption = this.service.getSelectedDateFilter();
     }
     if (Object.keys(changes)?.length > 0) {
-      if (changes['data']) {
-        this.elem = this.viewContainerRef.element.nativeElement;
+        d3.select(this.elem).select('svg').remove();
+        d3.select(this.elem).select('.bstimeslider').remove();
         this.draw();
-      }
-    }
-    // if (Object.keys(changes)?.length > 0) {
-    //     d3.select(this.elem).select('svg').remove();
-    //     d3.select(this.elem).select('.bstimeslider').remove();
-    //     this.draw('update');
-    // } else {
-    //   d3.select(this.elem).select('svg').remove();
-    //   d3.select(this.elem).select('.bstimeslider').remove();
-    //   this.draw('new');
-    // }
+    } else {
+      d3.select(this.elem).select('svg').remove();
+      d3.select(this.elem).select('.bstimeslider').remove(); 
+      this.draw();
+    }    
     if(changes['activeTab']){
+      /** settimeout applied because dom is loading late */
       setTimeout(() => {
-       this.draw();
+        this.draw();
       }, 0);
     }
   }
@@ -153,11 +153,7 @@ export class MultilineComponent implements OnChanges {
       'tickets' : 'T'
     }
 
-    // width =
-    //   data[0].value.length <= 5
-    //     ? document.getElementById('multiLineChart').offsetWidth - 70
-    //     : data[0].value.length * 20 * 8;
-    width = document.getElementById('multiLineChart'+this.kpiId).offsetWidth - 70;
+    width = this.elem.offsetWidth - 70;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis
@@ -331,7 +327,7 @@ export class MultilineComponent implements OnChanges {
     // Define the div for the tooltip
     const div = d3
       .select(this.elem)
-      .select('#multiLineChart'+this.kpiId)
+      .select('#multiLineChart')
       .append('div')
       .attr('class', 'tooltip')
       .style('display', 'none')
@@ -653,7 +649,7 @@ export class MultilineComponent implements OnChanges {
 
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
-      const legendDiv = d3.select(this.elem).select('#multiLineChart'+this.kpiId).append('div')
+      const legendDiv = d3.select(this.elem).select('#multiLineChart').append('div')
         .attr('id', 'legendContainer')
         .style('margin-left', 60 + 'px')
         .append('div');
@@ -720,5 +716,6 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     d3.select(this.elem).select('#legendContainer').remove();
     this.data = [];
+    this.elemObserver.unobserve(this.elem);
   }
 }

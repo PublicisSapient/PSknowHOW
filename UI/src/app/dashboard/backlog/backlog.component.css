@@ -71,6 +71,8 @@
     border-radius: 5px !important;
     padding: 10px !important;
     margin: 10px !important;
+    font-size: 12px;
+    text-transform: uppercase;
 }
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
     padding: 0;
