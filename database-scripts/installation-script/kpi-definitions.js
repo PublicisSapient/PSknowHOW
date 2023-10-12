@@ -2942,6 +2942,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
