@@ -604,7 +604,8 @@ public abstract class ToolsKPIService<R, S> {
 					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
 							.map(val -> (R) val.getValue()).collect(Collectors.toList());
-					R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
+
+					R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 					String aggregateValue = null;
 					String maturity = null;
 					if (maturityValue != null) {
@@ -618,6 +619,27 @@ public abstract class ToolsKPIService<R, S> {
 			}
 		}
 		return trendValues;
+	}
+
+	/**
+	 * Method to calculate the Aggregated value with Cycle kpi dora
+	 * 
+	 * @param aggValues
+	 *            AggValue
+	 * @param kpiId
+	 *            kpiId
+	 * @return calculated Agg value
+	 */
+	private R getCalculatedAggValue(List<R> aggValues, String kpiId) {
+		R calculatedAggValue = null;
+		if (!aggValues.isEmpty()) {
+			if (aggValues.get(0) instanceof Double) {
+				calculatedAggValue = (R) calculateCycleAggregateValueForDouble((List<Double>) aggValues, kpiId);
+			} else if (aggValues.get(0) instanceof Long) {
+				calculatedAggValue = (R) calculateCycleAggregateValueForLong((List<Long>) aggValues, kpiId);
+			}
+		}
+		return calculatedAggValue;
 	}
 
 	private Pair<String, String> getMaturityValuePair(String kpiName, String kpiId, List<DataCount> dataCounts) {
@@ -706,7 +728,7 @@ public abstract class ToolsKPIService<R, S> {
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
-						R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
+						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
 						String maturity = null;
 						if (maturityValue != null) {
@@ -918,22 +940,17 @@ public abstract class ToolsKPIService<R, S> {
 	 */
 	public Double calculateKpiValueForDouble(List<Double> valueList, String kpiId) {
 		Double calculatedValue = 0.0;
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.PERCENTILE
-						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				calculatedValue = AggregationUtils.percentiles(valueList, 90.0D);
 			} else {
 				calculatedValue = AggregationUtils.percentiles(valueList, customApiConfig.getPercentileValue());
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			calculatedValue = AggregationUtils.median(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			calculatedValue = AggregationUtils.average(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
 		}
 		return round(calculatedValue);
@@ -949,24 +966,19 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return result
 	 */
 	public Long calculateKpiValueForLong(List<Long> valueList, String kpiId) {
-		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.PERCENTILE
-						.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
 			} else {
 				Double percentile = customApiConfig.getPercentileValue();
 				return AggregationUtils.percentilesLong(valueList, percentile);
 			}
-		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			return AggregationUtils.getMedianForLong(valueList);
-		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
-			return AggregationUtils.averageLong(valueList);
-		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))
-				|| Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
 			return AggregationUtils.sumLong(valueList);
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteria().get(kpiId))) {
+			return AggregationUtils.averageLong(valueList);
 		}
 		return AggregationUtils.percentilesLong(valueList, 90d);
 	}
@@ -1075,4 +1087,57 @@ public abstract class ToolsKPIService<R, S> {
 		return bd.doubleValue();
 	}
 
+	/**
+	 * Method to calculate the Agg value of List of double for cycle kpi(dora)
+	 * 
+	 * @param valueList
+	 *            List of values
+	 * @param kpiId
+	 *            kpiId
+	 * @return Agg value
+	 */
+	public Double calculateCycleAggregateValueForDouble(List<Double> valueList, String kpiId) {
+		Double calculatedValue = 0.0;
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			if (null == customApiConfig.getPercentileValue()) {
+				calculatedValue = AggregationUtils.percentiles(valueList, 90.0D);
+			} else {
+				calculatedValue = AggregationUtils.percentiles(valueList, customApiConfig.getPercentileValue());
+			}
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			calculatedValue = AggregationUtils.median(valueList);
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			calculatedValue = AggregationUtils.average(valueList);
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			calculatedValue = valueList.stream().mapToDouble(i -> i).sum();
+		}
+		return round(calculatedValue);
+	}
+
+	/**
+	 * Method to calculate the Agg value of List of Long for cycle kpi(dora)
+	 * 
+	 * @param valueList
+	 *            List of values
+	 * @param kpiId
+	 *            kpiId
+	 * @return Agg value
+	 */
+	public Long calculateCycleAggregateValueForLong(List<Long> valueList, String kpiId) {
+		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			if (null == customApiConfig.getPercentileValue()) {
+				return AggregationUtils.percentilesLong(valueList, 90d);
+			} else {
+				Double percentile = customApiConfig.getPercentileValue();
+				return AggregationUtils.percentilesLong(valueList, percentile);
+			}
+		} else if (Constant.MEDIAN.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			return AggregationUtils.getMedianForLong(valueList);
+		} else if (Constant.AVERAGE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			return AggregationUtils.averageLong(valueList);
+		} else if (Constant.SUM.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
+			return AggregationUtils.sumLong(valueList);
+		}
+		return AggregationUtils.percentilesLong(valueList, 90d);
+	}
 }

@@ -50,7 +50,7 @@
                     </span>
                     <span class="p-mr-3 p-ml-3">
                       <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
-                      [style]="{'min-width':'300px', 'max-width':'300px'}"
+                      [style]="{'min-width':'300px', 'max-width':'300px'}" [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}"
                       [filter]="true" filterBy="name" [showClear]="false" placeholder="Select a Project"
                       (onChange)="updateProjectSelection($event)"
                       >
