@@ -85,7 +85,7 @@
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <ng-container
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                                  <div class="p-pl-3 p-pr-3 w-100" [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                  <div class="p-pl-3 p-pr-3 w-100 p-pb-5" [ngSwitch]="kpi?.kpiDetail?.chartType"
                                     *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
@@ -223,7 +223,7 @@
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <ng-container
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                                  <div class="p-pl-3 p-pr-3 w-100" [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                  <div class="p-pl-3 p-pr-3 w-100 p-pb-5" [ngSwitch]="kpi?.kpiDetail?.chartType"
                                     *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
@@ -361,7 +361,7 @@
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <ng-container
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                                  <div class="p-pl-3 p-pr-3 w-100" [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                  <div class="p-pl-3 p-pr-3 w-100 p-pb-5" [ngSwitch]="kpi?.kpiDetail?.chartType"
                                     *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"
@@ -501,7 +501,7 @@
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
                                 <ng-container
                                   *ngIf="(kpiChartData | json) !== '{}' && kpiChartData != undefined;else noData">
-                                  <div class="p-pl-3 p-pr-3 w-100" [ngSwitch]="kpi?.kpiDetail?.chartType"
+                                  <div class="p-pl-3 p-pr-3 w-100 p-pb-5" [ngSwitch]="kpi?.kpiDetail?.chartType"
                                     *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
                                     <ng-container *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0); else noData">
                                       <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'normal'"

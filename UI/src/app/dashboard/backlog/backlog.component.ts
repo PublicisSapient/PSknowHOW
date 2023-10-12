@@ -189,12 +189,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       return tabDetails;
     })
 
-    // Divide into two parts
-    // const dataLength = this.dragableConfigGlobalData.length;
-    // const middleIndex = Math.floor(dataLength / 2);
-    // this.kpiPart1 = this.dragableConfigGlobalData.slice(0, middleIndex + (dataLength % 2));
-    // this.kpiPart2 = this.dragableConfigGlobalData.slice(middleIndex + (dataLength % 2));
-
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
     if (showKpisCount === 0) {

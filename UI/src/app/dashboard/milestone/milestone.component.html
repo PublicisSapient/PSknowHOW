@@ -8,7 +8,7 @@
             <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                  <div class="p-grid p-mr-1 p-ml-1 p-mt-0 iteration-dashboard">
+                  <div class="p-grid p-mr-1 p-ml-1 p-mt-0">
 
                     <ng-container *ngIf="board.width === 'half'">
                       <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
