@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -181,19 +180,21 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 			List<IterationKpiValue> iterationKpiValues) {
 
 		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream()
-				.filter(jiraIssue -> jiraIssue.getEpicLinked()!=null).collect(Collectors
-				.groupingBy(JiraIssue::getEpicLinked));
+				.filter(jiraIssue -> jiraIssue.getEpicLinked() != null)
+				.collect(Collectors.groupingBy(JiraIssue::getEpicLinked));
 		Map<String, String> epicIssueMap = epicIssues.stream()
 				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 
 		List<DataCount> dataCountList = new ArrayList<>();
 		Map<String, String> epicWiseSize = new HashMap<>();
 		epicWiseJiraIssues.forEach((epic, issues) -> {
-			String epicNameStatus = epicIssueMap.getOrDefault(epic, Constant.DASH);
-			DataCount statusWiseCountList = getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicNameStatus,
-					fieldMapping);
-			epicWiseSize.put(epic, String.valueOf(statusWiseCountList.getSize()));
-			dataCountList.add(statusWiseCountList);
+			if (epicIssueMap.containsKey(epic)) {
+				String epicNameStatus = epicIssueMap.get(epic);
+				DataCount statusWiseCountList = getStatusWiseCountList(issues, jiraIssueReleaseStatus, epicNameStatus,
+						fieldMapping);
+				epicWiseSize.put(epic, String.valueOf(statusWiseCountList.getSize()));
+				dataCountList.add(statusWiseCountList);
+			}
 		});
 		IterationKpiValue iterationKpiValue = new IterationKpiValue();
 		sorting(dataCountList);
@@ -251,7 +252,7 @@ public class ReleaseEpicProgressServiceImpl extends JiraKPIService<Integer, List
 		issueCountDc.setData(String.valueOf(toDoCount + inProgressCount + doneCount));
 		issueCountDc.setSize(String.valueOf(toDoSize + inProgressSize + doneSize));
 		issueCountDc.setValue(issueCountDcList);
-		issueCountDc.setKpiGroup(epic.equalsIgnoreCase(Constant.DASH) ? "None" : epic);
+		issueCountDc.setKpiGroup(epic);
 		return issueCountDc;
 	}
 
