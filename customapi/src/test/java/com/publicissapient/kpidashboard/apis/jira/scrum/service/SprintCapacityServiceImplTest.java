@@ -18,8 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +44,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
@@ -56,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -65,34 +67,38 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.excel.CapacityKpiDataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
+/**
+ * test case for Sprint Capcacity Utilizatin
+ * author @shi6
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SprintCapacityServiceImplTest {
 	private final static String SPRINTCAPACITYKEY = "sprintCapacityKey";
-	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
-	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	List<JiraIssue> totalJiraIssueList = new ArrayList<>();
-	List<CapacityKpiData> dataList = new ArrayList<>();
+	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
+	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private List<JiraIssue> totalJiraIssueList = new ArrayList<>();
+	private List<CapacityKpiData> dataList = new ArrayList<>();
 	@Mock
-	JiraIssueRepository jiraIssueRepository;
+	private JiraIssueRepository jiraIssueRepository;
 	@Mock
-	CacheService cacheService;
+	private CacheService cacheService;
 	@Mock
-	ConfigHelperService configHelperService;
+	private ConfigHelperService configHelperService;
 	@Mock
-	KpiHelperService kpiHelperService;
+	private KpiHelperService kpiHelperService;
 	@InjectMocks
-	SprintCapacityServiceImpl sprintCapacityServiceImpl;
+	private SprintCapacityServiceImpl sprintCapacityServiceImpl;
 	@Mock
-	ProjectBasicConfigRepository projectConfigRepository;
+	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
-	FieldMappingRepository fieldMappingRepository;
+	private FieldMappingRepository fieldMappingRepository;
 	@Mock
-	CustomApiConfig customApiConfig;
+	private CustomApiConfig customApiConfig;
 	@Mock
-	CapacityKpiDataRepository capacityKpiDataRepository;
+	private CapacityKpiDataRepository capacityKpiDataRepository;
 	private Map<String, String> kpiWiseAggregation = new HashMap<>();
 	private KpiRequest kpiRequest;
-	private KpiElement kpiElement;
+	private FieldMappingDataFactory fieldMappingDataFactory;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	@Mock
 	private CommonService commonService;
@@ -102,25 +108,24 @@ public class SprintCapacityServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi70");
 		kpiRequest.setLabel("PROJECT");
-		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("testExecutionPercentage", "average");
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		configHelperService.setProjectConfigMap(projectConfigMap);
-		configHelperService.setFieldMappingMap(fieldMappingMap);
 		totalJiraIssueList = JiraIssueDataFactory.newInstance().getJiraIssues();
-	}
+		fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/scrum_project_field_mappings.json");
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		CapacityKpiData capacityKpiData = new CapacityKpiData();
+		capacityKpiData.setBasicProjectConfigId(new ObjectId("6335363749794a18e8a4479b"));
+		capacityKpiData.setCapacityPerSprint(12.0);
+		capacityKpiData.setSprintID("438294_Scrum Project_6335363749794a18e8a4479b");
+		dataList.add(capacityKpiData);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(createTrendMap());
 
-	@Test
-	public void testCalculateKPIMetrics() {
-		Map<String, Object> filterComponentIdWiseDefectMap = new HashMap<>();
-		String kpiRequestTrackerId = "automationpercenttrack001";
-
-		filterComponentIdWiseDefectMap.put(SPRINTCAPACITYKEY, totalJiraIssueList);
-		Double capacityValue = sprintCapacityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap);
-
-		assertThat("Capacity value :", capacityValue, equalTo(180.0));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -141,55 +146,125 @@ public class SprintCapacityServiceImplTest {
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-		assertThat("Capacity value :", ((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size(),
-				equalTo(42));
+		Assert.assertEquals("Capacity value :", 42,
+				((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetSprintCapacity() throws ApplicationException {
-		List<Node> leafNodeList = new ArrayList<>();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.SPRINT) {
-				leafNodeList.addAll(v);
-			}
-		});
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
 		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
 		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
 		kpiWiseAggregation.put("sprintCapacity", "average");
 		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
-		// when(customApiConfig.getSprintCountForFilters()).thenReturn(5);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 
-		try {
-			KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertThat("Capacity estimateTimeCount :",
-					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
-		} catch (ApplicationException enfe) {
+		KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		Assert.assertEquals("Capacity estimateTimeCount :", 1,
+				((List<DataCountGroup>) kpiElement.getTrendValueList()).get(0).getValue().size());
 
-		}
+	}
+
+	@Test
+	public void testGetSprintCapacitySpilledConfiguration() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
+		kpiWiseAggregation.put("sprintCapacity", "average");
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setExcludeSpilledKpi46("On");
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		Assert.assertEquals("Capacity estimateTimeCount :", 1,
+				((List<DataCountGroup>) kpiElement.getTrendValueList()).get(0).getValue().size());
+	}
+
+	@Test
+	public void testGetSprintCapacitySpilledConfigurationWithOriginalEstimate() throws ApplicationException {
+
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("sprintCapacity", Arrays.asList("-5", "5-25", "25-50", "50-75", "75-"));
+		when(customApiConfig.getApplicationDetailedLogger()).thenReturn("On");
+		when(kpiHelperService.fetchSprintCapacityDataFromDb(Mockito.any())).thenReturn(totalJiraIssueList);
+		kpiWiseAggregation.put("sprintCapacity", "average");
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
+		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setExcludeSpilledKpi46("On");
+		fieldMapping.setEstimationCriteria("Original Estimate");
+		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
+		KpiElement kpiElement = sprintCapacityServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
+		int size = ((List<DataCountGroup>) kpiElement.getTrendValueList()).get(0).getValue().size();
+		Assert.assertEquals(1, size);
 
 	}
 
 	@Test
 	public void testGetQualifierType() {
-		assertThat(sprintCapacityServiceImpl.getQualifierType(), equalTo("SPRINT_CAPACITY_UTILIZATION"));
+		Assert.assertEquals("SPRINT_CAPACITY_UTILIZATION", sprintCapacityServiceImpl.getQualifierType());
 	}
 
 	@Test
 	public void calculateKpiValueTest() {
 		Double kpiValue = sprintCapacityServiceImpl.calculateKpiValue(Arrays.asList(1.0, 2.0), "kpi14");
-		assertThat("Kpi value  :", kpiValue, equalTo(0.0));
+		Assert.assertEquals(0.0, kpiValue, 0.0);
+	}
+
+	@Test
+	public void testCalculateKPIMetrics() {
+		Map<String, Object> filterComponentIdWiseDefectMap = new HashMap<>();
+		filterComponentIdWiseDefectMap.put(SPRINTCAPACITYKEY, totalJiraIssueList);
+		Assert.assertNull(sprintCapacityServiceImpl.calculateKPIMetrics(filterComponentIdWiseDefectMap));
+
+	}
+
+	private Map<String, List<DataCount>> createTrendMap() {
+		Map<String, List<DataCount>> map = new HashMap<>();
+		DataCount d1 = new DataCount();
+		List<DataCount> d1OuterList = new ArrayList<>();
+		List<DataCount> d1InnerList = new ArrayList<>();
+		DataCount d1Inner = new DataCount();
+		d1Inner.setData("0.0");
+		d1Inner.setSProjectName("Scrum Project");
+		d1Inner.setSSprintID("sprint1");
+		d1Inner.setValue(0.0d);
+		d1InnerList.add(d1Inner);
+		d1.setValue(d1InnerList);
+		d1.setData("Scrum Project");
+		d1OuterList.add(d1);
+		map.put("Planned View", d1OuterList);
+		map.put("Execution View", d1OuterList);
+		return map;
 	}
 
 }

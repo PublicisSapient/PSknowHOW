@@ -1020,6 +1020,7 @@ db.getCollection('kpi_master').insertMany(
     "yAxisLabel": "Hours",
     "lineLegend": "Logged",
     "barLegend": "Estimated",
+    "kpiFilter": "radioButton",
     "isPositiveTrend": true,
     "showTrend": false,
     "aggregationCriteria": "sum",
@@ -9069,5 +9070,23 @@ db.getCollection('field_mapping_structure').insertMany(
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
   }
-}
+},
+{
+        "fieldName": "excludeSpilledKpi46",
+        "fieldLabel": "Exclude Spilled Issues",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+             "definition": "By enabling this, any issues spilled from any previous sprint will not be considered for estimates hours or logged hours calculation."
+        },
+        "options": [{
+             "label": "On",
+             "value": "On"
+        },
+        {
+             "label": "Off",
+             "value": "Off"
+        }
+        ]
+   }
 ]);
