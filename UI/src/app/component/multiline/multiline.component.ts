@@ -57,6 +57,8 @@ export class MultilineComponent implements OnChanges {
   @Input() viewType :string = 'chart'
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
+  @Input() activeTab?: number = 0;
+  elemObserver = new ResizeObserver(() => {this.draw()});
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -71,6 +73,10 @@ export class MultilineComponent implements OnChanges {
      });
   }
 
+  ngAfterViewInit(): void {
+    this.elemObserver.observe(this.elem);
+  }
+
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer')
@@ -80,15 +86,21 @@ export class MultilineComponent implements OnChanges {
     if (Object.keys(changes)?.length > 0) {
         d3.select(this.elem).select('svg').remove();
         d3.select(this.elem).select('.bstimeslider').remove();
-        this.draw('update');
+        this.draw();
     } else {
       d3.select(this.elem).select('svg').remove();
-      d3.select(this.elem).select('.bstimeslider').remove();
-      this.draw('new');
+      d3.select(this.elem).select('.bstimeslider').remove(); 
+      this.draw();
+    }    
+    if(changes['activeTab']){
+      /** settimeout applied because dom is loading late */
+      setTimeout(() => {
+        this.draw();
+      }, 0);
     }
   }
 
-  draw(status) {
+  draw() {
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
@@ -141,11 +153,7 @@ export class MultilineComponent implements OnChanges {
       'tickets' : 'T'
     }
 
-    // width =
-    //   data[0].value.length <= 5
-    //     ? document.getElementById('multiLineChart').offsetWidth - 70
-    //     : data[0].value.length * 20 * 8;
-    width = document.getElementById('multiLineChart').offsetWidth - 70;
+    width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis
@@ -708,5 +716,6 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     d3.select(this.elem).select('#legendContainer').remove();
     this.data = [];
+    this.elemObserver.unobserve(this.elem);
   }
 }

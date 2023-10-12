@@ -124,7 +124,7 @@
   color: var(--color-gray-34);
   height: 40px;
   margin-top: 20px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 ::ng-deep .stack-key{
   width: 70px;
