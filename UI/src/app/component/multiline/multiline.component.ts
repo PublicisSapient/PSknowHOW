@@ -58,7 +58,7 @@ export class MultilineComponent implements OnChanges {
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
   @Input() activeTab?: number = 0;
-  elemObserver = new ResizeObserver(() => {console.log("hi");this.draw()});
+  elemObserver = new ResizeObserver(() => {this.draw()});
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -153,7 +153,7 @@ export class MultilineComponent implements OnChanges {
       'tickets' : 'T'
     }
 
-    width = this.elem.offsetWidth - 70;
+    width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis

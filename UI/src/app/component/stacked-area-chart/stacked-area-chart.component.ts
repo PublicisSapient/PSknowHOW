@@ -78,7 +78,7 @@ export class StackedAreaChartComponent implements OnInit {
     
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
-      width = this.elem.offsetWidth - 70,
+      width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0,
       height = 228;
 
     // append the svg object to the body of the page
