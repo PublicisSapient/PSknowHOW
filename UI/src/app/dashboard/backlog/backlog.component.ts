@@ -130,10 +130,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
 }
   processKpiConfigData(){
     this.navigationTabs = [
-      {'label':'Flow KPIs', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
+      {'label':'Summary', 'count': 0,kpis : [],width :'half'},
       {'label':'Backlog Health', 'count': 0,kpis : [],width :'half'},
       {'label':'Epic View', 'count': 0,kpis : [],width :'full', fullWidthKpis : []},
-      {'label':'Summary', 'count': 0,kpis : [],width :'half'},
+      {'label':'Flow KPIs', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
     ];
     this.kpiConfigData = {};
     for(let i=0;i<this.configGlobalData?.length; i++){
