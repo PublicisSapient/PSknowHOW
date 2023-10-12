@@ -11,7 +11,7 @@ export class StackedAreaChartComponent implements OnInit {
   elem;
   @Input() kpiId:string = ''; 
   @Input() activeTab?: number = 0;
-  elemObserver = new ResizeObserver(() => {console.log("hi");this.draw()});
+  elemObserver = new ResizeObserver(() => {this.draw()});
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {}

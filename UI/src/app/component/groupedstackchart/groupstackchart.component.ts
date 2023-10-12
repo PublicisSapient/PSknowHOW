@@ -47,7 +47,7 @@ export class GroupstackchartComponent implements OnChanges {
   dataPoints = 2;
   dataLength = 0;
   @Input() activeTab?: number = 0;
-  elemObserver = new ResizeObserver(() => {console.log("hi");this.draw()});
+  elemObserver = new ResizeObserver(() => {this.draw()});
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
   ngOnChanges(changes: SimpleChanges) {
