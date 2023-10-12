@@ -649,9 +649,7 @@ public class LeadTimeForChangeServiceImpl extends JiraKPIService<Double, List<Ob
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setDate(weekOrMonthName);
 		dataCount.setValue(days);
-		Map<String, Object> hoverValueMap = new HashMap<>();
-		hoverValueMap.put("Lead time Change", days);
-		dataCount.setHoverValue(hoverValueMap);
+		dataCount.setHoverValue(new HashMap<>());
 		return dataCount;
 	}
 
