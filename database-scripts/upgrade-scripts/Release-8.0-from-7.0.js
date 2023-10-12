@@ -5113,7 +5113,7 @@ db.kpi_master.bulkWrite([
     },
     {
         updateMany: {
-            filter: { "kpiId": { $in: ["kpi150","kpi147"] } },
+            filter: { "kpiId": { $in: ["kpi150","kpi147", "kpi3"] } },
             update: { $set: { "kpiWidth": 100 } }
         },
     }
