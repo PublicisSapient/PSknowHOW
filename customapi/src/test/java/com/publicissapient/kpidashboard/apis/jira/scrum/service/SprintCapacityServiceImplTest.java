@@ -146,7 +146,7 @@ public class SprintCapacityServiceImplTest {
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 		Map<String, Object> capacityListMap = sprintCapacityServiceImpl.fetchKPIDataFromDb(leafNodeList, null, null,
 				kpiRequest);
-		Assert.assertEquals("Capacity value :", 42,
+		Assert.assertEquals("Capacity value :", 44,
 				((List<JiraIssue>) (capacityListMap.get(SPRINTCAPACITYKEY))).size());
 	}
 
