@@ -23,6 +23,7 @@ export class GroupBarChartComponent implements OnChanges {
   @Input() maxValue?: any;
   @Input() selectedtype: string;
   @Input() legendType: string;
+  VisibleXAxisLbl = [];
 
   elem;
   maxYValue = 0;
@@ -82,10 +83,10 @@ export class GroupBarChartComponent implements OnChanges {
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
-    let width = window.innerWidth- 320 - marginLeft;
-    if(data.length > 5){
-      width += data.length * barWidth * (subgroups.length + 3);
-    }
+    let width = window.innerWidth- 300 - marginLeft;
+    // if(data.length > 5){
+      // width += data.length * barWidth * (subgroups.length + 3);
+    // }
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
@@ -111,7 +112,7 @@ export class GroupBarChartComponent implements OnChanges {
     const x = d3.scaleBand()
       .domain(groups)
       .range([0, width - margin])
-      .paddingInner(2)
+      .paddingInner(1)
       .paddingOuter(0.5);
 
     const y = d3.scaleLinear()
@@ -123,15 +124,34 @@ export class GroupBarChartComponent implements OnChanges {
       .range([0, subgroups.length * barWidth])
       .paddingInner(0);
 
-    const colorList = ['#049fff', '#f4aa46', '#f8404d', '#00e1ba'];
+    const colorList = ['#049fff', '#f4aa46', '#f8404d'];
     const color = d3.scaleOrdinal()
-      .domain(subgroups)
+      .domain([...this.subGroups,...this.lineGroups])
       .range(colorList);
+
+    // Hide/show x-axis label logic
+      const xLength = groups.length;
+      const gap = Math.ceil(xLength / 12);
+      for (var i = 0; i < groups.length; i += gap) {
+          this.VisibleXAxisLbl.push(groups[i]);
+      }
+      if (!this.VisibleXAxisLbl.includes(groups[groups.length - 1])) {
+          this.VisibleXAxisLbl.push(groups[groups.length - 1]);
+      }
+
+      this.VisibleXAxisLbl = this.VisibleXAxisLbl;
+
+      const xAxisGenerator = d3.axisBottom(x);
+      xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
+   
 
     svgX.append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${y(0)})`)
-      .call(d3.axisBottom(x));
+      .call(xAxisGenerator)
+      .selectAll("g")
+      .filter((d, i) => !this.VisibleXAxisLbl.includes(d))
+      .classed("minor", true);      
 
     d3.select(this.elem).select('#xCaptionContainer').append('text')
       .attr('x', ((document.getElementById('groupstackchart').offsetWidth - 70) / 2) - 24)
@@ -145,28 +165,29 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('x', xTick)
       .attr('y', 15);
 
-   
-    if (currentDayIndex >= 0) {
-      svgX
-        .select('.xAxis')
-        .selectAll(`.tick:nth-of-type(${currentDayIndex + 1}) text`)
-        .style('color', '#079FFF').
-        style("font-weight", "bolder")
+
+    if (currentDayIndex) {
+        this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y)
+    }
+    
+    const ReleasePredIndex = data.findIndex(d => d.hasOwnProperty('Release Prediction'))
+    if(ReleasePredIndex && ReleasePredIndex > -1){
+        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,'dotted',svgX,x,y)
     }
 
      /** Showing  data point for current plot */
     const currentWeekTooltipContainer = d3.select('#horizontalSVG').select('.current-week-tooltip');
-    let top = (height / 2) - 30;
-    for (const kpiGroup of this.lineGroups) {
-      const lineData = data[data.length - 1];
-      currentWeekTooltipContainer.append('div')
-        .attr('class', 'tooltip')
-        .style('left', `${x(lineData.group)}px`)
-        .style('top', top + 'px')
-        .text(`${kpiGroup} - ${lineData[kpiGroup]}`)
-        .style('opacity', 1);
-      top = top + 30;
-    }
+    // let top = (height / 2) - 30;
+    // for (const kpiGroup of this.lineGroups) {
+    //   const lineData = data[data.length - 1];
+    //   currentWeekTooltipContainer.append('div')
+    //     .attr('class', 'tooltip')
+    //     .style('left', `${x(lineData.group)}px`)
+    //     .style('top', top + 'px')
+    //     .text(`${kpiGroup} - ${lineData[kpiGroup]}`)
+    //     .style('opacity', 1);
+    //   top = top + 30;
+    // }
 
     svgX
       .select('.xAxis')
@@ -261,7 +282,7 @@ export class GroupBarChartComponent implements OnChanges {
         currentWeekTooltipContainer.style('display','none');
         tooltipContainer
           .selectAll('div')
-          .data(linedata)
+          .data(linedata.filter(data=>this.VisibleXAxisLbl.includes(data.filter))) // Tooltip will come only for Visible label
           .join('div')
           .attr('class', 'tooltip')
           .style('left', d => x(d.filter)  + 0 + 'px')
@@ -284,7 +305,13 @@ export class GroupBarChartComponent implements OnChanges {
       };
 
       for (const kpiGroup of this.lineGroups) {
-        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup]}})
+        if(kpiGroup === 'Release Prediction'){
+            const firstPredictIndex = data.findIndex(d => d.hasOwnProperty(kpiGroup))
+            if(firstPredictIndex && firstPredictIndex > 0){
+                data[firstPredictIndex-1] = {...data[firstPredictIndex-1],...{'Release Prediction':data[firstPredictIndex-1]['Release Progress']}};
+            }
+        }
+        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup]}});
   
         const line = svgX
           .append('g')
@@ -299,6 +326,7 @@ export class GroupBarChartComponent implements OnChanges {
           .style('stroke-width', 2)
           .style('fill', 'none')
           .style('cursor', 'pointer')
+          .attr('stroke-dasharray', (d) => kpiGroup === 'Release Prediction' ? '8,3 ' : 'none' )
           .on('mouseover', function(event, linedata) {
             d3.select(this)
               .style('stroke-width', 4);
@@ -315,7 +343,8 @@ export class GroupBarChartComponent implements OnChanges {
           .attr('class', 'circle-group')
           .attr('transform', `translate(17,0)`)
           .selectAll('circle')
-          .data(lineData)
+        //   .data(lineData.filter(data=>this.VisibleXAxisLbl.includes(data.filter))) // for hide the circle
+        .data(lineData)
           .enter()
           .append('circle')
           .attr('cx', d => x(d.filter))
@@ -355,11 +384,11 @@ export class GroupBarChartComponent implements OnChanges {
     var counter = 0;
     subgroups.forEach((d, i) => {
       counter = i;
-      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${colorList[i]}"></div> : ${d}</div>`;
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
     });
-    counter ++
+    // counter ++
     this.lineGroups.forEach((d, i) => {
-      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${colorList[counter]}"></div> : ${d}</div>`;
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
       counter ++;
     })
 
@@ -425,22 +454,33 @@ export class GroupBarChartComponent implements OnChanges {
         const today = new Date();
         const startOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfCurrentWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()));
-        if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
-          this.currentDayIndex = i;
-        }
-        d['group'] = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
+        const formatedWeek = `${(date1.getDate() < 10) ? ('0' + date1.getDate()) : date1.getDate()}/${(date1.getMonth() + 1) < 10 ? '0' + (date1.getMonth() + 1) : date1.getMonth() + 1} - `+
         `${(date2.getDate() < 10) ? ('0' + date2.getDate()) : date2.getDate()}/${(date2.getMonth() + 1) < 10 ? '0' + (date2.getMonth() + 1) : date2.getMonth() + 1}`;
+        if (date1 <= endOfCurrentWeek && date2 >= startOfCurrentWeek) {
+          this.currentDayIndex = formatedWeek;
+        }
+        d['group'] = formatedWeek
       return d;
       }else{
         const date = new Date(d['group']);
         const currentDate = new Date();
+        const formatedDate =  `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
         if (date.toDateString() === currentDate.toDateString()) {
-          this.currentDayIndex = i;
+          this.currentDayIndex = formatedDate;
         }
-        d['group'] = `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+        d['group'] = formatedDate;
       return d;
       }
     });
   }
-
+generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
+    svg.append('line')
+    .attr('x1', xAxis(xCoordinates)+ 18)
+    .attr('y1', yAxis(yCordinates))
+    .attr('x2', xAxis(xCoordinates)+18)  
+    .attr('y2', yAxis(this.maxYValue)) 
+    .attr('stroke', 'black')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none' )
+}
 }
