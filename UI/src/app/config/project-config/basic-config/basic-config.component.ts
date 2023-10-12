@@ -182,7 +182,8 @@ export class BasicConfigComponent implements OnInit {
 
 
   stringValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    if ((typeof control.value === 'string' || control.value instanceof String) && control.value !== null && (control.value && (control.value.indexOf('###') !== -1 || control.value.indexOf('~') !== -1 || control.value.indexOf('`') !== -1 || control.value.indexOf('!') !== -1))) {
+    const inputValue: string = control.value as string;
+    if ((typeof control.value === 'string' || control.value instanceof String) &&  control.value && control.value !== null && !/^[a-zA-Z0-9\s]+$/.test(inputValue)) {
       return { stringValidator: true };
     }
     return null;
