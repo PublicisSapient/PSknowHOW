@@ -634,9 +634,9 @@ public abstract class ToolsKPIService<R, S> {
 		R calculatedAggValue = null;
 		if (!aggValues.isEmpty()) {
 			if (aggValues.get(0) instanceof Double) {
-				calculatedAggValue = (R) calculateAggregateValueForDouble((List<Double>) aggValues, kpiId);
+				calculatedAggValue = (R) calculateCycleAggregateValueForDouble((List<Double>) aggValues, kpiId);
 			} else if (aggValues.get(0) instanceof Long) {
-				calculatedAggValue = (R) calculateAggregateValueForLong((List<Long>) aggValues, kpiId);
+				calculatedAggValue = (R) calculateCycleAggregateValueForLong((List<Long>) aggValues, kpiId);
 			}
 		}
 		return calculatedAggValue;
@@ -728,7 +728,7 @@ public abstract class ToolsKPIService<R, S> {
 						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
-						R calculatedAggValue = calculateKpiValue(aggValues, kpiId);
+						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
 						String maturity = null;
 						if (maturityValue != null) {
@@ -1088,7 +1088,7 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * Method to calculate the Agg value of List of double
+	 * Method to calculate the Agg value of List of double for cycle kpi(dora)
 	 * 
 	 * @param valueList
 	 *            List of values
@@ -1096,7 +1096,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return Agg value
 	 */
-	public Double calculateAggregateValueForDouble(List<Double> valueList, String kpiId) {
+	public Double calculateCycleAggregateValueForDouble(List<Double> valueList, String kpiId) {
 		Double calculatedValue = 0.0;
 		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
@@ -1115,7 +1115,7 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * Method to calculate the Agg value of List of Long
+	 * Method to calculate the Agg value of List of Long for cycle kpi(dora)
 	 * 
 	 * @param valueList
 	 *            List of values
@@ -1123,7 +1123,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiId
 	 * @return Agg value
 	 */
-	public Long calculateAggregateValueForLong(List<Long> valueList, String kpiId) {
+	public Long calculateCycleAggregateValueForLong(List<Long> valueList, String kpiId) {
 		if (Constant.PERCENTILE.equalsIgnoreCase(configHelperService.calculateCriteriaForCircleKPI().get(kpiId))) {
 			if (null == customApiConfig.getPercentileValue()) {
 				return AggregationUtils.percentilesLong(valueList, 90d);
