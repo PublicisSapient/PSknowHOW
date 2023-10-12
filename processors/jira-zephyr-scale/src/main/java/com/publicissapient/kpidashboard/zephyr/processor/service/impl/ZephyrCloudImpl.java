@@ -58,9 +58,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 	private static final String CREATED_ON = "createdOn";
 	private static final String CUSTOM_FIELDS = "customFields";
 	private static final String LABELS = "labels";
-	private static final String OWNER = "owner";
-	private static final String SELF = "self";
-	private static final String DISPLAY_NAME = "displayName";
+	private static final String OWNER = "dummy_user";
 	private static final String FOLDER = "folder";
 	private static final String ID = "id";
 	private static final String LINKS = "links";
@@ -168,7 +166,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 			String createdDate = getString(testcaseResponse, CREATED_ON);
 			List<String> labels = prepareLabelsDetails(testcaseResponse);
 			Map<String, String> customFields = prepareCustomFieldsDetails(testcaseResponse);
-			String owner = prepareOwnerDetails(testcaseResponse, jiraCloudCredential);
 			String folder = prepareFolderDetails(testcaseResponse, accessToken, folderMap);
 			Set<String> issueLinks = prepareIssueLinks(testcaseResponse, jiraCloudCredential);
 			zephyrTestCaseDTO.setKey(key);
@@ -176,7 +173,7 @@ public class ZephyrCloudImpl implements ZephyrClient {
 			zephyrTestCaseDTO.setCreatedOn(createdDate);
 			zephyrTestCaseDTO.setUpdatedOn(createdDate);
 			zephyrTestCaseDTO.setLabels(labels);
-			zephyrTestCaseDTO.setOwner(owner);
+			zephyrTestCaseDTO.setOwner(OWNER);
 			zephyrTestCaseDTO.setFolder(folder);
 			zephyrTestCaseDTO.setIssueLinks(issueLinks);
 			zephyrTestCaseDTO.setCustomFields(customFields);
@@ -239,46 +236,6 @@ public class ZephyrCloudImpl implements ZephyrClient {
 			}
 		}
 		return labels;
-	}
-
-	/**
-	 * prepare owner name using rest api call
-	 *
-	 * @param testcaseResponse
-	 */
-	private String prepareOwnerDetails(JSONObject testcaseResponse, String jiraCloudCredential) throws ParseException {
-		String owner = null;
-		if (jiraCloudCredential != null) {
-			JSONObject jsonObject = getJSONObject(testcaseResponse, OWNER);
-			if (jsonObject != null) {
-				String url = getString(jsonObject, SELF);
-				owner = getOwnerDetailsUsingRestAPICall(url, jiraCloudCredential);
-			}
-		}
-		return owner;
-	}
-
-	/**
-	 * rest api call getting display name as owner
-	 *
-	 * @param url
-	 *            for example =
-	 *            https://jira.cloudUrl/rest/api/2/user?accountId=5cd97657e826800fcda592ff
-	 * @param jiraCloudCredential
-	 *
-	 */
-	private String getOwnerDetailsUsingRestAPICall(String url, String jiraCloudCredential) throws ParseException {
-		String ownerName = null;
-		HttpEntity<String> httpEntity = zephyrUtil.buildAuthenticationHeader(jiraCloudCredential);
-		ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, String.class);
-		if (response.getStatusCode() == HttpStatus.OK) {
-			JSONParser jsonParser = new JSONParser();
-			JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-			if (jsonObject != null) {
-				ownerName = getString(jsonObject, DISPLAY_NAME);
-			}
-		}
-		return ownerName;
 	}
 
 	/**

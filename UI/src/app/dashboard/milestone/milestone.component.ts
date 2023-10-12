@@ -111,7 +111,7 @@ export class MilestoneComponent implements OnInit {
 
   processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Speed', 'count': 0,kpis : [],width : 'half'},
+      {'label':'Speed', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
       {'label':'Quality', 'count': 0,kpis : [],width :'half'},
       {'label':'Value', 'count': 0,kpis : [],width :'full'},
     ];
@@ -132,14 +132,25 @@ export class MilestoneComponent implements OnInit {
     }
 
     this.navigationTabs.map(tabDetails => {
-      if (tabDetails['width'] === 'half') {
-        const dataLength = tabDetails['kpis'].length;
+      if(tabDetails['width'] === 'half'){
+        let fullWidthKPis = [];
+        let halfWithKpis = []
+        tabDetails['kpis'].forEach(kpiDetails=>{
+          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+            fullWidthKPis = fullWidthKPis.concat(kpiDetails);
+          }else{
+            halfWithKpis = halfWithKpis.concat(kpiDetails);
+          }
+        })
+        const dataLength = halfWithKpis.length;
         const middleIndex = Math.floor(dataLength / 2);
-        tabDetails['kpiPart1'] = tabDetails['kpis'].slice(0, middleIndex + (dataLength % 2));
-        tabDetails['kpiPart2'] = tabDetails['kpis'].slice(middleIndex + (dataLength % 2));
+        tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
+        tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
+        tabDetails['fullWidthKpis'] = fullWidthKPis;
       }
-        return tabDetails;
-      })
+      return tabDetails;
+    });
+    
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -163,7 +174,6 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.activeIndex = 0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
@@ -631,7 +641,7 @@ export class MilestoneComponent implements OnInit {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
       if(tab.width === 'half'){
         const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2']];
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
       }
       this.upDatedConfigData = [];
       this.navigationTabs.forEach(tabs=>{

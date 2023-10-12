@@ -5035,7 +5035,7 @@ db.kpi_master.bulkWrite([
                 "kanban": false,
                 "chartType": "horizontalPercentBarChart",
                 "kpiInfo": {
-                    "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+                    "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
                 },
                 "xAxisLabel": "",
                 "yAxisLabel": "",
@@ -5066,7 +5066,7 @@ db.kpi_master.bulkWrite([
                 "kanban": false,
                 "chartType": "horizontalPercentBarChart",
                 "kpiInfo": {
-                    "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+                    "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
                 },
                 "xAxisLabel": "",
                 "yAxisLabel": "",
@@ -5109,6 +5109,12 @@ db.kpi_master.bulkWrite([
         updateMany: {
             filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi163"] } },
             update: { $set: { "kpiSubCategory": "Quality" } }
+        },
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150","kpi147", "kpi3"] } },
+            update: { $set: { "kpiWidth": 100 } }
         },
     }
 ]);

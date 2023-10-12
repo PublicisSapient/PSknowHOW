@@ -2824,6 +2824,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -2941,6 +2942,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
@@ -3047,6 +3049,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "Count",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -3604,7 +3607,7 @@ db.getCollection('kpi_master').insertMany(
     "kanban": false,
     "chartType": "horizontalPercentBarChart",
     "kpiInfo": {
-      "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+      "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
@@ -3630,7 +3633,7 @@ db.getCollection('kpi_master').insertMany(
       "kanban": false,
       "chartType": "horizontalPercentBarChart",
       "kpiInfo": {
-        "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+        "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
       },
       "xAxisLabel": "",
       "yAxisLabel": "",
