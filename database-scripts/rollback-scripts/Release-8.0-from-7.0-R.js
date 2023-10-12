@@ -762,3 +762,14 @@ db.kpi_master.bulkWrite([
         }
     }
 ]);
+
+//DTS-29115 Prod fix Rollback
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi40", "kpi46"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi164" }, { $set: { "groupId": 4 } })
+
+db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 2 } })
+db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 3 } })
