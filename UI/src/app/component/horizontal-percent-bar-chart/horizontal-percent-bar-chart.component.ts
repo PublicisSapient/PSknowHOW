@@ -314,7 +314,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 15 + 'px');
+      .style('bottom', 30 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
