@@ -107,7 +107,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
@@ -131,7 +130,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
-
 		return kpiElement;
 	}
 
@@ -143,14 +141,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
-
+		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-
+		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
-
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
-
 		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
 		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
 				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
@@ -182,7 +178,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			sprintWiseFTPRMap.put(sprint, sprintWiseFtpr);
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, ftpStoriesList);
 		});
-
 		sprintLeafNodeList.forEach(node -> {
 
 			String trendLineName = node.getProjectFilter().getName();
@@ -264,7 +259,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			sprintList.add(leaf.getSprintFilter().getId());
@@ -274,17 +268,21 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					Pair.of(leaf.getSprintFilter().getStartDate(), leaf.getSprintFilter().getEndDate()));
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI82());
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
+					fieldMapping.getDefectPriorityKPI82());
 			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-						fieldMapping.getJiraKPI82StoryIdentification(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+						fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
+						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					fieldMapping.getJiraIssueDeliverdStatusKPI82());
-			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI82(), fieldMapping.getJiraDefectRejectionStatusKPI82());
+			KpiHelperService.getDroppedDefectsFilters(statusConfigsOfRejectedStoriesByProject, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI82(),
+					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
@@ -300,28 +298,24 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		// Fetch Story ID grouped by Sprint
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
-
 		List<JiraIssue> issuesBySprintAndType = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters,
 				uniqueProjectMap);
-
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
-				defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType, defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
 		removeStoriesWithDefect(defectListWoDrop, projectWisePriority, projectWiseRCA,
 				statusConfigsOfRejectedStoriesByProject);
-
 		List<String> storyIds = getIssueIds(defectListWoDrop);
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
-
 		defectListWoDrop.removeIf(issue -> {
 			Map<ObjectId, FieldMapping> fieldMappingMap = configHelperService.getFieldMappingMap();
 			FieldMapping fieldMapping = fieldMappingMap.get(new ObjectId(issue.getBasicProjectConfigId()));
 			return kpiHelperService.hasReturnTransactionOrFTPRRejectedStatus(issue, storiesHistory,
-					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),fieldMapping.getJiraFtprRejectStatusKPI82());
+					fieldMapping.getJiraStatusForDevelopmentKPI82(), fieldMapping.getJiraStatusForQaKPI82(),
+					fieldMapping.getJiraFtprRejectStatusKPI82());
 		});
 
 		List<String> storyIdList = new ArrayList<>();

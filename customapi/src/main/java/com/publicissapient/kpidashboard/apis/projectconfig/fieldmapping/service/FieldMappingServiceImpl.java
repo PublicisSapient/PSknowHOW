@@ -101,13 +101,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	@Override
 	public FieldMapping getFieldMapping(String projectToolConfigId) {
+
 		if (!ObjectId.isValid(projectToolConfigId)) {
 			throw new IllegalArgumentException(INVALID_PROJECT_TOOL_CONFIG_ID);
 		}
 		if (!authorizedProjectsService.ifSuperAdminUser() && !hasProjectAccess(projectToolConfigId)) {
 			throw new AccessDeniedException("Access is denied");
 		}
-
 		return fieldMappingRepository.findByProjectToolConfigId(new ObjectId(projectToolConfigId));
 	}
 

@@ -10,7 +10,7 @@
 :host ::ng-deep.chart-container{
   position: relative;
   height: 200px;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -61,3 +61,6 @@
   :host::ng-deep .legend_item {
     padding: 0;
   } 
+  div.normal-legend{
+    height: auto;
+  }

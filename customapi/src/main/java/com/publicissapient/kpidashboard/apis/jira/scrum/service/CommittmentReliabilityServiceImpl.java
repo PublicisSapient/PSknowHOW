@@ -170,8 +170,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-
+		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
+		log.info("CommitmentReliability taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
 		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
@@ -330,7 +331,6 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 		});
-
 		List<SprintDetails> sprintDetails = new ArrayList<>(sprintRepository.findBySprintIDIn(sprintList));
 		Map<ObjectId, List<SprintDetails>> projectWiseTotalSprintDetails = sprintDetails.stream()
 				.collect(Collectors.groupingBy(SprintDetails::getBasicProjectConfigId));
@@ -377,10 +377,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		/** additional filter **/
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
-
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			resultListMap.put(PROJECT_WISE_TOTAL_ISSUE,
 					jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue, new HashMap<>()));

@@ -20,7 +20,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   elem: any;
   selectedNode: {};
   @Input() kpiId:string = '';
-  @Input() activeTab: number = 0;
+  @Input() activeTab?: number = 0;
   @Input() kpiWidth:string = '';
   constructor(public viewContainerRef: ViewContainerRef) { }
 
@@ -73,7 +73,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       chart.select('.chart-container').select('svg').remove();
       chart.select('.chart-container').remove();
       const width = chartContainerWidth - margin.left - margin.right;
-      const barsTotalWidth = data.length > 3 ? data.length*30 : 180;
+      const barsTotalWidth = data.length > 7 ? data.length*30 : 180;
       const height = !this.isDrilledDown ? barsTotalWidth - margin.top - margin.bottom : 100;
   
       // append the svg object to the body of the page
@@ -265,7 +265,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     legendDiv = d3.select(elem).select('#chart-'+this.kpiId).select('#legendContainer');
 
     legendDiv
-      .style('width', '100%')
+      .style('width', '95%')
       .style('margin', '0 auto')  
       .transition()
       .duration(200)
@@ -314,7 +314,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 15 + 'px');
+      .style('bottom', 30 + 'px');
   }
 
   // Required for dynamic component only; not in use right now
