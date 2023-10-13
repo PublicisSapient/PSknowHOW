@@ -64,7 +64,14 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       let self = this;
       const elem = this.elem;
       self.selectedNode = selectedNode;
-      const margin = { top: 10, right: 22, bottom: 20, left: this.kpiWidth == '100' ? 260 : 100};
+      let isLong: boolean = false;
+      data.forEach(x => {
+        if(x.kpiGroup.length > 15){
+          isLong = true;
+        }
+      })
+      
+      const margin = { top: 10, right: 22, bottom: 20, left: this.kpiWidth == '100' && isLong ? 260 : 100};
       let tempWidth:any = (document.getElementById('chart-'+this.kpiId)?.offsetWidth ? document.getElementById('chart-'+this.kpiId)?.offsetWidth : 485)
       let chartContainerWidth = tempWidth;
       
@@ -133,7 +140,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
       const yAxis = svg.append('g')
         .attr('class', 'yAxis')
         .call(d3.axisLeft(y).tickSize(0));
-  
+      
       yAxis.selectAll('text')
         .style('font-size', '10px')
         .call(this.wrap, this.kpiWidth);
@@ -343,7 +350,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
   wrap(text, kpiWidth) {
     let textLength = 15;
     if(kpiWidth == '100'){
-      textLength = 50;
+      textLength = 48;
     }
     text.each(function () {
       let text = d3.select(this);
