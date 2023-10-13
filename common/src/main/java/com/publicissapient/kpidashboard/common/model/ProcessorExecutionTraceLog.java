@@ -47,5 +47,5 @@ public class ProcessorExecutionTraceLog {
 	private String lastSuccessfulRun;
 	private Map<String, LocalDateTime> lastSavedEntryUpdatedDateByType;
 	private boolean lastEnableAssigneeToggleState;
-
+	private String boardId;
 }

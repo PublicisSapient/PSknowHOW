@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -373,7 +374,8 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private String notificationEnabler = "On";
+	private boolean notificationEnabler=true;
+
 	private List<String> jiraIssueEpicTypeKPI153;
 
 	// DTS-26150 start
@@ -419,4 +421,7 @@ public class FieldMapping extends BasicModel {
 		this.jiraIssueTypeNames = jiraIssueTypeNames == null ? null : jiraIssueTypeNames.clone();
 	}
 
+	public boolean getNotificationEnabler() {
+		return notificationEnabler;
+	}
 }
