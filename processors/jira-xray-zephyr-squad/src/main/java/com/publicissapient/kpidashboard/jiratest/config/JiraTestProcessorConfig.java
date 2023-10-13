@@ -30,5 +30,8 @@ public class JiraTestProcessorConfig {
 	private String jiraDirectTicketLinkKey;
 	private String jiraCloudDirectTicketLinkKey;
 	private boolean considerStartDate;
-
+	private String samlTokenStartString;
+	private String samlTokenEndString;
+	private String samlUrlStartString;
+	private String samlUrlEndString;
 }

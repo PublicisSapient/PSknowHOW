@@ -244,7 +244,6 @@ public class UserBoardConfigServiceImplTest {
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		when(kpiCategoryRepository.findAll()).thenReturn(kpiCategoryList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 7);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}

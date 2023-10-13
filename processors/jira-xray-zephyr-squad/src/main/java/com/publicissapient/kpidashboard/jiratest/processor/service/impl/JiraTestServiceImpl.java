@@ -28,9 +28,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.logging.log4j.util.Strings;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -93,6 +97,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
+	private static final String TEST_AUTOMATED_FIELD_PARSING_ERROR = "JIRA Processor |Error while parsing test automated field";
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
 	@Autowired
@@ -117,6 +122,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private TestCaseDetailsRepository testCaseDetailsRepository;
 	private ProcessorJiraRestClient client;
 
+	private KerberosClient krb5Client;
+
 	/**
 	 * Explicitly updates queries for the source system, and initiates the update to
 	 * MongoDB from those calls.
@@ -135,7 +142,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 				projectConfig.getBasicProjectConfigId().toHexString());
-
+		boolean processorFetchingComplete = false;
 		try {
 			client = getProcessorJiraRestClient(projectConfig);
 
@@ -181,11 +188,12 @@ public class JiraTestServiceImpl implements JiraTestService {
 					break;
 				}
 			}
+			processorFetchingComplete = true;
 		} catch (JSONException e) {
 			log.error("Error while updating Story information in scrum client", e);
 			lastSavedJiraIssueChangedDateByType.clear();
 		} finally {
-			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount);
+			boolean isAttemptSuccess = isAttemptSuccess(total, savedIsuesCount, processorFetchingComplete);
 			if (!isAttemptSuccess) {
 				lastSavedJiraIssueChangedDateByType.clear();
 			}
@@ -195,8 +203,8 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return savedIsuesCount;
 	}
 
-	private boolean isAttemptSuccess(int total, int savedCount) {
-		return savedCount > 0 && total == savedCount;
+	private boolean isAttemptSuccess(int total, int savedCount, boolean processorFetchingComplete) {
+		return savedCount > 0 && total == savedCount && processorFetchingComplete;
 	}
 
 	private List<Issue> getIssuesFromResult(SearchResult searchResult) {
@@ -434,7 +442,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 			setRegressionLabel(jiraTestToolInfo, fields, testCaseDetail);
 		} catch (Exception e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 	}
 
@@ -551,7 +559,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 		return automationFlag;
 	}
@@ -585,7 +593,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(TEST_AUTOMATED_FIELD_PARSING_ERROR, e);
 		}
 		return fetchedValueFromJson;
 	}
@@ -665,72 +673,42 @@ public class JiraTestServiceImpl implements JiraTestService {
 	}
 
 	public ProcessorJiraRestClient getProcessorJiraRestClient(ProjectConfFieldMapping projectConfFieldMapping) {
-		ProcessorToolConnection processorToolConnection = projectConfFieldMapping.getProcessorToolConnection();
+		Optional<Connection> connection = connectionRepository.findById(projectConfFieldMapping.getProcessorToolConnection().getConnectionId());
 		String username = "";
 		String password = "";
-		if (processorToolConnection.isVault()) {
-			ToolCredential toolCredential = toolCredentialProvider
-					.findCredential(processorToolConnection.getUsername());
-			if (toolCredential != null) {
-				username = toolCredential.getUsername();
-				password = toolCredential.getPassword();
+		if (connection.isPresent()) {
+			Connection conn = connection.get();
+			if (conn.isVault()) {
+				ToolCredential toolCredential = toolCredentialProvider
+						.findCredential(conn.getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+					client = jiraRestClientFactory.getJiraClient(
+							JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+									.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+				}
 			}
-
-		} else {
-			username = processorToolConnection.getUsername();
-			password = decryptJiraPassword(processorToolConnection.getPassword());
-		}
-
-		if (processorToolConnection.isOAuth()) {
-			// Sets Jira OAuth properties
-			jiraOAuthProperties.setJiraBaseURL(processorToolConnection.getUrl());
-			jiraOAuthProperties.setConsumerKey(processorToolConnection.getConsumerKey());
-			jiraOAuthProperties.setPrivateKey(decryptJiraPassword(processorToolConnection.getPrivateKey()));
-
-			generateAndSaveAccessToken(processorToolConnection);
-			jiraOAuthProperties.setAccessToken(processorToolConnection.getAccessToken());
-
-			client = jiraRestClientFactory.getJiraOAuthClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
-							.password(password).jiraConfigAccessToken(processorToolConnection.getAccessToken())
-							.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
-
-		} else {
-
-			client = jiraRestClientFactory.getJiraClient(
-					JiraInfo.builder().jiraConfigBaseUrl(processorToolConnection.getUrl()).username(username)
-							.password(password).jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
-
+			else if (conn.getIsOAuth()) {
+				username = conn.getUsername();
+				password = decryptJiraPassword(conn.getPassword());
+				client = jiraRestClientFactory.getJiraOAuthClient(
+						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+								.jiraConfigAccessToken(conn.getAccessToken()).jiraConfigProxyUrl(null)
+								.jiraConfigProxyPort(null).build());
+			} else if (conn.isJaasKrbAuth()) {
+				krb5Client = new KerberosClient(conn.getJaasConfigFilePath(),
+						conn.getKrb5ConfigFilePath(), conn.getJaasUser(), conn.getSamlEndPoint(), conn.getBaseUrl());
+				client = jiraRestClientFactory.getSpnegoSamlClient(krb5Client);
+			} else {
+				username = conn.getUsername();
+				password = decryptJiraPassword(conn.getPassword());
+				client = jiraRestClientFactory.getJiraClient(
+						JiraInfo.builder().jiraConfigBaseUrl(conn.getBaseUrl()).username(username).password(password)
+								.jiraConfigProxyUrl(null).jiraConfigProxyPort(null).build());
+			}
 		}
 		return client;
-	}
-
-	/**
-	 * Generate and save accessToken
-	 *
-	 * @param processorToolConnection
-	 */
-	private void generateAndSaveAccessToken(ProcessorToolConnection processorToolConnection) {
-
-		String username = processorToolConnection.getUsername();
-		String plainTextPassword = decryptJiraPassword(processorToolConnection.getPassword());
-
-		String accessToken;
-		try {
-			accessToken = jiraOAuthClient.getAccessToken(username, plainTextPassword);
-			processorToolConnection.setAccessToken(accessToken);
-			Optional<Connection> connection = connectionRepository.findById(processorToolConnection.getConnectionId());
-			if (connection.isPresent()) {
-				connection.get().setAccessToken(accessToken);
-				connectionRepository.save(connection.get());
-			}
-		} catch (FailingHttpStatusCodeException e) {
-			log.error("HTTP Status code error while generating accessToken", e);
-		} catch (MalformedURLException e) {
-			log.error("Malformed URL error while generating accessToken", e);
-		} catch (IOException e) {
-			log.error("Error while generating accessToken", e);
-		}
 	}
 
 	private String decryptJiraPassword(String encryptedPassword) {
@@ -763,7 +741,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 				});
 
-				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType);
+				query = JiraProcessorUtil.createJql(projectConfig.getProjectKey(), startDateTimeStrByIssueType, projectConfig);
 				log.info("jql= " + query);
 				Instant start = Instant.now();
 
@@ -873,17 +851,35 @@ public class JiraTestServiceImpl implements JiraTestService {
 		return userTimeZone;
 	}
 
-	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection connection)
+	private String getDataFromServer(ProcessorToolConnection processorToolConnection, HttpURLConnection httpURLConnection)
 			throws IOException {
-		HttpURLConnection request = connection;
-
-		String username = processorToolConnection.getUsername();
-		String password = decryptJiraPassword(processorToolConnection.getPassword());
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		request.connect();
+		String username = null;
+		String password = null;
+		Optional<Connection> connectionOptional = connectionRepository.findById(processorToolConnection.getConnectionId());
+		if (connectionOptional.isPresent() && connectionOptional.map(Connection::isJaasKrbAuth).orElse(false)) {
+			HttpUriRequest httpUriRequest = RequestBuilder.get().setUri(httpURLConnection.getURL().toString())
+					.setHeader(HttpHeaders.ACCEPT, "application/json")
+					.setHeader(HttpHeaders.CONTENT_TYPE, "application/json").build();
+			return krb5Client.getResponse(httpUriRequest);
+		}
+		else if (connectionOptional.isPresent() && connectionOptional.map(Connection:: isBearerToken).orElse(false)) {
+			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
+			httpURLConnection.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
+		}
+		else if(connectionOptional.isPresent() && connectionOptional.map(Connection:: isVault).orElse(false)){
+				ToolCredential toolCredential = toolCredentialProvider.findCredential(connectionOptional.get().getUsername());
+				if (toolCredential != null) {
+					username = toolCredential.getUsername();
+					password = toolCredential.getPassword();
+				}
+		} else {
+			username = connectionOptional.map(Connection::getUsername).orElse(null);
+			password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
+			httpURLConnection.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		}
+		httpURLConnection.connect();
 		StringBuilder sb = new StringBuilder();
-		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
+		try (InputStream in = (InputStream) httpURLConnection.getContent(); BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
