@@ -30,7 +30,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

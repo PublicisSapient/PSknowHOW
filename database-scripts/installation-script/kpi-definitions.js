@@ -8835,11 +8835,11 @@ db.getCollection('field_mapping_structure').insertMany(
         },
         "options": [{
              "label": "On",
-             "value": "On"
+             "value": true
         },
         {
              "label": "Off",
-             "value": "Off"
+             "value": false
         }
         ]
     },

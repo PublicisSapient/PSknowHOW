@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -47,7 +49,10 @@ public class SignupManager {
 	private CommonService commonService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
-
+	@Autowired
+	private NotificationService notificationService;
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
@@ -117,14 +122,15 @@ public class SignupManager {
 	 * @param notKey
 	 */
 	public void sendEmailNotification(List<String> emailAddresses, Map<String, String> customData, String subjectKey,
-			String notKey) {
+									  String notKey) {
 		Map<String, String> notificationSubjects = customApiConfig.getNotificationSubject();
 		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(emailAddresses)
 				&& MapUtils.isNotEmpty(notificationSubjects)) {
 			String subject = notificationSubjects.get(subjectKey);
 			log.info("Notification message sent to kafka with key : {}", notKey);
-			commonService.sendNotificationEvent(emailAddresses, customData, subject, notKey,
-					customApiConfig.getKafkaMailTopic());
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(notKey,"");
+			notificationService.sendNotificationEvent(emailAddresses, customData, subject, notKey,
+					customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate,templateKey,customApiConfig.isMailWithoutKafka());
 		} else {
 			log.error("Notification Event not sent : No email address found "
 					+ "or Property - notificationSubject.accessRequest not set in property file ");
