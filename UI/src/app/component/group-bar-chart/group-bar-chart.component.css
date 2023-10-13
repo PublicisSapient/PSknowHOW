@@ -162,7 +162,7 @@
 
   ::ng-deep .legend_color_indicator.line-indicator{
     height: 5px;
-    width: 25px
+    width: 30px;
   }
 
   :host ::ng-deep .xAxis .tick.minor line {
