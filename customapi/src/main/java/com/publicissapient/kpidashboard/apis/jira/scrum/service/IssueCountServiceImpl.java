@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -190,8 +189,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			List<String> jiraStoryIdentification = new ArrayList<>();
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKpi40()).isPresent()) {
-				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream().map(String::toLowerCase)
-						.collect(Collectors.toList());
+				jiraStoryIdentification = fieldMapping.getJiraStoryIdentificationKpi40().stream()
+						.map(String::toLowerCase).collect(Collectors.toList());
 			}
 			projectWiseJiraIdentification.put(basicProjectConfigId.toString(), jiraStoryIdentification);
 			List<String> categories = new ArrayList<>(jiraStoryIdentification);
@@ -200,8 +199,8 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 																	  // comparison
 					.distinct().collect(Collectors.toList());
 
-			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(), categories,
-					JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+					fieldMapping.getJiradefecttype(), categories, JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		});
 
@@ -269,7 +268,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		long time = System.currentTimeMillis();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
+		log.info("IssueCount taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
 		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
 
