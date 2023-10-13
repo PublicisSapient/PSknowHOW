@@ -1,0 +1,91 @@
+[
+  {
+    "_id": "63f619e817b32e30f5b97fc1",
+    "processorId": "63b3f50b6d8d7f44def6ec2f",
+    "issueId": "1",
+    "number": "DTS-22047",
+    "name": "Anaylse current code for jira history",
+    "typeId": "7",
+    "typeName": "Story",
+    "status": "Closed",
+    "state": "Closed",
+    "estimate": "2.0",
+    "storyPoints": "2",
+    "url": "https://tools.publicis.sapient.com/jira/browse/DTS-22047",
+    "changeDate": "2023-02-05T23:19:32.0000000",
+    "isDeleted": "False",
+    "priority": "P3 - Major",
+    "labels": [],
+    "createdDate": "2023-02-01T15:21:30.0000000",
+    "rootCauseList": [
+      "None"
+    ],
+    "ownersID": [
+      "hargupta15"
+    ],
+    "ownersIsDeleted": [],
+    "ownersChangeDate": [],
+    "ownersState": [
+      "Active"
+    ],
+    "ownersUsername": [
+      "hargupta15"
+    ],
+    "ownersFullName": [
+      "Harsh Gupta"
+    ],
+    "ownersShortName": [
+      "hargupta15"
+    ],
+    "sprintIsDeleted": "False",
+    "sprintChangeDate": "",
+    "sprintAssetState": "CLOSED",
+    "sprintEndDate": "2023-02-08T21:26:00.0000000",
+    "sprintBeginDate": "2023-01-25T21:26:00.0000000",
+    "sprintName": "KnowHOW | PI_12| ITR_3",
+    "sprintID": "41409_NewJira_63c04dc7b7617e260763ca4e",
+    "sprintIdList": [
+      "41409"
+    ],
+    "costOfDelay": "0",
+    "jobSize": "0",
+    "wsjf": "0",
+    "businessValue": "0",
+    "timeCriticality": "0",
+    "riskReduction": "0",
+    "projectPath": "",
+    "projectIsDeleted": "False",
+    "projectState": "",
+    "projectChangeDate": "",
+    "projectEndDate": "",
+    "projectBeginDate": "",
+    "projectName": "NewJira",
+    "projectID": "NewJira_63c04dc7b7617e260763ca4e",
+    "projectKey": "DTS",
+    "resolution": "Fixed or Completed",
+    "affectedVersions": [],
+    "additionalFilters": [
+      {
+        "filterId": "sqd",
+        "filterValues": [
+          {
+            "valueId": "1234455566",
+            "value": "Squad"
+          }
+        ]
+      }
+    ],
+    "assigneeId": "hargupta15",
+    "assigneeName": "Harsh Gupta",
+    "jiraStatus": "Closed",
+    "timeSpentInMinutes": 0,
+    "basicProjectConfigId": "63c04dc7b7617e260763ca4e",
+    "releaseVersions": [],
+    "defectRaisedByQA": false,
+    "originalEstimateMinutes": 960,
+    "remainingEstimateMinutes": 0,
+    "productionDefect": false,
+    "updateDate": "2023-02-05T23:19:32.0000000",
+    "_class": "com.publicissapient.kpidashboard.common.model.jira.JiraIssue"
+  }
+]

@@ -45,14 +45,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.JsonUtils;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public final class JiraProcessorUtil {
-
-	private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
+public class JiraProcessorUtil {
 
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
@@ -68,10 +67,6 @@ public final class JiraProcessorUtil {
 	private static final String ACTIVATEDDATE = "activatedDate";
 	private static final String GOAL = "goal";
 	private static final String BOARDID = "boardId";
-
-	private JiraProcessorUtil() {
-		// Default
-	}
 
 	/**
 	 * This method return UTF-8 decoded string response
@@ -251,7 +246,7 @@ public final class JiraProcessorUtil {
 			JsonNode jsonNode = objectMapper.readTree(sprintData);
 			sprint.setSprintID(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
 			sprint.setOriginalSprintId(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
-			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText().toUpperCase());
+			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText());
 			String boardId = null;
 
 			if (jsonNode.get(RAPIDVIEWID) == null) {
@@ -362,75 +357,6 @@ public final class JiraProcessorUtil {
 	}
 
 	/**
-	 * process jql
-	 *
-	 * @param query
-	 *            jqlquery
-	 * @param startDateTimeStrByIssueType
-	 *            datewise issuetype map
-	 * @param dataExist
-	 *            data already exist in db or not
-	 * @return processed JQL
-	 */
-	public static String processJql(String query, Map<String, String> startDateTimeStrByIssueType, boolean dataExist) {
-
-		String finalQuery = StringUtils.EMPTY;
-		if (StringUtils.isEmpty(query) || startDateTimeStrByIssueType == null) {
-			return finalQuery;
-		}
-		query = query.toLowerCase().split(JiraConstants.ORDERBY)[0];
-		StringBuilder issueTypeDateQuery = new StringBuilder();
-
-		int size = startDateTimeStrByIssueType.entrySet().size();
-		int count = 0;
-		issueTypeDateQuery.append(" (");
-		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-			count++;
-			String type = entry.getKey();
-			String dateTime = entry.getValue();
-
-			issueTypeDateQuery.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-			if (count < size) {
-				issueTypeDateQuery.append(" OR ");
-			}
-		}
-
-		issueTypeDateQuery.append(") ");
-
-		if (dataExist) {
-			if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-				finalQuery = replaceDateQuery(query, issueTypeDateQuery.toString());
-			} else {
-				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-			}
-		} else {
-			if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-				finalQuery = appendDateQuery(query, "");
-			} else {
-				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-			}
-		}
-
-		return finalQuery;
-	}
-
-	/**
-	 * append pre and post query
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return appended query
-	 */
-	private static String appendDateQuery(String preQuery, String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(preQuery);
-		sb.append(" ");
-		sb.append(postQuery);
-		sb.append(" ORDER BY updated DESC");
-		return sb.toString();
-	}
-
-	/**
 	 * find project key from query
 	 *
 	 * @param query
@@ -448,20 +374,6 @@ public final class JiraProcessorUtil {
 			}
 		}
 		return projectKey;
-	}
-
-	/**
-	 * replace updated date
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return replaced query
-	 */
-	private static String replaceDateQuery(String preQuery, String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(preQuery.replace(JiraConstants.UPDATEDDATE, postQuery));
-		sb.append(" ORDER BY updated DESC");
-		return sb.toString();
 	}
 
 	public static String convertToNewFormat(String dateStr) {
@@ -492,7 +404,7 @@ public final class JiraProcessorUtil {
 	}
 
 	public static String processJqlForSprintFetch(List<String> issueKeys) {
-		String finalQuery = StringUtils.EMPTY;
+		String finalQuery = org.apache.commons.lang3.StringUtils.EMPTY;
 		if (issueKeys == null) {
 			return finalQuery;
 		}
@@ -515,5 +427,4 @@ public final class JiraProcessorUtil {
 
 		return finalQuery;
 	}
-
 }
