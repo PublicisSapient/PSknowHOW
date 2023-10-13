@@ -344,8 +344,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		Double originalEstimateInMinutes = 0.0d;
 
 		if (CollectionUtils.isNotEmpty(createdIssues)) {
-			Predicate<JiraIssue> excludeSpilledIssue = jiraIssue -> !fieldMapping.getExcludeSpilledKpi46()
-					.equalsIgnoreCase("On")
+			Predicate<JiraIssue> excludeSpilledIssue = jiraIssue -> !fieldMapping.isExcludeSpilledKpi46()
 					|| Optional.ofNullable(jiraIssue.getSprintIdList()).orElse(Arrays.asList("")).size() <= 1;
 
 			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())

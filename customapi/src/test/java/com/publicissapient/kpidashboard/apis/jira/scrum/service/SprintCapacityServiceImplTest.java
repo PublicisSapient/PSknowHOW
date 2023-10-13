@@ -190,7 +190,7 @@ public class SprintCapacityServiceImplTest {
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setExcludeSpilledKpi46("On");
+		fieldMapping.setExcludeSpilledKpi46(true);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
@@ -217,7 +217,7 @@ public class SprintCapacityServiceImplTest {
 		when(sprintCapacityServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(kpiHelperService.fetchCapacityDataFromDB(Mockito.any())).thenReturn(dataList);
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setExcludeSpilledKpi46("On");
+		fieldMapping.setExcludeSpilledKpi46(true);
 		fieldMapping.setEstimationCriteria("Original Estimate");
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
