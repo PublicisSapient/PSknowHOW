@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.StringEscapeUtils;
@@ -565,8 +566,6 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	/**
 	 * Process change log and create array of status in Issue history
 	 *
-	 * @param azureIssue
-	 *            Jiraissue
 	 * @param updateValueList
 	 *            Changes log list for jira issue
 	 * @param issueCreatedDate
@@ -607,19 +606,14 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @return KanbanJiraIssue corresponding to issueId from DB
 	 */
 	private KanbanJiraIssue findOneKanbanIssueRepo(String issueId, String basicProjectConfigId) {
-		List<KanbanJiraIssue> jiraIssues = kanbanJiraRepo
+		KanbanJiraIssue jiraIssues = kanbanJiraRepo
 				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
 
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | More than one collector item found for scopeId {}", issueId);
+		if (ObjectUtils.allNull(jiraIssues)) {
+			return null;
 		}
 
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-
-		return null;
+		return jiraIssues;
 	}
 
 	/**
@@ -633,17 +627,14 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *         issueId from DB
 	 */
 	private KanbanIssueCustomHistory findOneKanbanIssueCustomHistory(String issueId, String basicProjectConfigId) {
-		List<KanbanIssueCustomHistory> jiraIssues = kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(issueId,
+		KanbanIssueCustomHistory jiraIssues = kanbanIssueHistoryRepo.findByStoryIDAndBasicProjectConfigId(issueId,
 				basicProjectConfigId);
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("JIRA Processor | Data issue More than one JIRA issue item found for id {}", issueId);
-		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
+
+		if (ObjectUtils.allNull(jiraIssues)) {
+			return null;
 		}
 
-		return null;
+		return jiraIssues;
 	}
 
 	/**

@@ -37,7 +37,7 @@ public interface CommonService {
 	 *
 	 * @param maturityRangeList
 	 *            the maturity range list
-	 * @param kpiType
+	 * @param kpiId
 	 *            the kpi type
 	 * @param actualMaturityVal
 	 *            the actual val
@@ -63,17 +63,6 @@ public interface CommonService {
 	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId);
 
 	/**
-	 *
-	 * @param emailAddresses
-	 * @param customData
-	 * @param notSubKey
-	 * @param notKey
-	 * @param topic
-	 */
-	public void sendNotificationEvent(List<String> emailAddresses, Map<String, String> customData, String notSubKey,
-			String notKey, String topic);
-
-	/**
 	 * 
 	 * @return String
 	 * @throws UnknownHostException
@@ -87,18 +76,5 @@ public interface CommonService {
 	 * @return sortedMap
 	 */
 	public Map<String, List<DataCount>> sortTrendValueMap(Map<String, List<DataCount>> trendMap);
-
-	/**
-	 * to send email without running kafka
-	 * 
-	 * @param emailAddresses
-	 * @param customData
-	 * @param notSubKey
-	 * @param notKey
-	 * @param topic
-	 * @param templateKey
-	 */
-	void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> customData, String notSubKey,
-			String notKey, String topic, String templateKey);
 
 }
