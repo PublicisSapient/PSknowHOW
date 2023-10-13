@@ -8,10 +8,10 @@
             <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined">
-                  <div class="p-grid p-mr-1 p-ml-1 p-mt-0">
+                  <div class="p-grid p-pr-2 p-pl-2 p-pt-2">
 
                     <ng-container *ngIf="board.width === 'half'">
-                      <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
+                      <div *ngIf="board.fullWidthKpis?.length>0" class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)"
                         [cdkDropListData]="board.fullWidthKpis">
                         <ng-container *ngFor="let kpi of board.fullWidthKpis">
                           <div class="card-type-1 p-mb-3 p-pr-0 p-pl-0"
@@ -141,7 +141,7 @@
                           </ng-template>
                         </ng-container>
                       </div>  
-                      <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
+                      <div *ngIf="board.kpiPart1?.length>0" class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                         [cdkDropListData]="board.kpiPart1">
                         <ng-container *ngFor="let kpi of board.kpiPart1">
                           <div class="card-type-1 p-mb-3 p-pr-0 p-pl-0"
@@ -271,7 +271,7 @@
                           </ng-template>
                         </ng-container>
                       </div>
-                      <div class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
+                      <div *ngIf="board.kpiPart2?.length>0" class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                         [cdkDropListData]="board.kpiPart2">
                         <ng-container *ngFor="let kpi of board.kpiPart2">
                           <div class="card-type-1 p-mb-3 p-pr-0 p-pl-0"
