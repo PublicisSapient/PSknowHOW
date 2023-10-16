@@ -118,9 +118,8 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 
@@ -152,9 +151,8 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueScrumJqlJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -197,9 +195,8 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -229,9 +226,8 @@ public class JobController {
 				try {
 					jobLauncher.run(fetchIssueKanbanJqlJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -259,7 +255,6 @@ public class JobController {
 			jobLauncher.run(fetchIssueSprintJob, params);
 		} catch (Exception e) {
 			log.info("Jira Sprint data fetch failed for SprintId : {}", params.getString(SPRINT_ID));
-			e.printStackTrace();
 		}
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
 
@@ -301,7 +296,7 @@ public class JobController {
 
 				runProjectBasedOnConfig(basicProjectConfigId, params, projBasicConfOpt);
 			} catch (Exception e) {
-				log.error("Jira fetch failed for BasicProjectConfigId : {}", params.getString(PROJECT_ID), e);
+				log.error("Jira fetch failed for BasicProjectConfigId : {}, with exception : {}", params.getString(PROJECT_ID), e);
 			}
 		});
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
