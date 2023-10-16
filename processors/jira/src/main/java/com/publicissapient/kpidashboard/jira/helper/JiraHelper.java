@@ -1,8 +1,5 @@
 package com.publicissapient.kpidashboard.jira.helper;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -10,9 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -30,13 +25,8 @@ import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.util.JiraProcessorUtil;
 
@@ -54,7 +44,6 @@ public class JiraHelper {
 		}
 		return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
 	};
-	protected static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
 	private static final String EXCEPTION = "Exception";
@@ -122,62 +111,11 @@ public class JiraHelper {
 		return changeLogList;
 	}
 
-	public static int getTotal(SearchResult searchResult) {
-		if (searchResult != null) {
-			return searchResult.getTotal();
-		}
-		return 0;
-	}
-
 	public static List<Issue> getIssuesFromResult(SearchResult searchResult) {
 		if (searchResult != null) {
 			return Lists.newArrayList(searchResult.getIssues());
 		}
 		return new ArrayList<>();
-	}
-
-	public static Map<String, JiraIssue> createMapOfIssueIdToJiraIssue(List<Issue> issueList,
-			List<JiraIssue> jiraIssueList) {
-
-		return jiraIssueList.stream().collect(Collectors.toMap(JiraIssue::getIssueId, x -> x));
-
-	}
-
-	public static void findLastSavedJiraIssueByType(List<JiraIssue> jiraIssues,
-			Map<String, LocalDateTime> lastSavedJiraIssueChangedDateByType) {
-		Map<String, List<JiraIssue>> issuesByType = CollectionUtils
-				.emptyIfNull(
-						jiraIssues)
-				.stream()
-				.sorted(Comparator.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT))).reversed())
-				.collect(Collectors.groupingBy(JiraIssue::getTypeName));
-
-		issuesByType.forEach((typeName, issues) -> {
-			JiraIssue firstIssue = issues.stream()
-					.sorted(Comparator
-							.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-									DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
-							.reversed())
-					.findFirst().orElse(null);
-			if (firstIssue != null) {
-				LocalDateTime currentIssueDate = LocalDateTime.parse(firstIssue.getChangeDate(),
-						DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT));
-				LocalDateTime capturedDate = lastSavedJiraIssueChangedDateByType.get(typeName);
-				lastSavedJiraIssueChangedDateByType.put(typeName, updatedDateToSave(capturedDate, currentIssueDate));
-			}
-		});
-	}
-
-	private static LocalDateTime updatedDateToSave(LocalDateTime capturedDate, LocalDateTime currentIssueDate) {
-		if (capturedDate == null) {
-			return currentIssueDate;
-		}
-
-		if (currentIssueDate.isAfter(capturedDate)) {
-			return currentIssueDate;
-		}
-		return capturedDate;
 	}
 
 	public static String hash(String input) {
@@ -214,14 +152,6 @@ public class JiraHelper {
 			}
 		}
 		return list;
-	}
-
-	public static void setLastUpdatedDateToStartDate(ProjectBasicConfig projectBasicConfig,
-			Map<String, LocalDateTime> lastUpdatedDateByIssueType, ProcessorExecutionTraceLog projectTraceLog,
-			LocalDateTime configuredStartDate, String issueType) {
-		if (projectBasicConfig.isSaveAssigneeDetails() != projectTraceLog.isLastEnableAssigneeToggleState()) {
-			lastUpdatedDateByIssueType.put(issueType, configuredStartDate);
-		}
 	}
 
 	public static List<Status> getStatus(ProcessorJiraRestClient client) {

@@ -22,6 +22,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -132,7 +133,7 @@ public class FetchEpicDataImpl implements FetchEpicData {
 					valuesJson = (JSONArray) obj.get("values");
 				}
 				getEpic(valuesJson, epicList);
-				isLast = Boolean.valueOf(obj.get("isLast").toString());
+				isLast = Boolean.parseBoolean(Objects.requireNonNull(obj).get("isLast").toString());
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}

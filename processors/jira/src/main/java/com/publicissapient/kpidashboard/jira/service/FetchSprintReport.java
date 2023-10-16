@@ -40,11 +40,9 @@ public interface FetchSprintReport {
 	 * @param isSprintFetch
 	 *            isSprintFetch
 	 * @return Set of SprintDetails
-	 * @throws InterruptedException
-	 *             InterruptedException
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException;
+			KerberosClient krb5Client, boolean isSprintFetch);
 
 	/**
 	 * @param projectConfig
@@ -52,11 +50,8 @@ public interface FetchSprintReport {
 	 * @param krb5Client
 	 *            krb5Client
 	 * @return List of SprintDetails
-	 * @throws InterruptedException
-	 *             InterruptedException
 	 */
-	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
-			throws InterruptedException;
+	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
 
 	/**
 	 * @param projectConfig

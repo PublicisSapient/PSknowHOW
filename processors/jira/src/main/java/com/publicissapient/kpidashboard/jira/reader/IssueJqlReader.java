@@ -25,8 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
-import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -38,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -49,6 +48,7 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
@@ -158,7 +158,8 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 				log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
 						pageNumber / pageSize);
 				String deltaDate = getDeltaDateFromTraceLog();
-				issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber, deltaDate);
+				issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
+						deltaDate);
 				issueSize = issues.size();
 				pageNumber += pageSize;
 				if (CollectionUtils.isNotEmpty(issues)) {

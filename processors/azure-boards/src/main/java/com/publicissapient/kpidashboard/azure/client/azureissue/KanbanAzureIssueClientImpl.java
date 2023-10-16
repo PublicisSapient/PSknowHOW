@@ -405,7 +405,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		// Saving back to MongoDB
 		kanbanJiraRepo.saveAll(kanbanIssuesToSave);
 		kanbanIssueHistoryRepo.saveAll(kanbanIssueHistoryToSave);
-		saveKanbanAccountHierarchy(kanbanIssuesToSave, projectConfig, hierarchyLevelList);
+		saveKanbanAccountHierarchy(kanbanIssuesToSave, hierarchyLevelList);
 		saveAssigneeDetailsToDb(projectConfig, assigneeSetToSave, assigneeDetails);
 		return kanbanIssuesToSave.size();
 	}
@@ -466,7 +466,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		if (null == azureIssueCustomHistory.getStoryID()) {
 			addStoryHistory(azureIssueCustomHistory, azureIssue, issue, valueList, fieldMapping);
 		} else {
-			addHistoryInAzureIssue(azureIssueCustomHistory, azureIssue, valueList, fieldMapping);
+			addHistoryInAzureIssue(azureIssueCustomHistory, azureIssue, valueList);
 		}
 
 	}
@@ -494,8 +494,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 
 		azureIssueCustomHistory.setCreatedDate(createdDate.toString());
 
-		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(valueList, createdDate,
-				fieldMapping);
+		List<KanbanIssueHistory> kanbanIssueHistoryList = getChangeLog(valueList, createdDate, fieldMapping);
 
 		azureIssueCustomHistory.setStoryID(azureIssue.getNumber());
 		azureIssueCustomHistory.setHistoryDetails(kanbanIssueHistoryList);
@@ -517,16 +516,13 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            JiraIssue instance
 	 * @param updateValueList
 	 *            List of Change log in jira
-	 * @param fieldMapping
-	 *            FieldMapping config
 	 */
 	private void addHistoryInAzureIssue(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
-			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
-			FieldMapping fieldMapping) {
+			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList) {
 		if (NormalizedJira.DEFECT_TYPE.getValue().equalsIgnoreCase(azureIssue.getTypeName())) {
 			azureIssueCustomHistory.setDefectStoryID(azureIssue.getDefectStoryID());
 		}
-		createKanbanIssueHistory(azureIssueCustomHistory, azureIssue, updateValueList, fieldMapping);
+		createKanbanIssueHistory(azureIssueCustomHistory, updateValueList);
 		azureIssueCustomHistory.setEstimate(azureIssue.getEstimate());
 	}
 
@@ -535,16 +531,11 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *
 	 * @param azureIssueCustomHistory
 	 *            JiraIssueCustomHistory
-	 * @param azureIssue
-	 *            jiraIssue
 	 * @param updateValueList
 	 *            Change Log list
-	 * @param fieldMapping
-	 *            List of JiraIssueCustomHistory
 	 */
-	private void createKanbanIssueHistory(KanbanIssueCustomHistory azureIssueCustomHistory, KanbanJiraIssue azureIssue,
-			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
-			FieldMapping fieldMapping) {
+	private void createKanbanIssueHistory(KanbanIssueCustomHistory azureIssueCustomHistory,
+			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList) {
 		List<KanbanIssueHistory> issueHistoryList = new ArrayList<>();
 		for (com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history : updateValueList) {
 			com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history
@@ -574,7 +565,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *            FielMapping
 	 * @return
 	 */
-	private List<KanbanIssueHistory> getChangeLog(List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
+	private List<KanbanIssueHistory> getChangeLog(
+			List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> updateValueList,
 			DateTime issueCreatedDate, FieldMapping fieldMapping) {
 		List<KanbanIssueHistory> historyDetails = new ArrayList<>();
 
@@ -642,13 +634,11 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 *
 	 * @param jiraIssueList
 	 *            Jiraissue list to be saved in DB
-	 * @param projectConfig
-	 *            Project configuration Mapping
 	 * @param hierarchyLevelList
 	 *            Kanban Filter category list
 	 */
-	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD
-																														// //NOSONAR
+	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, // NOPMD
+																				 // //NOSONAR
 			List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
 
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
@@ -668,9 +658,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 				List<KanbanAccountHierarchy> additionalFiltersHierarchies = accountHierarchiesForAdditionalFilters(
 						kanbanJiraIssue, projectHierarchy, projectHierarchyLevel, hierarchyLevelList);
 
-				additionalFiltersHierarchies.forEach(accountHierarchy -> {
-					accHierarchyToSave(accountHierarchy, existingKanbanHierarchy, accHierarchyToSave);
-				});
+				additionalFiltersHierarchies.forEach(accountHierarchy -> accHierarchyToSave(accountHierarchy,
+						existingKanbanHierarchy, accHierarchyToSave));
 
 			}
 		}
@@ -1034,7 +1023,8 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 		return azureServer;
 	}
 
-	private KanbanIssueHistory getIssueHistory(com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history) {
+	private KanbanIssueHistory getIssueHistory(
+			com.publicissapient.kpidashboard.common.model.azureboards.updates.Value history) {
 		com.publicissapient.kpidashboard.common.model.azureboards.updates.Fields changelogItem = history.getFields();
 		KanbanIssueHistory kanbanHistory = new KanbanIssueHistory();
 		if (null != changelogItem && null != changelogItem.getSystemState()) {

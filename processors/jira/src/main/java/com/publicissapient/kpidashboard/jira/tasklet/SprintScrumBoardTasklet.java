@@ -91,6 +91,7 @@ public class SprintScrumBoardTasklet implements Tasklet {
 			sprintRepository.saveAll(sprintDetailsList);
 		} catch (Exception e) {
 			log.error("Exception while fetching sprint data for scrum project and board setup", e);
+			Thread.currentThread().interrupt();
 		}
 		log.info("**** Sprint report for Scrum Board ended * * *");
 		return RepeatStatus.FINISHED;

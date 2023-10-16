@@ -100,6 +100,7 @@ public class SprintReportTasklet implements Tasklet {
 			}
 		} catch (Exception e) {
 			log.error("Exception while fetching sprint data for the sprint : {}", sprintId, e);
+			Thread.currentThread().interrupt();
 		}
 		return RepeatStatus.FINISHED;
 	}

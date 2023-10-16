@@ -22,16 +22,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -45,7 +38,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.util.JsonUtils;
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,7 +48,6 @@ public class JiraProcessorUtil {
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 	private static final String NULL_STR = "null";
-	private static final String PROJECTKEY = "project";
 	private static final String ID = "id";
 	private static final String STATE = "state";
 	private static final String RAPIDVIEWID = "rapidViewId";
@@ -273,121 +264,6 @@ public class JiraProcessorUtil {
 		} catch (JsonProcessingException e) {
 			log.error("Error in parsing sprint data : " + sprintData, e);
 		}
-	}
-
-	/**
-	 * Gets Formatted date time Object
-	 *
-	 * @param dateString
-	 *            DateString
-	 * @return Formatted Date object
-	 */
-	public static Date getFormattedDateTime(String dateString) {
-		String inputDate = dateString;
-		Date formattedDate = null;
-		if (dateString == null) {
-			return null;
-		}
-		int charIndex = inputDate.indexOf('.');
-		if (charIndex != -1) {
-			inputDate = inputDate.substring(0, charIndex);
-		}
-		try {
-			formattedDate = new SimpleDateFormat(JiraConstants.DATE_TIME_FORMAT, Locale.US).parse(inputDate);
-		} catch (ParseException e) {
-			log.error("Error while converting String Date to date object {}  {}", dateString, e);
-		}
-		return formattedDate;
-	}
-
-	/**
-	 * Get Date in String formatted
-	 *
-	 * @param date
-	 *            Date Object
-	 * @return formatted Date as String
-	 */
-	public static String getFormattedDateString(Date date) {
-		DateFormat df = new SimpleDateFormat(JiraConstants.DATE_TIME_FORMAT, Locale.US);
-		return df.format(date);
-	}
-
-	/**
-	 * Subtracts minutes from given date
-	 *
-	 * @param date
-	 *            Date Object
-	 * @param minutes
-	 *            Minutes to subtract
-	 * @return Adjusted Date
-	 */
-	public static Date getTimeAdjustedDate(Date date, int minutes) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.add(Calendar.MINUTE, -1 * minutes);
-		return calendar.getTime();
-	}
-
-	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
-
-		if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
-			return "";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("project IN ('");
-		stringBuilder.append(projectKey);
-		stringBuilder.append("') AND (");
-
-		int size = startDateTimeStrByIssueType.entrySet().size();
-		int count = 0;
-		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-			count++;
-			String type = entry.getKey();
-			String dateTime = entry.getValue();
-
-			stringBuilder.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-			if (count < size) {
-				stringBuilder.append(" OR ");
-			}
-		}
-
-		stringBuilder.append(") ORDER BY updated DESC");
-
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * find project key from query
-	 *
-	 * @param query
-	 *            jql query
-	 * @return string result
-	 */
-	public static String getProjectKey(String query) {
-		String projectKey = null;
-		if (StringUtils.containsIgnoreCase(query, PROJECTKEY)) {
-			query = query.toLowerCase().split(PROJECTKEY)[1].replaceAll("[^a-zA-Z0-9 ]", "").trim();
-			if (query.indexOf(' ') > -1) {
-				projectKey = query.substring(0, query.indexOf(' '));
-			} else {
-				projectKey = query;
-			}
-		}
-		return projectKey;
-	}
-
-	public static String convertToNewFormat(String dateStr) {
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		SimpleDateFormat destFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		sourceFormat.setTimeZone(utc);
-		Date convertedDate = null;
-		try {
-			convertedDate = sourceFormat.parse(dateStr);
-		} catch (ParseException e) {
-			log.error("Parsing error while converting date format", e);
-		}
-		return destFormat.format(convertedDate);
 	}
 
 	public static String getFormattedDateForSprintDetails(String date) {
