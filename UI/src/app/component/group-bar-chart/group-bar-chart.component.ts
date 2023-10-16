@@ -326,7 +326,7 @@ export class GroupBarChartComponent implements OnChanges {
           .style('stroke-width', 2)
           .style('fill', 'none')
           .style('cursor', 'pointer')
-          .attr('stroke-dasharray', (d) => d[0].lineType === 'dotted' ? '8,3 ' : 'none')
+          .attr('stroke-dasharray', (d) => kpiGroup === 'Release Prediction' ? '8,3 ' : 'none')
           .on('mouseover', function(event, linedata) {
             d3.select(this)
               .style('stroke-width', 4);
@@ -403,7 +403,13 @@ export class GroupBarChartComponent implements OnChanges {
 
   findMaxVal(data) {
     data.forEach(item => {
-      Object.values(item).forEach(val => {
+      const arrayOfObject = Object.values(item);
+      const valueList = arrayOfObject.map((item:any)=>{
+        if(typeof item === 'object'){
+           return item?.value;
+        }
+      });
+      valueList.forEach(val => {
         if (typeof val === 'number') {
           this.maxYValue = Math.max(this.maxYValue, val);
         }
