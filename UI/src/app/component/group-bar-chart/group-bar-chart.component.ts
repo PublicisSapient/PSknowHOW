@@ -134,8 +134,7 @@ export class GroupBarChartComponent implements OnChanges {
         gap = 0; 
       }else if(xLength > 10 && xLength <= 30){
         gap = 1; 
-      }
-      else if(xLength > 30 && xLength <= 50){
+      } else if(xLength > 30 && xLength <= 50){
         gap = 2; 
       }else if(xLength > 50 && xLength <= 70){
         gap = 3; 
@@ -160,13 +159,20 @@ export class GroupBarChartComponent implements OnChanges {
       xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
 
 
-    svgX.append('g')
+    const toBeCustomizeXaxis = svgX.append('g')
       .attr('class', 'xAxis')
       .attr('transform', `translate(0, ${y(0)})`)
       .call(xAxisGenerator)
-      .selectAll("g")
+      
+
+      toBeCustomizeXaxis.selectAll("g")
       .filter((d, i) => !this.VisibleXAxisLbl.includes(d))
       .classed("minor", true);
+
+      toBeCustomizeXaxis.selectAll(".tick text")
+      .filter((d, i) => this.VisibleXAxisLbl.includes(d))
+      .attr('transform', `translate(15, 0)`)
+      .call(this.wrap, x.bandwidth())
 
     d3.select(this.elem).select('#xCaptionContainer').append('text')
       .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
@@ -414,9 +420,17 @@ export class GroupBarChartComponent implements OnChanges {
         htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
       }
     })
+    if(currentDayIndex){
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: #944075"></div> : Today</div>`;
+    }
 
+    const idPredictionDate = data.findIndex(d => d.hasOwnProperty('Release Prediction'))
+    if(idPredictionDate && idPredictionDate > -1){
+      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1]})</div>`;
+    }
+    
     legendDiv.html(htmlString)
-      .style('left', 25 + 'px')
+      .style('left', 43 + 'px')
       .style('bottom', 20 + 'px')
       .style('top', y[0] + 30 + 'px');
   }
@@ -511,7 +525,7 @@ generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
     .attr('y1', yAxis(yCordinates))
     .attr('x2', xAxis(xCoordinates)+18)
     .attr('y2', yAxis(this.maxYValue))
-    .attr('stroke', 'grey')
+    .attr('stroke', '#944075')
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none' )
 }
@@ -521,5 +535,29 @@ generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
       this.draw();
     });
     resizeObserver.observe(document.getElementById('horizontalSVG'));
+  }
+
+  wrap(text, width) {
+    text.each(function() {
+      var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em")
+      while (word = words.pop()) {
+        line.push(word)
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > width) {
+          line.pop()
+          tspan.text(line.join(" "))
+          line = [word]
+          tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        }
+      }
+    })
   }
 }
