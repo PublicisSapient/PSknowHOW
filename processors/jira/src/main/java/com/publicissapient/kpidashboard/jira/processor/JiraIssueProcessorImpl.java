@@ -443,27 +443,23 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private boolean shouldEstimationBeCalculated(Map<String, IssueField> fields, String estimationField) {
-		return StringUtils.isNotBlank(estimationField)
-				&& fields.get(estimationField) != null
+		return StringUtils.isNotBlank(estimationField) && fields.get(estimationField) != null
 				&& fields.get(estimationField).getValue() != null
 				&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty();
 	}
 
 	private boolean shouldEstimationBeCalculated(IssueField estimationField) {
-		return estimationField != null
-				&& estimationField.getValue() != null
+		return estimationField != null && estimationField.getValue() != null
 				&& !JiraProcessorUtil.deodeUTF8String(estimationField.getValue()).isEmpty();
 	}
 
 	private Double calculateEstimation(IssueField estimationField, String estimationCriteria) {
 		if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-			return (estimationField.getValue() instanceof Integer) ?
-					((Integer) estimationField.getValue()) / 3600D :
-					((Double) estimationField.getValue());
+			return (estimationField.getValue() instanceof Integer) ? ((Integer) estimationField.getValue()) / 3600D
+					: ((Double) estimationField.getValue());
 		} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-			return (estimationField.getValue() instanceof Integer) ?
-					((Double) estimationField.getValue()) / 3600D :
-					((Double) estimationField.getValue());
+			return (estimationField.getValue() instanceof Integer) ? ((Double) estimationField.getValue()) / 3600D
+					: ((Double) estimationField.getValue());
 		} else if (JiraConstants.STORY_POINT.equalsIgnoreCase(estimationCriteria)) {
 			return Double.parseDouble(JiraProcessorUtil.deodeUTF8String(estimationField.getValue()));
 		}

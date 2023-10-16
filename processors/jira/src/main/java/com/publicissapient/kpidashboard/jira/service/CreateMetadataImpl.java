@@ -268,7 +268,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 		return fieldMapping;
 	}
 
-	private FieldMapping getFieldMapping(ProjectConfFieldMapping projectConfig, List<Identifier> issueList, List<Identifier> customFieldList, List<Identifier> workflowList, Map<String, String> allCustomField) {
+	private FieldMapping getFieldMapping(ProjectConfFieldMapping projectConfig, List<Identifier> issueList,
+			List<Identifier> customFieldList, List<Identifier> workflowList, Map<String, String> allCustomField) {
 		FieldMapping fieldMapping;
 		Map<String, List<String>> issueTypeMap = new HashMap<>();
 		issueList.forEach(identifier -> issueTypeMap.put(identifier.getType(),

@@ -325,7 +325,9 @@ public class JobController {
 		}
 	}
 
-	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params, List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params,
+			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 
@@ -343,7 +345,9 @@ public class JobController {
 		}
 	}
 
-	private void launchJobBasedOnQueryEnabledForKanban(String basicProjectConfigId, JobParameters params, List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	private void launchJobBasedOnQueryEnabledForKanban(String basicProjectConfigId, JobParameters params,
+			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 
