@@ -68,6 +68,7 @@ import net.logstash.logback.util.StringUtils;
 @StepScope
 public class IssueBoardReader implements ItemReader<ReadData> {
 
+	private static final String NOBOARD_MSG = "noBoard";
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
@@ -91,7 +92,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private Iterator<Issue> issueIterator;
 	private ProjectConfFieldMapping projectConfFieldMapping;
 	private String projectId;
-	private static final String NOBOARD_MSG="noBoard";
 
 	@Autowired
 	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
@@ -118,7 +118,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		try {
-			if (boardIterator == null && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+			if (boardIterator == null
+					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 			}
 			if (issueIterator == null || !issueIterator.hasNext()) {
@@ -211,11 +212,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 				LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()),
 				JiraConstants.QUERYDATEFORMAT);
 
-		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils
+				.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			fetchDeltaDateFromTraceLog(deltaDate);
 		}
 
-		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
+		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(
+				projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
 			deltaDate = updateDeltaDateFromBoardWiseData(deltaDate);
 		}
 
@@ -243,8 +246,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			}
 
 			if (MapUtils.isEmpty(boardWiseDate)) {
-				log.info(
-						"project: {} found but board {} not found in trace log so data will be fetched from beginning",
+				log.info("project: {} found but board {} not found in trace log so data will be fetched from beginning",
 						projectConfFieldMapping.getProjectName(), boardId);
 
 				if (lastSuccessfulRun == null) {
@@ -262,7 +264,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	}
 
 	private String updateDeltaDateFromBoardWiseData(String deltaDate) {
-		Map<String, String> boardWiseDate = projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString());
+		Map<String, String> boardWiseDate = projectBoardWiseDeltaDate
+				.get(projectConfFieldMapping.getBasicProjectConfigId().toString());
 
 		if (!StringUtils.isBlank(boardWiseDate.get(NOBOARD_MSG))) {
 			deltaDate = boardWiseDate.get(NOBOARD_MSG);

@@ -291,7 +291,7 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			Issue issue) {
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv=Boolean.FALSE;
+		Boolean cloudEnv = Boolean.FALSE;
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
 			cloudEnv = connection.isCloudEnv();

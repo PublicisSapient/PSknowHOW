@@ -64,10 +64,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JobController {
 
+	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
 	private static String PROJECT_ID = "projectId";
 	private static String SPRINT_ID = "sprintId";
 	private static String CURRENTTIME = "currentTime";
-	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG ="Total number of processor available : {} = number or projects run in parallel";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -110,8 +110,7 @@ public class JobController {
 		log.info("Total projects to fun for Scrum - Board Wise : {}", totalProjects);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -144,8 +143,7 @@ public class JobController {
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
@@ -191,8 +189,7 @@ public class JobController {
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -224,8 +221,7 @@ public class JobController {
 				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG,
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -311,7 +307,9 @@ public class JobController {
 		return ResponseEntity.ok().body("Job started for BasicProjectConfigId: " + basicProjectConfigId);
 	}
 
-	private void runProjectBasedOnConfig(String basicProjectConfigId, JobParameters params, Optional<ProjectBasicConfig> projBasicConfOpt) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+	private void runProjectBasedOnConfig(String basicProjectConfigId, JobParameters params,
+			Optional<ProjectBasicConfig> projBasicConfOpt) throws JobExecutionAlreadyRunningException,
+			JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 		if (projBasicConfOpt.isPresent()) {
 			ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
 			List<ProjectToolConfig> projectToolConfigs = toolRepository

@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.jira.service;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -161,10 +160,10 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	private void getSprintReport(SprintDetails sprint, ProjectConfFieldMapping projectConfig, String boardId,
 			SprintDetails dbSprintDetails, KerberosClient krb5Client) {
-		if (sprint.getOriginalSprintId() != null &&
-				sprint.getOriginBoardId() != null &&
-				sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
-			// If there's at least one non-null and non-empty string in the list, the condition is true.
+		if (sprint.getOriginalSprintId() != null && sprint.getOriginBoardId() != null
+				&& sprint.getOriginBoardId().stream().anyMatch(id -> id != null && !id.isEmpty())) {
+			// If there's at least one non-null and non-empty string in the list, the
+			// condition is true.
 			getSprintReport(projectConfig, sprint.getOriginalSprintId(), boardId, sprint, dbSprintDetails, krb5Client);
 		}
 	}
@@ -243,7 +242,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 				addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
 
-				if(null != sprint) {
+				if (null != sprint) {
 					sprint.setCompletedIssues(completedIssues);
 					sprint.setNotCompletedIssues(notCompletedIssues);
 					sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);

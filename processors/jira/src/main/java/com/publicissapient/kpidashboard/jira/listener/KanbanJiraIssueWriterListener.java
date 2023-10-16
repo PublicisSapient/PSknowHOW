@@ -60,7 +60,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 	 */
 	@Override
 	public void beforeWrite(List<? extends CompositeResult> compositeResult) {
-		//in future we can use this method to do something before saving data in db
+		// in future we can use this method to do something before saving data in db
 	}
 
 	/*

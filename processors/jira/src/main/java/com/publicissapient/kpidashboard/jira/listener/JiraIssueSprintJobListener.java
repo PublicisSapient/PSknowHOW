@@ -52,7 +52,7 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		//in future we can use this method to do something before saving data in db
+		// in future we can use this method to do something before saving data in db
 	}
 
 	/*

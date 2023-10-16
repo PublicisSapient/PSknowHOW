@@ -907,7 +907,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
-
 	private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {

@@ -77,7 +77,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
-		//in future we can use this method to do something before job execution starts
+		// in future we can use this method to do something before job execution starts
 	}
 
 	/*
