@@ -263,19 +263,22 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping = mapFieldMapping(issueTypeMap, workflowMap, customField, valuesToIdentifyMap, projectConfig,
 					templateName);
 		} else {
-
-			Map<String, List<String>> issueTypeMap = new HashMap<>();
-			issueList.forEach(identifier -> issueTypeMap.put(identifier.getType(),
-					CollectionUtils.isNotEmpty(identifier.getValue()) ? identifier.getValue() : null));
-			Map<String, List<String>> workflowMap = new HashMap<>();
-			workflowList.forEach(identifier1 -> workflowMap.put(identifier1.getType(),
-					CollectionUtils.isNotEmpty(identifier1.getValue()) ? identifier1.getValue() : null));
-			Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
-			fieldMapping = mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig);
+			fieldMapping = getFieldMapping(projectConfig, issueList, customFieldList, workflowList, allCustomField);
 		}
-
 		return fieldMapping;
+	}
 
+	private FieldMapping getFieldMapping(ProjectConfFieldMapping projectConfig, List<Identifier> issueList, List<Identifier> customFieldList, List<Identifier> workflowList, Map<String, String> allCustomField) {
+		FieldMapping fieldMapping;
+		Map<String, List<String>> issueTypeMap = new HashMap<>();
+		issueList.forEach(identifier -> issueTypeMap.put(identifier.getType(),
+				CollectionUtils.isNotEmpty(identifier.getValue()) ? identifier.getValue() : null));
+		Map<String, List<String>> workflowMap = new HashMap<>();
+		workflowList.forEach(identifier1 -> workflowMap.put(identifier1.getType(),
+				CollectionUtils.isNotEmpty(identifier1.getValue()) ? identifier1.getValue() : null));
+		Map<String, String> customField = compareCustomField(customFieldList, allCustomField);
+		fieldMapping = mapFieldMapping(issueTypeMap, workflowMap, customField, projectConfig);
+		return fieldMapping;
 	}
 
 	private FieldMapping mapFieldMapping(Map<String, List<String>> issueTypeMap, Map<String, List<String>> workflowMap,

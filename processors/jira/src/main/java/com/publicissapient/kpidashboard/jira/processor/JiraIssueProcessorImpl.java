@@ -420,47 +420,58 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setEstimate(JiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping) {
-
 		Double value = 0d;
 		String valueString = "0";
 		String estimationCriteria = fieldMapping.getEstimationCriteria();
+
 		if (StringUtils.isNotBlank(estimationCriteria)) {
 			String estimationField = fieldMapping.getJiraStoryPointsCustomField();
-			if (StringUtils.isNotBlank(estimationField) && fields.get(estimationField) != null
-					&& fields.get(estimationField).getValue() != null
-					&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty()) {
-				if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					if (fields.get(estimationField).getValue() instanceof Integer) {
-						value = ((Integer) fields.get(estimationField).getValue()) / 3600D;
-					} else {
-						value = ((Double) (fields.get(estimationField).getValue()));
-					}
-					valueString = String.valueOf(value.doubleValue());
-				} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
-					if (fields.get(estimationField).getValue() instanceof Integer) {
-						value = ((Double) fields.get(estimationField).getValue()) / 3600D;
-					} else {
-						value = ((Double) (fields.get(estimationField).getValue()));
-					}
-					valueString = String.valueOf(value.doubleValue());
-
-				} else if (JiraConstants.STORY_POINT.equalsIgnoreCase(estimationCriteria)) {
-					value = Double
-							.parseDouble(JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()));
-					valueString = String.valueOf(value.doubleValue());
-				}
+			if (shouldEstimationBeCalculated(fields, estimationField)) {
+				value = calculateEstimation(fields.get(estimationField), estimationCriteria);
+				valueString = String.valueOf(value);
 			}
 		} else {
-			// by default storypoints
 			IssueField estimationField = fields.get(fieldMapping.getJiraStoryPointsCustomField());
-			if (estimationField != null && estimationField.getValue() != null
-					&& !JiraProcessorUtil.deodeUTF8String(estimationField.getValue()).isEmpty()) {
-				value = Double.parseDouble(JiraProcessorUtil.deodeUTF8String(estimationField.getValue()));
-				valueString = String.valueOf(value.doubleValue());
+			if (shouldEstimationBeCalculated(estimationField)) {
+				value = calculateEstimation(estimationField);
+				valueString = String.valueOf(value);
 			}
 		}
+
 		jiraIssue.setEstimate(valueString);
 		jiraIssue.setStoryPoints(value);
+	}
+
+	private boolean shouldEstimationBeCalculated(Map<String, IssueField> fields, String estimationField) {
+		return StringUtils.isNotBlank(estimationField)
+				&& fields.get(estimationField) != null
+				&& fields.get(estimationField).getValue() != null
+				&& !JiraProcessorUtil.deodeUTF8String(fields.get(estimationField).getValue()).isEmpty();
+	}
+
+	private boolean shouldEstimationBeCalculated(IssueField estimationField) {
+		return estimationField != null
+				&& estimationField.getValue() != null
+				&& !JiraProcessorUtil.deodeUTF8String(estimationField.getValue()).isEmpty();
+	}
+
+	private Double calculateEstimation(IssueField estimationField, String estimationCriteria) {
+		if (JiraConstants.ACTUAL_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
+			return (estimationField.getValue() instanceof Integer) ?
+					((Integer) estimationField.getValue()) / 3600D :
+					((Double) estimationField.getValue());
+		} else if (JiraConstants.BUFFERED_ESTIMATION.equalsIgnoreCase(estimationCriteria)) {
+			return (estimationField.getValue() instanceof Integer) ?
+					((Double) estimationField.getValue()) / 3600D :
+					((Double) estimationField.getValue());
+		} else if (JiraConstants.STORY_POINT.equalsIgnoreCase(estimationCriteria)) {
+			return Double.parseDouble(JiraProcessorUtil.deodeUTF8String(estimationField.getValue()));
+		}
+		return 0.0; // Default value if none of the criteria match
+	}
+
+	private Double calculateEstimation(IssueField estimationField) {
+		return Double.parseDouble(JiraProcessorUtil.deodeUTF8String(estimationField.getValue()));
 	}
 
 	private void setAdditionalFilters(JiraIssue jiraIssue, Issue issue, ProjectConfFieldMapping projectConfig) {
