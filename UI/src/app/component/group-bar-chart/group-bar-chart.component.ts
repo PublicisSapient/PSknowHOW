@@ -83,10 +83,8 @@ export class GroupBarChartComponent implements OnChanges {
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
-    let width = window.innerWidth- 300 - marginLeft;
-    // if(data.length > 5){
-      // width += data.length * barWidth * (subgroups.length + 3);
-    // }
+    let width = document.getElementById('horizontalSVG')?.offsetWidth - 20 - marginLeft;
+  
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
       .attr('width', width)
@@ -131,7 +129,24 @@ export class GroupBarChartComponent implements OnChanges {
 
     // Hide/show x-axis label logic
       const xLength = groups.length;
-      const gap = Math.ceil(xLength / 12);
+      var gap = 0;
+      if(xLength <= 10){
+        gap = 0; 
+      }else if(xLength > 10 && xLength <= 30){
+        gap = 1; 
+      }
+      else if(xLength > 30 && xLength <= 50){
+        gap = 2; 
+      }else if(xLength > 50 && xLength <= 70){
+        gap = 3; 
+      }else if(xLength > 70 && xLength <= 90){
+        gap = 4; 
+      }else if(xLength > 90 && xLength <= 110){
+        gap = 5; 
+      }else{
+        gap = 6
+      }
+      this.VisibleXAxisLbl = [];
       for (var i = 0; i < groups.length; i += gap) {
           this.VisibleXAxisLbl.push(groups[i]);
       }
@@ -154,7 +169,7 @@ export class GroupBarChartComponent implements OnChanges {
       .classed("minor", true);
 
     d3.select(this.elem).select('#xCaptionContainer').append('text')
-      .attr('x', ((document.getElementById('groupstackchart').offsetWidth - 70) / 2) - 24)
+      .attr('x', ((d3.select(elem).select('#groupstackchart').node().offsetWidth - 70) / 2) - 24)
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
@@ -481,7 +496,7 @@ export class GroupBarChartComponent implements OnChanges {
       }else{
         const date = new Date(d['group']);
         const currentDate = new Date();
-        const formatedDate =  `${days[date.getDay()]} ${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
+        const formatedDate =  `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
         if (date.toDateString() === currentDate.toDateString()) {
           this.currentDayIndex = formatedDate;
         }
@@ -496,8 +511,15 @@ generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
     .attr('y1', yAxis(yCordinates))
     .attr('x2', xAxis(xCoordinates)+18)
     .attr('y2', yAxis(this.maxYValue))
-    .attr('stroke', 'black')
+    .attr('stroke', 'grey')
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', (d) => type === 'dotted' ? '8,3 ' : 'none' )
 }
+
+  ngAfterViewInit() {
+    const resizeObserver = new ResizeObserver(entries => {
+      this.draw();
+    });
+    resizeObserver.observe(document.getElementById('horizontalSVG'));
+  }
 }
