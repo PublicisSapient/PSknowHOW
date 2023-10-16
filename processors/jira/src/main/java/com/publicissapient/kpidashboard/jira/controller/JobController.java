@@ -314,7 +314,6 @@ public class JobController {
 			ProjectBasicConfig projectBasicConfig = projBasicConfOpt.get();
 			List<ProjectToolConfig> projectToolConfigs = toolRepository
 					.findByToolNameAndBasicProjectConfigId(JiraConstants.JIRA, projectBasicConfig.getId());
-
 			if (projectBasicConfig.isKanban()) {
 				// Project is kanban
 				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs);
