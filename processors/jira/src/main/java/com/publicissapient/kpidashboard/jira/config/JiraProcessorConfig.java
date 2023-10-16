@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.jira.config;//NOPMD
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -40,15 +41,9 @@ public class JiraProcessorConfig {
 	// Do not remove pmd this is for ignoring TooManyFields violation
 	// it is required
 
-	private String cron;
 	private int pageSize;
-	private String startDate;
-	private long minsToReduce;
-	private String jiraBackLogStatusFlow;
-	private String jsonFileName;
 	private String customApiBaseUrl;
 	private Integer socketTimeOut;
-	private String estimationCriteria;
 	private int threadPoolSize;
 	@Value("${aesEncryptionKey}")
 	private String aesEncryptionKey;
@@ -56,9 +51,7 @@ public class JiraProcessorConfig {
 	private String jiraServerGetUserApi;
 	private boolean fetchMetadata;
 	private List<String> excludeLinks;
-	private String sprintJsonFileName;
 	private List<String> rcaValuesForCodeIssue;
-	private Integer sprintCountForCacheClean;
 	private String jiraCloudSprintReportApi;
 	private String jiraServerSprintReportApi;
 	private String jiraDirectTicketLinkKey;
@@ -68,6 +61,18 @@ public class JiraProcessorConfig {
 	private Integer sprintReportCountToBeFetched;
 	private boolean considerStartDate;
 	private long subsequentApiCallDelayInMilli;
+
+	@Value("${kafka.mailtopic}")
+	private String kafkaMailTopic;
+	private Map<String, String> notificationSubject;
+	@Value("${notification.switch}")
+	private boolean notificationSwitch;
+
+	private Map<String, String> mailTemplate;
+
+	@Value("${flag.mailWithoutKafka}")
+	private boolean mailWithoutKafka;
+
 	private String samlTokenStartString;
 	private String samlTokenEndString;
 	private String samlUrlStartString;
@@ -77,4 +82,6 @@ public class JiraProcessorConfig {
 	private String jiraServerVersionReportApi;
 	private String jiraCloudVersionReportApi;
 	private Integer prevMonthCountToFetchData;
+	private Integer daysToReduce;
+	private Integer chunkSize;
 }
