@@ -99,7 +99,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws InterruptedException {
+			KerberosClient krb5Client, boolean isSprintFetch) {
 		Set<SprintDetails> sprintToSave = new HashSet<>();
 		ObjectId jiraProcessorId = jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA).getId();
 		if (CollectionUtils.isNotEmpty(sprintDetailsSet)) {
@@ -242,12 +242,14 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 				addedIssues = setAddedIssues(addedIssuesJson, addedIssues);
 
-				sprint.setCompletedIssues(completedIssues);
-				sprint.setNotCompletedIssues(notCompletedIssues);
-				sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
-				sprint.setPuntedIssues(puntedIssues);
-				sprint.setAddedIssues(addedIssues);
-				sprint.setTotalIssues(totalIssues);
+				if(null != sprint) {
+					sprint.setCompletedIssues(completedIssues);
+					sprint.setNotCompletedIssues(notCompletedIssues);
+					sprint.setCompletedIssuesAnotherSprint(completedIssuesAnotherSprint);
+					sprint.setPuntedIssues(puntedIssues);
+					sprint.setAddedIssues(addedIssues);
+					sprint.setTotalIssues(totalIssues);
+				}
 
 			} catch (org.json.simple.parser.ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
@@ -467,7 +469,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			KerberosClient krb5Client) throws InterruptedException {
+			KerberosClient krb5Client) {
 		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
 		for (BoardDetails boardDetails : boardDetailsList) {
@@ -500,7 +502,6 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			if (null != jiraToolConfig) {
 				boolean isLast = false;
 				int startIndex = 0;
-				Instant start = Instant.now();
 				do {
 					URL url = getSprintUrl(projectConfig, boardId, startIndex);
 					String jsonResponse = jiraCommonService.getDataFromClient(projectConfig, url, krb5Client);
@@ -534,7 +535,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					valuesJson = (JSONArray) obj.get("values");
 				}
 				setSprintDetails(valuesJson, sprintDetailsSet, projectConfig, boardId);
-				isLast = Boolean.valueOf(obj.get("isLast").toString());
+				isLast = Boolean.parseBoolean(Objects.requireNonNull(obj).get("isLast").toString());
 			} catch (ParseException pe) {
 				log.error("Parser exception when parsing statuses", pe);
 			}

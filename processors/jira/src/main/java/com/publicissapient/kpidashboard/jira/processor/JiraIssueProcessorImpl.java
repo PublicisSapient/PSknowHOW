@@ -887,18 +887,26 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setURL(String ticketNumber, JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-		baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
-		if (Boolean.TRUE.equals(cloudEnv)) {
-			baseUrl = baseUrl.equals("") ? ""
-					: baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
-		} else {
-			baseUrl = baseUrl.equals("") ? ""
-					: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
+		if (connectionOptional.isPresent()) {
+			Connection connection = connectionOptional.get();
+			Boolean cloudEnv = connection.isCloudEnv();
+			String baseUrl = connection.getBaseUrl();
+
+			if (baseUrl == null) {
+				baseUrl = "";
+			} else {
+				baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
+
+				if (Boolean.TRUE.equals(cloudEnv)) {
+					baseUrl = baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
+				} else {
+					baseUrl = baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
+				}
+			}
+			jiraIssue.setUrl(baseUrl);
 		}
-		jiraIssue.setUrl(baseUrl);
 	}
+
 
 	private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
