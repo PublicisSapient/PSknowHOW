@@ -1,0 +1,49 @@
+[
+  {
+    "_id": "6335368249794a18e8a447a3",
+    "nodeId": "Kanban Project_6335368249794a18e8a4479f",
+    "nodeName": "Kanban Project",
+    "labelName": "project",
+    "filterCategoryId": "632814ec8d7e06a0cfd669be",
+    "parentId": "Sample Three_hierarchyLevelThree",
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "isDeleted": "False",
+    "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+    "createdDate": "2022-09-29T11:39:06.262"
+  },
+  {
+    "_id": "6335368249794a18e8a447a2",
+    "nodeId": "Sample Three_hierarchyLevelThree",
+    "nodeName": "Sample Three",
+    "labelName": "hierarchyLevelThree",
+    "filterCategoryId": "632814ec8d7e06a0cfd669be",
+    "parentId": "Sample Two_hierarchyLevelTwo",
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "isDeleted": "False",
+    "path": "Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+    "createdDate": "2022-09-29T11:39:06.262"
+  },
+  {
+    "_id": "6335368249794a18e8a447a1",
+    "nodeId": "Sample Two_hierarchyLevelTwo",
+    "nodeName": "Sample Two",
+    "labelName": "hierarchyLevelTwo",
+    "filterCategoryId": "632814ec8d7e06a0cfd669bd",
+    "parentId": "Sample One_hierarchyLevelOne",
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "isDeleted": "False",
+    "path": "Sample One_hierarchyLevelOne",
+    "createdDate": "2022-09-29T11:39:06.262"
+  },
+  {
+    "_id": "6335368249794a18e8a447a0",
+    "nodeId": "Sample One_hierarchyLevelOne",
+    "nodeName": "Sample One",
+    "labelName": "hierarchyLevelOne",
+    "filterCategoryId": "632814ec8d7e06a0cfd669bc",
+    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "isDeleted": "False",
+    "path": "",
+    "createdDate": "2022-09-29T11:39:06.262"
+  }
+]

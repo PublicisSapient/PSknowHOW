@@ -1,4 +1,4 @@
-FROM psknowhow/amazoncorretto:8.1
+FROM openjdk:8-jre-slim-stretch
 
 # There are environment variables with periods in the names so change bash as default
 RUN ln -sf /bin/bash /bin/sh 

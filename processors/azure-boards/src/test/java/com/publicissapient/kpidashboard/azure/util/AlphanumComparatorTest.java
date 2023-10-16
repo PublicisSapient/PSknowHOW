@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.azure.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 
@@ -47,17 +48,16 @@ public class AlphanumComparatorTest {
 
 	@Test
 	public void compareCaseOne() {
-		Mockito.when(fileOne.getName()).thenReturn("TEST_191029");
-		Mockito.when(fileTwo.getName()).thenReturn("TEST_101029");
+		when(fileOne.getName()).thenReturn("TEST_191029");
+		when(fileTwo.getName()).thenReturn("TEST_101029");
 		int result = alphanumComparator.compare(fileOne, fileTwo);
 		assertEquals(9, result);
-
 	}
 
 	@Test
 	public void compareCaseTwo() {
-		Mockito.when(fileTwo.getName()).thenReturn("TEST_191029_4");
-		Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
+		when(fileTwo.getName()).thenReturn("TEST_191029_4");
+		when(fileOne.getName()).thenReturn("TEST_10102");
 		int result = alphanumComparator.compare(fileOne, fileTwo);
 		assertEquals(-1, result);
 
@@ -65,8 +65,8 @@ public class AlphanumComparatorTest {
 
 	@Test
 	public void compareNullFileName() {
-		Mockito.when(fileTwo.getName()).thenReturn(null);
-		Mockito.when(fileOne.getName()).thenReturn("TEST_10102");
+		when(fileTwo.getName()).thenReturn(null);
+		when(fileOne.getName()).thenReturn("TEST_10102");
 		int result = alphanumComparator.compare(fileOne, fileTwo);
 		assertEquals(0, result);
 

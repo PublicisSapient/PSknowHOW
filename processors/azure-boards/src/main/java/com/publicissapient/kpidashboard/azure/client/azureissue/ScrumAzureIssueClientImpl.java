@@ -39,7 +39,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.text.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
@@ -447,19 +446,13 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssue corresponding to provided IssueId in DB
 	 */
 	private JiraIssue findOneAzureIssue(String issueId, String basicProjectConfigId) {
-		List<JiraIssue> jiraIssues = jiraIssueRepository
-				.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(issueId), basicProjectConfigId);
+		JiraIssue jiraIssues = jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(issueId, basicProjectConfigId);
 
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.error("JIRA Processor | More than one Jira Issue item found for id {}", issueId);
+		if (ObjectUtils.allNull(jiraIssues)) {
+			return null;
 		}
 
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
-		}
-
-		return null;
+		return jiraIssues;
 	}
 
 	/**
@@ -472,14 +465,11 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 * @return JiraIssueCustomHistory corresponding to given IssueId from DB
 	 */
 	private JiraIssueCustomHistory findOneAzureIssueHistory(String issueId, String basicProjectConfigId) {
-		List<JiraIssueCustomHistory> jiraIssues = jiraIssueCustomHistoryRepository
+		JiraIssueCustomHistory jiraIssues = jiraIssueCustomHistoryRepository
 				.findByStoryIDAndBasicProjectConfigId(issueId, basicProjectConfigId);
-		// Not sure of the state of the data
-		if (jiraIssues.size() > 1) {
-			log.warn("Azure Processor | More than one Issue id  found for history {}", issueId);
-		}
-		if (!jiraIssues.isEmpty()) {
-			return jiraIssues.get(0);
+
+		if (ObjectUtils.isNotEmpty(jiraIssues)) {
+			return jiraIssues;
 		}
 		return null;
 	}
@@ -1193,20 +1183,24 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void saveAssigneeDetailsToDb(ProjectConfFieldMapping projectConfig, Set<Assignee> assigneeSetToSave,
 			AssigneeDetails assigneeDetails) {
-		if (CollectionUtils.isNotEmpty(assigneeSetToSave)) {
-			if (assigneeDetails == null) {
-				assigneeDetails = new AssigneeDetails();
-				assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
-				assigneeDetails.setSource(ProcessorConstants.AZURE);
-				assigneeDetails.setAssignee(assigneeSetToSave);
-			} else {
-				Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
-				updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
-				updatedAssigneeSetToSave.addAll(assigneeSetToSave);
-				assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+		if (assigneeDetails == null) {
+			assigneeDetails = new AssigneeDetails();
+			assigneeDetails.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId().toString());
+			assigneeDetails.setSource(ProcessorConstants.AZURE);
+			assigneeDetails.setAssignee(assigneeSetToSave);
+			if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+				assigneeDetails.setAssigneeSequence(2);
 			}
-			assigneeDetailsRepository.save(assigneeDetails);
+		} else {
+			Set<Assignee> updatedAssigneeSetToSave = new HashSet<>();
+			updatedAssigneeSetToSave.addAll(assigneeDetails.getAssignee());
+			updatedAssigneeSetToSave.addAll(assigneeSetToSave);
+			assigneeDetails.setAssignee(updatedAssigneeSetToSave);
+			if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
+				assigneeDetails.setAssigneeSequence(updatedAssigneeSetToSave.size() + 1);
+			}
 		}
+		assigneeDetailsRepository.save(assigneeDetails);
 	}
 
 	private ProcessorExecutionTraceLog createTraceLog(ProjectConfFieldMapping projectConfig) {

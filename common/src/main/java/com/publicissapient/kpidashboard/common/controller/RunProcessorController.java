@@ -78,22 +78,4 @@ public class RunProcessorController {
 		return ResponseEntity.ok().body(response);
 	}
 
-	@RequestMapping(value = "/activeIteration/fetch", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE)
-	public ResponseEntity<Map> activeIterationDataFetch(@RequestBody String sprintId) {
-
-		MDC.put("Processor Name", jobExecuter.getProcessor().getProcessorName());
-		MDC.put("RequestStartTime", String.valueOf(System.currentTimeMillis()));
-
-		log.info("Received request to fetch the active sprint: {}", sprintId);
-		ACTIVE_ITERATION_EXECUTORS.execute(() -> jobExecuter.runSprint(sprintId));
-
-		MDC.put("RequestEndTime", String.valueOf(System.currentTimeMillis()));
-		log.info("Processor execution called for fetch sprint {}", sprintId);
-
-		MDC.clear();
-		Map response = new HashMap();
-		response.put("status", "processing");
-		return ResponseEntity.ok().body(response);
-	}
-
 }
