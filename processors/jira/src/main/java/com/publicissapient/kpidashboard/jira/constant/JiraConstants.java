@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 public final class JiraConstants {
 
 	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();// NOSONAR
-	public static final String SPRINT = "Sprint";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
 	public static final String PRIORITY = "priority";
@@ -46,7 +45,6 @@ public final class JiraConstants {
 	public static final String ACTUAL_ESTIMATION = "Actual Estimation";
 	public static final String BUFFERED_ESTIMATION = "Buffered Estimation";
 	public static final String STORY_POINT = "Story Point";
-	public static final String SETTING_JIRA_START_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
 	public static final String JIRA_ISSUE_CHANGE_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSS";
 	public static final String EMPTY_STR = "";
 	public static final String FALSE = "False";
@@ -66,14 +64,9 @@ public final class JiraConstants {
 	public static final String AGGREGATED_TIME_REMAIN = "aggregatetimeestimate";
 	public static final String ID = "id";
 	public static final String COMPONENT = "Component";
-	public static final String SCRUM_DATA = "scrumDataCount";
-	public static final String KANBAN_DATA = "kanbanDataCount";
 	public static final String JIRA = "Jira";
-	public static final String UPDATEDDATE = "updateddate";
 	public static final String ORDERBY = "order by";
 
-	public static final String AUTOMATION = "Automation";
-	public static final String CAN_BE_AUTOMATED = "Manual";
 	public static final String PARENT = "parent";
 	public static final String KEY = "key";
 	public static final String USER = "User";

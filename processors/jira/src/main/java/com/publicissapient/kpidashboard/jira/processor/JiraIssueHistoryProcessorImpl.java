@@ -291,8 +291,11 @@ public class JiraIssueHistoryProcessorImpl implements JiraIssueHistoryProcessor 
 			Issue issue) {
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.isPresent() ? connectionOptional.map(Connection::isCloudEnv).get()
-				: Boolean.FALSE;
+		Boolean cloudEnv = Boolean.FALSE;
+		if (connectionOptional.isPresent()) {
+			Connection connection = connectionOptional.get();
+			cloudEnv = connection.isCloudEnv();
+		}
 		List<JiraHistoryChangeLog> statusChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.STATUS);
 		List<JiraHistoryChangeLog> assigneeChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.ASSIGNEE);
 		List<JiraHistoryChangeLog> priorityChangeLog = getJiraFieldChangeLog(changeLogList, JiraConstants.PRIORITY);
