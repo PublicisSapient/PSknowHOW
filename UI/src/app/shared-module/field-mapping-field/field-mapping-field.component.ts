@@ -80,4 +80,7 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
         return;
     }
 }
+  numericInputUpDown(event: any) {
+    this.setValue();
+  }
 }
