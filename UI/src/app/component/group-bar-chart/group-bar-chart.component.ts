@@ -136,7 +136,7 @@ export class GroupBarChartComponent implements OnChanges {
           this.VisibleXAxisLbl.push(groups[i]);
       }
       if (!this.VisibleXAxisLbl.includes(groups[groups.length - 1])) {
-          this.VisibleXAxisLbl.push(groups[groups.length - 1]);
+          this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1] = groups[groups.length - 1];
       }
 
       this.VisibleXAxisLbl = this.VisibleXAxisLbl;
@@ -311,7 +311,7 @@ export class GroupBarChartComponent implements OnChanges {
                 data[firstPredictIndex-1] = {...data[firstPredictIndex-1],...{'Release Prediction':data[firstPredictIndex-1]['Release Progress']}};
             }
         }
-        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup]}});
+        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup].value,'lineType':d[kpiGroup].lineType}});
 
         const line = svgX
           .append('g')
@@ -326,7 +326,7 @@ export class GroupBarChartComponent implements OnChanges {
           .style('stroke-width', 2)
           .style('fill', 'none')
           .style('cursor', 'pointer')
-          .attr('stroke-dasharray', (d) => kpiGroup === 'Release Prediction' ? '8,3 ' : 'none' )
+          .attr('stroke-dasharray', (d) => d[0].lineType === 'dotted' ? '8,3 ' : 'none')
           .on('mouseover', function(event, linedata) {
             d3.select(this)
               .style('stroke-width', 4);
@@ -381,15 +381,16 @@ export class GroupBarChartComponent implements OnChanges {
       .attr('class', 'p-d-flex p-flex-wrap normal-legend');
 
     let htmlString = '';
-    var counter = 0;
     subgroups.forEach((d, i) => {
-      counter = i;
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
     });
-    // counter ++
+
     this.lineGroups.forEach((d, i) => {
-      htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
-      counter ++;
+      if(d==='Release Prediction'){
+        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed ${color(d)}"></div> : ${d}</div>`;
+      }else{
+        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
+      }
     })
 
     legendDiv.html(htmlString)
@@ -424,7 +425,10 @@ export class GroupBarChartComponent implements OnChanges {
           this.lineGroups.push(groupD.kpiGroup);
         }
          graphData = { ...graphData,
-          [groupD.kpiGroup]: groupD.value,
+          [groupD.kpiGroup]: {
+            value : groupD.value,
+            lineType : groupD.lineCategory,
+          },
           group: date,
           date : date,
           [groupD.kpiGroup+'HoverValue']:groupD?.hoverValue,
