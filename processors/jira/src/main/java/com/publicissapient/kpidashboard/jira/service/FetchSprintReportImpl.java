@@ -146,6 +146,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 					try {
 						TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
 						throw new RuntimeException(e);
 					}
 					getSprintReport(sprint, projectConfig, boardId, dbSprintDetailMap.get(sprint.getSprintID()),
@@ -519,6 +520,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 		} catch (IOException ioe) {
 			log.error("IOException", ioe);
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			throw new RuntimeException(e);
 		}
 		return sprintDetailsList;
