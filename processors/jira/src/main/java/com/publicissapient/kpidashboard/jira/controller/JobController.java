@@ -254,7 +254,7 @@ public class JobController {
 		try {
 			jobLauncher.run(fetchIssueSprintJob, params);
 		} catch (Exception e) {
-			log.info("Jira Sprint data fetch failed for SprintId : {}", params.getString(SPRINT_ID));
+			log.info("Jira Sprint data fetch failed for SprintId : {}, with exception : {}", params.getString(SPRINT_ID),e);
 		}
 		return ResponseEntity.ok().body("job started for Sprint : " + sprintId);
 
