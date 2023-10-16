@@ -317,39 +317,51 @@ public class JobController {
 
 			if (projectBasicConfig.isKanban()) {
 				// Project is kanban
-				if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
-					ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-
-					if (projectToolConfig.isQueryEnabled()) {
-						// JQL is setup for the project
-						jobLauncher.run(fetchIssueKanbanJqlJob, params);
-					} else {
-						// Board is setup for the project
-						jobLauncher.run(fetchIssueKanbanBoardJob, params);
-					}
-				} else {
-					log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
-					// Mark the execution as completed
-					ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
-				}
+				launchJobBasedOnQueryEnabledForKanban(basicProjectConfigId, params, projectToolConfigs);
 			} else {
 				// Project is Scrum
-				if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
-					ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
-
-					if (projectToolConfig.isQueryEnabled()) {
-						// JQL is setup for the project
-						jobLauncher.run(fetchIssueScrumJqlJob, params);
-					} else {
-						// Board is setup for the project
-						jobLauncher.run(fetchIssueScrumBoardJob, params);
-					}
-				} else {
-					log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
-					// Mark the execution as completed
-					ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
-				}
+				launchJobBasedOnQueryEnabledForScrum(basicProjectConfigId, params, projectToolConfigs);
 			}
+		}
+	}
+
+	private void launchJobBasedOnQueryEnabledForScrum(String basicProjectConfigId, JobParameters params,
+			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+
+			if (projectToolConfig.isQueryEnabled()) {
+				// JQL is setup for the project
+				jobLauncher.run(fetchIssueScrumJqlJob, params);
+			} else {
+				// Board is setup for the project
+				jobLauncher.run(fetchIssueScrumBoardJob, params);
+			}
+		} else {
+			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+			// Mark the execution as completed
+			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
+		}
+	}
+
+	private void launchJobBasedOnQueryEnabledForKanban(String basicProjectConfigId, JobParameters params,
+			List<ProjectToolConfig> projectToolConfigs) throws JobExecutionAlreadyRunningException, JobRestartException,
+			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
+		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
+			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
+
+			if (projectToolConfig.isQueryEnabled()) {
+				// JQL is setup for the project
+				jobLauncher.run(fetchIssueKanbanJqlJob, params);
+			} else {
+				// Board is setup for the project
+				jobLauncher.run(fetchIssueKanbanBoardJob, params);
+			}
+		} else {
+			log.info("removing project with basicProjectConfigId {}", basicProjectConfigId);
+			// Mark the execution as completed
+			ongoingExecutionsService.markExecutionAsCompleted(basicProjectConfigId);
 		}
 	}
 
