@@ -27,6 +27,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.loader = true;
+    d3.select(this.elem).select('#back_icon').attr('class', 'p-d-none');
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
@@ -41,8 +42,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     }
     if(changes['activeTab']){
       /** settimeout applied because dom is loading late */
+      this.isDrilledDown = false;
       setTimeout(() => {
-        this.draw(this.data);
+          this.draw(this.data);
       }, 0);
     }
     if (changes['filter']) {

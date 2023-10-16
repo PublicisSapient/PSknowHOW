@@ -109,7 +109,7 @@ export class MultilineComponent implements OnChanges {
     const formatedData = this?.data[0]?.value.map(details=>{
       const XValue = details.date || details.sSprintName;
       const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
-      const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+      const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName,'') : XValue;
        return {...details,sortSprint:removeProject};
     })
     const isAllBelowFromThreshold = this.data[0].value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
