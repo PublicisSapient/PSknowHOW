@@ -366,7 +366,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				double avgIssueCount = 0L;
 				double avgStoryPoint = 0d;
 				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap);
-				avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0L);
+				avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
 				// finding the release scope and progress for which prediction need to be cal
@@ -453,10 +453,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<String, Object> averageDataMap, FieldMapping fieldMapping) {
 		double issueSizePrediction;
 		double issueCountPrediction;
-		double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0L);
+		double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 		double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
-		if (!startLocalDate.isBefore(LocalDate.now())) {
+		if (!startLocalDate.isBefore(LocalDate.now()) && MapUtils.isNotEmpty(averageDataMap)) {
 			issueCountPrediction = (double) predictionDataMap.get(ISSUE_COUNT_PREDICTION);
 			issueSizePrediction = (double) predictionDataMap.get(ISSUE_SIZE_PREDICTION);
 			long daysInterval = ChronoUnit.DAYS.between(dateRange.getStartDate(), dateRange.getEndDate()) + 1;
