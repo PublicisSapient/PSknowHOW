@@ -964,7 +964,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         selectedIdx = 0;
                     }
                 }
-                iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+                if(selectedIdx != -1){
+                    iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+                }
             }
             let filtersApplied = Object.keys(this.colorObj);
             
