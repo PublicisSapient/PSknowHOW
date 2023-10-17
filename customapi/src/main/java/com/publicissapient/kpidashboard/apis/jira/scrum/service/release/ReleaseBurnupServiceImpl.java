@@ -537,8 +537,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		// completed issue between prediction start date and today both inclusive
 		while (!currentDate.isBefore(predictionStartDate) && !LocalDate.now().isBefore(currentDate)) {
 			completedIssuesTillToday.addAll(completedReleaseMap.getOrDefault(currentDate, new ArrayList<>()));
+			if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
+				countOfDaysTillToday++;
+			}
 			currentDate = currentDate.plusDays(1);
-			countOfDaysTillToday++;
 		}
 		// calculate the avg issue count and story point
 		if (countOfDaysTillToday != 0 && CollectionUtils.isNotEmpty(completedIssuesTillToday)) {
@@ -568,12 +570,17 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<IterationKpiValue> iterationKpiValueList, List<DataCountGroup> issueCountDataGroup,
 			List<DataCountGroup> issueSizeCountDataGroup) {
 		if (CollectionUtils.isNotEmpty(issueCountDataGroup)) {
+			Map<String, Object> additionalInfoMap = new HashMap<>();
+			additionalInfoMap.put("isXaxisGapRequired", true);
+			additionalInfoMap.put("customisedGroup", RELEASE_PREDICTION);
 			IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
 			kpiValueIssueCount.setDataGroup(issueCountDataGroup);
 			kpiValueIssueCount.setFilter1(ISSUE_COUNT);
+			kpiValueIssueCount.setAdditionalInfo(additionalInfoMap);
 			IterationKpiValue kpiValueSizeCount = new IterationKpiValue();
 			kpiValueSizeCount.setDataGroup(issueSizeCountDataGroup);
 			kpiValueSizeCount.setFilter1(STORY_POINT);
+			kpiValueSizeCount.setAdditionalInfo(additionalInfoMap);
 			iterationKpiValueList.add(kpiValueSizeCount);
 			iterationKpiValueList.add(kpiValueIssueCount);
 

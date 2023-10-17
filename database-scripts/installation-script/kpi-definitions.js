@@ -3036,7 +3036,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiCategory": "Release",
     "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
