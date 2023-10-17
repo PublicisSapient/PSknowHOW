@@ -5066,7 +5066,7 @@ db.kpi_master.bulkWrite([
                 "kanban": false,
                 "chartType": "horizontalPercentBarChart",
                 "kpiInfo": {
-                    "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
+                    "definition": "It depicts the progress of each epic in terms of total count and %age completion."
                 },
                 "xAxisLabel": "",
                 "yAxisLabel": "",
