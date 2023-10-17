@@ -109,7 +109,6 @@ public class ReleaseBurnupServiceImplTest {
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
-
 	}
 
 	@Test
@@ -162,6 +161,7 @@ public class ReleaseBurnupServiceImplTest {
 			data.getNode().stream().filter(node -> node.getGroupName().equalsIgnoreCase("release")).forEach(node -> {
 				node.getAccountHierarchy().setBeginDate("2023-05-25T15:53:00.0000000");
 				node.getAccountHierarchy().setEndDate(null);
+				node.getAccountHierarchy().setReleaseState("Released");
 			});
 			return true;
 		}).collect(Collectors.toList());
@@ -178,6 +178,7 @@ public class ReleaseBurnupServiceImplTest {
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
+
 	@Test
 	public void getKpiData_bad_scenario() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
