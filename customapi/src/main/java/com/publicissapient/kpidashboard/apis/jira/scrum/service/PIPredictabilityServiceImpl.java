@@ -243,6 +243,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), projectWiseIssueTypeMap
+				.get(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString()));
 
 		List<ReleaseWisePI> releaseWisePIList = jiraIssueRepository
 				.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
