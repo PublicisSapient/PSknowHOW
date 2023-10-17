@@ -88,7 +88,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -118,7 +117,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -146,7 +144,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -176,7 +173,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
