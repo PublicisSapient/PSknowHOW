@@ -26,6 +26,7 @@ export class GroupBarChartComponent implements OnChanges {
   VisibleXAxisLbl = [];
   isXaxisGapRequired : any;
   customisedGroup : any ;
+  customiseGroupIndex : number
 
   elem;
   maxYValue = 0;
@@ -132,6 +133,7 @@ export class GroupBarChartComponent implements OnChanges {
       .range(colorList);
 
       this.VisibleXAxisLbl = [];
+      this.customiseGroupIndex = -1;
     if (this.isXaxisGapRequired) {
 
       // Hide/show x-axis label logic
@@ -200,9 +202,9 @@ export class GroupBarChartComponent implements OnChanges {
         this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y)
     }
 
-    const ReleasePredIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
-    if(ReleasePredIndex && ReleasePredIndex > -1){
-        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[ReleasePredIndex][this.customisedGroup]?.lineType,svgX,x,y)
+    this.customiseGroupIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
+    if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
+        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[this.customiseGroupIndex][this.customisedGroup]?.lineType,svgX,x,y)
     }
 
      /** Showing  data point for current plot */
@@ -419,8 +421,7 @@ export class GroupBarChartComponent implements OnChanges {
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: #944075"></div> : Today</div>`;
     }
 
-    const idPredictionDate = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
-    if(idPredictionDate && idPredictionDate > -1){
+    if(this.customiseGroupIndex && this.customiseGroupIndex > -1){
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1]})</div>`;
     }
     
