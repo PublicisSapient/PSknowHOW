@@ -24,6 +24,8 @@ export class GroupBarChartComponent implements OnChanges {
   @Input() selectedtype: string;
   @Input() legendType: string;
   VisibleXAxisLbl = [];
+  isXaxisGapRequired : any;
+  customisedGroup : any ;
 
   elem;
   maxYValue = 0;
@@ -69,6 +71,8 @@ export class GroupBarChartComponent implements OnChanges {
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
     d3.select(elem).select('#horizontalSVG').select('.current-week-tooltip').selectAll('.tooltip').remove();
     let data = this.data[0]?.dataGroup;
+    this.isXaxisGapRequired = this.data[0]?.additionalInfo?.isXaxisGapRequired;
+    this.customisedGroup = this.data[0]?.additionalInfo?.customisedGroup;
     data = this.formatData(data);
 
     const subgroups = this.subGroups;
@@ -124,36 +128,41 @@ export class GroupBarChartComponent implements OnChanges {
 
     const colorList = ['#049fff', '#f4aa46', '#f8404d'];
     const color = d3.scaleOrdinal()
-      .domain([...this.subGroups,...this.lineGroups])
+      .domain([...this.subGroups,...this.lineGroups.map(lineDetails=>lineDetails.lineName)])
       .range(colorList);
 
-    // Hide/show x-axis label logic
+      this.VisibleXAxisLbl = [];
+    if (this.isXaxisGapRequired) {
+
+      // Hide/show x-axis label logic
       const xLength = groups.length;
       var gap = 0;
-      if(xLength <= 10){
-        gap = 0; 
-      }else if(xLength > 10 && xLength <= 30){
-        gap = 1; 
-      } else if(xLength > 30 && xLength <= 50){
-        gap = 2; 
-      }else if(xLength > 50 && xLength <= 70){
-        gap = 3; 
-      }else if(xLength > 70 && xLength <= 90){
-        gap = 4; 
-      }else if(xLength > 90 && xLength <= 110){
-        gap = 5; 
-      }else{
+      if (xLength <= 10) {
+        gap = 0;
+      } else if (xLength > 10 && xLength <= 30) {
+        gap = 1;
+      } else if (xLength > 30 && xLength <= 50) {
+        gap = 2;
+      } else if (xLength > 50 && xLength <= 70) {
+        gap = 3;
+      } else if (xLength > 70 && xLength <= 90) {
+        gap = 4;
+      } else if (xLength > 90 && xLength <= 110) {
+        gap = 5;
+      } else {
         gap = 6
       }
-      this.VisibleXAxisLbl = [];
+
       for (var i = 0; i < groups.length; i += gap) {
-          this.VisibleXAxisLbl.push(groups[i]);
+        this.VisibleXAxisLbl.push(groups[i]);
       }
       if (!this.VisibleXAxisLbl.includes(groups[groups.length - 1])) {
-          this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1] = groups[groups.length - 1];
+        this.VisibleXAxisLbl[this.VisibleXAxisLbl.length - 1] = groups[groups.length - 1];
       }
-
-      this.VisibleXAxisLbl = this.VisibleXAxisLbl;
+    } else {
+      this.VisibleXAxisLbl = groups;
+    }
+    
 
       const xAxisGenerator = d3.axisBottom(x);
       xAxisGenerator.tickFormat((d, i) => this.VisibleXAxisLbl.includes(d) ? d : "");
@@ -191,9 +200,9 @@ export class GroupBarChartComponent implements OnChanges {
         this.generateVerticleLine(currentDayIndex,0,'solid',svgX,x,y)
     }
 
-    const ReleasePredIndex = data.findIndex(d => d.hasOwnProperty('Release Prediction'))
+    const ReleasePredIndex = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
     if(ReleasePredIndex && ReleasePredIndex > -1){
-        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,'dotted',svgX,x,y)
+        this.generateVerticleLine(this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1],0,data[ReleasePredIndex][this.customisedGroup]?.lineType,svgX,x,y)
     }
 
      /** Showing  data point for current plot */
@@ -326,7 +335,7 @@ export class GroupBarChartComponent implements OnChanges {
       };
 
       for (const kpiGroup of this.lineGroups) {
-        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup].value,'lineType':d[kpiGroup].lineType}});
+        const lineData = data.filter(d => d.hasOwnProperty(kpiGroup.lineName)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup.lineName].value,'lineType':d[kpiGroup.lineName].lineType}});
 
         const line = svgX
           .append('g')
@@ -337,11 +346,11 @@ export class GroupBarChartComponent implements OnChanges {
             .x((d) => x(d.filter))
             .y((d) => y(d.value))
           )
-          .attr('stroke', (d) => color(kpiGroup))
+          .attr('stroke', (d) => color(kpiGroup.lineName))
           .style('stroke-width', 2)
           .style('fill', 'none')
           .style('cursor', 'pointer')
-          .attr('stroke-dasharray', (d) => kpiGroup === 'Release Prediction' ? '8,3 ' : 'none')
+          .attr('stroke-dasharray', (d) => kpiGroup.lineType === 'dotted' ? '8,3 ' : 'none')
           .on('mouseover', function(event, linedata) {
             d3.select(this)
               .style('stroke-width', 4);
@@ -366,7 +375,7 @@ export class GroupBarChartComponent implements OnChanges {
           .attr('r', 3)
           .style('stroke-width', 1)
           .attr('stroke', 'none')
-          .attr('fill', color(kpiGroup))
+          .attr('fill', color(kpiGroup.lineName))
           .on('mouseover', function(event) {
             d3.select(this)
               .transition()
@@ -400,17 +409,17 @@ export class GroupBarChartComponent implements OnChanges {
     });
 
     this.lineGroups.forEach((d, i) => {
-      if(d==='Release Prediction'){
-        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed ${color(d)}"></div> : ${d}</div>`;
+      if(d.lineType==='dotted'){
+        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed ${color(d.lineName)}"></div> : ${d.lineName}</div>`;
       }else{
-        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d)}"></div> : ${d}</div>`;
+        htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: ${color(d.lineName)}"></div> : ${d.lineName}</div>`;
       }
     })
     if(currentDayIndex){
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="background-color: #944075"></div> : Today</div>`;
     }
 
-    const idPredictionDate = data.findIndex(d => d.hasOwnProperty('Release Prediction'))
+    const idPredictionDate = data.findIndex(d => d.hasOwnProperty(this.customisedGroup))
     if(idPredictionDate && idPredictionDate > -1){
       htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator line-indicator" style="border-top: 3px dashed #944075"></div> : Predicated Completion Till (${this.VisibleXAxisLbl[this.VisibleXAxisLbl.length-1]})</div>`;
     }
@@ -449,8 +458,12 @@ export class GroupBarChartComponent implements OnChanges {
          if (!this.subGroups.includes(groupD.kpiGroup) && groupD.graphType === 'bar' ) {
            this.subGroups.push(groupD.kpiGroup);
          }
-         if (!this.lineGroups.includes(groupD.kpiGroup) && groupD.graphType === 'line' ) {
-          this.lineGroups.push(groupD.kpiGroup);
+         const lineNameList = this.lineGroups.map(details=>details?.lineName);
+         if (!lineNameList.includes(groupD.kpiGroup) && groupD.graphType === 'line' ) {
+          this.lineGroups.push({
+            lineName : groupD.kpiGroup,
+            lineType : groupD.lineCategory
+          });
         }
          graphData = { ...graphData,
           [groupD.kpiGroup]: {
