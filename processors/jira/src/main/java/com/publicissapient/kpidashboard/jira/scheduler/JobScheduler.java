@@ -46,8 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 public class JobScheduler {
 
 	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
-	private static String PROJECT_ID = "projectId";
-	private static String CURRENTTIME = "currentTime";
+	private static final String PROJECT_ID = "projectId";
+	private static final String CURRENTTIME = "currentTime";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -88,7 +88,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -118,7 +117,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -146,7 +144,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}
@@ -176,7 +173,6 @@ public class JobScheduler {
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
 							params.getString(PROJECT_ID),e);
-					e.printStackTrace();
 				}
 			});
 		}

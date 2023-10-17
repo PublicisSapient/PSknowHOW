@@ -214,7 +214,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
 		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils
 				.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
-			fetchDeltaDateFromTraceLog(deltaDate);
+			setLastSuccessfulRunFromTraceLog(deltaDate);
 		}
 
 		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(
@@ -225,7 +225,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		return deltaDate;
 	}
 
-	private void fetchDeltaDateFromTraceLog(String deltaDate) {
+	private void setLastSuccessfulRunFromTraceLog(String deltaDate) {
 		log.info("fetching project status from trace log for project: {} board id :{}",
 				projectConfFieldMapping.getProjectName(), boardId);
 

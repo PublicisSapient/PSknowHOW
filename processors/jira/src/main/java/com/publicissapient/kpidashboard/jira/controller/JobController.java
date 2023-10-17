@@ -65,9 +65,9 @@ import lombok.extern.slf4j.Slf4j;
 public class JobController {
 
 	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
-	private static String PROJECT_ID = "projectId";
-	private static String SPRINT_ID = "sprintId";
-	private static String CURRENTTIME = "currentTime";
+	private static final String PROJECT_ID = "projectId";
+	private static final String SPRINT_ID = "sprintId";
+	private static final String CURRENTTIME = "currentTime";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
