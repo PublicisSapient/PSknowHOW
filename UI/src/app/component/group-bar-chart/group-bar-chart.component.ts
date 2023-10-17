@@ -140,19 +140,19 @@ export class GroupBarChartComponent implements OnChanges {
       const xLength = groups.length;
       var gap = 0;
       if (xLength <= 10) {
-        gap = 0;
-      } else if (xLength > 10 && xLength <= 30) {
         gap = 1;
-      } else if (xLength > 30 && xLength <= 50) {
+      } else if (xLength > 10 && xLength <= 30) {
         gap = 2;
-      } else if (xLength > 50 && xLength <= 70) {
+      } else if (xLength > 30 && xLength <= 50) {
         gap = 3;
-      } else if (xLength > 70 && xLength <= 90) {
+      } else if (xLength > 50 && xLength <= 70) {
         gap = 4;
-      } else if (xLength > 90 && xLength <= 110) {
+      } else if (xLength > 70 && xLength <= 90) {
         gap = 5;
+      } else if (xLength > 90 && xLength <= 110) {
+        gap = 6;
       } else {
-        gap = 6
+        gap = 7
       }
 
       for (var i = 0; i < groups.length; i += gap) {
