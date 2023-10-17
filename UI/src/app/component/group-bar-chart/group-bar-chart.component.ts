@@ -326,19 +326,6 @@ export class GroupBarChartComponent implements OnChanges {
       };
 
       for (const kpiGroup of this.lineGroups) {
-        // if(kpiGroup === 'Release Prediction'){
-        //     const firstPredictIndex = data.findIndex(d => d.hasOwnProperty(kpiGroup))
-        //     if(firstPredictIndex && firstPredictIndex > 0){
-        //         data[firstPredictIndex-1] = {...data[firstPredictIndex-1],...{'Release Prediction':data[firstPredictIndex-1]['Release Progress']}};
-        //     }
-        // }
-
-        //   if(kpiGroup === 'Release Progress'){
-        //     const firstPredictIndex = data.findIndex(d => d.hasOwnProperty('Release Prediction'))
-        //     if(firstPredictIndex && firstPredictIndex > 0){
-        //         data[firstPredictIndex] = {...data[firstPredictIndex],...{'Release Progress':data[firstPredictIndex]['Release Prediction']}};
-        //     }
-        //  }
         const lineData = data.filter(d => d.hasOwnProperty(kpiGroup)).map(d=>{ return { "filter" : d['group'],"value" : d[kpiGroup].value,'lineType':d[kpiGroup].lineType}});
 
         const line = svgX
@@ -371,8 +358,7 @@ export class GroupBarChartComponent implements OnChanges {
           .attr('class', 'circle-group')
           .attr('transform', `translate(17,0)`)
           .selectAll('circle')
-        //   .data(lineData.filter(data=>this.VisibleXAxisLbl.includes(data.filter))) // for hide the circle
-        .data(lineData)
+          .data(lineData)
           .enter()
           .append('circle')
           .attr('cx', d => x(d.filter))
