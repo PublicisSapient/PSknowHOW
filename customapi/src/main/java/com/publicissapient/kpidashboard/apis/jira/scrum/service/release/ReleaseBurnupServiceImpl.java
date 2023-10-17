@@ -122,7 +122,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("ReleaseBurnUpServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
@@ -618,13 +618,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		Map<String, Long> map = new HashMap<>();
 		long range;
 		String duration;
-		// representing in months if week count > 20
-		if (ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) > 120) {
+		// representing in months if week count > 120
+		if (ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) > DAYS_RANGE) {
 			range = ChronoUnit.MONTHS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.MONTH;
 		}
 		// added+1 to add the end date as well
-		else if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > 120) {
+		else if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > DAYS_RANGE) {
 			range = ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.WEEK;
 		} else {
