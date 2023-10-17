@@ -69,9 +69,7 @@ public class JiraCommonService {
 
 	public static final String PROCESSING_ISSUES_PRINT_LOG = "Processing issues %d - %d out of %d";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
-	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
-	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-	private static final String NO_RESULT_QUERY = "No result available for query: {}";
+
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
 
@@ -320,8 +318,7 @@ public class JiraCommonService {
 			log.error("Either Project key is empty or jiraIssueTypeNames not provided. key {} ",
 					projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
-			String query = StringUtils.EMPTY;
-			query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
+			String query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
 			CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
 			Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
 					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);

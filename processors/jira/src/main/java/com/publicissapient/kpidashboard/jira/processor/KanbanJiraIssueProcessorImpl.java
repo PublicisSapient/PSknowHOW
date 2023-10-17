@@ -144,7 +144,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 			// Label
 			jiraIssue.setLabels(getLabelsList(issue));
-			processJiraIssueData(jiraIssue, issue, fields, fieldMapping, jiraProcessorConfig);
+			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 
 			// Set project specific details
 			setProjectSpecificDetails(projectConfig, jiraIssue, issue);
@@ -417,7 +417,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 	}
 
 	private void processJiraIssueData(KanbanJiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
-			FieldMapping fieldMapping, JiraProcessorConfig jiraProcessorConfig) throws JSONException {
+			FieldMapping fieldMapping) throws JSONException {
 
 		String status = issue.getStatus().getName();
 		String changeDate = issue.getUpdateDate().toString();
@@ -438,7 +438,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		if (issue.getResolution() != null) {
 			jiraIssue.setResolution(JiraProcessorUtil.deodeUTF8String(issue.getResolution().getName()));
 		}
-		setEstimate(jiraIssue, fields, fieldMapping, jiraProcessorConfig);
+		setEstimate(jiraIssue, fields, fieldMapping);
 		Integer timeSpent = 0;
 		if (issue.getTimeTracking() != null && issue.getTimeTracking().getTimeSpentMinutes() != null) {
 			timeSpent = issue.getTimeTracking().getTimeSpentMinutes();
@@ -484,8 +484,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	}
 
-	private void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping, // NOSONAR
-			JiraProcessorConfig jiraProcessorConfig) {
+	private void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping// NOSONAR
+	) {
 		Double value = 0d;
 		String valueString = "0";
 		String estimationCriteria = fieldMapping.getEstimationCriteria();
@@ -580,17 +580,20 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	private void setURL(String ticketNumber, KanbanJiraIssue kanbanJiraIssue, ProjectConfFieldMapping projectConfig) {
 		Optional<Connection> connectionOptional = projectConfig.getJira().getConnection();
-		Boolean cloudEnv = connectionOptional.map(Connection::isCloudEnv).get();
-		String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
-		baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
-		if (cloudEnv) {
-			baseUrl = baseUrl.equals("") ? ""
-					: baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
-		} else {
-			baseUrl = baseUrl.equals("") ? ""
-					: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
+		if (connectionOptional.isPresent()) {
+			Connection connection = connectionOptional.get();
+			Boolean cloudEnv = connection.isCloudEnv();
+			String baseUrl = connectionOptional.map(Connection::getBaseUrl).orElse("");
+			baseUrl = baseUrl + (baseUrl.endsWith("/") ? "" : "/");
+			if (cloudEnv) {
+				baseUrl = baseUrl.equals("") ? ""
+						: baseUrl + jiraProcessorConfig.getJiraCloudDirectTicketLinkKey() + ticketNumber;
+			} else {
+				baseUrl = baseUrl.equals("") ? ""
+						: baseUrl + jiraProcessorConfig.getJiraDirectTicketLinkKey() + ticketNumber;
+			}
+			kanbanJiraIssue.setUrl(baseUrl);
 		}
-		kanbanJiraIssue.setUrl(baseUrl);
 	}
 
 }

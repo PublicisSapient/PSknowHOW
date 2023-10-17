@@ -57,18 +57,19 @@ public class JiraClient {
 	@Autowired
 	private JiraCommonService jiraCommonService;
 
-	private ProcessorJiraRestClient client;
+	private ProcessorJiraRestClient restClient;
 
 	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
 			KerberosClient krb5Client) {
-		if (projectConfFieldMapping.getJira().getConnection().isPresent()) {
-			Connection connection = projectConfFieldMapping.getJira().getConnection().get();
+		Optional<Connection> connectionOptional=projectConfFieldMapping.getJira().getConnection();
+		if (connectionOptional.isPresent()) {
+			Connection connection = connectionOptional.get();
 			boolean isOauth = connection.getIsOAuth();
 			krb5Client = new KerberosClient(connection.getJaasConfigFilePath(), connection.getKrb5ConfigFilePath(),
 					connection.getJaasUser(), connection.getSamlEndPoint(), connection.getBaseUrl());
-			client = getProcessorRestClient(projectConfFieldMapping, isOauth, connection, krb5Client);
+			restClient = getProcessorRestClient(projectConfFieldMapping, isOauth, connection, krb5Client);
 		}
-		return client;
+		return restClient;
 	}
 
 	private ProcessorJiraRestClient getProcessorRestClient(ProjectConfFieldMapping projectConfFieldMapping,

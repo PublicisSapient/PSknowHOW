@@ -92,7 +92,7 @@ export class GroupstackchartComponent implements OnChanges {
     // d3.select(elem).select('#legendIndicator').select('svg').remove();
     d3.select(elem).select('#xCaptionContainer').select('text').remove();
     const data = this.formatData(this.data);
-    const width = this.dataPoints <= 5 && document.getElementById('groupstackchart').offsetWidth? document.getElementById('groupstackchart').offsetWidth - 70 : this.dataPoints * 20 * 4;
+    const width = this.dataPoints <= 5 && document.getElementById('groupstackchart')?.offsetWidth? document.getElementById('groupstackchart')?.offsetWidth - 70 : this.dataPoints * 20 * 4;
     // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
     // const spacingVariable = 20;
     const height = 225;
@@ -210,7 +210,7 @@ export class GroupstackchartComponent implements OnChanges {
 
     const XCaption = d3
       .select(this.elem).select('#xCaptionContainer').append('text')
-      .attr('x', ((document.getElementById('groupstackchart').offsetWidth - 70) / 2) - 24)
+      .attr('x', ((document.getElementById('groupstackchart')?.offsetWidth - 70) / 2) - 24)
       .attr('y', 44)
       .attr('transform', 'rotate(0)')
       .text(this.xCaption);
@@ -360,31 +360,31 @@ export class GroupstackchartComponent implements OnChanges {
       // dataObj = this.padData(dataObj);
       let max = 0;
       const targetList = [];
-      dataObj.forEach((item, index) => {
+      dataObj?.forEach((item, index) => {
         const sprintValue = index + 1;
-        if (typeof (item.value) === 'object' && Object.keys(item.value)?.length > 0) {
+        if (typeof (item?.value) === 'object' && Object.keys(item?.value)?.length > 0) {
           const types = Object.keys(item.value);
           // if (types.length >= 1) {      
           types?.forEach(function (type) {
             const obj = {};
-            obj['group'] = item.sSprintName;
+            obj['group'] = item?.sSprintName;
             obj['type'] = type;
-            obj['value'] = item.value[type][Object.keys(item.value[type])?.[0]];
+            obj['value'] = item?.value[type][Object.keys(item?.value[type])?.[0]];
             obj['hoverText'] = {};
             obj['hoverText'][type] = '(';
             // obj['hoverText'] = type +': ' + '(';
-            let lastEle = Object.keys(item.value[type])?.length - 1;
-            Object.keys(item.value[type])?.forEach((x, i) => {
-              obj['hoverText'][type] += item.value[type][x] + (i != lastEle ? ', ' : '');
+            let lastEle = Object.keys(item?.value[type])?.length - 1;
+            Object.keys(item?.value[type])?.forEach((x, i) => {
+              obj['hoverText'][type] += item?.value[type][x] + (i != lastEle ? ', ' : '');
             })
             obj['hoverText'][type] += ')';
             obj['xName'] = sprintValue;
             targetList.push(obj);
-            max = Math.max(max, item.data);
+            max = Math.max(max, item?.data);
           });
           } else {
             const obj = {};
-            obj['group'] = item.sSprintName;
+            obj['group'] = item?.sSprintName;
             obj['hoverText'] = {};
             obj['xName'] = sprintValue;
             targetList.push(obj);
