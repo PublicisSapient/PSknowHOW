@@ -773,3 +773,8 @@ db.kpi_master.updateOne({ "kpiId": "kpi164" }, { $set: { "groupId": 4 } })
 
 db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 2 } })
 db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 3 } })
+
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["startDateCountKPI150"]}
+});
