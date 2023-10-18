@@ -10,6 +10,9 @@ public final class MongockUtils {
 	public static final String ROLES_COLLECTION = "roles";
 	public static final String KPI_MASTER_COLLECTION = "kpi_master";
 	public static final String KPI_COLUMN_CONFIG_COLLECTION = "kpi_column_configs";
+	public static final String FIELD_MAPPING_STRUCTURE_COLLECTION = "field_mapping_structure";
+	public static final String ACTION_POLICY_RULE_COLLECTION = "action_policy_rule";
+	public static final String FIELD_MAPPING = "field_mapping";
 	public static final String kpiId = "kpiId";
 
 	public static void checkCollectionExists(MongoTemplate mongoTemplate, String collectionName) {
@@ -44,5 +47,10 @@ public final class MongockUtils {
 				.append("calculateMaturity", calculateMaturity);
 
 		return kpiDocument;
+	}
+
+	boolean isRelae7.3Done()
+	{
+
 	}
 }

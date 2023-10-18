@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.mongock;
 
 import com.mongodb.client.MongoCollection;
+import com.publicissapient.kpidashboard.apis.util.MongockUtils;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
@@ -11,10 +12,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.*;
 
 @Slf4j
-@ChangeUnit(id = "installation", order = "001", author = "hargupta15", runAlways = true)
+@ChangeUnit(id = "DDL", order = "001", author = "hargupta15", runAlways = true, systemVersion = "8.0.0")
 public class Installation {
 	private final MongoTemplate mongoTemplate;
-	private final String ROLES_COLLECTION = "roles";
 
 	public Installation(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -22,14 +22,19 @@ public class Installation {
 
 	@Execution
 	public void changeSet() {
-		MongoCollection<Document> rolesCollection = mongoTemplate.getCollection(ROLES_COLLECTION);
-		if (!mongoTemplate.collectionExists(ROLES_COLLECTION))
-			rolesCollection = mongoTemplate.createCollection(ROLES_COLLECTION);
+		MongoCollection<Document> rolesCollection = mongoTemplate.getCollection(MongockUtils.ROLES_COLLECTION);
+		//rolesCollection = getDocumentMongoCollection(rolesCollection);
 		if (rolesCollection.countDocuments() == 0) {
 			List<Document> roles = getRoles();
-			mongoTemplate.insert(roles, ROLES_COLLECTION);
+			mongoTemplate.insert(roles, MongockUtils.ROLES_COLLECTION);
 		}
 
+	}
+
+	private MongoCollection<Document> getDocumentMongoCollection(MongoCollection<Document> rolesCollection) {
+		if (!mongoTemplate.collectionExists(MongockUtils.ROLES_COLLECTION))
+			rolesCollection = mongoTemplate.createCollection(MongockUtils.ROLES_COLLECTION);
+		return rolesCollection;
 	}
 
 	private static List<Document> getRoles() {
@@ -53,6 +58,6 @@ public class Installation {
 
 	@RollbackExecution
 	public void rollback() {
-		mongoTemplate.dropCollection(ROLES_COLLECTION);
+		mongoTemplate.dropCollection(MongockUtils.ROLES_COLLECTION);
 	}
 }

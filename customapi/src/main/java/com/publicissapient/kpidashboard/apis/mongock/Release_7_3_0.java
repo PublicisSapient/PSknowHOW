@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@ChangeUnit(id = "Release_7.3.0", order = "002", author = "hargupta15", runAlways = true, systemVersion = "8.0.0")
+@ChangeUnit(id = "Release_7.3.0", order = "002", author = "hargupta15", runAlways = true, systemVersion = "7.3.0")
 public class Release_7_3_0 {
 
 	private final MongoTemplate mongoTemplate;
