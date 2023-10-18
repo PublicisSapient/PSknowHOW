@@ -243,7 +243,7 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 			filterStatusUpdationLogs = issueHistoryLogs.stream()
 					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
 							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
-									DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+									DateTimeFormatter.ofPattern(TIME_FORMAT)),
 							sprintStartDate, sprintEndDate))
 					.collect(Collectors.toList());
 		}
