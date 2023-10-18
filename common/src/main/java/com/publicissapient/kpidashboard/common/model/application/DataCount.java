@@ -59,7 +59,7 @@ public class DataCount implements Serializable {
 	private transient Object value;
 	private transient Object drillDown;
 	private String kanbanDate;
-	private Map<String, Object> hoverValue;
+	private transient Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
 	private Map<String, Integer> lineHoverValue;
 	private String executed;
@@ -86,6 +86,7 @@ public class DataCount implements Serializable {
 	private String graphType;// for non-clustered bar and line graph
 
 	private List<DataValue> dataValue; // for multiple line graph
+	private transient Object size; // horizontal stacked bar graph
 
 	/**
 	 * Instantiates a new Data count.
@@ -126,6 +127,25 @@ public class DataCount implements Serializable {
 	public DataCount(String subFilter, Object value, Object drillDown) {
 		this.subFilter = subFilter;
 		this.value = value;
+		this.drillDown = drillDown;
+	}
+
+	/**
+	 * Instantiates a drill down data count
+	 *
+	 * @param subFilter
+	 *            the subFilter
+	 * @param value
+	 *            the value
+	 * @param size
+	 *            the size
+	 * @param drillDown
+	 *            the drill down
+	 */
+	public DataCount(String subFilter, Object value, Object size, Object drillDown) {
+		this.subFilter = subFilter;
+		this.value = value;
+		this.size = size;
 		this.drillDown = drillDown;
 	}
 

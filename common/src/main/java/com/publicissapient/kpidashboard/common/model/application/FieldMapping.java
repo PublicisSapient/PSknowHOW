@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -71,9 +72,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForDevelopmentAVR;
 	private List<String> jiraStatusForDevelopmentKPI82;
 	private List<String> jiraStatusForDevelopmentKPI135;
+	@Builder.Default
 	private List<String> jiraStatusForQa = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+	@Builder.Default
 	private List<String> jiraStatusForQaKPI148 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+	@Builder.Default
 	private List<String> jiraStatusForQaKPI135 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
+	@Builder.Default
 	private List<String> jiraStatusForQaKPI82 = Arrays.asList(READY_FOR_TESTING, IN_TESTING);
 	// type of test cases
 	private List<String> jiraDefectInjectionIssueType;
@@ -261,10 +266,13 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraStatusForInProgressKPI119;
 	private List<String> jiraStatusForInProgressKPI154;
 
+	@Builder.Default
 	private String estimationCriteria = "Story Point";
 
+	@Builder.Default
 	private Double storyPointToHourMapping = 8D;
 
+	@Builder.Default
 	private Double workingHoursDayCPT = 6D;
 
 	// additional filter config fields
@@ -374,8 +382,10 @@ public class FieldMapping extends BasicModel {
 	private String jiraLiveStatusKPI155;
 
 	@Builder.Default
-	private String notificationEnabler = "On";
+	private boolean notificationEnabler=true;
+
 	private List<String> jiraIssueEpicTypeKPI153;
+	private Integer startDateCountKPI150;
 	private List<String> jiraSubTaskIdentification;
 
 	// DTS-26150 start
@@ -430,4 +440,7 @@ public class FieldMapping extends BasicModel {
 		this.jiraStatusForInProgressKPI119 = status;
 	}
 
+	public boolean getNotificationEnabler() {
+		return notificationEnabler;
+	}
 }

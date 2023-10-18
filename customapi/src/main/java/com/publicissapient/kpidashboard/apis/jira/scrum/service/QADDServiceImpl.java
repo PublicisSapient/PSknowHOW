@@ -158,9 +158,11 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-
+		long time = System.currentTimeMillis();
 		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
 				kpiRequest);
+		log.info("QADD taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
 		List<JiraIssue> storyFilteredList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS);
 
@@ -252,8 +254,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			howerMap.put(STORY_POINTS_DATA, storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum());
 		} else {
 			double totalOriginalEstimate = storyList.stream()
-					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-					.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+					.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+					.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 			double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
 			double storyPointsData = Double.parseDouble(
 					String.format("%.2f", totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()));

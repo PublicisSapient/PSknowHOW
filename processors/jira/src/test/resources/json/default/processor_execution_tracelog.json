@@ -1,0 +1,12 @@
+[
+  {
+    "_id": "63c04eb60b28191677619b90",
+    "processorName": "Jira",
+    "basicProjectConfigId": "63c04dc7b7617e260763ca4e",
+    "executionStartedAt": "1673547314376",
+    "executionEndedAt": "1675145299936",
+    "executionSuccess": true,
+    "lastSuccessfulRun": "2023-01-31 11:38",
+    "_class": "com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog"
+  }
+]

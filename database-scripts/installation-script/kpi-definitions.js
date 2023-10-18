@@ -744,7 +744,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "average",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
@@ -1194,7 +1194,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "multiSelectDropDown",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
@@ -2563,6 +2563,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "",
     "boxType": "3_column",
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2587,6 +2588,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2611,6 +2613,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2659,6 +2662,7 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "hideOverallFilter": true,
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2669,7 +2673,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2695,7 +2699,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2721,7 +2725,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 3,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2747,7 +2751,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2809,7 +2813,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 5,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2820,6 +2824,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -2889,6 +2894,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
+    "kpiSubCategory": "Health",
     "calculateMaturity": false
   },
   {
@@ -2936,10 +2942,12 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": true,
   },
   {
@@ -2964,6 +2972,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -2988,6 +2997,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -3026,9 +3036,9 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Progress",
+    "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -3039,6 +3049,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "Count",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -3068,6 +3079,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3092,6 +3104,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3167,6 +3180,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "dropdown",
     "boxType": "chart",
+    "kpiSubCategory": "Summary",
     "calculateMaturity": false
   },
   {
@@ -3198,7 +3212,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
-    "aggregationCircleCriteria" : "average"
+    "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
   },
@@ -3512,7 +3526,6 @@ db.getCollection('kpi_master').insertMany(
         "maturityRange": ["-16", "16-8", "8-4", "4-2", "2-"],
         "isRepoToolKpi": true,
         "kpiCategory": "Developer"
-      }
   },
   {
 	"kpiId": "kpi164",
@@ -3575,9 +3588,64 @@ db.getCollection('kpi_master').insertMany(
      "isAdditionalFilterSupport":false,
      "kpiFilter":"radioButton",
      "boxType":"chart",
-     "calculateMaturity":false
-  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
- }
+     "calculateMaturity":false,
+     "kpiSubCategory": "Quality",
+  	 "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ },
+ {
+    "kpiId": "kpi165",
+    "kpiName": "Epic Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSubCategory": "Value",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "kpiWidth": 100,
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+{
+      "kpiId": "kpi169",
+      "kpiName": "Epic Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 5,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+        "definition": "It depicts the progress of each epic in terms of total count and %age completion."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "kpiWidth": 100,
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiSubCategory": "Epic View"
+    }
 ]
 );
 
@@ -6819,8 +6887,6 @@ db.kpi_column_configs.insertMany([
                                         },
                                       ],
                                     },
-                                 ]);
-                                 	},
                                  	{
                                     	basicProjectConfigId: null,
                                     	kpiId: 'kpi164',
@@ -8768,11 +8834,11 @@ db.getCollection('field_mapping_structure').insertMany(
         },
         "options": [{
              "label": "On",
-             "value": "On"
+             "value": true
         },
         {
              "label": "Off",
-             "value": "Off"
+             "value": false
         }
         ]
     },
@@ -9150,6 +9216,16 @@ db.getCollection('field_mapping_structure').insertMany(
   "section":"WorkFlow Status Mapping",
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+  }
+},
+{
+
+  "fieldName": "startDateCountKPI150",
+  "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
+  "fieldType": "number",
+  "section": "Issue Types Mapping",
+  "tooltip": {
+    "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
   }
 }
 ]);

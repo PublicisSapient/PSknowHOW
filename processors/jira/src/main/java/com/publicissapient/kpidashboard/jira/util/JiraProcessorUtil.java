@@ -22,16 +22,9 @@ import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
@@ -50,12 +43,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public final class JiraProcessorUtil {
+public class JiraProcessorUtil {
 
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 	private static final String NULL_STR = "null";
-	private static final String PROJECTKEY = "project";
 	private static final String ID = "id";
 	private static final String STATE = "state";
 	private static final String RAPIDVIEWID = "rapidViewId";
@@ -66,10 +58,6 @@ public final class JiraProcessorUtil {
 	private static final String ACTIVATEDDATE = "activatedDate";
 	private static final String GOAL = "goal";
 	private static final String BOARDID = "boardId";
-
-	private JiraProcessorUtil() {
-		// Default
-	}
 
 	/**
 	 * This method return UTF-8 decoded string response
@@ -124,10 +112,12 @@ public final class JiraProcessorUtil {
 	 * @param data
 	 *            Sprint Data object
 	 * @return List of sprints
+	 * @throws ParseException
+	 *             ParseException
 	 * @throws JSONException
 	 *             JSONException
 	 */
-	public static List<SprintDetails> processSprintDetail(Object data) throws JSONException {
+	public static List<SprintDetails> processSprintDetail(Object data) throws ParseException, JSONException {
 		List<SprintDetails> sprints = new ArrayList<>();
 
 		if (data instanceof JSONArray) {
@@ -247,7 +237,7 @@ public final class JiraProcessorUtil {
 			JsonNode jsonNode = objectMapper.readTree(sprintData);
 			sprint.setSprintID(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
 			sprint.setOriginalSprintId(jsonNode.get(ID) == null ? null : jsonNode.get(ID).asText());
-			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText().toUpperCase());
+			sprint.setState(jsonNode.get(STATE) == null ? null : jsonNode.get(STATE).asText());
 			String boardId = null;
 
 			if (jsonNode.get(RAPIDVIEWID) == null) {
@@ -276,204 +266,6 @@ public final class JiraProcessorUtil {
 		}
 	}
 
-	/**
-	 * Gets Formatted date time Object
-	 *
-	 * @param dateString
-	 *            DateString
-	 * @return Formatted Date object
-	 */
-	public static Date getFormattedDateTime(String dateString) {
-		String inputDate = dateString;
-		Date formattedDate = null;
-		if (dateString == null) {
-			return null;
-		}
-		int charIndex = inputDate.indexOf('.');
-		if (charIndex != -1) {
-			inputDate = inputDate.substring(0, charIndex);
-		}
-		try {
-			formattedDate = new SimpleDateFormat(JiraConstants.DATE_TIME_FORMAT, Locale.US).parse(inputDate);
-		} catch (ParseException e) {
-			log.error("Error while converting String Date to date object {}  {}", dateString, e);
-		}
-		return formattedDate;
-	}
-
-	/**
-	 * Get Date in String formatted
-	 *
-	 * @param date
-	 *            Date Object
-	 * @return formatted Date as String
-	 */
-	public static String getFormattedDateString(Date date) {
-		DateFormat df = new SimpleDateFormat(JiraConstants.DATE_TIME_FORMAT, Locale.US);
-		return df.format(date);
-	}
-
-	/**
-	 * Subtracts minutes from given date
-	 *
-	 * @param date
-	 *            Date Object
-	 * @param minutes
-	 *            Minutes to subtract
-	 * @return Adjusted Date
-	 */
-	public static Date getTimeAdjustedDate(Date date, int minutes) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		calendar.add(Calendar.MINUTE, -1 * minutes);
-		return calendar.getTime();
-	}
-
-	public static String createJql(String projectKey, Map<String, String> startDateTimeStrByIssueType) {
-
-		if (StringUtils.isEmpty(projectKey) || startDateTimeStrByIssueType == null) {
-			return "";
-		}
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("project IN ('");
-		stringBuilder.append(projectKey);
-		stringBuilder.append("') AND (");
-
-		int size = startDateTimeStrByIssueType.entrySet().size();
-		int count = 0;
-		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-			count++;
-			String type = entry.getKey();
-			String dateTime = entry.getValue();
-
-			stringBuilder.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-			if (count < size) {
-				stringBuilder.append(" OR ");
-			}
-		}
-
-		stringBuilder.append(") ORDER BY updated DESC");
-
-		return stringBuilder.toString();
-	}
-
-	/**
-	 * process jql
-	 *
-	 * @param query
-	 *            jqlquery
-	 * @param startDateTimeStrByIssueType
-	 *            datewise issuetype map
-	 * @param dataExist
-	 *            data already exist in db or not
-	 * @return processed JQL
-	 */
-	public static String processJql(String query, Map<String, String> startDateTimeStrByIssueType, boolean dataExist) {
-
-		String finalQuery = StringUtils.EMPTY;
-		if (StringUtils.isEmpty(query) || startDateTimeStrByIssueType == null) {
-			return finalQuery;
-		}
-		query = query.toLowerCase().split(JiraConstants.ORDERBY)[0];
-		StringBuilder issueTypeDateQuery = new StringBuilder();
-
-		int size = startDateTimeStrByIssueType.entrySet().size();
-		int count = 0;
-		issueTypeDateQuery.append(" (");
-		for (Map.Entry<String, String> entry : startDateTimeStrByIssueType.entrySet()) {
-			count++;
-			String type = entry.getKey();
-			String dateTime = entry.getValue();
-
-			issueTypeDateQuery.append("(issuetype IN ('" + type + "') AND updatedDate>='" + dateTime + "')");
-			if (count < size) {
-				issueTypeDateQuery.append(" OR ");
-			}
-		}
-
-		issueTypeDateQuery.append(") ");
-
-		if (dataExist) {
-			if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-				finalQuery = replaceDateQuery(query, issueTypeDateQuery.toString());
-			} else {
-				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-			}
-		} else {
-			if (StringUtils.containsIgnoreCase(query, JiraConstants.UPDATEDDATE)) {
-				finalQuery = appendDateQuery(query, "");
-			} else {
-				finalQuery = appendDateQuery(issueTypeDateQuery.toString(), "AND " + query);
-			}
-		}
-
-		return finalQuery;
-	}
-
-	/**
-	 * append pre and post query
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return appended query
-	 */
-	private static String appendDateQuery(String preQuery, String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(preQuery);
-		sb.append(" ");
-		sb.append(postQuery);
-		sb.append(" ORDER BY updated DESC");
-		return sb.toString();
-	}
-
-	/**
-	 * find project key from query
-	 *
-	 * @param query
-	 *            jql query
-	 * @return string result
-	 */
-	public static String getProjectKey(String query) {
-		String projectKey = null;
-		if (StringUtils.containsIgnoreCase(query, PROJECTKEY)) {
-			query = query.toLowerCase().split(PROJECTKEY)[1].replaceAll("[^a-zA-Z0-9 ]", "").trim();
-			if (query.indexOf(' ') > -1) {
-				projectKey = query.substring(0, query.indexOf(' '));
-			} else {
-				projectKey = query;
-			}
-		}
-		return projectKey;
-	}
-
-	/**
-	 * replace updated date
-	 *
-	 * @param preQuery
-	 * @param postQuery
-	 * @return replaced query
-	 */
-	private static String replaceDateQuery(String preQuery, String postQuery) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(preQuery.replace(JiraConstants.UPDATEDDATE, postQuery));
-		sb.append(" ORDER BY updated DESC");
-		return sb.toString();
-	}
-
-	public static String convertToNewFormat(String dateStr) {
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		SimpleDateFormat sourceFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-		SimpleDateFormat destFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		sourceFormat.setTimeZone(utc);
-		Date convertedDate = null;
-		try {
-			convertedDate = sourceFormat.parse(dateStr);
-		} catch (ParseException e) {
-			log.error("Parsing error while converting date format", e);
-		}
-		return destFormat.format(convertedDate);
-	}
-
 	public static String getFormattedDateForSprintDetails(String date) {
 		if (date != null && !date.isEmpty()) {
 			try {
@@ -488,7 +280,7 @@ public final class JiraProcessorUtil {
 	}
 
 	public static String processJqlForSprintFetch(List<String> issueKeys) {
-		String finalQuery = StringUtils.EMPTY;
+		String finalQuery = org.apache.commons.lang3.StringUtils.EMPTY;
 		if (issueKeys == null) {
 			return finalQuery;
 		}
@@ -511,5 +303,4 @@ public final class JiraProcessorUtil {
 
 		return finalQuery;
 	}
-
 }

@@ -42,9 +42,10 @@ public interface JiraIssueCustomHistoryRepository extends CrudRepository<JiraIss
 	 *            the story id
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
-	 * @return the list
+	 * @return the JiraIssueCustomHistory
 	 */
-	List<JiraIssueCustomHistory> findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
+	@Query(fields = "{ 'storyID' : 1, 'createdDate' : 1, 'estimate' : 1, 'bufferedEstimateTime': 1 }")
+	JiraIssueCustomHistory findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
 
 	/**
 	 * Find by story id in list.

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jettison.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -41,6 +42,7 @@ import com.publicissapient.kpidashboard.azure.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.azure.util.AzureConstants;
 import com.publicissapient.kpidashboard.azure.util.AzureProcessorUtil;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -49,13 +51,20 @@ import com.publicissapient.kpidashboard.common.model.azureboards.SystemAssignedT
 import com.publicissapient.kpidashboard.common.model.azureboards.SystemCreatedBy;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class AzureIssueClient {// NOPMD //NOSONAR
+
+	AssigneeDetails tempAssigneeDetails;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	public static String hash(String input) {
 		return String.valueOf(Objects.hash(input));
@@ -398,10 +407,45 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 			ProjectConfFieldMapping projectConfig) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 			jiraIssue.setAssigneeId(hash(jiraIssue.getAssigneeId()));
-			jiraIssue.setAssigneeName(hash(jiraIssue.getAssigneeId() + jiraIssue.getAssigneeName()));
+			jiraIssue.setAssigneeName(setAssigneeName(jiraIssue.getAssigneeId(),
+					projectConfig.getBasicProjectConfigId().toString(), assigneeSetToSave));
 		} else {
 			assigneeSetToSave.add(new Assignee(jiraIssue.getAssigneeId(), jiraIssue.getAssigneeName()));
 		}
+	}
+
+	private String setAssigneeName(String assigneeId, String basicProjectConfigId, Set<Assignee> assigneeSetToSave) {
+		String assigneeName = AzureConstants.USER + AzureConstants.SPACE + 1;
+		if (null == tempAssigneeDetails
+				|| !tempAssigneeDetails.getBasicProjectConfigId().equalsIgnoreCase(basicProjectConfigId)) {
+			tempAssigneeDetails = assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(basicProjectConfigId,
+					ProcessorConstants.AZURE);
+		}
+		if (tempAssigneeDetails == null) {
+			tempAssigneeDetails = new AssigneeDetails();
+			tempAssigneeDetails.setBasicProjectConfigId(basicProjectConfigId);
+			tempAssigneeDetails.setSource(ProcessorConstants.AZURE);
+			assigneeSetToSave.add(new Assignee(assigneeId, assigneeName));
+			tempAssigneeDetails.setAssignee(assigneeSetToSave);
+			tempAssigneeDetails.setAssigneeSequence(2);
+		} else {
+			Assignee assignee = tempAssigneeDetails.getAssignee().stream()
+					.filter(Assignee -> assigneeId.equals(Assignee.getAssigneeId())).findAny().orElse(null);
+			if (null == assignee) {
+				assigneeName = AzureConstants.USER + AzureConstants.SPACE + tempAssigneeDetails.getAssigneeSequence();
+				tempAssigneeDetails.setAssigneeSequence(tempAssigneeDetails.getAssigneeSequence() + 1);
+				// this set is created so that there is no need to fetch
+				// assigneeDetails again and same assignee can be checked
+				// only with existing assigneeDetails object
+				Set<Assignee> newAssignee = new HashSet<>();
+				newAssignee.add(new Assignee(assigneeId, assigneeName));
+				tempAssigneeDetails.getAssignee().addAll(newAssignee);
+				assigneeSetToSave.add(new Assignee(assigneeId, assigneeName));
+			} else {
+				assigneeName = assignee.getAssigneeName();
+			}
+		}
+		return assigneeName;
 	}
 
 	private void updateOwnerDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,

@@ -382,6 +382,7 @@ public class FieldMappingDTO extends BasicModel {
 	private List<String> jiraIssueEpicTypeKPI153;
 	private List<String> jiraSubTaskIdentification;
 	private List<String> jiraStatusStartDevelopmentKPI154;
+	private Integer startDateCountKPI150;
 
 	// DTS-26150 start
 	// Testing Phase Defect Mapping

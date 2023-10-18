@@ -20,20 +20,33 @@ package com.publicissapient.kpidashboard.jira;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
+/**
+ * @author pankumar8
+ *
+ */
+@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+// @SpringBootApplication - uncomment this line and remove above line when
+// spring job repository implemented for mongodb
 @EnableCaching
 @ComponentScan(basePackages = { "com.publicissapient" })
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
+@EnableBatchProcessing
+@EnableAsync
+@EnableScheduling
 public class JiraProcessorApplication {
 
 	private static boolean sslHostNameFlag = true;
@@ -48,5 +61,4 @@ public class JiraProcessorApplication {
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
-
 }

@@ -719,6 +719,65 @@ db.kpi_category_mapping.insertMany(
 "kpiOrder" : Double("7"),
 "kanban" : false
 })
+
+
+//---------Release 8.0.0----------------
+//deleting kpi 165, 169
+// Reverting Backlog kpiCategory changes
+// Reverting Backlog kpiSubCategory changes
+// reverting release renaming of kpiSubCategory of release
+db.kpi_master.bulkWrite([
+    {
+        deleteMany: {
+            filter: { kpiId: { $in: ["kpi165", "kpi169"] } }
+        }
+    },
+    {
+        updateMany: {
+            filter: {
+                kpiId: {
+                    $in: ["kpi152", "kpi155", "kpi151", "kpi139", "kpi138", "kpi127", "kpi137", "kpi129",
+                        "kpi3", "kpi148", "kpi146"]
+                }
+            },
+            update: { $unset: { kpiSubCategory: "" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150"] } },
+            update: { $set: { "kpiSubCategory": "Release Progress" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi147", "kpi163"] } },
+            update: { $set: { "kpiSubCategory": "Release Review" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150", "kpi147", "kpi3"] } },
+            update: { $unset: { "kpiWidth": "" } }
+        }
+    }
+]);
+
+//DTS-29115 Prod fix Rollback
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi40", "kpi46"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 1 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi164" }, { $set: { "groupId": 4 } })
+
+db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 2 } })
+db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 3 } })
+
+db.field_mapping_structure.deleteMany(
+{
+"fieldName": { $in: ["startDateCountKPI150"]}
+});
 )
 
 db.field_mapping_structure.deleteMany({

@@ -5015,6 +5015,136 @@ db.getCollection('metadata_identifier').updateMany(
             }
    }}
 );
+//------------------------- 8.0.0 changes----------------------------------------------------------------------------------
+db.kpi_master.bulkWrite([
+    {
+        insertOne: {
+            "document":
+            {
+                "kpiId": "kpi165",
+                "kpiName": "Epic Progress",
+                "maxValue": "",
+                "kpiUnit": "Count",
+                "isDeleted": "False",
+                "defaultOrder": 5,
+                "kpiCategory": "Release",
+                "kpiSubCategory": "Value",
+                "kpiSource": "Jira",
+                "groupId": 9,
+                "thresholdValue": "",
+                "kanban": false,
+                "chartType": "horizontalPercentBarChart",
+                "kpiInfo": {
+                    "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
+                },
+                "xAxisLabel": "",
+                "yAxisLabel": "",
+                "kpiWidth": 100,
+                "isPositiveTrend": true,
+                "showTrend": false,
+                "isAdditionalFilterSupport": false,
+                "kpiFilter": "multiSelectDropDown",
+                "boxType": "chart",
+                "calculateMaturity": false
+            }
+        }
+    },
+    {
+        insertOne: {
+            "document":
+            {
+                "kpiId": "kpi169",
+                "kpiName": "Epic Progress",
+                "maxValue": "",
+                "kpiUnit": "Count",
+                "isDeleted": "False",
+                "defaultOrder": 5,
+                "kpiCategory": "Backlog",
+                "kpiSource": "Jira",
+                "groupId": 9,
+                "thresholdValue": "",
+                "kanban": false,
+                "chartType": "horizontalPercentBarChart",
+                "kpiInfo": {
+                    "definition": "It depicts the progress of each epic in terms of total count and %age completion."
+                },
+                "xAxisLabel": "",
+                "yAxisLabel": "",
+                "kpiWidth": 100,
+                "isPositiveTrend": true,
+                "showTrend": false,
+                "isAdditionalFilterSupport": false,
+                "kpiFilter": "multiSelectDropDown",
+                "boxType": "chart",
+                "calculateMaturity": false,
+                "kpiSubCategory": "Epic View"
+            }
+
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] } },
+            update: { $set: { "kpiSubCategory": "Summary" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi139", "kpi138", "kpi127", "kpi137", "kpi129", "kpi161"] } },
+            update: { $set: { "kpiSubCategory": "Backlog Health" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi3", "kpi148", "kpi146"] } },
+            update: { $set: { "kpiSubCategory": "Flow KPIs" } }
+        }
+    }, {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi147", "kpi150"] } },
+            update: { $set: { "kpiSubCategory": "Speed" } }
+        }
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi141", "kpi142", "kpi143", "kpi144", "kpi163"] } },
+            update: { $set: { "kpiSubCategory": "Quality" } }
+        },
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150","kpi147", "kpi3"] } },
+            update: { $set: { "kpiWidth": 100 } }
+        },
+    },
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150"] } },
+            update: { $set: { "defaultOrder": 1 } }
+        },
+    }
+]);
+
+
+//DTS-29115 Prod fix
+db.kpi_master.updateMany(
+   { "kpiId": { $in: ["kpi40", "kpi46", "kpi164"] } }, // Match documents with specified kpiId values
+   { $set: { "groupId": 5 } } // Set the new value for groupId
+)
+
+db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 3 } })
+db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 16 } })
+
+db.getCollection('field_mapping_structure').insertMany([{
+
+    "fieldName": "startDateCountKPI150",
+    "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
+    "fieldType": "number",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
+    }
+}]);
 //------------------------------DSV S2 Changes
 db.getCollection('field_mapping_structure').insertMany([
     {
