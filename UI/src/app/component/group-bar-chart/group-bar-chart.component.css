@@ -154,7 +154,7 @@
     font-size: 10px;
     color: var(--color-gray-34);
     position: absolute;
-    bottom: 0;
+    bottom: 20px;
   }
   .tooltip-container, .current-week-tooltip{
       position: relative;
@@ -162,5 +162,17 @@
 
   ::ng-deep .legend_color_indicator.line-indicator{
     height: 5px;
-    width: 25px
+    width: 30px;
+  }
+
+  :host ::ng-deep .xAxis .tick.minor line {
+    stroke: #777;
+    stroke-width: 1px;
+    stroke-dasharray: 6,4;
+  }
+
+  :host ::ng-deep .xAxis .tick line {
+    shape-rendering: crispEdges;
+    stroke: #000;
+    stroke-width: 3px;
   }

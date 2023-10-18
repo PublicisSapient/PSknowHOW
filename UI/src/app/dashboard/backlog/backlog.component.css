@@ -66,10 +66,25 @@
 :host::ng-deep .config-confirmation.p-dialog {
     width: 50vw !important;
 }
-
-.subKPi{
-    display: flex;
-    width: 50%;
-    flex-direction: column;
+:host::ng-deep.iteration-tabs .p-tabview-nav-link{
+    border: 1px solid #707070 !important;
+    border-radius: 5px !important;
+    padding: 10px !important;
+    margin: 10px !important;
+    font-size: 12px;
+    text-transform: uppercase;
 }
-
+:host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
+    padding: 0;
+}
+:host::ng-deep.iteration-tabs li.p-highlight .p-tabview-nav-link{
+    color: #fff !important;
+    background: var(--color-black) !important;
+}
+:host::ng-deep.iteration-tabs .p-tabview .p-tabview-panels{
+    background: transparent;
+    padding: 0 ;
+}
+:host::ng-deep .p-tabview .p-tabview-nav .p-tabview-ink-bar{
+    display: none;
+}

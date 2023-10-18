@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
@@ -42,6 +44,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Autowired
 	private GlobalConfigRepository globalConfigRepository;
 
+	@Autowired
+	private NotificationService notificationService;
+
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplate;
+
 	@Override
 	public boolean submitFeedback(FeedbackSubmitDTO feedback) {
 		boolean status = true;
@@ -49,7 +57,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
 		GlobalConfig globalConfig = CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-		EmailServerDetail emailServerDetail = globalConfig == null ? null : globalConfig.getEmailServerDetail();
+		EmailServerDetail emailServerDetail =  globalConfig == null ? null : globalConfig.getEmailServerDetail();
 		if (emailServerDetail != null) {
 			emailAddresses = emailServerDetail.getFeedbackEmailIds();
 		} else {
@@ -67,8 +75,9 @@ public class FeedbackServiceImpl implements FeedbackService {
 			}
 			Map<String, String> customData = createCustomData(feedback, serverPath);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
-			commonService.sendNotificationEvent(emailAddresses, customData, feedbackNotificationSubjects,
-					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic());
+			String templateKey = customApiConfig.getMailTemplate().getOrDefault(NOTIFICATION_KEY,"");
+			notificationService.sendNotificationEvent(emailAddresses, customData, feedbackNotificationSubjects,
+					NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),customApiConfig.isNotificationSwitch(),kafkaTemplate,templateKey,customApiConfig.isMailWithoutKafka());
 		} else {
 			status = false;
 			log.error("Notification Event not sent : No email address "

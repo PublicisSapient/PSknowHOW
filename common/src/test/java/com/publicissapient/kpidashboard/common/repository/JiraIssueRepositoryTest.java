@@ -505,7 +505,7 @@ public class JiraIssueRepositoryTest {
 		jiraIssue.setBasicProjectConfigId("676987987897");
 		jiraIssueList.add(jiraIssue);
 		when(featureRepo.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(testStoryId),
-				"676987987897")).thenReturn(jiraIssueList);
+				"676987987897")).thenReturn(jiraIssueList.get(0));
 		assertEquals("Expected feature ID did not match actual feature ID", testStoryId,
 				jiraIssueList.get(0).getIssueId().toString());
 	}

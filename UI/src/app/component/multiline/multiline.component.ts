@@ -57,6 +57,8 @@ export class MultilineComponent implements OnChanges {
   @Input() viewType :string = 'chart'
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
+  @Input() activeTab?: number = 0;
+  elemObserver = new ResizeObserver(() => {this.draw()});
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -72,6 +74,10 @@ export class MultilineComponent implements OnChanges {
      });
   }
 
+  ngAfterViewInit(): void {
+    this.elemObserver.observe(this.elem);
+  }
+
   // Runs when property "data" changed
   ngOnChanges(changes: SimpleChanges) {
     if (this.selectedtype?.toLowerCase() === 'kanban' || this.service.getSelectedTab().toLowerCase() === 'developer')
@@ -81,15 +87,21 @@ export class MultilineComponent implements OnChanges {
     if (Object.keys(changes)?.length > 0) {
         d3.select(this.elem).select('svg').remove();
         d3.select(this.elem).select('.bstimeslider').remove();
-        this.draw('update');
+        this.draw();
     } else {
       d3.select(this.elem).select('svg').remove();
       d3.select(this.elem).select('.bstimeslider').remove();
-      this.draw('new');
+      this.draw();
+    }
+    if(changes['activeTab']){
+      /** settimeout applied because dom is loading late */
+      setTimeout(() => {
+        this.draw();
+      }, 0);
     }
   }
 
-  draw(status) {
+  draw() {
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
     d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
@@ -98,7 +110,7 @@ export class MultilineComponent implements OnChanges {
     const formatedData = this?.data[0]?.value.map(details=>{
       const XValue = details.date || details.sSprintName;
       const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
-      const removeProject = XValue.includes(projectName) ? XValue.replace(projectName,'') : XValue;
+      const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName,'') : XValue;
        return {...details,sortSprint:removeProject};
     })
     const isAllBelowFromThreshold = this.data[0].value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
@@ -140,14 +152,10 @@ export class MultilineComponent implements OnChanges {
       '%' : '%',
       'check-ins' : 'CI',
       'tickets' : 'T',
-      'unit' : '',
+      'unit' : ''
     }
 
-    // width = $('#multiLineChart').width();
-    width =
-      data[0].value.length <= 5
-        ? document.getElementById('multiLineChart').offsetWidth - 70
-        : data[0].value.length * 20 * 8;
+    width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis
@@ -192,13 +200,13 @@ export class MultilineComponent implements OnChanges {
       xScale = d3
         .scaleBand()
         .domain(sprintList)
-        .range([0, width - margin])
+        .range([0, width])
         .padding(0)
 
     }else{
       xScale = d3
       .scaleBand()
-      .rangeRound([0, width - margin])
+      .rangeRound([0, width])
       .padding(0)
       .domain(
         data[maxObjectNo].value.map(function (d, i) {
@@ -640,11 +648,6 @@ export class MultilineComponent implements OnChanges {
             );
         }
       });
-      if(board == 'dora'){
-        svgX
-        .select('.x')
-        .selectAll('.tick').selectAll('text').attr('transform', 'translate(0, 5) rotate(-35)')
-      }
 
     if (this.kpiId == 'kpi17') {
       d3.select(this.elem).select('#legendContainer').remove();
@@ -715,5 +718,6 @@ export class MultilineComponent implements OnChanges {
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     d3.select(this.elem).select('#legendContainer').remove();
     this.data = [];
+    this.elemObserver.unobserve(this.elem);
   }
 }

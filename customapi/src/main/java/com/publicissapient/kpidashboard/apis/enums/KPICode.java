@@ -465,8 +465,16 @@ public enum KPICode {
     /**
      * PR Size
      */
-    PR_SIZE("kpi162", KPISource.BITBUCKET.name());
-
+    PR_SIZE("kpi162", KPISource.BITBUCKET.name()),
+    /**
+     * DTS-27553
+     * Epic Progress
+     */
+    EPIC_PROGRESS("kpi165", KPISource.JIRA.name()),
+    /**
+     * Epic Progress (Backlog)
+     */
+    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name());
 
 
     // @formatter:on

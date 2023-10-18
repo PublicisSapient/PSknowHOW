@@ -165,7 +165,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
-    
+
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
       if(x['label'] === 'Daily Standup'){
@@ -174,7 +174,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.subCategoryBoard;
+      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
       if(idx != -1) {
         this.navigationTabs[idx]['count']++;
@@ -195,7 +195,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           }else{
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
-        }) 
+        })
         const dataLength = halfWithKpis.length;
         const middleIndex = Math.floor(dataLength / 2);
         tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
@@ -228,7 +228,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();

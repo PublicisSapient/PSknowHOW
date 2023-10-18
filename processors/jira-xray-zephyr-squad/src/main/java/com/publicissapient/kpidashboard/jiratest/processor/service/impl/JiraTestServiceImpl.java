@@ -93,6 +93,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 	private static final String TEST_AUTOMATED_FLAG = "testAutomatedFlag";
 	private static final String TEST_CAN_BE_AUTOMATED_FLAG = "testCanBeAutomatedFlag";
 	private static final String AUTOMATED_VALUE = "automatedValue";
+	private static final String ERROR_PARSING_TEST_AUTOMATED_FIELD = "JIRA Processor |Error while parsing test automated field";
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
 	@Autowired
@@ -434,7 +435,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 			setRegressionLabel(jiraTestToolInfo, fields, testCaseDetail);
 		} catch (Exception e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(ERROR_PARSING_TEST_AUTOMATED_FIELD, e);
 		}
 	}
 
@@ -551,7 +552,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(ERROR_PARSING_TEST_AUTOMATED_FIELD, e);
 		}
 		return automationFlag;
 	}
@@ -585,7 +586,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 			}
 
 		} catch (JSONException | org.json.simple.parser.ParseException e) {
-			log.error("JIRA Processor |Error while parsing test automated field", e);
+			log.error(ERROR_PARSING_TEST_AUTOMATED_FIELD, e);
 		}
 		return fetchedValueFromJson;
 	}
