@@ -1,0 +1,16 @@
+[
+  {
+    "id": "5fd99f7bc8b51a7b55aec836",
+    "type": "Jira",
+    "connectionName": "Tools-Atlassian Tools Support -Jira Connection",
+    "cloudEnv": false,
+    "baseUrl": "https://tools.publicis.sapient.com/jira/",
+    "username": "admin",
+    "password": "R5PSV5fVpDBrFA0DL8WCMg==",
+    "apiEndPoint": "rest/api/2/",
+    "privateKey": "",
+    "isOAuth": false,
+    "offline": false,
+    "updatedAt": "2020-12-16T06:45:54"
+  }
+]
