@@ -115,18 +115,6 @@ public class CreateDatabaseIndexesChangeLog {
 
 	@RollbackExecution
 	public void rollback() {
-		mongoTemplate.dropCollection(JIRA_ISSUE);
-		mongoTemplate.dropCollection(JIRA_ISSUE_CUSTOM_HISTORY);
-		mongoTemplate.dropCollection(KANBAN_JIRA_ISSUE);
-		mongoTemplate.dropCollection(KANBAN_JIRA_ISSUE_CUSTOM_HISTORY);
-		mongoTemplate.dropCollection(SPRINT_DETAILS);
-		mongoTemplate.dropCollection(TEST_CASE_DETAILS);
-		mongoTemplate.dropCollection("test_execution");
-		mongoTemplate.dropCollection("build_details");
-		mongoTemplate.dropCollection("deployments");
-		mongoTemplate.dropCollection(USER_INFO);
-		mongoTemplate.dropCollection("usertokendata");
-		mongoTemplate.dropCollection("merge_requests");
-		mongoTemplate.dropCollection("processor_items");
+		// We are inserting the indexes, so no drop to any collections
 	}
 }
