@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.mongock.DDL;
+package com.publicissapient.kpidashboard.apis.mongock.ddl;
 
 import io.mongock.api.annotations.ChangeUnit;
 import lombok.extern.slf4j.Slf4j;
