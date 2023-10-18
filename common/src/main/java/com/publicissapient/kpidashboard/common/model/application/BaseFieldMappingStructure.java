@@ -52,6 +52,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private MappingToolTip tooltip;
 	private List<Options> options;
 	private List<String> filterGroup;
+	private String readOnly;
 
 	@Data
 	@Getter

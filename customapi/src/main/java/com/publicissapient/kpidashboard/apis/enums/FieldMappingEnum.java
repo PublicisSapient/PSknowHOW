@@ -39,7 +39,8 @@ public enum FieldMappingEnum {
 					"productionDefectCustomField", "productionDefectIdentifier", "productionDefectValue",
 					"productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue",
 					"epicLink", "jiraSubTaskDefectType", "testingPhaseDefectCustomField", "testingPhaseDefectsIdentifier",
-					"testingPhaseDefectValue", "testingPhaseDefectComponentValue")),
+					"testingPhaseDefectValue", "testingPhaseDefectComponentValue", "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "storyFirstStatusKPI154","jiraOnHoldStatusKPI154", "jiraSubTaskIdentification")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -175,18 +176,30 @@ public enum FieldMappingEnum {
 
 	KPI153("PI Predictability", KPISource.JIRA.name(), Arrays.asList("jiraIssueEpicTypeKPI153")),
 
+	KPI154("Daily StandUp View", KPISource.JIRA.name(),
+			Arrays.asList("jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154","storyFirstStatusKPI154", "jiraOnHoldStatusKPI154")),
+
 	// DTS-26123 start
 	KPI155("Defect Count By Type", KPISource.JIRA.name(),
 			Arrays.asList("jiraDefectRejectionStatusKPI155", "jiraDodKPI155", "jiraLiveStatusKPI155")),
 	// DTS-26123 end
-	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")), KPI16(
-			"Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16")), KPI161(
-					"Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161")), KPI164(
+	KPI42("Regression Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI42")),
+
+	KPI16(
+			"Insprint Automation Coverage", KPISource.ZEPHYR.name(), Arrays.asList("uploadDataKPI16")),
+
+	KPI161(
+					"Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161")),
+
+	KPI164(
 							"Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164")),
 
 	KPI156("Lead Time For Change", KPISource.JIRA.name(),
 			Arrays.asList("leadTimeConfigRepoTool", "toBranchForMRKPI156" , "jiraDodKPI156" , "jiraIssueTypeKPI156")),
+
 	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI163")),
+
 	KPI150("Release Burnup", KPISource.JIRA.name(), Collections.singletonList("startDateCountKPI150"));
 
 	private List<String> fields;

@@ -2,80 +2,108 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <ng-container *ngIf="selectedUser === 'Overall'">
-            <ng-container *ngFor="let filter of filterData">
-                <ng-container [ngSwitch]="filter?.filterType">
-                    <div class="filters" *ngSwitchCase="'singleSelect'">
-                        <ng-select  [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
-                        (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Filter By Role"
-                         class="p-pb-0" [style]="{'min-width' : '180px'}">
-                        <ng-option *ngFor="let item of filter.options" [value]="item">
-                           {{item}}
-                        </ng-option>
-                     </ng-select>
-                    </div>
-                </ng-container>
-              
-            </ng-container>
-        </ng-container>
+        <div class="p-d-flex p-align-center p-jc-between">
+            <ng-container *ngIf="selectedUser === 'Overall' else assignee">
+                <ng-container *ngFor="let filter of filterData">
+                    <ng-container [ngSwitch]="filter?.filterType">
+                        <div class="filters" *ngSwitchCase="'singleSelect'">
+                            <ng-select [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
+                                (change)="handleSingleSelectChange($event,filter?.filterKey)"
+                                placeholder="Filter By Role" class="p-pb-0" [style]="{'min-width' : '180px'}">
+                                <ng-option *ngFor="let item of filter.options" [value]="item">
+                                    {{item}}
+                                </ng-option>
+                            </ng-select>
+                        </div>
+                    </ng-container>
 
-       
-        <p-button (click)="handleViewExpandCollapse()">{{displayModal ? 'Collapse' : 'Expand'}} </p-button>
+                </ng-container>
+            </ng-container>
+            <ng-template #assignee>
+                <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded"
+                    (click)="setSelectedUser('Overall','')"></button>
+            </ng-template>
+
+            <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
+                <div class="p-d-flex" style="width: 70vw; max-height: 50px;">
+                    <button *ngFor="let assignee of assigneeList"
+                        (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
+                        [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+                        [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee">
+                        {{getNameInitials(assignee.assigneeName)}}
+                    </button>
+                </div>
+            </div>
+            <button class="assignee" (click)="handleViewExpandCollapse()">
+                <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
+            </button>
+        </div>
     </section>
 
-    <!-- user filter section -->
-    <section class="p-d-flex p-w-100 p-align-center">
-        <div class="user-filter" [ngClass]="{'show-less': showLess}">
-            <p-button class="p-m-1" [ngClass]="{'selected-user' : selectedUser === 'Overall'}" (click)="setSelectedUser('Overall')"><span class="filter-user">Overall</span></p-button>
-            <p-button  class="p-m-1" *ngFor="let assignee of assigneeList" [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" (click)="setSelectedUser(assignee.assigneeId)"><span class="filter-user">{{assignee.assigneeName}}</span></p-button>
-            <p-button class="p-m-1" *ngIf="!showLess" (click)="setShowLess()">Show fewer...</p-button>
-        </div>
-        <div *ngIf="showLess" class="p-p-3 show-more" [style]="{'height':'62px'}">
-            <p-button class="p-m-1" (click)="setShowLess()">Show More...</p-button>
-        </div>
+    <!-- assignee capacity info -->
+    <section *ngIf="selectedUserInfo" class="selected-user-info">
+        <span class="p-mr-5">
+            <h4 class="p-mb-1 font-grey font-bold">{{selectedUserInfo.assigneeName}}</h4>
+            <p class="p-mt-2 font-bold">{{selectedUserInfo.role}}</p>
+        </span>
+        <sapn *ngFor="let col of columns" class="p-mr-5">
+            <h4 class="p-mb-1 font-grey font-bold">{{col}}</h4>
+            <p class="p-mt-2 font-bold">
+                {{convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],selectedUserInfo.cardDetails[col]['unit'])}}
+                {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !==
+                '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
+                {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
+                '+ selectedUserInfo.cardDetails[col]['unit1'] : ''}} </p>
+        </sapn>
     </section>
 
     <!-- Capacity Info table -->
-   <section class="p-p-3" *ngIf="selectedUser === 'Overall' else userInfo">
-    <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}" (sortFunction)="customSort($event)" [customSort]="true">
-        <ng-template pTemplate="header">
-            <tr>
-                <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col">
-                    {{col}}  <p-sortIcon field="code"></p-sortIcon>
-                </th>
-            </tr>
-            <tr>
-                <th>{{totals['Team Member']}}</th>
-                <th *ngFor="let col of columns">
-                    {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col].unit : ''}}
-                    {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ totals[col].unit1 : ''}}
-                </th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-assignee>
-            <tr>
-                <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
-                <td *ngFor="let col of columns">
-                    {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}} {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-')  ? assignee.cardDetails[col]['unit'] : ''}} 
-                    {{assignee.cardDetails[col]['value1'] ? ' / ' + assignee.cardDetails[col]['value1'] +' '+ assignee.cardDetails[col]['unit1'] : ''}}
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
-   </section>
-
-   <!-- Assignee Issue details -->
-   <ng-template #userInfo>
-    <section class="user-info p-m-2">
-        <h1 [style]="{'text-align': 'center'}">User issue details</h1>
+    <section class="p-p-3 user-info-section" *ngIf="selectedUser === 'Overall' else userInfo">
+        <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}"
+            (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true" scrollHeight="100px">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col">
+                        {{col}} <p-sortIcon field="code"></p-sortIcon>
+                    </th>
+                </tr>
+                <tr>
+                    <th>{{totals['Team Member']}}</th>
+                    <th *ngFor="let col of columns">
+                        {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col]?.unit : ''}}
+                        {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ (totals[col]?.unit1 != 'day' ?
+                        totals[col]?.unit1 : '') : ''}}
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-assignee>
+                <tr>
+                    <td> <span class="user-name">{{assignee.assigneeName}}</span></td>
+                    <td *ngFor="let col of columns">
+                        {{convertToHoursIfTime(assignee.cardDetails[col]['value'],assignee.cardDetails[col]['unit'])}}
+                        {{(assignee.cardDetails[col]['unit'] !== 'day' && assignee.cardDetails[col]['value'] !== '-') ?
+                        assignee.cardDetails[col]['unit'] : ''}}
+                        {{assignee.cardDetails[col]['value1'] ? (' / ' +
+                        convertToHoursIfTime(assignee.cardDetails[col]['value1'],assignee.cardDetails[col]['unit1']) +'
+                        '+ ((assignee.cardDetails[col]['unit1'] !== 'day' && assignee.cardDetails[col]['value1'] !==
+                        '-') ? assignee.cardDetails[col]['unit1'] :'') ): ''}}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </section>
-   </ng-template>
+
+    <!-- Assignee Issue details -->
+    <ng-template #userInfo>
+        <section class="user-info p-m-2">
+            <app-assignee-board [issueDataList]="currentAssigneeissueData"
+                [standUpStatusFilter]="standUpStatusFilter"></app-assignee-board>
+        </section>
+    </ng-template>
 </main>
 <ng-template #noData>
     <div [style]="{'text-align': 'center'}">
-     <h1>No Data Available</h1>
+        <h1>No Data Available</h1>
     </div>
 </ng-template>
-
-

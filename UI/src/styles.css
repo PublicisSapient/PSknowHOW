@@ -143,7 +143,7 @@ a{
 
 body {
   background-color: #dedede;
-  overflow-x: hidden;
+
 }
 
 html {
@@ -306,6 +306,10 @@ h3{
 
 .fnt-size-12 {
   font-size: 12px;
+}
+
+.fnt-size-9{
+  font-size: 9px;
 }
 
 .left-nav-tabs {
@@ -1714,7 +1718,7 @@ a:hover {
   border: 1px solid #757575;
 }
 
-.iteration-dashboard .kpi-card-container .kpi-card-body {
+.iteration-dashboard .kpi-card-body, .backlog-dashboard .kpi-card-body{
   display: flex;
   min-height: 100px !important;
   height: 100% !important;

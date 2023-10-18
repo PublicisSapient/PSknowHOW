@@ -520,4 +520,24 @@ public final class CommonUtils {
 		return resultDate;
 	}
 
+	public static String convertSecondsToDays(int inputSeconds) {
+		if (inputSeconds <= 0) {
+			return "0s";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		int days = inputSeconds / (24 * 3600);
+
+		if (days > 0) {
+			sb.append(days).append('d');
+			inputSeconds %= (days * 24 * 3600);
+		}
+
+		int hours = inputSeconds / 3600;
+		if (hours > 0) {
+			sb.append(' ').append(hours).append('h');
+		}
+		return sb.toString();
+	}
+
 }

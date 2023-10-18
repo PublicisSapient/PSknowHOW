@@ -98,6 +98,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   navigationTabs:Array<object> =[
     {'label':'Iteration Review', 'count': 0,width : 'half',kpis : []},
     {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+    {'label':'Daily Standup', 'count': 0,width : 'full',kpis : []},
   ];
   forzenColumns = ['issue id','issue description'];
   commitmentReliabilityKpi;
@@ -168,13 +169,13 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     /**reset the kpi count */
     this.navigationTabs = this.navigationTabs.map((x) => {
-      if(x['label'] === 'Daily Standup'){
-        return x;
-      }
+      // if(x['label'] === 'Daily Standup'){
+      //   return x;
+      // }
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+      let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
       if(idx != -1) {
         this.navigationTabs[idx]['count']++;
@@ -228,6 +229,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();

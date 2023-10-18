@@ -256,6 +256,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
           }else{
             return (xScale(i+1) + xScale.bandwidth() / 2 - 5)+ 'px';
           }
+          
         })
         .style('top', d => {
           return (yScale(d.value) + 7 ) +'px'

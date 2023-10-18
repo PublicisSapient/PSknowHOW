@@ -96,6 +96,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
+                                this.service.setVisibleSideBar(false);
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }

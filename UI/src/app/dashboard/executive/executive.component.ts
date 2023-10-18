@@ -293,12 +293,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
                         } else {
-
-                            this.groupJiraKpi(kpiIdsForCurrentBoard);
-                           // this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
+                            this.groupJiraKpi(kpiIdsForCurrentBoard);
+                            this.groupBitBucketKpi(kpiIdsForCurrentBoard);
+                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
                         this.createKpiTableHeads(this.selectedtype.toLowerCase());
                         
@@ -964,9 +963,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         selectedIdx = 0;
                     }
                 }
-                if(selectedIdx != -1){
-                    iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
-                }
+                iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
             }
             let filtersApplied = Object.keys(this.colorObj);
             

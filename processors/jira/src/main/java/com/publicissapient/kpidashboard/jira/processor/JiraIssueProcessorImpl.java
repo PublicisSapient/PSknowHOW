@@ -188,6 +188,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 			setEpicLinked(fieldMapping, jiraIssue, fields);
+			setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
@@ -227,6 +228,16 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
+	}
+
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 

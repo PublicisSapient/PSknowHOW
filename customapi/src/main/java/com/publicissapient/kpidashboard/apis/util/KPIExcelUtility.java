@@ -1372,9 +1372,16 @@ public class KPIExcelUtility {
 			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
+
+		if (modalValues!=null && overAllModalValues!=null){
 			modalValues.add(jiraIssueModalObject);
 			overAllModalValues.add(jiraIssueModalObject);
 		}
+		else{
+			modalObjectMap.computeIfPresent(jiraIssue.getNumber(),(k,v)->jiraIssueModalObject);
+		}
+
+	}
 
 	/**
 	 * This Method is used to populate Excel Data for Rejection Refinement KPI

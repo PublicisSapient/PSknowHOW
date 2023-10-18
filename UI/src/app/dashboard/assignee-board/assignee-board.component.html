@@ -1,0 +1,15 @@
+<main class="container">
+    <div class="graph-container" [style.width.%]="graphWidth">
+        <app-daily-scrum-graph [selectedSprintInfo]="currentSprint" [issueDataList]="issueDataList"
+            [standUpStatusFilter]="standUpStatusFilter"></app-daily-scrum-graph>
+    </div>
+    <div class="issue-card-container" *ngIf="showIssueDetails">
+        <div class="issue-nav p-m-2">
+            <p-button label="Previous" class="prev" (click)="onPreviousIssue()"
+                [disabled]="currentIssueIndex === 0"></p-button>
+            <p-button label="Next" class="next" (click)="onNextIssue()"
+                [disabled]="currentIssueIndex === this.issueDataList.length-1"></p-button>
+        </div>
+        <app-issue-card></app-issue-card>
+    </div>
+</main>

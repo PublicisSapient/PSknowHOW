@@ -59,12 +59,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
   kpiCommentsCountObj: object = {};
   kpiSpecificLoader =[];
   durationFilter='Past 2 Weeks';
-  kpiPart1 : any = []
+  kpiPart1 : any = [] 
   kpiPart2 : any = []
   leadTime : object;
   dragableConfigGlobalData;
-  navigationTabs:Array<object>;
-  activeIndex = 0;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -129,12 +127,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }));
 }
   processKpiConfigData(){
-    this.navigationTabs = [
-      {'label':'Summary', 'count': 0,kpis : [],width :'half'},
-      {'label':'Backlog Health', 'count': 0,kpis : [],width :'half'},
-      {'label':'Epic View', 'count': 0,kpis : [],width :'full', fullWidthKpis : []},
-      {'label':'Flow KPIs', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
-    ];
     this.kpiConfigData = {};
     for(let i=0;i<this.configGlobalData?.length; i++){
       if (this.configGlobalData[i]?.shown ===false && this.configGlobalData[i]?.isEnabled === true) {
@@ -156,38 +148,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }else{
       this.leadTime = undefined;
     }
-    this.dragableConfigGlobalData = this.updatedConfigGlobalData;
-    for(let i = 0; i<this.dragableConfigGlobalData?.length; i++){
-      let board = this.dragableConfigGlobalData[i]?.kpiDetail.kpiSubCategory;
-      let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
-        this.navigationTabs[idx]['count']++;
-        this.navigationTabs[idx]['kpis'].push(this.dragableConfigGlobalData[i]);
-      }
-    }
-    if(kpi3?.isEnabled){
-      this.navigationTabs[0]['count']++;
-    }
-
-    this.navigationTabs.map(tabDetails => {
-      if(tabDetails['width'] === 'half'){
-        let fullWidthKPis = [];
-        let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
-            fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
-            halfWithKpis = halfWithKpis.concat(kpiDetails);
-          }
-        })
-        const dataLength = halfWithKpis.length;
-        const middleIndex = Math.floor(dataLength / 2);
-        tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
-        tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
-        tabDetails['fullWidthKpis'] = fullWidthKPis;
-      }
-      return tabDetails;
-    })
+    this.dragableConfigGlobalData = this.updatedConfigGlobalData.filter(kpi=>kpi?.kpiId !== 'kpi3')
+    
+ 
+    // Divide into two parts
+    const dataLength = this.dragableConfigGlobalData.length;
+    const middleIndex = Math.floor(dataLength / 2);
+    this.kpiPart1 = this.dragableConfigGlobalData.slice(0, middleIndex + (dataLength % 2));
+    this.kpiPart2 = this.dragableConfigGlobalData.slice(middleIndex + (dataLength % 2));
 
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
@@ -400,7 +368,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }else{
         this.kpiChartData[kpiId] = [];
       }
-
+      
     }
     if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
       this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
@@ -661,7 +629,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         });
 
         kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
-
+        
         kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
         this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
@@ -867,17 +835,10 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
+  drop(event: CdkDragDrop<string[]>,dragContainer) {
     if(event?.previousIndex !== event.currentIndex) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
-      }
-      this.updatedConfigGlobalData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.updatedConfigGlobalData  = this.updatedConfigGlobalData.concat(tabs['kpis']);
-      })
+      this.updatedConfigGlobalData = [...this.kpiPart1,...this.kpiPart2];
       this.updatedConfigGlobalData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
@@ -885,10 +846,6 @@ export class BacklogComponent implements OnInit, OnDestroy{
       hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
       this.service.kpiListNewOrder.next([this.leadTime,...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
     }
-  }
-
-  handleTabChange(event){
-    this.activeIndex = event.index;
   }
 
   ngOnDestroy() {

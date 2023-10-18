@@ -1,0 +1,548 @@
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import * as d3 from 'd3';
+import { SharedService } from 'src/app/services/shared.service';
+
+@Component({
+  selector: 'app-daily-scrum-graph',
+  templateUrl: './daily-scrum-graph.component.html',
+  styleUrls: ['./daily-scrum-graph.component.css']
+})
+export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
+
+
+  @Input() issueDataList;
+  @Input() selectedSprintInfo;
+  @Input() standUpStatusFilter;
+  elem;
+
+  currentDayIndex;
+  displayModal = false;
+  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.elem = this.viewContainerRef.element.nativeElement;
+    this.draw(this.issueDataList);
+  }
+
+  showLegends() {
+    this.displayModal = !this.displayModal;
+  }
+
+  //generated dates on MM/DD format
+  generateDates() {
+    const currentDate = new Date();
+
+    const startDate = new Date(this.selectedSprintInfo.sprintStartDate);
+    const endDate = new Date(this.selectedSprintInfo.sprintEndDate);
+    const xAxisCoordinates = [];
+    const noOfDaysInCurrentSprint = this.getNoOFDayBetweenStartAndEndDate(startDate, endDate);
+    for (let i = 0; i < noOfDaysInCurrentSprint; i++) {
+      const date = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + i);
+      if (date.toDateString() === currentDate.toDateString()) {
+        this.currentDayIndex = i;
+      }
+      xAxisCoordinates.push(this.formatDate(date));
+    }
+    return xAxisCoordinates;
+  }
+
+  getNoOFDayBetweenStartAndEndDate(startDate, endDate) {
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    return (Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()) - Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) / _MS_PER_DAY + 1;
+  }
+
+  formatDate(date) {
+    return this.pad(date.getMonth() + 1) + '/' + this.pad(date.getDate());
+  }
+
+  pad(s) {
+    return s < 10 ? '0' + s : s;
+  }
+
+  draw(issueList) {
+    const chart = d3.select(this.elem).select('#chart');
+    chart.select('svg').remove();
+    d3.select(this.elem)
+      .select('#dateLine').select('#dateAxis').select('svg').remove();
+    d3.select(this.elem)
+      .select('#issueAxis').select('*').remove();
+
+    const xCoordinates = this.generateDates();
+    const margin = { top: 30, right: 10, bottom: 20, left: 100 };
+    let width = (chart.node().getBoundingClientRect().width < 1200 ? 1200 : chart.node().getBoundingClientRect().width) - margin.left - margin.right;
+    // const height = d3.select(this.elem).node().offsetHeight;
+    const swimLaneHeight = 150;
+    const height = issueList.length * swimLaneHeight;
+
+    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
+    let selectedIssueSubtask = [];
+    const acutalIssueList = [...this.issueDataList];
+    let issueDataList = [...issueList];
+
+    if (issueDataList.length > 15) {
+      width = width + ((issueDataList.length - 14) * 200);
+    }
+
+    const svg = chart
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g')
+      .attr('transform', `translate(${margin.left},0)`);
+
+    const x = d3.scaleBand()
+      .domain(xCoordinates)
+      .range([0, width])
+      .paddingOuter(0)
+    // .tickValues(d3.range(xCoordinates[0], xCoordinates[xCoordinates.length - 1], 3));
+
+    const y = d3.scaleLinear()
+      .domain([0, issueDataList.length + 2])
+      .range([0, height]);
+
+    const initialCoordinate = x(xCoordinates[1]);
+
+    const issueAxis = d3.select(this.elem)
+      .select('#issueAxis')
+      .append('svg')
+      .attr('width', 90)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g');
+
+    const dateLine = d3.select(this.elem)
+      .select('#dateLine').select('#dateAxis')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', 30)
+      .append('g')
+      .attr('transform', `translate(${margin.left + initialCoordinate},0)`);
+
+    //add X-Axis
+    const svgX = dateLine.append('g')
+      .attr('class', 'xAxis')
+      // .attr('transform', `translate(0, ${height})`)
+      .call(d3.axisBottom(x));
+
+    // highlight todays Date
+    if (this.currentDayIndex >= 0) {
+      svg
+        .select('.xAxis')
+        .selectAll(`.tick:nth-of-type(${this.currentDayIndex + 1}) text`)
+        .style('color', '#2741D3')
+        .style('font-weight', 'bold');
+    }
+
+    svg
+      .select('.xAxis')
+      .selectAll(`.tick text`)
+      .style('font-size', '10px');
+
+    const getNameInitials = (name) => {
+      const initials = name?.split(' ').map(d => d[0]);
+      if (initials.length > 2) {
+        return initials?.slice(0, 2).join('').toUpperCase();
+      }
+      return initials?.join('').toUpperCase();
+    };
+
+    const showMarkers = (issueList) => {
+      let self = this;
+      const marker = svg
+        .selectAll('circle.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('parent-data', (d) => JSON.stringify(d))
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
+
+      let currentIssue = {};
+      let parts = marker.selectAll("g.part")
+        .data(() => {
+          console.log([].concat(...issueList.map((d) => Object.keys(d['statusLogGroup']))));
+          return [].concat(...issueList.map((d, index) => Object.keys(d['statusLogGroup'])))
+        })
+        .enter()
+        .append("g")
+        .attr("class", "statusPart")
+
+      // we need to show status change only when tooltip data ie... info about the status change is present in currentIssue
+      // that is why display property takes into account the currentIssue
+      parts.append('circle')
+        .attr('cx', function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+              return x(self.formatDate(new Date(d))) + initialCoordinate / 2
+            } else {
+              return 0;
+            }
+          }
+        })
+        .attr('cy', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i) - 1) / 2 - 20)
+        .attr('r', 5)
+        .style('display', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          let display = 'none'
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+              display = 'block';
+            }
+          }
+          return display;
+        })
+        .style('stroke-width', 1)
+        .attr('stroke', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          return openIssueStatus.includes(currentIssue['Issue Status']) ? '#707070' : '#437495'
+        })
+        .attr('fill', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          return openIssueStatus.includes(currentIssue['Issue Status']) ? '#707070' : '#fff';
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function (event, i) {
+          let d = event.currentTarget.__data__;
+          let data = ``;
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+          }
+
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+
+      let assigneeParts = marker.selectAll("g.part")
+        .data(() => {
+          console.log([].concat(...issueList.map((d) => Object.keys(d['assigneeLogGroup']))));
+          return [].concat(...issueList.map((d, index) => Object.keys(d['assigneeLogGroup'])))
+        })
+        .enter()
+        .append("g")
+        .attr("class", "assigneePart")
+
+      assigneeParts
+        .append('text')
+        .attr('class', 'assigneeChangeText')
+        .attr('height', 10)
+        .attr('width', 100)
+        .style('color', '#437495')
+        .style('font-weight', 'bold')
+        .style('font-size', '10px')
+        .attr('x', function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          if (Object.keys(currentIssue['assigneeLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['assigneeLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && toolTipData !== '') {
+              return x(self.formatDate(new Date(d))) + initialCoordinate / 2
+            } else {
+              return 0;
+            }
+          }
+        })
+        .attr('y', (d, i) => 65)
+        .style('cursor', 'pointer')
+        .text(function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let textData = ``;
+          if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && currentIssue['assigneeLogGroup'][d].length === 1) {
+            textData += `${getNameInitials(currentIssue['assigneeLogGroup'][d][0])}`
+            return textData;
+          } else {
+            if (currentIssue['assigneeLogGroup'][d]) {
+              currentIssue['assigneeLogGroup'][d].forEach((element, index) => {
+                if (index !== currentIssue['assigneeLogGroup'][d].length - 1) {
+                  textData += `${getNameInitials(element)} --> `;
+                } else {
+                  textData += `${getNameInitials(element)}`;
+                }
+              });
+              return textData;
+            }
+          }
+        })
+        .on('mouseover', (d) => {
+          // const data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
+          // showTooltip(data, xValue, yValue);
+        })
+        .on('mouseout', () => {
+          // hideTooltip();
+        });
+
+      // show 'Due Date Exceeded' if status not closed after dueDate
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
+        .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 25)
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>Due date exceeded</p><p>Original Due Date: ${d['Due Date']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+
+      // show QA completed if it exists
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/qa-completed.svg')
+        .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => {
+          console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25);
+          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25;
+        })
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>QA Completed</p><p>Date: ${d['Test-Completed']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+
+      // Show 'Dev Due Date completion' if it exist
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/dev-completed.svg')
+        .style('display', (d) => d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => {
+          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25
+        })
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>Dev Completed</p><p>Date: ${d['Dev-Completion-Date']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+    };
+
+    const showTaskDetail = (issue) => {
+      this.service.setIssueData(issue);
+    }
+
+    const showSubTask = (parentIssue, index,) => {
+      issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
+      console.log(issueDataList);
+      this.draw(issueDataList);
+    };
+
+    // const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue = false) => {
+    const showIssueIdandStatus = (issueList) => {
+      let self = this;
+      //add issue boxes
+      const issueSvg = issueAxis
+        .selectAll('rect.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
+
+      issueSvg.append("rect")
+        .attr("width", '100%')
+        .attr("height", (d, i) => issueList.length <= 1 ? 75 : y(i + 1) - y(i) - 1)
+        .attr("fill", function (d, i) { return i % 2 ? '#FFF' : '#EFEFEF' })
+
+
+      issueSvg
+        .append('foreignObject')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('x', 10)
+        .attr('y', 22)
+        .append('xhtml:div')
+        .html(function (d) {
+          if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
+            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a><i class="fas fa-angle-right p-mr-1"></i>${d['Issue Id']}</a></div>
+                    <div><span class="issueStatus">${d['Issue Status']}</div>`;
+          } else {
+            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+            <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div>`;
+          }
+        })
+        .style('font-weight', 'bold')
+        .style('font-size', '10px')
+        .style('cursor', 'pointer')
+        .on('click', function (event, issue) {
+          let d = issue;
+          if (d && d['subTask']) {
+            selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
+            console.log(d['subTask'], selectedIssueSubtask);
+            let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
+            showSubTask(d, index);
+          }
+          showTaskDetail(d);
+        })
+    };
+
+    //show tooltip
+    const tooltipContainer = d3.select('#chart').select('.tooltip-container');
+    const showTooltip = (data, xVal, yVal) => {
+      tooltipContainer
+        .selectAll('div')
+        .data(data)
+        .join('div')
+        .attr('class', 'tooltip')
+        .style('left', xVal + initialCoordinate / 2 + 'px')
+        .style('top', yVal + 'px')
+        .html(data)
+        .transition()
+        .duration(500)
+        .style('display', 'block')
+        .style('opacity', 1);
+    };
+    const hideTooltip = () => {
+      tooltipContainer
+        .selectAll('.tooltip')
+        .transition()
+        .duration(500)
+        .style('display', 'none')
+        .style('opacity', 0);
+      tooltipContainer.selectAll('.tooltip').remove();
+    };
+
+
+
+    const drawLineForIssue = (issueList) => {
+      let self = this;
+      let line = svg
+        .selectAll('rect.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
+
+      line.append("rect")
+        .attr("width", '90%')
+        .attr("height", (d, i) => issueList.length <= 1 ? 75 : y(i + 1) - y(i) - 1)
+        .attr("fill", function (d, i) { return i % 2 ? '#fff' : '#EFEFEF' })
+        .attr('x', -100)
+        .attr('transform', function (d, i) { return 'translate(0,0)'; });
+
+      line
+        .append('g')
+        .attr('class', 'line')
+        .attr('transform', `translate(0,0)`)
+        .append('svg:line')
+        .attr('x1', function (d, i) { return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2; })
+        .attr('x2', function (d, i) { return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2; })
+        .attr('y1', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y2', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20)
+        .style('stroke', function (d) { return d['Actual-Completion-Date'] ? '#D8D8D8' : '#437495'; })
+        .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
+        .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })
+        .style('fill', 'none')
+        .attr('class', 'gridline')
+        .style('cursor', 'pointer')
+        .on('mouseover', function (event) {
+          d3.select(this)
+            .style('stroke-width', function (d) { return d['isSubtask'] ? 3 : 6; })
+        })
+        .on('mouseout', function (event) {
+          d3.select(this)
+            .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
+        });
+
+      // const issueStatus = line
+      //   .append('g')
+      //   .attr('transform', (d, i) => { return `translate(0,${(y(i + 1) - y(i) - 1) / 2 - 10})` })
+      //   .append('text')
+      //   .attr('height', 10)
+      //   .attr('width', 100)
+      //   .attr('class', 'statusText')
+      //   .attr('x', (d) => x(self.getStartAndEndLinePoints(d)['centerDate']))
+      //   // .attr('x', (d) => openIssueStatus.includes(d['Issue Status']) ? x(self.getStartAndEndLinePoints(d)['centerDate']) + initialCoordinate / 2 + 10 : x(self.getStartAndEndLinePoints(d)['centerDate']) + initialCoordinate / 2)
+      //   .attr('y', (d, i) => (y(i + 1) - y(i) - 1) / 2 - 30)
+      //   .html((d) => `${d['Issue Status']}`)
+      //   .style('font-size', '10px');
+
+      showMarkers(issueList);
+      showIssueIdandStatus(issueList);
+    };
+
+
+
+    // draw lines for each issues and its subtask
+    drawLineForIssue(issueDataList);
+    // for (let i = 0; i < issueDataList.length; i++) {
+    //   drawLineForIssue(issueDataList[i], i, issueDataList[i]['isSubtask']);
+
+    //   // draw lines for subtask
+    //   // if(issueDataList[i]['subTask']){
+    //   //   for(let j=0;j<issueDataList[i]['subTask'].length ; j++){
+    //   //     drawLineForIssue(issueDataList[i]['subTask'][j],(i +j+1*0.5),true);
+    //   //   }
+    //   // }
+    // }
+
+    //draw line for todays date if it exist
+    if (typeof this.currentDayIndex === 'number') {
+      const line = svg
+        .append('g')
+        .attr('transform', `translate(0,0)`)
+        .append('svg:line')
+        .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+        .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+        .attr('y1', height)
+        .attr('y2', 0)
+        .style('stroke', '#dedede')
+        .style('fill', 'none')
+        .attr('class', 'gridline');
+    }
+
+  }
+
+  // get line start and end coordinates
+  getStartAndEndLinePoints(issue) {
+    //calculate startDate
+    let startPoint;
+    if (issue['spill']) {
+      startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
+    } else {
+      startPoint = issue['Actual-Start-Date'] ? new Date(issue['Actual-Start-Date']) : new Date();
+    }
+    //calculate endDate
+    const endPoint = issue['Actual-Completion-Date'] ? new Date(issue['Actual-Completion-Date']) : new Date();
+
+    const noOfDaysBetweenStartandEnd = this.getNoOFDayBetweenStartAndEndDate(startPoint, endPoint);
+
+    const centerDate = new Date(startPoint.getFullYear(), startPoint.getMonth(), startPoint.getDate() + noOfDaysBetweenStartandEnd / 2);
+
+    return { startPoint: this.formatDate(startPoint), endPoint: this.formatDate(endPoint), centerDate: this.formatDate(centerDate) };
+  }
+
+  //check if date 1 is greater than date2
+  compareDates(date1, date2) {
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    if (d1.toDateString() === d2.toDateString()) {
+      return false;
+    }
+    return d1 > d2;
+  }
+
+
+  ngOnDestroy(): void {
+    const chart = d3.select(this.elem).select('#chart');
+    chart.select('svg').remove();
+  }
+}
