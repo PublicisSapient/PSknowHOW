@@ -63,7 +63,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const chart = d3.select(this.elem).select('#chart');
     chart.select('svg').remove();
     d3.select(this.elem)
-      .select('#dateLine').select('*').remove();
+      .select('#dateLine').select('#dateAxis').select('svg').remove();
     d3.select(this.elem)
       .select('#issueAxis').select('*').remove();
 
@@ -110,7 +110,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       .append('g');
 
     const dateLine = d3.select(this.elem)
-      .select('#dateLine')
+      .select('#dateLine').select('#dateAxis')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', 30)
