@@ -233,7 +233,6 @@ public class JiraIssue extends BasicModel implements Cloneable {
 	private List<String> escapedDefectGroup;
 
 	private String boardId;
-	private Set<String> parentStoryId;
 
 	public boolean isDefectRaisedByQA() {
 		return defectRaisedByQA;
