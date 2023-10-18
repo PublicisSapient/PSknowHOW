@@ -3,13 +3,16 @@
 </div>
 
 <div id="chart-main-container">
-    <div id="dateLine"></div>
-    <div id="chart-container">
+    <div id="dateLine">
+        <div id="dateAxis"></div>
+        <div id="chart-container">
         <div id="issueAxis"></div>
         <div id="chart" style="overflow-x: auto;">
             <div class="tooltip-container"></div>
         </div>
     </div>
+    </div>
+    
 </div>
     <div class="modal">
         <p-dialog [(visible)]="displayModal" header="Legends" [modal]="true" [draggable]="true" [resizable]="true">
