@@ -1,6 +1,7 @@
 #chart-main-container {
-    overflow-x: hidden;
     background-color: #fff;
+    height: calc(100vh - 150px);
+    overflow: hidden;
 }
 
 #chart-container {
@@ -8,6 +9,9 @@
     background-color: #fff;
     z-index: 1000;
     position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 80%;
 }
 
 #chart{
@@ -76,13 +80,11 @@
 }
 
 #dateLine {
-    position: sticky;
     top: 0;
     z-index: 999;
     background-color: #fff;
     width: 100%;
     height: 20px;
-    margin-top: 20px;
     margin-left: 10px;
 }
 

@@ -16,6 +16,8 @@
 .issue-card-container{
     flex-basis: 24%;
     border: 1px solid #c0c0c0;
+    height: calc(100vh - 150px);
+    overflow-y: auto;
 }
 
 .issue-nav{
