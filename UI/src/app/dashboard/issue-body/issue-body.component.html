@@ -11,7 +11,7 @@
                 </span>
                 <span>
                     <h4 class="p-mb-1  p-mt-2"  [style]="{'color':'#666666'}">DEV DUE DATE</h4>
-                    <p class="p-mt-1 font-bold">{{issueData['Dev Due Date'] | date:"dd-MMM-yyyy"}}</p>
+                    <p class="p-mt-1 font-bold">{{ issueData['Dev Due Date'] !== "-" ? (issueData['Dev Due Date'] | date:"dd-MMM-yyyy") : "-"}}</p>
                 </span>
             </div>
         </div>

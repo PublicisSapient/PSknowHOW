@@ -1,3 +1,15 @@
+#chart-main-container {
+    overflow-x: hidden;
+    background-color: #fff;
+}
+
+#chart-container {
+    display: flex;
+    background-color: #fff;
+    z-index: 1000;
+    position: relative;
+}
+
 #chart{
     min-width: 100%;
     height: 100%;
@@ -59,4 +71,60 @@
     min-width: 544px;
 }
 
+:host ::ng-deep #issueAxis {
+    width: 11%;
+}
+
+#dateLine {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #fff;
+    width: 100%;
+    height: 20px;
+    margin-top: 20px;
+    margin-left: 10px;
+}
+
+:host ::ng-deep .issueStatus::before {
+    content: '';
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    height: 7px;
+    width: 7px;
+    margin-right: 5px;
+    background-color: #bdbdbd;
+    display: inline-block
+}
+
+:host ::ng-deep .issueStatus.in_progress::before {
+    background-color: #20E24D;
+}
+
+:host ::ng-deep .issueStatus.closed::before {
+    background-color: #3DA3C9;
+}
+
+:host ::ng-deep .issueTypeIcon {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    background-size: cover;
+}
+
+:host ::ng-deep .issueTypeIcon.Task,
+:host ::ng-deep .issueTypeIcon.Studio-Task {
+    background-image: url('/assets/img/Subtask_icon.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Bug,
+:host ::ng-deep .issueTypeIcon.Defect {
+    background-image: url('/assets/img/Bug.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Story{
+    background-image: url('/assets/img/Story.svg');
+}
 

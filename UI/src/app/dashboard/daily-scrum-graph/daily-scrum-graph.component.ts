@@ -21,7 +21,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
-    this.draw(this.issueDataList, '');
+    this.draw(this.issueDataList);
   }
 
   showLegends() {
@@ -59,14 +59,20 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     return s < 10 ? '0' + s : s;
   }
 
-  draw(issueList, selectedIssue) {
+  draw(issueList) {
     const chart = d3.select(this.elem).select('#chart');
     chart.select('svg').remove();
+    d3.select(this.elem)
+      .select('#dateLine').select('*').remove();
+    d3.select(this.elem)
+      .select('#issueAxis').select('*').remove();
 
     const xCoordinates = this.generateDates();
-    const margin = { top: 30, right: 10, bottom: 20, left: 10 };
+    const margin = { top: 30, right: 10, bottom: 20, left: 100 };
     let width = (chart.node().getBoundingClientRect().width < 1200 ? 1200 : chart.node().getBoundingClientRect().width) - margin.left - margin.right;
-    const height = d3.select(this.elem).node().offsetHeight;
+    // const height = d3.select(this.elem).node().offsetHeight;
+    const swimLaneHeight = 150;
+    const height = issueList.length * swimLaneHeight;
 
     const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
     let selectedIssueSubtask = [];
@@ -87,7 +93,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const x = d3.scaleBand()
       .domain(xCoordinates)
       .range([0, width])
-      .paddingOuter(0);
+      .paddingOuter(0)
+    // .tickValues(d3.range(xCoordinates[0], xCoordinates[xCoordinates.length - 1], 3));
 
     const y = d3.scaleLinear()
       .domain([0, issueDataList.length + 2])
@@ -95,8 +102,23 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const initialCoordinate = x(xCoordinates[1]);
 
+    const issueAxis = d3.select(this.elem)
+      .select('#issueAxis')
+      .append('svg')
+      .attr('width', 90)
+      .attr('height', height + margin.top + margin.bottom)
+      .append('g');
+
+    const dateLine = d3.select(this.elem)
+      .select('#dateLine')
+      .append('svg')
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', 30)
+      .append('g')
+      .attr('transform', `translate(${margin.left + initialCoordinate},0)`);
+
     //add X-Axis
-    const svgX = svg.append('g')
+    const svgX = dateLine.append('g')
       .attr('class', 'xAxis')
       // .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(x));
@@ -115,153 +137,201 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       .selectAll(`.tick text`)
       .style('font-size', '10px');
 
-    //draw line for todays date if it exist
-    if (typeof this.currentDayIndex === 'number') {
-      const line = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('svg:line')
-        .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-        .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-        .attr('y1', height)
-        .attr('y2', 0)
-        .style('stroke', '#dedede')
-        .style('fill', 'none')
-        .attr('class', 'gridline');
-    }
-
     const getNameInitials = (name) => {
       const initials = name?.split(' ').map(d => d[0]);
       if (initials.length > 2) {
-        return initials?.map(d => d[0]).slice(0, 2).join('').toUpperCase();
+        return initials?.slice(0, 2).join('').toUpperCase();
       }
       return initials?.join('').toUpperCase();
     };
 
-    const showMarkers = (issue, index) => {
+    const showMarkers = (issueList) => {
+      let self = this;
       const marker = svg
-        .append('g')
-        .attr('class', 'circle-group')
-        .attr('transform', `translate(0,0)`);
+        .selectAll('circle.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('parent-data', (d) => JSON.stringify(d))
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
 
-      //show status transition within sprint dates 'statusLogGroup'
-      Object.keys(issue['statusLogGroup']).forEach(status => {
-        const xValue = x(this.formatDate(new Date(status))) + initialCoordinate / 2;
-        const yValue = y(index);
-        marker.append('circle')
-          .attr('cx', d => xValue)
-          .attr('cy', yValue)
-          .attr('r', 5)
-          .style('stroke-width', 1)
-          .attr('stroke', '#437495')
-          .attr('fill', 'white')
-          .style('cursor', 'pointer')
-          .on('mouseover', () => {
-            const data = `<p>${issue['statusLogGroup'][status].join(' --> ')}</p><p>Date: ${status}</>`;
-            showTooltip(data, xValue, yValue);
-          })
-          .on('mouseout', () => {
-            hideTooltip();
-          });
+      let currentIssue = {};
+      let parts = marker.selectAll("g.part")
+        .data(() => {
+          console.log([].concat(...issueList.map((d) => Object.keys(d['statusLogGroup']))));
+          return [].concat(...issueList.map((d, index) => Object.keys(d['statusLogGroup'])))
+        })
+        .enter()
+        .append("g")
+        .attr("class", "statusPart")
 
-      });
-
-
-      //show assignee status transition within sprint dates 'assigneeLogGroup'
-      Object.keys(issue['assigneeLogGroup']).forEach(d => {
-        const xValue = x(this.formatDate(new Date(d))) + initialCoordinate;
-        const yValue = y(index);
-        let assigneeName = '';
-        if (Array.isArray(issue['assigneeLogGroup'][d])) {
-
-          for (let i = 0; i < issue['assigneeLogGroup'][d].length; i++) {
-            if (issue['assigneeLogGroup'][d].length > 1 && i !== issue['assigneeLogGroup'][d].length - 1) {
-              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]) + ' --> ';
+      // we need to show status change only when tooltip data ie... info about the status change is present in currentIssue
+      // that is why display property takes into account the currentIssue
+      parts.append('circle')
+        .attr('cx', function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+              return x(self.formatDate(new Date(d))) + initialCoordinate / 2
             } else {
-              assigneeName += getNameInitials(issue['assigneeLogGroup'][d][i]);
+              return 0;
             }
-
           }
-        } else {
-          assigneeName = getNameInitials(issue['assigneeLogGroup'][d]);
-        }
-        marker.append('text')
-          .attr('height', 10)
-          .attr('width', 100)
-          .style('color', '#437495')
-          .style('font-weight', 'bold')
-          .style('font-size', '10px')
-          .attr('x', xValue)
-          .attr('y', yValue)
-          .style('cursor', 'pointer')
-          .html(`${assigneeName}`)
-          .on('mouseover', () => {
-            const data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
-            showTooltip(data, xValue, yValue);
-          })
-          .on('mouseout', () => {
-            hideTooltip();
-          });
+        })
+        .attr('cy', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i) - 1) / 2 - 20)
+        .attr('r', 5)
+        .style('display', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          let display = 'none'
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+              display = 'block';
+            }
+          }
+          return display;
+        })
+        .style('stroke-width', 1)
+        .attr('stroke', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          return openIssueStatus.includes(currentIssue['Issue Status']) ? '#707070' : '#437495'
+        })
+        .attr('fill', function (d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          return openIssueStatus.includes(currentIssue['Issue Status']) ? '#707070' : '#fff';
+        })
+        .style('cursor', 'pointer')
+        .on('mouseover', function (event, i) {
+          let d = event.currentTarget.__data__;
+          let data = ``;
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+            data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+          }
 
-      });
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
 
-      //show 'Due Date Exceeded' if status not closed after dueDate
-      if (this.compareDates(new Date(), issue['Due Date']) && !issue['Actual-Completion-Date']) {
-        const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
-        const yValue = y(index);
+      let assigneeParts = marker.selectAll("g.part")
+        .data(() => {
+          console.log([].concat(...issueList.map((d) => Object.keys(d['assigneeLogGroup']))));
+          return [].concat(...issueList.map((d, index) => Object.keys(d['assigneeLogGroup'])))
+        })
+        .enter()
+        .append("g")
+        .attr("class", "assigneePart")
 
-        marker.append('image')
-          .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
-          .attr('width', '50px').attr('height', '50px')
-          .attr('x', xValue - 25)
-          .attr('y', yValue - 25)
-          .style('cursor', 'pointer')
-          .on('mouseover', () => {
-            const data = `<p>Due date exceeded</p><p>Original Due Date: ${issue['Due Date']}</>`;
-            showTooltip(data, xValue, yValue);
-          })
-          .on('mouseout', () => {
-            hideTooltip();
-          });
-      }
+      assigneeParts
+        .append('text')
+        .attr('class', 'assigneeChangeText')
+        .attr('height', 10)
+        .attr('width', 100)
+        .style('color', '#437495')
+        .style('font-weight', 'bold')
+        .style('font-size', '10px')
+        .attr('x', function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let toolTipData = ``;
+          if (Object.keys(currentIssue['assigneeLogGroup']).includes(d)) {
+            toolTipData += `<p>${currentIssue['assigneeLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && toolTipData !== '') {
+              return x(self.formatDate(new Date(d))) + initialCoordinate / 2
+            } else {
+              return 0;
+            }
+          }
+        })
+        .attr('y', (d, i) => 65)
+        .style('cursor', 'pointer')
+        .text(function (d, i) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          let textData = ``;
+          if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && currentIssue['assigneeLogGroup'][d].length === 1) {
+            textData += `${getNameInitials(currentIssue['assigneeLogGroup'][d][0])}`
+            return textData;
+          } else {
+            if (currentIssue['assigneeLogGroup'][d]) {
+              currentIssue['assigneeLogGroup'][d].forEach((element, index) => {
+                if (index !== currentIssue['assigneeLogGroup'][d].length - 1) {
+                  textData += `${getNameInitials(element)} --> `;
+                } else {
+                  textData += `${getNameInitials(element)}`;
+                }
+              });
+              return textData;
+            }
+          }
+        })
+        .on('mouseover', (d) => {
+          // const data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
+          // showTooltip(data, xValue, yValue);
+        })
+        .on('mouseout', () => {
+          // hideTooltip();
+        });
 
-      //Show 'Dev Due Date completion' if it exist
-      if (issue['Dev-Completion-Date'] !== '-' && this.compareDates(issue['Dev-Completion-Date'], this.selectedSprintInfo.sprintStartDate) && this.compareDates(this.selectedSprintInfo.sprintEndDate, issue['Dev-Completion-Date'])) {
-        const xValue = x(this.formatDate(new Date(issue['Dev-Completion-Date']))) + initialCoordinate / 2;
-        const yValue = y(index);
-        marker.append('image')
-          .attr('xlink:href', '../../../assets/img/dev-completed.svg')
-          .attr('width', '50px').attr('height', '50px')
-          .attr('x', xValue - 25)
-          .attr('y', yValue - 25)
-          .style('cursor', 'pointer')
-          .on('mouseover', () => {
-            const data = `<p>Dev Completed</p><p>Original Due Date: ${issue['Dev-Completion-Date']}</>`;
-            showTooltip(data, xValue, yValue);
-          })
-          .on('mouseout', () => {
-            hideTooltip();
-          });
-      }
+      // show 'Due Date Exceeded' if status not closed after dueDate
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
+        .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 25)
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>Due date exceeded</p><p>Original Due Date: ${d['Due Date']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
 
-      // show QA completed ifit exist
-      if (issue['Test-Completed'] !== '-' && this.compareDates(issue['Test-Completed'], this.selectedSprintInfo.sprintStartDate) && this.compareDates(this.selectedSprintInfo.sprintEndDate, issue['Test-Completed'])) {
-        const xValue = x(this.formatDate(new Date(issue['Test-Completed']))) + initialCoordinate / 2;
-        const yValue = y(index);
-        marker.append('image')
-          .attr('xlink:href', '../../../assets/img/qa-completed.svg')
-          .attr('width', '50px').attr('height', '50px')
-          .attr('x', xValue - 25)
-          .attr('y', yValue - 25)
-          .style('cursor', 'pointer')
-          .on('mouseover', () => {
-            const data = `<p>QA Completed</p><p>Date: ${issue['Test-Completed']}</>`;
-            showTooltip(data, xValue, yValue);
-          })
-          .on('mouseout', () => {
-            hideTooltip();
-          });
-      }
+      // show QA completed if it exists
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/qa-completed.svg')
+        .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => {
+          console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25);
+          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25;
+        })
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>QA Completed</p><p>Date: ${d['Test-Completed']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+
+      // Show 'Dev Due Date completion' if it exist
+      marker.append('image')
+        .attr('xlink:href', '../../../assets/img/dev-completed.svg')
+        .style('display', (d) => d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none')
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => {
+          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25
+        })
+        .attr('y', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>Dev Completed</p><p>Date: ${d['Dev-Completion-Date']}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
     };
 
     const showTaskDetail = (issue) => {
@@ -269,63 +339,58 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     }
 
     const showSubTask = (parentIssue, index,) => {
-      if (selectedIssue === parentIssue['Issue Id']) {
-        selectedIssue = '';
-        selectedIssueSubtask = [];
-        issueDataList = acutalIssueList;
-        this.draw(issueDataList, '');
-      } else if (selectedIssue && selectedIssue !== parentIssue['Issue Id']) {
-        issueDataList = acutalIssueList;
-        issueDataList.splice(index, 0, ...selectedIssueSubtask);
-        console.log(issueDataList);
-        this.draw(issueDataList, parentIssue['Issue Id']);
-      } else {
-        console.log(index, selectedIssueSubtask, issueDataList, selectedIssue);
-        issueDataList.splice(index, 0, ...selectedIssueSubtask);
-        console.log(issueDataList);
-        this.draw(issueDataList, parentIssue['Issue Id']);
-      }
+      issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
+      console.log(issueDataList);
+      this.draw(issueDataList);
     };
 
-    const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue = false) => {
+    // const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue = false) => {
+    const showIssueIdandStatus = (issueList) => {
+      let self = this;
+      //add issue boxes
+      const issueSvg = issueAxis
+        .selectAll('rect.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
 
-      const issueId = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('text')
-        .attr('height', 10)
-        .attr('width', 100)
-        .attr('x', isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
-        .attr('y', isOpenIssue ? y(i) - 10 : y(i) - 15)
-        .html(`${issue['Issue Id']}`)
+      issueSvg.append("rect")
+        .attr("width", '100%')
+        .attr("height", (d, i) => issueList.length <= 1 ? 75 : y(i + 1) - y(i) - 1)
+        .attr("fill", function (d, i) { return i % 2 ? '#FFF' : '#EFEFEF' })
+
+
+      issueSvg
+        .append('foreignObject')
+        .attr('width', '100%')
+        .attr('height', '100%')
+        .attr('x', 10)
+        .attr('y', 22)
+        .append('xhtml:div')
+        .html(function (d) {
+          if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
+            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a><i class="fas fa-angle-right p-mr-1"></i>${d['Issue Id']}</a></div>
+                    <div><span class="issueStatus">${d['Issue Status']}</div>`;
+          } else {
+            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+            <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div>`;
+          }
+        })
         .style('font-weight', 'bold')
         .style('font-size', '10px')
         .style('cursor', 'pointer')
-        .on('click', function () {
-
-          if (issue['subTask']) {
-            selectedIssueSubtask = issue['subTask'].map(d => ({ ...d, isSubtask: true }));
-            console.log(issue['subTask'], selectedIssueSubtask);
-            showSubTask(issue, i);
+        .on('click', function (event, issue) {
+          let d = issue;
+          if (d && d['subTask']) {
+            selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
+            console.log(d['subTask'], selectedIssueSubtask);
+            let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
+            showSubTask(d, index);
           }
-
-          showTaskDetail(issue);
-        });
-
-      const issUeStatus = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('text')
-        .attr('height', 10)
-        .attr('width', 100)
-        // .attr('x', issue['Actual-Start-Date'] ? x(centerDate) +initialCoordinate/2 : x(centerDate) +initialCoordinate/2 + 30)
-        .attr('x', isOpenIssue ? x(centerDate) + initialCoordinate / 2 + 10 : x(centerDate) + initialCoordinate / 2)
-        .attr('y', isOpenIssue ? y(i) + 5 : y(i) + 18)
-        .html(`${issue['Issue Status']}`)
-        .style('font-size', '10px');
-
-
-
+          showTaskDetail(d);
+        })
     };
 
     //show tooltip
@@ -356,72 +421,93 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
 
 
-    const drawLineForIssue = (issue, i, isSubTask) => {
-      const { startPoint, endPoint, centerDate } = this.getStartAndEndLinePoints(issue);
-      // console.log(startPoint,endPoint,issue['Issue Id']);
-      if (startPoint && endPoint && !openIssueStatus.includes(issue['Issue Status'])) {
-        const lineColor = issue['Actual-Completion-Date'] ? '#D8D8D8' : '#437495';
-        const lineType = issue['spill'] ? '4,4' : '0,0';
+    const drawLineForIssue = (issueList) => {
+      let self = this;
+      let line = svg
+        .selectAll('rect.some-class')
+        .data(issueList)
+        .enter()
+        .append("g")
+        .attr('class', 'box')
+        .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
 
-        const line = svg
-          .append('g')
-          .attr('class', 'line')
-          .attr('transform', `translate(0,0)`)
-          .append('svg:line')
-          .attr('x1', issue['spill'] ? x(startPoint) - initialCoordinate : x(startPoint) + initialCoordinate / 2)
-          .attr('x2', x(endPoint) + initialCoordinate / 2)
-          .attr('y1', y(i + 1))
-          .attr('y2', y(i + 1))
-          .style('stroke', lineColor)
-          .style('stroke-width', isSubTask ? 1 : 4)
-          .style('stroke-dasharray', lineType)
-          .style('fill', 'none')
-          .attr('class', 'gridline')
-          .style('cursor', 'pointer')
-          .on('mouseover', function (event) {
-            d3.select(this)
-              .style('stroke-width', isSubTask ? 3 : 6);
-          })
-          .on('mouseout', function (event) {
-            d3.select(this)
-              .style('stroke-width', isSubTask ? 1 : 4);
-          });
+      line.append("rect")
+        .attr("width", '90%')
+        .attr("height", (d, i) => issueList.length <= 1 ? 75 : y(i + 1) - y(i) - 1)
+        .attr("fill", function (d, i) { return i % 2 ? '#fff' : '#EFEFEF' })
+        .attr('x', -100)
+        .attr('transform', function (d, i) { return 'translate(0,0)'; });
 
-        showMarkers(issue, i + 1);
-        showIssueIdandStatus(startPoint, issue, i + 1, false);
+      line
+        .append('g')
+        .attr('class', 'line')
+        .attr('transform', `translate(0,0)`)
+        .append('svg:line')
+        .attr('x1', function (d, i) { return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2; })
+        .attr('x2', function (d, i) { return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2; })
+        .attr('y1', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y2', (d, i) => issueList.length <= 1 ? 35 : (y(i + 1) - y(i)) / 2 - 20)
+        .style('stroke', function (d) { return d['Actual-Completion-Date'] ? '#D8D8D8' : '#437495'; })
+        .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
+        .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })
+        .style('fill', 'none')
+        .attr('class', 'gridline')
+        .style('cursor', 'pointer')
+        .on('mouseover', function (event) {
+          d3.select(this)
+            .style('stroke-width', function (d) { return d['isSubtask'] ? 3 : 6; })
+        })
+        .on('mouseout', function (event) {
+          d3.select(this)
+            .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
+        });
 
-      } else if (openIssueStatus.includes(issue['Issue Status'])) {
-        //draw circle to represent issue
-        const xValue = x(this.formatDate(new Date())) + initialCoordinate / 2;
-        const yValue = y(i + 1);
+      // const issueStatus = line
+      //   .append('g')
+      //   .attr('transform', (d, i) => { return `translate(0,${(y(i + 1) - y(i) - 1) / 2 - 10})` })
+      //   .append('text')
+      //   .attr('height', 10)
+      //   .attr('width', 100)
+      //   .attr('class', 'statusText')
+      //   .attr('x', (d) => x(self.getStartAndEndLinePoints(d)['centerDate']))
+      //   // .attr('x', (d) => openIssueStatus.includes(d['Issue Status']) ? x(self.getStartAndEndLinePoints(d)['centerDate']) + initialCoordinate / 2 + 10 : x(self.getStartAndEndLinePoints(d)['centerDate']) + initialCoordinate / 2)
+      //   .attr('y', (d, i) => (y(i + 1) - y(i) - 1) / 2 - 30)
+      //   .html((d) => `${d['Issue Status']}`)
+      //   .style('font-size', '10px');
 
-        svg.append('g')
-          .attr('transform', `translate(0,0)`)
-          .append('circle')
-          .attr('cx', d => xValue)
-          .attr('cy', yValue)
-          .attr('r', 5)
-          .style('stroke-width', 1)
-          .attr('stroke', '#707070')
-          .attr('fill', '#707070');
-        showIssueIdandStatus(this.formatDate(new Date()), issue, i + 1, true);
-      }
+      showMarkers(issueList);
+      showIssueIdandStatus(issueList);
     };
 
 
 
     // draw lines for each issues and its subtask
-    for (let i = 0; i < issueDataList.length; i++) {
-      drawLineForIssue(issueDataList[i], i, issueDataList[i]['isSubtask']);
+    drawLineForIssue(issueDataList);
+    // for (let i = 0; i < issueDataList.length; i++) {
+    //   drawLineForIssue(issueDataList[i], i, issueDataList[i]['isSubtask']);
 
-      // draw lines for subtask
-      // if(issueDataList[i]['subTask']){
-      //   for(let j=0;j<issueDataList[i]['subTask'].length ; j++){
-      //     drawLineForIssue(issueDataList[i]['subTask'][j],(i +j+1*0.5),true);
-      //   }
-      // }
+    //   // draw lines for subtask
+    //   // if(issueDataList[i]['subTask']){
+    //   //   for(let j=0;j<issueDataList[i]['subTask'].length ; j++){
+    //   //     drawLineForIssue(issueDataList[i]['subTask'][j],(i +j+1*0.5),true);
+    //   //   }
+    //   // }
+    // }
+
+    //draw line for todays date if it exist
+    if (typeof this.currentDayIndex === 'number') {
+      const line = svg
+        .append('g')
+        .attr('transform', `translate(0,0)`)
+        .append('svg:line')
+        .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+        .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+        .attr('y1', height)
+        .attr('y2', 0)
+        .style('stroke', '#dedede')
+        .style('fill', 'none')
+        .attr('class', 'gridline');
     }
-
 
   }
 
