@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import lombok.Data;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SprintIssue implements Cloneable, Serializable {
+public class SprintIssue implements Cloneable {
 	private String number;
 	private String originBoardId;
 	private String priority;

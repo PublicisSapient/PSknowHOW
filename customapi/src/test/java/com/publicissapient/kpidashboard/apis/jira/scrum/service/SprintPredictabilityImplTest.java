@@ -2,10 +2,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -15,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.junit.After;
@@ -59,7 +54,6 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintPredictabilityImplTest {
@@ -114,8 +108,6 @@ public class SprintPredictabilityImplTest {
 
 	@Mock
 	private JiraServiceR jiraKPIService;
-	@Mock
-	private SprintRepositoryCustom sprintRepositoryCustom;
 
 	@Before
 	public void setup() {
@@ -156,7 +148,6 @@ public class SprintPredictabilityImplTest {
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
-
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("defectRemovalEfficiency", "percentile");
 		sprintStatusList.add(SprintDetails.SPRINT_STATE_CLOSED);
@@ -180,16 +171,14 @@ public class SprintPredictabilityImplTest {
 		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(),
-				anyList(),anyLong())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
-        when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
+
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
-		Map<ObjectId, List<SprintDetails>> expectedDuplicateIssues = new HashMap<>();
-		expectedDuplicateIssues.put(new ObjectId("6335363749794a18e8a4479b"),sprintDetailsList.stream().collect(Collectors.toList()));
 
 		resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetailsList);
 
@@ -209,8 +198,8 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(),
-				anyList(),anyLong())).thenReturn(sprintDetailsList);
+		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+				sprintStatusList)).thenReturn(sprintDetailsList);
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
@@ -250,7 +239,7 @@ public class SprintPredictabilityImplTest {
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("Azure Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
+			assertThat("Azure Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (Exception exception) {
 		}
 	}
@@ -283,42 +272,8 @@ public class SprintPredictabilityImplTest {
 		try {
 			KpiElement kpiElement = sprintPredictability.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(0));
+			assertThat("DRE Value :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
 		} catch (Exception exception) {
 		}
-	}
-
-	@Test
-	public void testFetchKPIDataFromDbData1() throws ApplicationException{
-
-		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
-		List<Node> leafNodeList = new ArrayList<>();
-		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		String startDate = leafNodeList.get(0).getSprintFilter().getStartDate();
-		String endDate = leafNodeList.get(leafNodeList.size() - 1).getSprintFilter().getEndDate();
-
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(anySet(),
-				anyList(),anyLong())).thenReturn(sprintDetailsList);
-
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
-				.thenReturn(sprintWiseStoryList);
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
-		Map<String, Object> resultListMap = new HashMap<>();
-		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
-//		Map<ObjectId, List<SprintDetails>> expectedDuplicateIssues = new HashMap<>();
-//		expectedDuplicateIssues.put(new ObjectId("6335363749794a18e8a4479b"),sprintDetailsList.stream().collect(Collectors.toList()));
-
-		resultListMap.put(SPRINT_WISE_SPRINT_DETAILS, sprintDetailsList);
-
-		Map<ObjectId, Set<String>> duplicateIssues = new HashMap<>();
-		Set<String> set = new HashSet<>();
-		set.add("6335363749794a18e8a4479b");
-		duplicateIssues.put(new ObjectId("6335363749794a18e8a4479b"),set);
-		when(kpiHelperService.getProjectWiseTotalSprintDetail(anyMap())).thenReturn(duplicateIssues);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-
-		Map<String, Object> sprintWisePredictability = sprintPredictability.fetchKPIDataFromDb(leafNodeList, startDate,
-				endDate, kpiRequest);
 	}
 }

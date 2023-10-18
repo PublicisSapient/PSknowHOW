@@ -252,7 +252,7 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		jiraIssueCustomHistory.setBasicProjectConfigId("676987987897");
 		jiraIssueCustomHistoryList.add(jiraIssueCustomHistory);
 		when(featureCustomHistoryRepo.findByStoryIDAndBasicProjectConfigId(testStoryId, "676987987897"))
-				.thenReturn(jiraIssueCustomHistoryList.get(0));
+				.thenReturn(jiraIssueCustomHistoryList);
 		assertEquals("Expected feature ID matches actual feature ID", testStoryId,
 				jiraIssueCustomHistoryList.get(0).getStoryID());
 	}

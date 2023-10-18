@@ -175,7 +175,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       return { ...x, count: 0};
     });
     for(let i = 0; i<this.upDatedConfigData?.length; i++){
-      let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
+      let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
       if(idx != -1) {
         this.navigationTabs[idx]['count']++;
@@ -229,6 +229,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
+    this.activeIndex =0;
     if(this.service.getDashConfigData()){
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();

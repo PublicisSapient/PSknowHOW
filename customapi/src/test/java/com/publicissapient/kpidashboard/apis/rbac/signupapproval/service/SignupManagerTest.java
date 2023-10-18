@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,8 +50,6 @@ public class SignupManagerTest {
 	CommonService commonService;
 	@Mock
 	private CustomApiConfig customApiConfig;
-	@Mock
-	private NotificationService notificationService;
 
 	@Test
 	public void testRejectAccessRequestSuccess() throws Exception {

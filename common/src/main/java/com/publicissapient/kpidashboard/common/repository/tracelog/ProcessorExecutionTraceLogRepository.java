@@ -17,7 +17,6 @@
 
 package com.publicissapient.kpidashboard.common.repository.tracelog;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -39,7 +38,4 @@ public interface ProcessorExecutionTraceLogRepository extends MongoRepository<Pr
 
 	void deleteByBasicProjectConfigIdAndProcessorName(String basicProjectConfigId, String toolName);
 
-    Optional<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdAndBoardId(String toolName, String basicProjectConfigId, String boardId);
-
-	List<ProcessorExecutionTraceLog> findByProcessorNameAndBasicProjectConfigIdIn(String toolName, List<String> basicProjectConfigIdList);
 }

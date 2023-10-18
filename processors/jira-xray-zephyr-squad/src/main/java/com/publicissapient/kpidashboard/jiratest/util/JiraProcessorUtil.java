@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class JiraProcessorUtil {
 
+	private static final JiraProcessorUtil INSTANCE = new JiraProcessorUtil();
 	private static final String NULL_STR = "null";
 
 	private JiraProcessorUtil() {
@@ -114,6 +115,22 @@ public final class JiraProcessorUtil {
 		stringBuilder.append(") ORDER BY updated DESC");
 
 		return stringBuilder.toString();
+	}
+
+	/**
+	 * append pre and post query
+	 *
+	 * @param preQuery
+	 * @param postQuery
+	 * @return appended query
+	 */
+	private static String appendDateQuery(String preQuery, String postQuery) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(preQuery);
+		sb.append(" ");
+		sb.append(postQuery);
+		sb.append(" ORDER BY updated DESC");
+		return sb.toString();
 	}
 
 }

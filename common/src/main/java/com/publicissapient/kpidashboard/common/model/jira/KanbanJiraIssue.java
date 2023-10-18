@@ -180,5 +180,4 @@ public class KanbanJiraIssue extends BasicModel {
 
 	private String originalType;
 	private String epicLinked;
-	private String boardId;
 }

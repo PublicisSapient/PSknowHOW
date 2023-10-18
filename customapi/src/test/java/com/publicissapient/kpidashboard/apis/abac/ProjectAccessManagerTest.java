@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,8 +96,6 @@ public class ProjectAccessManagerTest {
 	HierarchyLevelService hierarchyLevelService;
 	@Mock
 	TokenAuthenticationService tokenAuthenticationService;
-	@Mock
-	NotificationService notificationService;
 
 	@Test
 	public void testCreateAccessRequest_hasPendingAccessRequest() {

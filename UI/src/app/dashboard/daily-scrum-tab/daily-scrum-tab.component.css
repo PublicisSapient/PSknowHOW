@@ -6,6 +6,7 @@
 
 :host ::ng-deep .expandCollapseModal .p-dialog-content{
     padding: 0;
+    overflow-y: hidden;
 }
 
 :host ::ng-deep .expandCollapseModal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable{
@@ -16,6 +17,6 @@
 }
 
 :host ::ng-deep .expandCollapseModal .container {
-    max-height: 100vh;
-    height: 100vh;
+    max-height: calc(100vh);
+    height: calc(100vh);
 }

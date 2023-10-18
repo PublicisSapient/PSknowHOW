@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +49,6 @@ public class FeedbackServiceImplTest {
 	private AuthenticationRepository authenticationRepository;
 	@Mock
 	private GlobalConfigRepository globalConfigRepository;
-	@Mock
-	private NotificationService notificationService;
 
 	/**
 	 * method includes preprocesses for test cases

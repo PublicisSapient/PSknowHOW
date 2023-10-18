@@ -43,5 +43,4 @@ public class AssigneeDetails extends BasicModel {
 	private String basicProjectConfigId;
 	private String source;
 	private Set<Assignee> assignee;
-	private int assigneeSequence;
 }

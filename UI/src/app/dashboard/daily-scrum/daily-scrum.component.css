@@ -5,7 +5,7 @@
     position: relative;
     margin: 0.5rem 0.25rem;
     max-height: calc(100vh - 265px);
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
 .filter-header,

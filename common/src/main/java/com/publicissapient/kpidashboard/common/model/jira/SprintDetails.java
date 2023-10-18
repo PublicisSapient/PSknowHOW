@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.common.model.jira;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +39,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "sprint_details")
-public class SprintDetails extends BasicModel implements Cloneable, Serializable {
+public class SprintDetails extends BasicModel implements Cloneable{
 
 	public static final String SPRINT_STATE_CLOSED = "CLOSED";
 	public static final String SPRINT_STATE_ACTIVE = "ACTIVE";

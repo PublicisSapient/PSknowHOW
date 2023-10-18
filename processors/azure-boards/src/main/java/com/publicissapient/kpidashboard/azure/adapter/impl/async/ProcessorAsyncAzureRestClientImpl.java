@@ -499,6 +499,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 					sprintWiseItemIdList.add(itemId);
 				}
 			}
+			// } catch (IOException e) {
+			// log.error("Error while parsing getUpdate API", e.getMessage());
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}

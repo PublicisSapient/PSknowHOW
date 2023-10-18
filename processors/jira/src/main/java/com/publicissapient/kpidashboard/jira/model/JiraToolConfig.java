@@ -39,6 +39,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JiraToolConfig {
+
 	private String basicProjectConfigId;
 	private Optional<Connection> connection;
 	private String projectId;
