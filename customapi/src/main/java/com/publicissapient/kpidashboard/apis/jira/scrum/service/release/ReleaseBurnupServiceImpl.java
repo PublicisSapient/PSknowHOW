@@ -55,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -135,7 +136,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
+			log.info("Release BurnUp -> Requested release : {}", leafNode.getName());
 
 			List<String> releaseList = getReleaseList();
 			if (CollectionUtils.isNotEmpty(releaseList)) {
@@ -362,7 +363,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				}
 			} else {
 				// populating release scope vs release progress followed by its prediction on
-				// avg completion
+				// avg completion rate
 				double avgIssueCount = 0L;
 				double avgStoryPoint = 0d;
 				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap);
@@ -400,7 +401,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				predictionDataMap.put(ISSUE_COUNT_PREDICTION, issueCountPrediction);
 				predictionDataMap.put(ISSUE_SIZE_PREDICTION, issueSizePrediction);
 				boolean isPredictionBoundary = true; // used to check and add data point of release
-													 // scope,progress,prediction
+													 // scope,progress,prediction at boundary
 				for (int i = 0; i < range && !startLocalDate.isAfter(predictionEndDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
 					DataCountGroup issueSize = new DataCountGroup();
@@ -459,7 +460,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (!startLocalDate.isBefore(LocalDate.now()) && MapUtils.isNotEmpty(averageDataMap)) {
 			issueCountPrediction = (double) predictionDataMap.get(ISSUE_COUNT_PREDICTION);
 			issueSizePrediction = (double) predictionDataMap.get(ISSUE_SIZE_PREDICTION);
-			long daysInterval = ChronoUnit.DAYS.between(dateRange.getStartDate(), dateRange.getEndDate()) + 1;
+			long daysInterval = (long) CommonUtils.getWorkingDays(dateRange.getStartDate(), dateRange.getEndDate()) + 1;
 			if (!isPredictionBoundary) {
 				// cal the next issueCount/Sp for prediction data
 				issueCountPrediction = roundingOff(
@@ -506,7 +507,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (avgStoryPoint != 0) {
 			timeRequiredForSp = (long) (remainingSp / avgStoryPoint);
 		}
-		return LocalDate.now().plusDays(Math.max(timeRequiredForSp, timeRequiredForIssueCount));
+		LocalDate predictionEnd = LocalDate.now();
+		long maxAxisLimit = Math.max(timeRequiredForSp, timeRequiredForIssueCount);
+		while (maxAxisLimit > 0) {
+			predictionEnd = CommonUtils.getNextWorkingDate(predictionEnd, 1);
+			maxAxisLimit--;
+		}
+		return predictionEnd;
 
 	}
 
@@ -530,8 +537,11 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 
 		// count of days from where user want to cal avg
 		Integer startDateCount = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0);
-		LocalDate predictionStartDate = startLocalDate.plusDays(startDateCount);
-
+		LocalDate predictionStartDate = startLocalDate;
+		while (startDateCount > 0) {
+			predictionStartDate = CommonUtils.getNextWorkingDate(predictionStartDate, 1);
+			startDateCount--;
+		}
 		LocalDate currentDate = predictionStartDate;
 		List<JiraIssue> completedIssuesTillToday = new ArrayList<>();
 		// completed issue between prediction start date and today both inclusive
@@ -631,7 +641,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			duration = CommonConstant.MONTH;
 		}
 		// added+1 to add the end date as well
-		else if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > DAYS_RANGE) {
+		else if (CommonUtils.getWorkingDays(startLocalDate, endLocalDate) + 1 > DAYS_RANGE) {
 			range = ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.WEEK;
 		} else {
@@ -918,7 +928,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		} else if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 			currentDate = currentDate.plusWeeks(1);
 		} else {
-			currentDate = currentDate.plusDays(1);
+			currentDate = CommonUtils.getNextWorkingDate(currentDate, 1);
 		}
 		return currentDate;
 	}

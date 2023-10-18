@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -502,4 +503,21 @@ public final class CommonUtils {
 		}
 		return returnString.toString();
 	}
+
+	/**
+	 * Method to get next working date i.e excluding sat sun
+	 * @param currentDate currentDate
+	 * @param daysToAdd count of days to add
+	 * @return
+	 */
+	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
+		java.time.LocalDate resultDate = currentDate.plusDays(daysToAdd);
+
+		while (resultDate.getDayOfWeek() == DayOfWeek.SATURDAY || resultDate.getDayOfWeek() == DayOfWeek.SUNDAY) {
+			resultDate = resultDate.plusDays(1);
+		}
+
+		return resultDate;
+	}
+
 }
