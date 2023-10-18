@@ -185,8 +185,7 @@ public interface JiraIssueRepository
 	 */
 	List<JiraIssue> findByBasicProjectConfigIdAndOriginalTypeIn(String basicProjectConfigId, List<String> typeName);
 
-	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
-			Set<String> parentStoryIds, List<String> originalTypes);
+    List<JiraIssue> findByBasicProjectConfigId(String basicProjectConfigId);
 
 	/**
 	 * Find set of jira Issues of particular types
@@ -201,6 +200,8 @@ public interface JiraIssueRepository
 	 */
 	@Query(value = "{ 'number' : { $in: ?0 }, 'basicProjectConfigId' : ?1, 'typeName' : ?2  }", fields = "{ 'number' : 1, 'basicProjectConfigId' : 1,'url':1, 'name':1, 'status':1 }")
 	Set<JiraIssue> findNumberInAndBasicProjectConfigIdAndTypeName(List<String> numberIds, String basicProjectConfigId,
-																  String typeName);
+			String typeName);
 
+	Set<JiraIssue> findByBasicProjectConfigIdAndParentStoryIdInAndOriginalTypeIn(String configId,
+			Set<String> parentStoryIds, List<String> originalTypes);
 }
