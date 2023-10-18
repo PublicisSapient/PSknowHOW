@@ -507,7 +507,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (avgStoryPoint != 0) {
 			timeRequiredForSp = (long) (remainingSp / avgStoryPoint);
 		}
-		return CommonUtils.getNextWorkingDate(LocalDate.now(), Math.max(timeRequiredForSp, timeRequiredForIssueCount));
+		LocalDate predictionEnd = LocalDate.now();
+		long maxAxisLimit = Math.max(timeRequiredForSp, timeRequiredForIssueCount);
+		while (maxAxisLimit > 0) {
+			predictionEnd = CommonUtils.getNextWorkingDate(predictionEnd, 1);
+			maxAxisLimit--;
+		}
+		return predictionEnd;
 
 	}
 
