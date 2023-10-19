@@ -95,7 +95,7 @@
 }
 
 #dateAxis {
-    background-color: transparent;
+    background-color: #FFF;
     position: sticky;
     z-index: 1001;
     top: 0;
@@ -127,6 +127,7 @@
     margin-top: 5px;
     display: inline-block;
     background-size: cover;
+    margin-bottom: -3px;
 }
 
 :host ::ng-deep .issueTypeIcon.Task,

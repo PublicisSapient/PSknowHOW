@@ -106,7 +106,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     // .tickValues(d3.range(xCoordinates[0], xCoordinates[xCoordinates.length - 1], 3));
 
     const y = d3.scaleLinear()
-      .domain([0, issueDataList.length + 2])
+      .domain([0, issueList.length + 2])
       .range([0, height]);
 
     const initialCoordinate = x(xCoordinates[1]);
@@ -190,7 +190,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('cy', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i) - 1) / 2)
+        .attr('cy', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i) - 1) / 2)
         .attr('r', 5)
         .style('display', function (d) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -275,7 +275,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('y', (d, i) => 50)
+        .attr('y', (d, i) => swimLaneHeight / 2 - 15)
         .style('cursor', 'pointer')
         .text(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -296,12 +296,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .on('mouseover', (d) => {
-          // const data = `<p>${issue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
-          // showTooltip(data, xValue, yValue);
+        .on('mouseover', function (event, d) {
+          currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+          const data = `<p>${currentIssue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
+          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
         })
         .on('mouseout', () => {
-          // hideTooltip();
+          hideTooltip();
         });
 
       // show 'Due Date Exceeded' if status not closed after dueDate
@@ -310,7 +311,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 25)
-        .attr('y', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -330,7 +331,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25);
           return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25;
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -349,7 +350,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('x', (d) => {
           return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -366,7 +367,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     }
 
     const showSubTask = (parentIssue, index,) => {
-      
+
       selectedIssueSubtask.forEach((task) => {
         let index = issueDataList.findIndex(obj => obj['Issue Id'] === task['Issue Id']);
         if (index !== -1) {
@@ -404,20 +405,23 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('width', '100%')
         .attr('height', '100%')
         .attr('x', 5)
-        .attr('y', 10)
+        .attr('y', 0)
         .append('xhtml:div')
         .html(function (d) {
           if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
-            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a><i class="fas fa-angle-right p-mr-1"></i>${d['Issue Id']}</a></div>
-                    <div><span class="issueStatus">${d['Issue Status']}</div>`;
+            return `<div><i class="fas fa-angle-right p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
+                    <div><span class="issueStatus">${d['Issue Status']}</div></div>`;
           } else {
-            return `<div><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
-            <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div>`;
+            return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+            <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div></div>`;
           }
         })
         .style('font-weight', 'bold')
         .style('font-size', '10px')
         .style('cursor', 'pointer')
+        .style('height', (d, i) => `${issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1}px`)
+        .style('display', 'flex')
+        .style('align-items', 'center')
         .on('click', function (event, issue) {
           let d = issue;
           if (d && d['subTask']) {
@@ -482,8 +486,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('svg:line')
         .attr('x1', function (d, i) { return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2; })
         .attr('x2', function (d, i) { return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2; })
-        .attr('y1', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i)) / 2)
-        .attr('y2', (d, i) => issueList.length <= 1 ? 20 : (y(i + 1) - y(i)) / 2)
+        .attr('y1', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
+        .attr('y2', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) { return d['Actual-Completion-Date'] ? '#D8D8D8' : '#437495'; })
         .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
         .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })

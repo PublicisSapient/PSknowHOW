@@ -1,6 +1,7 @@
 
 
     <app-daily-scrum *ngIf="!displayModal" 
+    [onFullScreen]="displayModal"
     [assigneeList]="assigneeList" 
     [columns]="columns" 
     [filterData]="filterData"
@@ -19,6 +20,7 @@
 <div class="expandCollapseModal">
 <p-dialog [(visible)]="displayModal">
     <app-daily-scrum 
+    [onFullScreen]="displayModal"
     [assigneeList]="assigneeList" 
     [columns]="columns" 
     [filterData]="filterData"

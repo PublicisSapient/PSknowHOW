@@ -18,6 +18,7 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
   @Input() filters ={};
   @Input() issueData=[];
   @Input() standUpStatusFilter =[];
+  @Input() onFullScreen;
 
   @Output() onExpandOrCollapse = new EventEmitter<boolean>();
   @Output() onShowLessOrMore = new EventEmitter<boolean>();
