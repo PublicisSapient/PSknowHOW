@@ -102,7 +102,7 @@
 }
 
 #dateAxis {
-    background-color: #FFF;
+    background-color: transparent;
     position: sticky;
     z-index: 1001;
     top: 0;

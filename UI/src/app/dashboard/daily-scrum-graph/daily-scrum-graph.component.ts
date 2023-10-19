@@ -69,7 +69,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const xCoordinates = this.generateDates();
     const margin = { top: 30, right: 10, bottom: 20, left: 100 };
-    let width = (chart.node().getBoundingClientRect().width < 1500 ? 1500 : chart.node().getBoundingClientRect().width) - margin.left - margin.right;
+    let width = (chart.node().parentNode.offsetWidth < 1500 ? 1500 : chart.node().parentNode.offsetWidth) - margin.left - margin.right;
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
@@ -114,7 +114,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const issueAxis = d3.select(this.elem)
       .select('#issueAxis')
       .append('svg')
-      .attr('width', '120px')
+      .attr('width', '100%')
       .attr('height', height + margin.top + margin.bottom)
       .append('g');
 
@@ -123,6 +123,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       .append('svg')
       .attr('width', width + margin.left + margin.right)
       .attr('height', 30)
+      .style('background-color', '#FFF')
       .append('g')
       .attr('transform', `translate(${margin.left},0)`);
 

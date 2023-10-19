@@ -38,12 +38,14 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   onPreviousIssue() {
     if (this.currentIssueIndex > 0) {
       this.currentIssueIndex = this.currentIssueIndex - 1;
+      this.sharedService.setIssueData(this.issueDataList[this.currentIssueIndex]);
     }
   }
 
   onNextIssue() {
     if (this.currentIssueIndex !== this.issueDataList.length - 1) {
       this.currentIssueIndex = this.currentIssueIndex + 1;
+      this.sharedService.setIssueData(this.issueDataList[this.currentIssueIndex]);
     }
   }
 }
