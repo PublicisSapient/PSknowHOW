@@ -10,7 +10,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "DDL2", order = "002", author = "knowHow", runAlways = true)
+@ChangeUnit(id = "DDL2", order = "002", author = "PSKnowHow")
 public class CreateDatabaseIndexesChangeLog {
 
 	private final MongoTemplate mongoTemplate;
@@ -115,6 +115,6 @@ public class CreateDatabaseIndexesChangeLog {
 
 	@RollbackExecution
 	public void rollback() {
-		// We are inserting the indexes, so no drop to any collections
+		// We are inserting the documents through DDL, no rollback to any collections.
 	}
 }

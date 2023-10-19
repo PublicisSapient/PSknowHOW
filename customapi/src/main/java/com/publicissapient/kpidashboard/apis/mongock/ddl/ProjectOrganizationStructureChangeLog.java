@@ -11,7 +11,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "DDL6", order = "006", author = "knowHow", runAlways = true)
+@ChangeUnit(id = "DDL6", order = "006", author = "PSKnowHow")
 public class ProjectOrganizationStructureChangeLog {
 	private final MongoTemplate mongoTemplate;
 	private static final String HIERARCHY_LEVELS = "hierarchy_levels";
@@ -69,8 +69,6 @@ public class ProjectOrganizationStructureChangeLog {
 
 	@RollbackExecution
 	public void rollback() {
-		mongoTemplate.dropCollection(HIERARCHY_LEVELS);
-		mongoTemplate.dropCollection(HIERARCHY_LEVEL_SUGGESTIONS);
-		mongoTemplate.dropCollection(ADDITIONAL_FILTER_CATEGORIES);
+		// We are inserting the documents through DDL, no rollback to any collections.
 	}
 }
