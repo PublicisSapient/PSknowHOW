@@ -63,12 +63,13 @@ public class KpiDefinition {
 	}
 
 	@Execution
-	public void changeSet() {
+	public boolean changeSet() {
 		MongockUtil.saveListToDB(kpiList, KPI_MASTER_COLLECTION, mongoTemplate);
 		MongockUtil.saveListToDB(kpiColumnConfigs, KPI_COLUMN_CONFIGS_COLLECTION, mongoTemplate);
 		MongockUtil.saveListToDB(kpiCategoryMappingList, KPI_CATEGORY_MAPPING_COLLECTION, mongoTemplate);
 		MongockUtil.saveListToDB(kpiCategoryList, KPI_CATEGORY_COLLECTION, mongoTemplate);
 		MongockUtil.saveListToDB(fieldMappingStructureList, FIELD_MAPPING_STRUCTURE_COLLECTION, mongoTemplate);
+		return true;
 	}
 
 	@RollbackExecution

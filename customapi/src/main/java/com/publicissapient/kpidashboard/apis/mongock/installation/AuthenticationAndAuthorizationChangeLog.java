@@ -59,7 +59,7 @@ public class AuthenticationAndAuthorizationChangeLog {
 
 	}
 
-	private MongoCollection<Document> getOrCreateCollection(String collectionName) {
+	public MongoCollection<Document> getOrCreateCollection(String collectionName) {
 		if (!mongoTemplate.collectionExists(collectionName))
 			return mongoTemplate.createCollection(collectionName);
 		return mongoTemplate.getCollection(collectionName);
