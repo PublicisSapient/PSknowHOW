@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -32,8 +31,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -56,10 +53,9 @@ public class NotificationHandler {
 
 	public static final String ROLE_PROJECT_ADMIN = "ROLE_PROJECT_ADMIN";
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
-	private static final Logger LOGGER = LoggerFactory.getLogger(NotificationHandler.class);
 	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
 	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
-	private static final String Error_In_Jira_Processor_Template_Key = "Error_In_Jira_Processor";
+	private static final String ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY = "Error_In_Jira_Processor";
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Autowired
@@ -88,26 +84,13 @@ public class NotificationHandler {
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = jiraProcessorConfig.getMailTemplate()
-					.getOrDefault(Error_In_Jira_Processor_Template_Key, "");
+					.getOrDefault(ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY, "");
 			notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
 					jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,
 					templateKey, jiraProcessorConfig.isMailWithoutKafka());
 		} else {
 			log.error("Notification Event not sent : No email address found associated with Project-Admin role");
 		}
-	}
-
-	private List<String> getSuperAdminEmailAddress() {
-		Set<String> emailAddresses = new HashSet<>();
-		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(ROLE_SUPERADMIN));
-		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
-			emailAddresses
-					.addAll(superAdminUsersList.stream().filter(user -> StringUtils.isNotEmpty(user.getEmailAddress()))
-							.map(UserInfo::getEmailAddress).collect(Collectors.toSet()));
-		} else {
-			log.error("Notification Event not sent : No email address found associated with Super-Admin role");
-		}
-		return emailAddresses.stream().filter(StringUtils::isNotEmpty).collect(Collectors.toList());
 	}
 
 	private List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {

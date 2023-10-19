@@ -68,6 +68,7 @@ import net.logstash.logback.util.StringUtils;
 @StepScope
 public class IssueBoardReader implements ItemReader<ReadData> {
 
+	private static final String NOBOARD_MSG = "noBoard";
 	@Autowired
 	FetchProjectConfiguration fetchProjectConfiguration;
 	@Autowired
@@ -117,10 +118,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		try {
-			if (boardIterator == null) {
-				if (CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
-					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
-				}
+			if (boardIterator == null
+					&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+				boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 			}
 			if (issueIterator == null || !issueIterator.hasNext()) {
 				KerberosClient krb5Client = null;
@@ -211,57 +211,75 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		String deltaDate = DateUtil.dateTimeFormatter(
 				LocalDateTime.now().minusMonths(jiraProcessorConfig.getPrevMonthCountToFetchData()),
 				JiraConstants.QUERYDATEFORMAT);
+
 		if (MapUtils.isEmpty(projectBoardWiseDeltaDate) || MapUtils
 				.isEmpty(projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
-			log.info("fetching project status from trace log for project: {} board id :{}",
-					projectConfFieldMapping.getProjectName(), boardId);
-			List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
-					.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
-							Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
-			if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-				Map<String, String> boardWiseDate = new HashMap<>();
-				String lastSuccessfulRun = deltaDate;
-				for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-					lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
-					if (!StringUtils.isBlank(processorExecutionTraceLog.getBoardId())) {
-						boardWiseDate.put(processorExecutionTraceLog.getBoardId(), lastSuccessfulRun);
-					}
-				}
-				// this code is to support backward compatibility. Initially no
-				// board was saved with project in trace log
-				if (MapUtils.isEmpty(boardWiseDate)) {
-					log.info(
-							"project: {} found but board {} not found in trace log so data will be fetched from beginning",
-							projectConfFieldMapping.getProjectName(), boardId);
-					if (null == lastSuccessfulRun) {
-						lastSuccessfulRun = deltaDate;
-					}
-					boardWiseDate.put("noBoard", lastSuccessfulRun);
-				}
-				projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(),
-						boardWiseDate);
-			} else {
-				log.info("project: {} not found in trace log so data will be fetched from beginning",
-						projectConfFieldMapping.getProjectName());
-			}
+			setLastSuccessfulRunFromTraceLog(deltaDate);
 		}
+
 		if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(
 				projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
-			Map<String, String> boardWiseDate = projectBoardWiseDeltaDate
-					.get(projectConfFieldMapping.getBasicProjectConfigId().toString());
-			// this code is to support backward compatibility. Initially no
-			// board was saved with project in in trace log
-			if (!StringUtils.isBlank(boardWiseDate.get("noBoard"))) {
-				deltaDate = boardWiseDate.get("noBoard");
-			} else {
-				String lastSuccessRun = boardWiseDate.get(boardId);
-				log.info("project: {} and board {} found in trace log. Data will be fetched from one day before {}",
-						projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
-				if (!StringUtils.isBlank(lastSuccessRun)) {
-					deltaDate = lastSuccessRun;
+			deltaDate = updateDeltaDateFromBoardWiseData(deltaDate);
+		}
+
+		return deltaDate;
+	}
+
+	private void setLastSuccessfulRunFromTraceLog(String deltaDate) {
+		log.info("fetching project status from trace log for project: {} board id :{}",
+				projectConfFieldMapping.getProjectName(), boardId);
+
+		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
+				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
+						Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
+
+		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
+			Map<String, String> boardWiseDate = new HashMap<>();
+			String lastSuccessfulRun = deltaDate;
+
+			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
+				lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
+
+				if (!StringUtils.isBlank(processorExecutionTraceLog.getBoardId())) {
+					boardWiseDate.put(processorExecutionTraceLog.getBoardId(), lastSuccessfulRun);
 				}
 			}
+
+			if (MapUtils.isEmpty(boardWiseDate)) {
+				log.info("project: {} found but board {} not found in trace log so data will be fetched from beginning",
+						projectConfFieldMapping.getProjectName(), boardId);
+
+				if (lastSuccessfulRun == null) {
+					lastSuccessfulRun = deltaDate;
+				}
+
+				boardWiseDate.put(NOBOARD_MSG, lastSuccessfulRun);
+			}
+
+			projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), boardWiseDate);
+		} else {
+			log.info("project: {} not found in trace log so data will be fetched from beginning",
+					projectConfFieldMapping.getProjectName());
 		}
+	}
+
+	private String updateDeltaDateFromBoardWiseData(String deltaDate) {
+		Map<String, String> boardWiseDate = projectBoardWiseDeltaDate
+				.get(projectConfFieldMapping.getBasicProjectConfigId().toString());
+
+		if (!StringUtils.isBlank(boardWiseDate.get(NOBOARD_MSG))) {
+			deltaDate = boardWiseDate.get(NOBOARD_MSG);
+		} else {
+			String lastSuccessRun = boardWiseDate.get(boardId);
+
+			log.info("project: {} and board {} found in trace log. Data will be fetched from one day before {}",
+					projectConfFieldMapping.getProjectName(), boardId, lastSuccessRun);
+
+			if (!StringUtils.isBlank(lastSuccessRun)) {
+				deltaDate = lastSuccessRun;
+			}
+		}
+
 		return deltaDate;
 	}
 

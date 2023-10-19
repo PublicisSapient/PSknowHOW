@@ -146,8 +146,8 @@ public class KPIExcelUtility {
 						if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 								&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 							excelData.setStoryPoint(jiraIssue.getStoryPoints().toString());
-						} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-							Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes())
+						} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+							Double originalEstimateInHours = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes())
 									/ 60;
 							excelData.setStoryPoint(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
 									+ "/" + originalEstimateInHours + " hrs");
@@ -591,8 +591,8 @@ public class KPIExcelUtility {
 				}
 				excelData.setTotalTimeSpent(String.valueOf(daysLogged));
 
-				if (issue.getOriginalEstimateMinutes() != null) {
-					daysEstimated = Double.valueOf(issue.getOriginalEstimateMinutes()) / 60;
+				if (issue.getAggregateTimeOriginalEstimateMinutes() != null) {
+					daysEstimated = Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60;
 				}
 				excelData.setOriginalTimeEstimate(String.valueOf(daysEstimated));
 				kpiExcelData.add(excelData);

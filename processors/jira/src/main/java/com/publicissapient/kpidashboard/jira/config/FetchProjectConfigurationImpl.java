@@ -113,17 +113,30 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	}
 
 	private ProjectConfFieldMapping createProjectConfFieldMapping(FieldMapping fieldMapping,
-			ProjectBasicConfig projectConfig, ProjectToolConfig projectToolConfig, JiraToolConfig jiraToolConfig) {
+																  ProjectBasicConfig projectConfig, ProjectToolConfig projectToolConfig, JiraToolConfig jiraToolConfig) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-		projectConfFieldMapping.setJira(jiraToolConfig);
-		projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
-		projectConfFieldMapping.setJiraToolConfigId(projectToolConfig.getId());
-		projectConfFieldMapping.setFieldMapping(fieldMapping);
-		projectConfFieldMapping.setProjectName(projectConfig.getProjectName());
+
+		if (projectConfig != null) {
+			projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+			projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+			projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+			projectConfFieldMapping.setProjectName(projectConfig.getProjectName());
+		}
+
+		if (jiraToolConfig != null) {
+			projectConfFieldMapping.setJira(jiraToolConfig);
+		}
+
+		if (projectToolConfig != null) {
+			projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
+			projectConfFieldMapping.setJiraToolConfigId(projectToolConfig.getId());
+		}
+
+		if (fieldMapping != null) {
+			projectConfFieldMapping.setFieldMapping(fieldMapping);
+		}
+
 		return projectConfFieldMapping;
 	}
 

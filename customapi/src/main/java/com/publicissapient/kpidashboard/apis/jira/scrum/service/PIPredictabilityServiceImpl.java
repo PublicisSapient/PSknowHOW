@@ -182,11 +182,18 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				});
 				mapTmp.get(node.getId()).setValue(dataCountList);
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					List<JiraIssue> sortedEpicList = epicList.stream()
-							.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
-									&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
-							.filter(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate().isBefore(DateTime.now()))
-							.sorted(Comparator.comparing(epic -> epic.getReleaseVersions().get(0).getReleaseName()))
+					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+							.get(node.getProjectFilter().getBasicProjectConfigId());
+					List<JiraIssue> sortedEpicList = sortedPINameWiseEpicData.values().stream()
+							.flatMap(piWiseLatestEpicData -> piWiseLatestEpicData.getEpicList().stream()
+									.filter(jiraIssue -> CollectionUtils.isNotEmpty(jiraIssue.getReleaseVersions())
+											&& jiraIssue.getReleaseVersions().get(0).getReleaseDate() != null)
+									.filter(jiraIssue -> jiraIssue.getReleaseVersions().get(0).getReleaseDate()
+											.isBefore(DateTime.now()))
+									.filter(jiraIssue -> fieldMapping.getJiraIssueEpicTypeKPI153()
+											.contains(jiraIssue.getTypeName()))
+									.sorted(Comparator
+											.comparing(epic -> epic.getReleaseVersions().get(0).getReleaseName())))
 							.collect(Collectors.toList());
 					KPIExcelUtility.populatePIPredictabilityExcelData(trendLineName, sortedEpicList, excelData);
 				}
@@ -236,6 +243,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		});
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(), projectWiseIssueTypeMap
+				.get(leafNodeList.get(0).getProjectFilter().getBasicProjectConfigId().toString()));
 
 		List<ReleaseWisePI> releaseWisePIList = jiraIssueRepository
 				.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
@@ -250,12 +259,17 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 					.filter(releaseWisePI -> CollectionUtils.isNotEmpty(releaseWisePI.getReleaseName()))
 					.collect(Collectors.groupingBy(releaseWisePI -> releaseWisePI.getReleaseName().get(0)));
 			versionWiseData.forEach((version, piData) -> {
-				if (piData.size() == 1 && CollectionUtils.isNotEmpty(projectWiseIssueTypeMap.get(basicProjectConfigId))
-						&& CollectionUtils.isNotEmpty(piData.get(0).getReleaseName()) && projectWiseIssueTypeMap
-								.get(basicProjectConfigId).contains(piData.get(0).getUniqueTypeName())) {
+				if (CollectionUtils.isNotEmpty(piData)
+						&& CollectionUtils.isNotEmpty(projectWiseIssueTypeMap.get(basicProjectConfigId))
+						&& piData.stream().anyMatch(releaseWisePI -> projectWiseIssueTypeMap.get(basicProjectConfigId)
+								.contains(releaseWisePI.getUniqueTypeName()))) {
 					projectWisePIList.putIfAbsent(basicProjectConfigId, new ArrayList<>());
 					projectWisePIList.computeIfPresent(basicProjectConfigId, (k, v) -> {
-						v.add(piData.get(0).getReleaseName().get(0));
+						Optional<ReleaseWisePI> epicPIData = piData.stream()
+								.filter(releaseWisePI -> projectWiseIssueTypeMap.get(basicProjectConfigId)
+										.contains(releaseWisePI.getUniqueTypeName()))
+								.findFirst();
+						epicPIData.ifPresent(releaseWisePI -> v.add(releaseWisePI.getReleaseName().get(0)));
 						return v;
 					});
 				}

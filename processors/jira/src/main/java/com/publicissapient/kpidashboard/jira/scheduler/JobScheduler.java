@@ -45,8 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class JobScheduler {
 
-	private static String PROJECT_ID = "projectId";
-	private static String CURRENTTIME = "currentTime";
+	private static final String NUMBER_OF_PROCESSOR_AVAILABLE_MSG = "Total number of processor available : {} = number or projects run in parallel";
+	private static final String PROJECT_ID = "projectId";
+	private static final String CURRENTTIME = "currentTime";
 	@Autowired
 	JobLauncher jobLauncher;
 	@Qualifier("fetchIssueScrumBoardJob")
@@ -77,8 +78,7 @@ public class JobScheduler {
 				false, false);
 		log.info("Scrum - Board Wise Projects : {}", scrumBoardbasicProjConfIds);
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info("Total number of processor available : {} = number or projects run in parallel",
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -86,9 +86,8 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -108,8 +107,7 @@ public class JobScheduler {
 				true, false);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info("Total number of processor available : {} = number or projects run in parallel",
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -117,9 +115,8 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueScrumJqlJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -137,8 +134,7 @@ public class JobScheduler {
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
-		log.info("Total number of processor available : {} = number or projects run in parallel",
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -146,9 +142,8 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}
@@ -168,8 +163,7 @@ public class JobScheduler {
 				true, true);
 
 		List<JobParameters> parameterSets = getDynamicParameterSets(scrumBoardbasicProjConfIds);
-		log.info("Total number of processor available : {} = number or projects run in parallel",
-				Runtime.getRuntime().availableProcessors());
+		log.info(NUMBER_OF_PROCESSOR_AVAILABLE_MSG, Runtime.getRuntime().availableProcessors());
 		ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
 		for (JobParameters params : parameterSets) {
@@ -177,9 +171,8 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueKanbanJqlJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}",
-							params.getString(PROJECT_ID));
-					e.printStackTrace();
+					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID),e);
 				}
 			});
 		}

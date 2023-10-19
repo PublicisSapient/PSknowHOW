@@ -377,6 +377,7 @@ public class FieldMapping extends BasicModel {
 	private boolean notificationEnabler=true;
 
 	private List<String> jiraIssueEpicTypeKPI153;
+	private Integer startDateCountKPI150;
 
 	// DTS-26150 start
 	// Testing Phase Defect Mapping

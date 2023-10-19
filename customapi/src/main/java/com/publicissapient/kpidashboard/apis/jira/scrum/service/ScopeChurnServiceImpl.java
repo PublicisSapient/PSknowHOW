@@ -186,8 +186,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 						.collect(Collectors.toList());
 				sprintWiseInitialComitList = fetchedIssue.stream()
 						.filter(f -> initialCommitIssue.contains(f.getNumber())).collect(Collectors.toList());
-				// For Scope Change : Added + Removed Issue
-				Set<JiraIssue> sprintWiseScopeChangeList = new HashSet<>(sprintWiseAddedList);
+				// For Scope Change : Added + Removed Issue (duplicate incl)
+				List<JiraIssue> sprintWiseScopeChangeList = new ArrayList<>(sprintWiseAddedList);
 				sprintWiseScopeChangeList.addAll(sprintWiseRemovedList);
 				double storyChurnForCurrLeaf = 0.0d;
 				currentSprintLeafNodeDataMap.put(SCOPE_CHANGE, sprintWiseScopeChangeList);
@@ -360,7 +360,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> scopeChangeAndInitialScopeMap) {
-		int scopeChange = ((Set<JiraIssue>) scopeChangeAndInitialScopeMap.get(SCOPE_CHANGE)).size();
+		int scopeChange = ((List<JiraIssue>) scopeChangeAndInitialScopeMap.get(SCOPE_CHANGE)).size();
 		int initialScope = ((List<JiraIssue>) scopeChangeAndInitialScopeMap.get(INITIAL_SCOPE)).size();
 		return (double) Math.round((100.0 * scopeChange) / (initialScope));
 	}
@@ -374,7 +374,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param initialIssue
 	 */
 	private void setHoverMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
-			Pair<String, String> sprint, Set<JiraIssue> scopeChange, List<JiraIssue> initialIssue) {
+			Pair<String, String> sprint, List<JiraIssue> scopeChange, List<JiraIssue> initialIssue) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(scopeChange)) {
 			howerMap.put(SCOPE_CHANGE, scopeChange.size());

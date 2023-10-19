@@ -77,6 +77,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
+		// in future we can use this method to do something before job execution starts
 	}
 
 	/*
@@ -95,7 +96,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 		if (jobExecution.getStatus() == BatchStatus.FAILED) {
 			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
 			setExecutionSuccessFalse();
-			sendNotification(jobExecution);
+			sendNotification();
 		}
 
 		log.info("removing project with basicProjectConfigId {}", projectId);
@@ -103,7 +104,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 		ongoingExecutionsService.markExecutionAsCompleted(projectId);
 	}
 
-	private void sendNotification(JobExecution jobExecution) {
+	private void sendNotification() {
 		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
 		if (fieldMapping.getNotificationEnabler()) {
 			handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()), projectId);
