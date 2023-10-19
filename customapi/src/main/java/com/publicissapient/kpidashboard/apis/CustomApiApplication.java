@@ -57,7 +57,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 @EnableMongock
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 @ComponentScan(basePackages = { "com.publicissapient.kpidashboard" })
-@EnableMongock
 public class CustomApiApplication extends SpringBootServletInitializer {
 
 	/**

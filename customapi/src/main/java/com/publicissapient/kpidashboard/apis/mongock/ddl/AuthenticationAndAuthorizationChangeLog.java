@@ -33,13 +33,13 @@ import java.util.List;
 @Slf4j
 @SuppressWarnings("java:S1192")
 @ChangeUnit(id = "ddl1", order = "001", author = "PSKnowHOW", runAlways = true)
-public class AuthenticationAndAuthorization {
+public class AuthenticationAndAuthorizationChangeLog {
 	public static final String ROLES_COLLECTION = "roles";
 	public static final String ACTION_POLICY_RULE_COLLECTION = "action_policy_rule";
 
 	private final MongoTemplate mongoTemplate;
 
-	public AuthenticationAndAuthorization(MongoTemplate mongoTemplate) {
+	public AuthenticationAndAuthorizationChangeLog(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
