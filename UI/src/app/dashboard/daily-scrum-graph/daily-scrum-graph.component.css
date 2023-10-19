@@ -23,6 +23,13 @@
     padding-bottom: 30px;
 }
 
+.container.noFullScreen #scroller {
+    height: calc(100vh - 385px);
+    overflow-y: auto;
+    min-height: unset;
+    max-height: unset;
+}
+
 #chart {
     max-width: 92.9%;
     float: right;

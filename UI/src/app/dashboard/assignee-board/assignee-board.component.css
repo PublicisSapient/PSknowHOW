@@ -36,10 +36,11 @@
     background: #EFEFEF;
 }
 
-.noFullScreen {
-    height: 210px;
+.noFullScreen, .container.noFullScreen #scroller {
+    height: calc(100vh - 385px);
     overflow-y: auto;
     min-height: unset;
+    max-height: unset;
 }
 
 .noFullScreen .issue-card-container {
