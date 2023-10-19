@@ -40,8 +40,9 @@ public class KpiDefaultConfiguration {
 	}
 
 	@Execution
-	public void changeSet() {
+	public boolean changeSet() {
 		MongockUtil.saveListToDB(metadataIdentifierList, METADATA_IDENTIFIER_COLLECTION, mongoTemplate);
+		return true;
 	}
 
 	@RollbackExecution
