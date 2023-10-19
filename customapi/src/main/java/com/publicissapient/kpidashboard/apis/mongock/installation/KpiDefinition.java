@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.ddl;
+package com.publicissapient.kpidashboard.apis.mongock.installation;
 
 import com.publicissapient.kpidashboard.apis.data.*;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
@@ -30,14 +30,14 @@ import java.util.List;
 @ChangeUnit(id = "ddl5", order = "005", author = "hargupta15", runAlways = true)
 public class KpiDefinition {
 	private final MongoTemplate mongoTemplate;
-	private final String KPI_MASTER_COLLECTION = "kpi_master";
-	private final String KPI_CATEGORY_COLLECTION = "kpi_category";
+	private static final String KPI_MASTER_COLLECTION = "kpi_master";
+	private static final String KPI_CATEGORY_COLLECTION = "kpi_category";
 
-	private final String KPI_CATEGORY_MAPPING_COLLECTION = "kpi_category_mapping";
+	private static final String KPI_CATEGORY_MAPPING_COLLECTION = "kpi_category_mapping";
 
-	private final String KPI_COLUMN_CONFIGS_COLLECTION = "kpi_column_configs";
+	private static final String KPI_COLUMN_CONFIGS_COLLECTION = "kpi_column_configs";
 
-	private final String FIELD_MAPPING_STRUCTURE_COLLECTION = "field_mapping_structure";
+	private static final String FIELD_MAPPING_STRUCTURE_COLLECTION = "field_mapping_structure";
 
 	List<KpiMaster> kpiList;
 	List<KpiColumnConfig> kpiColumnConfigs;
@@ -73,6 +73,6 @@ public class KpiDefinition {
 
 	@RollbackExecution
 	public void rollback() {
-
+		// We are inserting the documents through DDL, no rollback to any collections.
 	}
 }

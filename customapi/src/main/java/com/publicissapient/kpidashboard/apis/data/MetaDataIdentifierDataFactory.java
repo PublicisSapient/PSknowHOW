@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@SuppressWarnings("java:S1075")
 public class MetaDataIdentifierDataFactory {
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/metadata_identifier.json";
 	private List<MetadataIdentifier> metadataIdentifierList;

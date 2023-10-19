@@ -14,8 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.ddl;
-
+package com.publicissapient.kpidashboard.apis.mongock.installation;
 
 import com.publicissapient.kpidashboard.apis.data.MetaDataIdentifierDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
@@ -31,7 +30,7 @@ import java.util.List;
 @ChangeUnit(id = "ddl4", order = "004", author = "PSKnowHOW", runAlways = true)
 public class KpiDefaultConfiguration {
 	private final MongoTemplate mongoTemplate;
-	private final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
+	private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";
 	List<MetadataIdentifier> metadataIdentifierList;
 
 	public KpiDefaultConfiguration(MongoTemplate mongoTemplate) {
@@ -47,6 +46,6 @@ public class KpiDefaultConfiguration {
 
 	@RollbackExecution
 	public void rollback() {
-
+		// We are inserting the documents through DDL, no rollback to any collections.
 	}
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@SuppressWarnings("java:S1075")
 public class KpiDefinationDataFactory {
     private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
     private List<KpiMaster> kpiList;

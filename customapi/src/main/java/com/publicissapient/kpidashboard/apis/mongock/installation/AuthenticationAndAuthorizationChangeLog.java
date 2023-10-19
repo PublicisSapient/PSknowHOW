@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.mongock.ddl;
+package com.publicissapient.kpidashboard.apis.mongock.installation;
 
 import com.mongodb.client.MongoCollection;
 import io.mongock.api.annotations.ChangeUnit;

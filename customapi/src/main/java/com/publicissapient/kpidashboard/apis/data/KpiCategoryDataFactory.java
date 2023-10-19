@@ -35,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author anisingh4
  */
 @Slf4j
+@SuppressWarnings("java:S1075")
 public class KpiCategoryDataFactory {
 
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_category.json";

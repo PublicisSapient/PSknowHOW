@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
+@SuppressWarnings("java:S1075")
 public class FieldMappingStructureDataFactory {
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/field_mapping_structure.json";
 	private List<BaseFieldMappingStructure> fieldMappingStructureList;
