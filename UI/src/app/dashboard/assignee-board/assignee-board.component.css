@@ -12,10 +12,9 @@
     flex-basis: 75%;
     flex: 1 1 auto;
     /* max-height: calc(100vh - 151px);
-    height: calc(100vh - 151px);
     overflow-y: auto; */
     max-height: 100%;
-    height: 450px;
+    height: calc(100vh - 151px);
     overflow: hidden;
 }
 
