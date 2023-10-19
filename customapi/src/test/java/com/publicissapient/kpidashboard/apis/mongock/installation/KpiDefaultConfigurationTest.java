@@ -4,7 +4,6 @@ import com.mongodb.client.MongoCollection;
 import com.publicissapient.kpidashboard.apis.data.MetaDataIdentifierDataFactory;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
-import javafx.beans.binding.When;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
