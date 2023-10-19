@@ -57,3 +57,27 @@
     padding: 2px;
 }
 
+:host ::ng-deep .issueTypeIcon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    background-size: cover;
+    margin-bottom: -5px;
+}
+
+:host ::ng-deep .issueTypeIcon.Task,
+:host ::ng-deep .issueTypeIcon.Studio-Task {
+    background-image: url('/assets/img/Subtask_icon.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Bug,
+:host ::ng-deep .issueTypeIcon.Defect {
+    background-image: url('/assets/img/Bug.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Story{
+    background-image: url('/assets/img/Story.svg');
+}
+

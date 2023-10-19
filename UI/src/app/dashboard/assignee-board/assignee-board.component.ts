@@ -10,6 +10,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
 
   @Input() issueDataList = [];
   @Input() standUpStatusFilter = [];
+  @Input() onFullScreen;
   currentIssueIndex = 0;
   currentSprint;
   showIssueDetails: boolean = false;

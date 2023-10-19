@@ -35,3 +35,14 @@
     color: black;
     background: #EFEFEF;
 }
+
+.noFullScreen {
+    height: 210px;
+    overflow-y: auto;
+    min-height: unset;
+}
+
+.noFullScreen .issue-card-container {
+    height: fit-content;
+    overflow-y: unset;
+}
