@@ -48,7 +48,8 @@
 			**com/publicissapient/kpidashboard/**/*Constants.java,
 			**com/publicissapient/kpidashboard/**/*Constant.java,
 			**com/publicissapient/kpidashboard/**/*Properties.java,
-			**com/publicissapient/kpidashboard/**/*Configuration.java
+			**com/publicissapient/kpidashboard/**/*Configuration.java,
+			**com/publicissapient/kpidashboard/apis/mongock/**/*
 		</sonar.coverage.exclusions>
 		<sonar.test.exclusions>
 			**src/test/java/**
