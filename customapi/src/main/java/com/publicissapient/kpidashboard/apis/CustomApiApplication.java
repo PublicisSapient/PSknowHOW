@@ -54,6 +54,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @SpringBootApplication
 @EnableCaching
+@EnableMongock
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 @ComponentScan(basePackages = { "com.publicissapient.kpidashboard" })
 @EnableMongock
