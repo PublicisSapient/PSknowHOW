@@ -1,5 +1,7 @@
 #chart-main-container {
     background-color: #fff;
+    display: flex;
+    max-height: 100%;
 }
 
 #chart-container {
@@ -7,7 +9,25 @@
     background-color: #fff;
     z-index: 1000;
     position: relative;
-    max-height: 420px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 100%;
+    width: 100%;
+}
+
+#scroller {
+    width:100%;
+    overflow-x: auto; 
+    display: inline-block; 
+    max-height: 100%;
+    padding-bottom: 30px;
+}
+
+#chart {
+    max-width: 92.9%;
+    float: right;
+    margin-top: -32px;
+    float: left;
 }
 
 .tooltip-container{
@@ -62,17 +82,23 @@
 }
 
 :host ::ng-deep #issueAxis {
-    width: 11%;
+    width: 7%;
+    display: inline;
+    position: sticky;
+    left: 0;
+    float: left;
 }
 
 #dateLine {
+    position: relative;
+    display: flex;
+}
+
+#dateAxis {
+    background-color: transparent;
+    position: sticky;
+    z-index: 1001;
     top: 0;
-    z-index: 999;
-    background-color: #fff;
-    width: 99%;
-    height: 449px;
-    overflow: auto;
-    margin-left: 10px;
 }
 
 :host ::ng-deep .issueStatus::before {
@@ -116,4 +142,3 @@
 :host ::ng-deep .issueTypeIcon.Story{
     background-image: url('/assets/img/Story.svg');
 }
-
