@@ -24,6 +24,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.common.feature.FeatureAssociation;
+import com.publicissapient.kpidashboard.common.feature.FeatureEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.Job;
@@ -272,6 +274,7 @@ public class JobController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/startprojectwiseissuejob")
+	@FeatureAssociation(value = FeatureEnum.FEATURE_3)
 	public ResponseEntity<String> startProjectWiseIssueJob(
 			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 		log.info("Request coming for fetching issue job");
