@@ -66,7 +66,7 @@
 .legends-button{
     position: absolute;
     top: -1rem;
-    right: 25%;
+    right: 0;
     background: none;
     border: none;
     cursor: pointer;
