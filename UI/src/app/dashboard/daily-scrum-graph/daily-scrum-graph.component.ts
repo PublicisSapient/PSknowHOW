@@ -421,7 +421,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           }
         })
         .style('font-weight', 'bold')
-        .style('font-size', '10px')
+        .style('transform', (d) => `scale(${d['parentStory'] && d['parentStory'].length ? 0.8 : 1})`)
         .style('cursor', 'pointer')
         .style('height', (d, i) => `${issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1}px`)
         .style('display', 'flex')

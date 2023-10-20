@@ -31,7 +31,7 @@
 }
 
 #chart {
-    max-width: 92.9%;
+    max-width: 88%;
     float: right;
     margin-top: -32px;
     float: left;
@@ -89,7 +89,7 @@
 }
 
 :host ::ng-deep #issueAxis {
-    width: 7%;
+    width: 12%;
     display: inline;
     position: sticky;
     left: 0;
@@ -106,6 +106,12 @@
     position: sticky;
     z-index: 1001;
     top: 0;
+}
+
+
+:host ::ng-deep .issueStatus {
+    margin-top: 5px;
+    display: block;
 }
 
 :host ::ng-deep .issueStatus::before {
