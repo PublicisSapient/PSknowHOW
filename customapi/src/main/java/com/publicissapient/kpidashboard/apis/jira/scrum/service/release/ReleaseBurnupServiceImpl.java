@@ -80,7 +80,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	public static final String MAX_ISSUE_CNT_LIMIT = "maxIssueCntLimit";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
 	private static final String FULL_RELEASE = "fullRelease";
@@ -114,6 +113,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private CommonServiceImpl commonService;
 
 	private LocalDate tempStartDate = null;
+	private final List<JiraIssue> allReleaseTaggedIssue = new ArrayList<>();
 
 	/**
 	 * {@inheritDoc}
@@ -341,6 +341,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			completedReleaseMap = prepareCompletedIssueMap(completedReleaseMap, startLocalDate);
 
 			tempStartDate = LocalDate.parse(startLocalDate.toString());
+			fullReleaseIssueMap.forEach((k,v)-> allReleaseTaggedIssue.addAll(v));
 			List<JiraIssue> overallIssues = new ArrayList<>();
 			List<JiraIssue> overallCompletedIssues = new ArrayList<>();
 			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
@@ -369,8 +370,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				// avg completion rate
 				double avgIssueCount = 0L;
 				double avgStoryPoint = 0d;
-				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap,
-						fullReleaseIssueMap);
+				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap);
 				avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
@@ -388,7 +388,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 						new ArrayList<>());
 				List<JiraIssue> releaseProgressTillNow = filterWiseGroupedMapTillNow.getOrDefault(RELEASE_PROGRESS,
 						new ArrayList<>());
-
+				releaseScopeToReach.retainAll(allReleaseTaggedIssue);
+				releaseProgressTillNow.retainAll(allReleaseTaggedIssue);
 				// based on the value to reach & avg value finding the Prediction date
 				final LocalDate predictionEndDate = calPredictionEndDate(releaseScopeToReach, releaseProgressTillNow,
 						fieldMapping, avgIssueCount, avgStoryPoint);
@@ -417,7 +418,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					overallCompletedIssues = filterWiseGroupedMap.getOrDefault(OVERALL_COMPLETED, new ArrayList<>());
 					String date = getRange(dateRange, duration);
 					// start populate the release prediction if startDate is greater than today
-					isPredictionBoundary = getNextPredictionDataPt(startLocalDate, predictionDataMap, dateRange,
+					isPredictionBoundary = getNextPredictionDataPt(predictionDataMap, dateRange,
 							isPredictionBoundary, releaseScopeToReach, averageDataMap, fieldMapping);
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration, fieldMapping,
 							predictionDataMap);
@@ -440,9 +441,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	/**
 	 * Method used to get successive data point of prediction
-	 * 
-	 * @param startLocalDate
-	 *            Population Date
+	 *
 	 * @param predictionDataMap
 	 *            Map<String, Object>
 	 * @param dateRange
@@ -457,7 +456,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            fieldMapping
 	 * @return prediction boundary flag
 	 */
-	private boolean getNextPredictionDataPt(LocalDate startLocalDate, Map<String, Object> predictionDataMap,
+	private boolean getNextPredictionDataPt(Map<String, Object> predictionDataMap,
 			CustomDateRange dateRange, boolean isPredictionBoundary, List<JiraIssue> releaseScopeToReach,
 			Map<String, Object> averageDataMap, FieldMapping fieldMapping) {
 		double issueSizePrediction;
@@ -466,7 +465,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 		final int issueCountToReach = releaseScopeToReach.size();
 		final Double storyPointToReach = getStoryPoint(releaseScopeToReach, fieldMapping);
-		if (!startLocalDate.isBefore(LocalDate.now()) && MapUtils.isNotEmpty(averageDataMap)) {
+		final boolean isStartPrediction = DateUtil.isWithinDateRange(LocalDate.now(), dateRange.getStartDate(), dateRange.getEndDate()) || dateRange.getStartDate().isAfter(LocalDate.now());
+
+		if (isStartPrediction && MapUtils.isNotEmpty(averageDataMap)) {
 			issueCountPrediction = (double) predictionDataMap.get(ISSUE_COUNT_PREDICTION);
 			issueSizePrediction = (double) predictionDataMap.get(ISSUE_SIZE_PREDICTION);
 			predictionDataMap.put(IS_ISSUE_COUNT_ACHIEVED, issueCountPrediction >= issueCountToReach);
@@ -518,14 +519,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (avgStoryPoint != 0) {
 			timeRequiredForSp = (long) (remainingSp / avgStoryPoint);
 		}
-		LocalDate predictionEnd = LocalDate.now();
-		long maxAxisLimit = Math.max(timeRequiredForSp, timeRequiredForIssueCount);
-		while (maxAxisLimit > 0) {
-			predictionEnd = CommonUtils.getNextWorkingDate(predictionEnd, 1);
-			maxAxisLimit--;
-		}
-		return predictionEnd;
-
+		return LocalDate.now().plusDays(Math.max(timeRequiredForSp, timeRequiredForIssueCount));
 	}
 
 	/**
@@ -540,21 +534,16 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * @return Map of Avg Issue Count, Story Point
 	 */
 	private Map<String, Object> getAverageData(FieldMapping fieldMapping, LocalDate startLocalDate,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap, Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 		Map<String, Object> averageDataMap = new HashMap<>();
 		double avgIssueCount;
 		double avgStoryPoint;
 		int countOfDaysTillToday = 0;
-		List<JiraIssue> allTaggedIssues = new ArrayList<>();
+
 		// count of days from where user want to cal avg
 		Integer startDateCount = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0);
-		LocalDate predictionStartDate = startLocalDate;
-		while (startDateCount > 0) {
-			predictionStartDate = CommonUtils.getNextWorkingDate(predictionStartDate, 1);
-			startDateCount--;
-		}
-		// all the currently tagged issues
-		fullReleaseIssueMap.forEach((k, v) -> allTaggedIssues.addAll(v));
+		LocalDate predictionStartDate = startLocalDate.plusDays(startDateCount);
+
 		LocalDate currentDate = predictionStartDate;
 		List<JiraIssue> completedIssuesTillToday = new ArrayList<>();
 		// completed issue between prediction start date and today both inclusive
@@ -566,7 +555,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			currentDate = currentDate.plusDays(1);
 		}
 		// out of all completed, what all issues were completed & tagged
-		completedIssuesTillToday.retainAll(allTaggedIssues);
+		completedIssuesTillToday.retainAll(allReleaseTaggedIssue);
 		// calculate the avg issue count and story point
 		if (countOfDaysTillToday != 0 && CollectionUtils.isNotEmpty(completedIssuesTillToday)) {
 			avgIssueCount = (double) completedIssuesTillToday.size() / countOfDaysTillToday;
@@ -920,6 +909,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
+			jiraIssueList.retainAll(allReleaseTaggedIssue);
 			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
 		}
 	}
@@ -955,7 +945,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		} else if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
 			currentDate = currentDate.plusWeeks(1);
 		} else {
-			currentDate = CommonUtils.getNextWorkingDate(currentDate, 1);
+			currentDate = currentDate.plusDays(1);
 		}
 		return currentDate;
 	}
