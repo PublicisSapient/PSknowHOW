@@ -165,10 +165,6 @@ padding: 0.75rem !important;
     padding-top: 0px;
 }
 
-:host ::ng-deep.p-datatable-scrollable .p-datatable-wrapper{
-    min-height: 45vh;
-}
-
 :host ::ng-deep.column-filter.p-multiselect{
     border: none;
     background-color: transparent;
