@@ -6939,7 +6939,7 @@ db.kpi_column_configs.insertMany([
 
 //field_mapping_structure
 db.getCollection('field_mapping_structure').insertMany(
-[{
+    [{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
         "fieldType": "chips",
@@ -7430,25 +7430,25 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
-                "label": "p1",
-                "value": "p1"
-            },
-            {
-                "label": "p2",
-                "value": "p2"
-            },
-            {
-                "label": "p3",
-                "value": "p3"
-            },
-            {
-                "label": "p4",
-                "value": "p4"
-            },
-            {
-                "label": "p5",
-                "value": "p5"
-            }
+            "label": "p1",
+            "value": "p1"
+        },
+        {
+            "label": "p2",
+            "value": "p2"
+        },
+        {
+            "label": "p3",
+            "value": "p3"
+        },
+        {
+            "label": "p4",
+            "value": "p4"
+        },
+        {
+            "label": "p5",
+            "value": "p5"
+        }
         ]
     },
     {
@@ -7460,25 +7460,25 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Priority values of defects which are to be excluded in 'Defect Injection rate' calculation"
         },
         "options": [{
-                "label": "p1",
-                "value": "p1"
-            },
-            {
-                "label": "p2",
-                "value": "p2"
-            },
-            {
-                "label": "p3",
-                "value": "p3"
-            },
-            {
-                "label": "p4",
-                "value": "p4"
-            },
-            {
-                "label": "p5",
-                "value": "p5"
-            }
+            "label": "p1",
+            "value": "p1"
+        },
+        {
+            "label": "p2",
+            "value": "p2"
+        },
+        {
+            "label": "p3",
+            "value": "p3"
+        },
+        {
+            "label": "p4",
+            "value": "p4"
+        },
+        {
+            "label": "p5",
+            "value": "p5"
+        }
         ]
     },
     {
@@ -7490,25 +7490,25 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Priority values of defects which are to be excluded in 'Defect Density' calculation"
         },
         "options": [{
-                "label": "p1",
-                "value": "p1"
-            },
-            {
-                "label": "p2",
-                "value": "p2"
-            },
-            {
-                "label": "p3",
-                "value": "p3"
-            },
-            {
-                "label": "p4",
-                "value": "p4"
-            },
-            {
-                "label": "p5",
-                "value": "p5"
-            }
+            "label": "p1",
+            "value": "p1"
+        },
+        {
+            "label": "p2",
+            "value": "p2"
+        },
+        {
+            "label": "p3",
+            "value": "p3"
+        },
+        {
+            "label": "p4",
+            "value": "p4"
+        },
+        {
+            "label": "p5",
+            "value": "p5"
+        }
         ]
     },
     {
@@ -7520,25 +7520,25 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Priority values of defects which are to be excluded in 'FTPR' calculation"
         },
         "options": [{
-                "label": "p1",
-                "value": "p1"
-            },
-            {
-                "label": "p2",
-                "value": "p2"
-            },
-            {
-                "label": "p3",
-                "value": "p3"
-            },
-            {
-                "label": "p4",
-                "value": "p4"
-            },
-            {
-                "label": "p5",
-                "value": "p5"
-            }
+            "label": "p1",
+            "value": "p1"
+        },
+        {
+            "label": "p2",
+            "value": "p2"
+        },
+        {
+            "label": "p3",
+            "value": "p3"
+        },
+        {
+            "label": "p4",
+            "value": "p4"
+        },
+        {
+            "label": "p5",
+            "value": "p5"
+        }
         ]
     },
     {
@@ -7550,25 +7550,25 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Priority values of defects which are to be excluded in 'Quality Status' calculation"
         },
         "options": [{
-                "label": "p1",
-                "value": "p1"
-            },
-            {
-                "label": "p2",
-                "value": "p2"
-            },
-            {
-                "label": "p3",
-                "value": "p3"
-            },
-            {
-                "label": "p4",
-                "value": "p4"
-            },
-            {
-                "label": "p5",
-                "value": "p5"
-            }
+            "label": "p1",
+            "value": "p1"
+        },
+        {
+            "label": "p2",
+            "value": "p2"
+        },
+        {
+            "label": "p3",
+            "value": "p3"
+        },
+        {
+            "label": "p4",
+            "value": "p4"
+        },
+        {
+            "label": "p5",
+            "value": "p5"
+        }
         ]
     },
     {
@@ -8191,13 +8191,13 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Estimation criteria for stories. <br> Example: Buffered Estimation."
         },
         "options": [{
-                "label": "Story Point",
-                "value": "Story Point"
-            },
-            {
-                "label": "Actual (Original Estimation)",
-                "value": "Actual Estimation"
-            }
+            "label": "Story Point",
+            "value": "Story Point"
+        },
+        {
+            "label": "Actual (Original Estimation)",
+            "value": "Actual Estimation"
+        }
         ],
         "nestedFields": [{
             "fieldName": "storyPointToHourMapping",
@@ -8219,13 +8219,13 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "The statuses that signify that team is unable to proceed on an issue due to internal or external dependency like On Hold, Waiting for user response, dependent work etc."
         },
         "options": [{
-                "label": "Blocked Status",
-                "value": "Blocked Status"
-            },
-            {
-                "label": "Include Flagged Issue",
-                "value": "Include Flagged Issue"
-            }
+            "label": "Blocked Status",
+            "value": "Blocked Status"
+        },
+        {
+            "label": "Include Flagged Issue",
+            "value": "Include Flagged Issue"
+        }
         ],
         "nestedFields": [{
             "fieldName": "jiraBlockedStatusKPI131",
@@ -8246,33 +8246,33 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "This field is used to identify if a defect is raised by QA<br>1. CustomField : If a separate custom field is used.<br>2. Labels : If a label is used to identify. Example: QA Defect <hr>"
         },
         "options": [{
-                "label": "CustomField",
-                "value": "CustomField"
-            },
-            {
-                "label": "Labels",
-                "value": "Labels"
-            }
+            "label": "CustomField",
+            "value": "CustomField"
+        },
+        {
+            "label": "Labels",
+            "value": "Labels"
+        }
         ],
         "nestedFields": [{
-                "fieldName": "jiraBugRaisedByQAValue",
-                "fieldLabel": "QA Defect Values",
-                "fieldType": "chips",
-                "filterGroup": ["CustomField", "Labels"],
-                "tooltip": {
-                    "definition": "Provide label name to identify QA raised defects."
-                }
-            },
-            {
-                "fieldName": "jiraBugRaisedByQACustomField",
-                "fieldLabel": "QA Defect Custom Field",
-                "fieldType": "text",
-                "fieldCategory": "fields",
-                "filterGroup": ["CustomField"],
-                "tooltip": {
-                    "definition": "Provide customfield name to identify QA raised defects. <br>Example: customfield_13907"
-                }
+            "fieldName": "jiraBugRaisedByQAValue",
+            "fieldLabel": "QA Defect Values",
+            "fieldType": "chips",
+            "filterGroup": ["CustomField", "Labels"],
+            "tooltip": {
+                "definition": "Provide label name to identify QA raised defects."
             }
+        },
+        {
+            "fieldName": "jiraBugRaisedByQACustomField",
+            "fieldLabel": "QA Defect Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+                "definition": "Provide customfield name to identify QA raised defects. <br>Example: customfield_13907"
+            }
+        }
         ]
     },
     {
@@ -8284,13 +8284,13 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
         },
         "options": [{
-                "label": "CustomField",
-                "value": "CustomField"
-            },
-            {
-                "label": "Labels",
-                "value": "Labels"
-            }
+            "label": "CustomField",
+            "value": "CustomField"
+        },
+        {
+            "label": "Labels",
+            "value": "Labels"
+        }
         ],
         "nestedFields": [
 
@@ -8567,14 +8567,14 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-    "fieldName": "jiraDueDateField",
-    "fieldLabel": "Due Date",
-    "fieldType": "radiobutton",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "This field is to track due date of issues tagged in the iteration"
-    },
-    "options": [{
+        "fieldName": "jiraDueDateField",
+        "fieldLabel": "Due Date",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "This field is to track due date of issues tagged in the iteration"
+        },
+        "options": [{
             "label": "Custom Field",
             "value": "CustomField"
         },
@@ -8582,106 +8582,106 @@ db.getCollection('field_mapping_structure').insertMany(
             "label": "Due Date",
             "value": "Due Date"
         }
-    ],
-    "nestedFields": [
+        ],
+        "nestedFields": [
 
-        {
-            "fieldName": "jiraDueDateCustomField",
-            "fieldLabel": "Due Date Custom Field",
-            "fieldType": "text",
-            "fieldCategory": "fields",
-            "filterGroup": ["CustomField"],
-            "tooltip": {
-                "definition": "This field is to track due date of issues tagged in the iteration."
+            {
+                "fieldName": "jiraDueDateCustomField",
+                "fieldLabel": "Due Date Custom Field",
+                "fieldType": "text",
+                "fieldCategory": "fields",
+                "filterGroup": ["CustomField"],
+                "tooltip": {
+                    "definition": "This field is to track due date of issues tagged in the iteration."
+                }
             }
-        }
-    ]
+        ]
     }, {
-     "fieldName": "jiraDevDueDateField",
-     "fieldLabel": "Dev Due Date",
-     "fieldType": "radiobutton",
-     "section": "Custom Fields Mapping",
-     "tooltip": {
-       "definition": "This field is to track dev due date of issues tagged in the iteration."
-     },
-     "options": [
-       {
-         "label": "Custom Field",
-         "value": "CustomField"
-       },
-       {
-         "label": "Due Date",
-         "value": "Due Date"
-       }
-     ],
-     "nestedFields": [
-       {
-         "fieldName": "jiraDevDueDateCustomField",
-         "fieldLabel": "Dev Due Date Custom Field",
-         "fieldType": "text",
-         "fieldCategory": "fields",
-         "filterGroup": [
-           "CustomField"
-         ],
-         "tooltip": {
-           "definition": "This field is to track dev due date of issues tagged in the iteration."
-         }
-       }
-     ]
-   }, {
-    "fieldName": "jiraIssueEpicType",
-    "fieldLabel": "Epic Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "This field is used to identify Epic Issue type.",
-    }
-}, {
-    "fieldName": "rootCause",
-    "fieldLabel": "Root Cause",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation.",
-    }
-}, {
-    "fieldName": "storyFirstStatus",
-    "fieldLabel": "Story First Status",
-    "fieldType": "text",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Default status when a Story is opened.",
-    }
-}, {
-    "fieldName": "jiraTestAutomationIssueType",
-    "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "",
-    }
-}, {
-    "fieldName": "jiraDefectDroppedStatusKPI127",
-    "fieldLabel": "Defect Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "All statuses with which defect is linked.",
-    }
-}, {
-    "fieldName": "productionDefectIdentifier",
-    "fieldLabel": "Production defects identification",
-    "fieldType": "radiobutton",
-    "section": "Defects Mapping",
-    "tooltip": {
-        "definition": "This field is used to identify if a defect is raised by Production. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
-    },
-    "options": [{
+        "fieldName": "jiraDevDueDateField",
+        "fieldLabel": "Dev Due Date",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "This field is to track dev due date of issues tagged in the iteration."
+        },
+        "options": [
+            {
+                "label": "Custom Field",
+                "value": "CustomField"
+            },
+            {
+                "label": "Due Date",
+                "value": "Due Date"
+            }
+        ],
+        "nestedFields": [
+            {
+                "fieldName": "jiraDevDueDateCustomField",
+                "fieldLabel": "Dev Due Date Custom Field",
+                "fieldType": "text",
+                "fieldCategory": "fields",
+                "filterGroup": [
+                    "CustomField"
+                ],
+                "tooltip": {
+                    "definition": "This field is to track dev due date of issues tagged in the iteration."
+                }
+            }
+        ]
+    }, {
+        "fieldName": "jiraIssueEpicType",
+        "fieldLabel": "Epic Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify Epic Issue type.",
+        }
+    }, {
+        "fieldName": "rootCause",
+        "fieldLabel": "Root Cause",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation.",
+        }
+    }, {
+        "fieldName": "storyFirstStatus",
+        "fieldLabel": "Story First Status",
+        "fieldType": "text",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Default status when a Story is opened.",
+        }
+    }, {
+        "fieldName": "jiraTestAutomationIssueType",
+        "fieldLabel": "In Sprint Automation - Issue Types with Linked Defect ",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "",
+        }
+    }, {
+        "fieldName": "jiraDefectDroppedStatusKPI127",
+        "fieldLabel": "Defect Dropped Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses with which defect is linked.",
+        }
+    }, {
+        "fieldName": "productionDefectIdentifier",
+        "fieldLabel": "Production defects identification",
+        "fieldType": "radiobutton",
+        "section": "Defects Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify if a defect is raised by Production. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+        },
+        "options": [{
             "label": "CustomField",
             "value": "CustomField"
         },
@@ -8693,152 +8693,152 @@ db.getCollection('field_mapping_structure').insertMany(
             "label": "Component",
             "value": "Component"
         }
-    ],
-    "nestedFields": [
+        ],
+        "nestedFields": [
 
-        {
-            "fieldName": "productionDefectCustomField",
-            "fieldLabel": "Production Defect CustomField",
-            "fieldType": "text",
-            "fieldCategory": "fields",
-            "filterGroup": ["CustomField"],
-            "tooltip": {
-                "definition": " Provide customfield name to identify Production raised defects."
+            {
+                "fieldName": "productionDefectCustomField",
+                "fieldLabel": "Production Defect CustomField",
+                "fieldType": "text",
+                "fieldCategory": "fields",
+                "filterGroup": ["CustomField"],
+                "tooltip": {
+                    "definition": " Provide customfield name to identify Production raised defects."
+                }
+            },
+            {
+                "fieldName": "productionDefectValue",
+                "fieldLabel": "Production Defect Values",
+                "fieldType": "chips",
+                "filterGroup": ["CustomField", "Labels"],
+                "tooltip": {
+                    "definition": "Provide label name to identify Production raised defects."
+                }
+            },
+            {
+                "fieldName": "productionDefectComponentValue",
+                "fieldLabel": "Component",
+                "fieldType": "text",
+                "filterGroup": ["Component"],
+                "tooltip": {
+                    "definition": "Provide label name to identify Production raised defects."
+                }
             }
-        },
-        {
-            "fieldName": "productionDefectValue",
-            "fieldLabel": "Production Defect Values",
-            "fieldType": "chips",
-            "filterGroup": ["CustomField", "Labels"],
-            "tooltip": {
-                "definition": "Provide label name to identify Production raised defects."
-            }
-        },
-        {
-            "fieldName": "productionDefectComponentValue",
-            "fieldLabel": "Component",
-            "fieldType": "text",
-            "filterGroup": ["Component"],
-            "tooltip": {
-                "definition": "Provide label name to identify Production raised defects."
-            }
+        ]
+    }, {
+        "fieldName": "ticketCountIssueType",
+        "fieldLabel": "Ticket Count Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "",
+
         }
-    ]
-}, {
-    "fieldName": "ticketCountIssueType",
-    "fieldLabel": "Ticket Count Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "",
-
-    }
-}, {
-    "fieldName": "kanbanRCACountIssueType",
-    "fieldLabel": "Ticket RCA Count Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "",
+    }, {
+        "fieldName": "kanbanRCACountIssueType",
+        "fieldLabel": "Ticket RCA Count Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "",
 
 
-    }
-}, {
-    "fieldName": "jiraTicketVelocityIssueType",
-    "fieldLabel": "Ticket Velocity Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "",
+        }
+    }, {
+        "fieldName": "jiraTicketVelocityIssueType",
+        "fieldLabel": "Ticket Velocity Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "",
 
 
-    }
-}, {
-    "fieldName": "kanbanCycleTimeIssueType",
-    "fieldLabel": "Kanban Lead Time Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "",
+        }
+    }, {
+        "fieldName": "kanbanCycleTimeIssueType",
+        "fieldLabel": "Kanban Lead Time Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "",
 
 
-    }
-}, {
-    "fieldName": "ticketDeliverdStatus",
-    "fieldLabel": "Ticket Delivered Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status from workflow on which ticket is considered as delivered."
-    }
-}, {
-    "fieldName": "jiraTicketClosedStatus",
-    "fieldLabel": "Ticket Closed Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status from workflow on which ticket is considered as Resolved."
-    }
-}, {
-    "fieldName": "jiraTicketTriagedStatus",
-    "fieldLabel": "Ticket Triaged Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status from workflow on which ticket is considered as Triaged."
-    }
-}, {
-    "fieldName": "jiraTicketRejectedStatus",
-    "fieldLabel": "Ticket Rejected/Dropped Status",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
-    }
-  },
-  {
-    "fieldName": "jiraDodKPI37",
-    "fieldLabel": "Status to identify completed issues",
-    "fieldType": "chips",
-    "fieldCategory": "workflow",
-    "section": "WorkFlow Status Mapping",
-    "tooltip": {
-        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
-    }
-   },
-   {
-    "fieldName": "sprintName",
-    "fieldLabel": "Sprint Name",
-    "fieldType": "text",
-    "fieldCategory": "fields",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
-    }
-},{
+        }
+    }, {
+        "fieldName": "ticketDeliverdStatus",
+        "fieldLabel": "Ticket Delivered Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which ticket is considered as delivered."
+        }
+    }, {
+        "fieldName": "jiraTicketClosedStatus",
+        "fieldLabel": "Ticket Closed Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which ticket is considered as Resolved."
+        }
+    }, {
+        "fieldName": "jiraTicketTriagedStatus",
+        "fieldLabel": "Ticket Triaged Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which ticket is considered as Triaged."
+        }
+    }, {
+        "fieldName": "jiraTicketRejectedStatus",
+        "fieldLabel": "Ticket Rejected/Dropped Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
+        }
+    },
+    {
+        "fieldName": "jiraDodKPI37",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)"
+        }
+    },
+    {
+        "fieldName": "sprintName",
+        "fieldLabel": "Sprint Name",
+        "fieldType": "text",
+        "fieldCategory": "fields",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Sprint name is a custom field in JIRA. So User need to provide that custom field which is associated with Sprint in Users JIRA Installation."
+        }
+    }, {
         "fieldName": "notificationEnabler",
         "fieldLabel": "Processor Failure Notification",
         "fieldType": "radiobutton",
         "section": "Custom Fields Mapping",
         "tooltip": {
-             "definition": "On/Off notification in case processor failure."
+            "definition": "On/Off notification in case processor failure."
         },
         "options": [{
-             "label": "On",
-             "value": true
+            "label": "On",
+            "value": true
         },
         {
-             "label": "Off",
-             "value": false
+            "label": "Off",
+            "value": false
         }
         ]
     },
@@ -8850,7 +8850,7 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Planned Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
-    }
+        }
     },
     {
         "fieldName": "epicAchievedValue",
@@ -8860,17 +8860,17 @@ db.getCollection('field_mapping_structure').insertMany(
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "JIRA applications let you add custom fields in addition to the built-in fields. Provide value of Achieved Value for Epics that need to show on Trend line. <br> Example:customfield_11111 <hr>",
-    }
+        }
     },
     {
-    "fieldName": "jiraIssueEpicTypeKPI153",
-    "fieldLabel": "Epic Issue Type",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "This field is used to identify Epic Issue type.",
-    }
+        "fieldName": "jiraIssueEpicTypeKPI153",
+        "fieldLabel": "Epic Issue Type",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify Epic Issue type.",
+        }
     },
     {
         "fieldName": "jiraItrQSIssueTypeKPI133",
@@ -8893,473 +8893,474 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-      "fieldName": "jiraSubTaskDefectType",
-      "fieldLabel": "Issue type for sub-task defect",
-      "fieldType": "chips",
-      "fieldCategory": "Issue_Type",
-      "section": "Issue Types Mapping",
-      "tooltip": {
-           "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
-      }
+        "fieldName": "jiraSubTaskDefectType",
+        "fieldLabel": "Issue type for sub-task defect",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "Any issue type mentioned will be considered as sub-task bug on Release dashboard"
+        }
     },
     {
-       "fieldName":"jiraDefectRejectionStatusKPI155",
-       "fieldLabel":"Ticket Rejected/Dropped Status",
-       "fieldType":"text",
-       "fieldCategory":"workflow",
-       "section":"WorkFlow Status Mapping",
-       "tooltip":{
-          "definition":"Status from workflow on which ticket is considered as Rejected/Dropped."
-       }
+        "fieldName": "jiraDefectRejectionStatusKPI155",
+        "fieldLabel": "Ticket Rejected/Dropped Status",
+        "fieldType": "text",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which ticket is considered as Rejected/Dropped."
+        }
     },
     {
-       "fieldName":"jiraDodKPI155",
-       "fieldLabel":"DOD Status",
-       "fieldType":"chips",
-       "fieldCategory":"workflow",
-       "section":"WorkFlow Status Mapping",
-       "tooltip":{
-          "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-       }
+        "fieldName": "jiraDodKPI155",
+        "fieldLabel": "DOD Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+        }
     },
     {
-       "fieldName":"jiraLiveStatusKPI155",
-       "fieldLabel":"Status to identify Live status",
-       "fieldType":"text",
-       "fieldCategory":"workflow",
-       "section":"WorkFlow Status Mapping",
-       "tooltip":{
-          "definition":"Provide any status from workflow on which Live is considered."
-       }
+        "fieldName": "jiraLiveStatusKPI155",
+        "fieldLabel": "Status to identify Live status",
+        "fieldType": "text",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Provide any status from workflow on which Live is considered."
+        }
     },
     {
-    	"fieldName": "uploadDataKPI42",
-    	"fieldLabel": "KPI calculation logic",
-    	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
-    	"section": "WorkFlow Status Mapping",
-    	"processorCommon": false,
-    	"tooltip": {
-    		"definition": "Enabled State (Kpi from data on Upload data screen)"
-    	}
+        "fieldName": "uploadDataKPI42",
+        "fieldLabel": "KPI calculation logic",
+        "fieldType": "toggle",
+        "toggleLabel": "Upload Data",
+        "section": "WorkFlow Status Mapping",
+        "processorCommon": false,
+        "tooltip": {
+            "definition": "Enabled State (Kpi from data on Upload data screen)"
+        }
     },
     {
-    	"fieldName": "uploadDataKPI16",
-    	"fieldLabel": "KPI calculation logic",
-    	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
-    	"section": "WorkFlow Status Mapping",
-    	"processorCommon": false,
-    	"tooltip": {
-    		"definition": "Enabled State (Kpi from data on Upload data screen)"
-    	}
+        "fieldName": "uploadDataKPI16",
+        "fieldLabel": "KPI calculation logic",
+        "fieldType": "toggle",
+        "toggleLabel": "Upload Data",
+        "section": "WorkFlow Status Mapping",
+        "processorCommon": false,
+        "tooltip": {
+            "definition": "Enabled State (Kpi from data on Upload data screen)"
+        }
     },
     {
-		"fieldName": "jiraStoryIdentificationKPI164",
-		"fieldLabel": "Issue type to identify Story",
-		"fieldType": "chips",
-		"fieldCategory": "Issue_Type",
-		"section": "Issue Types Mapping",
-		"tooltip": {
-			"definition": "All issue types that are used as/equivalent to Story.",
+        "fieldName": "jiraStoryIdentificationKPI164",
+        "fieldLabel": "Issue type to identify Story",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All issue types that are used as/equivalent to Story.",
 
-		}
-	},
-{
-    "fieldName": "jiraIssueTypeNamesKPI161",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI146",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI148",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI151",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-    "fieldName": "jiraIssueTypeNamesKPI152",
-    "fieldLabel": "Issue types to be included",
-    "fieldType": "chips",
-    "fieldCategory": "Issue_Type",
-    "processorCommon": false,
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "All the issue types used by a project in Jira."
-    }
-},
-{
-            "fieldName": "leadTimeConfigRepoTool",
-            "fieldLabel": "Lead Time KPI calculation logic",
-            "fieldType": "radiobutton",
-            "section": "Custom Fields Mapping",
-            "tooltip": {
-                "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
-            },
-            "options": [{
-                    "label": "Jira",
-                    "value": "Jira"
-                },
-                {
-                    "label": "Repo",
-                    "value": "Repo"
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI161",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI146",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI148",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI151",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "jiraIssueTypeNamesKPI152",
+        "fieldLabel": "Issue types to be included",
+        "fieldType": "chips",
+        "fieldCategory": "Issue_Type",
+        "processorCommon": false,
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "All the issue types used by a project in Jira."
+        }
+    },
+    {
+        "fieldName": "leadTimeConfigRepoTool",
+        "fieldLabel": "Lead Time KPI calculation logic",
+        "fieldType": "radiobutton",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "By Default State Calculation is based on Jira Issues and Releases. <br>  1. Jira : Calculation is based on Jira Issues and Releases, <br>  2. Repo : Calculation is based on Repo Data and Releases. <br> Branch Name Must have Jira Issue Key in it.",
+        },
+        "options": [{
+            "label": "Jira",
+            "value": "Jira"
+        },
+        {
+            "label": "Repo",
+            "value": "Repo"
+        }
+        ],
+        "nestedFields": [
+            {
+                "fieldName": "jiraIssueTypeKPI156",
+                "fieldLabel": "Issue type to be included",
+                "fieldType": "chips",
+                "fieldCategory": "Issue_Type",
+                "filterGroup": ["Jira"],
+                "tooltip": {
+                    "definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
                 }
-            ],
-            "nestedFields": [
-{
-	"fieldName": "jiraIssueTypeKPI156",
-	"fieldLabel": "Issue type to be included",
-	"fieldType": "chips",
-	"fieldCategory": "Issue_Type",
-	 "filterGroup": ["Jira"],
-	"tooltip": {
-		"definition": "Only these Issue Types will be considered for Lead Time Calculation. If this Configuration is not provided, all the Issue Types will be considered. <br> Example: Story, Enabler Story, Tech Story, Change request <hr>."
-	}
-}, {
-	"fieldName": "jiraDodKPI156",
-	"fieldLabel": "Status to identify DOD",
-	"fieldType": "chips",
-	"fieldCategory": "workflow",
-	"filterGroup": ["Jira"],
-	"tooltip": {
-		"definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
-	}
-},{
-	"fieldName": "toBranchForMRKPI156",
-	"fieldLabel": "Production Branch Name",
-	"fieldType": "text",
-	"filterGroup": ["Repo"],
-	"tooltip": {
-		"definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
-	}
-}]
-},
-{
-  "fieldName":"testingPhaseDefectsIdentifier",
-  "fieldLabel":"Testing phase defects identification",
-  "fieldType":"radiobutton",
-  "section":"Defects Mapping",
-  "tooltip":{
-    "definition":"This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
-  },
-  "options":[
-    {
-      "label":"CustomField",
-      "value":"CustomField"
+            }, {
+                "fieldName": "jiraDodKPI156",
+                "fieldLabel": "Status to identify DOD",
+                "fieldType": "chips",
+                "fieldCategory": "workflow",
+                "filterGroup": ["Jira"],
+                "tooltip": {
+                    "definition": " Definition of Doneness. Provide any status from workflow on which DOD is considered. Difference between the latest date of theses statuses and release end date will be considered as the Lead Time. <br> <br> <b>Note:</b> This configuration will be ignored if Lead Time KPI calculation logic is set to Repo Data. <br> <br> <b>Note:</b> This configuration will be ignored if Issue Type is not provided.br> Example: Closed,Done. <hr> "
+                }
+            }, {
+                "fieldName": "toBranchForMRKPI156",
+                "fieldLabel": "Production Branch Name",
+                "fieldType": "text",
+                "filterGroup": ["Repo"],
+                "tooltip": {
+                    "definition": "Production Branch in Which all the Child Branches are Merged <br> eg. master <hr>"
+                }
+            }]
     },
     {
-      "label":"Labels",
-      "value":"Labels"
+        "fieldName": "testingPhaseDefectsIdentifier",
+        "fieldLabel": "Testing phase defects identification",
+        "fieldType": "radiobutton",
+        "section": "Defects Mapping",
+        "tooltip": {
+            "definition": "This field is used to identify a defect in which phase it is raised. 1. CustomField : If a separate custom field is used, 2. Labels : If a label is used to identify, 3. Component : If a Component is used to identify"
+        },
+        "options": [
+            {
+                "label": "CustomField",
+                "value": "CustomField"
+            },
+            {
+                "label": "Labels",
+                "value": "Labels"
+            },
+            {
+                "label": "Component",
+                "value": "Component"
+            }
+        ],
+        "nestedFields": [
+            {
+                "fieldName": "testingPhaseDefectCustomField",
+                "fieldLabel": "Testing Phase Defect CustomField",
+                "fieldType": "text",
+                "fieldCategory": "fields",
+                "filterGroup": [
+                    "CustomField"
+                ],
+                "tooltip": {
+                    "definition": " Provide customfield name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName": "testingPhaseDefectValue",
+                "fieldLabel": "Testing Phase Defect Values",
+                "fieldType": "chips",
+                "filterGroup": [
+                    "CustomField",
+                    "Labels"
+                ],
+                "tooltip": {
+                    "definition": "Provide label name to identify testing phase defects."
+                }
+            },
+            {
+                "fieldName": "testingPhaseDefectComponentValue",
+                "fieldLabel": "Component",
+                "fieldType": "text",
+                "filterGroup": [
+                    "Component"
+                ],
+                "tooltip": {
+                    "definition": "Provide label name to identify testing phase defects."
+                }
+            }
+        ]
     },
     {
-      "label":"Component",
-      "value":"Component"
-    }
-  ],
-  "nestedFields":[
-    {
-      "fieldName":"testingPhaseDefectCustomField",
-      "fieldLabel":"Testing Phase Defect CustomField",
-      "fieldType":"text",
-      "fieldCategory":"fields",
-      "filterGroup":[
-        "CustomField"
-      ],
-      "tooltip":{
-        "definition":" Provide customfield name to identify testing phase defects."
-      }
+        "fieldName": "jiraDodKPI163",
+        "fieldLabel": "DOD Status",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+        }
     },
     {
-      "fieldName":"testingPhaseDefectValue",
-      "fieldLabel":"Testing Phase Defect Values",
-      "fieldType":"chips",
-      "filterGroup":[
-        "CustomField",
-        "Labels"
-      ],
-      "tooltip":{
-        "definition":"Provide label name to identify testing phase defects."
-      }
-    },
-    {
-      "fieldName":"testingPhaseDefectComponentValue",
-      "fieldLabel":"Component",
-      "fieldType":"text",
-      "filterGroup":[
-        "Component"
-      ],
-      "tooltip":{
-        "definition":"Provide label name to identify testing phase defects."
-      }
-    }
-  ]
-},
-{
-  "fieldName":"jiraDodKPI163",
-  "fieldLabel":"DOD Status",
-  "fieldType":"chips",
-  "fieldCategory":"workflow",
-  "section":"WorkFlow Status Mapping",
-  "tooltip":{
-    "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-  }
-},
-{
 
-  "fieldName": "startDateCountKPI150",
-  "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
-  "fieldType": "number",
-  "section": "Issue Types Mapping",
-  "tooltip": {
-    "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
-  }
-},
-{
+        "fieldName": "startDateCountKPI150",
+        "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
+        "fieldType": "number",
+        "section": "Issue Types Mapping",
+        "tooltip": {
+            "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
+        }
+    },
+    {
         "fieldName": "thresholdValueKPI14",
-        "fieldLabel": "Working Hours in a Day",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Working hours in a day"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI82",
-        "fieldLabel": "Working Hours in a Day",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Working hours in a day"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI111",
-        "fieldLabel": "Working Hours in a Day",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Working hours in a day"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI35",
-        "fieldLabel": "Working Hours in a Day",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Working hours in a day"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI34",
-        "fieldLabel": "Custom Field Label 34",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Custom Field Definition 34"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI37",
-        "fieldLabel": "Custom Field Label 37",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Custom Field Definition 37"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI28",
-        "fieldLabel": "Custom Field Label 28",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Custom Field Definition 28"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI36",
-        "fieldLabel": "Custom Field Label 36",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Custom Field Definition 36"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI16",
-        "fieldLabel": "Custom Field Label 16",
+        "fieldLabel": "Target KPI Value",
         "fieldType": "text",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Custom Field Definition 16"
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
-{
-    "fieldName": "thresholdValueKPI17",
-    "fieldLabel": "New Field Label 17",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "New Field Definition 17"
+    {
+        "fieldName": "thresholdValueKPI17",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI38",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI27",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI72",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI84",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI11",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI62",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI64",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI67",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI65",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI157",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI158",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI159",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI160",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
+    {
+        "fieldName": "thresholdValueKPI164",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "text",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
     }
-},
-{
-    "fieldName": "thresholdValueKPI38",
-    "fieldLabel": "New Field Label 38",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "New Field Definition 38"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI27",
-    "fieldLabel": "New Field Label 27",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "New Field Definition 27"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI72",
-    "fieldLabel": "New Field Label 72",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "New Field Definition 72"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI84",
-    "fieldLabel": "New Field Label 84",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "New Field Definition 84"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI11",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI62",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI64",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI67",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI65",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI157",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI158",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI159",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI160",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-},
-{
-    "fieldName": "thresholdValueKPI164",
-    "fieldLabel": "Working Hours in a Day",
-    "fieldType": "text",
-    "section": "Custom Fields Mapping",
-    "tooltip": {
-        "definition": "Working hours in a day"
-    }
-}
-]);
+    ]
+);

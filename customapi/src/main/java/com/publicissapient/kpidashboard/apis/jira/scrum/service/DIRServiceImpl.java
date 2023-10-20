@@ -284,6 +284,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping){
 		return calculateThresholdValue(fieldMapping.getThresholdValueKPI14(),KPICode.DEFECT_INJECTION_RATE.getKpiId());
 	}

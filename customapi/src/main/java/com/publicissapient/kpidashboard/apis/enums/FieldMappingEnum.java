@@ -197,7 +197,8 @@ public enum FieldMappingEnum {
 									Collections.singletonList("startDateCountKPI150")),
 
 	KPI17("Unit Test Coverage", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI17")),
-	KPI62("Unit Test Coverage (Kanban) ", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI62")),
+
+	KPI62("Unit Test Coverage (Kanban) ", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI62")),
 
 	KPI38("Sonar Violations", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI38")),
 	KPI64("Sonar Violations (Kanban) ", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI64")),
