@@ -62,6 +62,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   draw(issueList, parentIssue = null, parentStoryClick = false) {
     const chart = d3.select(this.elem).select('#chart');
+    const scroller = d3.select(this.elem).select('#scroller');
     chart.selectAll('svg').remove();
     d3.select(this.elem)
       .select('#dateAxis').select('svg').remove();
@@ -240,7 +241,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
           }
 
-          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+          showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
@@ -316,7 +317,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseover', function (event, d) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           const data = `<p>${currentIssue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
-          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+          showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
@@ -338,7 +339,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
           const data = `<p>Due date exceeded</p><p>Original Due Date: ${self.formatDate(d['Due Date'])}</>`;
-          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+          showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
@@ -358,7 +359,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
           const data = `<p>QA Completed</p><p>Date: ${self.formatDate(d['Test-Completed'])}</>`;
-          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+          showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
@@ -377,7 +378,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
           const data = `<p>Dev Completed</p><p>Date: ${self.formatDate(d['Dev-Completion-Date'])}</>`;
-          showTooltip(data, event.offsetX + 25, event.offsetY + 25);
+          showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
@@ -471,13 +472,28 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     //show tooltip
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
     const showTooltip = (data, xVal, yVal) => {
+
+      if(xVal + 200 > scroller.node().getBoundingClientRect().right) {
+        xVal -= 100;
+      } else {
+        xVal +=20;
+      }
+
+      if(yVal > scroller.node().getBoundingClientRect().bottom) {
+        yVal -= 50;
+      } else {
+        yVal +=20;
+      }
+
       tooltipContainer
         .selectAll('div')
         .data(data)
         .join('div')
         .attr('class', 'tooltip')
-        .style('left', xVal + initialCoordinate / 2 + 'px')
+        .style('left', xVal + 'px')
         .style('top', yVal + 'px')
+        .style('width', '200px')
+        .style('height', '50px')
         .html(data)
         .transition()
         .duration(500)
