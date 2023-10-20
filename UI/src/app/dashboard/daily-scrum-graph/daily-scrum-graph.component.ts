@@ -52,6 +52,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   }
 
   formatDate(date) {
+    date = new Date(date);
     return this.pad(date.getMonth() + 1) + '/' + this.pad(date.getDate());
   }
 
@@ -59,7 +60,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     return s < 10 ? '0' + s : s;
   }
 
-  draw(issueList, parentStoryClick = false) {
+  draw(issueList, parentIssue = null, parentStoryClick = false) {
     const chart = d3.select(this.elem).select('#chart');
     chart.selectAll('svg').remove();
     d3.select(this.elem)
@@ -106,7 +107,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     // .tickValues(d3.range(xCoordinates[0], xCoordinates[xCoordinates.length - 1], 3));
 
     const y = d3.scaleLinear()
-      .domain([0, issueList.length + 2])
+      .domain([0, issueList.length])
       .range([0, height]);
 
     const initialCoordinate = x(xCoordinates[1]);
@@ -133,12 +134,12 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(x));
 
-      
+
 
     // highlight todays Date
     if (this.currentDayIndex >= 0) {
       svgX.call(g => g.selectAll(`.tick:nth-of-type(${this.currentDayIndex + 1}) text`)
-      .style('color', '#2741D3').style('font-weight', 'bold'))  
+        .style('color', '#2741D3').style('font-weight', 'bold'))
     }
 
     svg
@@ -303,11 +304,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseout', () => {
           hideTooltip();
         })
-        .each(function(d,i) {
+        .each(function (d, i) {
           var thisWidth = this.getComputedTextLength()
           console.log(this, thisWidth);
-          this.setAttribute('x', this.getAttribute('x') < 0 ? -200 : this.getAttribute('x') - thisWidth/2);
-      })
+          this.setAttribute('x', this.getAttribute('x') < 0 ? -200 : this.getAttribute('x') - thisWidth / 2);
+        })
 
       // show 'Due Date Exceeded' if status not closed after dueDate
       marker.append('image')
@@ -319,7 +320,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
-          const data = `<p>Due date exceeded</p><p>Original Due Date: ${d['Due Date']}</>`;
+          const data = `<p>Due date exceeded</p><p>Original Due Date: ${self.formatDate(d['Due Date'])}</>`;
           showTooltip(data, event.offsetX + 25, event.offsetY + 25);
         })
         .on('mouseout', () => {
@@ -339,7 +340,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
-          const data = `<p>QA Completed</p><p>Date: ${d['Test-Completed']}</>`;
+          const data = `<p>QA Completed</p><p>Date: ${self.formatDate(d['Test-Completed'])}</>`;
           showTooltip(data, event.offsetX + 25, event.offsetY + 25);
         })
         .on('mouseout', () => {
@@ -371,18 +372,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     }
 
     const showSubTask = (parentIssue, index,) => {
-
       selectedIssueSubtask.forEach((task) => {
-        let index = issueDataList.findIndex(obj => obj['Issue Id'] === task['Issue Id']);
-        if (index !== -1) {
+        let idx = issueDataList.findIndex(obj => obj['Issue Id'] === task['Issue Id']);
+        if (idx !== -1) {
           selectedIssueSubtask.splice(selectedIssueSubtask.findIndex(subTask => subTask['Issue Id'] === task['Issue Id']), 1, {});
         }
       });
       selectedIssueSubtask = selectedIssueSubtask.filter((task) => Object.keys(task).length);
       if (selectedIssueSubtask.length) {
         issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
-        console.log(issueDataList);
-        this.draw(issueDataList, true);
+        this.draw(issueDataList, parentIssue, true);
       }
     };
 
@@ -400,8 +399,15 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueSvg.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1)
-        .attr("fill", function (d, i) { return i % 2 ? '#FFF' : '#EFEFEF' })
+        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) + 8)
+        .attr("fill", function (d, i) {
+          if (parentIssue && parentIssue['Issue Id']) {
+            if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
+              return '#4374950F';
+            }
+          }
+          return '#FFF';
+        });
 
 
       issueSvg
@@ -412,13 +418,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('y', 0)
         .append('xhtml:div')
         .html(function (d) {
-          if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
-            return `<div><i class="fas fa-angle-right p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
+            if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
+              return `<div><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
                     <div><span class="issueStatus">${d['Issue Status']}</div></div>`;
-          } else {
-            return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+            } else {
+              return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
             <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div></div>`;
-          }
+            }
         })
         .style('font-weight', 'bold')
         .style('transform', (d) => `scale(${d['parentStory'] && d['parentStory'].length ? 0.8 : 1})`)
@@ -478,8 +484,15 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       line.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1)
-        .attr("fill", function (d, i) { return i % 2 ? '#fff' : '#EFEFEF' })
+        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8)
+        .attr("fill", function (d, i) {
+          if (parentIssue && parentIssue['Issue Id']) {
+            if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
+              return '#4374950F';
+            }
+          }
+          return '#FFF';
+        })
         .attr('x', -100)
         .attr('transform', function (d, i) { return 'translate(0,0)'; });
 
