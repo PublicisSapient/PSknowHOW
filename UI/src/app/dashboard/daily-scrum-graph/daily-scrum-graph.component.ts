@@ -86,7 +86,22 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         }
       })];
     } else {
-      issueDataList = [...issueList];
+      let otherExpandedStories = issueList.filter((f) => f['IsExpanded'] && f['Issue Id'] !== parentIssue['Issue Id']);
+      otherExpandedStories.forEach((element) => {
+        delete element['IsExpanded'];
+        issueList.splice(issueList.findIndex((obj) => obj['Issue Id'] === element['Issue Id']) + 1, element['subTask'].length);
+      });
+
+      issueDataList = [...issueList.filter((issue) => {
+        let independentSubtasks = issueList.filter((f) => f['parentStory'] && f['parentStory'].length && !issueList.includes(f['parentStory'][0])).map(m => m['Issue Id']);
+        if (issue['parentStory'] && issue['parentStory'].length && issue['parentStory'].includes(parentIssue['Issue Id'])) {
+          return issue;
+        } else if (independentSubtasks.includes(issue['Issue Id'])) {
+          return issue;
+        } else if (!issue['parentStory']) {
+          return issue;
+        }
+      })];
     }
 
     if (issueDataList.length > 15) {
@@ -275,7 +290,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('y', (d, i) => swimLaneHeight / 2 + 20)
+        .attr('y', (d, i) => swimLaneHeight / 2 + 25)
         .style('cursor', 'pointer')
         .text(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -381,6 +396,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       selectedIssueSubtask = selectedIssueSubtask.filter((task) => Object.keys(task).length);
       if (selectedIssueSubtask.length) {
         issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
+        parentIssue['IsExpanded'] = true;
         this.draw(issueDataList, parentIssue, true);
       }
     };
@@ -418,13 +434,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('y', 0)
         .append('xhtml:div')
         .html(function (d) {
-            if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
-              return `<div><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
+          if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
+            return `<div><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
                     <div><span class="issueStatus">${d['Issue Status']}</div></div>`;
-            } else {
-              return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+          } else {
+            return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
             <div><span class="issueStatus ${openIssueStatus.includes(d['Issue Status']) ? 'in_progress' : 'closed'}">${d['Issue Status']}</div></div>`;
-            }
+          }
         })
         .style('font-weight', 'bold')
         .style('transform', (d) => `scale(${d['parentStory'] && d['parentStory'].length ? 0.8 : 1})`)
