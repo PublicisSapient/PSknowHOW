@@ -68,13 +68,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     d3.select(this.elem)
       .select('#issueAxis').select('*').remove();
 
-    const xCoordinates = this.generateDates();
-    const margin = { top: 30, right: 10, bottom: 20, left: 100 };
-    let width = (chart.node().parentNode.offsetWidth < 1500 ? 1500 : chart.node().parentNode.offsetWidth) - margin.left - margin.right;
-    const swimLaneHeight = 75;
-    const height = issueList.length * swimLaneHeight + swimLaneHeight;
-
-    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
+    // modify issues list
     let selectedIssueSubtask = [];
     let issueDataList = [];
     if (!parentStoryClick) {
@@ -103,6 +97,14 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         }
       })];
     }
+
+    const xCoordinates = this.generateDates();
+    const margin = { top: 30, right: 10, bottom: 20, left: 100 };
+    let width = (chart.node().parentNode.offsetWidth < 1500 ? 1500 : chart.node().parentNode.offsetWidth) - margin.left - margin.right;
+    const swimLaneHeight = 75;
+    const height = issueList.length * swimLaneHeight + swimLaneHeight;
+
+    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
 
     if (issueDataList.length > 15) {
       width = width + ((issueDataList.length - 14) * 200);
@@ -415,7 +417,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueSvg.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) + 8)
+        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight)
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
@@ -500,7 +502,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       line.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8)
+        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight )
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
