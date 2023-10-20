@@ -133,13 +133,12 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(x));
 
+      
+
     // highlight todays Date
     if (this.currentDayIndex >= 0) {
-      svg
-        .select('.xAxis')
-        .selectAll(`.tick:nth-of-type(${this.currentDayIndex + 1}) text`)
-        .style('color', '#2741D3')
-        .style('font-weight', 'bold');
+      svgX.call(g => g.selectAll(`.tick:nth-of-type(${this.currentDayIndex + 1}) text`)
+      .style('color', '#2741D3').style('font-weight', 'bold'))  
     }
 
     svg
@@ -231,7 +230,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       let assigneeParts = marker.selectAll("g.part")
         .data(() => {
-          console.log([].concat(...issueList.map((d) => Object.keys(d['assigneeLogGroup']))));
           return [].concat(...issueList.map((d, index) => Object.keys(d['assigneeLogGroup'])))
         })
         .enter()
@@ -267,7 +265,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               });
               if (!alreadyThere) {
                 assigneePartsArr.push(obj);
-                return x(self.formatDate(new Date(d))) + initialCoordinate / 2;
+                return x(self.formatDate(new Date(d))) + initialCoordinate / 2
               } else {
                 return -200;
               }
@@ -276,7 +274,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('y', (d, i) => swimLaneHeight / 2 - 15)
+        .attr('y', (d, i) => swimLaneHeight / 2 + 20)
         .style('cursor', 'pointer')
         .text(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -304,15 +302,20 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .on('mouseout', () => {
           hideTooltip();
-        });
+        })
+        .each(function(d,i) {
+          var thisWidth = this.getComputedTextLength()
+          console.log(this, thisWidth);
+          this.setAttribute('x', this.getAttribute('x') < 0 ? -200 : this.getAttribute('x') - thisWidth/2);
+      })
 
       // show 'Due Date Exceeded' if status not closed after dueDate
       marker.append('image')
         .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
         .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
-        .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 25)
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -329,10 +332,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
-          console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25);
-          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 25;
+          console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20);
+          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -349,9 +352,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
-          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25
+          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 20
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -515,17 +518,17 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     //draw line for todays date if it exist
     if (typeof this.currentDayIndex === 'number') {
-      const line = svg
-        .append('g')
-        .attr('transform', `translate(0,0)`)
-        .append('svg:line')
-        .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-        .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-        .attr('y1', height)
-        .attr('y2', 0)
-        .style('stroke', '#dedede')
-        .style('fill', 'none')
-        .attr('class', 'gridline');
+      // const line = svg
+      //   .append('g')
+      //   .attr('transform', `translate(0,0)`)
+      //   .append('svg:line')
+      //   .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+      //   .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
+      //   .attr('y1', height)
+      //   .attr('y2', 0)
+      //   .style('stroke', '#dedede')
+      //   .style('fill', 'none')
+      //   .attr('class', 'gridline');
     }
 
   }
