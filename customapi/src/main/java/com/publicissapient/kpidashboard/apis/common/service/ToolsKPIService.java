@@ -1148,12 +1148,20 @@ public abstract class ToolsKPIService<R, S> {
 		return AggregationUtils.percentilesLong(valueList, 90d);
 	}
 
+	/**
+	 * on selection of single project the fieldmapping threshold value will be
+	 * selected
+	 * 
+	 * @param selectIds
+	 *            projectIds
+	 * @param kpiElement
+	 *            kpiElement to set thresholdvalue
+	 */
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement) {
-
 		String basicProjectConfigId = null;
-		if (selectIds.size() == 1) {
+
+		if (selectIds.size() == 1)
 			basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
-		}
 
 		if (StringUtils.isNotEmpty(basicProjectConfigId)) {
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -1164,10 +1172,18 @@ public abstract class ToolsKPIService<R, S> {
 		}
 	}
 
-	public Double calculateThresholdValue(FieldMapping fieldMapping) { // NOSONAR
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param fieldValue
+	 *            fieldmapping thresholdvalue
+	 * @param kpiId
+	 *            KPICODE kpiId
+	 * @return
+	 */
 	public Double calculateThresholdValue(String fieldValue, String kpiId) { // NOSONAR
 		Double thresholdValue;
 		if (StringUtils.isEmpty(fieldValue)) {
