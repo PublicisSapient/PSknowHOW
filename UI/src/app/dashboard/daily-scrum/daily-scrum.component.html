@@ -9,7 +9,7 @@
                         <div class="filters" *ngSwitchCase="'singleSelect'">
                             <ng-select [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
                                 (change)="handleSingleSelectChange($event,filter?.filterKey)"
-                                placeholder="Filter By Role" class="p-pb-0" [style]="{'min-width' : '180px'}">
+                                placeholder="Domain" class="p-pb-0" [style]="{'min-width' : '180px'}">
                                 <ng-option *ngFor="let item of filter.options" [value]="item">
                                     {{item}}
                                 </ng-option>
