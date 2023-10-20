@@ -2,7 +2,7 @@
 
     <!-- filter section -->
     <section class="filter-header">
-        <div class="p-d-flex p-align-center p-jc-between">
+        <div class="p-d-flex p-align-center p-jc-between p-w-100">
             <ng-container *ngIf="selectedUser === 'Overall' else assignee">
                 <ng-container *ngFor="let filter of filterData">
                     <ng-container [ngSwitch]="filter?.filterType">
@@ -25,13 +25,15 @@
             </ng-template>
 
             <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
-                <div class="p-d-flex" style="width: 70vw; max-height: 50px;">
-                    <button *ngFor="let assignee of assigneeList"
-                        (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
-                        [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-                        [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee">
-                        {{getNameInitials(assignee.assigneeName)}}
-                    </button>
+                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto;">
+                    <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
+                        <button *ngFor="let assignee of assigneeList"
+                            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
+                            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee">
+                            {{getNameInitials(assignee.assigneeName)}}
+                        </button>
+                    </div>
                 </div>
             </div>
             <button class="assignee" (click)="handleViewExpandCollapse()">
@@ -97,8 +99,8 @@
     <!-- Assignee Issue details -->
     <ng-template #userInfo>
         <section class="user-info p-m-2">
-            <app-assignee-board [issueDataList]="currentAssigneeissueData"
-                [standUpStatusFilter]="standUpStatusFilter" [onFullScreen]="onFullScreen"></app-assignee-board>
+            <app-assignee-board [issueDataList]="currentAssigneeissueData" [standUpStatusFilter]="standUpStatusFilter"
+                [onFullScreen]="onFullScreen"></app-assignee-board>
         </section>
     </ng-template>
 </main>

@@ -58,14 +58,14 @@
 /* user button css */
 button.assignee {
     width: 40px;
-    height: 36px;
+    height: 40px;
     border-radius: 50%;
     background-color: white;
     cursor: pointer;
     font-weight: bold;
     display: inline-block;
     padding: 0;
-    align-items: flex-end;
+    align-items: center;
     margin-left: 4px;
 }
 
