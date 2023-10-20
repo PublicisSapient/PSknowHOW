@@ -25,14 +25,11 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @SuppressWarnings("java:S1192")
-@ChangeUnit(id = "ddl1", order = "001", author = "PSKnowHOW", runAlways = true)
+@ChangeUnit(id = "ddl1", order = "001", author = "PSKnowHOW")
 public class AuthenticationAndAuthorizationChangeLog {
 	public static final String ROLES_COLLECTION = "roles";
 	public static final String ACTION_POLICY_RULE_COLLECTION = "action_policy_rule";
@@ -66,23 +63,51 @@ public class AuthenticationAndAuthorizationChangeLog {
 	}
 
 	private List<Document> getRoles() {
-		return Arrays.asList(
-				new Document("roleName", "ROLE_PROJECT_VIEWER").append("displayName", "Project Viewer")
-						.append("description", "read kpi data at project level").append("createdDate", new Date())
-						.append("lastModifiedDate", new Date()).append("isDeleted", false)
-						.append("permissionNames", Collections.singletonList("View")),
-				new Document("roleName", "ROLE_PROJECT_ADMIN").append("displayName", "Project Admin")
-						.append("description", "manage user-roles at project level").append("createdDate", new Date())
-						.append("lastModifiedDate", new Date()).append("isDeleted", false)
-						.append("permissionNames", Collections.singletonList("View")),
-				new Document("roleName", "ROLE_SUPERADMIN").append("displayName", "Super Admin")
-						.append("description", "access to every resource in the instance")
-						.append("createdDate", new Date()).append("lastModifiedDate", new Date())
-						.append("isDeleted", false).append("permissionNames", Collections.singletonList("ViewAll")),
-				new Document("roleName", "ROLE_GUEST").append("displayName", "Guest")
-						.append("description", "read access for the instance").append("createdDate", new Date())
-						.append("lastModifiedDate", new Date()).append("isDeleted", false)
-						.append("permissionNames", Collections.singletonList("View")));
+		List<Document> documents = new ArrayList<>();
+		Document document1 = new Document();
+		document1.append("roleName", "ROLE_GUEST").append("displayName", "Guest")
+				.append("description", "read access for the instance").append("createdDate", "2023-07-17T07:27:57.955Z")
+				.append("lastModifiedDate", "2023-07-17T07:27:57.955Z").append("isDeleted", "False")
+				.append("permissions",
+						Arrays.asList(new Document("permissionName", "View").append("operationName", "Read")
+								.append("resourceName", "resource4").append("createdDate", "2023-07-17T07:27:57.756Z")
+								.append("lastModifiedDate", "2023-07-17T07:27:57.756Z").append("isDeleted", "False")));
+		documents.add(document1);
+		// Document 2
+		Document document2 = new Document();
+		document2.append("roleName", "ROLE_SUPERADMIN").append("displayName", "Super Admin")
+				.append("description", "access to every resource in the instance")
+				.append("createdDate", "2023-07-17T07:27:57.955Z")
+				.append("lastModifiedDate", "2023-07-17T07:27:57.955Z").append("isDeleted", "False")
+				.append("permissions",
+						Arrays.asList(new Document("permissionName", "ViewAll").append("operationName", "Read")
+								.append("resourceName", "resource5").append("createdDate", "2023-07-17T07:27:57.756Z")
+								.append("lastModifiedDate", "2023-07-17T07:27:57.756Z").append("isDeleted", "False")));
+		documents.add(document2);
+		// Document 3 - ROLE_PROJECT_ADMIN
+		Document document3 = new Document();
+		document3.append("roleName", "ROLE_PROJECT_ADMIN").append("displayName", "Project Admin")
+				.append("description", "manage user-roles at project level")
+				.append("createdDate", "2023-07-17T07:27:57.955Z")
+				.append("lastModifiedDate", "2023-07-17T07:27:57.955Z").append("isDeleted", "False")
+				.append("permissions",
+						Arrays.asList(new Document("permissionName", "View").append("operationName", "Read")
+								.append("resourceName", "resource4").append("createdDate", "2023-07-17T07:27:57.756Z")
+								.append("lastModifiedDate", "2023-07-17T07:27:57.756Z").append("isDeleted", "False")));
+		documents.add(document3);
+
+		// Document 4 - ROLE_PROJECT_VIEWER
+		Document document4 = new Document();
+		document4.append("roleName", "ROLE_PROJECT_VIEWER").append("displayName", "Project Viewer")
+				.append("description", "read kpi data at project level")
+				.append("createdDate", "2023-07-17T07:27:57.955Z")
+				.append("lastModifiedDate", "2023-07-17T07:27:57.955Z").append("isDeleted", "False")
+				.append("permissions",
+						Arrays.asList(new Document("permissionName", "View").append("operationName", "Read")
+								.append("resourceName", "resource4").append("createdDate", "2023-07-17T07:27:57.756Z")
+								.append("lastModifiedDate", "2023-07-17T07:27:57.756Z").append("isDeleted", "False")));
+		documents.add(document4);
+		return documents;
 	}
 
 	private List<Document> getActionPolicyRule() {
@@ -319,4 +344,5 @@ public class AuthenticationAndAuthorizationChangeLog {
 		mongoTemplate.dropCollection(ROLES_COLLECTION);
 		mongoTemplate.dropCollection(ACTION_POLICY_RULE_COLLECTION);
 	}
+
 }

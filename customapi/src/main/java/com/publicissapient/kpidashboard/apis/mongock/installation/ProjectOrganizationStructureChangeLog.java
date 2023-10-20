@@ -27,7 +27,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "ddl6", order = "006", author = "PSKnowHOW", runAlways = true)
+@ChangeUnit(id = "ddl6", order = "006", author = "PSKnowHOW")
 public class ProjectOrganizationStructureChangeLog {
 	private final MongoTemplate mongoTemplate;
 	private static final String HIERARCHY_LEVELS = "hierarchy_levels";

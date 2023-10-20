@@ -26,7 +26,7 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
-@ChangeUnit(id = "ddl2", order = "002", author = "PSKnowHOW", runAlways = true)
+@ChangeUnit(id = "ddl2", order = "002", author = "PSKnowHOW")
 public class CreateDatabaseIndexesChangeLog {
 
 	private final MongoTemplate mongoTemplate;

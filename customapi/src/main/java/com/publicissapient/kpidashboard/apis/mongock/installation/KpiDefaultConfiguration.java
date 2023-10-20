@@ -27,7 +27,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.List;
 
 @Slf4j
-@ChangeUnit(id = "ddl4", order = "004", author = "PSKnowHOW", runAlways = true)
+@ChangeUnit(id = "ddl4", order = "004", author = "PSKnowHOW")
 public class KpiDefaultConfiguration {
 	private final MongoTemplate mongoTemplate;
 	private static final String METADATA_IDENTIFIER_COLLECTION = "metadata_identifier";

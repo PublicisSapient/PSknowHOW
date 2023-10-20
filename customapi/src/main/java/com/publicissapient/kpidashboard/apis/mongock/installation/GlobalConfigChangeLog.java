@@ -29,7 +29,7 @@ import io.mongock.api.annotations.Execution;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@ChangeUnit(id = "ddl3", order = "003", author = "PSKnowHOW", runAlways = true)
+@ChangeUnit(id = "ddl3", order = "003", author = "PSKnowHOW")
 public class GlobalConfigChangeLog {
 
 	private final MongoTemplate mongoTemplate;

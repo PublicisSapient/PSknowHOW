@@ -27,7 +27,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import java.util.List;
 
 @Slf4j
-@ChangeUnit(id = "ddl5", order = "005", author = "hargupta15", runAlways = true)
+@ChangeUnit(id = "ddl5", order = "005", author = "hargupta15")
 public class KpiDefinition {
 	private final MongoTemplate mongoTemplate;
 	private static final String KPI_MASTER_COLLECTION = "kpi_master";
