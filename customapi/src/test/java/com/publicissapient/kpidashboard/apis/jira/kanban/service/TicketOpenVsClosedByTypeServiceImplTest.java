@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -123,6 +124,10 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("storyOpenRateByIssue", "sum");
+
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
+
 
 	}
 
