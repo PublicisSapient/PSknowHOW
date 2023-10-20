@@ -452,11 +452,17 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('align-items', 'center')
         .on('click', function (event, issue) {
           let d = issue;
-          if (d && d['subTask']) {
-            selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
-            console.log(d['subTask'], selectedIssueSubtask);
-            let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
-            showSubTask(d, index);
+          if (!d['IsExpanded']) {
+            if (d && d['subTask']) {
+              selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
+              console.log(d['subTask'], selectedIssueSubtask);
+              let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
+              showSubTask(d, index);
+            }
+          } else {
+            delete d['IsExpanded'];
+            issueList.splice(issueList.findIndex((obj) => obj['Issue Id'] === d['Issue Id']) + 1, d['subTask'].length);
+            self.draw(issueList);
           }
           showTaskDetail(d);
         })
@@ -502,7 +508,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       line.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight )
+        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight)
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
