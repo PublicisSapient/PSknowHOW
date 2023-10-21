@@ -1,7 +1,8 @@
 #chart-main-container {
     background-color: #fff;
     display: flex;
-    max-height: 100%;
+    height: 100%;
+    overflow-y: auto;
 }
 
 #chart-container {
@@ -9,17 +10,13 @@
     background-color: #fff;
     z-index: 1000;
     position: relative;
-    overflow-x: hidden;
-    overflow-y: auto;
-    max-height: 100%;
     width: 100%;
 }
 
 #scroller {
     width:100%;
     overflow-x: auto; 
-    display: inline-block; 
-    max-height: 100%;
+    overflow-y: auto;
     padding-bottom: 30px;
 }
 

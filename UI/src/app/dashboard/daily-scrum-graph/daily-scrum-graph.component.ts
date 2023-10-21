@@ -107,9 +107,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
 
-    if (issueDataList.length > 15) {
-      width = width + ((issueDataList.length - 14) * 200);
-    }
+    // if (issueDataList.length > 15) {
+    //   width = width + ((issueDataList.length - 14) * 200);
+    // }
 
     const svg = chart
       .append('svg')
