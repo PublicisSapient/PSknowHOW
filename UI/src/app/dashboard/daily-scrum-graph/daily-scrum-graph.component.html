@@ -14,39 +14,55 @@
     </div>
 </div>
 <div class="modal">
-    <p-dialog [(visible)]="displayModal" header="Legends" [modal]="true" [draggable]="true" [resizable]="true">
-        <div class="p-p-3 p-pl-5">
-            <div class="p-d-flex p-align-center">
-                <img src="../../../assets/img/due-date-exceeded.svg" />
-                <span class="p-ml-4">Due Date Exceeded</span>
+    <p-dialog [(visible)]="displayModal" header="Legend" [modal]="true" [draggable]="true" [resizable]="true">
+        <div class="p-grid p-p-6">
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:32px; margin:auto;" src="../../../assets/img/Epic.svg" />
+                <span class="p-d-block p-mt-2">Epic</span>
             </div>
-            <div class="p-d-flex p-align-center">
-                <img src="../../../assets/img/dev-completed.svg" />
-                <span class="p-ml-4">Dev Completed</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:32px; margin:auto;" src="../../../assets/img/Story.svg" />
+                <span class="p-d-block p-mt-2">Story</span>
             </div>
-            <div class="p-d-flex p-align-center">
-                <img src="../../../assets/img/qa-completed.svg" />
-                <span class="p-ml-4">QA Completed</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:32px; margin:auto;" src="../../../assets/img/Subtask_icon.svg" />
+                <span class="p-d-block p-mt-2">Subtask</span>
             </div>
-            <div class="p-d-flex p-align-center">
-                <img src="../../../assets/img/intermin-status.JPG" />
-                <span class="p-ml-4">Intermin Status</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:32px; margin:auto;" src="../../../assets/img/Bug.svg" />
+                <span class="p-d-block p-mt-2">Defect</span>
             </div>
-            <div class="p-d-flex" [style]="{'align-items':'center'}">
-                <img style="width:40px" src="../../../assets/img/spill active issue.JPG" />
-                <span class="p-ml-4 p-mt-3 p-mb-4">Spilled Issue</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:50px; margin:auto;" src="../../../assets/img/due-date-exceeded.svg" />
+                <span class="p-d-block">Due Date Exceeded</span>
             </div>
-            <div class="p-d-flex" [style]="{'align-items':'flex-start'}">
-                <img style="width:40px" src="../../../assets/img/spill-issue-closed.JPG" />
-                <span class="p-ml-4 p-mb-4">Spilled Closed Issue</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:50px; margin:auto;" src="../../../assets/img/dev-completed.svg" />
+                <span class="p-d-block">Dev Completed</span>
             </div>
-            <div class="p-d-flex" [style]="{'align-items':'flex-start'}">
-                <img style="width:40px" src="../../../assets/img/active-issue.JPG" />
-                <span class="p-ml-4 p-mb-4">Active Issue</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:50px; margin:auto;" src="../../../assets/img/qa-completed.svg" />
+                <span class="p-d-block">QA Completed</span>
             </div>
-            <div class="p-d-flex" [style]="{'align-items':'flex-start'}">
-                <img style="width:40px" src="../../../assets/img/closed issue.JPG" />
-                <span class="p-ml-4 p-mb-4">Closed Issue</span>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:50px; margin:auto;" src="../../../assets/img/intermin-status.JPG" />
+                <span class="p-d-block">Interim Status</span>
+            </div>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:40px; margin:auto;" src="../../../assets/img/spill active issue.JPG" />
+                <span class="p-d-block">Spilled Issue</span>
+            </div>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:40px; margin:auto; margin-top: 14px; margin-bottom: 14px;" src="../../../assets/img/spill-issue-closed.JPG" />
+                <span class="p-d-block">Spilled Closed Issue</span>
+            </div>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:40px; margin:auto;" src="../../../assets/img/active-issue.JPG" />
+                <span class="p-d-block">Active Issue</span>
+            </div>
+            <div class="p-col-3 p-d-flex p-flex-column legend-item">
+                <img style="width:40px; margin:auto;" src="../../../assets/img/closed issue.JPG" />
+                <span class="p-d-block">Closed Issue</span>
             </div>
         </div>
     </p-dialog>
