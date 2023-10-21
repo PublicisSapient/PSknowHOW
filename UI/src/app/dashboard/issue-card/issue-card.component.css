@@ -1,51 +1,52 @@
-.button-set{
+.button-set {
     display: flex;
 }
 
-.button-set button{
+.button-set button {
     flex-grow: 1;
     padding: 1rem;
     cursor: pointer;
     color: #666666;
     background-color: white;
-    border: 1px solid #666666;;
+    border: 1px solid #666666;
+    ;
 }
 
-.button-set button.selected-button{
+.button-set button.selected-button {
     color: white;
     background-color: var(--color-cyan-blue);
     border: 1px solid var(--color-cyan-blue);
 }
 
 
-.issue-status{
-    display:flex;
+.issue-status {
+    display: flex;
     justify-content: space-between;
 }
 
-.issue-status p{
+.issue-status p {
     color: #666666;
 }
 
-.issue-status p span{
+.issue-status p span {
     color: #3F51B5;
 }
 
-:host::ng-deep .p-accordion .p-accordion-tab .p-accordion-toggle-icon{
+:host::ng-deep .p-accordion .p-accordion-tab .p-accordion-toggle-icon {
     border: none;
     font-size: 1rem;
 }
 
-:host::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link{
+:host::ng-deep .p-accordion .p-accordion-header .p-accordion-header-link {
     padding: 0.5rem;
     border-bottom: 1px solid #666666;
 }
 
-:host::ng-deep .p-accordion .p-accordion-tab{
+:host::ng-deep .p-accordion .p-accordion-tab {
     margin-bottom: 1rem;
 }
 
-.assignee{
+.assignee {
     width: 1.75rem;
     height: 1.75rem;
     border-radius: 50%;
@@ -77,7 +78,13 @@
     background-image: url('/assets/img/Bug.svg');
 }
 
-:host ::ng-deep .issueTypeIcon.Story{
+:host ::ng-deep .issueTypeIcon.Story {
     background-image: url('/assets/img/Story.svg');
 }
 
+@media only screen and (min-width: 1321px) {
+    :host ::ng-deep .issueTypeIcon {
+        height: 25px;
+        width: 25px;
+    }
+}
