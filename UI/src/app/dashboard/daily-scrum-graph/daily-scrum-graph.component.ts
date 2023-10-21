@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
+import { setTimeout } from 'timers';
 
 @Component({
   selector: 'app-daily-scrum-graph',
@@ -21,7 +22,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
-    this.draw(this.issueDataList);
+    window.setTimeout(() => {
+      this.draw(this.issueDataList);
+    }, 0);
   }
 
   showLegends() {
@@ -101,7 +104,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const xCoordinates = this.generateDates();
     const margin = { top: 30, right: 10, bottom: 20, left: 100 };
-    let width = chart.node().parentNode.offsetWidth - margin.left - margin.right - 12.5/100 * scroller.node().offsetWidth;
+    let width = chart.node().parentNode.offsetWidth - margin.left - margin.right - 12.5 / 100 * scroller.node().offsetWidth;
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
@@ -466,7 +469,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             issueList.splice(issueList.findIndex((obj) => obj['Issue Id'] === d['Issue Id']) + 1, d['subTask'].length);
 
             let scrollPosition = scroller.node().scrollTop;
-            self.draw(issueList,null, false, scrollPosition);
+            self.draw(issueList, null, false, scrollPosition);
           }
           showTaskDetail(d);
         })

@@ -17,7 +17,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   graphWidth: number = 100;
   constructor(private sharedService: SharedService) {
     this.sharedService.currentData.subscribe(data => {
-      if (Object.keys(data).length) {
+      if (data && Object.keys(data).length) {
         this.showIssueDetails = true;
         this.graphWidth = 75;
       } else {

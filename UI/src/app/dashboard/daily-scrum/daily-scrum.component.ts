@@ -55,10 +55,10 @@ export class DailyScrumComponent implements OnInit ,OnChanges{
   }
 
   setSelectedUser(assigneeId,assigneeName){
+    this.service.setIssueData(null);
     this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === assigneeId);
     this.onSelectedUserChange.emit(assigneeId);
     this.getCurrentAssigneeIssueData(assigneeName);
-    this.service.setIssueData({});
   }
 
   setShowLess(){
