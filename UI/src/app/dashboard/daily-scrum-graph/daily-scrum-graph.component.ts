@@ -424,7 +424,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
-              return '#4374950F';
+              return '#F4F7F9';
             }
           }
           return '#FFF';
@@ -530,7 +530,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
-              return '#4374950F';
+              return '#F4F7F9';
             }
           }
           return '#FFF';
