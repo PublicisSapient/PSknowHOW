@@ -11,8 +11,6 @@
     margin-right: 0.25rem;
     flex-basis: 75%;
     flex: 1 1 auto;
-    /* max-height: calc(100vh - 151px);
-    overflow-y: auto; */
     max-height: 100%;
     height: calc(100vh - 151px);
     overflow: hidden;

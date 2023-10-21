@@ -100,32 +100,22 @@ button.assignee.selected-user {
     color: var(--color-green);
 }
 
-/* @media (max-width: 1260px) and (-webkit-min-device-pixel-ratio: 1) { */
+@media only screen and (min-device-width : 320px) and (max-width: 1320px) {
 
     :host .container,
     :host::ng-deep .container .p-component,
-    .button.assignee,:host::ng-deep .legends-button {
-        font-size: 10px !important;
-        font-family: var(--font-regular) !important;
+    .button.assignee,
+    :host::ng-deep .legends-button {
+        font-size: 10px;
     }
+}
 
-    :host .button.assignee {
-        width: 40px;
-        height: 36px;
-    }
-/* } */
-
-/* @media (min-width: 1724px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
+@media only screen and (min-width: 1321px) {
 
     :host .container,
     :host::ng-deep .container .p-component,
-    .button.assignee,:host::ng-deep .legends-button {
-        font-size: 16px !important;
-        font-family: var(--font-regular) !important;
+    .button.assignee,
+    :host::ng-deep .legends-button {
+        font-size: 14px;
     }
-
-    :host .button.assignee {
-        width: 40px;
-        height: 36px;
-    }
-} */
+}

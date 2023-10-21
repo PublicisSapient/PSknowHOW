@@ -163,7 +163,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     svg
       .select('.xAxis')
       .selectAll(`.tick text`)
-      .style('font-size', '10px');
+      // .style('font-size', '10px');
 
     const getNameInitials = (name) => {
       const initials = name?.split(' ').map(d => d[0]);
@@ -263,7 +263,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('width', 100)
         .style('color', '#437495')
         .style('font-weight', 'bold')
-        .style('font-size', '10px')
+        // .style('font-size', '10px')
         .attr('x', function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let toolTipData = ``;
