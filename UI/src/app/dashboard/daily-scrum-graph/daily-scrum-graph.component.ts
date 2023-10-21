@@ -101,7 +101,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     const xCoordinates = this.generateDates();
     const margin = { top: 30, right: 10, bottom: 20, left: 100 };
-    let width = (chart.node().parentNode.offsetWidth < 1500 ? 1500 : chart.node().parentNode.offsetWidth) - margin.left - margin.right;
+    let width = chart.node().parentNode.offsetWidth - margin.left - margin.right - 12.5/100 * scroller.node().offsetWidth;
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
@@ -163,7 +163,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     svg
       .select('.xAxis')
       .selectAll(`.tick text`)
-      // .style('font-size', '10px');
 
     const getNameInitials = (name) => {
       const initials = name?.split(' ').map(d => d[0]);
@@ -263,7 +262,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('width', 100)
         .style('color', '#437495')
         .style('font-weight', 'bold')
-        // .style('font-size', '10px')
         .attr('x', function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let toolTipData = ``;
