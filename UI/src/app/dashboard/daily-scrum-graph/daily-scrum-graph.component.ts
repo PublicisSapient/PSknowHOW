@@ -109,6 +109,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
     const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Open')?.options;
+    const closedIssueStatus = this.standUpStatusFilter.find(item => item['filterName'] === 'Done')?.options;
 
     if (xCoordinates.length > 20) {
       width = width + ((xCoordinates.length - 19) * 50);
@@ -202,12 +203,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('cx', function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let toolTipData = ``;
-          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
-            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
-              return x(self.formatDate(new Date(d))) >= 0 ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : 0
-            } else {
-              return -500;
+          if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+              if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+                return x(self.formatDate(new Date(d))) >= 0 ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : 0
+              } else {
+                return -500;
+              }
+            } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
+              return x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2
             }
           }
         })
@@ -217,14 +222,20 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let toolTipData = ``;
           let display = 'none'
-          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-            toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
-            if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
-              display = 'block';
+          if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+              if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
+                display = 'block';
+              }
             }
+
+          } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
+            display = 'block'
           }
           return display;
-        })
+        }
+        )
         .style('stroke-width', 1)
         .attr('stroke', function (d) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -239,10 +250,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           let d = event.currentTarget.__data__;
           let data = ``;
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
-          if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-            data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+          if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
+            if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
+              data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            }
+          } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
+            data += `<p>Closed</p><p>Date: ${currentIssue['Change Date']}</>`;
           }
-
           showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
@@ -547,8 +561,24 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('class', 'line')
         .attr('transform', `translate(0,0)`)
         .append('svg:line')
-        .attr('x1', function (d, i) { return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2; })
-        .attr('x2', function (d, i) { return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2; })
+        .attr('x1', function (d, i) {
+          if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
+            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+          } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
+            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
+          } else {
+            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+          }
+        })
+        .attr('x2', function (d, i) {
+          if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
+            return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2;
+          } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
+            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
+          } else {
+            return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2;
+          }
+        })
         .attr('y1', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .attr('y2', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) { return d['Actual-Completion-Date'] ? '#D8D8D8' : '#437495'; })
