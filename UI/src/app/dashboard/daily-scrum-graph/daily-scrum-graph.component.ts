@@ -203,9 +203,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
             toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
             if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
-              return x(self.formatDate(new Date(d))) + initialCoordinate / 2
+              return x(self.formatDate(new Date(d))) ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : - 200
             } else {
-              return 0;
+              return -500;
             }
           }
         })
@@ -284,12 +284,12 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               });
               if (!alreadyThere) {
                 assigneePartsArr.push(obj);
-                return x(self.formatDate(new Date(d))) + initialCoordinate / 2
+                return x(self.formatDate(new Date(d))) ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : - 200
               } else {
-                return -200;
+                return -500;
               }
             } else {
-              return -200;
+              return -500;
             }
           }
         })
@@ -325,7 +325,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .each(function (d, i) {
           var thisWidth = this.getComputedTextLength()
           console.log(this, thisWidth);
-          this.setAttribute('x', this.getAttribute('x') < 0 ? -200 : this.getAttribute('x') - thisWidth / 2);
+          if (this.getAttribute('x')) {
+            this.setAttribute('x', parseInt(this.getAttribute('x')) < 0 ? -500 : parseInt(this.getAttribute('x')) - thisWidth / 2);
+          }
         })
 
       // show 'Due Date Exceeded' if status not closed after dueDate
@@ -473,16 +475,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
     const showTooltip = (data, xVal, yVal) => {
 
-      if(xVal + 200 > scroller.node().getBoundingClientRect().right) {
+      if (xVal + 200 > scroller.node().getBoundingClientRect().right) {
         xVal -= 100;
       } else {
-        xVal +=20;
+        xVal += 20;
       }
 
-      if(yVal > scroller.node().getBoundingClientRect().bottom) {
+      if (yVal > scroller.node().getBoundingClientRect().bottom) {
         yVal -= 50;
       } else {
-        yVal +=20;
+        yVal += 20;
       }
 
       tooltipContainer
@@ -493,7 +495,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('left', xVal + 'px')
         .style('top', yVal + 'px')
         .style('width', '200px')
-        .style('height', '50px')
+        .style('height', 'auto')
         .html(data)
         .transition()
         .duration(500)
