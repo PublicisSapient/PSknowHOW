@@ -55,7 +55,7 @@
                 {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !==
                 '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
                 {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
-                '+ selectedUserInfo.cardDetails[col]['unit1'] : ''}} </p>
+                '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] : '' : ''}} </p>
         </sapn>
     </section>
 

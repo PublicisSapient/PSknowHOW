@@ -205,7 +205,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
             toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
             if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
-              return x(self.formatDate(new Date(d))) ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : - 200
+              return x(self.formatDate(new Date(d))) >= 0 ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : 0
             } else {
               return -500;
             }
@@ -285,7 +285,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               });
               if (!alreadyThere) {
                 assigneePartsArr.push(obj);
-                return x(self.formatDate(new Date(d))) ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : - 200
+                return x(self.formatDate(new Date(d))) >= 0 ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : -500
               } else {
                 return -500;
               }
