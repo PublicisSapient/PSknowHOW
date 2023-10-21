@@ -30,13 +30,16 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.support.SimpleValueWrapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthNAuthService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceKanbanImpl;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -68,6 +71,8 @@ public class CacheServiceImpl implements CacheService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Autowired
+	private AuthNAuthService authNAuthService;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -256,5 +261,26 @@ public class CacheServiceImpl implements CacheService {
 		return hierarchyLevels.stream()
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
+	}
+
+	/**
+	 * 
+	 * @param authCookie
+	 * @return
+	 */
+	@Override
+	@Cacheable(value = CommonConstant.ACTION_POLICY_RULES_CACHE, key = "#authCookie")
+	public ServiceResponse getActionPoliciesFromCache(String authCookie) {
+		return authNAuthService.fetchActionPolicyByResource(authCookie);
+	}
+
+	/**
+	 * Run every week (7 days * 24 hours * 60 minutes * 60 seconds * 1000
+	 * milliseconds) used to clear the cache
+	 */
+	@Scheduled(fixedRate = 604800000)
+	@SuppressWarnings("java:S2259")
+	public void evictActionPoliciesCache() {
+		cacheManager.getCache(CommonConstant.ACTION_POLICY_RULES_CACHE).clear();
 	}
 }

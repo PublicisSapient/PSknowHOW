@@ -41,6 +41,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -506,8 +507,11 @@ public final class CommonUtils {
 
 	/**
 	 * Method to get next working date i.e excluding sat sun
-	 * @param currentDate currentDate
-	 * @param daysToAdd count of days to add
+	 * 
+	 * @param currentDate
+	 *            currentDate
+	 * @param daysToAdd
+	 *            count of days to add
 	 * @return
 	 */
 	public static java.time.LocalDate getNextWorkingDate(java.time.LocalDate currentDate, long daysToAdd) {
@@ -520,4 +524,22 @@ public final class CommonUtils {
 		return resultDate;
 	}
 
+	/**
+	 * 
+	 * @param apiKey
+	 * @param usingBasicAuth
+	 * @return
+	 */
+
+	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (apiKey != null && !apiKey.isEmpty()) {
+			if (usingBasicAuth) {
+				headers.set("x-api-key", apiKey);
+			} else {
+				headers.add("x-api-key", apiKey);
+			}
+		}
+		return headers;
+	}
 }

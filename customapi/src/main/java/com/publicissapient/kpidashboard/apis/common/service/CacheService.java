@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 
@@ -100,5 +101,7 @@ public interface CacheService {
 	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
+
+	ServiceResponse getActionPoliciesFromCache(String authCookie);
 
 }

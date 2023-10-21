@@ -25,6 +25,9 @@ public class ServiceResponse extends BaseResponse {
 
 	private Object data;
 
+	public ServiceResponse() {
+	}
+
 	/**
 	 * 
 	 * @param isSuccess

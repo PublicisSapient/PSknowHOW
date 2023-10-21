@@ -52,6 +52,8 @@ public class AuthProperties {// NOPMD
 	private String secret;
 	private String ldapUserDnPattern;
 	private String ldapServerUrl;
+
+	private String centralAuthBaseURL;
 	private List<AuthType> authenticationProviders = Lists.newArrayList();
 
 	private String adDomain;
@@ -123,6 +125,24 @@ public class AuthProperties {// NOPMD
 	 */
 	public void setLdapUserDnPattern(String ldapUserDnPattern) {
 		this.ldapUserDnPattern = ldapUserDnPattern;
+	}
+
+	/**
+	 * Get central auth base url
+	 *
+	 * @return
+	 */
+	public String getCentralAuthBaseURL() {
+		return centralAuthBaseURL;
+	}
+
+	/**
+	 * Set central auth base url
+	 * 
+	 * @param centralAuthBaseURL
+	 */
+	public void setCentralAuthBaseURL(String centralAuthBaseURL) {
+		this.centralAuthBaseURL = centralAuthBaseURL;
 	}
 
 	/**

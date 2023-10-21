@@ -319,6 +319,7 @@ public final class CommonConstant {
 	public static final String JIRA = "Jira";
 
 	public static final String REPO = "Repo";
+	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
 
 	private CommonConstant() {
 
