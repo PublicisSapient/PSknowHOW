@@ -60,7 +60,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     return s < 10 ? '0' + s : s;
   }
 
-  draw(issueList, parentIssue = null, parentStoryClick = false) {
+  draw(issueList, parentIssue = null, parentStoryClick = false, previousScroll = 0) {
     const chart = d3.select(this.elem).select('#chart');
     const scroller = d3.select(this.elem).select('#scroller');
     chart.selectAll('svg').remove();
@@ -402,7 +402,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       if (selectedIssueSubtask.length) {
         issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
         parentIssue['IsExpanded'] = true;
-        this.draw(issueDataList, parentIssue, true);
+        let scrollPosition = scroller.node().scrollTop;
+        this.draw(issueDataList, parentIssue, true, scrollPosition);
       }
     };
 
@@ -465,7 +466,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           } else {
             delete d['IsExpanded'];
             issueList.splice(issueList.findIndex((obj) => obj['Issue Id'] === d['Issue Id']) + 1, d['subTask'].length);
-            self.draw(issueList);
+
+            let scrollPosition = scroller.node().scrollTop;
+            self.draw(issueList,null, false, scrollPosition);
           }
           showTaskDetail(d);
         })
@@ -586,6 +589,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       //   .attr('class', 'gridline');
     }
 
+    scroller.node().scrollTop = previousScroll;
   }
 
   // get line start and end coordinates
