@@ -212,7 +212,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
                 return -500;
               }
             } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
-              return x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2
+              return 0;
             }
           }
         })
