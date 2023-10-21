@@ -56,7 +56,7 @@
 }
 
 :host ::ng-deep.tick text{
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 .legends-button{
@@ -151,4 +151,18 @@
 
 :host ::ng-deep .issueTypeIcon.Story{
     background-image: url('/assets/img/Story.svg');
+}
+
+@media only screen and (min-device-width : 320px) and (max-width: 1320px) {
+
+    :host ::ng-deep.tick text {
+        font-size: 10px;
+    }
+}
+
+@media only screen and (min-width: 1321px) {
+
+    :host ::ng-deep.tick text {
+        font-size: 14px;
+    }
 }
