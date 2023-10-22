@@ -563,16 +563,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
             return d['spill'] ? 0 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
           } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
-            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
+            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 : 0;
           } else {
             return d['spill'] ? 0 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
-          }
+          }         
         })
         .attr('x2', function (d, i) {
           if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
             return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2;
           } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
-            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
+            return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 : 0;
           } else {
             return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2;
           }
