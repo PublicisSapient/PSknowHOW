@@ -40,7 +40,6 @@
 :host ::ng-deep.tooltip{
     display: none;
     font-size: 10px;
-    padding: 2px;
     position: absolute;
     border-radius: 5px;
     opacity: 0.5;
