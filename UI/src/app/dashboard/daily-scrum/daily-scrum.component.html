@@ -8,8 +8,8 @@
                     <ng-container [ngSwitch]="filter?.filterType">
                         <div class="filters" *ngSwitchCase="'singleSelect'">
                             <ng-select [(ngModel)]="filters[filter?.filterKey]" [dropdownPosition]="'bottom'"
-                                (change)="handleSingleSelectChange($event,filter?.filterKey)"
-                                placeholder="Domain" class="p-pb-0" [style]="{'min-width' : '180px'}">
+                                (change)="handleSingleSelectChange($event,filter?.filterKey)" placeholder="Domain"
+                                class="p-pb-0" [style]="{'min-width' : '180px'}">
                                 <ng-option *ngFor="let item of filter.options" [value]="item">
                                     {{item}}
                                 </ng-option>
@@ -25,12 +25,17 @@
             </ng-template>
 
             <div class="user-filter" [ngClass]="{'p-mt-2': selectedUser === 'Overall'}">
-                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto;">
+                <button (click)="setSelectedUser(null,'Unassigned')" [pTooltip]="'Unassigned'" tooltipPosition="bottom"
+                    class="assignee unassignedBtn">
+                    <i class="pi pi-user-minus" style="font-size: 1rem"></i>
+                </button>
+                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
                     <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
-                        <button *ngFor="let assignee of assigneeList"
+                        <button *ngFor="let assignee of assigneeList" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
                             (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
                             [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee">
+                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee"
+                            >
                             {{getNameInitials(assignee.assigneeName)}}
                         </button>
                     </div>
@@ -55,14 +60,16 @@
                 {{(selectedUserInfo.cardDetails[col]['unit'] !== 'day' && selectedUserInfo.cardDetails[col]['value'] !==
                 '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
                 {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
-                '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] : '' : ''}} </p>
+                '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
+                '' : ''}} </p>
         </sapn>
     </section>
 
     <!-- Capacity Info table -->
     <section class="p-p-3 user-info-section" *ngIf="selectedUser === 'Overall' else userInfo">
         <p-table [value]="assigneeList" [columns]="columns" [tableStyle]="{'width': '100%'}"
-            (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true" scrollHeight="{{ onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)' }}">
+            (sortFunction)="customSort($event)" [customSort]="true" [scrollable]="true"
+            scrollHeight="{{ onFullScreen ? 'calc(100vh - 100px)' : 'calc(100vh - 360px)' }}">
             <ng-template pTemplate="header">
                 <tr>
                     <th pSortableColumn="Team Member">Team Member <p-sortIcon field="assigneeName"></p-sortIcon></th>

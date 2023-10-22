@@ -20,7 +20,7 @@
     margin-left: 2rem;
     max-width: calc(75%);
     overflow-x: auto;
-    display: inline-block;
+    display: flex;
     overflow: visible;
 }
 
@@ -68,6 +68,13 @@ button.assignee {
     padding: 0;
     align-items: center;
     margin-left: 4px;
+}
+
+button.unassignedBtn {
+    width: 34px;
+    height: 34px;
+    margin-top: 4px;
+    background-color: #EFEFEF;
 }
 
 button.assignee.selected-user {
