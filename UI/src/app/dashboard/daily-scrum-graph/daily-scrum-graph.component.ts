@@ -562,11 +562,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('svg:line')
         .attr('x1', function (d, i) {
           if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
-            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+            return d['spill'] ? 0 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
           } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
             return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
           } else {
-            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+            return d['spill'] ? 0 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
           }
         })
         .attr('x2', function (d, i) {
