@@ -12,15 +12,17 @@
     flex-basis: 75%;
     flex: 1 1 auto;
     max-height: 100%;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 220px);
     overflow: hidden;
+    margin-top: 50px;
 }
 
 .issue-card-container{
     flex-basis: 24%;
     border: 1px solid #c0c0c0;
-    height: calc(100vh - 160px);
+    height: calc(100vh - 220px);
     overflow-y: auto;
+    margin-top: 50px;
 }
 
 .issue-nav{

@@ -14,6 +14,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   @Input() selectedSprintInfo;
   @Input() standUpStatusFilter;
   elem;
+  statusFilterOptions = [];
+  selectedStatus;
+  filteredIssueDataList = [];
 
   currentDayIndex;
   displayModal = false;
@@ -21,13 +24,32 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
+    this.statusFilterOptions = this.standUpStatusFilter.map(d => {
+      return {
+        'name': d.filterName,
+        'value': d.filterName
+      }
+    });
     window.setTimeout(() => {
-      this.draw(this.issueDataList);
+      if (this.selectedStatus && this.selectedStatus['value'] && this.selectedStatus['value'].length) {
+        this.filterTasksByStatus({});
+      } else {
+        this.draw(this.issueDataList);
+      }
     }, 0);
   }
 
   showLegends() {
     this.displayModal = !this.displayModal;
+  }
+
+  filterTasksByStatus(e) {
+    if (this.selectedStatus && this.selectedStatus['value'] && this.selectedStatus['value'].length) {
+      this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'] === this.selectedStatus['value'])?.options.includes(d['Issue Status']));
+      this.draw(this.filteredIssueDataList);
+    } else {
+      this.draw(this.issueDataList);
+    }
   }
 
   //generated dates on MM/DD format
@@ -308,7 +330,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 + 20 : (y(i + 1) - y(i) - 1) / 2 + 25)
         .attr('dy', 0)
-        .attr('text-anchor','middle')
+        .attr('text-anchor', 'middle')
         .style('cursor', 'pointer')
         .text(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -566,7 +588,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2 : 0;
           } else {
             return d['spill'] ? 0 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
-          }         
+          }
         })
         .attr('x2', function (d, i) {
           if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {

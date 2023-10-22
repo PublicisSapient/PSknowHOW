@@ -60,12 +60,22 @@
 
 .legends-button{
     position: absolute;
-    top: -1rem;
+    top: 28px;
     right: 0;
     background: none;
     border: none;
     cursor: pointer;
     color: blue;
+}
+
+:host ::ng-deep .p-dropdown.statusFilterDropDown {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: 14px;
 }
 
 :host ::ng-deep .modal .p-dialog-header{

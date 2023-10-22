@@ -1,3 +1,5 @@
+<p-dropdown styleClass="statusFilterDropDown" placeholder="Filter by Status" [showClear]="true"
+[options]="statusFilterOptions" [(ngModel)]="selectedStatus" optionLabel="name" (onChange)="filterTasksByStatus($event)"></p-dropdown>
 <div>
     <button class="legends-button" (click)="showLegends()">Legend</button>
 </div>
