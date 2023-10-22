@@ -103,7 +103,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     }
 
     const xCoordinates = this.generateDates();
-    const margin = { top: 30, right: 10, bottom: 20, left: 100 };
+    const margin = { top: 30, right: 10, bottom: 20, left: 10 };
     let width = chart.node().parentNode.offsetWidth - margin.left - margin.right - 12.5 / 100 * scroller.node().offsetWidth;
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
@@ -190,7 +190,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       let currentIssue = {};
       let parts = marker.selectAll("g.part")
         .data(() => {
-          console.log([].concat(...issueList.map((d) => Object.keys(d['statusLogGroup']))));
           return [].concat(...issueList.map((d, index) => Object.keys(d['statusLogGroup'])))
         })
         .enter()
@@ -211,7 +210,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               } else {
                 return -500;
               }
-            } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
+            } else if ((closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) || currentIssue['preClosed']) {
               return x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 : 0;
             }
           }
@@ -230,7 +229,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
               }
             }
 
-          } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
+          } else if ((closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) || currentIssue['preClosed']) {
             display = 'block'
           }
           return display;
@@ -275,8 +274,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       assigneeParts
         .append('text')
         .attr('class', 'assigneeChangeText')
-        .attr('height', 10)
-        .attr('width', 100)
+        .attr('height', 'auto')
+        .attr('width', 80)
         .style('color', '#437495')
         .style('font-weight', 'bold')
         .attr('x', function (d, i) {
@@ -309,6 +308,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           }
         })
         .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 + 20 : (y(i + 1) - y(i) - 1) / 2 + 25)
+        .attr('dy', 0)
+        .attr('text-anchor','middle')
         .style('cursor', 'pointer')
         .text(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -337,13 +338,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('mouseout', () => {
           hideTooltip();
         })
-        .each(function (d, i) {
-          var thisWidth = this.getComputedTextLength()
-          console.log(this, thisWidth);
-          if (this.getAttribute('x')) {
-            this.setAttribute('x', parseInt(this.getAttribute('x')) < 0 ? -500 : parseInt(this.getAttribute('x')) - thisWidth / 2);
+        .each(function (d, i, nodes) {
+          var thisWidth = this.getComputedTextLength();
+          if (thisWidth > 80) {
+            const textElement = d3.select(nodes[i]);
+            self.wrap(textElement, 80);
           }
-        })
+        });
 
       // show 'Due Date Exceeded' if status not closed after dueDate
       marker.append('image')
@@ -368,7 +369,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
-          console.log(!d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20);
           return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
         })
         .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
@@ -474,7 +474,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           if (!d['IsExpanded']) {
             if (d && d['subTask']) {
               selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
-              console.log(d['subTask'], selectedIssueSubtask);
               let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
               showSubTask(d, index);
             }
@@ -543,7 +542,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('transform', function (d, i) { return 'translate(0,' + ((i + 1) * 75) + ')'; });
 
       line.append("rect")
-        .attr("width", '100%')
+        .attr("width", width + margin.left + margin.right + 200)
         .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight)
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
@@ -553,8 +552,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           }
           return '#FFF';
         })
-        .attr('x', -100)
-        .attr('transform', function (d, i) { return 'translate(0,0)'; });
+        .attr('x', -120)
+        .attr('transform', function (d, i) { return 'translate(100,0)'; });
 
       line
         .append('g')
@@ -563,11 +562,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .append('svg:line')
         .attr('x1', function (d, i) {
           if (!closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length > 0) {
-            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
           } else if (closedIssueStatus.includes(d['Issue Status']) && Object.keys(d['statusLogGroup']).length === 0) {
             return x(self.formatDate(new Date(d['Change Date']))) + initialCoordinate / 2;
           } else {
-            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) - initialCoordinate : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
+            return d['spill'] ? x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2 : x(self.getStartAndEndLinePoints(d)['startPoint']) + initialCoordinate / 2;
           }
         })
         .attr('x2', function (d, i) {
@@ -628,7 +627,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     //calculate startDate
     let startPoint;
     if (issue['spill']) {
-      startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
+      if (!this.compareDates(issue['Actual-Start-Date'], this.selectedSprintInfo.sprintStartDate)) {
+        startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
+      } else {
+        startPoint = new Date(issue['Actual-Start-Date']);
+      }
     } else {
       startPoint = issue['Actual-Start-Date'] ? new Date(issue['Actual-Start-Date']) : new Date();
     }
@@ -650,6 +653,31 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       return false;
     }
     return d1 > d2;
+  }
+
+  wrap(text, width) {
+    text.each(function () {
+      var text = d3.select(this),
+        words = text.text().split(/\s+/).reverse(),
+        word,
+        line = [],
+        lineNumber = 0,
+        lineHeight = 1.1, // ems
+        x = text.attr("x"),
+        y = text.attr("y"),
+        dy = parseFloat(text.attr("dy")),
+        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em")
+      while (word = words.pop()) {
+        line.push(word)
+        tspan.text(line.join(" "))
+        if (tspan.node().getComputedTextLength() > (width - 5)) {
+          line.pop()
+          tspan.text(line.join(" "))
+          line = [word]
+          tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+        }
+      }
+    })
   }
 
 

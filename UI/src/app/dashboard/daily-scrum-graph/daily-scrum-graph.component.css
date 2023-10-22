@@ -160,6 +160,10 @@
     background-image: url('/assets/img/Story.svg');
 }
 
+:host ::ng-deep text.assigneeChangeText {
+    text-align: center;
+}
+
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
 
     :host ::ng-deep.tick text {
