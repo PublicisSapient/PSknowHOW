@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
-import { setTimeout } from 'timers';
 
 @Component({
   selector: 'app-daily-scrum-graph',
@@ -603,22 +602,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
     // draw lines for each issues and its subtask
     drawLineForIssue(issueDataList);
-
-    //draw line for todays date if it exist
-    if (typeof this.currentDayIndex === 'number') {
-      // const line = svg
-      //   .append('g')
-      //   .attr('transform', `translate(0,0)`)
-      //   .append('svg:line')
-      //   .attr('x1', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-      //   .attr('x2', x(xCoordinates[this.currentDayIndex]) + initialCoordinate / 2)
-      //   .attr('y1', height)
-      //   .attr('y2', 0)
-      //   .style('stroke', '#dedede')
-      //   .style('fill', 'none')
-      //   .attr('class', 'gridline');
-    }
-
     scroller.node().scrollTop = previousScroll;
   }
 
