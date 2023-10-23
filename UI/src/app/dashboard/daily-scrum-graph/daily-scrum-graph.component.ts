@@ -27,21 +27,21 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   userRole: string;
   checkIfViewer: boolean;
   selectedToolConfig: any = [];
-  loading : boolean = false
-  noData : boolean = false
+  loading: boolean = false
+  noData: boolean = false
   displayConfigModel: boolean;
   fieldMappingConfig = [];
   selectedFieldMapping = []
   selectedConfig: any = {};
   fieldMappingMetaData = [];
   @Output() reloadKPITab = new EventEmitter<any>();
-  
-  constructor(private viewContainerRef: ViewContainerRef, private http : HttpService, public service: SharedService, private authService : GetAuthorizationService) { }
+
+  constructor(private viewContainerRef: ViewContainerRef, private http: HttpService, public service: SharedService, private authService: GetAuthorizationService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
     this.userRole = this.authService.getRole();
-    this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}));
+    this.checkIfViewer = (this.authService.checkIfViewer({ id: this.service.getSelectedTrends()[0]?.basicProjectConfigId }));
     this.statusFilterOptions = this.standUpStatusFilter.map(d => {
       return {
         'name': d.filterName,
@@ -131,11 +131,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueDataList = [...issueList.filter((issue) => {
         let independentSubtasks = issueList.filter((f) => f['parentStory'] && f['parentStory'].length && !issueList.includes(f['parentStory'][0])).map(m => m['Issue Id']);
-        if (issue['parentStory'] && issue['parentStory'].length && issue['parentStory'].includes(parentIssue['Issue Id'])) {
-          return issue;
-        } else if (independentSubtasks.includes(issue['Issue Id'])) {
-          return issue;
-        } else if (!issue['parentStory']) {
+        if (issue['parentStory'] && issue['parentStory'].length && issue['parentStory'].includes(parentIssue['Issue Id']) ||
+          independentSubtasks.includes(issue['Issue Id']) ||
+          !issue['parentStory']) {
           return issue;
         }
       })];
@@ -308,7 +306,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .enter()
         .append("g")
         .attr("class", "assigneePart")
-        
+
 
       let assigneePartsArr = [];
       assigneeParts
@@ -453,7 +451,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       this.service.setIssueData(issue);
     }
 
-    const showSubTask = (parentIssue, index,) => {
+    const showSubTask = (parentTask, index,) => {
       selectedIssueSubtask.forEach((task) => {
         let idx = issueDataList.findIndex(obj => obj['Issue Id'] === task['Issue Id']);
         if (idx !== -1) {
@@ -463,9 +461,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       selectedIssueSubtask = selectedIssueSubtask.filter((task) => Object.keys(task).length);
       if (selectedIssueSubtask.length) {
         issueDataList.splice(index + 1, 0, ...selectedIssueSubtask);
-        parentIssue['IsExpanded'] = true;
+        parentTask['IsExpanded'] = true;
         let scrollPosition = scroller.node().scrollTop;
-        this.draw(issueDataList, parentIssue, true, scrollPosition);
+        this.draw(issueDataList, parentTask, true, scrollPosition);
       }
     };
 
@@ -705,22 +703,22 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     })
   }
 
-    /** When field mapping dialog is opening */
-    onOpenFieldMappingDialog(){
-      this.getKPIFieldMappingConfig();
-    }
+  /** When field mapping dialog is opening */
+  onOpenFieldMappingDialog() {
+    this.getKPIFieldMappingConfig();
+  }
 
-    /** This method is responsible for getting field mapping configuration for specfic KPI */
+  /** This method is responsible for getting field mapping configuration for specfic KPI */
   getKPIFieldMappingConfig() {
     const selectedTab = this.service.getSelectedTab().toLowerCase();
     const selectedType = this.service.getSelectedType().toLowerCase();
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1  || (selectedTab === 'release' && this.kpiData?.kpiId === 'kpi163')) {
+    if (selectedType === 'scrum' && selectedTrend.length == 1 || (selectedTab === 'release' && this.kpiData?.kpiId === 'kpi163')) {
       this.loading = true;
       this.noData = false;
       this.displayConfigModel = true;
       this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/kpi154`).subscribe(data => {
-        if(data && data['success']){
+        if (data && data['success']) {
           this.fieldMappingConfig = data?.data['fieldConfiguration'];
           const kpiSource = data?.data['kpiSource']?.toLowerCase();
           const toolConfigID = data?.data['projectToolConfigId'];
@@ -730,7 +728,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             this.getFieldMapping();
             if (this.service.getFieldMappingMetaData().length) {
               const metaDataList = this.service.getFieldMappingMetaData();
-              const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
+              const metaData = metaDataList.find(metaDataObj => metaDataObj.projectID === selectedTrend[0]?.basicProjectConfigId && metaDataObj.kpiSource === kpiSource);
               if (metaData && metaData.metaData) {
                 this.fieldMappingMetaData = metaData.metaData;
               } else {
@@ -776,7 +774,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     });
   }
 
-  reloadKPI(){
+  reloadKPI() {
     this.displayConfigModel = false;
     this.reloadKPITab.emit(this.kpiData[0]);
   }
