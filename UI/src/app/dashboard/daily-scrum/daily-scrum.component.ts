@@ -116,7 +116,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       if (this.totals[col]?.unit === 'day') {
         this.totals[col].value = this.convertToHoursIfTime(this.totals[col].value, this.totals[col].unit);
       } else {
-        this.totals[col].value = this.totals[col].value.toFixed();
+        if (this.totals[col].value) {
+          this.totals[col].value = this.totals[col].value.toFixed();
+        }
       }
 
       if (this.totals[col]?.unit1 === 'day') {
