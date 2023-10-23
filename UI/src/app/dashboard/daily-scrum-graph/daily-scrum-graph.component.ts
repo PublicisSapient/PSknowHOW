@@ -131,7 +131,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueDataList = [...issueList.filter((issue) => {
         let independentSubtasks = issueList.filter((f) => f['parentStory'] && f['parentStory'].length && !issueList.includes(f['parentStory'][0])).map(m => m['Issue Id']);
-        if (issue['parentStory'] && issue['parentStory'].length && issue['parentStory'].includes(parentIssue['Issue Id']) ||
+        if ((issue['parentStory'] && issue['parentStory'].length && issue['parentStory'].includes(parentIssue['Issue Id'])) ||
           independentSubtasks.includes(issue['Issue Id']) ||
           !issue['parentStory']) {
           return issue;
