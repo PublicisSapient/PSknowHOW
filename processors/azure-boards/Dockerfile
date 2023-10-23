@@ -15,7 +15,7 @@ ARG JAR_FILE
 ADD ${JAR_FILE} /app/azure.jar
 ADD src/main/resources/application.properties /app/properties/azure.properties
 
-EXPOSE 50008
+EXPOSE 50017
 WORKDIR /app
 ENV JAVA_OPTS=""
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar azure.jar --spring.config.location=classpath:/BOOT-INF/classes/application.properties --spring.config.additional-location=optional:file:/app/properties/azure.properties" ]
