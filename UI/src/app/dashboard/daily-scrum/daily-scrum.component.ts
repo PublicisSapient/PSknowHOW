@@ -70,6 +70,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       this.onSelectedUserChange.emit('Unassigned');
       this.getCurrentAssigneeIssueData('Unassigned');
     }
+    this.onExpandOrCollapse.emit(true);
   }
 
   setShowLess() {
