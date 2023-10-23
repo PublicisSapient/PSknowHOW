@@ -225,7 +225,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           let toolTipData = ``;
           if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
             if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' \&#8594;\ ')}</p><p>Date: ${d}</>`
               if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
                 return x(self.formatDate(new Date(d))) >= 0 ? x(self.formatDate(new Date(d))) + initialCoordinate / 2 : 0
               } else {
@@ -244,7 +244,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           let display = 'none'
           if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
             if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+              toolTipData += `<p>${currentIssue['statusLogGroup'][d].join(' \&#8594;\ ')}</p><p>Date: ${d}</>`
               if (Object.keys(currentIssue['statusLogGroup']).includes(d) && toolTipData !== '') {
                 display = 'block';
               }
@@ -272,7 +272,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           if ((!closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0) || (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length > 0)) {
             if (Object.keys(currentIssue['statusLogGroup']).includes(d)) {
-              data += `<p>${currentIssue['statusLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+              data += `<p>${currentIssue['statusLogGroup'][d].join(' \&#8594;\ ')}</p><p>Date: ${d}</>`
             }
           } else if (closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) {
             data += `<p>Closed</p><p>Date: ${currentIssue['Change Date']}</>`;
@@ -303,7 +303,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let toolTipData = ``;
           if (Object.keys(currentIssue['assigneeLogGroup']).includes(d)) {
-            toolTipData += `<p>${currentIssue['assigneeLogGroup'][d].join(' --> ')}</p><p>Date: ${d}</>`
+            toolTipData += `<p>${currentIssue['assigneeLogGroup'][d].join(' \&#8594;\ ')}</p><p>Date: ${d}</>`
             if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && toolTipData !== '') {
               // logic to avoid multiple labels with same text on the same position
               let obj = {
@@ -332,7 +332,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('dy', 0)
         .attr('text-anchor', 'middle')
         .style('cursor', 'pointer')
-        .text(function (d, i) {
+        .style('line-height', '15px')
+        .html(function (d, i) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
           let textData = ``;
           if (Object.keys(currentIssue['assigneeLogGroup']).includes(d) && currentIssue['assigneeLogGroup'][d].length === 1) {
@@ -340,26 +341,47 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             return textData;
           } else {
             if (currentIssue['assigneeLogGroup'][d]) {
-              currentIssue['assigneeLogGroup'][d].forEach((element, index) => {
-                if (index !== currentIssue['assigneeLogGroup'][d].length - 1) {
-                  textData += `${getNameInitials(element)} --> `;
-                } else {
-                  textData += `${getNameInitials(element)}`;
-                }
-              });
+              // if no. of assignees is more, we need to show only the first and last and add background color
+              if (currentIssue['assigneeLogGroup'][d].length > 2) {
+                currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
+                const data = `<p>${currentIssue['assigneeLogGroup'][d].join(' \&#8594;\ ')}</p><p>Owned: ${d}</>`;
+                this.setAttribute('class', 'assigneePartLong');
+                this.setAttribute('tooltipData', data);
+              }
+              textData += `${[getNameInitials(currentIssue['assigneeLogGroup'][d][0]), getNameInitials(currentIssue['assigneeLogGroup'][d][currentIssue['assigneeLogGroup'][d].length - 1])].join(' \&#8594;\ ')}`;
               return textData;
             }
           }
         })
         .on('mouseover', function (event, d) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
-          const data = `<p>${currentIssue['assigneeLogGroup'][d].join('-->')}</p><p>Owned: ${d}</>`;
+          const data = `<p>${currentIssue['assigneeLogGroup'][d].join(' \&#8594;\ ')}</p><p>Owned: ${d}</>`;
           showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
           hideTooltip();
         })
         .each(function (d, i, nodes) {
+
+          if (this.getAttribute('class') === 'assigneePartLong') {
+            let textNode = this;
+            d3.select(this.parentNode)
+              .append('rect')
+              .attr("x", textNode.getAttribute('x') - textNode.getComputedTextLength() / 2)
+              .attr("y", textNode.getAttribute('y') - 12)
+              .attr('width', textNode.getComputedTextLength())
+              .attr('height', 15)
+              .attr('fill', 'pink')
+              .style('opacity', 0.5)
+              .on('mouseover', function (event, d) {
+                const data = textNode.getAttribute('tooltipData');
+                showTooltip(data, event.offsetX, event.offsetY);
+              })
+              .on('mouseout', () => {
+                hideTooltip();
+              })
+          }
+
           var thisWidth = this.getComputedTextLength();
           if (thisWidth > 80) {
             const textElement = d3.select(nodes[i]);
@@ -513,7 +535,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
     const showTooltip = (data, xVal, yVal) => {
 
-      if (xVal + 200 > chart.node().getBoundingClientRect().right - 12/100 * chart.node().getBoundingClientRect().right) {
+      if (xVal + 200 > chart.node().getBoundingClientRect().right - 12 / 100 * chart.node().getBoundingClientRect().right) {
         xVal -= 200;
       } else {
         xVal += 20;
