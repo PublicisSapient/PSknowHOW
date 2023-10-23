@@ -213,7 +213,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     //add X-Axis
     const svgX = dateLine.append('g')
       .attr('class', 'xAxis')
-      // .attr('transform', `translate(0, ${height})`)
       .call(d3.axisBottom(x));
 
 
@@ -801,8 +800,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     this.displayConfigModel = false;
     this.reloadKPITab.emit(this.kpiData[0]);
   }
-
-
 
   ngOnDestroy(): void {
     const chart = d3.select(this.elem).select('#chart');

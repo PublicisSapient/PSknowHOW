@@ -58,7 +58,7 @@
 }
 
 .noFullScreen, .container.noFullScreen #scroller {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 395px);
     overflow-y: auto;
     min-height: unset;
     max-height: unset;
