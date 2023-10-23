@@ -65,6 +65,7 @@
     display: inline-block;
     background-size: cover;
     margin-bottom: -5px;
+    background-image: url('/assets/img/GenericIssue.svg');
 }
 
 :host ::ng-deep .issueTypeIcon.Task,
