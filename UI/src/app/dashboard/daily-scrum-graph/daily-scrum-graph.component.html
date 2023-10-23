@@ -60,7 +60,8 @@
                 <span class="p-d-block p-mt-2">Defect</span>
             </div>
             <div class="p-col-3 p-d-flex p-flex-column legend-item">
-                <img style="width:50px; margin:auto;" alt="Due Date Exceeded" src="../../../assets/img/due-date-exceeded.svg" />
+                <img style="width:50px; margin:auto;" alt="Due Date Exceeded"
+                    src="../../../assets/img/due-date-exceeded.svg" />
                 <span class="p-d-block">Due Date Exceeded</span>
             </div>
             <div class="p-col-3 p-d-flex p-flex-column legend-item">
@@ -76,11 +77,13 @@
                 <span class="p-d-block">Interim Status</span>
             </div>
             <div class="p-col-3 p-d-flex p-flex-column legend-item">
-                <img style="width:40px; margin:auto;" alt="Spilled Active Issue" src="../../../assets/img/spill active issue.JPG" />
+                <img style="width:40px; margin:auto;" alt="Spilled Active Issue"
+                    src="../../../assets/img/spill active issue.JPG" />
                 <span class="p-d-block">Spilled Issue</span>
             </div>
             <div class="p-col-3 p-d-flex p-flex-column legend-item">
-                <img style="width:40px; margin:auto; margin-top: 14px; margin-bottom: 14px;" alt="Spilled Closed Issue" src="../../../assets/img/spill-issue-closed.JPG" />
+                <img style="width:40px; margin:auto; margin-top: 14px; margin-bottom: 14px;" alt="Spilled Closed Issue"
+                    src="../../../assets/img/spill-issue-closed.JPG" />
                 <span class="p-d-block">Spilled Closed Issue</span>
             </div>
             <div class="p-col-3 p-d-flex p-flex-column legend-item">
@@ -94,27 +97,24 @@
         </div>
     </p-dialog>
 </div>
-<p-dialog [header]="'Daily Standup View'" [closable]="true"  [(visible)]="displayConfigModel" [modal]="true"  styleClass="field-mapping">
+<p-dialog [header]="'Daily Standup View'" [closable]="true" [(visible)]="displayConfigModel" [modal]="true"
+    styleClass="field-mapping">
     <hr>
-    <ng-template pTemplate="content" >
-       <app-field-mapping-form #fieldMappingForm
+    <ng-template pTemplate="content">
+        <app-field-mapping-form #fieldMappingForm
             *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
-            [disableSave]="disableSave"
-            [fieldMappingMetaData]="fieldMappingMetaData"
-            [fieldMappingConfig]="fieldMappingConfig"
-            [formData]="selectedFieldMapping"
-            [selectedConfig]="selectedConfig"
-            [selectedToolConfig]="selectedToolConfig"
-            (reloadKPI)="reloadKPI()"
-            ></app-field-mapping-form>
-      </ng-template>
-      <ng-template pTemplate="footer"></ng-template>
-      <ng-container *ngIf=" noData && !loading">
+            [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
+            [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
+            [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig"
+            (reloadKPI)="reloadKPI()"></app-field-mapping-form>
+    </ng-template>
+    <ng-template pTemplate="footer"></ng-template>
+    <ng-container *ngIf=" noData && !loading">
         <h2 class="p-text-center">No Configuration Available</h2>
-      </ng-container>
-      <ng-container *ngIf="loading">
+    </ng-container>
+    <ng-container *ngIf="loading">
         <div class="overlay">
             <div class="loading-img"></div>
         </div>
     </ng-container>
- </p-dialog>
+</p-dialog>

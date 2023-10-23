@@ -106,8 +106,8 @@ export class DailyScrumComponent implements OnInit, OnChanges {
 
   handleSingleSelectChange(e, filterKey) {
     this.onFilterChange.emit(this.filters);
-    if (e) {
-      this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e);
+    if (e && e.value) {
+      this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e.value);
     } else {
       this.assigneeList = this.allAssignee;
     }
