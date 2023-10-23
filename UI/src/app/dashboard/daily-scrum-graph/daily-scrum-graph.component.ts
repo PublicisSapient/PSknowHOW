@@ -513,13 +513,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
     const showTooltip = (data, xVal, yVal) => {
 
-      if (xVal + 200 > scroller.node().getBoundingClientRect().right) {
-        xVal -= 100;
+      if (xVal + 200 > chart.node().getBoundingClientRect().right - 12/100 * chart.node().getBoundingClientRect().right) {
+        xVal -= 200;
       } else {
         xVal += 20;
       }
 
-      if (yVal > scroller.node().getBoundingClientRect().bottom) {
+      if (yVal > chart.node().getBoundingClientRect().bottom) {
         yVal -= 50;
       } else {
         yVal += 20;
