@@ -68,3 +68,10 @@
     height: fit-content;
     overflow-y: unset;
 }
+
+@media only screen and (min-width: 1321px) {
+
+    .noFullScreen .graph-container {
+        height: calc(100vh - 470px);
+    }
+}
