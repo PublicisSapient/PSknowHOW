@@ -11,10 +11,14 @@
     margin-right: 0.25rem;
     flex-basis: 75%;
     flex: 1 1 auto;
-    max-height: 100%;
     height: calc(100vh - 220px);
     overflow: hidden;
     margin-top: 50px;
+}
+
+.noFullScreen .graph-container {
+    max-height: unset;
+    height: calc(100vh - 475px);
 }
 
 .issue-card-container{
@@ -36,7 +40,7 @@
 }
 
 .noFullScreen, .container.noFullScreen #scroller {
-    height: calc(100vh - 385px);
+    height: calc(100vh - 400px);
     overflow-y: auto;
     min-height: unset;
     max-height: unset;
