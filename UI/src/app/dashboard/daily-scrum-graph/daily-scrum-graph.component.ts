@@ -290,6 +290,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .enter()
         .append("g")
         .attr("class", "assigneePart")
+        
 
       let assigneePartsArr = [];
       assigneeParts
@@ -364,22 +365,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .each(function (d, i, nodes) {
 
           if (this.getAttribute('class') === 'assigneePartLong') {
-            let textNode = this;
-            d3.select(this.parentNode)
-              .append('rect')
-              .attr("x", textNode.getAttribute('x') - textNode.getComputedTextLength() / 2)
-              .attr("y", textNode.getAttribute('y') - 12)
-              .attr('width', textNode.getComputedTextLength())
-              .attr('height', 15)
-              .attr('fill', 'pink')
-              .style('opacity', 0.5)
-              .on('mouseover', function (event, d) {
-                const data = textNode.getAttribute('tooltipData');
-                showTooltip(data, event.offsetX, event.offsetY);
-              })
-              .on('mouseout', () => {
-                hideTooltip();
-              })
+            d3.select(this.parentNode).attr('fill', '#437495');
           }
 
           var thisWidth = this.getComputedTextLength();
@@ -540,12 +526,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       } else {
         xVal += 20;
       }
-
-      // if (yVal > chart.node().getBoundingClientRect().bottom) {
-      //   yVal -= 50;
-      // } else {
-      //   yVal += 20;
-      // }
 
       tooltipContainer
         .selectAll('div')

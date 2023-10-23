@@ -70,8 +70,9 @@
 
 :host ::ng-deep .p-dropdown.statusFilterDropDown {
     position: absolute;
-    top: 0;
+    top: 10px;
     left: 0;
+    line-height: 6px;
 }
 
 :host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
