@@ -36,7 +36,7 @@
 
 .noFullScreen .graph-container {
     max-height: unset;
-    height: calc(100vh - 475px);
+    height: calc(100vh - 455px);
 }
 
 .issue-card-container{
