@@ -183,7 +183,6 @@
 }
 
 :host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping {
-    max-width: 90vw !important;
     width: 90vw !important;
     max-width: 90vw;
     max-height: 50vh !important;
@@ -191,7 +190,6 @@
 }
 
 :host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .mapping-selection-popup {
-    max-width: 50vw !important;
     width: 50vw !important;
     max-width: 50vw;
     max-height: 30vh !important;
