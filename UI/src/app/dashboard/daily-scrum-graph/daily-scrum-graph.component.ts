@@ -703,16 +703,16 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   wrap(text, width) {
     text.each(function () {
-      var text = d3.select(this),
-        words = text.text().split(/\s+/).reverse(),
+      let textElem = d3.select(this),
+        words = textElem.text().split(/\s+/).reverse(),
         word,
         line = [],
         lineNumber = 0,
         lineHeight = 1.1, // ems
-        x = text.attr("x"),
-        y = text.attr("y"),
-        dy = parseFloat(text.attr("dy")),
-        tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em")
+        x = textElem.attr("x"),
+        y = textElem.attr("y"),
+        dy = parseFloat(textElem.attr("dy")),
+        tspan = textElem.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em")
       while (word = words.pop()) {
         line.push(word)
         tspan.text(line.join(" "))
@@ -720,7 +720,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           line.pop()
           tspan.text(line.join(" "))
           line = [word]
-          tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
+          tspan = textElem.append("tspan").attr("x", x).attr("y", y).attr("dy", `${++lineNumber * lineHeight + dy}em`).text(word)
         }
       }
     })
