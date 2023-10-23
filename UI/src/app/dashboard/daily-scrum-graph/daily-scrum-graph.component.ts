@@ -519,11 +519,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         xVal += 20;
       }
 
-      if (yVal > chart.node().getBoundingClientRect().bottom) {
-        yVal -= 50;
-      } else {
-        yVal += 20;
-      }
+      // if (yVal > chart.node().getBoundingClientRect().bottom) {
+      //   yVal -= 50;
+      // } else {
+      //   yVal += 20;
+      // }
 
       tooltipContainer
         .selectAll('div')
@@ -531,7 +531,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .join('div')
         .attr('class', 'tooltip')
         .style('left', xVal + 'px')
-        .style('top', yVal + 'px')
+        .style('top', yVal + 20 + 'px')
         .style('width', '200px')
         .style('height', 'auto')
         .html(data)
