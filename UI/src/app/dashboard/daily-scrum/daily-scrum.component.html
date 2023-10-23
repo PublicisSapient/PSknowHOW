@@ -107,12 +107,17 @@
     <ng-template #userInfo>
         <section class="user-info p-m-2">
             <app-assignee-board [issueDataList]="currentAssigneeissueData" [standUpStatusFilter]="standUpStatusFilter"
-                [onFullScreen]="onFullScreen"></app-assignee-board>
+                [onFullScreen]="onFullScreen" [kpiData]="kpiData" (reloadKPITab)="reloadKPI($event)"></app-assignee-board>
         </section>
     </ng-template>
 </main>
 <ng-template #noData>
-    <div [style]="{'text-align': 'center'}">
+    <div *ngIf="!loader" class="noDataDiv">
         <h1>No Data Available</h1>
+    </div>
+    <div *ngIf="loader" class="noDataDiv">
+        <div class="overlay">
+            <div class="loading-img"></div>
+        </div>
     </div>
 </ng-template>

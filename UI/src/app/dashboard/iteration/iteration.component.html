@@ -483,7 +483,9 @@
                     [columns]="jiraKpiData['kpi154']?.modalHeads"
                     [filterData]="jiraKpiData['kpi154']?.filterData"
                     [issueData]="jiraKpiData['kpi154']?.issueData"
-                    [standUpStatusFilter]="jiraKpiData['kpi154']?.standUpStatusFilter">
+                    [standUpStatusFilter]="jiraKpiData['kpi154']?.standUpStatusFilter"
+                    [kpiData]="dailyStandupData"
+                    (reloadKPITab)="reloadKPI($event)">
                   </app-daily-scrum-tab>
                 </ng-container>
               </p-tabPanel>

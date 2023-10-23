@@ -14,8 +14,8 @@
 }
 
 #scroller {
-    width:100%;
-    overflow-x: auto; 
+    width: 100%;
+    overflow-x: auto;
     overflow-y: auto;
     padding-bottom: 30px;
 }
@@ -33,11 +33,11 @@
     float: left;
 }
 
-.tooltip-container{
+.tooltip-container {
     position: relative;
 }
 
-:host ::ng-deep.tooltip{
+:host ::ng-deep.tooltip {
     display: none;
     font-size: 10px;
     position: absolute;
@@ -47,18 +47,18 @@
     color: white;
     background-color: black;
     padding: 0.5rem;
-   
+
 }
 
-:host ::ng-deep.tooltip p{
+:host ::ng-deep.tooltip p {
     margin: 0rem;
 }
 
-:host ::ng-deep.tick text{
+:host ::ng-deep.tick text {
     font-size: 1rem;
 }
 
-.legends-button{
+.legends-button {
     position: absolute;
     top: 28px;
     right: 0;
@@ -79,16 +79,16 @@
     font-size: 14px;
 }
 
-:host ::ng-deep .modal .p-dialog-header{
+:host ::ng-deep .modal .p-dialog-header {
     display: flex !important;
 }
 
-:host ::ng-deep.modal .p-dialog-content{
+:host ::ng-deep.modal .p-dialog-content {
     padding: 0;
     overflow-x: hidden;
 }
 
-:host ::ng-deep .modal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable{
+:host ::ng-deep .modal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable {
     height: 500px !important;
     width: 500px !important;
     max-width: 90vw !important;
@@ -166,12 +166,47 @@
     background-image: url('/assets/img/Bug.svg');
 }
 
-:host ::ng-deep .issueTypeIcon.Story{
+:host ::ng-deep .issueTypeIcon.Story {
     background-image: url('/assets/img/Story.svg');
 }
 
 :host ::ng-deep text.assigneeChangeText {
     text-align: center;
+}
+
+.kpi-card-icons {
+    top: 24px;
+    position: absolute;
+    right: 45px;
+    cursor: pointer;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    max-width: 90vw;
+    max-height: 50vh !important;
+    font-size: 16px !important;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .mapping-selection-popup {
+    max-width: 50vw !important;
+    width: 50vw !important;
+    max-width: 50vw;
+    max-height: 30vh !important;
+    font-size: 16px !important;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-header {
+    display: block;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-content {
+    overflow-y: auto;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-footer span.p-button-label {
+    font-size: 14px;
 }
 
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
@@ -185,5 +220,9 @@
 
     :host ::ng-deep.tick text {
         font-size: 14px;
+    }
+
+    .kpi-card-icons {
+        right: 60px;
     }
 }

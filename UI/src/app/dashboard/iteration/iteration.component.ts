@@ -105,6 +105,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   kpiCommentsCountObj: object = {};
   currentSelectedSprint;
 
+  dailyStandupData: object = {};
+
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
@@ -218,6 +220,11 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiConfigData[element.kpiId] = false;
       }
     });
+
+    
+    console.log(this.navigationTabs);
+    this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
+
   }
 
   getSelectedType(sharedobject) {

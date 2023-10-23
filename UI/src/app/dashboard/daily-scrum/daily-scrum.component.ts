@@ -30,6 +30,10 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   selectedUserInfo;
   currentAssigneeissueData = [];
 
+  @Input() kpiData;
+  @Output() reloadKPITab = new EventEmitter<any>();
+  loader: boolean = false;
+
   constructor(private service: SharedService) { }
 
   ngOnInit(): void {
@@ -52,6 +56,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === this.selectedUser);
     this.calculateTotal();
     this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
+    // this.loader = false;
   }
 
   setSelectedUser(assigneeId, assigneeName) {
@@ -195,5 +200,11 @@ export class DailyScrumComponent implements OnInit, OnChanges {
 
   getSubTaskIssueDetails(subTaskList) {
     return this.issueData.filter(issue => subTaskList.includes(issue['Issue Id']));
+  }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
+    this.loader = true;
+    this.reloadKPITab.emit(event);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -10,15 +10,16 @@ export class DailyScrumTabComponent implements OnInit {
 
   @Input() filterData;
   @Input() assigneeList = [];
-  @Input() columns =[];
-  @Input() issueData =[];
-  @Input() standUpStatusFilter =[];
+  @Input() columns = [];
+  @Input() issueData = [];
+  @Input() standUpStatusFilter = [];
+  @Input() kpiData;
   displayModal = true;
   showLess = true;
-  selectedRole =null;
+  selectedRole = null;
   selectedUser = 'Overall';
-  filters={};
-
+  filters = {};
+  @Output() reloadKPITab = new EventEmitter<any>();
   constructor(private sharedService: SharedService) { }
 
   ngOnInit(): void {
@@ -26,20 +27,25 @@ export class DailyScrumTabComponent implements OnInit {
     this.sharedService.setSideNav(false);
   }
 
-  setExpandView(e){
+  setExpandView(e) {
     this.assigneeList = this.assigneeList.slice();
     this.displayModal = e;
   }
 
-  onShowLessOrMore(){
+  onShowLessOrMore() {
     this.showLess = !this.showLess;
   }
 
-  onFilterChange(filters){
+  onFilterChange(filters) {
     this.filters = filters;
   }
 
-  onSelectedUserChange(selectedUser){
-    this.selectedUser = this.selectedUser === selectedUser ? 'Overall' : selectedUser ;
+  onSelectedUserChange(selectedUser) {
+    this.selectedUser = this.selectedUser === selectedUser ? 'Overall' : selectedUser;
+  }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
+    this.reloadKPITab.emit(event);
   }
 }

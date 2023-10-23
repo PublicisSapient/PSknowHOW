@@ -107,6 +107,22 @@ button.assignee.selected-user {
     color: var(--color-green);
 }
 
+.noDataDiv {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay {
+    position: fixed;
+    z-index: 99999;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    opacity: .5;
+}
+
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
 
     :host .container,
@@ -114,6 +130,12 @@ button.assignee.selected-user {
     .button.assignee,
     :host::ng-deep .legends-button {
         font-size: 10px;
+    }
+
+    :host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-content .field-title, 
+    :host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-content .p-accordion-header-text,
+    :host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-content .save-container span.p-button-label {
+        font-size: 14px;
     }
 }
 

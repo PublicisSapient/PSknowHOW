@@ -15,7 +15,8 @@
     (onSelectedUserChange)="onSelectedUserChange($event)"
     [issueData]="issueData"
     [standUpStatusFilter]="standUpStatusFilter"
-   >
+    [kpiData]="kpiData"
+    (reloadKPITab)="reloadKPI($event)">
 </app-daily-scrum>
 <div class="expandCollapseModal">
 <p-dialog [(visible)]="displayModal">
@@ -33,7 +34,9 @@
     (onFilterChange)="onFilterChange($event)"
     (onSelectedUserChange)="onSelectedUserChange($event)"
     [issueData]="issueData"
-    [standUpStatusFilter]="standUpStatusFilter">
+    [standUpStatusFilter]="standUpStatusFilter"
+    [kpiData]="kpiData"
+    (reloadKPITab)="reloadKPI($event)">
     </app-daily-scrum>
 </p-dialog>
 

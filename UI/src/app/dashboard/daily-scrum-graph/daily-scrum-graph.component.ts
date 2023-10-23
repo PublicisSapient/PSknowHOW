@@ -1,6 +1,8 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-daily-scrum-graph',
@@ -13,6 +15,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   @Input() issueDataList;
   @Input() selectedSprintInfo;
   @Input() standUpStatusFilter;
+  @Input() kpiData;
   elem;
   statusFilterOptions = [];
   selectedStatus;
@@ -20,10 +23,25 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   currentDayIndex;
   displayModal = false;
-  constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
+
+  userRole: string;
+  checkIfViewer: boolean;
+  selectedToolConfig: any = [];
+  loading : boolean = false
+  noData : boolean = false
+  displayConfigModel: boolean;
+  fieldMappingConfig = [];
+  selectedFieldMapping = []
+  selectedConfig: any = {};
+  fieldMappingMetaData = [];
+  @Output() reloadKPITab = new EventEmitter<any>();
+  
+  constructor(private viewContainerRef: ViewContainerRef, private http : HttpService, public service: SharedService, private authService : GetAuthorizationService) { }
 
   ngOnChanges(changes: SimpleChanges) {
     this.elem = this.viewContainerRef.element.nativeElement;
+    this.userRole = this.authService.getRole();
+    this.checkIfViewer =  (this.authService.checkIfViewer({id : this.service.getSelectedTrends()[0]?.basicProjectConfigId}));
     this.statusFilterOptions = this.standUpStatusFilter.map(d => {
       return {
         'name': d.filterName,
@@ -686,6 +704,83 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       }
     })
   }
+
+    /** When field mapping dialog is opening */
+    onOpenFieldMappingDialog(){
+      this.getKPIFieldMappingConfig();
+    }
+
+    /** This method is responsible for getting field mapping configuration for specfic KPI */
+  getKPIFieldMappingConfig() {
+    const selectedTab = this.service.getSelectedTab().toLowerCase();
+    const selectedType = this.service.getSelectedType().toLowerCase();
+    const selectedTrend = this.service.getSelectedTrends();
+    if (selectedType === 'scrum' && selectedTrend.length == 1  || (selectedTab === 'release' && this.kpiData?.kpiId === 'kpi163')) {
+      this.loading = true;
+      this.noData = false;
+      this.displayConfigModel = true;
+      this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/kpi154`).subscribe(data => {
+        if(data && data['success']){
+          this.fieldMappingConfig = data?.data['fieldConfiguration'];
+          const kpiSource = data?.data['kpiSource']?.toLowerCase();
+          const toolConfigID = data?.data['projectToolConfigId'];
+          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+          if (this.fieldMappingConfig.length > 0) {
+            this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
+            this.getFieldMapping();
+            if (this.service.getFieldMappingMetaData().length) {
+              const metaDataList = this.service.getFieldMappingMetaData();
+              const metaData = metaDataList.find(data => data.projectID === selectedTrend[0]?.basicProjectConfigId && data.kpiSource === kpiSource);
+              if (metaData && metaData.metaData) {
+                this.fieldMappingMetaData = metaData.metaData;
+              } else {
+                this.getFieldMappingMetaData(kpiSource);
+              }
+            } else {
+              this.getFieldMappingMetaData(kpiSource);
+            }
+          } else {
+            this.loading = false;
+            this.noData = true;
+          }
+        }
+      })
+    }
+  }
+
+  getFieldMapping() {
+    this.http.getFieldMappings(this.selectedToolConfig[0].id).subscribe(mappings => {
+      if (mappings && mappings['success'] && Object.keys(mappings['data']).length >= 2) {
+        this.selectedFieldMapping = mappings['data'];
+        this.displayConfigModel = true;
+        this.loading = false;
+
+      } else {
+        this.loading = false;
+      }
+    });
+  }
+
+  getFieldMappingMetaData(kpiSource) {
+    this.http.getKPIConfigMetadata(this.selectedToolConfig[0].id).subscribe(Response => {
+      if (Response.success) {
+        this.fieldMappingMetaData = Response.data;
+        this.service.setFieldMappingMetaData({
+          projectID: this.service.getSelectedTrends()[0]?.basicProjectConfigId,
+          kpiSource: kpiSource,
+          metaData: Response.data
+        })
+      } else {
+        this.fieldMappingMetaData = [];
+      }
+    });
+  }
+
+  reloadKPI(){
+    this.displayConfigModel = false;
+    this.reloadKPITab.emit(this.kpiData[0]);
+  }
+
 
 
   ngOnDestroy(): void {

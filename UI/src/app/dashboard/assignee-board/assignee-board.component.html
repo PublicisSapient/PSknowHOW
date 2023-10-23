@@ -1,7 +1,7 @@
 <main class="container" [ngClass]="{'noFullScreen': !onFullScreen}">
     <div class="graph-container" [style.width.%]="graphWidth">
         <app-daily-scrum-graph [selectedSprintInfo]="currentSprint" [issueDataList]="issueDataList"
-            [standUpStatusFilter]="standUpStatusFilter"></app-daily-scrum-graph>
+            [standUpStatusFilter]="standUpStatusFilter" [kpiData]="kpiData" (reloadKPITab)="reloadKPI($event)"></app-daily-scrum-graph>
     </div>
     <div class="issue-card-container" *ngIf="showIssueDetails">
         <div class="issue-nav p-m-2">

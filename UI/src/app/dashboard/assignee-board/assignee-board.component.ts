@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -11,10 +11,14 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   @Input() issueDataList = [];
   @Input() standUpStatusFilter = [];
   @Input() onFullScreen;
+  @Input() kpiData;
   currentIssueIndex = 0;
   currentSprint;
   showIssueDetails: boolean = false;
   graphWidth: number = 100;
+
+  @Output() reloadKPITab = new EventEmitter<any>();
+  
   constructor(private sharedService: SharedService) {
     this.sharedService.currentData.subscribe(data => {
       if (data && Object.keys(data).length) {
@@ -47,5 +51,10 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
       this.currentIssueIndex = this.currentIssueIndex + 1;
       this.sharedService.setIssueData(this.issueDataList[this.currentIssueIndex]);
     }
+  }
+
+   /** Reload KPI once field mappoing updated */
+   reloadKPI(event){
+    this.reloadKPITab.emit(event);
   }
 }
