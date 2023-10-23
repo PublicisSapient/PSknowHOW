@@ -73,41 +73,41 @@ export class IterationComponent implements OnInit, OnDestroy {
   upDatedConfigData;
   timeRemaining = 0;
   displayModal = false;
-  modalDetails= {
+  modalDetails = {
     header: '',
     tableHeadings: [],
     tableValues: [],
-    kpiId:''
+    kpiId: ''
   };
   kpiDropdowns = {};
   trendBoxColorObj: any;
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   noProjects = false;
-  tableColumnData= {};
-  tableColumnForm={};
-  excludeColumnFilter=[];
-  excludeColumns=[];
-  selectedColumns=[];
-  tableColumns=[];
-  tableHeaders=[];
+  tableColumnData = {};
+  tableColumnForm = {};
+  excludeColumnFilter = [];
+  excludeColumns = [];
+  selectedColumns = [];
+  tableColumns = [];
+  tableHeaders = [];
   filteredColumn;
-  markerInfo=[];
+  markerInfo = [];
   globalConfig;
   sharedObject;
   activeIndex = 0;
-  navigationTabs:Array<object> =[
-    {'label':'Iteration Review', 'count': 0,width : 'half',kpis : []},
-    {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
-    {'label':'Daily Standup', 'count': 0,width : 'full',kpis : []},
+  navigationTabs: Array<object> = [
+    { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [] },
+    { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+    { 'label': 'Daily Standup', 'count': 0, width: 'full', kpis: [] },
   ];
-  forzenColumns = ['issue id','issue description'];
+  forzenColumns = ['issue id', 'issue description'];
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
   currentSelectedSprint;
 
   dailyStandupData: object = {};
 
-  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
+  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
         this.allKpiArray = [];
@@ -116,7 +116,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiDropdowns = {};
         this.kpiCommentsCountObj = {};
         this.sharedObject = sharedobject;
-        if(this.globalConfig || this.service.getDashConfigData()){
+        if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
         this.noTabAccess = false;
@@ -126,8 +126,8 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig && this.sharedObject){
-        if(this.sharedObject || this.service.getFilterObject()){
+      if (globalConfig && this.sharedObject) {
+        if (this.sharedObject || this.service.getFilterObject()) {
           this.receiveSharedData(this.service.getFilterObject());
         }
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
@@ -149,16 +149,16 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   processKpiConfigData() {
-    if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
-      this.navigationTabs =  [
-        {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
-        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
-        {'label':'Daily Standup','count':1 , width : 'full',kpis : []}
+    if (this.service.currentSelectedSprint?.sprintState === 'ACTIVE') {
+      this.navigationTabs = [
+        { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+        { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+        { 'label': 'Daily Standup', 'count': 1, width: 'full', kpis: [] }
       ];
-    }else{
-      this.navigationTabs =  [
-        {'label':'Iteration Review', 'count': 0 , width : 'half',kpis : [],fullWidthKpis:[]},
-        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
+    } else {
+      this.navigationTabs = [
+        { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+        { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
       ];
     }
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
@@ -174,28 +174,28 @@ export class IterationComponent implements OnInit, OnDestroy {
       // if(x['label'] === 'Daily Standup'){
       //   return x;
       // }
-      return { ...x, count: 0};
+      return { ...x, count: 0 };
     });
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.subCategoryBoard;
       let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx != -1) {
         this.navigationTabs[idx]['count']++;
         this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
       }
     }
-    if(this.commitmentReliabilityKpi?.isEnabled){
+    if (this.commitmentReliabilityKpi?.isEnabled) {
       this.navigationTabs[0]['count']++;
     }
 
     this.navigationTabs.map(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -221,9 +221,10 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     });
 
-    
-    console.log(this.navigationTabs);
-    this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
+
+    if (this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup').length) {
+      this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
+    }
 
   }
 
@@ -236,8 +237,8 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    this.activeIndex =0;
-    if(this.service.getDashConfigData()){
+    this.activeIndex = 0;
+    if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
@@ -280,7 +281,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Iteration');
+        this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Iteration');
         this.postJiraKpi(this.kpiJira, 'jira');
       }
     });
@@ -412,14 +413,14 @@ export class IterationComponent implements OnInit, OnDestroy {
     return count;
   }
 
-  applyAggregationForChart(arr){
+  applyAggregationForChart(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr[0]));
-    for(let i=1;i<arr.length;i++){
-        for(let j=0;j<arr[i].value.length;j++){
-            aggregatedArr.value[j].value +=arr[i].value[j].value;
+    for (let i = 1; i < arr.length; i++) {
+      for (let j = 0; j < arr[i].value.length; j++) {
+        aggregatedArr.value[j].value += arr[i].value[j].value;
 
-            aggregatedArr.value[j].hoverValue = {...aggregatedArr.value[j].hoverValue,...arr[i].value[j].hoverValue};
-        }
+        aggregatedArr.value[j].hoverValue = { ...aggregatedArr.value[j].hoverValue, ...arr[i].value[j].hoverValue };
+      }
     }
     return [aggregatedArr];
   }
@@ -459,15 +460,15 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     aggregatedArr[0]?.data?.forEach((item) => {
       item['value'] = +(item['value']?.toFixed(2));
-      if(item.value1){
+      if (item.value1) {
         item['value1'] = +(item['value1']?.toFixed(2));
       }
     });
 
     const evalvateExpression = aggregatedArr[0]['data'].filter(el => el.hasOwnProperty('expressions'));
-    if(evalvateExpression.length > 0){
-      evalvateExpression.forEach(item =>{
-        this.evalvateExpression(item, aggregatedArr[0]['data'],arr);
+    if (evalvateExpression.length > 0) {
+      evalvateExpression.forEach(item => {
+        this.evalvateExpression(item, aggregatedArr[0]['data'], arr);
       });
     }
     return aggregatedArr;
@@ -558,7 +559,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
         this.kpiChartData[kpiId] = [...preAggregatedValues];
-      }else{
+      } else {
 
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
@@ -583,7 +584,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     }
   }
 
-  getKpiChartType(kpiId){
+  getKpiChartType(kpiId) {
     return this.updatedConfigGlobalData.filter(kpiDetails => kpiDetails.kpiId === kpiId)[0]?.kpiDetail?.chartType;
   }
 
@@ -689,7 +690,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {"filter1":[event]};
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
 
@@ -775,13 +776,13 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }
     this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
-    this.httpService.getkpiColumns(basicConfigId,kpi.kpiId).subscribe(response =>{
-      if(response['success']){
+    this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
+      if (response['success']) {
         this.tableColumns = response['data']['kpiColumnDetails'];
-        this.selectedColumns=this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
+        this.selectedColumns = this.tableColumns.filter(colDetails => colDetails.isDefault || colDetails.isShown).map(col => col.columnName);
         this.tableComponent.clear();
         this.generateTableColumnsFilterData(Object.keys(tableValues[0]));
-        this.tableHeaders= this.selectedColumns;
+        this.tableHeaders = this.selectedColumns;
         this.modalDetails['header'] = kpi?.kpiName + ' / ' + label;
         this.modalDetails['kpiId'] = kpi.kpiId;
         this.modalDetails['tableValues'] = tableValues;
@@ -792,15 +793,15 @@ export class IterationComponent implements OnInit, OnDestroy {
     });
   }
 
-  generateTableColumnsFilterData(tableValue){
+  generateTableColumnsFilterData(tableValue) {
     const unSelectedColumn = [];
     const defaultAndSelectedColumns = this.tableColumns.map(col => col.columnName);
-    this.modalDetails['tableHeadings'] = [...new Set([...tableValue,...defaultAndSelectedColumns])];
+    this.modalDetails['tableHeadings'] = [...new Set([...tableValue, ...defaultAndSelectedColumns])];
     this.modalDetails['tableHeadings'] = this.modalDetails['tableHeadings'].filter(colName => !this.excludeColumns.includes(colName));
-    this.modalDetails['tableHeadings'].forEach(col =>{
-      if(!defaultAndSelectedColumns.includes(col)){
+    this.modalDetails['tableHeadings'].forEach(col => {
+      if (!defaultAndSelectedColumns.includes(col)) {
         unSelectedColumn.push({
-          columnName:col,
+          columnName: col,
           isDefault: false,
           isShown: false,
           order: 0
@@ -811,71 +812,71 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.tableColumns.push(...unSelectedColumn);
   }
 
-  generateExcludeColumnsFilterList(tableValue){
-  this.excludeColumnFilter = ['Linked Defect', 'Defect Priority','Linked Stories'];
-    for(const colunmName in tableValue){
-      if(typeof tableValue[colunmName] == 'object'){
+  generateExcludeColumnsFilterList(tableValue) {
+    this.excludeColumnFilter = ['Linked Defect', 'Defect Priority', 'Linked Stories'];
+    for (const colunmName in tableValue) {
+      if (typeof tableValue[colunmName] == 'object') {
         this.excludeColumnFilter.push(colunmName);
       }
     }
   }
 
-  onFilterClick(columnName){
-    this.filteredColumn =columnName;
+  onFilterClick(columnName) {
+    this.filteredColumn = columnName;
   }
 
-  onFilterBlur(columnName){
-    this.filteredColumn= this.filteredColumn === columnName ? '' : this.filteredColumn;
+  onFilterBlur(columnName) {
+    this.filteredColumn = this.filteredColumn === columnName ? '' : this.filteredColumn;
   }
 
-  applyColumnFilter(){
+  applyColumnFilter() {
     this.saveKpiColumnsConfig(this.selectedColumns);
   }
 
-  saveTableColumnOrder(){
-    if(this.tableComponent.columns.length > 0){
+  saveTableColumnOrder() {
+    if (this.tableComponent.columns.length > 0) {
       this.saveKpiColumnsConfig(this.tableComponent.columns);
     }
   }
 
-  saveKpiColumnsConfig(selectedColumns: any[]){
-    const postData={
-      kpiId:'',
-      basicProjectConfigId:'',
-      kpiColumnDetails:[]
+  saveKpiColumnsConfig(selectedColumns: any[]) {
+    const postData = {
+      kpiId: '',
+      basicProjectConfigId: '',
+      kpiColumnDetails: []
     };
-    postData.kpiId=this.modalDetails['kpiId'];
-    postData['basicProjectConfigId']=this.service.selectedTrends[0].basicProjectConfigId;
-    postData['kpiColumnDetails']= this.tableColumns.filter(col =>{
+    postData.kpiId = this.modalDetails['kpiId'];
+    postData['basicProjectConfigId'] = this.service.selectedTrends[0].basicProjectConfigId;
+    postData['kpiColumnDetails'] = this.tableColumns.filter(col => {
       const selectedColIndex = selectedColumns.findIndex(colName => colName === col.columnName);
-      if(selectedColIndex !== -1){
+      if (selectedColIndex !== -1) {
         col.isShown = true;
-        col.order=selectedColIndex;
+        col.order = selectedColIndex;
         return true;
-      } else{
-        col.isShown =false;
+      } else {
+        col.isShown = false;
         return false;
       }
     });
-    postData['kpiColumnDetails'].sort((a,b) => a.order -b.order);
-    this.tableHeaders =  postData['kpiColumnDetails'].map(col => col.columnName);
-    this.httpService.postkpiColumnsConfig(postData).subscribe(response =>{
+    postData['kpiColumnDetails'].sort((a, b) => a.order - b.order);
+    this.tableHeaders = postData['kpiColumnDetails'].map(col => col.columnName);
+    this.httpService.postkpiColumnsConfig(postData).subscribe(response => {
       if (response && response['success'] && response['data']) {
         this.messageService.add({ severity: 'success', summary: 'Kpi Column Configurations saved successfully!' });
-    } else {
+      } else {
         this.messageService.add({ severity: 'error', summary: 'Error in Kpi Column Configurations. Please try after sometime!' });
-    }
+      }
     });
   }
 
-  generateTableColumnData(){
-    this.modalDetails['tableHeadings'].forEach(colName =>{
-      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({name:colData,value:colData}));
-      this.tableColumnForm[colName]= [];
+  generateTableColumnData() {
+    this.modalDetails['tableHeadings'].forEach(colName => {
+      this.tableColumnData[colName] = [...new Set(this.modalDetails['tableValues'].map(item => item[colName]))].map(colData => ({ name: colData, value: colData }));
+      this.tableColumnForm[colName] = [];
     });
 
     this.tableComponent.sortMode = 'multiple';
-    this.tableComponent.multiSortMeta = [{field: 'Assignee', order: 1},{field: 'Due Date', order: -1}];
+    this.tableComponent.multiSortMeta = [{ field: 'Assignee', order: 1 }, { field: 'Due Date', order: -1 }];
     this.tableComponent.sortMultiple();
   }
 
@@ -885,12 +886,12 @@ export class IterationComponent implements OnInit, OnDestroy {
       excelData: []
     };
     let excelData = [];
-    let columns =[];
+    let columns = [];
     if (exportMode === 'all') {
       excelData = this.modalDetails['tableValues'];
       columns = this.modalDetails['tableHeadings'];
     } else {
-      excelData = this.tableComponent?.filteredValue ?  this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
+      excelData = this.tableComponent?.filteredValue ? this.tableComponent?.filteredValue : this.modalDetails['tableValues'];
       columns = this.tableHeaders;
     }
 
@@ -900,21 +901,21 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     excelData.forEach(colData => {
       let obj = {};
-      for(let key in colData){
-        if(this.typeOf(colData[key])){
+      for (let key in colData) {
+        if (this.typeOf(colData[key])) {
           obj[key] = [];
-          for(let y in colData[key]){
+          for (let y in colData[key]) {
             //added check if valid url
-            if(colData[key][y].includes('http')){
-              obj[key].push({text: y, hyperlink: colData[key][y]});
-            }else{
+            if (colData[key][y].includes('http')) {
+              obj[key].push({ text: y, hyperlink: colData[key][y] });
+            } else {
               obj[key].push(colData[key][y]);
             }
           }
-        }else if(key == 'Issue Id'){
+        } else if (key == 'Issue Id') {
           obj['Issue Id'] = {};
           obj['Issue Id'][colData[key]] = colData['Issue URL'];
-        }else{
+        } else {
           obj[key] = colData[key]
         }
       }
@@ -924,16 +925,16 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.excelService.generateExcel(kpiData, this.modalDetails['header']);
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
+  drop(event: CdkDragDrop<string[]>, tab) {
     if (event?.previousIndex !== event.currentIndex) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+      if (tab.width === 'half') {
+        const updatedTabsDetails = this.navigationTabs.find(tabs => tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
       }
       this.upDatedConfigData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
+      this.navigationTabs.forEach(tabs => {
+        this.upDatedConfigData = this.upDatedConfigData.concat(tabs['kpis']);
       })
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
@@ -941,7 +942,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
       hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
       const capacityKpi = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi121');
-     if (capacityKpi) {
+      if (capacityKpi) {
         this.service.kpiListNewOrder.next([capacityKpi, ...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
       }
     }
@@ -952,27 +953,27 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   /** Reload KPI once field mappoing updated */
-  reloadKPI(event){
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId,'Iteration');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event?.kpiDetail?.groupId, 'Iteration');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(currentKPIGroup, 'jira');
+      this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
-  getKpiCommentsCount(kpiId?){
+  getKpiCommentsCount(kpiId?) {
     let requestObj = {
       "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
-      "level":this.filterApplyData?.level,
+      "level": this.filterApplyData?.level,
       "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
       'kpiIds': []
     };
-    if(kpiId){
+    if (kpiId) {
       requestObj['kpiIds'] = [kpiId];
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
-    }else{
+    } else {
       requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
