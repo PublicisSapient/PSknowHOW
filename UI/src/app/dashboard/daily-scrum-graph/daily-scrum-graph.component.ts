@@ -510,12 +510,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           return issueList.length <= 1 ? swimLaneHeight : heightCoefficent;
         })
         .attr("fill", function (d, i) {
-          if (parentIssue && parentIssue['Issue Id']) {
-            if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
-              return '#F4F7F9';
-            }
-          }
-          return '#FFF';
+          return self.decideFillColor(parentIssue, d);
         });
 
 
@@ -642,13 +637,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           let heightCoefficent = y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight;
           return issueList.length <= 1 ? swimLaneHeight + 5 : heightCoefficent;
         })
-        .attr("fill", function (d, i) {
-          if (parentIssue && parentIssue['Issue Id']) {
-            if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
-              return '#F4F7F9';
-            }
-          }
-          return '#FFF';
+        .attr("fill", function (d) {
+          return self.decideFillColor(parentIssue, d);
         })
         .attr('x', -120)
         .attr('transform', function (d, i) { return 'translate(100,0)'; });
@@ -705,6 +695,14 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     // draw lines for each issues and its subtask
     drawLineForIssue(issueDataList);
     scroller.node().scrollTop = previousScroll;
+  }
+  decideFillColor(parentIssue: any, d: any) {
+    if (parentIssue && parentIssue['Issue Id']) {
+      if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
+        return '#F4F7F9';
+      }
+    }
+    return '#FFF';
   }
 
   // get line start and end coordinates
