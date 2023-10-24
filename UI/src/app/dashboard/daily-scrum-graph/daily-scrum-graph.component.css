@@ -248,3 +248,7 @@
         right: 60px;
     }
 }
+
+:host ::ng-deep .fixed_position {
+    position: fixed;
+}

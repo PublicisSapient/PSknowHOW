@@ -523,26 +523,27 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('x', 5)
         .attr('y', 0)
         .append('xhtml:div')
+        .attr('class', 'issueBox')
         .html(function (d) {
-          let issueClass= '';
-          if(openIssueStatus.includes(d['Issue Status'])) {
+          let issueClass = '';
+          if (openIssueStatus.includes(d['Issue Status'])) {
             issueClass = 'open';
           }
-          if(inProgressIssueStatus.includes(d['Issue Status'])) {
+          if (inProgressIssueStatus.includes(d['Issue Status'])) {
             issueClass = 'in_progress';
           }
-          if(closedIssueStatus.includes(d['Issue Status'])) {
+          if (closedIssueStatus.includes(d['Issue Status'])) {
             issueClass = 'closed'
           }
-          if(onHoldIssueStatus.includes(d['Issue Status'])) {
+          if (onHoldIssueStatus.includes(d['Issue Status'])) {
             issueClass = 'on_hold'
           }
 
           if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
-            return `<div><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a>${d['Issue Id']}</a></div>
+            return `<div class="issueIDContainer"><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a class="issue_Id">${d['Issue Id']}</a></div>
                     <div><span class="issueStatus ${issueClass}">${d['Issue Status']}</div></div>`;
           } else {
-            return `<div><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div>${d['Issue Id']}</div>
+            return `<div class="issueIDContainer"><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a class="issue_Id">${d['Issue Id']}</a></div>
             <div><span class="issueStatus ${issueClass}">${d['Issue Status']}</div></div>`;
           }
         })
@@ -568,12 +569,25 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             self.draw(issueList, null, false, scrollPosition);
           }
           showTaskDetail(d);
-        })
+        });
+
+
+      let issueBoxes = d3.select('#issueAxis').selectAll('a.issue_Id');
+      issueBoxes.on('mouseover', function (event) {
+        let d = event.target.parentNode.parentNode.parentNode.__data__;
+        if (d) {
+          const data = `<p>${d['Issue Description']}</p>`
+          showTooltip(data, event.x + 50, event.y, true);
+        }
+      })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
     };
 
     //show tooltip
     const tooltipContainer = d3.select('#chart').select('.tooltip-container');
-    const showTooltip = (data, xVal, yVal) => {
+    const showTooltip = (data, xVal, yVal, fixed = false) => {
 
       if (xVal + 200 > chart.node().getBoundingClientRect().right - 12 / 100 * chart.node().getBoundingClientRect().right) {
         xVal -= 200;
@@ -585,7 +599,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .selectAll('div')
         .data(data)
         .join('div')
-        .attr('class', 'tooltip')
+        .attr('class', `tooltip${fixed ? ' fixed_position' : ''}`)
         .style('left', xVal + 'px')
         .style('top', yVal + 20 + 'px')
         .style('width', '200px')
@@ -604,6 +618,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', 'none')
         .style('opacity', 0);
       tooltipContainer.selectAll('.tooltip').remove();
+      tooltipContainer.selectAll('.fixed_position').remove();
     };
 
 
