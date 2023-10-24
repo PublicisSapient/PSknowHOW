@@ -505,7 +505,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       issueSvg.append("rect")
         .attr("width", '100%')
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight)
+        .attr("height", (d, i) => {
+          let heightCoefficent = y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight;
+          return issueList.length <= 1 ? swimLaneHeight : heightCoefficent;
+        })
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
@@ -635,7 +638,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       line.append("rect")
         .attr("width", width + margin.left + margin.right + 200)
-        .attr("height", (d, i) => issueList.length <= 1 ? swimLaneHeight + 5 : y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight)
+        .attr("height", (d, i) => {
+          let heightCoefficent = y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight;
+          return issueList.length <= 1 ? swimLaneHeight + 5 : heightCoefficent;
+        })
         .attr("fill", function (d, i) {
           if (parentIssue && parentIssue['Issue Id']) {
             if (d['Issue Id'] === parentIssue['Issue Id'] || (d['isSubtask'] && d['parentStory'][0] === parentIssue['Issue Id'])) {
@@ -672,7 +678,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .attr('y1', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .attr('y2', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
-        .style('stroke', function (d) { return d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495'; })
+        .style('stroke', function (d) {
+          let onHoldOrNot = onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495';
+          return d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldOrNot;
+        })
         .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
         .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })
         .style('fill', 'none')
@@ -761,42 +770,34 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     this.getKPIFieldMappingConfig();
   }
 
-  /** This method is responsible for getting field mapping configuration for specfic KPI */
+  /** This method is responsible for getting field mapping configuration for this KPI */
   getKPIFieldMappingConfig() {
-    const selectedTab = this.service.getSelectedTab().toLowerCase();
-    const selectedType = this.service.getSelectedType().toLowerCase();
+    console.log(this.kpiData);
     const selectedTrend = this.service.getSelectedTrends();
-    if (selectedType === 'scrum' && selectedTrend.length == 1 || (selectedTab === 'release' && this.kpiData?.kpiId === 'kpi163')) {
-      this.loading = true;
-      this.noData = false;
-      this.displayConfigModel = true;
-      this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/kpi154`).subscribe(data => {
-        if (data && data['success']) {
-          this.fieldMappingConfig = data?.data['fieldConfiguration'];
-          const kpiSource = data?.data['kpiSource']?.toLowerCase();
-          const toolConfigID = data?.data['projectToolConfigId'];
-          this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
-          if (this.fieldMappingConfig.length > 0) {
-            this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
-            this.getFieldMapping();
-            if (this.service.getFieldMappingMetaData().length) {
-              const metaDataList = this.service.getFieldMappingMetaData();
-              const metaData = metaDataList.find(metaDataObj => metaDataObj.projectID === selectedTrend[0]?.basicProjectConfigId && metaDataObj.kpiSource === kpiSource);
-              if (metaData && metaData.metaData) {
-                this.fieldMappingMetaData = metaData.metaData;
-              } else {
-                this.getFieldMappingMetaData(kpiSource);
-              }
-            } else {
-              this.getFieldMappingMetaData(kpiSource);
-            }
+    this.loading = true;
+    this.noData = false;
+    this.displayConfigModel = true;
+    this.http.getKPIFieldMappingConfig(`${selectedTrend[0]?.basicProjectConfigId}/${this.kpiData[0]['kpiId']}`).subscribe(data => {
+      if (data && data['success']) {
+        this.fieldMappingConfig = data?.data['fieldConfiguration'];
+        const kpiSource = data?.data['kpiSource']?.toLowerCase();
+        const toolConfigID = data?.data['projectToolConfigId'];
+        this.selectedToolConfig = [{ id: toolConfigID, toolName: kpiSource }];
+        this.selectedConfig = { ...selectedTrend[0], id: selectedTrend[0]?.basicProjectConfigId }
+        this.getFieldMapping();
+        if (this.service.getFieldMappingMetaData().length) {
+          const metaDataList = this.service.getFieldMappingMetaData();
+          const metaData = metaDataList.find(metaDataObj => metaDataObj.projectID === selectedTrend[0]?.basicProjectConfigId && metaDataObj.kpiSource === kpiSource);
+          if (metaData && metaData.metaData) {
+            this.fieldMappingMetaData = metaData.metaData;
           } else {
-            this.loading = false;
-            this.noData = true;
+            this.getFieldMappingMetaData(kpiSource);
           }
+        } else {
+          this.getFieldMappingMetaData(kpiSource);
         }
-      })
-    }
+      }
+    })
   }
 
   getFieldMapping() {
