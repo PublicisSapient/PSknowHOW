@@ -1,4 +1,4 @@
-import { Component, OnInit ,Input} from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-issue-body',
@@ -13,12 +13,12 @@ export class IssueBodyComponent implements OnInit {
   }
 
   convertToHoursIfTime(val, unit) {
-    if(val === '-'){
+    if (val === '-') {
       return val;
     }
     const isLessThanZero = val < 0;
     val = Math.abs(val);
-    const hours = (val / (60*60));
+    const hours = (val / (60 * 60));
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
     const rminutes = Math.round(minutes);
@@ -36,20 +36,14 @@ export class IssueBodyComponent implements OnInit {
   }
 
   convertToHours(rminutes, rhours) {
-    if (rminutes === 0) {
-      return rhours + 'h';
-    } else if (rhours === 0) {
-      return rminutes + 'm';
-    } else {
-      return rhours + 'h ' + rminutes + 'm';
-    }
+    return rhours + 'h ';
   }
 
   convertToDays(rminutes, rhours) {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}${(rminutes !== 0) ? rminutes + 'm' : ''}`;
+    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}`;
   }
 
 }
