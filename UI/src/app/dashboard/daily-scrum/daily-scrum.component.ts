@@ -185,7 +185,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     const days = rhours / 8;
     const rdays = Math.floor(days);
     rhours = (days - rdays) * 8;
-    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}}`;
+    return `${(rdays !== 0) ? rdays + 'd ' : ''}${(rhours !== 0) ? rhours + 'h ' : ''}`;
   }
 
   customSort(event: SortEvent) {
