@@ -153,15 +153,20 @@
     width: 7px;
     margin-right: 5px;
     background-color: #bdbdbd;
-    display: inline-block
+    display: inline-block;
+    background-color: #898989;
 }
 
 :host ::ng-deep .issueStatus.in_progress::before {
-    background-color: #20E24D;
+    background-color: #E8E831;
 }
 
 :host ::ng-deep .issueStatus.closed::before {
-    background-color: #3DA3C9;
+    background-color: #20E24D;
+}
+
+:host ::ng-deep .issueStatus.on_hold::before {
+    background-color: #EB4545;
 }
 
 :host ::ng-deep .issueTypeIcon {
