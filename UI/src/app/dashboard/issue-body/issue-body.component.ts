@@ -32,6 +32,9 @@ export class IssueBodyComponent implements OnInit {
     if (isLessThanZero) {
       val = '-' + val;
     }
+    if(val === '') {
+      val = '0d'
+    }
     return val;
   }
 

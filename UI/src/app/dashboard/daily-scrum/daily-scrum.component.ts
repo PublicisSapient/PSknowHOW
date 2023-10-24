@@ -174,6 +174,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     if (isLessThanZero) {
       val = '-' + val;
     }
+    if(val === '') {
+      val = '0d'
+    }
     return val;
   }
 

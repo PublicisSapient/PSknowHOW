@@ -79,7 +79,7 @@ describe('DailyScrumComponent', () => {
 
   it('should convert to day', () => {
     let result = component.convertToHoursIfTime(25, 'day');
-    expect(result.trim()).toEqual('25m');
+    expect(result.trim()).toEqual('0d');
 
     result = component.convertToHoursIfTime(480, 'day');
     expect(result.trim()).toEqual('1d');
