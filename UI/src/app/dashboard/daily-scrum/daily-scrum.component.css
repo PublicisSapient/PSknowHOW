@@ -133,12 +133,11 @@ button.assignee.selected-user {
 }
 
 .overlay {
-    position: fixed;
+    position: relative;
     z-index: 99999;
-    width: 100vw;
-    height: 100vh;
-    background-color: black;
-    opacity: .5;
+    width: 100%;
+    height: calc(100vh - 265px);
+    background-color: #fff;
 }
 
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {

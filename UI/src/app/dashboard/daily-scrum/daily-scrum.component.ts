@@ -79,7 +79,6 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === this.selectedUser);
     this.calculateTotal();
     this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
-    this.loader = false;
   }
 
   setSelectedUser(assigneeId, assigneeName) {
