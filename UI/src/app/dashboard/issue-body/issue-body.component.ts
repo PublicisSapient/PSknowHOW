@@ -13,7 +13,7 @@ export class IssueBodyComponent implements OnInit {
   }
 
   convertToHoursIfTime(val, unit) {
-    if (val === '-') {
+    if (val === '-' || isNaN(val)) {
       return val;
     }
     const isLessThanZero = val < 0;

@@ -155,9 +155,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   convertToHoursIfTime(val, unit) {
-    if (val === '-') {
-      return val;
-    } else if(isNaN(val)) {
+    if (val === '-' || isNaN(val)) {
       return val;
     }
     const isLessThanZero = val < 0;
