@@ -96,8 +96,8 @@
                 <tr>
                     <th>{{totals['Team Member']}}</th>
                     <th *ngFor="let col of columns">
-                        {{totals[col]?.value}} {{totals[col]?.unit !== 'day' ? totals[col]?.unit : ''}}
-                        {{totals[col]?.unit1 ? ' / ' + totals[col]?.value1 +' '+ (totals[col]?.unit1 != 'day' ?
+                        {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ? totals[col]?.unit : ''}}
+                        {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +' '+ (totals[col]?.unit1 != 'day' ?
                         totals[col]?.unit1 : '') : ''}}
                     </th>
                 </tr>
