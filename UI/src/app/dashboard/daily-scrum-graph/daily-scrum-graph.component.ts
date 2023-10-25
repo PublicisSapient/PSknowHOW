@@ -415,9 +415,28 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           }
         });
 
+      // show 'Due Date' if available
+      marker.append('image')
+        .attr('class', 'OverallDueDate')
+        .attr('xlink:href', '../../../assets/img/OverallDueDate.svg')
+        .style('display', (d) => {return d['Due Date'] && d['Due Date'] !== '-' ? 'block' : 'none'})
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => d['Due Date'] && d['Due Date'] !== '-' ? x(self.formatDate(new Date(d['Due Date']))) + initialCoordinate / 2 - 20 : 0)
+        .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .style('cursor', 'pointer')
+        .on('mouseover', (event, i) => {
+          let d = event.currentTarget.__data__;
+          const data = `<p>Due Date: ${self.formatDate(d['Due Date'])}</>`;
+          showTooltip(data, event.offsetX, event.offsetY);
+        })
+        .on('mouseout', () => {
+          hideTooltip();
+        });
+
       // show 'Due Date Exceeded' if status not closed after dueDate
       marker.append('image')
-        .attr('xlink:href', '../../../assets/img/due-date-exceeded.svg')
+        .attr('class', 'OverallDueDateExceeded')
+        .attr('xlink:href', '../../../assets/img/OverallDueDateExceeded.svg')
         .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 20)
@@ -668,7 +687,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('y2', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) {
           let onHoldOrNot = onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495';
-          return d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldOrNot;
+          let OverallDueDateExceeded =  self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'];
+          return OverallDueDateExceeded ? '#DE1F1F80' : d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldOrNot;
         })
         .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
         .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })
