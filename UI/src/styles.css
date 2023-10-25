@@ -87,6 +87,10 @@
   width: 8px;
   height: 8px;
 }
+/* for Mozilla*/
+* {
+  scrollbar-width: thin;
+}
 
 /* Track */
 ::-webkit-scrollbar-track {
