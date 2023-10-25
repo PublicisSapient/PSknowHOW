@@ -434,4 +434,8 @@ public class FieldMappingDTO extends BasicModel {
         this.linkDefectToStoryField = linkDefectToStoryField == null ? null : linkDefectToStoryField.clone();
     }
 
+    public boolean getNotificationEnabler() {
+        return notificationEnabler;
+    }
+
 }
