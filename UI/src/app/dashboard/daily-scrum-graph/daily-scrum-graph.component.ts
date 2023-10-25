@@ -435,9 +435,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       // show 'Dev Due Date' if available
       marker.append('image')
-        .attr('class', 'OverallDueDate')
+        .attr('class', 'DevDueDate')
         .attr('xlink:href', '../../../assets/img/DevDueDate.svg')
-        .style('display', (d) => { return d['Dev Due Date'] && d['Dev Due Date'] !== '-' ? 'block' : 'none' })
+        .style('display', (d) => { return d['Dev Due Date'] && d['Dev Due Date'] !== '-' && self.compareDates(d['Due Date'], d['Dev Due Date']) ? 'block' : 'none' })
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => d['Dev Due Date'] && d['Dev Due Date'] !== '-' && !isNaN(x(self.formatDate(new Date(d['Dev Due Date'])))) ? x(self.formatDate(new Date(d['Dev Due Date']))) + initialCoordinate / 2 - 20 : -500)
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
