@@ -88,8 +88,7 @@ export class GroupBarChartComponent implements OnChanges {
     const marginLeft = 40;
     const marginTop = 35;
     const xTick = barWidth;
-    const tempWidth = window.innerWidth - 320 - marginLeft ;
-    let width = elem.offsetWidth ? (elem.offsetWidth - 20 - marginLeft) : tempWidth;
+    let width = document.getElementById('horizontalSVG')?.offsetWidth - 20 - marginLeft;
   
 
     const svgX = d3.select(elem).select('#horizontalSVG').append('svg')
