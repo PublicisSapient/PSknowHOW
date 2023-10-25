@@ -232,14 +232,14 @@
 
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
 
-    :host ::ng-deep.tick text {
+    :host ::ng-deep .tick text {
         font-size: 10px;
     }
 }
 
 @media only screen and (min-width: 1321px) {
 
-    :host ::ng-deep.tick text {
+    :host ::ng-deep .tick text {
         font-size: 14px;
     }
 
