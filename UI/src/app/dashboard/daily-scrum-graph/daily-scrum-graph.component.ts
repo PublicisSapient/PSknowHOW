@@ -21,7 +21,7 @@ File contains d3js code for daily scrum graph component.
 @author rishabh
 *******************************/
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewContainerRef } from '@angular/core';
 import * as d3 from 'd3';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
@@ -237,11 +237,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       return initials?.join('').toUpperCase();
     };
 
-    const showMarkers = (issueList) => {
+    const showMarkers = (issues) => {
       let self = this;
       const marker = svg
         .selectAll('circle.some-class')
-        .data(issueList)
+        .data(issues)
         .enter()
         .append("g")
         .attr('class', 'box')
@@ -251,7 +251,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       let currentIssue = {};
       let parts = marker.selectAll("g.part")
         .data(() => {
-          return [].concat(...issueList.map((d, index) => Object.keys(d['statusLogGroup'])))
+          return [].concat(...issues.map((d) => Object.keys(d['statusLogGroup'])))
         })
         .enter()
         .append("g")
@@ -276,7 +276,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('cy', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i) - 1) / 2)
+        .attr('cy', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i) - 1) / 2)
         .attr('r', 5)
         .style('display', function (d) {
           currentIssue = (JSON.parse(d3.select(this.parentNode.parentNode).attr('parent-data')));
@@ -325,7 +325,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
       let assigneeParts = marker.selectAll("g.part")
         .data(() => {
-          return [].concat(...issueList.map((d, index) => Object.keys(d['assigneeLogGroup'])))
+          return [].concat(...issues.map((d, index) => Object.keys(d['assigneeLogGroup'])))
         })
         .enter()
         .append("g")
@@ -369,7 +369,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             }
           }
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 + 20 : (y(i + 1) - y(i) - 1) / 2 + 25)
+        .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 + 20 : (y(i + 1) - y(i) - 1) / 2 + 25)
         .attr('dy', 0)
         .attr('text-anchor', 'middle')
         .style('cursor', 'pointer')
@@ -421,7 +421,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'] ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => !d['Due Date'] || d['Due Date'] === '-' ? 0 : x(self.formatDate(new Date())) + initialCoordinate / 2 - 20)
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -440,7 +440,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('x', (d) => {
           return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -459,7 +459,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('x', (d) => {
           return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 20
         })
-        .attr('y', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
+        .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
@@ -491,13 +491,12 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       }
     };
 
-    // const showIssueIdandStatus = (centerDate, issue, i, isOpenIssue = false) => {
-    const showIssueIdandStatus = (issueList) => {
+    const showIssueIdandStatus = (issueListArr) => {
       let self = this;
       //add issue boxes
       const issueSvg = issueAxis
         .selectAll('rect.some-class')
-        .data(issueList)
+        .data(issueListArr)
         .enter()
         .append("g")
         .attr('class', 'box')
@@ -507,7 +506,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr("width", '100%')
         .attr("height", (d, i) => {
           let heightCoefficent = y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight;
-          return issueList.length <= 1 ? swimLaneHeight : heightCoefficent;
+          return issueListArr.length <= 1 ? swimLaneHeight : heightCoefficent;
         })
         .attr("fill", function (d, i) {
           return self.decideFillColor(parentIssue, d);
@@ -548,23 +547,22 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('font-weight', 'bold')
         .style('transform', (d) => `scale(${d['parentStory'] && d['parentStory'].length ? 0.8 : 1})`)
         .style('cursor', 'pointer')
-        .style('height', (d, i) => `${issueList.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1}px`)
+        .style('height', (d, i) => `${issueListArr.length <= 1 ? swimLaneHeight : y(i + 1) - y(i) - 1}px`)
         .style('display', 'flex')
         .style('align-items', 'center')
-        .on('click', function (event, issue) {
-          let d = issue;
+        .on('click', function (event, d) {
           if (!d['IsExpanded']) {
             if (d && d['subTask']) {
               selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
-              let index = issueList.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
+              let index = issueListArr.findIndex(obj => obj['Issue Id'] === issue['Issue Id']);
               showSubTask(d, index);
             }
           } else {
             delete d['IsExpanded'];
-            issueList.splice(issueList.findIndex((obj) => obj['Issue Id'] === d['Issue Id']) + 1, d['subTask'].length);
+            issueListArr.splice(issueListArr.findIndex((obj) => obj['Issue Id'] === d['Issue Id']) + 1, d['subTask'].length);
 
             let scrollPosition = scroller.node().scrollTop;
-            self.draw(issueList, null, false, scrollPosition);
+            self.draw(issueListArr, null, false, scrollPosition);
           }
           showTaskDetail(d);
         });
@@ -621,11 +619,11 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
 
 
-    const drawLineForIssue = (issueList) => {
+    const drawLineForIssue = (issuesList) => {
       let self = this;
       let line = svg
         .selectAll('rect.some-class')
-        .data(issueList)
+        .data(issuesList)
         .enter()
         .append("g")
         .attr('class', 'box')
@@ -635,7 +633,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr("width", width + margin.left + margin.right + 200)
         .attr("height", (d, i) => {
           let heightCoefficent = y(i + 1) - y(i) + 8 <= swimLaneHeight ? y(i + 1) - y(i) + 8 : swimLaneHeight;
-          return issueList.length <= 1 ? swimLaneHeight + 5 : heightCoefficent;
+          return issuesList.length <= 1 ? swimLaneHeight + 5 : heightCoefficent;
         })
         .attr("fill", function (d) {
           return self.decideFillColor(parentIssue, d);
@@ -666,8 +664,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             return x(self.getStartAndEndLinePoints(d)['endPoint']) + initialCoordinate / 2;
           }
         })
-        .attr('y1', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
-        .attr('y2', (d, i) => issueList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
+        .attr('y1', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
+        .attr('y2', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) {
           let onHoldOrNot = onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495';
           return d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldOrNot;
@@ -686,8 +684,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
         });
 
-      showMarkers(issueList);
-      showIssueIdandStatus(issueList);
+      showMarkers(issuesList);
+      showIssueIdandStatus(issuesList);
     };
 
 
