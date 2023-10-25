@@ -80,7 +80,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
-	public static final String MAX_ISSUE_CNT_LIMIT = "maxIssueCntLimit";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
 	private static final String FULL_RELEASE = "fullRelease";
@@ -102,8 +101,6 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
 	private static final String AVG_STORY_POINT = "avgStoryPoint";
 	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
-	public static final String IS_ISSUE_COUNT_ACHIEVED = "isIssueCountAchieved";
-	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -369,8 +366,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				// avg completion rate
 				double avgIssueCount = 0L;
 				double avgStoryPoint = 0d;
-				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap,
-						fullReleaseIssueMap);
+				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedReleaseMap);
 				avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
@@ -422,12 +418,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration, fieldMapping,
 							predictionDataMap);
 					startLocalDate = getNextRangeDate(duration, startLocalDate);
-					if (CollectionUtils.isNotEmpty(issueCount.getValue())) {
-						issueCountDataGroup.add(issueCount);
-					}
-					if (CollectionUtils.isNotEmpty(issueSize.getValue())) {
-						issueSizeCountDataGroup.add(issueSize);
-					}
+					issueCountDataGroup.add(issueCount);
+					issueSizeCountDataGroup.add(issueSize);
 				}
 			}
 			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
@@ -464,23 +456,20 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		double issueCountPrediction;
 		double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 		double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
-		final int issueCountToReach = releaseScopeToReach.size();
-		final Double storyPointToReach = getStoryPoint(releaseScopeToReach, fieldMapping);
+
 		if (!startLocalDate.isBefore(LocalDate.now()) && MapUtils.isNotEmpty(averageDataMap)) {
 			issueCountPrediction = (double) predictionDataMap.get(ISSUE_COUNT_PREDICTION);
 			issueSizePrediction = (double) predictionDataMap.get(ISSUE_SIZE_PREDICTION);
-			predictionDataMap.put(IS_ISSUE_COUNT_ACHIEVED, issueCountPrediction >= issueCountToReach);
-			predictionDataMap.put(IS_STORY_POINT_ACHIEVED, issueSizePrediction >= storyPointToReach);
 			long daysInterval = (long) CommonUtils.getWorkingDays(dateRange.getStartDate(), dateRange.getEndDate()) + 1;
 			if (!isPredictionBoundary) {
 				// cal the next issueCount/Sp for prediction data
-				issueCountPrediction = roundingOff((issueCountPrediction + avgIssueCount) * daysInterval);
-				issueSizePrediction = roundingOff((issueSizePrediction + avgStoryPoint) * daysInterval);
+				issueCountPrediction = roundingOff(
+						Math.min((issueCountPrediction + avgIssueCount) * daysInterval, releaseScopeToReach.size()));
+				issueSizePrediction = roundingOff(Math.min((issueSizePrediction + avgStoryPoint) * daysInterval,
+						getStoryPoint(releaseScopeToReach, fieldMapping)));
 			}
-
-			predictionDataMap.put(ISSUE_COUNT_PREDICTION,
-					roundingOff(Math.min(issueCountPrediction, issueCountToReach)));
-			predictionDataMap.put(ISSUE_SIZE_PREDICTION, roundingOff(Math.min(issueSizePrediction, storyPointToReach)));
+			predictionDataMap.put(ISSUE_COUNT_PREDICTION, issueCountPrediction);
+			predictionDataMap.put(ISSUE_SIZE_PREDICTION, issueSizePrediction);
 			predictionDataMap.put(SHOW_PREDICTION, true);
 			predictionDataMap.put(IS_PREDICTION_BOUNDARY, isPredictionBoundary);
 			isPredictionBoundary = false;
@@ -540,12 +529,12 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * @return Map of Avg Issue Count, Story Point
 	 */
 	private Map<String, Object> getAverageData(FieldMapping fieldMapping, LocalDate startLocalDate,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap, Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
 		Map<String, Object> averageDataMap = new HashMap<>();
 		double avgIssueCount;
 		double avgStoryPoint;
 		int countOfDaysTillToday = 0;
-		List<JiraIssue> allTaggedIssues = new ArrayList<>();
+
 		// count of days from where user want to cal avg
 		Integer startDateCount = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0);
 		LocalDate predictionStartDate = startLocalDate;
@@ -553,8 +542,6 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			predictionStartDate = CommonUtils.getNextWorkingDate(predictionStartDate, 1);
 			startDateCount--;
 		}
-		// all the currently tagged issues
-		fullReleaseIssueMap.forEach((k, v) -> allTaggedIssues.addAll(v));
 		LocalDate currentDate = predictionStartDate;
 		List<JiraIssue> completedIssuesTillToday = new ArrayList<>();
 		// completed issue between prediction start date and today both inclusive
@@ -565,8 +552,6 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			}
 			currentDate = currentDate.plusDays(1);
 		}
-		// out of all completed, what all issues were completed & tagged
-		completedIssuesTillToday.retainAll(allTaggedIssues);
 		// calculate the avg issue count and story point
 		if (countOfDaysTillToday != 0 && CollectionUtils.isNotEmpty(completedIssuesTillToday)) {
 			avgIssueCount = (double) completedIssuesTillToday.size() / countOfDaysTillToday;
@@ -698,24 +683,18 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		double predictionIssueSize = (double) predictionDataMap.getOrDefault(ISSUE_SIZE_PREDICTION, 0d);
 		boolean showPrediction = (boolean) predictionDataMap.getOrDefault(SHOW_PREDICTION, false);
 		boolean isPredictionBoundary = (boolean) predictionDataMap.getOrDefault(IS_PREDICTION_BOUNDARY, false);
-		boolean isIssueCountAchieved = (boolean) predictionDataMap.getOrDefault(IS_ISSUE_COUNT_ACHIEVED, false);
-		boolean isStoryPointAchieved = (boolean) predictionDataMap.getOrDefault(IS_STORY_POINT_ACHIEVED, false);
 
+		createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList,
+				CommonConstant.SOLID_LINE_TYPE);
 		if (!showPrediction) {
-			createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList,
-					CommonConstant.SOLID_LINE_TYPE);
 			createDataCount((long) completedIssues.size(), LINE_GRAPH_TYPE, RELEASE_PROGRESS, issueCountDataList,
 					CommonConstant.SOLID_LINE_TYPE);
 		} else if (isPredictionBoundary) { // populating release Progress & prediction when boundary is reached
-			createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList,
-					CommonConstant.SOLID_LINE_TYPE);
 			createDataCount((long) completedIssues.size(), LINE_GRAPH_TYPE, RELEASE_PROGRESS, issueCountDataList,
 					CommonConstant.SOLID_LINE_TYPE);
 			createDataCount(predictionIssueCount, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueCountDataList,
 					CommonConstant.DOTTED_LINE_TYPE);
-		} else if (!isIssueCountAchieved) {
-			createDataCount((long) overallIssues.size(), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueCountDataList,
-					CommonConstant.SOLID_LINE_TYPE);
+		} else {
 			createDataCount(predictionIssueCount, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueCountDataList,
 					CommonConstant.DOTTED_LINE_TYPE);
 
@@ -724,29 +703,23 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		issueCount.setDuration(duration);
 		issueCount.setValue(issueCountDataList);
 
+		createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE, issueSizeDataList,
+				CommonConstant.SOLID_LINE_TYPE);
 		if (!showPrediction) {
-			createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE,
-					issueSizeDataList, CommonConstant.SOLID_LINE_TYPE);
 			createDataCount(getStoryPoint(completedIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_PROGRESS,
 					issueSizeDataList, CommonConstant.SOLID_LINE_TYPE);
 		} else if (isPredictionBoundary) {// populating release Progress & prediction when boundary is reached
-			createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE,
-					issueSizeDataList, CommonConstant.SOLID_LINE_TYPE);
 			createDataCount(getStoryPoint(completedIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_PROGRESS,
 					issueSizeDataList, CommonConstant.SOLID_LINE_TYPE);
 			createDataCount(predictionIssueSize, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueSizeDataList,
 					CommonConstant.DOTTED_LINE_TYPE);
-		} else if (!isStoryPointAchieved) {
-			createDataCount(getStoryPoint(overallIssues, fieldMapping), LINE_GRAPH_TYPE, RELEASE_SCOPE,
-					issueSizeDataList, CommonConstant.SOLID_LINE_TYPE);
+		} else {
 			createDataCount(predictionIssueSize, LINE_GRAPH_TYPE, RELEASE_PREDICTION, issueSizeDataList,
 					CommonConstant.DOTTED_LINE_TYPE);
 		}
-
 		issueSize.setFilter(date);
 		issueSize.setDuration(duration);
 		issueSize.setValue(issueSizeDataList);
-
 	}
 
 	/**
