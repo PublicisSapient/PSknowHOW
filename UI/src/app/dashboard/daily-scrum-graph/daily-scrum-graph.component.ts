@@ -421,7 +421,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('xlink:href', '../../../assets/img/OverallDueDate.svg')
         .style('display', (d) => {return d['Due Date'] && d['Due Date'] !== '-' ? 'block' : 'none'})
         .attr('width', '40px').attr('height', '40px')
-        .attr('x', (d) => d['Due Date'] && d['Due Date'] !== '-' ? x(self.formatDate(new Date(d['Due Date']))) + initialCoordinate / 2 - 20 : 0)
+        .attr('x', (d) => d['Due Date'] && d['Due Date'] !== '-' && !isNaN(x(self.formatDate(new Date(d['Due Date'])))) ? x(self.formatDate(new Date(d['Due Date']))) + initialCoordinate / 2 - 20 : -500)
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
