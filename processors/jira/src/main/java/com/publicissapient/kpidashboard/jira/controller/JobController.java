@@ -136,7 +136,7 @@ public class JobController {
 
 	@GetMapping("/startscrumjqljob")
 	public ResponseEntity<String> startScrumJqlJob() {
-		log.info("Request coming for job for Scrum project configured with JQL");
+		log.info("Request come for job for Scrum project configured with JQL via controller");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				true, false);
@@ -183,7 +183,7 @@ public class JobController {
 	 */
 	@GetMapping("/startkanbanboardjob")
 	public ResponseEntity<String> startKanbanJob() {
-		log.info("Request coming for job");
+		log.info("Request come for job for Kanban project configured with Board via controller");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
@@ -212,7 +212,7 @@ public class JobController {
 	 */
 	@GetMapping("/startkanbanjqljob")
 	public ResponseEntity<String> startKanbanJqlJob() {
-		log.info("Request coming for job for Kanban project configured with JQL");
+		log.info("Request come for job for Kanban project configured with JQL via controller");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				true, true);

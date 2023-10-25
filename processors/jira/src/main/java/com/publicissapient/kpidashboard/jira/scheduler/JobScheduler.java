@@ -72,7 +72,7 @@ public class JobScheduler {
 	@Async
 	@Scheduled(cron = "${jira.scrumBoardCron}")
 	public void startScrumBoardJob() {
-		log.info("Request come for job for Scrum project configured with board via controller");
+		log.info("Request come for job for Scrum project configured with board via cron");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, false);
@@ -101,7 +101,7 @@ public class JobScheduler {
 	@Async
 	@Scheduled(cron = "${jira.scrumJqlCron}")
 	public void startScrumJqlJob() {
-		log.info("Request coming for job for Scrum project configured with JQL");
+		log.info("Request coming for job for Scrum project configured with JQL via cron");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				true, false);
@@ -130,7 +130,7 @@ public class JobScheduler {
 	@Async
 	@Scheduled(cron = "${jira.kanbanBoardCron}")
 	public void startKanbanJob() {
-		log.info("Request coming for job");
+		log.info("Request coming for job for Kanban project configured with Board via cron");
 		List<String> kanbanBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				false, true);
 		List<JobParameters> parameterSets = getDynamicParameterSets(kanbanBoardbasicProjConfIds);
@@ -157,7 +157,7 @@ public class JobScheduler {
 	@Async
 	@Scheduled(cron = "${jira.kanbanJqlCron}")
 	public void startKanbanJqlJob() {
-		log.info("Request coming for job for Kanban project configured with JQL");
+		log.info("Request coming for job for Kanban project configured with JQL via cron");
 
 		List<String> scrumBoardbasicProjConfIds = fetchProjectConfiguration.fetchBasicProjConfId(JiraConstants.JIRA,
 				true, true);
