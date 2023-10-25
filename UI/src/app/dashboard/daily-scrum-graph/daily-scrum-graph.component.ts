@@ -553,7 +553,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .on('click', function (event, d) {
           if (!d['IsExpanded']) {
             if (d && d['subTask']) {
-              selectedIssueSubtask = d['subTask'].map(d => ({ ...d, isSubtask: true }));
+              selectedIssueSubtask = d['subTask'].map(st => ({ ...st, isSubtask: true }));
               let index = issueListArr.findIndex(obj => obj['Issue Id'] === d['Issue Id']);
               showSubTask(d, index);
             }

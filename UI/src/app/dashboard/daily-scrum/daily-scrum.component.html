@@ -27,7 +27,7 @@
                         <div class="filters" *ngSwitchCase="'singleSelect'">
                             <span class="p-float-label">
                                 <p-dropdown [showClear]="true" [style]="{'min-width' : '180px', 'font-size' : '16px'}" [(ngModel)]="filters[filter?.filterKey]" [autoDisplayFirst]="false" [options]="filter.options"
-                                (onChange)="handleSingleSelectChange($event,filter?.filterKey)"></p-dropdown>
+                                (onChange)="handleSingleSelectChange($event,filter?.filterKey)" [disabled]="!filter.options || !filter.options.length || (filter.options.length === 1 && filter.options[0] === 'Unassigned')"></p-dropdown>
                                 <label for="dropdown">Domain</label>
                             </span>
                         </div>
