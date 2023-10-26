@@ -67,7 +67,7 @@
     <section *ngIf="selectedUserInfo" class="selected-user-info">
         <span class="p-mr-5">
             <h4 class="p-mb-1 font-grey font-bold">{{selectedUserInfo.assigneeName}}</h4>
-            <p class="p-mt-2 font-bold">{{selectedUserInfo.role}}</p>
+            <p class="p-mt-2 font-bold">{{selectedUserInfo.role !== 'Unassigned' ? selectedUserInfo.role : '-' }}</p>
         </span>
         <sapn *ngFor="let col of columns" class="p-mr-5">
             <h4 class="p-mb-1 font-grey font-bold">{{col}}</h4>

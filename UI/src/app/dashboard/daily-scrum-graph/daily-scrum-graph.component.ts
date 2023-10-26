@@ -609,7 +609,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       issueBoxes.on('mouseover', function (event) {
         let d = event.target.parentNode.parentNode.parentNode.__data__;
         if (d) {
-          const data = `<p>${d['Issue Description']}</p>`
+          const data = `<p>${d['Issue Type']}: ${d['Issue Description']}</p>`
           showTooltip(data, event.x + 50, event.y, true);
         }
       })
