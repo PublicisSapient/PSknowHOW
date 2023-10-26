@@ -9149,7 +9149,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI14",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9158,7 +9158,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI82",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9167,7 +9167,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI111",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9176,7 +9176,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI35",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9185,7 +9185,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI34",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9194,7 +9194,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI37",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9203,7 +9203,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI28",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9212,16 +9212,16 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI36",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+           "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI16",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9230,7 +9230,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI17",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9239,7 +9239,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI38",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9248,16 +9248,16 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI27",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
-            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+           "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     },
     {
         "fieldName": "thresholdValueKPI72",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9266,7 +9266,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI84",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9275,7 +9275,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI11",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9284,7 +9284,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI62",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9293,7 +9293,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI64",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9302,7 +9302,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI67",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9311,7 +9311,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI65",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9320,7 +9320,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI157",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9329,7 +9329,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI158",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9338,7 +9338,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI159",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9347,7 +9347,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI160",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
@@ -9356,7 +9356,7 @@ db.getCollection('field_mapping_structure').insertMany(
     {
         "fieldName": "thresholdValueKPI164",
         "fieldLabel": "Target KPI Value",
-        "fieldType": "text",
+        "fieldType": "number",
         "section": "Custom Fields Mapping",
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
