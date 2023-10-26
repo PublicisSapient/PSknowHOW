@@ -32,6 +32,7 @@ services:
       - customapivol:/app/properties/
       - customapivol:/app/offline_data/
       - customapivol:/app/certs/
+      - /etc/hosts:/etc/hosts
     environment:
       - CONFIG_LOCATION=file:/app/properties/customapi.properties
       - forgotPassword.uiHost=<Your-Public-IP>or<Your-DNS>
@@ -84,6 +85,7 @@ services:
       - jira-processorvol:/app/logs
       - jira-processorvol:/app/properties/
       - jira-processorvol:/app/offline_data
+      - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
@@ -108,6 +110,7 @@ services:
       - devops-processorvol:/app/properties/
       - devops-processorvol:/app/offline_data
       - devops-processorvol:/app/certs/
+      - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
@@ -131,6 +134,7 @@ services:
       - azure-board-processorvol:/app/logs
       - azure-board-processorvol:/app/properties/
       - azure-board-processorvol:/app/offline_data
+      - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
@@ -155,6 +159,7 @@ services:
       - azure-pipeline-repovol:/app/properties/
       - azure-pipeline-repovol:/app/offline_data
       - azure-pipeline-repovol:/app/certs/
+      - /etc/hosts:/etc/hosts
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
