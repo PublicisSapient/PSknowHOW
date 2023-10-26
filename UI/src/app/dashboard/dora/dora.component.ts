@@ -64,7 +64,7 @@ export class DoraComponent implements OnInit {
   selectedJobFilter = 'Select';
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
-  kpiThresholdObj: any;
+  kpiThresholdObj = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {

@@ -68,7 +68,7 @@ export class MilestoneComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   navigationTabs:Array<object>;
   activeIndex = 0;
-  kpiThresholdObj: any;
+  kpiThresholdObj = {};
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */

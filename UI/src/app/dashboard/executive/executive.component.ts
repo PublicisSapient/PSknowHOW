@@ -924,7 +924,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
         this.createTrendsData(kpiId);
         this.handleMaturityTableLoader();
-        console.log(this.kpiThresholdObj);
     }
 
     /**To create KPI table headings */
