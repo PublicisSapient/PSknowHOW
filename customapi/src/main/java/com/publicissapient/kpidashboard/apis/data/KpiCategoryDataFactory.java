@@ -32,7 +32,7 @@ import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author anisingh4
+ * @author hargupta15
  */
 @Slf4j
 @SuppressWarnings("java:S1075")

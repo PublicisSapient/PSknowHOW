@@ -27,7 +27,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import lombok.extern.slf4j.Slf4j;
-
+/**
+ * @author bogolesw
+ */
 @Slf4j
 @ChangeUnit(id = "ddl3", order = "003", author = "PSKnowHOW")
 public class GlobalConfigChangeLog {

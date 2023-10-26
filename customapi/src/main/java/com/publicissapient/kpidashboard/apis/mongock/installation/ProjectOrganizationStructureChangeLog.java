@@ -26,7 +26,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
-
+/**
+ * @author bogolesw
+ */
 @ChangeUnit(id = "ddl6", order = "006", author = "PSKnowHOW")
 public class ProjectOrganizationStructureChangeLog {
 	private final MongoTemplate mongoTemplate;

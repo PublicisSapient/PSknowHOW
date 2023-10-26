@@ -30,7 +30,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
 
 import lombok.extern.slf4j.Slf4j;
-
+/**
+ * @author hargupta15
+ */
 @Slf4j
 @SuppressWarnings("java:S1075")
 public class KpiColumnConfigDataFactory {
