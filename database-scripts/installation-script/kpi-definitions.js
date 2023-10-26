@@ -3693,7 +3693,8 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
-    "maturityRange": ["5", "4", "3", "2", "1"]
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yAxisOrder": ["A", "B", "C", "D", "E"]
   }
 ]
 );

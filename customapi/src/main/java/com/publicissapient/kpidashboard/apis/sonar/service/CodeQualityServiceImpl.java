@@ -71,7 +71,6 @@ import lombok.extern.slf4j.Slf4j;
 public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, Map<ObjectId, List<SonarDetails>>> {
 
 	private static final String SQALE_RATING = "sqale_rating";
-	private static final List<String> yAxisOrder = Arrays.asList("A", "B", "C", "D", "E");
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -97,7 +96,6 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 			dataCountGroups.add(dataCountGroup);
 		});
 		kpiElement.setTrendValueList(dataCountGroups);
-		kpiElement.setyAxisOrder(yAxisOrder);
 
 		log.debug("[SONAR-TECH-DEBT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), treeAggregatorDetail.getRoot());

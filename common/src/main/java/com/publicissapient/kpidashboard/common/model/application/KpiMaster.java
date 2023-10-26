@@ -93,4 +93,5 @@ public class KpiMaster extends BasicModel {
 	private Integer kpiWidth;
 	private List<MaturityLevel> maturityLevel;
 	private Boolean isRepoToolKpi;
+	private List<String> yAxisOrder;
 }

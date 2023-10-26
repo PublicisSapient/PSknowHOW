@@ -112,7 +112,6 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient Object filterDuration;
     private transient Set<IterationKpiModalValue> issueData;
 	private transient List<Filter> filterData;
-	private transient List<String> yAxisOrder;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -847,15 +846,6 @@ public class KpiElement implements Serializable { // NOPMD
 	public List<Filter> getFilterData() { return filterData; }
 
 	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
-
-
-	public List<String> getyAxisOrder() {
-		return yAxisOrder;
-	}
-
-	public void setyAxisOrder(List<String> yAxisOrder) {
-		this.yAxisOrder = yAxisOrder;
-	}
 
 
 
