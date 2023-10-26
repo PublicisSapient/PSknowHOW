@@ -12,6 +12,7 @@ export class IssueCardComponent implements OnChanges {
   isOverViewSelected = true;
   constructor(private service: SharedService) {
     this.service.currentData.subscribe(data => {
+      this.isOverViewSelected = true;
       this.issueData = data;
     });
    }
