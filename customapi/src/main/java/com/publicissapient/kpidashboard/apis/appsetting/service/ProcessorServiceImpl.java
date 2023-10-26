@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -73,13 +74,28 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
+		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable();
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
-				listProcessor.add(p);
+				String processorName = p.getProcessorName();
+				boolean isGitLab = processorName.equalsIgnoreCase(ProcessorConstants.GITLAB);
+				boolean isGitHub = processorName.equalsIgnoreCase(ProcessorConstants.GITHUB);
+				boolean isBitbucket = processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET);
+				boolean isAzureRepo = processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO);
+				boolean isRepoTool = processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS);
+				if (repoToolFlag.equals(Boolean.FALSE)
+						&& !isRepoTool)
+					listProcessor.add(p);
+				else if (repoToolFlag.equals(Boolean.TRUE) && !isGitLab && !isGitHub && !isBitbucket && !isAzureRepo) {
+					listProcessor.add(p);
+				}
 			}
 		});
 		log.debug("Returning list of Processors having size: {}", listProcessor.size());
