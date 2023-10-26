@@ -93,6 +93,7 @@ describe('ToolMenuComponent', () => {
   it('should fetch fetch all tool configs', () => {
     component.isAssigneeSwitchChecked = true;
     spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+    spyOn(component, 'setGaData');
     component.ngOnInit();
     expect(httpService.getAllToolConfigs).toHaveBeenCalledTimes(1);
 
