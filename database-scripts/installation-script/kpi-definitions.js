@@ -3036,7 +3036,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 1,
+    "defaultOrder": 6,
     "kpiCategory": "Release",
     "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
@@ -9134,16 +9134,6 @@ db.getCollection('field_mapping_structure').insertMany(
   "section":"WorkFlow Status Mapping",
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
-  }
-},
-{
-
-  "fieldName": "startDateCountKPI150",
-  "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
-  "fieldType": "number",
-  "section": "Issue Types Mapping",
-  "tooltip": {
-    "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
   }
 }
 ]);
