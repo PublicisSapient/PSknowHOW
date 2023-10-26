@@ -47,6 +47,9 @@ export class ToolMenuComponent implements OnInit {
   isAssigneeSwitchDisabled : boolean = false;
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
   userName : string;
+  repoTools = ['BitBucket','GitLab','GitHub','Azure Repo'];
+  repoToolsEnabled : boolean;
+
   constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
 
   }
@@ -65,6 +68,7 @@ export class ToolMenuComponent implements OnInit {
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
      this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
+     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
 
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -271,6 +275,15 @@ export class ToolMenuComponent implements OnInit {
         this.tools.unshift(jiraType);
       }
     }
+
+    // filtering tolls based on repoToolFlag
+    this.tools = this.tools.filter(details=>{
+      if(this.repoToolsEnabled){
+         return !this.repoTools.includes(details.toolName)
+      }else{
+        return details.toolName !== 'RepoTool';
+      }
+    })
 
   }
 

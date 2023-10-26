@@ -38,6 +38,8 @@ import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
 import { TestConnectionService } from 'src/app/services/test-connection.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
+import { DatePipe } from '@angular/common';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
@@ -1026,6 +1028,8 @@ describe('ConnectionListComponent', () => {
         ConfirmationService,
         SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
+        HelperService,
+        DatePipe
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
@@ -1045,8 +1049,16 @@ describe('ConnectionListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Should test 10 connections are loaded', () => {
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(13);
+  it('Should test 10 connections are loaded', () => { 
+    sharedService.setGlobalConfigData({repoToolFlag: true});
+    let connTobeShown;
+    const totalConnectionList = 13;
+    if(component.repoToolsEnabled){
+      connTobeShown = totalConnectionList - 4;
+    }else{
+      connTobeShown = totalConnectionList - 1;
+    }
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(connTobeShown);
   });
 
   it('Should test all connections are present', () => {
@@ -2049,6 +2061,13 @@ describe('ConnectionListComponent', () => {
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it('should filter list based on flag',()=>{
+    sharedService.setGlobalConfigData({repoToolFlag: true});
+    component.ngOnInit();
+    component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(8);
   })
 
 });
