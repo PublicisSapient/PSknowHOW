@@ -81,6 +81,7 @@ export class DeveloperComponent implements OnInit {
   enableByeUser: boolean;
   showChart = 'chart';
   iSAdditionalFilterSelected = false;
+  kpiThresholdObj = {};
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -399,6 +400,7 @@ export class DeveloperComponent implements OnInit {
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
 
