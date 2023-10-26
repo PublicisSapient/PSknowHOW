@@ -3016,7 +3016,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 1 ,
+    "defaultOrder" : 6 ,
     "kpiCategory" : "Release" ,
     "kpiSubCategory" : "Speed" ,
     "kpiSource" : "Jira" ,
