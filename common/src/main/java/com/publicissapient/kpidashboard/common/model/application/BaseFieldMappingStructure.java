@@ -66,7 +66,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@NoArgsConstructor
 	public static class Options {
 		String label;
-		String value;
+		Object value;
 	}
 
 }
