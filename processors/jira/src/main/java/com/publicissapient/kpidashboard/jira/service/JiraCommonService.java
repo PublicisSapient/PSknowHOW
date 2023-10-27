@@ -101,7 +101,9 @@ public class JiraCommonService {
 			HttpUriRequest request = RequestBuilder.get().setUri(url.toString())
 					.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
 					.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json").build();
-			return krb5Client.getResponse(request);
+			String responce = krb5Client.getResponse(request);
+			request.abort();
+			return responce;
 		} else {
 			return getDataFromServer(url, connectionOptional);
 		}
@@ -146,8 +148,11 @@ public class JiraCommonService {
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
 			}
+			request.disconnect();
 		} catch (IOException ie) {
 			log.error("Read exception when connecting to server {}", ie);
+			request.disconnect();
+			throw ie;
 		}
 		return sb.toString();
 	}
@@ -276,7 +281,7 @@ public class JiraCommonService {
 	 */
 	public List<Issue> fetchIssueBasedOnBoard(ProjectConfFieldMapping projectConfig,
 			ProcessorJiraRestClient clientIncoming, int pageNumber, String boardId, String deltaDate)
-			throws InterruptedException {
+			throws InterruptedException, IOException {
 
 		client = clientIncoming;
 		List<Issue> issues = new ArrayList<>();
@@ -289,6 +294,7 @@ public class JiraCommonService {
 
 			SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
 			issues = JiraHelper.getIssuesFromResult(searchResult);
+			client.close();
 		}
 		return issues;
 	}
@@ -328,7 +334,6 @@ public class JiraCommonService {
 						Math.min(pageStart + jiraProcessorConfig.getPageSize() - 1, searchResult.getTotal()),
 						searchResult.getTotal()));
 			}
-
 		}
 
 		return searchResult;
