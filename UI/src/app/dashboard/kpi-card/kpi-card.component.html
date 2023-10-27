@@ -162,7 +162,7 @@
 
  <p-dialog [header]="kpiData?.kpiName"  [(visible)]="displayConfigModel" [modal]="true"  styleClass="field-mapping">
     <hr>
-    <ng-template pTemplate="content" >
+    <ng-template pTemplate="content">
        <app-field-mapping-form #fieldMappingForm
             *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
             [disableSave]="disableSave"
@@ -172,6 +172,7 @@
             [selectedConfig]="selectedConfig"
             [selectedToolConfig]="selectedToolConfig"
             (reloadKPI)="reloadKPI()"
+            [thresholdUnit]="kpiData['kpiDetail']['kpiUnit']"
             ></app-field-mapping-form>
       </ng-template>
       <ng-template pTemplate="footer"></ng-template>
