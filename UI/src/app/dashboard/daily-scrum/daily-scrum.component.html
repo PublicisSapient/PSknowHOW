@@ -80,7 +80,7 @@
                 '' : ''}} 
             </p>
             <p class="p-mt-2 font-bold" *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] !== '-'">
-                {{ selectedUserInfo.cardDetails[col]['value'] }} / {{ selectedUserInfo.cardDetails[col]['value1'] }}
+                {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'], selectedUserInfo.cardDetails[col]['unit'])  }} / {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value1'],selectedUserInfo.cardDetails[col]['unit1'])  }}
                 {{ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
                 '' }}  
             </p>
