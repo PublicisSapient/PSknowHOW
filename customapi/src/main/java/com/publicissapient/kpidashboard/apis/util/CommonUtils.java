@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

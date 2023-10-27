@@ -402,6 +402,15 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
 
+	private List<String> storyFirstStatusKPI154;
+	private List<String> jiraStatusForInProgressKPI154;
+	private List<String> jiraDevDoneStatusKPI154;
+	private List<String> jiraQADoneStatusKPI154;
+	private List<String> jiraOnHoldStatusKPI154;
+	private List<String> jiraIterationCompletionStatusKPI154;
+	private List<String> jiraSubTaskIdentification;
+	private List<String> jiraStatusStartDevelopmentKPI154;
+
 	/**
 	 * Get jira issue type names string [ ].
 	 *
@@ -423,5 +432,14 @@ public class FieldMapping extends BasicModel {
 
 	public boolean getNotificationEnabler() {
 		return notificationEnabler;
+	}
+
+	public List<String> getJiraStatusForInProgressKPI154() {
+		return jiraStatusForInProgressKPI119;
+	}
+
+	public void setJiraStatusForInProgressKPI119(List<String> status) {
+		this.jiraStatusForInProgressKPI154 = status;
+		this.jiraStatusForInProgressKPI119 = status;
 	}
 }
