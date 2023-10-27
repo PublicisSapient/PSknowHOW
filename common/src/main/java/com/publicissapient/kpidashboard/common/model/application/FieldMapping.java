@@ -401,6 +401,7 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
+	private Integer startDateCountKPI150;
 
 	/**
 	 * Get jira issue type names string [ ].
