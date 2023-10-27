@@ -65,36 +65,32 @@ public class SprintScrumBoardTasklet implements Tasklet {
         this.projectId = projectId;
     }
 
-	/**
-	 *
-	 * @param sc
-	 *            StepContribution
-	 * @param cc
-	 *            ChunkContext
-	 * @return RepeatStatus
-	 * @throws Exception
-	 *             Exception
-	 */
-	@TrackExecutionTime
-	@Override
-	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-		log.info("**** Sprint report for Scrum Board started * * *");
-		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
-		KerberosClient krb5Client = null;
-		ProcessorJiraRestClient client=jiraClient.getClient(projConfFieldMapping, krb5Client);
-		try {
-			List<SprintDetails> sprintDetailsList = fetchSprintReport
-					.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
-			sprintRepository.saveAll(sprintDetailsList);
-			client.close();
-		} catch (Exception e) {
-			log.error("Exception while fetching sprint data for scrum project and board setup", e);
-			client.close();
-			throw e;
-		}
-		log.info("**** Sprint report for Scrum Board ended * * *");
-		return RepeatStatus.FINISHED;
-	}
+    /**
+     * @param sc StepContribution
+     * @param cc ChunkContext
+     * @return RepeatStatus
+     * @throws Exception Exception
+     */
+    @TrackExecutionTime
+    @Override
+    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+        log.info("**** Sprint report for Scrum Board started * * *");
+        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+        log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
+        KerberosClient krb5Client = null;
+        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+        try {
+            List<SprintDetails> sprintDetailsList = fetchSprintReport
+                    .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
+            sprintRepository.saveAll(sprintDetailsList);
+            client.close();
+        } catch (Exception e) {
+            log.error("Exception while fetching sprint data for scrum project and board setup", e);
+            client.close();
+            throw e;
+        }
+        log.info("**** Sprint report for Scrum Board ended * * *");
+        return RepeatStatus.FINISHED;
+    }
 
 }

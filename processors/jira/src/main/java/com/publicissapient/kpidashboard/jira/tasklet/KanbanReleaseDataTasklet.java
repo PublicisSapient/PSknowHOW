@@ -53,32 +53,28 @@ public class KanbanReleaseDataTasklet implements Tasklet {
         this.projectId = projectId;
     }
 
-	/**
-	 *
-	 * @param sc
-	 *            StepContribution
-	 * @param cc
-	 *            ChunkContext
-	 * @return RepeatStatus
-	 * @throws Exception
-	 *             Exception
-	 */
-	@Override
-	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-		log.info("**** ReleaseData fetch started ****");
-		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		KerberosClient krb5Client = null;
-		ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-		try {
-			fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
-			client.close();
-		} catch (Exception e) {
-			log.error("Exception while fetching ReleaseData", e);
-			client.close();
+    /**
+     * @param sc StepContribution
+     * @param cc ChunkContext
+     * @return RepeatStatus
+     * @throws Exception Exception
+     */
+    @Override
+    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+        log.info("**** ReleaseData fetch started ****");
+        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+        KerberosClient krb5Client = null;
+        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+        try {
+            fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
+            client.close();
+        } catch (Exception e) {
+            log.error("Exception while fetching ReleaseData", e);
+            client.close();
             throw e;
-		}
-		log.info("**** ReleaseData fetch ended ****");
-		return RepeatStatus.FINISHED;
-	}
+        }
+        log.info("**** ReleaseData fetch ended ****");
+        return RepeatStatus.FINISHED;
+    }
 
 }
