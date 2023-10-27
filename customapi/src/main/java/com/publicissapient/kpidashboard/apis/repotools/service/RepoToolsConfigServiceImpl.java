@@ -200,7 +200,7 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public String createProjectCode(String basicProjectConfigId) {
 		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
-		return projectBasicConfig.getProjectName() + "_" + basicProjectConfigId;
+		return (projectBasicConfig.getProjectName() + "_" + basicProjectConfigId).replaceAll("\\s", "");
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class RepoToolsConfigServiceImpl {
 			// delete only the repository
 			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(
 					customApiConfig.getRepoToolDeleteRepoUrl(),
-					projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), tool.getRepositoryName());
+					createProjectCode(basicProjectConfigId), tool.getRepositoryName());
 			httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
@@ -254,8 +254,9 @@ public class RepoToolsConfigServiceImpl {
 		String repoToolUrl = customApiConfig.getRepoToolURL().concat(repoToolKpi);
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
-		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(projectCode, startDate, endDate,
-				frequency);
+		RepoToolKpiRequestBody repoToolKpiRequestBody = new RepoToolKpiRequestBody(
+				projectCode.stream().map(code -> code.replaceAll("\\s", "")).collect(Collectors.toList()), startDate,
+				endDate, frequency);
 		try {
 			String url = String.format(repoToolUrl, startDate, endDate, frequency);
 			RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = repoToolsClient.kpiMetricCall(url,

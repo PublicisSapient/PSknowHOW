@@ -81,7 +81,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
-		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable();
+		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable()==null?false:true;
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
 				String processorName = p.getProcessorName();
