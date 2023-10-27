@@ -65,7 +65,6 @@ public class ReleaseBurnupServiceImplTest {
 	private List<JiraIssueCustomHistory> jiraIssuesCustomHistory = new ArrayList<>();
 	private List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList;
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
-	FieldMapping fieldMapping;
 
 	@Before
 	public void setUp() {
