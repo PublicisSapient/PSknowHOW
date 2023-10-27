@@ -150,7 +150,8 @@ export class MultilineComponent implements OnChanges {
       'min' : 'Min',
       '%' : '%',
       'check-ins' : 'CI',
-      'tickets' : 'T'
+      'tickets' : 'T',
+      'lines':'lines'
     }
 
     width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;

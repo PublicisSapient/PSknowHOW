@@ -29,6 +29,7 @@ import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
@@ -78,6 +79,9 @@ public class ProcessorServiceImplTest {
 
 	@Mock
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Mock
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * method includes preprocesses for test cases
