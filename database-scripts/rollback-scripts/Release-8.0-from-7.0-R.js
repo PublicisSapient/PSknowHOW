@@ -774,11 +774,6 @@ db.kpi_master.updateOne({ "kpiId": "kpi164" }, { $set: { "groupId": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 2 } })
 db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 3 } })
 
-db.field_mapping_structure.deleteMany(
-{
-"fieldName": { $in: ["startDateCountKPI150"]}
-});
-
 //----DSV-2
 db.field_mapping_structure.deleteMany({
     "fieldName": { $in: [ "jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154", "jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154", "jiraSubTaskIdentification","storyFirstStatusKPI154","jiraOnHoldStatusKPI154"]}
