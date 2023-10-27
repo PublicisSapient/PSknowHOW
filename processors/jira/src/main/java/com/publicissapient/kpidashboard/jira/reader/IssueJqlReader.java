@@ -115,9 +115,9 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping) {
+			KerberosClient krb5Client = null;
+			ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
 			try {
-				KerberosClient krb5Client = null;
-				ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
 				if (null == issueIterator) {
 					pageNumber = 0;
 					fetchIssues(client);
@@ -139,10 +139,12 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 					log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
 					readData = null;
 				}
+				client.close();
 			} catch (Exception e) {
 				log.error("Exception while fetching data for the project {}", projectConfFieldMapping.getProjectName(),
 						e);
-				readData = null;
+				client.close();
+				throw e;
 			}
 		}
 		return readData;
