@@ -35,7 +35,7 @@
     <div class="p-d-flex p-justify-between" *ngSwitchCase="'radiobutton'">
         <div class="p-inputgroup">
             <ng-container *ngFor="let opt of fieldConfig.options">
-                <p-radioButton placeholder="Select" value="{{opt.value}}" label="{{opt.value}}" class="p-m-2"
+                <p-radioButton placeholder="Select" [value]="opt.value" label="{{opt.label}}" class="p-m-2"
                     [name]="fieldConfig?.fieldName" [(ngModel)]="value" (onClick)="setValue()">
                 </p-radioButton>
             </ng-container>
