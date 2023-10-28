@@ -29,6 +29,8 @@ export class FeatureGuard implements CanLoad, CanActivateChild {
             if (isEnabled) {
                 return true;
             }
+        } else {
+            return true;
         }
         this.router.navigate(['/']);
         return false;
@@ -43,6 +45,8 @@ export class FeatureGuard implements CanLoad, CanActivateChild {
             if (isEnabled) {
                 return true;
             }
+        } else {
+            return true;
         }
         this.router.navigate(['/']);
         return false;

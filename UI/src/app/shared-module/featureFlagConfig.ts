@@ -41,5 +41,13 @@ export const features = [
         'enabled': true,
         'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
         'personas': []
+    },
+    // to test child module
+    {
+        'featureName': 'Profile',
+        'enabled': true,
+        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
+        'personas': []
     }
+
 ];
