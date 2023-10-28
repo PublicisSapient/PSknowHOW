@@ -57,7 +57,6 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
    }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('YaxisOrder : ',this.yAxisOrder)
     if (this.selectedtype?.toLowerCase() === 'kanban'|| this.service.getSelectedTab().toLowerCase() === 'developer') {
       this.xCaption = this.service.getSelectedDateFilter();
     }
@@ -68,7 +67,6 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   }
 
   formatData(data) {
-    console.log("Before modified : ",data)
     const result = [];
     const newObj = {};
     newObj['value'] = [];
@@ -128,7 +126,6 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   }
 
   draw(data) {
-    console.log("After modified : ",data)
     const unitAbbs = {
       'hours' : 'Hrs',
       'sp' : 'SP',
@@ -167,22 +164,24 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
-    const width = data.length <= 5 ? d3.select(this.elem).select('#chart').node().offsetWidth - 70 : data.length * barWidth * 10;
+    const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
+    const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
+    const width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 - paddingTop : 210 - paddingTop;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
-    const x0 = d3.scaleBand().range([0, width]).padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);
+    const xScale = d3.scaleBand().range([0, width]).padding([((6 + this.dataPoints) / (3 * this.dataPoints)) * paddingFactor]);;
 
-    const x1 = d3.scaleBand();
+    const barScale = d3.scaleBand();
     let tempAxis;
     if (viewType === 'large' && selectedProjectCount === 1) {
       /** Temporary axis for wrapping text only */
       tempAxis =  d3.scaleBand().rangeRound([0, width - margin.left]).domain(sprintList)
-      x0.domain(sprintList);
+      xScale.domain(sprintList);
     }else{
-      x0.domain(categoriesNames);
+      xScale.domain(categoriesNames);
     }
-    x1.domain(rateNames).range([0, x0.bandwidth()]);
+    barScale.domain(rateNames).range([0, xScale.bandwidth()]);
 
     let y = d3.scaleBand().range([height - margin.top, 0]).domain(Object.values(this.yAxisOrder).reverse());;
 
@@ -191,7 +190,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       tickPadding = 6;
     }
 
-    const xAxis = d3.axisBottom(x0).tickSize(0).tickPadding(tickPadding);
+    const xAxis = d3.axisBottom(xScale).tickSize(0).tickPadding(tickPadding);
 
     const yAxis = d3.axisLeft(y).ticks(5)
 
@@ -223,12 +222,12 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
         .style('left', (d,i) => {
           let left = d.value[0]?.date || d.value[0]?.sortSprint;
           if(viewType === 'large'){
-            return x0(left) + x0.bandwidth() / 2 + 'px';
+            return xScale(left) + xScale.bandwidth() / 2 + 'px';
           }else{
-            return x0(i+1) + x0.bandwidth() / 2 + 'px';
+            return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
           }
         })
-        .style('top', d => y(this.yAxisOrder[d.value[0].value]) - 25)
+        .style('top', d => y(this.yAxisOrder[d.value[0].value]) + 'px')
         .text(d => (d.value[0].value)+ ` ${showUnit ? unitAbbs[showUnit?.toLowerCase()] : ''}`)
         .transition()
         .duration(500)
@@ -327,7 +326,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .data(data)
       .enter()
       .append('g')
-      .attr('transform', (d) => 'translate(' + x0(d.categorie) + ',0)');
+      .attr('transform', (d) => 'translate(' + xScale(d.categorie) + ',0)');
 
     slice
       .selectAll('rect')
@@ -337,9 +336,9 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
       .attr('width', barWidth)
       .attr('x', (d, i) =>{
         if (viewType === 'large' && selectedProjectCount === 1) {
-          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x0(d.sortSprint || d.date) + barWidth / 1.5 : x0(d.sortSprint || d.date)
+          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? xScale(d.sortSprint || d.date) + barWidth / 1.5 : xScale(d.sortSprint || d.date)
         }else{
-          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? x1(d.rate) + barWidth / 1.5 : x1(d.rate)
+          return paddingFactor < 0.55 && data.length <= 5 && self.dataPoints === 1 ? barScale(d.rate) + barWidth / 1.5 : barScale(d.rate)
         }
       })
       .style('fill', (d) =>color(d.rate))
@@ -376,6 +375,7 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
     const resizeObserver = new ResizeObserver(entries => {
       const data = this.formatData(this.data);
       this.draw(data);
+      console.log("called")
     });
     resizeObserver.observe(d3.select(this.elem).select('#chart').node());
   }
