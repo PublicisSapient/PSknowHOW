@@ -68,7 +68,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	@Setter
 	class Options {
 		String label;
-		String value;
+		Object value;
 	}
 
 }

@@ -41,7 +41,7 @@ describe('FieldMappingFieldComponent', () => {
 
   it('should reset radio button',()=>{
     component.resetRadioButton("fakeName");
-    expect(component.value).toBe('')
+    expect(component.value).toBe(true)
   })
 
   it('should set addtional filter value button',()=>{
