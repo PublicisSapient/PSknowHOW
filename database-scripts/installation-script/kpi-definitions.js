@@ -3659,7 +3659,7 @@ db.getCollection('kpi_master').insertMany(
     "kpiSource": "Sonar",
     "groupId": 1,
     "kanban": false,
-    "chartType": "bar",
+    "chartType": "bar-with-y-axis-group",
     "kpiInfo": {
       "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
       "details": [
@@ -3694,7 +3694,13 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": true,
     "hideOverallFilter": true,
     "maturityRange": ["5", "4", "3", "2", "1"],
-    "yAxisOrder": ["A", "B", "C", "D", "E"]
+    "yaxisOrder" : {
+            5 : 'E',
+            4 : 'D',
+            3 : 'C',
+            2 : 'B',
+            1 : 'A'
+        }
   }
 ]
 );
