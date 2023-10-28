@@ -118,6 +118,7 @@ import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
 import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
+import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 
 /******************************************************/
 
@@ -188,7 +189,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         MultilineStyleComponent,
         DoraComponent,
         FeedbackComponent,
-        DeveloperComponent
+        DeveloperComponent,
+        BarWithYAxisGroupComponent
     ],
     imports: [
         DropdownModule,
