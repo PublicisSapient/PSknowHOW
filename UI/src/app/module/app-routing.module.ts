@@ -53,46 +53,47 @@ const routes: Routes = [
   },
   {
     path: 'dashboard', component: DashboardComponent,
+    canActivateChild : [FeatureGuard],
     children: [
       { path: '', redirectTo: 'iteration', pathMatch: 'full' },
       {
-        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "My Dashboard"
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
         data: {
           feature: "Iteration"
         }
       },
       {
-        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
-          feature: "Deveoper"
+          feature: "Developer"
         }
       },
       {
-        path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Maturity"
         }
       },
       {
-        path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Backlog"
         }
       },
       {
-        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Release"
         }
       },
       {
-        path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Dora"
         }
@@ -106,7 +107,7 @@ const routes: Routes = [
           feature: "Config"
         }
       },
-      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
 
     ], canActivate: [AuthGuard]
   },

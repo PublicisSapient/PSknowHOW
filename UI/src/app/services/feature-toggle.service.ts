@@ -17,7 +17,7 @@ export class FeatureFlagsService {
 
   isFeatureEnabled(key: string) {
     if (this.config.length) {
-      let requiredConfig = this.config.filter(feature => feature['featureName'] === key)[0];
+      let requiredConfig = this.config.filter(feature => feature['featureName'].toLowerCase() === key.toLowerCase())[0];
       if (requiredConfig) {
         if(requiredConfig.enabled && requiredConfig.roles.includes(this.roleService.getRole())) {
           return true;
