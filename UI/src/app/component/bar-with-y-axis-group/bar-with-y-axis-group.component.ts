@@ -46,7 +46,11 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
   @Input() yAxisOrder : Array<any>;
-  @Input() thresholdValue : number
+  @Input() thresholdValue : number;
+  resizeObserver = new ResizeObserver(entries => {
+    const data = this.formatData(this.data);
+    this.draw(data);
+  });
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -372,12 +376,12 @@ export class BarWithYAxisGroupComponent implements OnInit, OnChanges {
   }
 
   ngAfterViewInit() {
-    const resizeObserver = new ResizeObserver(entries => {
-      const data = this.formatData(this.data);
-      this.draw(data);
-      console.log("called")
-    });
-    resizeObserver.observe(d3.select(this.elem).select('#chart').node());
+    this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
+  }
+
+  ngOnDestroy(): void {
+    this.data = []
+    this.resizeObserver.unobserve(d3.select(this.elem).select('#chart').node());
   }
 
 }
