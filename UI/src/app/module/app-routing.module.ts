@@ -34,6 +34,7 @@ import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
+import { FeatureGuard } from '../services/feature.guard';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -46,28 +47,64 @@ const routes: Routes = [
   { path: '', redirectTo: 'authentication', pathMatch: 'full' },
   {
     path: 'authentication',
-    // loadChildren: '../authentication/authentication.module#AuthenticationModule',
     loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
     resolve: [Logged],
-    canActivate:[SSOGuard]
+    canActivate: [SSOGuard]
   },
   {
     path: 'dashboard', component: DashboardComponent,
     children: [
-      { path: '', redirectTo: 'iteration', pathMatch: 'full'},
-      { path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard] },
-      { path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard] },
+      { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+      {
+        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "My Dashboard"
+        }
+      },
+      {
+        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Iteration"
+        }
+      },
+      {
+        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Deveoper"
+        }
+      },
+      {
+        path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Maturity"
+        }
+      },
+      {
+        path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Backlog"
+        }
+      },
+      {
+        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Release"
+        }
+      },
+      {
+        path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard], canLoad: [FeatureGuard],
+        data: {
+          feature: "Dora"
+        }
+      },
       { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
       { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
       {
         path: 'Config',
-        // loadChildren: '../config/config.module#ConfigModule'
-        loadChildren: () => import('../config/config.module').then(m => m.ConfigModule),
+        loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
+        data: {
+          feature: "Config"
+        }
       },
       { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard] },
 
@@ -85,7 +122,8 @@ const routes: Routes = [
     AuthGuard,
     Logged,
     AccessGuard,
-    GuestGuard
+    GuestGuard,
+    FeatureGuard
   ]
 })
 export class AppRoutingModule { }
