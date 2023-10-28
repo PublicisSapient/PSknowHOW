@@ -416,10 +416,24 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         });
 
       // show 'Due Date' if available
+      // we need to show it only when 'Dev Completed' and 'Due Date Exceeded' are not there on the graph
       marker.append('image')
         .attr('class', 'OverallDueDate')
         .attr('xlink:href', '../../../assets/img/OverallDueDate.svg')
-        .style('display', (d) => { return d['Due Date'] && d['Due Date'] !== '-' ? 'block' : 'none' })
+        .style('display', (d) => {
+          let display = 'block';
+          if (d['Due Date'] && d['Due Date'] !== '-') {
+            if (self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date']) {
+              display = 'none';
+            } else if(!self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date']) {
+              display = 'block';
+            }
+             else {
+              display = 'none';
+            }
+          }
+          return display;
+        })
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => d['Due Date'] && d['Due Date'] !== '-' && !isNaN(x(self.formatDate(new Date(d['Due Date'])))) ? x(self.formatDate(new Date(d['Due Date']))) + initialCoordinate / 2 - 20 : -500)
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
