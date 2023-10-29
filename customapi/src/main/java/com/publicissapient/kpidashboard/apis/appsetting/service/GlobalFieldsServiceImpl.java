@@ -25,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
+/**
+ * provides methods related to the global fields
+ */
 @Service
 public class GlobalFieldsServiceImpl {
 

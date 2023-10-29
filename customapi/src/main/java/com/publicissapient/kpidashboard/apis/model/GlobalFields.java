@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.model;
 
 import lombok.Data;
 
+/**
+ * Model to represent global fields
+ */
 @Data
 public class GlobalFields {
 
