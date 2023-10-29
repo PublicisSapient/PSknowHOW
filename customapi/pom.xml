@@ -48,8 +48,7 @@
 			**com/publicissapient/kpidashboard/**/*Constants.java,
 			**com/publicissapient/kpidashboard/**/*Constant.java,
 			**com/publicissapient/kpidashboard/**/*Properties.java,
-			**com/publicissapient/kpidashboard/**/*Configuration.java,
-			**com/publicissapient/kpidashboard/apis/mongock/**/*
+			**com/publicissapient/kpidashboard/**/*Configuration.java
 		</sonar.coverage.exclusions>
 		<sonar.test.exclusions>
 			**src/test/java/**
@@ -344,27 +343,8 @@
 			<artifactId>jackson-datatype-joda</artifactId>
 			<version>2.14.2</version>
 		</dependency>
-		<dependency>
-			<groupId>io.mongock</groupId>
-			<artifactId>mongock-springboot</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.mongock</groupId>
-			<artifactId>mongodb-springdata-v3-driver</artifactId>
-		</dependency>
         
     </dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>io.mongock</groupId>
-				<artifactId>mongock-community-bom</artifactId>
-				<version>5.3.4</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<finalName>${final.name}</finalName>
