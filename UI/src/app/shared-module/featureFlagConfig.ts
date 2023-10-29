@@ -48,6 +48,13 @@ export const features = [
         'enabled': true,
         'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
         'personas': []
+    },
+    {
+        'featureName': 'GrantRequests',
+        'enabled': true,
+        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
+        'personas': []
     }
+
 
 ];
