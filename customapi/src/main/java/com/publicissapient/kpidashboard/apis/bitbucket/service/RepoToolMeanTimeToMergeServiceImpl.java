@@ -183,16 +183,18 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 					createDateLabelWiseMap(repoToolKpiMetricRespons, repo.getRepositoryName(), repo.getBranch(),
 							dateWiseMeanTimeToMerge);
 					aggMeanTimeToMerge(aggMeanTimeToMerge, dateWiseMeanTimeToMerge);
-					setWeekWiseMeanTimeToMergeForRepoTools(dateWiseMeanTimeToMerge, excelDataLoader, branchName,
-							projectName, aggDataMap, duration, dataPoints);
+					List<DataCount> dataCountList = setWeekWiseMeanTimeToMergeForRepoTools(dateWiseMeanTimeToMerge,
+							excelDataLoader, projectName, duration, dataPoints);
+					aggDataMap.put(branchName, dataCountList);
 					repoWiseMRList.add(excelDataLoader);
 					repoList.add(repo.getUrl());
 					branchList.add(repo.getBranch());
 
 				}
 			});
-			setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, excelDataLoader, Constant.AGGREGATED_VALUE,
-					projectName, aggDataMap, duration, dataPoints);
+			List<DataCount> dataCountList = setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, excelDataLoader,
+					projectName, duration, dataPoints);
+			aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
 
 			mapTmp.get(node.getId()).setValue(aggDataMap);
 			populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, node);
@@ -210,22 +212,20 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	 * @param projectName
 	 * @param aggDataMap
 	 */
-	private void setWeekWiseMeanTimeToMergeForRepoTools(Map<String, Double> mergeReqList,
-			Map<String, Double> excelDataLoader, String branchName, String projectName,
-			Map<String, List<DataCount>> aggDataMap, String duration, Integer dataPoints) {
+	private List<DataCount> setWeekWiseMeanTimeToMergeForRepoTools(Map<String, Double> mergeReqList,
+			Map<String, Double> excelDataLoader, String projectName, String duration, Integer dataPoints) {
 		LocalDate currentDate = LocalDate.now();
+		List<DataCount> dataCountList = new ArrayList<>();
 		for (int i = 0; i < dataPoints; i++) {
 			CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(currentDate, duration);
 			double meanTimeToMerge = mergeReqList.getOrDefault(dateRange.getStartDate().toString(), 0.0d) * 1000;
 			String date = getDateRange(dateRange, duration);
-			aggDataMap.putIfAbsent(branchName, new ArrayList<>());
-			DataCount dataCount = setDataCount(projectName, date, meanTimeToMerge);
-			aggDataMap.get(branchName).add(dataCount);
+			dataCountList.add(setDataCount(projectName, date, meanTimeToMerge));
 			excelDataLoader.put(date, (double) TimeUnit.MILLISECONDS.toHours((long) meanTimeToMerge));
 			currentDate = getNextRangeDate(duration, currentDate);
-
 		}
-
+		Collections.reverse(dataCountList);
+		return dataCountList;
 	}
 
 	private String getDateRange(CustomDateRange dateRange, String duration) {
