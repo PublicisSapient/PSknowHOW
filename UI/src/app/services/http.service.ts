@@ -173,6 +173,8 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private getGlobalConfigUrl = this.baseUrl + '/api/globalfields';
+
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1119,6 +1121,10 @@ export class HttpService {
   /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
   getKPIFieldMappingConfig(KPIID) {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+  }
+
+  getGlobalConfig() {
+    return this.http.get<any>(this.getGlobalConfigUrl);
   }
 
 }

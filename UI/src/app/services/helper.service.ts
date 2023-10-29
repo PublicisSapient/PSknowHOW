@@ -23,6 +23,7 @@ This files contain common methods that can be use in application
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class HelperService {
@@ -30,7 +31,7 @@ export class HelperService {
     grossMaturityObj = {};
     public passMaturityToFilter;
 
-    constructor(private httpService: HttpService, private excelService: ExcelService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService,private sharedService : SharedService) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -520,4 +521,12 @@ export class HelperService {
             reject(error);
         }));
     }
+
+    getGlobalConfig(){
+        this.httpService.getGlobalConfig().subscribe(res=>{
+          if(res && res['success']){
+            this.sharedService.setGlobalConfigData(res['data']);
+          }
+        })
+      }
 }
