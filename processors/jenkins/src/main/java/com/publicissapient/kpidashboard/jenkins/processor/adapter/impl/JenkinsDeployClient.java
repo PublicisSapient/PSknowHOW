@@ -130,7 +130,7 @@ public class JenkinsDeployClient implements JenkinsClient {
 		deployment.setBasicProjectConfigId(jenkinsServer.getBasicProjectConfigId());
 		deployment.setProjectToolConfigId(jenkinsServer.getId());
 		String serverJobName = jenkinsServer.getJobName();
-		int indexJ = serverJobName.lastIndexOf("/");
+		int indexJ = serverJobName.lastIndexOf('/');
 		String jobName = serverJobName.substring(indexJ + 1);
 		deployment.setJobName(jobName);
 		deployment.setJobFolderName(jenkinsServer.getJobName());
