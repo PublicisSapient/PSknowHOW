@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,7 +92,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
-			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
+			log.info("Release BurnUp -> Requested sprint : {}", leafNode.getName());
 
 			List<String> releaseList = getReleaseList();
 			if (CollectionUtils.isNotEmpty(releaseList)) {
@@ -133,10 +134,11 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName))
 					.forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
-						LocalDate updatedLog = updateLogs.getUpdatedOn().toLocalDate();
+						LocalDate updatedLog;
 						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
 							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase()
 									.contains(finalReleaseName)) {
+								updatedLog = fixVersionUpdationLog.get(lastIndex).getUpdatedOn().toLocalDate();
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -144,7 +146,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 								});
 								fullReleaseMap.putIfAbsent(updatedLog, cloneList);
 							}
-
+							updatedLog = updateLogs.getUpdatedOn().toLocalDate();
 							addedIssuesMap.computeIfPresent(updatedLog, (k, v) -> {
 								v.addAll(jiraIssueList);
 								return v;
@@ -267,7 +269,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 				duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 				range = durationRangeMap.values().stream().findFirst().orElse(0L);
-				completedReleaseMap = prepareCompletedIssueMap(completedReleaseMap, startLocalDate);
+				completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
+				fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 
 				tempStartDate = LocalDate.parse(startLocalDate.toString());
 				List<JiraIssue> overallIssues = new ArrayList<>();
@@ -283,10 +286,11 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues, completedReleaseMap,
 							overallCompletedIssues);
 					overallCompletedIssues = filterWiseGroupedMap.getOrDefault("OVERALL COMPLETED", new ArrayList<>());
+					overallIssues = filterWiseGroupedMap.getOrDefault("OVERALL ISSUE", new ArrayList<>());
 					String date = getRange(dateRange, duration);
 					populateFilterWiseDataMap(filterWiseGroupedMap, issueCount, issueSize, date, duration,
 							fieldMapping);
-					startLocalDate = getNextRangeDate(duration, startLocalDate);
+					startLocalDate = getNextRangeDate(duration, startLocalDate, endLocalDate);
 					issueCountDataGroup.add(issueCount);
 					issueSizeCountDataGroup.add(issueSize);
 				}
@@ -319,11 +323,11 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	/**
-	 * issue completed before the release version but happened to be present in
+	 * issue completed/added before the release version but happened to be present in
 	 * selected release then issues to be present on the first day of release start
 	 * date
 	 */
-	private Map<LocalDate, List<JiraIssue>> prepareCompletedIssueMap(
+	private Map<LocalDate, List<JiraIssue>> prepareIssueBeforeStartDate(
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap, LocalDate startLocalDate) {
 		Map<LocalDate, List<JiraIssue>> rangedCompletedMap = new HashMap<>();
 		completedReleaseMap.forEach((date, issues) -> {
@@ -346,6 +350,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		String duration;
 		// added+1 to add the end date as well
 		if (ChronoUnit.DAYS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1 > 15) {
+			startLocalDate = startLocalDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 			range = ChronoUnit.WEEKS.between(Objects.requireNonNull(startLocalDate), endLocalDate) + 1;
 			duration = CommonConstant.WEEK;
 		} else {
@@ -459,6 +464,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		List<JiraIssue> commonIssues = (List<JiraIssue>) CollectionUtils.intersection(allAddedIssues, removedIssues);
 		removedIssues.removeAll(commonIssues);
 		allAddedIssues.removeAll(commonIssues);
+		overallIssues.removeAll(commonIssues);
 		List<JiraIssue> commonIssuesRemoved = (List<JiraIssue>) CollectionUtils.intersection(overallIssues,
 				removedIssues);
 		allAddedIssues.removeAll(overallIssues);
@@ -479,6 +485,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		groupedMap.put(RELEASE_SCOPE, overallIssues);
 		groupedMap.put(RELEASE_PROGRESS, allCompletedIssuesOutOfOverall);
 		groupedMap.put("OVERALL COMPLETED", overallCompletedIssues.stream().distinct().collect(Collectors.toList()));
+		groupedMap.put("OVERALL ISSUE", overallIssues.stream().distinct().collect(Collectors.toList()));
 
 		return groupedMap;
 	}
@@ -515,9 +522,13 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				.collect(Collectors.toList());
 	}
 
-	private LocalDate getNextRangeDate(String duration, LocalDate currentDate) {
+	private LocalDate getNextRangeDate(String duration, LocalDate currentDate, LocalDate endLocalDate) {
 		if (duration.equalsIgnoreCase(CommonConstant.WEEK)) {
-			currentDate = currentDate.plusWeeks(1);
+			LocalDate monday = currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+			currentDate = monday.plusWeeks(1);
+			if (currentDate.isAfter(endLocalDate)) {
+				currentDate = endLocalDate;
+			}
 		} else {
 			currentDate = currentDate.plusDays(1);
 		}

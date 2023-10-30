@@ -2563,7 +2563,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "",
     "boxType": "3_column",
-    "kpiSubCategory": "Health",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2588,7 +2588,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
-    "kpiSubCategory": "Health",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2613,7 +2613,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
-    "kpiSubCategory": "Health",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2662,7 +2662,7 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "hideOverallFilter": true,
-    "kpiSubCategory": "Health",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2894,7 +2894,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
-    "kpiSubCategory": "Health",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -3645,6 +3645,32 @@ db.getCollection('kpi_master').insertMany(
       "boxType": "chart",
       "calculateMaturity": false,
       "kpiSubCategory": "Epic View"
+    },
+    {
+        "kpiId": "kpi161",
+        "kpiName": "Iteration Readiness",
+        "maxValue": "",
+        "kpiUnit": "Count",
+        "isDeleted": "False",
+        "defaultOrder": 5,
+        "kpiCategory": "Backlog",
+        "kpiSource": "Jira",
+        "groupId": 11,
+        "thresholdValue": "",
+        "kanban": false,
+        "chartType": "stackedColumn",
+        "kpiInfo": {
+          "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+        },
+        "xAxisLabel": "Sprint",
+        "yAxisLabel": "Count",
+        "isPositiveTrend": true,
+        "showTrend": false,
+        "kpiSubCategory": "Backlog Health",
+        "isAdditionalFilterSupport": false,
+        "kpiFilter": "",
+        "boxType": "chart",
+        "calculateMaturity": false
     }
 ]
 );
