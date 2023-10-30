@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -80,7 +76,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
@@ -194,19 +190,19 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		releaseName = releaseName != null ? releaseName : "";
 		String finalReleaseName = releaseName.toLowerCase();
 		allIssuesHistory.forEach(issueHistory -> {
-			List<JiraHistoryChangeLog> fixVersionUpdationLog = issueHistory.getFixVersionUpdationLog();
-			Collections.sort(fixVersionUpdationLog, Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
-			int lastIndex = fixVersionUpdationLog.size() - 1;
-			fixVersionUpdationLog.stream()
+			List<JiraHistoryChangeLog> fixVersionUpdateLog = issueHistory.getFixVersionUpdationLog();
+			fixVersionUpdateLog.sort(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn));
+			int lastIndex = fixVersionUpdateLog.size() - 1;
+			fixVersionUpdateLog.stream()
 					.filter(updateLogs -> updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)
 							|| updateLogs.getChangedFrom().toLowerCase().contains(finalReleaseName))
 					.forEach(updateLogs -> {
 						List<JiraIssue> jiraIssueList = getRespectiveJiraIssue(releaseIssue, issueHistory);
 						LocalDate updatedLog;
 						if (updateLogs.getChangedTo().toLowerCase().contains(finalReleaseName)) {
-							if (fixVersionUpdationLog.get(lastIndex).getChangedTo().toLowerCase()
+							if (fixVersionUpdateLog.get(lastIndex).getChangedTo().toLowerCase()
 									.contains(finalReleaseName)) {
-								updatedLog = fixVersionUpdationLog.get(lastIndex).getUpdatedOn().toLocalDate();
+								updatedLog = fixVersionUpdateLog.get(lastIndex).getUpdatedOn().toLocalDate();
 								List<JiraIssue> cloneList = new ArrayList<>(jiraIssueList);
 								fullReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 									v.addAll(cloneList);
@@ -251,14 +247,14 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(new ObjectId(issueHistory.getBasicProjectConfigId()));
-		List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
+		List<JiraHistoryChangeLog> statusUpdateLog = issueHistory.getStatusUpdationLog();
 		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
-		statusUpdationLog = statusUpdationLog.stream()
+		statusUpdateLog = statusUpdateLog.stream()
 				.filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
 						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
 				.collect(Collectors.toList());
-		if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
-			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdationLog,
+		if (CollectionUtils.isNotEmpty(statusUpdateLog)) {
+			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdateLog,
 					jiraIssueReleaseStatus, fieldMapping);
 			// Getting the min date of closed status.
 			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
@@ -276,10 +272,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		}
 	}
 
-	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdationLog,
+	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdateLog,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus, FieldMapping fieldMapping) {
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
+		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
 			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
 					DATE_TIME_FORMATTER);
 			// reopened scenario

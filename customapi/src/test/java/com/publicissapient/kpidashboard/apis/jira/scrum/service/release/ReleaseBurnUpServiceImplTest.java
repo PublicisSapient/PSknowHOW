@@ -64,13 +64,13 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReleaseBurnupServiceImplTest {
+public class ReleaseBurnUpServiceImplTest {
 	@Mock
 	CacheService cacheService;
 	@Mock
 	ConfigHelperService configHelperService;
 	@InjectMocks
-	private ReleaseBurnupServiceImpl releaseBurnupService;
+	private ReleaseBurnUpServiceImpl releaseBurnUpService;
 	@Mock
 	private JiraServiceR jiraService;
 
@@ -114,7 +114,7 @@ public class ReleaseBurnupServiceImplTest {
 
 	@Test
 	public void getQualifierType() {
-		assertThat(releaseBurnupService.getQualifierType(), equalTo(KPICode.RELEASE_BURNUP.name()));
+		assertThat(releaseBurnUpService.getQualifierType(), equalTo(KPICode.RELEASE_BURNUP.name()));
 	}
 
 	@Test
@@ -129,7 +129,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
@@ -153,7 +153,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
@@ -178,7 +178,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
@@ -194,7 +194,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(new ArrayList<>());
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
@@ -219,7 +219,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
