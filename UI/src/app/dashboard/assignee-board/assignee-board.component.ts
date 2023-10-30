@@ -35,13 +35,15 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   @Input() standUpStatusFilter = [];
   @Input() onFullScreen;
   @Input() kpiData;
+  selectedTaskStatusFilter: string;
   currentIssueIndex = 0;
   currentSprint;
   showIssueDetails: boolean = false;
   graphWidth: number = 100;
 
   @Output() reloadKPITab = new EventEmitter<any>();
-  
+  filteredIssueDataList: any[];
+
   constructor(private sharedService: SharedService) {
     this.sharedService.currentData.subscribe(data => {
       if (data && Object.keys(data).length) {
@@ -56,6 +58,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentSprint = this.sharedService.currentSelectedSprint;
+    this.filteredIssueDataList = Object.assign({}, this.issueDataList);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -65,19 +68,36 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   onPreviousIssue() {
     if (this.currentIssueIndex > 0) {
       this.currentIssueIndex = this.currentIssueIndex - 1;
-      this.sharedService.setIssueData(this.issueDataList[this.currentIssueIndex]);
+      this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
     }
   }
 
   onNextIssue() {
-    if (this.currentIssueIndex !== this.issueDataList.length - 1) {
+    if (this.currentIssueIndex !== this.filteredIssueDataList.length - 1) {
       this.currentIssueIndex = this.currentIssueIndex + 1;
-      this.sharedService.setIssueData(this.issueDataList[this.currentIssueIndex]);
+      this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
     }
   }
 
-   /** Reload KPI once field mappoing updated */
-   reloadKPI(event){
+  taskFilterSelected(e) {
+    if (e) {
+      this.selectedTaskStatusFilter = e;
+    } else {
+      this.selectedTaskStatusFilter = '';
+    }
+    this.filterTasksByStatus();
+  }
+
+  filterTasksByStatus() {
+    if (this.selectedTaskStatusFilter && this.selectedTaskStatusFilter.length) {
+      this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === this.selectedTaskStatusFilter.toLowerCase())?.options.includes(d['Issue Status']));
+    } else {
+      this.filteredIssueDataList = this.issueDataList;
+    }
+  }
+
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
     this.reloadKPITab.emit(event);
   }
 }

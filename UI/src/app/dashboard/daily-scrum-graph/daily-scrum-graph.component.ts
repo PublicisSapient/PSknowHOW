@@ -39,6 +39,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   @Input() selectedSprintInfo;
   @Input() standUpStatusFilter;
   @Input() kpiData;
+  @Output() selectedTaskFilter = new EventEmitter();
   elem;
   statusFilterOptions = [];
   selectedStatus;
@@ -86,11 +87,14 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
 
   filterTasksByStatus(e) {
     if (this.selectedStatus && this.selectedStatus['value'] && this.selectedStatus['value'].length) {
-      this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'] === this.selectedStatus['value'])?.options.includes(d['Issue Status']));
+      this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === this.selectedStatus['value'].toLowerCase())?.options.includes(d['Issue Status']));
       this.draw(this.filteredIssueDataList);
+      this.selectedTaskFilter.emit(this.selectedStatus['value']);
     } else {
       this.draw(this.issueDataList);
+      this.selectedTaskFilter.emit(null);
     }
+    
   }
 
   //generated dates on MM/DD format
