@@ -121,35 +121,56 @@ export class DeveloperComponent implements OnInit {
       }
     }));
 
-    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+    // this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+    //   if (Object.keys(x).length > 0) {
+    //     this.colorObj = x;
+    //     this.trendBoxColorObj = { ...x };
+    //     let tempObj = {};
+    //     for (const key in this.trendBoxColorObj) {
+    //       const idx = key.lastIndexOf('_');
+    //       const nodeName = key.slice(0, idx);
+    //       this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+    //       tempObj[nodeName] = [];
+    //     }
+    //     if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
+    //       for (const key in this.kpiChartData) {
+    //         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
+    //         this.createTrendsData(key);
+    //       }
+    //     }
+    //   }
+    //   return this.service.passDataToDashboard;
+    // }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+    //   // used to get all filter data when user click on apply button in filter
+    //   if (sharedobject?.filterData?.length) {
+    //     this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+    //     this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
+    //     this.receiveSharedData(sharedobject);
+    //     this.noTabAccess = false;
+    //   } else {
+    //     this.noTabAccess = true;
+    //   }
+    // }));
+
+    
+    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
         this.colorObj = x;
         this.trendBoxColorObj = { ...x };
-        let tempObj = {};
         for (const key in this.trendBoxColorObj) {
           const idx = key.lastIndexOf('_');
           const nodeName = key.slice(0, idx);
           this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          tempObj[nodeName] = [];
         }
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          for (const key in this.kpiChartData) {
-            this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-            this.createTrendsData(key);
-          }
-        }
+        this.allKpiArray = [];
+        this.kpiChartData = {};
+        this.chartColorList = {};
+        this.kpiSelectedFilterObj = {};
+        this.kpiDropdowns = {};
+        this.kpiTrendsObj = {};
+        this.kpiLoader = true;
       }
       return this.service.passDataToDashboard;
-    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
-      // used to get all filter data when user click on apply button in filter
-      if (sharedobject?.filterData?.length) {
-        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-        this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-        this.receiveSharedData(sharedobject);
-        this.noTabAccess = false;
-      } else {
-        this.noTabAccess = true;
-      }
     }));
 
     /**observable to get the type of view */
