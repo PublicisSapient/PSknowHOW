@@ -58,11 +58,11 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.currentSprint = this.sharedService.currentSelectedSprint;
-    this.filteredIssueDataList = Object.assign({}, this.issueDataList);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.currentIssueIndex = 0;
+    this.filteredIssueDataList = JSON.parse(JSON.stringify(this.issueDataList));
   }
 
   onPreviousIssue() {
@@ -73,7 +73,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   }
 
   onNextIssue() {
-    if (this.currentIssueIndex !== this.filteredIssueDataList.length - 1) {
+    if (this.currentIssueIndex < this.filteredIssueDataList.length - 1) {
       this.currentIssueIndex = this.currentIssueIndex + 1;
       this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
     }
@@ -92,7 +92,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
     if (this.selectedTaskStatusFilter && this.selectedTaskStatusFilter.length) {
       this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === this.selectedTaskStatusFilter.toLowerCase())?.options.includes(d['Issue Status']));
     } else {
-      this.filteredIssueDataList = this.issueDataList;
+      this.filteredIssueDataList = JSON.parse(JSON.stringify(this.issueDataList));
     }
     this.currentIssueIndex = 0;
     this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
