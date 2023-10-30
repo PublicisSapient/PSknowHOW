@@ -524,6 +524,22 @@ export class DeveloperComponent implements OnInit {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, this.iSAdditionalFilterSelected);
   }
 
+  reloadKPI(event) {
+    const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+    if (idx !== -1) {
+      this.allKpiArray.splice(idx, 1);
+    }
+    const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, event.kpiDetail?.groupId, 'developer');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+      if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+        this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+      } else {
+        this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+      }
+    }
+  }
+
 
   // unsubscribing all Kpi Request
   ngOnDestroy() {
