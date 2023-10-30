@@ -102,7 +102,6 @@ public class JiraCommonService {
 					.setHeader(org.apache.http.HttpHeaders.ACCEPT, "application/json")
 					.setHeader(org.apache.http.HttpHeaders.CONTENT_TYPE, "application/json").build();
 			String responce = krb5Client.getResponse(request);
-			request.abort();
 			return responce;
 		} else {
 			return getDataFromServer(url, connectionOptional);
@@ -294,7 +293,6 @@ public class JiraCommonService {
 
 			SearchResult searchResult = getBoardIssues(boardId, projectConfig, queryDate, pageNumber);
 			issues = JiraHelper.getIssuesFromResult(searchResult);
-			client.close();
 		}
 		return issues;
 	}
