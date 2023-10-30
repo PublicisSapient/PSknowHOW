@@ -264,10 +264,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
 					.min(LocalDate::compareTo).orElse(null);
 			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
-			LocalDate finalUpdatedLog = updatedLog;
-			jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(finalUpdatedLog)
+			jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(updatedLog)
 					? LocalDate.parse(issue.getUpdateDate().split("T")[0], DATE_TIME_FORMATTER).toString()
-					: finalUpdatedLog.toString()));
+					: updatedLog.toString()));
 			completedIssues.computeIfPresent(updatedLog, (k, v) -> {
 				v.addAll(jiraIssueList);
 				return v;
@@ -283,10 +282,12 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
 			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
 					DATE_TIME_FORMATTER);
+			// reopened scenario
 			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedFrom())
 					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
 				closedStatusDateMap.clear();
 			}
+			// first close date of last close cycle
 			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedTo())) {
 				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
 					closedStatusDateMap.clear();
@@ -321,7 +322,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		String startDate = latestRelease.getReleaseFilter().getStartDate();
 		String endDate = latestRelease.getReleaseFilter().getEndDate();
 		String releaseState = Optional.ofNullable(latestRelease.getAccountHierarchy().getReleaseState()).orElse("");
-		Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
+		Optional.of(latestRelease).ifPresent(latestReleaseNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
 		List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
@@ -342,8 +343,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			/*
-			 * if starttime is absent, then the date at which issue was added and remained
-			 * added in the entire relase is considered to be the start date if end date is
+			 * if start-time is absent, then the date at which issue was added and remained
+			 * added in the entire release is considered to be the start date if end date is
 			 * absent then it means that issue is unreleased, so till today we can consider
 			 * as end date
 			 */
@@ -367,6 +368,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<DataCountGroup> issueCountDataGroup = new ArrayList<>();
 			List<DataCountGroup> issueSizeCountDataGroup = new ArrayList<>();
 			Map<String, Object> predictionDataMap = new HashMap<>();
+			// if no issue is closed & status is "Released" in a release prediction will not
+			// be shown
 			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(completedReleaseMap)) {
 				// populating only release scope vs progress
 				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
@@ -493,8 +496,10 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		if (isStartPrediction && MapUtils.isNotEmpty(averageDataMap)) {
 			issueCountPrediction = (double) predictionDataMap.get(ISSUE_COUNT_PREDICTION);
 			issueSizePrediction = (double) predictionDataMap.get(ISSUE_SIZE_PREDICTION);
+			// checking if predication crossed the scope or not
 			predictionDataMap.put(IS_ISSUE_COUNT_ACHIEVED, issueCountPrediction >= issueCountToReach);
 			predictionDataMap.put(IS_STORY_POINT_ACHIEVED, issueSizePrediction >= storyPointToReach);
+			// working days between intervals namely: [days, week or month]
 			long daysInterval = (long) CommonUtils.getWorkingDays(dateRange.getStartDate(), dateRange.getEndDate()) + 1;
 			if (!isPredictionBoundary) {
 				// cal the next issueCount/Sp for prediction data
@@ -568,21 +573,21 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		LocalDate predictionStartDate = startLocalDate.plusDays(startDateCount);
 
 		LocalDate currentDate = predictionStartDate;
-		List<JiraIssue> completedIssuesTillToday = new ArrayList<>();
+		List<JiraIssue> completedIssuesTillTodayList = new ArrayList<>();
 		// completed issue between prediction start date and today both inclusive
-		while (!currentDate.isBefore(predictionStartDate) && !LocalDate.now().isBefore(currentDate)) {
-			completedIssuesTillToday.addAll(completedReleaseMap.getOrDefault(currentDate, new ArrayList<>()));
+		while (DateUtil.isWithinDateRange(currentDate, predictionStartDate, LocalDate.now())) {
+			completedIssuesTillTodayList.addAll(completedReleaseMap.getOrDefault(currentDate, new ArrayList<>()));
 			if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				countOfDaysTillToday++;
 			}
 			currentDate = currentDate.plusDays(1);
 		}
 		// out of all completed, what all issues were completed & tagged
-		completedIssuesTillToday.retainAll(allReleaseTaggedIssue);
+		completedIssuesTillTodayList.retainAll(allReleaseTaggedIssue);
 		// calculate the avg issue count and story point
-		if (countOfDaysTillToday != 0 && CollectionUtils.isNotEmpty(completedIssuesTillToday)) {
-			avgIssueCount = (double) completedIssuesTillToday.size() / countOfDaysTillToday;
-			avgStoryPoint = getStoryPoint(completedIssuesTillToday, fieldMapping) / countOfDaysTillToday;
+		if (countOfDaysTillToday != 0 && CollectionUtils.isNotEmpty(completedIssuesTillTodayList)) {
+			avgIssueCount = (double) completedIssuesTillTodayList.size() / countOfDaysTillToday;
+			avgStoryPoint = getStoryPoint(completedIssuesTillTodayList, fieldMapping) / countOfDaysTillToday;
 			averageDataMap.put(AVG_ISSUE_COUNT, roundingOff(avgIssueCount));
 			averageDataMap.put(AVG_STORY_POINT, roundingOff(avgStoryPoint));
 		}
@@ -834,6 +839,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            List<JiraIssue>
 	 * @return Map<String, List<JiraIssue>>
 	 */
+	@SuppressWarnings("unchecked")
 	private Map<String, List<JiraIssue>> createFilterWiseGroupedMap(CustomDateRange dateRange,
 			Map<LocalDate, List<JiraIssue>> addedIssuesMap, Map<LocalDate, List<JiraIssue>> removeIssueMap,
 			Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap, List<JiraIssue> overallIssues,
@@ -844,8 +850,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		List<JiraIssue> removedIssues = new ArrayList<>();
 		List<JiraIssue> completedIssues = new ArrayList<>();
 
-		for (LocalDate currentDate = dateRange.getStartDate(); currentDate.compareTo(dateRange.getStartDate()) >= 0
-				&& dateRange.getEndDate().compareTo(currentDate) >= 0; currentDate = currentDate.plusDays(1)) {
+		for (LocalDate currentDate = dateRange.getStartDate(); DateUtil.isWithinDateRange(currentDate,
+				dateRange.getStartDate(), dateRange.getEndDate()); currentDate = currentDate.plusDays(1)) {
 			if (currentDate.isEqual(tempStartDate)) {
 				defaultIssues.addAll(fullReleaseIssueMap.getOrDefault(currentDate, new ArrayList<>()));// defaultMap
 				defaultIssues.addAll(addedIssuesMap.getOrDefault(currentDate, new ArrayList<>()));
@@ -867,6 +873,7 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		overallIssues.removeAll(commonIssues);
 		List<JiraIssue> commonIssuesRemoved = (List<JiraIssue>) CollectionUtils.intersection(overallIssues,
 				removedIssues);
+		// issues removed and added on same day
 		List<JiraIssue> removedThenAdded = (List<JiraIssue>) CollectionUtils.intersection(commonIssues, defaultIssues);
 		allAddedIssues.addAll(removedThenAdded);
 		allAddedIssues.removeAll(overallIssues);
