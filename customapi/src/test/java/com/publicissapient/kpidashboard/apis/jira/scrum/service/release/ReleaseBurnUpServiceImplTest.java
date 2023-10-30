@@ -193,7 +193,6 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(new ArrayList<>());
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(new ArrayList<>());
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
