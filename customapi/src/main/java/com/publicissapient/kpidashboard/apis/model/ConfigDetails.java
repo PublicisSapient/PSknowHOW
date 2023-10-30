@@ -28,8 +28,9 @@ public class ConfigDetails {
 	private Double percentile;
 	private int hierarchySelectionCount;
 	private DateRangeFilter dateRangeFilter;
-
 	private int noOfDataPoints;
+	private boolean repoToolFlag;
+
 	public DateRangeFilter getDateRangeFilter() {
 		return dateRangeFilter;
 	}
@@ -87,4 +88,9 @@ public class ConfigDetails {
 	public void setNoOfDataPoints(int noOfDataPoints) {
 		this.noOfDataPoints = noOfDataPoints;
 	}
+
+	public void setRepoToolFlag(boolean repoToolFlag) {
+		this.repoToolFlag = repoToolFlag;
+	}
+
 }
