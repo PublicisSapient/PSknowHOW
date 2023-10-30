@@ -114,15 +114,14 @@ public class IssueBoardReader implements ItemReader<ReadData> {
             initializeReader(projectId);
         }
         ReadData readData = null;
-        try {
+        KerberosClient krb5Client = null;
+        try(ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
             if (boardIterator == null
                     && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
                 boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
             }
             if (issueIterator == null || !issueIterator.hasNext()) {
-                KerberosClient krb5Client = null;
                 List<Issue> epicIssues;
-                ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client);
                 if (null == issueIterator || boardIssueSize < pageSize) {
                     pageNumber = 0;
                     if (boardIterator.hasNext()) {
@@ -134,7 +133,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
                             issues.addAll(epicIssues);
                         }
                     }
-
                 } else {
                     fetchIssues(client);
                 }
@@ -142,7 +140,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
                 if (CollectionUtils.isNotEmpty(issues)) {
                     issueIterator = issues.iterator();
                 }
-                client.close();
             }
             if (null != issueIterator && issueIterator.hasNext()) {
                 Issue issue = issueIterator.next();
