@@ -94,6 +94,8 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
     } else {
       this.filteredIssueDataList = this.issueDataList;
     }
+    this.currentIssueIndex = 0;
+    this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
   }
 
   /** Reload KPI once field mappoing updated */
