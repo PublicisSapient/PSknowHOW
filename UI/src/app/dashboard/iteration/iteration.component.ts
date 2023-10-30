@@ -106,6 +106,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   currentSelectedSprint;
 
   dailyStandupData: object = {};
+  selectedProjectId: string;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -131,6 +132,7 @@ export class IterationComponent implements OnInit, OnDestroy {
           this.receiveSharedData(this.service.getFilterObject());
         }
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
+        this.checkForAssigneeDataAndSetupTabs();
         this.processKpiConfigData();
       }
     }));
@@ -149,18 +151,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
 
   processKpiConfigData() {
-    if (this.service.currentSelectedSprint?.sprintState === 'ACTIVE') {
-      this.navigationTabs = [
-        { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
-        { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
-        { 'label': 'Daily Standup', 'count': 1, width: 'full', kpis: [] }
-      ];
-    } else {
-      this.navigationTabs = [
-        { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
-        { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
-      ];
-    }
+
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
     // user can enable kpis from show/hide filter, added below flag to show different message to the user
     this.enableByUser = disabledKpis?.length ? true : false;
@@ -169,44 +160,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     this.commitmentReliabilityKpi = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId === 'kpi120')[0];
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
-    /**reset the kpi count */
-    this.navigationTabs = this.navigationTabs.map((x) => {
-      // if(x['label'] === 'Daily Standup'){
-      //   return x;
-      // }
-      return { ...x, count: 0 };
-    });
-    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
-      let board = this.upDatedConfigData[i]?.subCategoryBoard;
-      let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
-      if (idx != -1) {
-        this.navigationTabs[idx]['count']++;
-        this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
-      }
-    }
-    if (this.commitmentReliabilityKpi?.isEnabled) {
-      this.navigationTabs[0]['count']++;
-    }
 
-    this.navigationTabs.map(tabDetails => {
-      if (tabDetails['width'] === 'half') {
-        let fullWidthKPis = [];
-        let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails => {
-          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
-            fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          } else {
-            halfWithKpis = halfWithKpis.concat(kpiDetails);
-          }
-        })
-        const dataLength = halfWithKpis.length;
-        const middleIndex = Math.floor(dataLength / 2);
-        tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
-        tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
-        tabDetails['fullWidthKpis'] = fullWidthKPis;
-      }
-      return tabDetails;
-    })
 
     if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
       this.noKpis = true;
@@ -220,12 +174,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiConfigData[element.kpiId] = false;
       }
     });
-
-
-    if (this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup').length) {
-      this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
-    }
-
   }
 
   getSelectedType(sharedobject) {
@@ -253,6 +201,9 @@ export class IterationComponent implements OnInit, OnDestroy {
             // this.groupHygieneKpi();
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
+            this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
+            this.checkForAssigneeDataAndSetupTabs();
+
             const today = new Date().toISOString().split('T')[0];
             const endDate = new Date(selectedSprint?.sprintEndDate).toISOString().split('T')[0];
             this.timeRemaining = this.calcBusinessDays(today, endDate);
@@ -264,6 +215,66 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.noTabAccess = true;
       }
     }
+  }
+
+  checkForAssigneeDataAndSetupTabs() {
+    this.httpService.getProjectListData().subscribe(responseList => {
+      console.log(responseList[0].data);
+      let selectedProject = responseList[0].data.filter((project) => project.id === this.selectedProjectId)[0];
+      let showDSVorNot = selectedProject['saveAssigneeDetails'];
+      if (this.service.currentSelectedSprint?.sprintState === 'ACTIVE' && showDSVorNot) {
+        this.navigationTabs = [
+          { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+          { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+          { 'label': 'Daily Standup', 'count': 1, width: 'full', kpis: [] }
+        ];
+      } else {
+        this.navigationTabs = [
+          { 'label': 'Iteration Review', 'count': 0, width: 'half', kpis: [], fullWidthKpis: [] },
+          { 'label': 'Iteration Progress', 'count': 0, width: 'full', kpis: [] },
+        ];
+      }
+
+      /**reset the kpi count */
+      this.navigationTabs = this.navigationTabs.map((x) => {
+        return { ...x, count: 0 };
+      });
+      for (let i = 0; i < this.upDatedConfigData?.length; i++) {
+        let board = this.upDatedConfigData[i]?.subCategoryBoard;
+        let idx = this.navigationTabs.findIndex(x => (x['label'] == board));
+        if (idx != -1) {
+          this.navigationTabs[idx]['count']++;
+          this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
+        }
+      }
+      if (this.commitmentReliabilityKpi?.isEnabled) {
+        this.navigationTabs[0]['count']++;
+      }
+
+      this.navigationTabs.map(tabDetails => {
+        if (tabDetails['width'] === 'half') {
+          let fullWidthKPis = [];
+          let halfWithKpis = []
+          tabDetails['kpis'].forEach(kpiDetails => {
+            if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
+              fullWidthKPis = fullWidthKPis.concat(kpiDetails);
+            } else {
+              halfWithKpis = halfWithKpis.concat(kpiDetails);
+            }
+          })
+          const dataLength = halfWithKpis.length;
+          const middleIndex = Math.floor(dataLength / 2);
+          tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
+          tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
+          tabDetails['fullWidthKpis'] = fullWidthKPis;
+        }
+        return tabDetails;
+      });
+
+      if (this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup').length) {
+        this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
+      }
+    });
 
   }
 
@@ -277,7 +288,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         groupIdSet.add(obj.groupId);
       }
     });
-
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
