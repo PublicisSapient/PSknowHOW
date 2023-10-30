@@ -17,6 +17,13 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.FetchKanbanReleaseData;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -26,57 +33,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.FetchKanbanReleaseData;
-
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @Component
 @StepScope
 public class KanbanReleaseDataTasklet implements Tasklet {
-	@Autowired
-	FetchProjectConfiguration fetchProjectConfiguration;
+    @Autowired
+    FetchProjectConfiguration fetchProjectConfiguration;
 
-	@Autowired
-	FetchKanbanReleaseData fetchKanbanReleaseData;
+    @Autowired
+    FetchKanbanReleaseData fetchKanbanReleaseData;
 
-	@Autowired
-	JiraClient jiraClient;
+    @Autowired
+    JiraClient jiraClient;
 
-	private String projectId;
+    private String projectId;
 
-	@Autowired
-	public KanbanReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
+    @Autowired
+    public KanbanReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
+        this.projectId = projectId;
+    }
 
-	/**
-	 *
-	 * @param sc
-	 *            StepContribution
-	 * @param cc
-	 *            ChunkContext
-	 * @return RepeatStatus
-	 * @throws Exception
-	 *             Exception
-	 */
-	@Override
-	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-		log.info("**** ReleaseData fetch started ****");
-		try {
-			ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-			KerberosClient krb5Client = null;
-			jiraClient.getClient(projConfFieldMapping, krb5Client);
-			fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
-		} catch (Exception e) {
-			log.error("Exception while fetching ReleaseData", e);
-		}
-		log.info("**** ReleaseData fetch ended ****");
-		return RepeatStatus.FINISHED;
-	}
+    /**
+     * @param sc StepContribution
+     * @param cc ChunkContext
+     * @return RepeatStatus
+     * @throws Exception Exception
+     */
+    @Override
+    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+        log.info("**** ReleaseData fetch started ****");
+        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+        KerberosClient krb5Client = null;
+        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
+        try {
+            fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
+            client.close();
+        } catch (Exception e) {
+            log.error("Exception while fetching ReleaseData", e);
+            client.close();
+            throw e;
+        }
+        log.info("**** ReleaseData fetch ended ****");
+        return RepeatStatus.FINISHED;
+    }
 
 }
