@@ -867,6 +867,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		overallIssues.removeAll(commonIssues);
 		List<JiraIssue> commonIssuesRemoved = (List<JiraIssue>) CollectionUtils.intersection(overallIssues,
 				removedIssues);
+		List<JiraIssue> removedThenAdded = (List<JiraIssue>) CollectionUtils.intersection(commonIssues, defaultIssues);
+		allAddedIssues.addAll(removedThenAdded);
 		allAddedIssues.removeAll(overallIssues);
 		groupedMap.put(SCOPE_REMOVED, commonIssuesRemoved);
 		groupedMap.put(SCOPE_ADDED, allAddedIssues);
