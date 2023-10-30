@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -85,7 +86,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 		ProjectConfFieldMapping projectConfFieldMapping = null;
 		ProjectBasicConfig projectBasicConfig = projectConfigRepository.findById(projectConfigId).orElse(null);
 		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(projectConfigId);
-		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByBasicProjectConfigId(projectConfigId);
+		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByToolNameAndBasicProjectConfigId(
+				ProcessorConstants.JIRA, projectConfigId);
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 			if (null != projectToolConfig.getConnectionId()) {
