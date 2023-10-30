@@ -80,7 +80,9 @@ public class FetchEpicDataImpl implements FetchEpicData {
 			} while (!isLast);
 
 		}
-		return getEpicIssuesQuery(epicList);
+		List<Issue> epicIssue = getEpicIssuesQuery(epicList);
+		client.close();
+		return epicIssue;
 	}
 
 	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList) throws InterruptedException, RestClientException {
