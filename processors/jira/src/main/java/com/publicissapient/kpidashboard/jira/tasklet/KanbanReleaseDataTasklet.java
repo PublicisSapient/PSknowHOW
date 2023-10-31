@@ -64,13 +64,10 @@ public class KanbanReleaseDataTasklet implements Tasklet {
         log.info("**** ReleaseData fetch started ****");
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         KerberosClient krb5Client = null;
-        ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);
-        try {
+        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
             fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
-            client.close();
         } catch (Exception e) {
             log.error("Exception while fetching ReleaseData", e);
-            client.close();
             throw e;
         }
         log.info("**** ReleaseData fetch ended ****");
