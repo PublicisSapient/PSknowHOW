@@ -53,7 +53,7 @@ export class HttpService {
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
-  private tooltipDataUrl = this.baseUrl + '/api/configDetails';
+  private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
   private configUrl = this.baseUrl + '/api/project';
@@ -173,7 +173,6 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
-  private getGlobalConfigUrl = this.baseUrl + '/api/globalfields';
 
   constructor(
     private router: Router,
@@ -256,8 +255,8 @@ export class HttpService {
   }
 
   /** GET getTooltipData from the server */
-  getTooltipData(): Observable<any> {
-    return this.http.get(this.tooltipDataUrl);
+  getConfigDetails(): Observable<any> {
+    return this.http.get(this.configDetailsUrl);
   }
 
   /** GET getTooltipData from the server */
@@ -1121,10 +1120,6 @@ export class HttpService {
   /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
   getKPIFieldMappingConfig(KPIID) {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
-  }
-
-  getGlobalConfig() {
-    return this.http.get<any>(this.getGlobalConfigUrl);
   }
 
 }

@@ -182,7 +182,7 @@ export class DeveloperComponent implements OnInit {
   ngOnInit(): void {
     this.selectedtype = this.service.getSelectedType();
 
-    this.httpService.getTooltipData()
+    this.httpService.getConfigDetails()
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
           this.tooltip = filterData;

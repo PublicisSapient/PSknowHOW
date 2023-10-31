@@ -523,7 +523,7 @@ export class HelperService {
     }
 
     getGlobalConfig(){
-        this.httpService.getGlobalConfig().subscribe(res=>{
+        this.httpService.getConfigDetails().subscribe(res=>{
           if(res && res['success']){
             this.sharedService.setGlobalConfigData(res['data']);
           }

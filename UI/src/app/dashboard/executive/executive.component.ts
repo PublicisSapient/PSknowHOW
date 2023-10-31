@@ -217,7 +217,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         if (this.service.getFilterObject()) {
             this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
         }
-        this.httpService.getTooltipData().subscribe(filterData => {
+        this.httpService.getConfigDetails().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
                 this.noOfDataPoints = filterData['noOfDataPoints'] || 5;
