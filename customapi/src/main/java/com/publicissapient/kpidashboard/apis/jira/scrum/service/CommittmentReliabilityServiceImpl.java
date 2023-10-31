@@ -549,7 +549,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 	@Override
 	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),KPICode.COMMITMENT_RELIABILITY.getKpiId());
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),KPICode.COMMITMENT_RELIABILITY.getKpiId());
 	}
 
 	@Getter
