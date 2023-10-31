@@ -21,11 +21,6 @@
 // Available personas are none as of now
 
 export const features = [
-    // to test service
-    {
-        'name': 'Daily Standup',
-        'enabled': true
-    },
     // to test directive
     {
         'name': 'Developer',

@@ -153,7 +153,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
         {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []}
       ];
-      if(this.featureFlagService.isFeatureEnabled('Daily Standup')) {
+      if(this.featureFlagService.isFeatureEnabled('DAILY_STANDUP')) {
         this.navigationTabs.push({'label':'Daily Standup','count':1 , width : 'full',kpis : []});
       }
     }else{
