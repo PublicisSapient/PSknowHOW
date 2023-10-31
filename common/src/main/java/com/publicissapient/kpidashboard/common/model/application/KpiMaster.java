@@ -57,10 +57,8 @@ public class KpiMaster extends BasicModel {
 	private String chartType;
 	private String upperThresholdBG;
 	private String lowerThresholdBG;
-	@JsonProperty("xAxisLabel")
-	private String xAxisLabel;
-	@JsonProperty("yAxisLabel")
-	private String yAxisLabel;
+	private String xaxisLabel;
+	private String yaxisLabel;
 	private boolean showTrend;
 	private Boolean isPositiveTrend;
 	private String lineLegend;

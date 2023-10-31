@@ -35,8 +35,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -86,8 +86,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -138,8 +138,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -189,8 +189,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -240,8 +240,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -291,8 +291,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -337,8 +337,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -377,8 +377,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -411,8 +411,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "isTrendCalculative" : true ,
     "trendCalculation" : [
@@ -479,8 +479,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -530,8 +530,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -576,8 +576,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "yAxisLabel" : "Percentage" ,
-    "xAxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Weeks" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -624,8 +624,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -664,8 +664,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Days" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Days" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -718,8 +718,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -761,8 +761,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "lineLegend" : "Passed" ,
     "barLegend" : "Executed" ,
     "isPositiveTrend" : true ,
@@ -802,8 +802,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -847,8 +847,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -901,8 +901,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "aggregationCriteria" : "average" ,
@@ -932,8 +932,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -996,8 +996,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Hours" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Hours" ,
     "lineLegend" : "Logged" ,
     "barLegend" : "Estimated" ,
     "isPositiveTrend" : true ,
@@ -1032,8 +1032,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count(Hours)" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count(Hours)" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -1077,8 +1077,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Days" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Days" ,
+    "yaxisLabel" : "Count" ,
     "lineLegend" : "Merge Requests" ,
     "barLegend" : "Commits" ,
     "isPositiveTrend" : true ,
@@ -1124,8 +1124,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count(Mins)" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count(Mins)" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -1168,8 +1168,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -1216,8 +1216,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Months" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Months" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -1255,8 +1255,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Months" ,
-    "yAxisLabel" : "Count(Days)" ,
+    "xaxisLabel" : "Months" ,
+    "yaxisLabel" : "Count(Days)" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -1285,8 +1285,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "isTrendCalculative" : true ,
     "trendCalculation" : [
@@ -1340,8 +1340,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "isTrendCalculative" : true ,
     "trendCalculation" : [
@@ -1394,8 +1394,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "maxValue" : "" ,
     "kpiUnit" : "Number" ,
     "isPositiveTrend" : false ,
@@ -1427,8 +1427,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "maxValue" : "" ,
     "kpiUnit" : "Number" ,
     "isPositiveTrend" : false ,
@@ -1461,8 +1461,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "isTrendCalculative" : false ,
     "showTrend" : true ,
@@ -1494,8 +1494,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Months" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Months" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "multiSelectDropDown" ,
     "showTrend" : false ,
@@ -1536,8 +1536,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -1582,8 +1582,8 @@
     } ,
     "upperThresholdBG" : "white" ,
     "lowerThresholdBG" : "red" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
     "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
@@ -1630,8 +1630,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
@@ -1670,8 +1670,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Days" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Days" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -1710,8 +1710,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Percentage" ,
     "lineLegend" : "Passed" ,
     "barLegend" : "Executed" ,
     "isPositiveTrend" : true ,
@@ -1751,8 +1751,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Story Points" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Story Points" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -1790,8 +1790,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Hours" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Hours" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -1822,8 +1822,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Min" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Min" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -1863,8 +1863,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -1927,8 +1927,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : false ,
     "showTrend" : false ,
     "kpiFilter" : "radioButton" ,
@@ -2015,8 +2015,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Months" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Months" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -2052,8 +2052,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Days" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Days" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -2086,8 +2086,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2128,8 +2128,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2163,8 +2163,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isSquadSupport" : false ,
@@ -2198,8 +2198,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2233,8 +2233,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2268,8 +2268,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2300,8 +2300,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2327,8 +2327,8 @@
     "kpiInfo" : {
       "definition" : "It shows the count of issues which do not have estimates and count of In progress issues without any work logs."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2353,8 +2353,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects within an iteration by root cause identified."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2387,8 +2387,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "kpiFilter" : "" ,
     "showTrend" : false ,
@@ -2411,8 +2411,8 @@
     "kpiInfo" : {
       "definition" : "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isSquadSupport" : false ,
@@ -2437,8 +2437,8 @@
     "kpiInfo" : {
       "definition" : "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
     } ,
-    "xAxisLabel" : "Days" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Days" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2477,8 +2477,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2503,8 +2503,8 @@
     "kpiInfo" : {
       "definition" : "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2535,8 +2535,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isSquadSupport" : false ,
@@ -2561,8 +2561,8 @@
     "kpiInfo" : {
       "definition" : "It groups all the open production defects based on their ageing in the backlog."
     } ,
-    "xAxisLabel" : "Months" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Months" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "multiSelectDropDown" ,
     "showTrend" : false ,
@@ -2586,8 +2586,8 @@
     "kpiInfo" : {
       "definition" : "It measures the percentage of stories rejected during refinement as compared to the overall stories discussed in a week."
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "" ,
     "showTrend" : false ,
@@ -2613,8 +2613,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects within an iteration by status. User can view the total defects in the iteration as well as the defects created after iteration start."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2662,8 +2662,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2688,8 +2688,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2714,8 +2714,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2740,8 +2740,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects tagged to a release based on Priority. The breakup is shown in terms of count & percentage."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2776,8 +2776,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2802,8 +2802,8 @@
     "kpiInfo" : {
       "definition" : "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "kpiWidth" : 100 ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
@@ -2829,8 +2829,8 @@
     "kpiInfo" : {
       "definition" : "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues"
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isSquadSupport" : false ,
@@ -2867,8 +2867,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -2920,8 +2920,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "kpiWidth" : 100 ,
     "isPositiveTrend" : false ,
     "showTrend" : false ,
@@ -2945,8 +2945,8 @@
     "kpiInfo" : {
       "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
     } ,
-    "xAxisLabel" : "Time" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Time" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "" ,
     "showTrend" : false ,
@@ -2970,8 +2970,8 @@
     "kpiInfo" : {
       "definition" : "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
     } ,
-    "xAxisLabel" : "Time" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Time" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "" ,
     "showTrend" : false ,
@@ -3007,8 +3007,8 @@
     "maxValue" : "5" ,
     "showTrend" : false ,
     "thresholdValue" : "" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Rating"
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Rating"
   } ,
   {
     "kpiId" : "kpi150" ,
@@ -3027,8 +3027,8 @@
     "kpiInfo" : {
       "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "Count" ,
     "kpiWidth" : 100 ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
@@ -3052,8 +3052,8 @@
     "kpiInfo" : {
       "definition" : "Total count of issues in the Backlog with a breakup by Status."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -3077,8 +3077,8 @@
     "kpiInfo" : {
       "definition" : "Total count of issues in the backlog with a breakup by issue type."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -3111,8 +3111,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "PIs" ,
-    "yAxisLabel" : "Business Value" ,
+    "xaxisLabel" : "PIs" ,
+    "yaxisLabel" : "Business Value" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
@@ -3153,8 +3153,8 @@
     "kpiInfo" : {
       "definition" : "Total count of issues in the backlog with a breakup by defect type."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -3186,8 +3186,8 @@
       ] ,
       "maturityLevels" : []
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Days" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Days" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "" ,
@@ -3248,8 +3248,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Days" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Days" ,
+    "yaxisLabel" : "Count" ,
     "lineLegend" : "Merge Requests" ,
     "barLegend" : "Commits" ,
     "isPositiveTrend" : true ,
@@ -3325,8 +3325,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count(Hours)" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count(Hours)" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -3400,8 +3400,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -3475,8 +3475,8 @@
         }
       ]
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count (Hours)" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count (Hours)" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -3508,8 +3508,8 @@
     "kpiInfo" : {
       "definition" : "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time."
     } ,
-    "xAxisLabel" : "Weeks" ,
-    "yAxisLabel" : "Count (No. of Lines)" ,
+    "xaxisLabel" : "Weeks" ,
+    "yaxisLabel" : "Count (No. of Lines)" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "kpiFilter" : "dropDown" ,
@@ -3563,8 +3563,8 @@
     } ,
     "upperThresholdBG" : "red" ,
     "lowerThresholdBG" : "white" ,
-    "xAxisLabel" : "Sprints" ,
-    "yAxisLabel" : "Percentage" ,
+    "xaxisLabel" : "Sprints" ,
+    "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
     "aggregationCriteria" : "average" ,
@@ -3594,8 +3594,8 @@
     "kpiInfo" : {
       "definition" : " It gives a breakup of escaped defects by testing phase"
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
@@ -3628,8 +3628,8 @@
     "kpiInfo" : {
       "definition" : "It depicts the progress of each epic in a release in terms of total count and %age completion."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "kpiWidth" : 100 ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
@@ -3654,8 +3654,8 @@
     "kpiInfo" : {
       "definition" : "It depicts the progress of each epic in terms of total count and %age completion."
     } ,
-    "xAxisLabel" : "" ,
-    "yAxisLabel" : "" ,
+    "xaxisLabel" : "" ,
+    "yaxisLabel" : "" ,
     "kpiWidth" : 100 ,
     "isPositiveTrend" : true ,
     "showTrend" : false ,
@@ -3681,8 +3681,8 @@
     "kpiInfo": {
       "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
     },
-    "xAxisLabel": "Sprint",
-    "yAxisLabel": "Count",
+    "xaxisLabel": "Sprint",
+    "yaxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
