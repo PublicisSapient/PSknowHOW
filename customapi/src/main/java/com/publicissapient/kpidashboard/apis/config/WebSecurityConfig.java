@@ -122,26 +122,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.headers().cacheControl();
-		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/registerUser")
-				.permitAll().antMatchers("/changePassword").permitAll().antMatchers("/login/captcha").permitAll()
-				.antMatchers("/login/captchavalidate").permitAll().antMatchers("/login**").permitAll()
-				.antMatchers("/error").permitAll().antMatchers("/authenticationProviders").permitAll()
+		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/error").permitAll()
 				.antMatchers("/auth-types-status").permitAll().antMatchers("/pushData/*").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
 
 				// management metrics
-				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
-				.antMatchers("/metrics").permitAll().antMatchers("/actuator/togglz").permitAll()
-				.antMatchers("/actuator**").permitAll().antMatchers("/forgotPassword").permitAll()
-				.antMatchers("/validateToken**").permitAll().antMatchers("/resetPassword").permitAll()
+				.antMatchers("/env").permitAll().antMatchers(HttpMethod.POST, "/validateToken").permitAll()
 				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
 				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
 				.httpBasic().and().csrf().disable().headers().and()
-				.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class).exceptionHandling()
 				.authenticationEntryPoint(customAuthenticationEntryPoint);
 

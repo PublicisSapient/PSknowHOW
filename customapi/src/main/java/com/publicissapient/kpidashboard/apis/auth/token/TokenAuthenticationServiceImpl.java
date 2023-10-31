@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -35,6 +36,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -79,6 +81,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
+	public static final String KNOWHOW = "KnowHow";
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	@Autowired
 	AuthenticationService authenticationService;
 	@Autowired
@@ -114,38 +118,37 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
+	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
+			HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			if (StringUtils.isBlank(authCookie.getValue())) {
+			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(KNOWHOW)) {
+				String token = userTokenAuthenticationDTO.getAuthCookie();
+				if (StringUtils.isBlank(token)) {
+					return null;
+				}
+				return createAuthentication(userTokenAuthenticationDTO, response);
+			} else {
 				return null;
 			}
-
-			String token = authCookie.getValue();
-
-			if (null == token) {
-				return null;
-			}
-			return createAuthentication(token, response);
 		}
 
 	}
 
-	private Authentication createAuthentication(String token, HttpServletResponse response) {
+	private Authentication createAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
+												HttpServletResponse response) {
 		try {
-			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(token)
+			Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(userTokenAuthenticationDTO.getAuthCookie())
 					.getBody();
 			String username = claims.getSubject();
 			Collection<? extends GrantedAuthority> authorities = getAuthorities(
 					claims.get(ROLES_CLAIM, Collection.class));
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
-			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			List<UserTokenData> userTokenData = userTokenReopository.findAllByUserName(username);
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(userTokenData));
+			Date tokenExpiration = claims.getExpiration();
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(tokenExpiration));
 
 			return authentication;
 
@@ -226,10 +229,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String setUpdateAuthFlag(List<UserTokenData> userTokenDataList) {
-		UserTokenData userTokenData = getLatestUser(userTokenDataList);
-		if (userTokenData != null) {
-			String expiryDate = userTokenData.getExpiryDate();
+	public String setUpdateAuthFlag(Date tokenExpiration) {
+		if (tokenExpiration != null ) {
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+			String expiryDate = dateFormat.format(tokenExpiration);
+
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();

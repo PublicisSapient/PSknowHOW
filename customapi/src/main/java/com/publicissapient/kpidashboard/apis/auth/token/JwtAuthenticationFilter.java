@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
+/*
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -63,9 +64,9 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 		}
 
 		Authentication authentication = tokenAuthenticationService.getAuthentication((HttpServletRequest) request,
-				(HttpServletResponse) response);
+				request, (HttpServletResponse) response);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);
 	}
-}
+}*/
