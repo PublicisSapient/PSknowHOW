@@ -32,11 +32,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -81,7 +81,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
+public class IterationBurnupServiceImpl extends JiraIterationKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
 	public static final String UNCHECKED = "unchecked";
 	public static final String DUE_DATE = "dueDate";
 	public static final String UPDATE_DATE = "updateDate";
@@ -111,17 +111,21 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		return KPICode.ITERATION_BURNUP.name();
 	}
 
+	@Override
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+
+		return null;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+								 Node filteredAccountData) throws ApplicationException {
+		if (Filters.getFilter(filteredAccountData.getGroupName()) == Filters.SPRINT){
+			sprintWiseLeafNodeValue(filteredAccountData, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
@@ -133,12 +137,10 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		return new HashMap<>();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
-			final String endDate, final KpiRequest kpiRequest) {
+
+
+	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, final String startDate,
+												  final String endDate, final KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
@@ -147,7 +149,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 			SprintDetails sprintDetails;
 			if (null != dbSprintDetail) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+						.get(leafNode.getAccountHierarchy().getBasicProjectConfigId());
 				// to modify sprintdetails on the basis of configuration for the project
 				List<JiraIssueCustomHistory> totalHistoryList = getJiraIssuesCustomHistoryFromBaseClass();
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
@@ -157,7 +159,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
 						dbSprintDetail, fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
-						leafNode.getProjectFilter().getBasicProjectConfigId());
+						leafNode.getAccountHierarchy().getBasicProjectConfigId());
 
 				LocalDate sprintStartDate = LocalDate.parse(sprintDetails.getStartDate().split("T")[0],
 						DATE_TIME_FORMATTER);
@@ -212,7 +214,6 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		}
 		return resultListMap;
 	}
-
 	private Set<SprintIssue> checkNullList(Set<SprintIssue> totalIssues) {
 		return CollectionUtils.isNotEmpty(totalIssues) ? totalIssues : new HashSet<>();
 	}
@@ -373,20 +374,19 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
 	 *
-	 * @param sprintLeafNodeList
+	 * @param sprintLeafNode
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings(UNCHECKED)
-	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
+
 		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
+		latestSprintNode.add(sprintLeafNode);
+		Object basicProjectConfigId = sprintLeafNode.getAccountHierarchy().getBasicProjectConfigId();
+		String sprintID = sprintLeafNode.getAccountHierarchy().getNodeId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
@@ -448,9 +448,9 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 						addedIssuesMap, processedAllIssues, date, sprintDetails, maximumRemovalDate);
 				Long plannedDateWiseTypeCount = processFieldWiseeIssues(processedAllIssues, date,
 						processedPlannedIssues, DUE_DATE);
-				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, latestSprint.getId(), OVERALL_SCOPE));
+				dataCountList.add(getDataCountObject(dueDateWiseTypeCountMap, sprintID, OVERALL_SCOPE));
 				dataCountList
-						.add(getDataCountObject(plannedDateWiseTypeCount, latestSprint.getId(), PLANNED_COMPLETION));
+						.add(getDataCountObject(plannedDateWiseTypeCount, sprintID, PLANNED_COMPLETION));
 				if (ObjectUtils.isNotEmpty(maxCompletionDate)
 						&& (date.isBefore(maxCompletionDate) || date.isEqual(maxCompletionDate))) {
 					List<JiraIssue> completedIssues = completedIssueMap.getOrDefault(date, new ArrayList<>());
@@ -462,13 +462,13 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 					completedIssues.removeAll(removedFromClosed.getOrDefault(date, new HashSet<>()));
 					Long closedDateWiseCount = processFieldWiseeIssues(completedIssues, date, processCompletedIssues,
 							UPDATE_DATE);
-					dataCountList.add(getDataCountObject(closedDateWiseCount, latestSprint.getId(), ACTUAL_COMPLETION));
+					dataCountList.add(getDataCountObject(closedDateWiseCount, sprintID, ACTUAL_COMPLETION));
 				}
 				if (ObjectUtils.isNotEmpty(minimumpredicateddate)
 						&& (date.isEqual(minimumpredicateddate) || date.isAfter(minimumpredicateddate))) {
 					pcdIssues.addAll(potentialDelay.getOrDefault(date, new ArrayList<>()));
 					dataCountList.add(
-							getDataCountObject((long) pcdIssues.size(), latestSprint.getId(), PREDICTED_COMPLETION));
+							getDataCountObject((long) pcdIssues.size(), sprintID, PREDICTED_COMPLETION));
 				}
 
 				dataCountGroup.setFilter(date.toString());
@@ -635,5 +635,6 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 		dataCount.setValue(value);
 		return dataCount;
 	}
+
 
 }
