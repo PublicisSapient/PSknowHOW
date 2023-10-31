@@ -23,38 +23,26 @@
 export const features = [
     // to test service
     {
-        'featureName': 'Daily Standup',
-        'enabled': true,
-        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
-        'personas': []
+        'name': 'Daily Standup',
+        'enabled': true
     },
     // to test directive
     {
-        'featureName': 'Developer',
-        'enabled': true,
-        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
-        'personas': []
+        'name': 'Developer',
+        'enabled': true
     },
     // to test route guard
     {
-        'featureName': 'Config',
-        'enabled': true,
-        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
-        'personas': []
+        'name': 'Config',
+        'enabled': true
     },
     // to test child module
     {
-        'featureName': 'Profile',
-        'enabled': true,
-        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
-        'personas': []
+        'name': 'Profile',
+        'enabled': true
     },
     {
-        'featureName': 'GrantRequests',
-        'enabled': true,
-        'roles': ['superAdmin', 'projectAdmin', 'projectViewer', 'roleViewer'],
-        'personas': []
+        'name': 'GrantRequests',
+        'enabled': true
     }
-
-
 ];

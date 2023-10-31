@@ -122,10 +122,10 @@ import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
 /******************************************************/
 
-export function initializeAppFactory(http: HttpClient, featureToogleService: FeatureFlagsService) {
+export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
     if (!environment.production) {
         return async () => {
-            return featureToogleService.loadConfig();
+            return featureToggleService.loadConfig();
         }
     } else {
         return async () => {
@@ -136,7 +136,7 @@ export function initializeAppFactory(http: HttpClient, featureToogleService: Fea
                 }));
 
             await env$.toPromise().then(res => {
-                featureToogleService.loadConfig();
+                featureToggleService.loadConfig();
             });
         };
     }
