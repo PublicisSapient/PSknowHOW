@@ -44,6 +44,8 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 	@Override
 	public ConfigDetails getConfigDetails() {
 		ConfigDetails configDetails = new ConfigDetails();
+		Boolean isRepoToolFlag = customApiConfig.getIsRepoToolEnable() == null ? Boolean.FALSE
+				: customApiConfig.getIsRepoToolEnable();
 		DateRangeFilter dateRangeFilter = new DateRangeFilter(customApiConfig.getDateRangeFilterTypes(),
 				customApiConfig.getDateRangeFilterCounts());
 		configDetails.setKpiWiseAggregationType(configHelperService.calculateCriteria());
@@ -51,7 +53,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
-		configDetails.setRepoToolFlag(customApiConfig.getIsRepoToolEnable());
+		configDetails.setRepoToolFlag(isRepoToolFlag);
 		return configDetails;
 	}
 
