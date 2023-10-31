@@ -221,6 +221,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
                 this.noOfDataPoints = filterData['noOfDataPoints'] || 5;
+                this.service.setGlobalConfigData(filterData);
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {

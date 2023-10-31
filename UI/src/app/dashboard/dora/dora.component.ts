@@ -106,6 +106,7 @@ export class DoraComponent implements OnInit {
     this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
         this.tooltip = filterData;
+        this.service.setGlobalConfigData(filterData);
       }
     });
 

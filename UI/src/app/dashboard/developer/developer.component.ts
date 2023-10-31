@@ -186,6 +186,7 @@ export class DeveloperComponent implements OnInit {
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
           this.tooltip = filterData;
+          this.service.setGlobalConfigData(filterData);
         }
       });
 

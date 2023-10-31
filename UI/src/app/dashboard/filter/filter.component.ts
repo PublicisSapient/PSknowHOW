@@ -260,6 +260,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+        this.service.setGlobalConfigData(filterData);
         if (this.selectedTab.toLowerCase() === 'developer') {
           this.selectedDayType = 'Days';
           // different date filter for developer tab

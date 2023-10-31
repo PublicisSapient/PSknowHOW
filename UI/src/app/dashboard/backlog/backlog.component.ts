@@ -99,6 +99,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       .subscribe(filterData => {
         if (filterData[0] !== 'error') {
           this.tooltip = filterData;
+          this.service.setGlobalConfigData(filterData);
         }
       });
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {

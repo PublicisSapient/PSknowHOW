@@ -337,6 +337,12 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }));
 
+    this.httpService.getConfigDetails().subscribe(filterData => {
+      if (filterData[0] !== 'error') {
+        this.service.setGlobalConfigData(filterData);
+      }
+  });
+
 
     this.service.getEmptyData().subscribe((val) => {
       if (val) {
