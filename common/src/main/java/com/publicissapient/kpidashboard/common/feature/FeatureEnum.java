@@ -9,8 +9,12 @@ public enum FeatureEnum implements Feature {
     @Label("Custom-api feature 1")
     FEATURE_1,
 
-    @Label("Custom-api feature 2")
-    FEATURE_2,
+    @Label("Custom-api Daily Standup")
+    DAILY_STANDUP,
+
+    @Label("Custom-api Project List")
+    ProjectList,
+
     @Label("Jira feature")
     FEATURE_3;
 
