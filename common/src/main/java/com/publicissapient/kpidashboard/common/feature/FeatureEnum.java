@@ -12,9 +12,6 @@ public enum FeatureEnum implements Feature {
     @Label("Custom-api Daily Standup")
     DAILY_STANDUP,
 
-    @Label("Custom-api Project List")
-    ProjectList,
-
     @Label("Jira feature")
     FEATURE_3;
 
