@@ -496,8 +496,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				iterationKpiModalValue.setDevCompletionDateInTime(
 						getDevCompletionDateInTime(issueHistory, fieldMapping.getJiraDevDoneStatusKPI154()));
 
+				if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList().size() > 1)
+					iterationKpiModalValue.setSpill(true);
+
 				getMaxCompleteMaxTestDevStartTime(inSprintStatusLogs, fieldMapping, iterationKpiModalValue,
-						closedStatus, jiraIssue);
+						closedStatus, jiraIssue, sprintStartDateTime.toString());
 
 				setPCDandDelay(iterationKpiModalValue, issueWiseDelay, jiraIssue);
 				iterationKpiModalValue.setStatusLogGroup(
@@ -521,8 +524,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 					iterationKpiModalValue.setEpicName(v);
 					return v;
 				});
-				if (CollectionUtils.isNotEmpty(jiraIssue.getSprintIdList()) && jiraIssue.getSprintIdList().size() > 1)
-					iterationKpiModalValue.setSpill(true);
+
 				if (MapUtils.isNotEmpty(linkedSubTasks))
 					linkedSubTasks.computeIfPresent(jiraIssue.getNumber(), (k, v) -> {
 						iterationKpiModalValue.setSubTask(v);
@@ -554,8 +556,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void getMaxCompleteMaxTestDevStartTime(List<JiraHistoryChangeLog> filterStatusUpdationLogs,
-			FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus,
-			JiraIssue jiraIssue) {
+												   FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus,
+												   JiraIssue jiraIssue, String sprintStartDateInTime) {
 
 		Set<String> testStatus = fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
@@ -583,6 +585,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 			getLatestCycleStatusMap(testStatus, statusUpdationLog, testClosedStatusMap, activityLocalDate);
 		}
+
+		if(StringUtils.isNotEmpty(iterationKpiModalValue.getActualStartDateInTime()) && iterationKpiModalValue.isSpill())
+			iterationKpiModalValue.setActualStartDateInTime(sprintStartDateInTime);
 
 		// Getting the max date of closed and test status.
 		iterationKpiModalValue.setActualCompletionDateInTime(closedStatusDateMap.values().stream()
