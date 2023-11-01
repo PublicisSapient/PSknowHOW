@@ -30,7 +30,7 @@ public abstract class JiraReleaseKPIService<R, S, T> implements ApplicationKPISe
     @Autowired
     private CacheService cacheService;
     @Autowired
-    private JiraServiceR jiraService;
+    private JiraReleaseServiceR jiraService;
 
     /**
      * Gets qualifier type
@@ -75,21 +75,6 @@ public abstract class JiraReleaseKPIService<R, S, T> implements ApplicationKPISe
         return (double) Math.round(value * 100) / 100;
     }
 
-    public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
-        return jiraService.getJiraIssuesForCurrentSprint().stream()
-                .filter(jiraIssue -> numbersList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
-    }
-
-    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass(List<String> numbersList) {
-        return jiraService.getJiraIssuesCustomHistoryForCurrentSprint().stream()
-                .filter(jiraIssueCustomHistory -> numbersList.contains(jiraIssueCustomHistory.getStoryID()))
-                .collect(Collectors.toList());
-    }
-
-    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
-        return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
-    }
-
     public List<JiraIssue> getBaseReleaseJiraIssues() {
         return jiraService.getJiraIssuesForSelectedRelease();
     }
@@ -128,10 +113,6 @@ public abstract class JiraReleaseKPIService<R, S, T> implements ApplicationKPISe
 
     public List<String> getReleaseList() {
         return jiraService.getReleaseList();
-    }
-
-    public List<JiraIssue> getJiraIssuesFromBaseClass() {
-        return jiraService.getJiraIssuesForCurrentSprint();
     }
 
 }

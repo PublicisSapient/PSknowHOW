@@ -320,6 +320,10 @@ public class JiraReleaseServiceR {
         return releaseList;
     }
 
+    public Set<JiraIssue> getSubTaskDefects() {
+        return threadSubtaskDefects.get();
+    }
+
     public class ParallelJiraServices implements Callable<Void>//extends RecursiveAction {
     {
         private static final long serialVersionUID = 1L;
