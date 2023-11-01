@@ -111,7 +111,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
+   	cookieUtil.addSameSiteCookieAttribute(response);
 		return data;
 	}
 
@@ -257,8 +257,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
-			if (LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
-				return Boolean.toString(true);
+			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
+			return Boolean.toString(true);
 			}
 		}
 		return Boolean.toString(false);
