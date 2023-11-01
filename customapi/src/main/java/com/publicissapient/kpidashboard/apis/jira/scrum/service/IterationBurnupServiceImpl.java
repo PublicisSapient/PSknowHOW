@@ -111,12 +111,6 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService<Map<Stri
 		return KPICode.ITERATION_BURNUP.name();
 	}
 
-	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-
-		return null;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

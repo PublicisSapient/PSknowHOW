@@ -176,9 +176,38 @@ public class JiraController {
 		return response;
 	}
 
-	@RequestMapping(value = "/jira/kpi/iteration", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/jira/iteration/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraIterationMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
+			throws Exception {// NOSONAR
+
+		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received Jira KPI request for iteration{}", kpiRequest);
+
+		long jiraRequestStartTime = System.currentTimeMillis();
+		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
+		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
+				kpiRequest.getRequestTrackerId());
+
+		if (CollectionUtils.isEmpty(kpiRequest.getKpiList())) {
+			throw new MissingServletRequestParameterException("kpiList", "List");
+		}
+
+		List<KpiElement> responseList = jiraIterationService.process(kpiRequest);
+		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
+
+		log.info("");
+		MDC.clear();
+		if (responseList.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
+		} else {
+			return ResponseEntity.ok().body(responseList);
+		}
+	}
+
+	@RequestMapping(value = "/jira/release/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
+	public ResponseEntity<List<KpiElement>> getJiraReleaseMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
 			throws Exception {// NOSONAR
 
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());

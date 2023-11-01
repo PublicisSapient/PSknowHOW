@@ -58,6 +58,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
+import org.springframework.stereotype.Component;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -71,7 +72,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
  *            Bind DB data with type
  * @author tauakram
  */
-public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R, S, T> {
+public abstract class JiraIterationKPIService<R, S, T> implements ApplicationKPIService<R, S, T> {
 
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
@@ -88,24 +89,9 @@ public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R,
 	 */
 	public abstract String getQualifierType();
 
-//	/**
-//	 * Gets Kpi data based on kpi request
-//	 *
-//	 * @param kpiRequest
-//	 * @param kpiElement
-//	 * @param treeAggregatorDetail
-//	 * @return kpi data
-//	 * @throws ApplicationException
-//	 */
-////	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-////			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
-	public  KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								  Node filteredAccountData) throws ApplicationException
-	{
-		return null;
-
-	}
+	public abstract KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+										  Node filteredAccountData) throws ApplicationException;
 	/**
 	 * Returns API Request tracker Id to be used for logging/debugging and using it
 	 * for maintaining any sort of cache.
@@ -116,35 +102,29 @@ public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R,
 		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
 	}
 
-	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using it
-	 * for maintaining any sort of cache.
-	 *
-	 * @return Kanban Request Tracker Id
-	 */
 	public String getKanbanRequestTrackerId() {
 		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRAKANBAN.name());
 	}
-
-	/**
-	 * This method populates KPI Element with Validation data. It will be triggered
-	 * only for request originated to get Excel data.
-	 *
-	 * @param kpiElement
-	 *            KpiElement
-	 * @param requestTrackerId
-	 *            request id
-	 * @param validationDataKey
-	 *            validation data key
-	 * @param validationDataMap
-	 *            validation data map
-	 * @param storyIdList
-	 *            story id list
-	 * @param sprintWiseDefectList
-	 *            sprints defect list
-	 * @param storyPointList
-	 *            the story point list
-	 */
+//
+//	/**
+//	 * This method populates KPI Element with Validation data. It will be triggered
+//	 * only for request originated to get Excel data.
+//	 *
+//	 * @param kpiElement
+//	 *            KpiElement
+//	 * @param requestTrackerId
+//	 *            request id
+//	 * @param validationDataKey
+//	 *            validation data key
+//	 * @param validationDataMap
+//	 *            validation data map
+//	 * @param storyIdList
+//	 *            story id list
+//	 * @param sprintWiseDefectList
+//	 *            sprints defect list
+//	 * @param storyPointList
+//	 *            the story point list
+//	 */
 	public void populateValidationDataObject(KpiElement kpiElement, String requestTrackerId, String validationDataKey,
 			Map<String, ValidationData> validationDataMap, List<String> storyIdList,
 			List<JiraIssue> sprintWiseDefectList, List<String> storyPointList) {
@@ -158,21 +138,6 @@ public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R,
 			validationDataMap.put(validationDataKey, validationData);
 			kpiElement.setMapOfSprintAndData(validationDataMap);
 		}
-	}
-
-	public Map<String, Double> getLastNMonth(int count) {
-		Map<String, Double> lastNMonth = new LinkedHashMap<>();
-		DateTime currentDate = DateTime.now();
-		String currentDateStr = currentDate.getYear() + Constant.DASH + currentDate.getMonthOfYear();
-		lastNMonth.put(currentDateStr, 0.0);
-		DateTime lastMonth = DateTime.now();
-		for (int i = 1; i < count; i++) {
-			lastMonth = lastMonth.minusMonths(1);
-			String lastMonthStr = lastMonth.getYear() + Constant.DASH + lastMonth.getMonthOfYear();
-			lastNMonth.put(lastMonthStr, 0.0);
-
-		}
-		return lastNMonth;
 	}
 
 	public long calcWeekDays(final LocalDate start, final LocalDate end) {
@@ -240,28 +205,28 @@ public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R,
 		}
 		return devCompleteDate;
 	}
-
-	/**
-	 * to maintain values upto 2 places of decimal
-	 * 
-	 * @param value
-	 * @return
-	 */
+//
+////	/**
+////	 * to maintain values upto 2 places of decimal
+////	 *
+////	 * @param value
+////	 * @return
+////	 */
 	public double roundingOff(double value) {
 		return (double) Math.round(value * 100) / 100;
 	}
-
-	/**
-	 * For Assigning IterationKPiData
-	 * 
-	 * @param label
-	 * @param fieldMapping
-	 * @param issueCount
-	 * @param storyPoint
-	 * @param originalEstimate
-	 * @param modalvalue
-	 * @return
-	 */
+////
+////	/**
+////	 * For Assigning IterationKPiData
+////	 *
+////	 * @param label
+////	 * @param fieldMapping
+////	 * @param issueCount
+////	 * @param storyPoint
+////	 * @param originalEstimate
+////	 * @param modalvalue
+////	 * @return
+////	 */
 	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
 			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
 		IterationKpiData iterationKpiData;
@@ -299,63 +264,6 @@ public abstract class JiraIterationKPIService<R, S, T> extends JiraKPIService<R,
 
 	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
 		return jiraIterationServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
-	}
-
-	public List<JiraIssue> getBaseReleaseJiraIssues() {
-		return jiraIterationServiceR.getJiraIssuesForSelectedRelease();
-	}
-
-	public Set<JiraIssue> getBaseReleaseSubTask() {
-		return jiraIterationServiceR.getSubTaskDefects();
-	}
-
-	public List<JiraIssue> getFilteredReleaseJiraIssuesFromBaseClass(FieldMapping fieldMapping) {
-		List<JiraIssue> filteredJiraIssue = new ArrayList<>();
-		List<JiraIssue> subtaskDefects = new ArrayList<>();
-		List<String> defectType = new ArrayList<>();
-		List<JiraIssue> jiraIssuesForCurrentRelease = jiraIterationServiceR.getJiraIssuesForSelectedRelease();
-		Set<JiraIssue> defectsList = jiraIterationServiceR.getSubTaskDefects();
-		if (CollectionUtils.isNotEmpty(defectsList)) {
-			subtaskDefects.addAll(defectsList);
-			subtaskDefects.removeIf(jiraIssuesForCurrentRelease::contains);
-			filteredJiraIssue = subtaskDefects;
-		}
-
-		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype())
-				&& CollectionUtils.isNotEmpty(jiraIssuesForCurrentRelease)) {
-			defectType.add(NormalizedJira.DEFECT_TYPE.getValue());
-			defectType.addAll(fieldMapping.getJiradefecttype());
-			List<JiraIssue> finalFilteredJiraIssue = filteredJiraIssue;
-			finalFilteredJiraIssue.addAll(jiraIssuesForCurrentRelease.stream()
-					.filter(jiraIssue -> defectType.contains(jiraIssue.getTypeName())).collect(Collectors.toList()));
-		} else
-			filteredJiraIssue = jiraIssuesForCurrentRelease;
-		return filteredJiraIssue;
-	}
-
-	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass() {
-		return jiraIterationServiceR.getJiraIssuesForCurrentSprint();
-	}
-
-	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
-		return jiraIterationServiceR.getJiraIssueReleaseForProject();
-	}
-
-	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-		overAllmodalValues.add(iterationKpiModalValue);
-		modalValues.add(iterationKpiModalValue);
-	}
-
-	public List<String> getReleaseList() {
-		return jiraIterationServiceR.getReleaseList();
 	}
 
 	public List<JiraIssue> getJiraIssuesFromBaseClass() {
