@@ -48,24 +48,25 @@ public class TokenAuthenticationController {
 
 	@PostMapping(value = "/validateToken")
 	public ResponseEntity<ServiceResponse> validateToken(
-			@Valid @RequestBody UserTokenAuthenticationDTO tokenAuthenticationDTO, HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.getAuthentication(tokenAuthenticationDTO, response);
+			@Valid @RequestBody UserTokenAuthenticationDTO userData, HttpServletResponse response) {
+		Authentication authentication = tokenAuthenticationService.getAuthentication(userData, response);
 		ServiceResponse serviceResponse;
 		if (null != authentication) {
 
-			UserTokenAuthenticationDTO userData = tokenAuthenticationService.addAuthentication(response,
-					authentication);
+			userData = tokenAuthenticationService.addAuthentication(response, authentication);
 
 			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
 			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
 			if (value) {
 				serviceResponse = new ServiceResponse(true, "success_valid_token", userData);
+				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 			} else {
 				serviceResponse = new ServiceResponse(false, "token is expired", null);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			}
 		} else {
 			serviceResponse = new ServiceResponse(false, "Unauthorized", null);
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 	}
 }

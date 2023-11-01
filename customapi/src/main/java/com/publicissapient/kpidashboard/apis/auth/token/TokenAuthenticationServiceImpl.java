@@ -107,7 +107,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
 		data.setUserName(authentication.getName());
-		data.setAuthCookie(jwt);
+		data.setAuthToken(jwt);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		response.addCookie(cookie);
@@ -124,7 +124,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
 			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(KNOWHOW)) {
-				String token = userTokenAuthenticationDTO.getAuthCookie();
+				String token = userTokenAuthenticationDTO.getAuthToken();
 				if (StringUtils.isBlank(token)) {
 					return null;
 				}

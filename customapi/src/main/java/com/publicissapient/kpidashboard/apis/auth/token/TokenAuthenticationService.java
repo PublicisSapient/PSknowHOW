@@ -42,10 +42,8 @@ public interface TokenAuthenticationService {
 	/**
 	 * Add authentication.
 	 *
-	 * @param response
-	 *            the response
-	 * @param authentication
-	 *            the authentication
+	 * @param response       the response
+	 * @param authentication the authentication
 	 */
 	UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication);
 

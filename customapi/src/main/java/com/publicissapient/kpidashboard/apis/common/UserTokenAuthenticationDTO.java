@@ -36,6 +36,6 @@ import lombok.Setter;
 public class UserTokenAuthenticationDTO {
 
 	private String userName;
-	private String authCookie;
+	private String authToken;
 	private String resource;
 }
