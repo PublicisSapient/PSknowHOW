@@ -429,15 +429,18 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 	@Override
-	public List<JiraIssue> findIssuesWithTrueField(Map<String, List<String>> mapOfFilters, String fieldName) {
+	public List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag, String dateFrom, String dateTo) {
+
+		String startDate = dateFrom + START_TIME;
+		String endDate = dateTo + END_TIME;
+
 
 		Criteria criteria = new Criteria();
 
-		// map of common filters Project
 		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
-
-		// field to check for true
-		criteria = criteria.and(fieldName).is(Boolean.TRUE);
+		criteria = criteria.and(TICKET_CREATED_DATE_FIELD).gte(startDate).lte(endDate);
+		// Field to check for true
+		criteria = criteria.and(fieldName).is(flag);
 
 		Query query = new Query(criteria);
 		query.fields().include(NUMBER);

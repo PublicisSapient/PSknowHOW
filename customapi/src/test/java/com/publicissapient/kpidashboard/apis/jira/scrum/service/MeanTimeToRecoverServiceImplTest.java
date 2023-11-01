@@ -119,8 +119,9 @@ public class MeanTimeToRecoverServiceImplTest {
 
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		jiraIssueList = jiraIssueDataFactory.getJiraIssues();
-		JiraIssueHistoryDataFactory issueHistoryFactory = JiraIssueHistoryDataFactory.newInstance();
-		issueCustomHistoryList = issueHistoryFactory.getJiraIssueCustomHistory();
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
+				.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
+		issueCustomHistoryList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
 
 		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 		projectConfig.setId(new ObjectId("6335363749794a18e8a4479b"));
@@ -149,7 +150,6 @@ public class MeanTimeToRecoverServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		when(jiraIssueRepository.findIssuesWithTrueField(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -174,7 +174,7 @@ public class MeanTimeToRecoverServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueRepository.findIssuesWithTrueField(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -202,7 +202,7 @@ public class MeanTimeToRecoverServiceImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		// Correct usage of argument matcher
-		when(jiraIssueRepository.findIssuesWithTrueField(Mockito.any(), Mockito.any())).thenReturn(jiraIssueList);
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(jiraIssueList);
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(issueCustomHistoryList);
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
@@ -221,7 +221,7 @@ public class MeanTimeToRecoverServiceImplTest {
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		List<Node> leafNodeList = new ArrayList<>();
 		leafNodeList = KPIHelperUtil.getLeafNodes(treeAggregatorDetail.getRoot(), leafNodeList);
-		when(jiraIssueRepository.findIssuesWithTrueField(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>());
+//		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(new ArrayList<>());
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
@@ -239,7 +239,7 @@ public class MeanTimeToRecoverServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
-		when(jiraIssueRepository.findIssuesWithTrueField(Mockito.any(), Mockito.any())).thenReturn(new ArrayList<>());
+		when(jiraIssueRepository.findIssuesWithBoolean(Mockito.anyMap(), Mockito.anyString(),Mockito.anyBoolean(), Mockito.anyString(), Mockito.anyString())).thenReturn(new ArrayList<>());
 		when(jiraIssueCustomHistoryRepository.findIssuesByCreatedDateAndType(any(), any(), any(), any()))
 				.thenReturn(new ArrayList<>());
 		when(meanTimeToRecoverService.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);

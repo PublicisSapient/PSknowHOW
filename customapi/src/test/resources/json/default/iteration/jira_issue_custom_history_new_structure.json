@@ -8,10 +8,10 @@
     "createdDate" : "2023-04-25T19:26:31.000",
     "projectKey" : "TEST",
     "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
-    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "statusUpdationLog" : [
       {
-        "changedFrom" : "",
+        "changedFrom" : "Closed",
         "changedTo" : "Open",
         "updatedOn" : "2023-04-25T19:26:31.000"
       },
@@ -81,7 +81,7 @@
     "createdDate" : "2023-05-22T18:28:39.000",
     "projectKey" : "TEST",
     "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
-    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "statusUpdationLog" : [
       {
         "changedFrom" : "",

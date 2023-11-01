@@ -153,7 +153,7 @@
     "jiraIssueTypeNamesKPI151": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI152": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraDodKPI166": [ "Done", "Closed" ],
-    "jiraStoryIdentificationKPI166" : [ "Story", "Enabler Story" ]
-
+    "jiraStoryIdentificationKPI166" : [ "Story", "Enabler Story" ],
+    "jiraProductionIncidentIdentification": "Labels"
   }
 ]

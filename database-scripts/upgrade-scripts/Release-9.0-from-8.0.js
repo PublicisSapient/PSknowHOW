@@ -84,7 +84,7 @@ db.field_mapping_structure.insertMany([
                 "fieldType": "chips",
                 "filterGroup": ["CustomField", "Labels"],
                 "tooltip": {
-                    "definition": "Provide label name to identify Production IncidentProduction IncideProd_Incidentxample: Clone_by_QA <hr>"
+                    "definition": "Provide label name to identify Production Incident Example: PROD_INCIDENT <hr>"
                 }
             }
         ]

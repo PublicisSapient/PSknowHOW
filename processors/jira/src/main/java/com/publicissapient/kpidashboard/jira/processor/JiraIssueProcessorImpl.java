@@ -971,7 +971,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				if (null != featureConfig.getJiraProductionIncidentIdentification() && featureConfig
 						.getJiraProductionIncidentIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
 					List<String> commonLabel = issue.getLabels().stream()
-							.filter(x -> featureConfig.getJiraBugRaisedByQAValue().contains(x))
+							.filter(x -> featureConfig.getJiraProdIncidentRaisedByValue().contains(x))
 							.collect(Collectors.toList());
 					if (CollectionUtils.isNotEmpty(commonLabel)) {
 						feature.setProductionIncident(true);
@@ -979,7 +979,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				} else feature.setProductionIncident(null != featureConfig.getJiraProductionIncidentIdentification()
                         && featureConfig.getJiraProductionIncidentIdentification().trim()
                         .equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-                        && fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()) != null
+                        && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
                         && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue() != null
                         && isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraProdIncidentRaisedByValue(),
                         fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue(), null));
