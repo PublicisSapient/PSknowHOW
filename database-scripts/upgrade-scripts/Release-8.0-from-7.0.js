@@ -3483,11 +3483,11 @@ db.getCollection('field_mapping_structure').insertMany([
             },
             "options": [{
                  "label": "On",
-                 "value": true
+                 "value": "true"
             },
             {
                  "label": "Off",
-                 "value": false
+                 "value": "false"
             }
             ]
     },
