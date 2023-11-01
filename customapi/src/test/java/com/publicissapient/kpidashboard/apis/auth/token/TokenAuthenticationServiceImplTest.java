@@ -38,6 +38,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
@@ -64,7 +65,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessReque
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAuthenticationServiceImplTest {

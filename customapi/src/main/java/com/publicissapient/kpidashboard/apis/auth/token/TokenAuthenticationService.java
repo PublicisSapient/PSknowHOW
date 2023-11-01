@@ -25,10 +25,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import org.json.simple.JSONObject;
 import org.springframework.security.core.Authentication;
 
+import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
@@ -47,16 +47,24 @@ public interface TokenAuthenticationService {
 	 * @param authentication
 	 *            the authentication
 	 */
-	void addAuthentication(HttpServletResponse response, Authentication authentication);
+	UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication);
 
 	/**
 	 * Gets authentication.
 	 *
-	 * @param request            the request
-	 * @param httpServletRequest
+	 * @param request
+	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletRequest httpServletRequest, HttpServletResponse response);
+	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletResponse response);
+
+	/**
+	 *  validate token
+	 * @param httpServletRequest
+	 * @param response
+	 * @return
+	 */
+	Authentication validateAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse response);
 
 	/**
 	 * This method returns Projects related to user

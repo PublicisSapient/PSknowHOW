@@ -132,6 +132,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
 				.httpBasic().and().csrf().disable().headers().and()
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class).exceptionHandling()
 				.authenticationEntryPoint(customAuthenticationEntryPoint);
