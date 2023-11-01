@@ -3886,7 +3886,7 @@
     "calculateMaturity": false,
     "kanban": false
   }
-  ,{
+,{
   "kpiId": "kpi139",
   "kpiName": "Refinement Rejection Rate",
   "kpiUnit": "Number",
@@ -3910,31 +3910,31 @@
   "isAdditionalFilterSupport": true,
   "calculateMaturity": false
 },
-{
-  "kpiId": "kpi145",
-  "kpiName": "Release Progress",
-  "maxValue": "",
-  "kpiUnit": "Count",
-  "isDeleted": "False",
-  "defaultOrder": 1,
-  "kpiCategory": "Release",
-  "kpiSource": "Jira",
-  "groupId": 9,
-  "thresholdValue": "",
-  "kanban": false,
-  "chartType": "horizontalPercentBarChart",
-  "kpiInfo": {
-    "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+  {
+    "kpiId": "kpi145",
+    "kpiName": "Release Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
   },
-  "xAxisLabel": "",
-  "yAxisLabel": "",
-  "isPositiveTrend": true,
-  "showTrend": false,
-  "isAdditionalFilterSupport": false,
-  "kpiFilter": "dropdown",
-  "boxType": "chart",
-  "calculateMaturity": false
- },
   {
     "kpiId": "kpi138",
     "kpiName": "Backlog Readiness Efficiency",
@@ -3969,29 +3969,29 @@
     "boxType": "3_column",
     "calculateMaturity": false
   },
- {
-   "kpiId": "kpi146",
-   "kpiName": "Flow Distribution",
-   "kpiUnit": "",
-   "isDeleted": "False",
-   "defaultOrder": 4,
-   "kpiCategory": "Backlog",
-   "kpiSource": "Jira",
-   "groupId": 2,
-   "thresholdValue": "",
-   "kanban": false,
-   "chartType": "stacked-area",
-   "kpiInfo": {
-     "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
-   },
-   "xAxisLabel": "Time",
-   "yAxisLabel": "Count",
-   "isPositiveTrend": false,
-   "kpiFilter": "",
-   "showTrend": false,
-   "aggregationCriteria": "sum",
-   "isAdditionalFilterSupport": false,
-   "calculateMaturity": false
+  {
+    "kpiId": "kpi146",
+    "kpiName": "Flow Distribution",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+      "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi148",
@@ -4273,6 +4273,57 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi165",
+    "kpiName": " EpicProgress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi169",
+    "kpiName": "Epic Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 5,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "It depicts the progress of each Feature in a release in terms of total count and %age completion."
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false,
+    "kpiSubCategory": "Epic View"
   },
   {
     "kpiId": "kpi166",

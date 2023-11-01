@@ -3,12 +3,15 @@
     height: 290px;
     width: 100%;
     margin-top: 1rem;
-    display: flex;
+    /* display: flex; */
     justify-content: center;
 }
 
 :host ::ng-deep.chart-container{
   position: relative;
+  height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 :host ::ng-deep.tooltip{
@@ -53,4 +56,11 @@
     display: none;
     margin: 10px;
     cursor: pointer;
+  }
+
+  :host::ng-deep .legend_item {
+    padding: 0;
+  } 
+  div.normal-legend{
+    height: auto;
   }

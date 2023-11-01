@@ -50,6 +50,7 @@ public final class CommonConstant {
 	public static final String TICKET_COUNT_ISSUE_TYPE = "ticketCountIssueType";
 
 	public static final String FIRST_STATUS = "firststatus";
+	public static final String FIRST_DEV_STATUS = "firstDevstatus";
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
 	public static final String FUTURE = "FUTURE";

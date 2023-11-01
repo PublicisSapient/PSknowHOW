@@ -19,13 +19,17 @@
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service.service;
 
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -88,7 +92,8 @@ public class FieldMappingServiceImplTest {
 	@Test
 	public void getFieldMappingSuccess() {
 		FieldMapping fieldMapping = createFieldMappingScrum();
-
+		Map<ObjectId, FieldMapping> map =  new HashMap<>();
+		map.put(new ObjectId("5d0533b0ff45ea9c730bb718"),fieldMapping);
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5d0533b0ff45ea9c730bb718"));
 		Optional<ProjectToolConfig> projectToolConfigOpt = Optional.of(projectToolConfig);
@@ -99,7 +104,6 @@ public class FieldMappingServiceImplTest {
 
 		Set<String> configIds = new HashSet<>();
 		configIds.add("5d0533b0ff45ea9c730bb718");
-
 		when(fieldMappingRepository.findByProjectToolConfigId(Mockito.any(ObjectId.class))).thenReturn(fieldMapping);
 		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718")).thenReturn(projectToolConfig);
 		when(projectBasicConfigRepository.findById(Mockito.any())).thenReturn(projectBasicConfigOpt);
@@ -308,10 +312,8 @@ public class FieldMappingServiceImplTest {
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
 				.thenReturn(createProjectBasicConfig(false));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
-				Mockito.any(String.class))).thenReturn(createProcessorExecutionTraceLog());
-		when(projectToolConfigRepository.findById("5d0533b0ff45ea9c730bb718"))
-				.thenReturn(createProjectToolConfigOpt().get());
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class),
+				any())).thenReturn(Arrays.asList(createProcessorExecutionTraceLog()));
 	}
 
 	private void mockRepositoriesForKanban() {
@@ -320,8 +322,8 @@ public class FieldMappingServiceImplTest {
 		when(projectBasicConfigRepository.findById(Mockito.any(ObjectId.class)))
 				.thenReturn(createProjectBasicConfig(true));
 		when(fieldMappingRepository.save(Mockito.any(FieldMapping.class))).thenReturn(fieldMapping);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(Mockito.any(String.class),
-				Mockito.any(String.class))).thenReturn(Optional.empty());
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(Mockito.any(String.class),
+				any())).thenReturn(Collections.emptyList());
 	}
 
 	private FieldMapping createFieldMappingScrum() {
@@ -425,11 +427,10 @@ public class FieldMappingServiceImplTest {
 		return projectBasicConfigOpt;
 	}
 
-	private Optional<ProcessorExecutionTraceLog> createProcessorExecutionTraceLog() {
+	private ProcessorExecutionTraceLog createProcessorExecutionTraceLog() {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setId(new ObjectId("5fa29069c5a8470e24667c36"));
-		Optional<ProcessorExecutionTraceLog> processorExecutionTraceLogOpt = Optional.of(processorExecutionTraceLog);
-		return processorExecutionTraceLogOpt;
+		return processorExecutionTraceLog;
 	}
 
 	private Optional<ProjectToolConfig> createProjectToolConfigOpt() {

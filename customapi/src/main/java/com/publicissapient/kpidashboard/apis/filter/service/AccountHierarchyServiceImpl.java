@@ -296,7 +296,7 @@ public class AccountHierarchyServiceImpl
 	 * Check is current node is Child Node
 	 *
 	 * @param accountHierarchy
-	 * @param label
+	 * @param childAccountHierarchy
 	 * @return true if current node label is child node label
 	 */
 	private boolean isCurrentNodeChild(AccountHierarchy accountHierarchy, AccountHierarchy childAccountHierarchy) {

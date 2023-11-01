@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.basic.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,17 +61,22 @@ import com.publicissapient.kpidashboard.apis.projectconfig.fieldmapping.service.
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -130,6 +136,12 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 
 	@Autowired
 	private TestExecutionService testExecutionService;
+
+	@Autowired
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+	@Autowired
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
@@ -206,6 +218,25 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 				ProjectBasicConfig savedConfig = savedConfigOpt.get();
 				ModelMapper mapper = new ModelMapper();
 				ProjectBasicConfig basicConfig = mapper.map(projectBasicConfigDTO, ProjectBasicConfig.class);
+				if (isAssigneeUpdated(basicConfig, savedConfig)) {
+					List<ProcessorExecutionTraceLog> traceLogs = processorExecutionTraceLogRepository
+							.findByProcessorNameAndBasicProjectConfigIdIn(ProcessorConstants.JIRA,
+									Collections.singletonList(basicConfigId));
+					if (!traceLogs.isEmpty()) {
+						for (ProcessorExecutionTraceLog traceLog : traceLogs) {
+							if (traceLog != null) {
+								traceLog.setLastSuccessfulRun(null);
+								traceLog.setLastSavedEntryUpdatedDateByType(new HashMap<>());
+							}
+						}
+						processorExecutionTraceLogRepository.saveAll(traceLogs);
+					}
+					AssigneeDetails assigneeDetails = assigneeDetailsRepository
+							.findByBasicProjectConfigId(basicConfigId);
+					if (assigneeDetails != null) {
+						assigneeDetailsRepository.delete(assigneeDetails);
+					}
+				}
 				basicConfig.setCreatedAt(savedConfig.getCreatedAt());
 				basicConfig.setUpdatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
 				ProjectBasicConfig updatedBasicConfig = basicConfigRepository.save(basicConfig);
@@ -218,6 +249,11 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 			response = new ServiceResponse(false, "Basic Config with id " + basicConfigId + " not present.", null);
 		}
 		return response;
+	}
+
+	private boolean isAssigneeUpdated(ProjectBasicConfig unsavedBasicConfig, ProjectBasicConfig savedConfig) {
+
+		return unsavedBasicConfig.isSaveAssigneeDetails() != savedConfig.isSaveAssigneeDetails();
 	}
 
 	/**

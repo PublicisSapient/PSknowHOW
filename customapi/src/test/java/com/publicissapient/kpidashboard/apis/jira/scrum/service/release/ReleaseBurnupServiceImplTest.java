@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +25,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueReleaseStatusDataFactory;
@@ -40,6 +39,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
@@ -87,9 +87,10 @@ public class ReleaseBurnupServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst().orElse(new JiraIssueCustomHistory());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		fieldMappingMap.put(new ObjectId(history.getBasicProjectConfigId()), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
 
 	}
@@ -110,6 +111,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
@@ -133,6 +135,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
@@ -156,6 +159,7 @@ public class ReleaseBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues);
 		when(jiraService.getReleaseList()).thenReturn(Arrays.asList("AP v2.0.0"));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());

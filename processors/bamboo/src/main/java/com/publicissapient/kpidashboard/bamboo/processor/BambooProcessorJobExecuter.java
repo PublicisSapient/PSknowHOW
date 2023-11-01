@@ -438,7 +438,7 @@ public class BambooProcessorJobExecuter extends ProcessorJobExecutor<BambooProce
 				bambooStart = LocalDateTime.now();
 				bambooEnd = LocalDateTime.now();
 			}
-			return endDb.isBefore(bambooEnd) && (startDb.isBefore(bambooStart)) ? false : true;
+			return !endDb.isBefore(bambooEnd) || (!startDb.isBefore(bambooStart));
 		}
 		return true;
 	}

@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +52,6 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceIm
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.EmailServerDetail;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
@@ -259,41 +259,6 @@ public class CommonServiceImplTest {
 	}
 
 	@Test
-	public void testSendNotificationEvent() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
-
-	}
-
-	@Test
-	public void testSendNotificationEventNull() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "";
-		String notKey = "key";
-		String topic = "topic";
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendNotificationEvent(emailList, customData, notSubject, notKey, topic);
-
-	}
-
-	@Test
 	public void testGetApiHost() throws UnknownHostException {
 		when(customApiConfig.getUiHost()).thenReturn("localhost");
 		when(customApiConfig.getUiPort()).thenReturn("9999");
@@ -376,44 +341,4 @@ public class CommonServiceImplTest {
 		basicConfig.setProjectName("project");
 		return basicConfig;
 	}
-
-	@Test
-	public void testSendEmailWithoutKafka() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		when(templateEngine.process(anyString(), any())).thenReturn("abc");
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		Assert.assertThrows(MailSendException.class, () -> commonService.sendEmailWithoutKafka(emailList, customData,
-				notSubject, notKey, topic, "Forgot_Password_Template"));
-
-	}
-
-	@Test
-	public void testSendEmailWithoutKafkaKeyNotFound() {
-		List<String> emailList = new ArrayList<>();
-		emailList.add("abc@xyz.com");
-		Map<String, String> customData = new HashMap<>();
-		customData.put("abc", "xyz");
-		String notSubject = "subject";
-		String notKey = "key";
-		String topic = "topic";
-		when(globalConfigRepository.findAll()).thenReturn(globalConfigs);
-		when(templateEngine.process(anyString(), any())).thenReturn(null);
-		EmailEvent emailEvent = new EmailEvent(globalConfig.getEmailServerDetail().getFromEmail(), emailList, null,
-				null, notSubject, null, customData, globalConfig.getEmailServerDetail().getEmailHost(),
-				globalConfig.getEmailServerDetail().getEmailPort());
-		notificationEventProducer.sendNotificationEvent(notKey, emailEvent, null, topic);
-		commonService.sendEmailWithoutKafka(emailList, customData, notSubject, notKey, topic,
-				"Forgot_Password_Template");
-	}
-
 }

@@ -143,7 +143,7 @@ a{
 
 body {
   background-color: #dedede;
-
+  overflow-x: hidden;
 }
 
 html {
@@ -1714,7 +1714,7 @@ a:hover {
   border: 1px solid #757575;
 }
 
-.iteration-dashboard .kpi-card-body, .backlog-dashboard .kpi-card-body{
+.iteration-dashboard .kpi-card-container .kpi-card-body {
   display: flex;
   min-height: 100px !important;
   height: 100% !important;

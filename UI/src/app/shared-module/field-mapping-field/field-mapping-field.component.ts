@@ -61,7 +61,7 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
   }
 
   resetRadioButton(fieldName) {
-    this.value = '';
+    this.value = true;
     this.setValue();
   }
 

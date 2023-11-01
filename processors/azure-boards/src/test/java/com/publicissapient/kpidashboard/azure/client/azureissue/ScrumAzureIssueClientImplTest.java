@@ -68,7 +68,7 @@ public class ScrumAzureIssueClientImplTest {
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
 	List<ProjectConfFieldMapping> projectConfFieldMappingList = new ArrayList<>();
 	List<Value> issues = new ArrayList<>();
-	List<JiraIssueCustomHistory> listJiraIssueCustomHistory = new ArrayList<>();
+
 	List<com.publicissapient.kpidashboard.common.model.azureboards.updates.Value> valueList = new ArrayList<>();
 	AccountHierarchy accountHierarchy;
 
@@ -148,7 +148,7 @@ public class ScrumAzureIssueClientImplTest {
 		when(azureProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(azureAdapter.getPageSize()).thenReturn(30);
 		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(anyString(), anyString()))
-				.thenReturn(listJiraIssueCustomHistory);
+				.thenReturn(jiraIssueCustomHistory);
 		when(azureAdapter.getIterationsModel(any())).thenReturn(azureIterationsModel);
 		when(azureAdapter.getWiqlModel(any(), any(), any(), anyBoolean())).thenReturn(azureWiqlModel);
 		when(azureProcessorConfig.getMinsToReduce()).thenReturn(30);

@@ -2563,6 +2563,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "",
     "boxType": "3_column",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2587,6 +2588,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2611,6 +2613,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2659,6 +2662,7 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "hideOverallFilter": true,
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2669,7 +2673,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 1,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2695,7 +2699,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 2,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2721,7 +2725,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 3,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2747,7 +2751,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Quality",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2809,7 +2813,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 5,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Review",
+    "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -2820,6 +2824,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -2889,6 +2894,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "multiSelectDropDown",
     "boxType": "3_column",
+    "kpiSubCategory": "Backlog Health",
     "calculateMaturity": false
   },
   {
@@ -2936,10 +2942,12 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "",
+    "kpiWidth": 100,
     "isPositiveTrend": false,
     "showTrend": false,
     "kpiFilter": "multiSelectDropDown",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": true,
   },
   {
@@ -2964,6 +2972,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -2988,6 +2997,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
+    "kpiSubCategory": "Flow KPIs",
     "calculateMaturity": false
   },
   {
@@ -3028,7 +3038,7 @@ db.getCollection('kpi_master').insertMany(
     "isDeleted": "False",
     "defaultOrder": 6,
     "kpiCategory": "Release",
-    "kpiSubCategory": "Release Progress",
+    "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
     "groupId": 9,
     "thresholdValue": "",
@@ -3039,6 +3049,7 @@ db.getCollection('kpi_master').insertMany(
     },
     "xAxisLabel": "",
     "yAxisLabel": "Count",
+    "kpiWidth": 100,
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
@@ -3068,6 +3079,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3092,6 +3104,7 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropdown",
       "boxType": "chart",
+      "kpiSubCategory": "Summary",
       "calculateMaturity": false
   },
   {
@@ -3167,6 +3180,7 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "kpiFilter": "dropdown",
     "boxType": "chart",
+    "kpiSubCategory": "Summary",
     "calculateMaturity": false
   },
   {
@@ -3575,45 +3589,126 @@ db.getCollection('kpi_master').insertMany(
      "kpiFilter":"radioButton",
      "boxType":"chart",
      "calculateMaturity":false,
+     "kpiSubCategory": "Quality",
   	 "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  },
  {
-    "kpiId": "kpi166",
-    "kpiName": "Mean Time to Recover",
-    "maxValue": "100",
-    "kpiUnit": "Hours",
+    "kpiId": "kpi165",
+    "kpiName": "Epic Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 4,
+    "defaultOrder": 5,
+    "kpiCategory": "Release",
+    "kpiSubCategory": "Value",
     "kpiSource": "Jira",
-    "kpiCategory": "Dora",
-    "groupId": 15,
-    "thresholdValue": 0,
+    "groupId": 9,
+    "thresholdValue": "",
     "kanban": false,
-    "chartType": "line",
+    "chartType": "horizontalPercentBarChart",
     "kpiInfo": {
-        "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
-        "details": [
-            {
-                "type": "paragraph",
-                "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
-            },
-            {
-                "type": "paragraph",
-                "value": "The average of all such tickets will be shown."
-            }
-        ],
-        "maturityLevels": []
+      "definition": "It depicts the progress of each epic in a release in terms of total count and %age completion."
     },
-    "xAxisLabel": "Weeks",
-    "yAxisLabel": "Hours",
-    "isPositiveTrend": false,
-    "showTrend": true,
-    "kpiFilter": "",
-    "aggregationCriteria": "sum",
-    "aggregationCircleCriteria": "average",
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "kpiWidth": 100,
+    "isPositiveTrend": true,
+    "showTrend": false,
     "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
     "calculateMaturity": false
- }
+  },
+{
+      "kpiId": "kpi169",
+      "kpiName": "Epic Progress",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 5,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 9,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+        "definition": "It depicts the progress of each epic in terms of total count and %age completion."
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "kpiWidth": 100,
+      "isPositiveTrend": true,
+      "showTrend": false,
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "multiSelectDropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiSubCategory": "Epic View"
+    },
+    {
+        "kpiId": "kpi161",
+        "kpiName": "Iteration Readiness",
+        "maxValue": "",
+        "kpiUnit": "Count",
+        "isDeleted": "False",
+        "defaultOrder": 5,
+        "kpiCategory": "Backlog",
+        "kpiSource": "Jira",
+        "groupId": 11,
+        "thresholdValue": "",
+        "kanban": false,
+        "chartType": "stackedColumn",
+        "kpiInfo": {
+          "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+        },
+        "xAxisLabel": "Sprint",
+        "yAxisLabel": "Count",
+        "isPositiveTrend": true,
+        "showTrend": false,
+        "kpiSubCategory": "Backlog Health",
+        "isAdditionalFilterSupport": false,
+        "kpiFilter": "",
+        "boxType": "chart",
+        "calculateMaturity": false
+    },
+    {
+       "kpiId": "kpi166",
+       "kpiName": "Mean Time to Recover",
+       "maxValue": "100",
+       "kpiUnit": "Hours",
+       "isDeleted": "False",
+       "defaultOrder": 4,
+       "kpiSource": "Jira",
+       "kpiCategory": "Dora",
+       "groupId": 15,
+       "thresholdValue": 0,
+       "kanban": false,
+       "chartType": "line",
+       "kpiInfo": {
+           "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+           "details": [
+               {
+                   "type": "paragraph",
+                   "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+               },
+               {
+                   "type": "paragraph",
+                   "value": "The average of all such tickets will be shown."
+               }
+           ],
+           "maturityLevels": []
+       },
+       "xAxisLabel": "Weeks",
+       "yAxisLabel": "Hours",
+       "isPositiveTrend": false,
+       "showTrend": true,
+       "kpiFilter": "",
+       "aggregationCriteria": "sum",
+       "aggregationCircleCriteria": "average",
+       "isAdditionalFilterSupport": false,
+       "calculateMaturity": false
+    }
 ]
 );
 
@@ -6900,7 +6995,7 @@ db.kpi_column_configs.insertMany([
                                     		isDefault: false
                                     	}]
                                     },
-                                    {
+{
                                         "basicProjectConfigId": null,
                                         "kpiId": "kpi166",
                                         "kpiColumnDetails": [
@@ -6954,7 +7049,7 @@ db.kpi_column_configs.insertMany([
                                             }
                                         ]
                                     }
-                                 ]);
+                                   ]);
 
 //default fields mapping structure for KPI, these fields are used to populate the config JIRA for any
 //project. these can be changed/updated in project config under setting in the KnowHOW
@@ -8856,11 +8951,11 @@ db.getCollection('field_mapping_structure').insertMany(
         },
         "options": [{
              "label": "On",
-             "value": "On"
+             "value": true
         },
         {
              "label": "Off",
-             "value": "Off"
+             "value": false
         }
         ]
     },
@@ -9219,4 +9314,5 @@ db.getCollection('field_mapping_structure').insertMany(
         "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
     }
 }
+
 ]);

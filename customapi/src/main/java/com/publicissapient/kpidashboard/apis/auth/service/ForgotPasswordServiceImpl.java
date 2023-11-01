@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
-	private CommonService commonService;
+	private NotificationService notificationService;
 
 	/**
 	 * Process forgotPassword request.
@@ -94,8 +95,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 			Map<String, String> customData = createCustomData(authentication.getUsername(), token, url,
 					customApiConfig.getForgotPasswordExpiryInterval());
 			log.info("Notification message sent to kafka with key : {}", FORGOT_PASSWORD_NOTIFICATION_KEY);
-			commonService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
-					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(), FORGOT_PASSWORD_TEMPLATE);
+			notificationService.sendEmailWithoutKafka(Arrays.asList(email), customData, customApiConfig.getEmailSubject(),
+					FORGOT_PASSWORD_NOTIFICATION_KEY, customApiConfig.getKafkaMailTopic(),FORGOT_PASSWORD_TEMPLATE);
 			return authentication;
 		}
 		return null;

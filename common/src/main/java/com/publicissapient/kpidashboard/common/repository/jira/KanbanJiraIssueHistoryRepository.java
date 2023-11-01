@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.repository.jira;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -33,16 +34,18 @@ import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHisto
 @Repository
 public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanIssueCustomHistory, ObjectId>,
 		QuerydslPredicateExecutor<KanbanIssueCustomHistory>, KanbanJiraIssueHistoryRepoCustom {
+
 	/**
-	 * Fetch feature custom history by story id.
+	 * Find by story id list.
 	 *
 	 * @param storyID
 	 *            the story id
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
-	 * @return list
+	 * @return the KanbanIssueCustomHistory
 	 */
-	List<KanbanIssueCustomHistory> findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
+	@Query(fields = "{ 'storyID' : 1, 'createdDate' : 1, 'estimate' : 1, 'bufferedEstimateTime': 1 }")
+	KanbanIssueCustomHistory findByStoryIDAndBasicProjectConfigId(String storyID, String basicProjectConfigId);
 
 	/**
 	 * Deletes all documents that matches with given projectID.
@@ -51,4 +54,6 @@ public interface KanbanJiraIssueHistoryRepository extends CrudRepository<KanbanI
 	 *            String projectID
 	 */
 	void deleteByBasicProjectConfigId(String projectID);
+
+    List<KanbanIssueCustomHistory> findByBasicProjectConfigId(String basicProjectConfigId);
 }
