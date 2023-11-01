@@ -19,6 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -171,6 +172,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 
 	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
 			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(new ObjectId(issueHistory.getBasicProjectConfigId()));
 		List<JiraHistoryChangeLog> statusUpdationLog = issueHistory.getStatusUpdationLog();
 		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 		statusUpdationLog = statusUpdationLog.stream()
@@ -178,17 +181,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
 				.collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(statusUpdationLog)) {
-			Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
-			for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
-				LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-						DATE_TIME_FORMATTER);
-				if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedTo())) {
-					if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
-						closedStatusDateMap.clear();
-					}
-					closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo(), activityDate);
-				}
-			}
+			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdationLog,
+					jiraIssueReleaseStatus, fieldMapping);
 			// Getting the min date of closed status.
 			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
 					.min(LocalDate::compareTo).orElse(null);
@@ -202,7 +196,28 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 				return v;
 			});
 			completedIssues.putIfAbsent(updatedLog, jiraIssueList);
+			completedIssues.remove(null);
 		}
+	}
+
+	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdationLog,
+			JiraIssueReleaseStatus jiraIssueReleaseStatus, FieldMapping fieldMapping) {
+		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
+		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdationLog) {
+			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+					DATE_TIME_FORMATTER);
+			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedFrom())
+					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
+				closedStatusDateMap.clear();
+			}
+			if (jiraIssueReleaseStatus.getClosedList().containsValue(jiraHistoryChangeLog.getChangedTo())) {
+				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo())) {
+					closedStatusDateMap.clear();
+				}
+				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo(), activityDate);
+			}
+		}
+		return closedStatusDateMap;
 	}
 
 	@Override
@@ -323,9 +338,9 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	/**
-	 * issue completed/added before the release version but happened to be present in
-	 * selected release then issues to be present on the first day of release start
-	 * date
+	 * issue completed/added before the release version but happened to be present
+	 * in selected release then issues to be present on the first day of release
+	 * start date
 	 */
 	private Map<LocalDate, List<JiraIssue>> prepareIssueBeforeStartDate(
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap, LocalDate startLocalDate) {
@@ -467,6 +482,8 @@ public class ReleaseBurnupServiceImpl extends JiraKPIService<Integer, List<Objec
 		overallIssues.removeAll(commonIssues);
 		List<JiraIssue> commonIssuesRemoved = (List<JiraIssue>) CollectionUtils.intersection(overallIssues,
 				removedIssues);
+		List<JiraIssue> removedThenAdded = (List<JiraIssue>) CollectionUtils.intersection(commonIssues, defaultIssues);
+		allAddedIssues.addAll(removedThenAdded);
 		allAddedIssues.removeAll(overallIssues);
 		groupedMap.put(SCOPE_REMOVED, commonIssuesRemoved);
 		groupedMap.put(SCOPE_ADDED, allAddedIssues);
