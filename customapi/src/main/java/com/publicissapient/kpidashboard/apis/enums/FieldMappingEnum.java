@@ -39,8 +39,7 @@ public enum FieldMappingEnum {
 					"productionDefectCustomField", "productionDefectIdentifier", "productionDefectValue",
 					"productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue",
 					"epicLink", "jiraSubTaskDefectType", "testingPhaseDefectCustomField", "testingPhaseDefectsIdentifier",
-					"testingPhaseDefectValue", "testingPhaseDefectComponentValue", "jiraProductionIncidentIdentification",
-					"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue")),
+					"testingPhaseDefectValue", "testingPhaseDefectComponentValue")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -188,7 +187,8 @@ public enum FieldMappingEnum {
 	KPI156("Lead Time For Change", KPISource.JIRA.name(),
 			Arrays.asList("leadTimeConfigRepoTool", "toBranchForMRKPI156" , "jiraDodKPI156" , "jiraIssueTypeKPI156")),
 	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI163")),
-	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166"));
+	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
+			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue"));
 
 	private List<String> fields;
 	private String kpiName;
