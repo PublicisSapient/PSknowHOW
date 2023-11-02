@@ -30,12 +30,12 @@ export class VerifyComponent implements OnInit, AfterViewInit {
   }
 
   validateUser(authToken, redirect_uri){
-    // let obj = {
-    //   'resource': 'knowhow',
-    //   'authToken': authToken
-    // };
+    let obj = {
+      'resource': 'knowhow',
+      'authToken': authToken
+    };
     
-    this.http.getUserValidation(authToken).subscribe((response) => {
+    this.http.getUserValidation(obj).subscribe((response) => {
       if(response && response['success']){
         this.router.navigateByUrl(redirect_uri);
       }else{
