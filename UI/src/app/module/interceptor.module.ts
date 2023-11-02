@@ -96,11 +96,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
-                                let current_uri = window.location.href;
+                                // let current_uri = window.location.href;
                                 /** redirect to central login url along with current url*/
-                                console.log("redirect_uri", current_uri);
+                                // console.log("redirect_uri", current_uri);
                                 
-                                window.location.href="http://localhost:3000?redirect_uri="+current_uri;
+                                window.location.href="http://localhost:3000";
                                 // this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }
