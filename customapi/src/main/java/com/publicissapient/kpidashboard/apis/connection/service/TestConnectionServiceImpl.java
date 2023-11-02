@@ -154,7 +154,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private String getApiForRepoTool(Connection connection) {
 		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 				.findByToolName(connection.getRepoToolProvider());
-		return repoToolsProvider.getTestApiUrl();
+		if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
+			return repoToolsProvider.getTestApiUrl() + connection.getUsername();
+		else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET))
+			return repoToolsProvider.getTestApiUrl();
+		else
+			return createApiUrl(repoToolsProvider.getTestApiUrl(), Constant.TOOL_GITLAB);
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -335,7 +340,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create API URL using base URL and API path for bitbucket
-	 * 
+	 *
 	 * @param connection
 	 *            connection
 	 *
@@ -355,7 +360,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create HTTP header with basic Authentication
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @return
@@ -387,7 +392,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Make API call to validate Credentials
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @param apiUrl
