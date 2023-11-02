@@ -20,7 +20,6 @@ package com.publicissapient.kpidashboard.apis.abac.policy;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,8 +33,7 @@ public class SimplePolicyDefinition implements PolicyDefinition {
 	ActionPolicyRuleRepository actionPolicyRuleRepository;
 	private List<ActionPolicyRule> rules;
 
-	@PostConstruct
-	private void init() {
+	public void init() {
 		rules = actionPolicyRuleRepository.findAll();
 	}
 
