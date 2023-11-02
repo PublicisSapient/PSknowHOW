@@ -47,8 +47,8 @@ public class TokenAuthenticationController {
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	@PostMapping(value = "/validateToken")
-	public ResponseEntity<ServiceResponse> validateToken(
-			@Valid @RequestBody UserTokenAuthenticationDTO userData, HttpServletResponse response) {
+	public ResponseEntity<ServiceResponse> validateToken(@Valid @RequestBody UserTokenAuthenticationDTO userData,
+			HttpServletResponse response) {
 		Authentication authentication = tokenAuthenticationService.getAuthentication(userData, response);
 		ServiceResponse serviceResponse;
 		if (null != authentication) {
