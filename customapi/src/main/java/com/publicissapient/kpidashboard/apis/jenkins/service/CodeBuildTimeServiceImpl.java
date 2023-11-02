@@ -382,9 +382,4 @@ public class CodeBuildTimeServiceImpl extends JenkinsKPIService<Long, List<Objec
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
 	}
-
-	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),KPICode.CODE_BUILD_TIME.getKpiId());
-	}
 }
