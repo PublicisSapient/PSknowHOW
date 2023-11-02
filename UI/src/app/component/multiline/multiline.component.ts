@@ -75,7 +75,7 @@ export class MultilineComponent implements OnChanges {
   }
 
   ngAfterViewInit(): void {
-    this.elemObserver.observe(this.elem);
+    this.elemObserver.observe(d3.select(this.elem).select('#graphContainer').node());
   }
 
   // Runs when property "data" changed
@@ -154,8 +154,8 @@ export class MultilineComponent implements OnChanges {
       'tickets' : 'T',
       'unit' : ''
     }
-
-    width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0;
+    const tempwidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
+    width = tempwidth - 70;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     // used to find object whose value is max on x axis
