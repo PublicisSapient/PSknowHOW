@@ -61,7 +61,7 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
   }
 
   resetRadioButton(fieldName) {
-    this.value = '';
+    this.value = true;
     this.setValue();
   }
 
@@ -74,13 +74,4 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
     this.onSearch.emit({isSingle,fieldName,type});
   }
 
-  enterNumericValue(event) {
-    if (!!event && !!event.preventDefault && event.key === '.' || event.key === 'e' || event.key === '-' || event.key === '+') {
-        event.preventDefault();
-        return;
-    }
-}
-  numericInputUpDown(event: any) {
-    this.setValue();
-  }
 }

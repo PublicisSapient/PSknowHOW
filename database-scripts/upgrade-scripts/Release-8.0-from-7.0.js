@@ -3483,11 +3483,11 @@ db.getCollection('field_mapping_structure').insertMany([
             },
             "options": [{
                  "label": "On",
-                 "value": "On"
+                 "value": "true"
             },
             {
                  "label": "Off",
-                 "value": "Off"
+                 "value": "false"
             }
             ]
     },
@@ -4409,14 +4409,6 @@ db.merge_requests.createIndex({"processorItemId":1,"createdDate":1, "fromBranch"
 db.processor_items.createIndex({"toolConfigId":1})
 
 
-db.getCollection('kpi_category_mapping').insertOne( {
-                                                    		"kpiId": "kpi168",
-                                                    		"categoryId": "categoryTwo",
-                                                    		"kpiOrder": 14,
-                                                    		"kanban": false
-                                                    	});
-
-
 
 
 // RepoTool - DTS-27526
@@ -5124,12 +5116,6 @@ db.kpi_master.bulkWrite([
             filter: { "kpiId": { $in: ["kpi150","kpi147", "kpi3"] } },
             update: { $set: { "kpiWidth": 100 } }
         },
-    },
-    {
-        updateMany: {
-            filter: { "kpiId": { $in: ["kpi150"] } },
-            update: { $set: { "defaultOrder": 1 } }
-        },
     }
 ]);
 
@@ -5143,16 +5129,30 @@ db.kpi_master.updateMany(
 db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 16 } })
 
-db.getCollection('field_mapping_structure').insertMany([{
-
-    "fieldName": "startDateCountKPI150",
-    "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
-    "fieldType": "number",
-    "section": "Issue Types Mapping",
-    "tooltip": {
-        "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
+//notificationEnabler fixed
+db.getCollection('field_mapping_structure').updateOne(
+    {"fieldName": "notificationEnabler"},
+    {
+        $set: {
+            "fieldLabel": "Processor Failure Notification",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "On/Off notification in case processor failure."
+            },
+            "options": [
+                {
+                    "label": "On",
+                    "value": true
+                },
+                {
+                    "label": "Off",
+                    "value": false
+                }
+            ]
+        }
     }
-}]);
+);
 //------------------------------Release 8.0-----------------------------------------
 //-------------Sonar Code Quality---------
 db.getCollection('kpi_master').insertOne(
