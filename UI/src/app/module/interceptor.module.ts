@@ -38,7 +38,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         const httpErrorHandler = req.headers.get('httpErrorHandler') || 'global';
         const requestArea = req.headers.get('requestArea') || 'internal';
 
-
         if (req.headers.get('httpErrorHandler')) {
             req = req.clone({ headers: req.headers.delete('httpErrorHandler') });
         }
@@ -97,7 +96,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
                                 /** redirect to central login url*/
-                                let redirect_uri = window.location.hostname;
+                                let redirect_uri = window.location.origin;
                                 window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                 // this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
