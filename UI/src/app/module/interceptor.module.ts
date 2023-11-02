@@ -96,7 +96,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
-                                let current_uri = this.router.url;
+                                let current_uri = window.location.href;
                                 /** redirect to central login url along with current url*/
                                 console.log("redirect_uri", current_uri);
                                 
