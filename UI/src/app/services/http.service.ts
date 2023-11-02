@@ -1122,9 +1122,10 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getUserValidation(data){
-    return this.http.post<object>(this.validateTokenUrl, data);
+  getUserValidation(authToken){
+    const headers = new HttpHeaders();
+    headers.append('authToken', authToken);
+    headers.append('resource', 'knowhow');
+    return this.http.post<object>(this.validateTokenUrl, { headers });
   }
-  
-
 }
