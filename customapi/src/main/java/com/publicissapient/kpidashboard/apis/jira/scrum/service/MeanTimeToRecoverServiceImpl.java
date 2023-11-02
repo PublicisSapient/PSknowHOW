@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -138,8 +139,9 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentificationKPI166()));
 			} // project for which prod incident is configured via custom or label
-			if (fieldMapping.getJiraProductionIncidentIdentification().equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-					|| fieldMapping.getJiraProductionIncidentIdentification().equalsIgnoreCase(CommonConstant.LABELS)) {
+			String jiraProductionIncidentIdentification = ObjectUtils.defaultIfNull(fieldMapping.getJiraProductionIncidentIdentification(),"");
+			if (jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+					|| jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.LABELS)) {
 				projectProdIncidentIdentifier.add(basicProjectConfigId.toString());
 			}
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
@@ -307,7 +309,9 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 */
 	private void findMeanTimeToRecover(List<JiraIssueCustomHistory> jiraIssueHistoryDataList, String weekOrMonth,
 			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise, FieldMapping fieldMapping) {
-		List<String> dodStatus = fieldMapping.getJiraDodKPI166().stream().map(String::toLowerCase)
+		List<String> jiraDodKPI166 = ObjectUtils.defaultIfNull(fieldMapping.getJiraDodKPI166(),new ArrayList<>());
+		String storyFirstStatus = ObjectUtils.defaultIfNull(fieldMapping.getStoryFirstStatus(),"");
+		List<String> dodStatus = jiraDodKPI166.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		jiraIssueHistoryDataList.forEach(jiraIssueHistoryData -> {
 			DateTime ticketClosedDate;
@@ -318,7 +322,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 				// reopened scenario
 				if (CollectionUtils.isNotEmpty(dodStatus)
 						&& dodStatus.contains(statusChangeLog.getChangedFrom().toLowerCase())
-						&& statusChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
+						&& statusChangeLog.getChangedTo().equalsIgnoreCase(storyFirstStatus)) {
 					closedStatusDateMap.clear();
 				}
 				// fist close date of last close cycle
