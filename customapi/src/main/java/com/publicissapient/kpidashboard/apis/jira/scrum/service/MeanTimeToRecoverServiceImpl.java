@@ -139,7 +139,8 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 				mapOfProjectFiltersFH.put(JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getJiraStoryIdentificationKPI166()));
 			} // project for which prod incident is configured via custom or label
-			String jiraProductionIncidentIdentification = ObjectUtils.defaultIfNull(fieldMapping.getJiraProductionIncidentIdentification(),"");
+			String jiraProductionIncidentIdentification = ObjectUtils
+					.defaultIfNull(fieldMapping.getJiraProductionIncidentIdentification(), "");
 			if (jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
 					|| jiraProductionIncidentIdentification.equalsIgnoreCase(CommonConstant.LABELS)) {
 				projectProdIncidentIdentifier.add(basicProjectConfigId.toString());
@@ -309,10 +310,9 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 */
 	private void findMeanTimeToRecover(List<JiraIssueCustomHistory> jiraIssueHistoryDataList, String weekOrMonth,
 			Map<String, List<MeanTimeRecoverData>> meanTimeRecoverMapTimeWise, FieldMapping fieldMapping) {
-		List<String> jiraDodKPI166 = ObjectUtils.defaultIfNull(fieldMapping.getJiraDodKPI166(),new ArrayList<>());
-		String storyFirstStatus = ObjectUtils.defaultIfNull(fieldMapping.getStoryFirstStatus(),"");
-		List<String> dodStatus = jiraDodKPI166.stream().map(String::toLowerCase)
-				.collect(Collectors.toList());
+		List<String> jiraDodKPI166 = ObjectUtils.defaultIfNull(fieldMapping.getJiraDodKPI166(), new ArrayList<>());
+		String storyFirstStatus = ObjectUtils.defaultIfNull(fieldMapping.getStoryFirstStatus(), "");
+		List<String> dodStatus = jiraDodKPI166.stream().map(String::toLowerCase).collect(Collectors.toList());
 		jiraIssueHistoryDataList.forEach(jiraIssueHistoryData -> {
 			DateTime ticketClosedDate;
 			DateTime ticketCreatedDate = jiraIssueHistoryData.getCreatedDate();
