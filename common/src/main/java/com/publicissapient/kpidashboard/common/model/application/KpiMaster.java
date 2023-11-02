@@ -57,8 +57,8 @@ public class KpiMaster extends BasicModel {
 	private String chartType;
 	private String upperThresholdBG;
 	private String lowerThresholdBG;
-	private String xAxisLabel;
-	private String yAxisLabel;
+	private String xaxisLabel;
+	private String yaxisLabel;
 	private boolean showTrend;
 	private Boolean isPositiveTrend;
 	private String lineLegend;
@@ -88,6 +88,7 @@ public class KpiMaster extends BasicModel {
 	private String aggregationCircleCriteria;
 	private boolean isTrendCalculative;
 	private List<KpiFormula> trendCalculation;
+	@JsonProperty("isAdditionalFilterSupport")
 	private boolean isAdditionalFilterSupport;
 	private List<String> maturityRange;
 	private Integer kpiWidth;

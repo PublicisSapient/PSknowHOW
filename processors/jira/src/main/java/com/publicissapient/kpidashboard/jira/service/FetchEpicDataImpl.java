@@ -53,7 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FetchEpicDataImpl implements FetchEpicData {
 
 	private static final String KEY = "key";
-	ProcessorJiraRestClient client;
 	@Autowired
 	private JiraCommonService jiraCommonService;
 	@Autowired
@@ -61,11 +60,10 @@ public class FetchEpicDataImpl implements FetchEpicData {
 
 	@Override
 	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,
-			ProcessorJiraRestClient clientIncoming, KerberosClient krb5Client)
+			ProcessorJiraRestClient client, KerberosClient krb5Client)
 			throws InterruptedException, RestClientException, IOException {
 
 		List<String> epicList = new ArrayList<>();
-		client = clientIncoming;
 
 		JiraToolConfig jiraToolConfig = projectConfig.getJira();
 		if (null != jiraToolConfig) {
@@ -80,12 +78,11 @@ public class FetchEpicDataImpl implements FetchEpicData {
 			} while (!isLast);
 
 		}
-		List<Issue> epicIssue = getEpicIssuesQuery(epicList);
-		client.close();
+		List<Issue> epicIssue = getEpicIssuesQuery(epicList,client);
 		return epicIssue;
 	}
 
-	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList) throws InterruptedException, RestClientException {
+	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProcessorJiraRestClient client) throws InterruptedException, RestClientException {
 
 		List<Issue> issueList = new ArrayList<>();
 		SearchResult searchResult = null;
