@@ -483,7 +483,7 @@ export class GroupBarChartComponent implements OnChanges {
 
     });
     const resultDataList = Object.values(resultData);
-    if(this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days'){
+    if(this.xCaption.toLowerCase() === 'weeks' || this.xCaption.toLowerCase() === 'days' || this.xCaption.toLowerCase() === 'months'){
       return this.formatDateOnXAxis(resultDataList);
     }else{
       return resultDataList;
@@ -493,7 +493,7 @@ export class GroupBarChartComponent implements OnChanges {
   formatDateOnXAxis(data){
     const days = ["SUN", "MON", "TUE", "WED", "THUR", "FRI", "SAT"];
     return data.map((d, i) => {
-      if(d['group'].includes('to')){
+      if(this.xCaption.toLowerCase() === 'weeks'){
         d['group'] = d['group'].replace(" ",'');
         const dateArray = d['group'].split('to');
         const date1 = new Date(dateArray[0]);
@@ -508,7 +508,7 @@ export class GroupBarChartComponent implements OnChanges {
         }
         d['group'] = formatedWeek
       return d;
-      }else{
+      }else if(this.xCaption.toLowerCase() === 'days'){
         const date = new Date(d['group']);
         const currentDate = new Date();
         const formatedDate =  `${(date.getDate() < 10) ? ('0' + date.getDate()) : date.getDate()}/${(date.getMonth() + 1) < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}`;
@@ -517,6 +517,15 @@ export class GroupBarChartComponent implements OnChanges {
         }
         d['group'] = formatedDate;
       return d;
+      }else {
+        const date = new Date(d['group']);
+        const currentDate = new Date();
+        const isCurrentMonth = date.getMonth() === currentDate.getMonth() && date.getFullYear() === currentDate.getFullYear();
+        if(isCurrentMonth){
+          this.currentDayIndex = d['group'];
+        }
+        d['group'] = d['group'];
+        return d;
       }
     });
   }
@@ -535,7 +544,7 @@ generateVerticleLine(xCoordinates,yCordinates,type,svg,xAxis,yAxis){
     const resizeObserver = new ResizeObserver(entries => {
       this.draw();
     });
-    resizeObserver.observe(document.getElementById('horizontalSVG'));
+    resizeObserver.observe(d3.select(this.elem).select('#horizontalSVG').node());
   }
 
   wrap(text, width) {
