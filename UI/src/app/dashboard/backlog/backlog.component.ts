@@ -65,7 +65,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   dragableConfigGlobalData;
   navigationTabs:Array<object>;
   activeIndex = 0;
-  kpiThresholdObj: any;
+  kpiThresholdObj: any = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
