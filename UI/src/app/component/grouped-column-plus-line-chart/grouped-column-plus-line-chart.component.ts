@@ -54,6 +54,10 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   @Input() viewType :string = 'chart'
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
+  resizeObserver = new ResizeObserver(entries => {
+    const data = this.transform2(this.data);
+    this.draw2(data);
+  });
 
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -179,7 +183,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
-    const width = data.length <= 5 ? document.getElementById('chart').offsetWidth - 70 : data.length * barWidth * 10;
+    const containerWidth = d3.select(this.elem).select('#chart').node().offsetWidth || window.innerWidth;
+    const resizeWidth = (containerWidth > (data.length * barWidth * 10) ? containerWidth : (data.length * barWidth * 10))
+    const width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     const height = (viewType === 'large' && selectedProjectCount === 1) ? 250 - paddingTop : 210 - paddingTop;
     const paddingFactor = width < 600 ? 0.30 : 0.55;
 
@@ -839,4 +845,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     })
   }
 
+  ngAfterViewInit() {
+    this.resizeObserver.observe(d3.select(this.elem).select('#chart').node());
+  }
 }
