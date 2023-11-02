@@ -98,6 +98,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                             if(!environment.SSO_LOGIN){
                                 let current_uri = this.router.url;
                                 /** redirect to central login url along with current url*/
+                                console.log("redirect_uri", current_uri);
+                                
                                 window.location.href="http://localhost:3000?redirect_uri="+current_uri;
                                 // this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
