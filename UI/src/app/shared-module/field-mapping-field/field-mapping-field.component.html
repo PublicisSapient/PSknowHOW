@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<div [ngSwitch]="fieldConfig?.fieldType">
+  <div [ngSwitch]="fieldConfig?.fieldType">
 
     <div class="p-inputgroup" *ngSwitchCase="'text'">
         <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.fieldLabel}}"

@@ -88,4 +88,13 @@ export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor 
     this.setValue();
   }
 
+  enterNumericValue(event) {
+    if (!!event && !!event.preventDefault && event.key === '.' || event.key === 'e' || event.key === '-' || event.key === '+') {
+        event.preventDefault();
+        return;
+    }
+}
+  numericInputUpDown(event: any) {
+    this.setValue();
+  }
 }

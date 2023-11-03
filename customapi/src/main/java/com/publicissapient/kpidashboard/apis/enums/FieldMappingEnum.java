@@ -201,16 +201,27 @@ public enum FieldMappingEnum {
 	KPI62("Unit Test Coverage (Kanban) ", KPISource.SONARKANBAN.name(), Arrays.asList("thresholdValueKPI62")),
 
 	KPI38("Sonar Violations", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI38")),
+
 	KPI64("Sonar Violations (Kanban) ", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI64")),
+
 	KPI84("Mean Time To Merge", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI84")),
+
 	KPI11("Check-Ins & Merge Requests", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI11")),
+
 	KPI157("Check-Ins & Merge Requests (Developer) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI157")),
+
 	KPI158("Mean Time To Merge (Developer) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI158")),
+
 	KPI159("Number of Check-ins (Developer) ", KPISource.BITBUCKETKANBAN.name(), Arrays.asList("thresholdValueKPI159")),
+
 	KPI160("Pickup Time (Developer) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI160")),
+
 	KPI65("Check-Ins & Merge Requests (Kanban) ", KPISource.BITBUCKET.name(), Arrays.asList("thresholdValueKPI65")),
+
 	KPI27("Sonar Tech Debt", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI27")),
+
 	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI67"));
+
 
 	private List<String> fields;
 	private String kpiName;

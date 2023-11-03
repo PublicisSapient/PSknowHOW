@@ -401,6 +401,7 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
+	private Integer startDateCountKPI150;
 
 	//threshold field
 	private String thresholdValueKPI14;
