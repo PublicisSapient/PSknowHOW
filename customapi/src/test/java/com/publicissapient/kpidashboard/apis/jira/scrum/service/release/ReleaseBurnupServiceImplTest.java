@@ -87,14 +87,11 @@ public class ReleaseBurnupServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst()
-				.orElse(new JiraIssueCustomHistory());
-		jiraIssuesCustomHistory = jiraIssuesCustomHistory.stream()
-				.filter(j -> j.getBasicProjectConfigId().equalsIgnoreCase(history.getBasicProjectConfigId()))
-				.collect(Collectors.toList());
+		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst().orElse(new JiraIssueCustomHistory());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		fieldMappingMap.put(new ObjectId(history.getBasicProjectConfigId()), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
+
 
 	}
 
