@@ -44,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +87,6 @@ public class ConfigHelperService {
 	/**
 	 * Load project config list.
 	 */
-	@PostConstruct
 	public void loadConfigData() {
 		log.info("loadConfigData - loading project config, field mapping and tool_config");
 		projectConfigMap.clear();
@@ -111,7 +109,6 @@ public class ConfigHelperService {
 	/**
 	 * This method load toolConfigMap
 	 */
-	@PostConstruct
 	public void loadToolConfig() {
 		toolItemMap.clear();
 		List<Tool> toolList = toolConfigRepository.getToolList();
@@ -238,7 +235,6 @@ public class ConfigHelperService {
 	/**
 	 * Load business unit Map.
 	 */
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_KPI_MASTER)
 	public Iterable<KpiMaster> loadKpiMaster() {
 		log.info("loading KPI Master data");
@@ -246,7 +242,6 @@ public class ConfigHelperService {
 	}
 
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_MATURITY_RANGE)
 	public Map<String, List<String>> calculateMaturity() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -266,7 +261,6 @@ public class ConfigHelperService {
 
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_AGG_CRITERIA)
 	public Map<String, String> calculateCriteria() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -274,7 +268,6 @@ public class ConfigHelperService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCriteria));
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_AGG_CIRCLE_CRITERIA)
 	public Map<String, String> calculateCriteriaForCircleKPI() {
 		List<KpiMaster> masterList = (List<KpiMaster>) loadKpiMaster();
@@ -282,7 +275,6 @@ public class ConfigHelperService {
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getAggregationCircleCriteria));
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_BASIC_TREE)
 	public ProjectBasicConfigNode loadProjectBasicTree() {
 		log.info("loading Project Basic Tree");
@@ -292,7 +284,6 @@ public class ConfigHelperService {
 	/**
 	 * Load cache hierarchy level value Map.
 	 */
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_HIERARCHY_LEVEL_VALUE)
 	public List<HierarchyLevelSuggestion> loadHierarchyLevelSuggestion() {
 		log.info("loading hierarchy level Master data");
@@ -303,21 +294,18 @@ public class ConfigHelperService {
 	 * Load KPI Field Mapping.
 	 */
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_FIELD_MAPPING_STUCTURE)
 	public Object loadFieldMappingStructure() {
 		log.info("loading FieldMappingStucture data");
 		return fieldMappingStructureRepository.findAll();
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_USER_BOARD_CONFIG)
 	public List<UserBoardConfig> loadUserBoardConfig() {
 		log.info("loading UserBoarConfig");
 		return userBoardConfigRepository.findAll();
 	}
 
-	@PostConstruct
 	@Cacheable(CommonConstant.CACHE_PROJECT_TOOL_CONFIG)
 	public Object loadAllProjectToolConfig() {
 		log.info("loading projectToolConfig data");
