@@ -237,6 +237,15 @@ export class ToolMenuComponent implements OnInit {
     if(this.isAssigneeSwitchChecked){
       this.isAssigneeSwitchDisabled = true;
     }
+
+       // filtering tolls based on repoToolFlag
+       this.tools = this.tools.filter(details=>{
+         if(this.repoToolsEnabled){
+            return !this.repoTools.includes(details.toolName)
+         }else{
+           return details.toolName !== 'RepoTool';
+         }
+       })
   }
 
   projectTypeChange(event, isClicked) {
@@ -275,15 +284,6 @@ export class ToolMenuComponent implements OnInit {
         this.tools.unshift(jiraType);
       }
     }
-
-    // filtering tolls based on repoToolFlag
-    this.tools = this.tools.filter(details=>{
-      if(this.repoToolsEnabled){
-         return !this.repoTools.includes(details.toolName)
-      }else{
-        return details.toolName !== 'RepoTool';
-      }
-    })
 
   }
 
