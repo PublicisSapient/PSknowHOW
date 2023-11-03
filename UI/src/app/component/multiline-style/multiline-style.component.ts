@@ -47,6 +47,9 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
   elem;
   sprintList : Array<any> = [];
   @Input() viewType :string = 'chart'
+  resizeObserver = new ResizeObserver(entries => {
+    this.draw();
+  });
 
   constructor(
     private viewContainerRef: ViewContainerRef,
@@ -133,11 +136,9 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
     const color = ['#079FFF', '#cdba38', '#00E6C3', '#fc6471', '#bd608c', '#7d5ba6'];
     const kpiId = this.kpiId;
     const showUnit = this.unit;
-
-    width =
-      data[0].value.length <= 5
-        ? document.getElementById('multiLine').offsetWidth - 70
-        : data[0].value.length * 20 * 8;
+    const containerWidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
+    const resizeWidth = (containerWidth > (data[0].value.length * 20 * 8) ? containerWidth : (data[0].value.length * 20 * 8))
+    width = data.length <= 5 ? containerWidth - 70 : resizeWidth;
     let maxXValueCount = 0;
     let maxObjectNo = 0;
     let maxYValue = 0;
@@ -670,6 +671,10 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
     content.scrollLeft += width;
   }
 
+  ngAfterViewInit() {
+    this.resizeObserver.observe(d3.select(this.elem).select('#graphContainer').node());
+  }
+
   ngOnDestroy() {
     // this is used for removing svg already made when value is updated
     d3.select(this.elem).select('#verticalSVG').select('svg').remove();
@@ -677,6 +682,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
     d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
     d3.select(this.elem).select('#legendContainer').remove();
     this.data = [];
+    this.resizeObserver.unobserve(this.elem);
   }
 
 }
