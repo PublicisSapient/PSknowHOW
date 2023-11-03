@@ -34,58 +34,58 @@ import io.mongock.api.annotations.RollbackExecution;
 @ChangeUnit(id = "r_release_burnUp_changes", order = "08102", author = "shunaray", systemVersion = "8.1.0")
 public class ReleaseBurnUpChangeUnit {
 
-    private final MongoTemplate mongoTemplate;
+	private final MongoTemplate mongoTemplate;
 
-    public ReleaseBurnUpChangeUnit(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+	public ReleaseBurnUpChangeUnit(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
+	}
 
-    @Execution
-    public void execution() {
-        releaseBurnUpDefaultOrderRollback();
-        releaseBurnUpFieldMappingRollback();
-    }
+	@Execution
+	public void execution() {
+		releaseBurnUpDefaultOrderRollback();
+		releaseBurnUpFieldMappingRollback();
+	}
 
-    public void releaseBurnUpDefaultOrderUpdate() {
-        Bson filter = Filters.in("kpiId", "kpi150");
-        Bson update = Updates.set("defaultOrder", 1);
-        mongoTemplate.getCollection("kpi_master").updateMany(filter, update);
-    }
+	public void releaseBurnUpDefaultOrderUpdate() {
+		Bson filter = Filters.in("kpiId", "kpi150");
+		Bson update = Updates.set("defaultOrder", 1);
+		mongoTemplate.getCollection("kpi_master").updateMany(filter, update);
+	}
 
-    public void releaseBurnUpFieldMappingInsert() {
+	public void releaseBurnUpFieldMappingInsert() {
 
-        Document document = new Document("fieldName", "startDateCountKPI150")
-                .append("fieldLabel",
-                        "Count of days from the release start date to calculate closure rate for prediction")
-                .append("fieldType", "number").append("section", "Issue Types Mapping")
-                .append("tooltip", new Document("definition",
-                        "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when the first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."));
+		Document document = new Document("fieldName", "startDateCountKPI150")
+				.append("fieldLabel",
+						"Count of days from the release start date to calculate closure rate for prediction")
+				.append("fieldType", "number").append("section", "Issue Types Mapping")
+				.append("tooltip", new Document("definition",
+						"If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when the first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."));
 
-        mongoTemplate.insert(document, "field_mapping_structure");
+		mongoTemplate.insert(document, "field_mapping_structure");
 
-    }
+	}
 
-    public void releaseBurnUpDefaultOrderRollback() {
+	@RollbackExecution
+	public void rollback() {
+		releaseBurnUpDefaultOrderUpdate();
+		releaseBurnUpFieldMappingInsert();
+	}
 
-        Bson filter = Filters.in("kpiId", "kpi150");
-        Bson rollbackUpdate = Updates.set("defaultOrder", 6);
-        mongoTemplate.getCollection("kpi_master").updateMany(filter, rollbackUpdate);
+	public void releaseBurnUpDefaultOrderRollback() {
 
-    }
+		Bson filter = Filters.in("kpiId", "kpi150");
+		Bson rollbackUpdate = Updates.set("defaultOrder", 6);
+		mongoTemplate.getCollection("kpi_master").updateMany(filter, rollbackUpdate);
 
-    public void releaseBurnUpFieldMappingRollback() {
+	}
 
-        // Define a filter to remove the inserted document
-        Bson filter = Filters.eq("fieldName", "startDateCountKPI150");
-        // Remove the document from the collection
-        mongoTemplate.getCollection("field_mapping_structure").deleteOne(filter);
+	public void releaseBurnUpFieldMappingRollback() {
 
-    }
+		// Define a filter to remove the inserted document
+		Bson filter = Filters.eq("fieldName", "startDateCountKPI150");
+		// Remove the document from the collection
+		mongoTemplate.getCollection("field_mapping_structure").deleteOne(filter);
 
-    @RollbackExecution
-    public void rollback() {
-        releaseBurnUpDefaultOrderUpdate();
-        releaseBurnUpFieldMappingInsert();
-    }
+	}
 
 }

@@ -66,6 +66,12 @@ public class ReleaseBurnUpChangeUnit {
 
 	}
 
+	@RollbackExecution
+	public void rollback() {
+		releaseBurnUpDefaultOrderRollback();
+		releaseBurnUpFieldMappingRollback();
+	}
+
 	public void releaseBurnUpDefaultOrderRollback() {
 
 		Bson filter = Filters.in("kpiId", "kpi150");
@@ -83,9 +89,4 @@ public class ReleaseBurnUpChangeUnit {
 
 	}
 
-	@RollbackExecution
-	public void rollback() {
-		releaseBurnUpDefaultOrderRollback();
-		releaseBurnUpFieldMappingRollback();
-	}
 }
