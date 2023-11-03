@@ -128,7 +128,7 @@ public class TicketOpenVsClosedByPriorityServiceImpl extends JiraKPIService<Long
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.TICKET_OPEN_VS_CLOSE_BY_PRIORITY);
 
 		trendValuesMap = sortTrendValueMap(trendValuesMap, priorityTypes(true));

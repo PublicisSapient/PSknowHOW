@@ -96,7 +96,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.COST_OF_DELAY);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.COST_OF_DELAY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.COST_OF_DELAY);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;

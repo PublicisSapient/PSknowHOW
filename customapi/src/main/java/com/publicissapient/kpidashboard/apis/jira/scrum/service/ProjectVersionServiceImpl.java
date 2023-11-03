@@ -83,7 +83,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
