@@ -5153,6 +5153,11 @@ db.getCollection('field_mapping_structure').updateOne(
         }
     }
 );
+db.kpi_master.updateMany(
+    { "kpiId": "kpi34" },
+    { $set: { "kpiInfo.formula.$[].operands": ["No. of defects in the iteration that are fixed", "Total no. of defects in an iteration"] } }
+);
+);
 //------------------------------Release 8.0-----------------------------------------
 //-------------Sonar Code Quality---------
 db.getCollection('kpi_master').insertOne(

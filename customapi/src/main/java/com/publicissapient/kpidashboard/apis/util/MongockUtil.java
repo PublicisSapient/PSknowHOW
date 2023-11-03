@@ -27,6 +27,9 @@ import com.mongodb.client.MongoCollection;
 
 public final class MongockUtil {
 
+	private MongockUtil() {
+	}
+
 	public static MongoCollection<Document> getOrCreateCollection(MongoTemplate mongoTemplate, String collectionName) {
 		if (!mongoTemplate.collectionExists(collectionName))
 			return mongoTemplate.createCollection(collectionName);
