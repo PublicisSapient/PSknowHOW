@@ -398,6 +398,8 @@ public class FieldMappingDTO extends BasicModel {
     @Builder.Default
     private String toBranchForMRKPI156 = "master";
 
+    private List<String> jiraLabelsKPI14;
+    private List<String> jiraLabelsKPI82;
     /**
      * Get jira issue type names string [ ].
      *
