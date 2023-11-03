@@ -401,6 +401,7 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
+	private Integer startDateCountKPI150;
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;

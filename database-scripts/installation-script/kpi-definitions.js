@@ -3036,7 +3036,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiCategory": "Release",
     "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
@@ -3671,43 +3671,6 @@ db.getCollection('kpi_master').insertMany(
         "kpiFilter": "",
         "boxType": "chart",
         "calculateMaturity": false
-    },
-    {
-       "kpiId": "kpi166",
-       "kpiName": "Mean Time to Recover",
-       "maxValue": "100",
-       "kpiUnit": "Hours",
-       "isDeleted": "False",
-       "defaultOrder": 4,
-       "kpiSource": "Jira",
-       "kpiCategory": "Dora",
-       "groupId": 15,
-       "thresholdValue": 0,
-       "kanban": false,
-       "chartType": "line",
-       "kpiInfo": {
-           "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
-           "details": [
-               {
-                   "type": "paragraph",
-                   "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
-               },
-               {
-                   "type": "paragraph",
-                   "value": "The average of all such tickets will be shown."
-               }
-           ],
-           "maturityLevels": []
-       },
-       "xAxisLabel": "Weeks",
-       "yAxisLabel": "Hours",
-       "isPositiveTrend": false,
-       "showTrend": true,
-       "kpiFilter": "",
-       "aggregationCriteria": "sum",
-       "aggregationCircleCriteria": "average",
-       "isAdditionalFilterSupport": false,
-       "calculateMaturity": false
     }
 ]
 );
@@ -6994,60 +6957,6 @@ db.kpi_column_configs.insertMany([
                                     		isShown: true,
                                     		isDefault: false
                                     	}]
-                                    },
-{
-                                        "basicProjectConfigId": null,
-                                        "kpiId": "kpi166",
-                                        "kpiColumnDetails": [
-                                            {
-                                                "columnName": "Project Name",
-                                                "order": 0,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Date",
-                                                "order": 1,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Story ID",
-                                                "order": 2,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Issue Type",
-                                                "order": 3,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Issue Description",
-                                                "order": 4,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Created Date",
-                                                "order": 5,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Completion Date",
-                                                "order": 6,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            },
-                                            {
-                                                "columnName": "Time to Recover (In Hours)",
-                                                "order": 7,
-                                                "isShown": true,
-                                                "isDefault": true
-                                            }
-                                        ]
                                     }
                                    ]);
 
@@ -9251,6 +9160,15 @@ db.getCollection('field_mapping_structure').insertMany(
   "section":"WorkFlow Status Mapping",
   "tooltip":{
     "definition":"Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+  }
+},
+{
+  "fieldName": "startDateCountKPI150",
+  "fieldLabel": "Count of days from the release start date to calculate closure rate for prediction",
+  "fieldType": "number",
+  "section": "Issue Types Mapping",
+  "tooltip": {
+    "definition": "If this field is kept blank, then daily closure rate of issues is calculated based on the number of working days between today and the release start date or date when first issue was added. This configuration allows you to decide from which date the closure rate should be calculated."
   }
 },
 {

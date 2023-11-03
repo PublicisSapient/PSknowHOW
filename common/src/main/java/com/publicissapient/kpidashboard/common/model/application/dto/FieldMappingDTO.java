@@ -397,6 +397,7 @@ public class FieldMappingDTO extends BasicModel {
 
     @Builder.Default
     private String toBranchForMRKPI156 = "master";
+    private Integer startDateCountKPI150;
 
     private String jiraProductionIncidentIdentification;
     private String jiraProdIncidentRaisedByCustomField;
