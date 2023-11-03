@@ -84,9 +84,6 @@ public class AuthenticationController {
     private AuthTypesConfigService authTypesConfigService;
     private TokenAuthenticationService tokenAuthenticationService;
 
-    @Autowired
-    private FeatureManager manager;
-
     /**
      * Instantiates a new Authentication controller.
      *
