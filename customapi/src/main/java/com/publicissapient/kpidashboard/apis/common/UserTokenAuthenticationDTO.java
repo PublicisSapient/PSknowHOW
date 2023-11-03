@@ -24,6 +24,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * aksshriv1
  */
@@ -36,6 +38,7 @@ import lombok.Setter;
 public class UserTokenAuthenticationDTO {
 
 	private String userName;
+	private List<String> userRoles;
 	private String authToken;
 	private String resource;
 }

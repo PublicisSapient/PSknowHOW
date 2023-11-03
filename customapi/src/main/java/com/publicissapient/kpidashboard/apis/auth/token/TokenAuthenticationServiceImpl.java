@@ -107,7 +107,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
 		data.setUserName(authentication.getName());
-		data.setAuthToken(jwt);
+		data.setUserRoles((List<String>) getRoles(authentication.getAuthorities()));
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		response.addCookie(cookie);
