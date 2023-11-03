@@ -3641,7 +3641,7 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "multiSelectDropDown",
+      "kpiFilter": "radioButton",
       "boxType": "chart",
       "calculateMaturity": false,
       "kpiSubCategory": "Epic View"
