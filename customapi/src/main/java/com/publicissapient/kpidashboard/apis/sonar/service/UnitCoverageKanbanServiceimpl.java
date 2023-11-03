@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -106,7 +107,7 @@ public class UnitCoverageKanbanServiceimpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.UNIT_TEST_COVERAGE_KANBAN);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.UNIT_TEST_COVERAGE_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -316,5 +317,10 @@ public class UnitCoverageKanbanServiceimpl
 
 		);
 		return map;
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI62(),KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId());
 	}
 }

@@ -125,7 +125,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -389,5 +389,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI82(),KPICode.FIRST_TIME_PASS_RATE.getKpiId());
 	}
 }
