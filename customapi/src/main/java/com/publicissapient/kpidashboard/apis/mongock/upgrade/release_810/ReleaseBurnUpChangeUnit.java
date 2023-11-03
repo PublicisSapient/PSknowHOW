@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -28,13 +28,16 @@ import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
+/**
+ * @author shunaray
+ */
 @SuppressWarnings("java:S1192")
-@ChangeUnit(id = "dml8.1.0", order = "1000", author = "PSKnowHOW", systemVersion = "8.1.0")
-public class Release810Mongock {
+@ChangeUnit(id = "release_burnUp_changes", order = "8102", author = "shunaray", systemVersion = "8.1.0")
+public class ReleaseBurnUpChangeUnit {
 
 	private final MongoTemplate mongoTemplate;
 
-	public Release810Mongock(MongoTemplate mongoTemplate) {
+	public ReleaseBurnUpChangeUnit(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
@@ -63,12 +66,6 @@ public class Release810Mongock {
 
 	}
 
-	@RollbackExecution
-	public void rollback() {
-		releaseBurnUpDefaultOrderRollback();
-		releaseBurnUpFieldMappingRollback();
-	}
-
 	public void releaseBurnUpDefaultOrderRollback() {
 
 		Bson filter = Filters.in("kpiId", "kpi150");
@@ -86,4 +83,9 @@ public class Release810Mongock {
 
 	}
 
+	@RollbackExecution
+	public void rollback() {
+		releaseBurnUpDefaultOrderRollback();
+		releaseBurnUpFieldMappingRollback();
+	}
 }
