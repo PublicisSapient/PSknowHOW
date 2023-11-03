@@ -22,17 +22,20 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   selector: 'app-field-mapping-field',
   templateUrl: './field-mapping-field.component.html',
   styleUrls: ['./field-mapping-field.component.css'],
-  providers:[
-    {provide:NG_VALUE_ACCESSOR,
-    useExisting: FieldMappingFieldComponent,
-    multi:true}
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: FieldMappingFieldComponent,
+      multi: true
+    }
   ]
 })
-export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
+export class FieldMappingFieldComponent implements OnInit, ControlValueAccessor {
 
   @Input() fieldConfig;
   @Output() onSearch = new EventEmitter();
   @Input() fieldMappingMetaData;
+  @Input() thresholdUnit;
   value;
   isDisabled = false;
 
@@ -65,13 +68,13 @@ export class FieldMappingFieldComponent implements OnInit,ControlValueAccessor {
     this.setValue();
   }
 
-  setAdditionalFilterValue(value){
+  setAdditionalFilterValue(value) {
     this.value = value;
     this.setValue();
   }
 
-  showDialogToAddValue(isSingle, fieldName, type){
-    this.onSearch.emit({isSingle,fieldName,type});
+  showDialogToAddValue(isSingle, fieldName, type) {
+    this.onSearch.emit({ isSingle, fieldName, type });
   }
 
   enterNumericValue(event) {

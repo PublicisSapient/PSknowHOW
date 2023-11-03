@@ -128,7 +128,7 @@ public class CostOfDelayKanbanServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.COST_OF_DELAY_KANBAN);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.COST_OF_DELAY_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.COST_OF_DELAY_KANBAN);
 
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		kpiElement.setTrendValueList(trendValues);

@@ -151,7 +151,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		// for chart with filter,group stack chart
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING);
 
 		trendValuesMap = sortTrendValueMap(trendValuesMap, priorityTypes(true));
