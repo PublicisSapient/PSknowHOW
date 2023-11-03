@@ -113,10 +113,10 @@ public class FeatureThresholdConfig {
 
 	@RollbackExecution
 	public void rollback() {
-		rollbackKpiMaster();
+		rollBackFieldMappingStructure();
 	}
 
-	public void rollbackKpiMaster() {
+	public void rollBackFieldMappingStructure() {
 		String[] fieldNamesToDelete = { "thresholdValueKPI14", "thresholdValueKPI82", "thresholdValueKPI111",
 				"thresholdValueKPI35", "thresholdValueKPI34", "thresholdValueKPI37", "thresholdValueKPI28",
 				"thresholdValueKPI36", "thresholdValueKPI16", "thresholdValueKPI17", "thresholdValueKPI38",
