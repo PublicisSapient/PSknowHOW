@@ -85,7 +85,7 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_CODE_QUALITY);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.SONAR_CODE_QUALITY);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
