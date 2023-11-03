@@ -54,61 +54,26 @@ public class FeatureThresholdConfig {
 	}
 
 	public void insertFieldMapping() {
-
-		fieldMappingStructure.insertMany(Arrays.asList(createDocument("thresholdValueKPI14", "Target KPI Value",
-				"number", "Custom Fields Mapping",
-				"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI82", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI111", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI35", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI34", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI37", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI28", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI36", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI16", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI17", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI38", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI27", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI72", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI84", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI11", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI62", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI64", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI67", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI157", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI158", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI159", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI160", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"),
-				createDocument("thresholdValueKPI164", "Target KPI Value", "number", "Custom Fields Mapping",
-						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown")));
+		fieldMappingStructure.insertMany(Arrays.asList(createDocument("thresholdValueKPI14"),
+				createDocument("thresholdValueKPI82"), createDocument("thresholdValueKPI111"),
+				createDocument("thresholdValueKPI35"), createDocument("thresholdValueKPI34"),
+				createDocument("thresholdValueKPI37"), createDocument("thresholdValueKPI28"),
+				createDocument("thresholdValueKPI36"), createDocument("thresholdValueKPI16"),
+				createDocument("thresholdValueKPI17"), createDocument("thresholdValueKPI38"),
+				createDocument("thresholdValueKPI27"), createDocument("thresholdValueKPI72"),
+				createDocument("thresholdValueKPI84"), createDocument("thresholdValueKPI11"),
+				createDocument("thresholdValueKPI62"), createDocument("thresholdValueKPI64"),
+				createDocument("thresholdValueKPI67"), createDocument("thresholdValueKPI157"),
+				createDocument("thresholdValueKPI158"), createDocument("thresholdValueKPI159"),
+				createDocument("thresholdValueKPI160"), createDocument("thresholdValueKPI164")));
 
 	}
 
-	private Document createDocument(String fieldName, String fieldLabel, String fieldType, String section,
-			String definition) {
-		return new Document("fieldName", fieldName).append("fieldLabel", fieldLabel).append("fieldType", fieldType)
-				.append("section", section).append("tooltip", new Document("definition", definition));
+	private Document createDocument(String fieldName) {
+		return new Document("fieldName", fieldName).append("fieldLabel", "Target KPI Value")
+				.append("fieldType", "number").append("section", "Custom Fields Mapping")
+				.append("tooltip", new Document("definition",
+						"Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"));
 	}
 
 	@RollbackExecution
@@ -132,5 +97,6 @@ public class FeatureThresholdConfig {
 
 	@RollbackBeforeExecution
 	public void rollbackBeforeExecution() {
+		// do not rquire the implementation
 	}
 }

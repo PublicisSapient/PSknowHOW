@@ -67,10 +67,12 @@ public class FeatureThresholdConfig {
 
 	@RollbackExecution
 	public void rollback() {
+		//do not require the implementation
 	}
 
 	@RollbackBeforeExecution
 	public void rollbackBeforeExecution() {
+		//do not require the implementation
 	}
 
 }

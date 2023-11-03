@@ -31,6 +31,10 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 public class PushDataValidation {
 
+	private static final String COMMA= " ,";
+
+	private PushDataValidation(){}
+
 	/**
 	 * check the Blank
 	 * 
@@ -40,7 +44,7 @@ public class PushDataValidation {
 	 */
 	public static void checkBlank(String parameter, String literal, Map<String, String> errors) {
 		if (StringUtils.isBlank(literal)) {
-			errors.computeIfPresent(parameter, (param, error) -> error.concat(" ," + parameter + " is Blank"));
+			errors.computeIfPresent(parameter, (param, error) -> error.concat(COMMA + parameter + " is Blank"));
 			errors.putIfAbsent(parameter, parameter + " is Blank");
 		}
 	}
@@ -55,7 +59,7 @@ public class PushDataValidation {
 	public static void checkNumeric(String parameter, String number, Map<String, String> errors) {
 		if (!StringUtils.isNumeric(number)) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(" ," + parameter + " should be in digits"));
+					(param, error) -> error.concat(COMMA + parameter + " should be in digits"));
 			errors.putIfAbsent(parameter, parameter + " should be in digits");
 		}
 	}
@@ -72,7 +76,7 @@ public class PushDataValidation {
 				.filter(buildStatus -> buildStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!buildStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllBuildValues()));
+					(param, error) -> error.concat(COMMA + parameter + " should be among " + getAllBuildValues()));
 			errors.putIfAbsent(parameter, parameter + " should be among " + getAllBuildValues());
 		}
 
@@ -90,7 +94,7 @@ public class PushDataValidation {
 				.filter(deploymentStatus -> deploymentStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!deploymentStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(" ," + parameter + " should be among " + getAllDeploymentValues()));
+					(param, error) -> error.concat(COMMA + parameter + " should be among " + getAllDeploymentValues()));
 			errors.putIfAbsent(parameter, parameter + " should be among " + getAllDeploymentValues());
 		}
 	}
