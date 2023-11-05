@@ -428,12 +428,28 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.find(query, JiraIssue.class);
 
 	}
+
+	/**
+	 * Method to fetch true value of fieldName
+	 * 
+	 * @param mapOfFilters
+	 *            mapOfFilters
+	 * @param fieldName
+	 *            fieldName
+	 * @param flag
+	 *            boolean flag
+	 * @param dateFrom
+	 *            dateFrom
+	 * @param dateTo
+	 *            dateTo
+	 * @return List<JiraIssue>
+	 */
 	@Override
-	public List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag, String dateFrom, String dateTo) {
+	public List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag,
+			String dateFrom, String dateTo) {
 
 		String startDate = dateFrom + START_TIME;
 		String endDate = dateTo + END_TIME;
-
 
 		Criteria criteria = new Criteria();
 
@@ -852,6 +868,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	/**
 	 * find unique Release Version Name group by type name
+	 * 
 	 * @param mapOfFilters
 	 * @return
 	 */
@@ -864,16 +881,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group(
-				"typeName", "basicProjectConfigId", "releaseVersions.releaseName"
-		);
+		GroupOperation groupOperation = Aggregation.group("typeName", "basicProjectConfigId",
+				"releaseVersions.releaseName");
 
-		ProjectionOperation projectionOperation = Aggregation.project()
-				.andExpression("_id.typeName").as("uniqueTypeName")
-				.andExpression("_id.releaseName").as("releaseName")
+		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")
+				.as("uniqueTypeName").andExpression("_id.releaseName").as("releaseName")
 				.andExpression("_id.basicProjectConfigId").as("basicProjectConfigId");
 
-		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation , projectionOperation);
+		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation, projectionOperation);
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 

@@ -185,28 +185,28 @@ public class MeanTimeToRecoverChangeUnit {
 	}
 
 	public void rollbackMeanTimeToRecover() {
-		Document filter = new Document("kpiId", "kpi166");
-		mongoTemplate.remove(filter, "kpi_master");
+		Query query = new Query(Criteria.where("kpiId").is("kpi166"));
+		mongoTemplate.remove(query, "kpi_master");
 	}
 
 	public void rollbackStoryToIdentifyFieldMapping() {
-		Document filter = new Document("fieldName", "jiraStoryIdentificationKPI166");
-		mongoTemplate.remove(filter, "field_mapping_structure");
+		Query query = new Query(Criteria.where("fieldName").is("jiraStoryIdentificationKPI166"));
+		mongoTemplate.remove(query, "field_mapping_structure");
 	}
 
 	public void rollbackProductionIncidentFieldMapping() {
-		Document filter = new Document("fieldName", "jiraProductionIncidentIdentification");
-		mongoTemplate.remove(filter, "field_mapping_structure");
+		Query query = new Query(Criteria.where("fieldName").is("jiraProductionIncidentIdentification"));
+		mongoTemplate.remove(query, "field_mapping_structure");
 	}
 
 	public void rollbackDodStatusFieldMapping() {
-		Document filter = new Document("fieldName", "dodStatusFieldMapping");
-		mongoTemplate.remove(filter, "field_mapping_structure");
+		Query query = new Query(Criteria.where("fieldName").is("jiraDodKPI166"));
+		mongoTemplate.remove(query, "field_mapping_structure");
 	}
 
 	public void rollbackInsertKpiColumnConfig() {
-		Document filter = new Document("kpiId", "kpi166");
-		mongoTemplate.remove(filter, "kpi_column_configs");
+		Query query = new Query(Criteria.where("kpiId").is("kpi166"));
+		mongoTemplate.remove(query, "kpi_column_configs");
 	}
 
 	public void rollbackUpdateMetadataIdentifier() {
