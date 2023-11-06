@@ -183,7 +183,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const onHoldIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options.length ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options : [];
 
     if (xCoordinates.length > 20) {
-      width = width + ((xCoordinates.length - 19) * 50);
+      width = (xCoordinates.length * 50);
     }
 
     const svg = chart
@@ -495,16 +495,18 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // show QA completed if it exists
       marker.append('image')
         .attr('xlink:href', '../../../assets/img/qa-completed.svg')
-        .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
-        .attr('width', '40px').attr('height', '40px')
-        .attr('x', (d) => {
+        .style('display', (d) => {
           if (!d['Actual-Completion-Date']) {
-            return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
+            return d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none';
           } else if (self.compareDates(d['Actual-Completion-Date'], d['Test-Completed'])) {
             return 'block';
           } else {
             return 'none';
           }
+        })
+        .attr('width', '40px').attr('height', '40px')
+        .attr('x', (d) => {
+          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
         })
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
@@ -517,7 +519,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           hideTooltip();
         });
 
-      // Show 'Dev Due Date completion' if it exist
+      // Show 'Dev completion' if it exist
       marker.append('image')
         .attr('xlink:href', '../../../assets/img/dev-completed.svg')
         .style('display', (d) => {
@@ -531,13 +533,24 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         })
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
-          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 20
+          return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? -500 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 20
         })
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
         .on('mouseover', (event, i) => {
           let d = event.currentTarget.__data__;
-          const data = `<p>Dev Completed</p><p>Date: ${self.formatDate(d['Dev-Completion-Date'])}</>`;
+          console.log(d);
+          let data = `<p>Dev Completed</p><p>Date: ${self.formatDate(d['Dev-Completion-Date'])}</>`;
+          let statusOnDate;
+          Object.keys(d['statusLogGroup']).forEach((date) => {
+            if (date === d['Dev-Completion-Date'].substring(0, d['Dev-Completion-Date'].lastIndexOf('T'))) {
+              statusOnDate = d['statusLogGroup'][date];
+            }
+          });
+          console.log(statusOnDate);
+          if (statusOnDate && statusOnDate.length) {
+            data += `<br/><p>${statusOnDate.join(' \&#8594;\ ')}</p>`
+          }
           showTooltip(data, event.offsetX, event.offsetY);
         })
         .on('mouseout', () => {
@@ -742,8 +755,12 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('y2', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) {
           let onHoldOrNot = onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495';
-          let OverallDueDateExceeded = self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'];
-          return OverallDueDateExceeded ? '#DE1F1F80' : d['Actual-Completion-Date'] ? '#D8D8D8' : onHoldOrNot;
+          if (!onHoldIssueStatus.includes(d['Issue Status'])) {
+            let OverallDueDateExceeded = self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'];
+            return OverallDueDateExceeded ? '#DE1F1F80' : '#D8D8D8';
+          } else {
+            return '#EB4545';
+          }
         })
         .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })
         .style('stroke-dasharray', function (d) { return d['spill'] ? '4,4' : '0,0'; })
@@ -782,14 +799,26 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   getStartAndEndLinePoints(issue) {
     //calculate startDate
     let startPoint;
-    if (issue['spill']) {
-      if (!this.compareDates(issue['Actual-Start-Date'], this.selectedSprintInfo.sprintStartDate)) {
-        startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
+    if (!issue['spill']) {
+      if (!issue['Actual-Completion-Date']) {
+        if (issue['Actual-Start-Date']) {
+          if (!this.compareDates(issue['Actual-Start-Date'], this.selectedSprintInfo.sprintStartDate)) {
+            startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
+          } else {
+            startPoint = new Date(issue['Actual-Start-Date']);
+          }
+        } else {
+          startPoint = new Date();
+        }
       } else {
-        startPoint = new Date(issue['Actual-Start-Date']);
+        if (issue['Actual-Start-Date']) {
+          startPoint = new Date(issue['Actual-Start-Date'])
+        } else {
+          startPoint = new Date(issue['Actual-Completion-Date']);
+        }
       }
     } else {
-      startPoint = issue['Actual-Start-Date'] ? new Date(issue['Actual-Start-Date']) : new Date();
+      startPoint = new Date(this.selectedSprintInfo.sprintStartDate);
     }
     //calculate endDate
     const endPoint = issue['Actual-Completion-Date'] ? new Date(issue['Actual-Completion-Date']) : new Date();
