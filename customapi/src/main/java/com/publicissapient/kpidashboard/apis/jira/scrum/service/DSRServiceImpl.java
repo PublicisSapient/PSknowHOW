@@ -116,7 +116,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -367,6 +367,11 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI35(),KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 	}
 
 }

@@ -43,20 +43,20 @@
                           <ng-container *ngIf="!(showChart === 'table')">
                             <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-                              [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                              [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList[kpi?.kpiId]"
                               [selectedtype]="selectedtype"></app-groupstackchart>
                             <app-table *ngSwitchCase="'table'" [trendBoxColorObj]="trendBoxColorObj" [data]="kpiChartData[kpi?.kpiId].data"
                               [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders" [showMarker]="'true'"
                               [showMarkerColumnNumber]="0"></app-table>
-                            <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                            <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
                               [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'" 
                               [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                             </app-multiline>
-                            <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                            <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                               [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                               [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                               [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
@@ -64,7 +64,7 @@
                             </app-multiline-style>
                             <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                               [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"
-                              [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+                              [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                               [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
                               [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
                               [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">

@@ -138,7 +138,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_REMOVAL_EFFICIENCY);
 		kpiElement.setTrendValueList(trendValues);
 
 		log.debug("[DRE-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -537,5 +537,10 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				jiraTicketClosedDateMap.put(JIRA_ISSUE_CLOSED_DATE, jiraTicketClosedDate);
 			}
 		});
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI34(),KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId());
 	}
 }

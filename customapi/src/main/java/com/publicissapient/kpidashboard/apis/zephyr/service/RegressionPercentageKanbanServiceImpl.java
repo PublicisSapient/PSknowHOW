@@ -122,7 +122,7 @@ public class RegressionPercentageKanbanServiceImpl extends ZephyrKPIService<Doub
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.KANBAN_REGRESSION_PASS_PERCENTAGE);
 
 		kpiElement.setTrendValueList(trendValues);
