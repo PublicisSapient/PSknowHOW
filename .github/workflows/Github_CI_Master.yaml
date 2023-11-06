@@ -55,6 +55,7 @@ jobs:
         id: BuildUI
         run: |
           hostname
+          java -version
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
