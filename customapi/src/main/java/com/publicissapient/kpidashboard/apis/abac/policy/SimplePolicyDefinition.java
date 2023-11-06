@@ -25,21 +25,21 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
-import com.publicissapient.kpidashboard.common.repository.rbac.ActionPolicyRuleRepository;
+import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 
 @Component("simplePolicyDefinition")
 public class SimplePolicyDefinition implements PolicyDefinition {
 	@Autowired
-	ActionPolicyRuleRepository actionPolicyRuleRepository;
-	private List<ActionPolicyRule> rules;
+	CacheService cacheService;
+	private List<ActionPoliciesDTO> rules;
 
 	@PostConstruct
 	private void init() {
-		rules = actionPolicyRuleRepository.findAll();
+		rules = cacheService.getActionPoliciesFromCache();
 	}
 
-	public List<ActionPolicyRule> getAllPolicyRules() {
+	public List<ActionPoliciesDTO> getAllPolicyRules() {
 		return rules;
 	}
 

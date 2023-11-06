@@ -33,6 +33,8 @@ import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
+import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
@@ -68,6 +70,8 @@ public class CacheServiceImpl implements CacheService {
 	private ConfigHelperService configHelperService;
 	@Autowired
 	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+	@Autowired
+	private AuthenticationService authNAuthService;
 
 	@Override
 	public void clearCache(String cacheName) {
@@ -256,5 +260,16 @@ public class CacheServiceImpl implements CacheService {
 		return hierarchyLevels.stream()
 				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
 
+	}
+
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	@Override
+	@Cacheable(value = CommonConstant.ACTION_POLICY_RULES_CACHE, key = "#authCookie")
+	public List<ActionPoliciesDTO> getActionPoliciesFromCache() {
+		return authNAuthService.fetchActionPolicyByResource();
 	}
 }

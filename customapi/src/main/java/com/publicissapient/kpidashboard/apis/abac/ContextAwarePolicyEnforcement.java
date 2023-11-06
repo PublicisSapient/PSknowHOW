@@ -51,7 +51,10 @@ public class ContextAwarePolicyEnforcement {
 
 		environment.put("time", new Date());
 
+		// --- auth-N-auth starts here -------
+		// --- We have to implement an api to fetch user info data from central auth
 		UserInfo user = userInfoService.getUserInfo(authenticationService.getLoggedInUser());
+		// --- auth-N-auth ends here -------
 
 		if (!policy.check(projectAccessManager, user, resource, permission, environment))
 			throw new AccessDeniedException("Access is denied");

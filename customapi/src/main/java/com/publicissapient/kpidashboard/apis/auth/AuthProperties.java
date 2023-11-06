@@ -68,6 +68,11 @@ public class AuthProperties {// NOPMD
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
 
+	// --- auth-N-auth changes starts here ----
+	private String centralAuthBaseURL;
+	private String resourceAPIKey;
+	private String resourcePolicyEndPoint;
+
 	/**
 	 * Gets expiration time.
 	 *
@@ -371,6 +376,55 @@ public class AuthProperties {// NOPMD
 	public void setAccountLockedPeriod(int accountLockedPeriod) {
 		this.accountLockedPeriod = accountLockedPeriod;
 	}
+
+	/**
+	 * Get central auth base url
+	 *
+	 * @return
+	 */
+	public String getCentralAuthBaseURL() {
+		return centralAuthBaseURL;
+	}
+
+	/**
+	 * Set central auth base url
+	 *
+	 * @param centralAuthBaseURL
+	 */
+	public void setCentralAuthBaseURL(String centralAuthBaseURL) {
+		this.centralAuthBaseURL = centralAuthBaseURL;
+	}
+
+	/**
+	 * get resourceAPIKey
+	 * @return
+	 */
+	public String getResourceAPIKey() {
+		return resourceAPIKey;
+	}
+
+	/**
+	 * Set resourcePolicyEndPoint
+	 *
+	 * @param resourcePolicyEndPoint
+	 */
+	public void setResourcePolicyEndPoint(String resourcePolicyEndPoint) {
+		this.resourcePolicyEndPoint = resourcePolicyEndPoint;
+	}
+
+	public String getResourcePolicyEndPoint() {
+		return resourcePolicyEndPoint;
+	}
+
+	/**
+	 * Set resourceAPIKey
+	 *
+	 * @param resourceAPIKey
+	 */
+	public void setResourceAPIKey(String resourceAPIKey) {
+		this.resourceAPIKey = resourceAPIKey;
+	}
+
 
 	/**
 	 * Apply defaults if needed.
