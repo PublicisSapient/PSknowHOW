@@ -108,7 +108,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.AVERAGE_RESOLUTION_TIME);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.AVERAGE_RESOLUTION_TIME);
 		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((issueType, dataCounts) -> {

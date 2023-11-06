@@ -129,7 +129,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_COUNT_BY_PRIORITY);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.DEFECT_COUNT_BY_PRIORITY);
 
 		trendValuesMap = sortTrendValueMap(trendValuesMap, priorityTypes(true));
@@ -464,5 +464,10 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		} else {
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI28(),KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId());
 	}
 }

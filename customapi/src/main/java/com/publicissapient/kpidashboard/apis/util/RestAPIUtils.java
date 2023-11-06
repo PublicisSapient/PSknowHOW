@@ -24,6 +24,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
  */
 @Component
 public class RestAPIUtils {
+	private static final String AUTHORIZATION = "Authorization";
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -38,9 +39,9 @@ public class RestAPIUtils {
 				String authentication = accessToken + ":";
 				byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 				String authenticationHeader = "Basic " + new String(encodedAuth);
-				headers.set("Authorization", authenticationHeader);
+				headers.set(AUTHORIZATION, authenticationHeader);
 			} else {
-				headers.add("Authorization", "Bearer " + accessToken);
+				headers.add(AUTHORIZATION, "Bearer " + accessToken);
 			}
 		}
 		return headers;
@@ -61,7 +62,7 @@ public class RestAPIUtils {
 			String authentication = username + ":" + password;
 			byte[] encodedAuth = Base64.encodeBase64(authentication.getBytes(StandardCharsets.US_ASCII));
 			String authenticationHeader = "Basic " + new String(encodedAuth);
-			header.set("Authorization", authenticationHeader);
+			header.set(AUTHORIZATION, authenticationHeader);
 		}
 		return header;
 	}
@@ -69,7 +70,7 @@ public class RestAPIUtils {
 	public HttpHeaders getHeadersForPAT(String pat) {
 		HttpHeaders header = new HttpHeaders();
 		String authenticationHeader = "Bearer " + pat;
-		header.set("Authorization", authenticationHeader);
+		header.set(AUTHORIZATION, authenticationHeader);
 		return header;
 	}
 

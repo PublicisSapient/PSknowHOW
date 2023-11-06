@@ -93,7 +93,7 @@ public class CodeBuildTimeKanbanServiceImpl extends JenkinsKPIService<Long, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.CODE_BUILD_TIME_KANBAN);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.CODE_BUILD_TIME_KANBAN);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();

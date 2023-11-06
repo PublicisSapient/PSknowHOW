@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -41,6 +39,7 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -62,6 +61,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
@@ -130,7 +130,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.INSPRINT_AUTOMATION_COVERAGE);
 		// 3rd change : remove code to set trendValuelist and call getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.INSPRINT_AUTOMATION_COVERAGE);
 		kpiElement.setTrendValueList(trendValues);
 
@@ -505,6 +505,11 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI16(),KPICode.INSPRINT_AUTOMATION_COVERAGE.getKpiId());
 	}
 
 }
