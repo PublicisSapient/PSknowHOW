@@ -19,6 +19,11 @@
         "changedFrom" : "Open",
         "changedTo" : "In Analysis",
         "updatedOn" : "2023-05-25T11:43:22.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T11:43:22.000"
       }
     ],
     "assigneeUpdationLog" : [
@@ -157,6 +162,11 @@
       {
         "changedFrom" : "",
         "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      },
+      {
+        "changedFrom" : "AP v2.0.0",
+        "changedTo" : "AP v2.1.0,AP v2.0.0",
         "updatedOn" : "2023-05-22T18:28:39.000"
       }
     ],
