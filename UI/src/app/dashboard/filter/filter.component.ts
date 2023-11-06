@@ -1345,7 +1345,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
-        this.router.navigate(['./authentication/login']);
+        window.location.href = environment.CENTRAL_LOGIN_URL;
       }
     });
   }
