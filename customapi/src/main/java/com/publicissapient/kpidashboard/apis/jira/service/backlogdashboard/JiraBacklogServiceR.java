@@ -140,7 +140,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
                 ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
                 List<CompletableFuture<Void>> futures = new ArrayList<>();
-
                 for (KpiElement kpiEle : kpiRequest.getKpiList()) {
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                         threadLocalJiraIssues.set(jiraIssueList);
