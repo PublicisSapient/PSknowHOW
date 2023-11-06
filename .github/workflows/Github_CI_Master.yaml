@@ -54,6 +54,7 @@ jobs:
         if: steps.changes.outputs.UI == 'true'
         id: BuildUI
         run: |
+          hostname
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
           sudo npm cache clean --force
