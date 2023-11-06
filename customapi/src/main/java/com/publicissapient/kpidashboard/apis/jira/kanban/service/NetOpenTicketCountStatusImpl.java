@@ -103,7 +103,7 @@ public class NetOpenTicketCountStatusImpl
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		// for chart with filter,group stack chart
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS);
 
 		Map<String, Map<String, List<DataCount>>> statusTypeProjectWiseDc = new LinkedHashMap<>();

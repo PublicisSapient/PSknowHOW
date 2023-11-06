@@ -103,7 +103,7 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;

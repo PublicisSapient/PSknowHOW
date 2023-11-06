@@ -403,6 +403,33 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
+	private Integer startDateCountKPI150;
+
+	//threshold field
+	private String thresholdValueKPI14;
+	private String thresholdValueKPI82;
+	private String thresholdValueKPI111;
+	private String thresholdValueKPI35;
+	private String thresholdValueKPI34;
+	private String thresholdValueKPI37;
+	private String thresholdValueKPI28;
+	private String thresholdValueKPI36;
+	private String thresholdValueKPI16;
+	private String thresholdValueKPI17;
+	private String thresholdValueKPI38;
+	private String thresholdValueKPI27;
+	private String thresholdValueKPI72;
+	private String thresholdValueKPI84;
+	private String thresholdValueKPI11;
+	private String thresholdValueKPI62;
+	private String thresholdValueKPI64;
+	private String thresholdValueKPI67;
+	private String thresholdValueKPI65;
+	private String thresholdValueKPI157;
+	private String thresholdValueKPI158;
+	private String thresholdValueKPI159;
+	private String thresholdValueKPI160;
+	private String thresholdValueKPI164;
 
 	/**
 	 * Get jira issue type names string [ ].
