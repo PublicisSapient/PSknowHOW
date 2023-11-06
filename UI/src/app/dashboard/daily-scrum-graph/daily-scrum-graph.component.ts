@@ -94,7 +94,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       this.draw(this.issueDataList);
       this.selectedTaskFilter.emit(null);
     }
-    
+
   }
 
   //generated dates on MM/DD format
@@ -429,10 +429,10 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
           if (d['Due Date'] && d['Due Date'] !== '-') {
             if (self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date']) {
               display = 'none';
-            } else if(!self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date']) {
+            } else if (!self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date']) {
               display = 'block';
             }
-             else {
+            else {
               display = 'none';
             }
           }
@@ -493,7 +493,13 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
+          if(!d['Actual-Completion-Date']) {
           return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
+          } else if(self.compareDates(d['Actual-Completion-Date'], d['Test-Completed'])){
+            return 'block';
+          } else {
+            return 'none';
+          }
         })
         .attr('y', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 - 20 : (y(i + 1) - y(i)) / 2 - 20)
         .style('cursor', 'pointer')
@@ -509,7 +515,15 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       // Show 'Dev Due Date completion' if it exist
       marker.append('image')
         .attr('xlink:href', '../../../assets/img/dev-completed.svg')
-        .style('display', (d) => d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none')
+        .style('display', (d) => {
+          if(!d['Actual-Completion-Date']) {
+          return d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none';
+          } else if(self.compareDates(d['Actual-Completion-Date'], d['Dev-Completion-Date'])){
+            return 'block';
+          } else {
+            return 'none';
+          }
+        })
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
           return isNaN(x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 25) ? 0 : x(self.formatDate(new Date(d['Dev-Completion-Date']))) + initialCoordinate / 2 - 20
