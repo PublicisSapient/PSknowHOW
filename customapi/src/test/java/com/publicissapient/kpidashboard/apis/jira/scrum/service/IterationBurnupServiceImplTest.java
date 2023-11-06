@@ -147,7 +147,7 @@ public class IterationBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList, startDate,
+		Map<String, Object> defectDataListMap = iterationBurnupService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
 				endDate, kpiRequest);
 		assertNotNull(defectDataListMap);
 	}
@@ -168,7 +168,7 @@ public class IterationBurnupServiceImplTest {
 		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
 		try {
 			KpiElement kpiElement = iterationBurnupService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

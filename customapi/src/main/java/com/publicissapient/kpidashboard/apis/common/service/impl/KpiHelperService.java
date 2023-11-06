@@ -38,6 +38,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -143,6 +147,10 @@ public class KpiHelperService { // NOPMD
 	private SprintRepository sprintRepository;
 	@Autowired
 	private FilterHelperService flterHelperService;
+	@Autowired
+	private CacheService cacheService;
+	@Autowired
+	private UserAuthorizedProjectsService authorizedProjectsService;
 
 	public static void getDroppedDefectsFilters(Map<String, Map<String, List<String>>> droppedDefects,
 			ObjectId basicProjectConfigId, List<String> resolutionTypeForRejection, String jiraDefectRejectionStatus) {
@@ -1581,6 +1589,58 @@ public class KpiHelperService { // NOPMD
 			}
 		});
 		return projectIssueWiseClosedDates;
+	}
+
+	/**
+	 * @param kpiRequest              kpiRequest
+	 * @param filteredAccountDataList filteredAccountDataList
+	 * @return list of AccountHierarchyData
+	 */
+	public List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
+																 List<AccountHierarchyData> filteredAccountDataList) {
+		kpiResolution(kpiRequest.getKpiList());
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
+			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
+		}
+
+		return filteredAccountDataList;
+	}
+
+	/**
+	 * @param kpiRequest              kpiRequest
+	 * @param filteredAccountDataList filteredAccountDataList
+	 */
+	public String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+		String[] projectKeyCache;
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
+			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
+		} else {
+			projectKeyCache = kpiRequest.getIds();
+		}
+
+		return projectKeyCache;
+	}
+
+	/**
+	 * @param kpiRequest   kpiRequest
+	 * @param responseList responseList
+	 * @param groupId      groupId
+	 */
+	public void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
+										 String[] projects) {
+		Integer sprintLevel = flterHelperService.getHierarchyIdLevelMap(false)
+				.get(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT);
+
+		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+				&& sprintLevel >= kpiRequest.getLevel() && isLeadTimeDuration(kpiRequest.getKpiList())) {
+			cacheService.setIntoApplicationCache(projects, responseList, KPISource.JIRA.name(), groupId,
+					kpiRequest.getSprintIncluded());
+		}
+
+	}
+
+	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
 	}
 
 }

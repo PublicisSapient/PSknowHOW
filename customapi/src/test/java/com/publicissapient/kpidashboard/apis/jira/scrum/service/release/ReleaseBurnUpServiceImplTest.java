@@ -130,7 +130,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -154,7 +154,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -179,7 +179,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -194,7 +194,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(new ArrayList<>());
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -219,7 +219,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
