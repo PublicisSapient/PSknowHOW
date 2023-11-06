@@ -35,6 +35,10 @@ import io.mongock.api.annotations.RollbackExecution;
  */
 @ChangeUnit(id = "kpi_sonar_code_quality", order = "8104", author = "shi6", systemVersion = "8.1.0")
 public class KpiSonarCodeQuality {
+	private static final String KPI_ID= "kpiId";
+	private static final String KPI_168= "Kpi168";
+	private static final String PARAGRAPH= "paragraph";
+	private static final String VALUE= "value";
 
 	private final MongoTemplate mongoTemplate;
 	private MongoCollection<Document> kpiMaster;
@@ -58,18 +62,18 @@ public class KpiSonarCodeQuality {
 
 	public void addSonarCodeQualityInKpiMaster() {
 		// Create the document to insert
-		Document document = new Document().append("kpiId", "kpi168").append("kpiName", "Sonar Code Quality")
+		Document document = new Document().append(KPI_ID, KPI_168).append("kpiName", "Sonar Code Quality")
 				.append("kpiUnit", "unit").append("maxValue", "90").append("isDeleted", "False")
 				.append("defaultOrder", 14).append("kpiSource", "Sonar").append("groupId", 1).append("kanban", false)
 				.append("chartType", "bar-with-y-axis-group")
 				.append("kpiInfo", new Document().append("definition",
 						"Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.")
 						.append("details", Arrays.asList(
-								new Document().append("type", "paragraph").append("value",
+								new Document().append("type", PARAGRAPH).append(VALUE,
 										"Code Quality in Sonarqube is shown as Grades (A to E)."),
-								new Document().append("type", "paragraph").append("value",
+								new Document().append("type", PARAGRAPH).append(VALUE,
 										"A is the highest (best) and,"),
-								new Document().append("type", "paragraph").append("value", "E is the least"),
+								new Document().append("type", PARAGRAPH).append(VALUE, "E is the least"),
 								new Document().append("type", "link").append("kpiLinkDetail",
 										new Document().append("text", "Detailed Information at").append("link",
 												"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality")))))
@@ -88,7 +92,7 @@ public class KpiSonarCodeQuality {
 		MongoCollection<Document> kpiCategoryMapping = mongoTemplate.getCollection("kpi_category_mapping");
 		// Query to find the kpi_category_mapping for kpiId = 38
 		// Execute the query
-		MongoCursor<Document> cursor = kpiCategoryMapping.find(new Document("kpiId", "kpi38")).iterator();
+		MongoCursor<Document> cursor = kpiCategoryMapping.find(new Document(KPI_ID, "kpi38")).iterator();
 
 		// Initialize the categoryId
 		String categoryId = null;
@@ -101,7 +105,7 @@ public class KpiSonarCodeQuality {
 		// Check if categoryId is not null and create an insert script
 		if (categoryId != null) {
 			// Create the insert script document
-			kpiCategoryMapping.insertOne(new Document().append("kpiId", "kpi168").append("categoryId", categoryId)
+			kpiCategoryMapping.insertOne(new Document().append(KPI_ID, KPI_168).append("categoryId", categoryId)
 					.append("kpiOrder", 15).append("kanban", false));
 		}
 	}
@@ -109,10 +113,10 @@ public class KpiSonarCodeQuality {
 	@RollbackExecution
 	public void rollbackMasterAndCategory() {
 		// Delete "Sonar Code Quality Kpi" from kpi_master collection
-		kpiMaster.findOneAndDelete(new Document("kpiId", "kpi168"));
+		kpiMaster.findOneAndDelete(new Document(KPI_ID, KPI_168));
 
 		// Delete "Sonar Code Quality Kpi" from kpi_category_mapping collection
-		kpiMasterMapping.findOneAndDelete(new Document("kpiId", "kpi168"));
+		kpiMasterMapping.findOneAndDelete(new Document(KPI_ID, KPI_168));
 	}
 
 	@RollbackBeforeExecution
