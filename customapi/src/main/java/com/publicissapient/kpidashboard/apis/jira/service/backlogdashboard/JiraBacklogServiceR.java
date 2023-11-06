@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -29,7 +28,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
-import com.publicissapient.kpidashboard.apis.model.SprintFilter;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -50,9 +48,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,7 +86,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
     private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
     /**
-     * This method process scrum JIRA based kpi request, cache data and call service
+     * This method process scrum jira based Backlog kpis request, cache data and call service
      * in multiple thread.
      *
      * @param kpiRequest JIRA KPI request true if flow for precalculated, false for direct
@@ -228,10 +224,10 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
 //    }
 
     private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
-            futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(), SprintDetails.SPRINT_STATE_FUTURE);
-            fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
-            fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
-            fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
+        futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(), SprintDetails.SPRINT_STATE_FUTURE);
+        fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
+        fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
+        fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
     }
 
     private boolean isLeadTimeDuration(List<KpiElement> kpiList) {

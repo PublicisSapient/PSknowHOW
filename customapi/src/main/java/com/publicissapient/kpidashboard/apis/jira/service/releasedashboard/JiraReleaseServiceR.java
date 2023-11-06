@@ -14,7 +14,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
@@ -99,7 +98,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
     private List<String> releaseList;
 
     /**
-     * This method process scrum JIRA based kpi request, cache data and call service
+     * This method process scrum jira based release kpis request, cache data and call service
      * in multiple thread.
      *
      * @param kpiRequest JIRA KPI request true if flow for precalculated, false for direct
@@ -324,9 +323,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
      * This method call by multiple thread, take object of specific KPI and call
      * method of these KPIs
      *
-     * @param kpiRequest              JIRA KPI request
-     * @param responseList            List of KpiElements having data of each KPI
-     * @param kpiElement              kpiElement object
+     * @param kpiRequest          JIRA KPI request
+     * @param responseList        List of KpiElements having data of each KPI
+     * @param kpiElement          kpiElement object
      * @param filteredAccountNode filtered node object
      * @throws ApplicationException ApplicationException
      */

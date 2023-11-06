@@ -15,7 +15,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 
-import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -87,7 +86,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
     private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
 
     /**
-     * This method process scrum JIRA based kpi request, cache data and call service
+     * This method process scrum jira based Iteration kpis request, cache data and call service
      * in multiple thread.
      *
      * @param kpiRequest JIRA KPI request true if flow for precalculated, false for direct
