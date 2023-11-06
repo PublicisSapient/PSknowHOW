@@ -100,9 +100,14 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   //generated dates on MM/DD format
   generateDates() {
     const currentDate = new Date();
-
+    console.log(this.selectedSprintInfo);
     const startDate = new Date(this.selectedSprintInfo.sprintStartDate);
-    const endDate = new Date(this.selectedSprintInfo.sprintEndDate);
+    let endDate;
+    if (this.selectedSprintInfo.sprintState.toLowerCase() === 'active' && this.compareDates(currentDate, this.selectedSprintInfo.sprintEndDate)) {
+      endDate = currentDate;
+    } else if (this.selectedSprintInfo.sprintState.toLowerCase() === 'active' && !this.compareDates(currentDate, this.selectedSprintInfo.sprintEndDate)) {
+      endDate = new Date(this.selectedSprintInfo.sprintEndDate);
+    }
     const xAxisCoordinates = [];
     const noOfDaysInCurrentSprint = this.getNoOFDayBetweenStartAndEndDate(startDate, endDate);
     for (let i = 0; i < noOfDaysInCurrentSprint; i++) {
@@ -493,9 +498,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .style('display', (d) => d['Test-Completed'] !== '-' && self.compareDates(d['Test-Completed'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Test-Completed']) ? 'block' : 'none')
         .attr('width', '40px').attr('height', '40px')
         .attr('x', (d) => {
-          if(!d['Actual-Completion-Date']) {
-          return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
-          } else if(self.compareDates(d['Actual-Completion-Date'], d['Test-Completed'])){
+          if (!d['Actual-Completion-Date']) {
+            return !d['Test-Completed'] || d['Test-Completed'] === '-' ? 0 : x(self.formatDate(new Date(d['Test-Completed']))) + initialCoordinate / 2 - 20;
+          } else if (self.compareDates(d['Actual-Completion-Date'], d['Test-Completed'])) {
             return 'block';
           } else {
             return 'none';
@@ -516,9 +521,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
       marker.append('image')
         .attr('xlink:href', '../../../assets/img/dev-completed.svg')
         .style('display', (d) => {
-          if(!d['Actual-Completion-Date']) {
-          return d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none';
-          } else if(self.compareDates(d['Actual-Completion-Date'], d['Dev-Completion-Date'])){
+          if (!d['Actual-Completion-Date']) {
+            return d['Dev-Completion-Date'] !== '-' && self.compareDates(d['Dev-Completion-Date'], self.selectedSprintInfo.sprintStartDate) && self.compareDates(self.selectedSprintInfo.sprintEndDate, d['Dev-Completion-Date']) ? 'block' : 'none';
+          } else if (self.compareDates(d['Actual-Completion-Date'], d['Dev-Completion-Date'])) {
             return 'block';
           } else {
             return 'none';
