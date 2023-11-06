@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author eswbogol
  */
-@ChangeUnit(id = "DIR_FTPR_Labels_ChangeLog", order = "8103", author = "eswbogol", systemVersion = "8.1.0")
+@ChangeUnit(id = "dir_ftpr_labels_changeLog", order = "8103", author = "eswbogol", systemVersion = "8.1.0")
 public class DIRFTPRLabelsChangeLog {
 
 	private final MongoTemplate mongoTemplate;
