@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,8 +138,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
 		countProjectWiseDc.forEach((issueType, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
-			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
+			List<DataCount> dataList = projectWiseDc.values().stream().flatMap(Collection::stream)
+					.collect(Collectors.toList());
 			dataCountGroup.setFilter(issueType);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
@@ -479,6 +480,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		return dataCount;
 	}
 
+	/*
+	 * This method will construct filterMap for story points and issue count with
+	 * initial scope and scope change jiraIssues
+	 */
 	private static Map<String, Map<String, List<JiraIssue>>> getFiltersMap(
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseAddedListMap,
 			Map<Pair<String, String>, List<JiraIssue>> sprintWiseRemovedListMap,
@@ -506,6 +511,9 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		setIssueCount(map, dataCount);
 	}
 
+	/*
+	 * This method sets issue count of both the scope change and initial scope
+	 */
 	private static void setIssueCount(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount) {
 		if (ISSUE_COUNT.equalsIgnoreCase(map.getKey())) {
 			double scopeChangeIssuesCount = 0.0;
@@ -527,6 +535,9 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		}
 	}
 
+	/*
+	 * This method sets story Points of both the scope change and initial scope
+	 */
 	private static void setStoryPoints(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount) {
 		if (STORY_POINTS.equalsIgnoreCase(map.getKey())) {
 			double scopeChangeStoryPoints = 0.0;
@@ -549,6 +560,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		}
 	}
 
+	/*
+	 * This method generate hoverMap for the scope change and initial scope
+	 * based on the issue count and story points
+	 */
 	private Map<String, Object> generateHoverMap(Map<String, List<JiraIssue>> valueMap, String key) {
 		Map<String, Object> hoverMap = new LinkedHashMap<>();
 		if (STORY_POINTS.equalsIgnoreCase(key)) {
