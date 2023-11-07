@@ -115,39 +115,41 @@ public class FileStorageController {
 
 	@PostMapping("/file/uploadCertificate")
 	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
-		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error", file.getOriginalFilename());
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error",
+				file.getOriginalFilename());
+
+		String extension = file.getOriginalFilename();
 		// Validate the file type
-		String originalFilename = file.getOriginalFilename();
-		if (!isValidFileExtension(originalFilename)) {
+		if (!isValidFile(extension)) {
 			response.setMessage("Invalid file type. Please upload a .cer file.");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
+		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+		String fileName = extension.replace(".cer", "") + "_" + timestamp + ".cer";
+		File dest = new File(customApiConfig.getHostPath(), fileName);
 		try {
-			// Generate a unique filename for the uploaded certificate
-			String uniqueFilename = generateUniqueFilename(originalFilename);
-			// Define the destination file path
-			File dest = new File(customApiConfig.getHostPath(), uniqueFilename);
-			// Ensure that the parent directory exists
-			if (!dest.getParentFile().exists()) {
-				dest.getParentFile().mkdirs();
-			}
-			// Transfer the uploaded file to the destination
+			dest.getParentFile().mkdirs();
 			file.transferTo(dest);
 			response.setSuccess(true);
-			response.setMessage("LDAP certificate copied successfully, please restart the customapi container service.");
+			response.setMessage(
+					"LDAP certificate copied successfully, please restart the customapi container service.");
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
 		}
 	}
-	private boolean isValidFileExtension(String filename) {
-		// Add your file extension validation logic here, e.g., check if it ends with .cer
-		return filename != null && filename.toLowerCase().endsWith(".cer");
-	}
-	private String generateUniqueFilename(String originalFilename) {
-		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-		// Generate a unique filename by appending the timestamp
-		return originalFilename.replace(".cer", "") + "_" + timestamp + ".cer";
+
+	private boolean isValidFile(String extension) {
+
+		boolean isValidFileExtension = false;
+		try {
+			isValidFileExtension = (null != extension) && (extension.endsWith(".cer"));
+
+		} catch (Exception e) {
+			log.error("Uploded File is either null or in incorrect format");
+		}
+		return isValidFileExtension;
 	}
 
 }
