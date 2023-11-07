@@ -398,7 +398,7 @@ public class KpiHelperService { // NOPMD
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
 					fieldMapping.getResolutionTypeForRejectionKPI14(),
 					fieldMapping.getJiraDefectRejectionStatusKPI14());
-			labelsList.addAll(fieldMapping.getJiraLabelsKPI14());
+			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI14()).orElse(new ArrayList<>()));
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);

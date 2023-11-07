@@ -286,7 +286,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			labelsList.addAll(fieldMapping.getJiraLabelsKPI82());
+			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI82()).orElse(new ArrayList<>()));
 		});
 
 		/** additional filter **/
