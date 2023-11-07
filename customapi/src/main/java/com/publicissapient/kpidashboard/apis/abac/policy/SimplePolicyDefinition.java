@@ -35,7 +35,7 @@ public class SimplePolicyDefinition implements PolicyDefinition {
 	private List<ActionPoliciesDTO> rules;
 
 	@PostConstruct
-	private void init() {
+	public void init() {
 		rules = cacheService.getActionPoliciesFromCache();
 	}
 
