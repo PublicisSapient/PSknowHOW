@@ -98,6 +98,11 @@ label.btn-import-label {
 ::ng-deep .field-mapping .p-inputtext{
   width: 100%;
 }
+
+::ng-deep .field-mapping .p-inputtext.w-80{
+  width: 80%;
+}
+
 ::ng-deep .field-mapping .p-dropdown{
   width: 100%;
 }

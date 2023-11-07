@@ -15,8 +15,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -24,13 +26,16 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -539,17 +544,18 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return trend values
 	 */
-	public List<DataCount> getTrendValues(KpiRequest kpiRequest, Map<Pair<String, String>, Node> nodeWiseKPIValue,
-			KPICode kpiCode) {
+	public List<DataCount> getTrendValues(KpiRequest kpiRequest, KpiElement kpiElement,
+			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
-
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement);
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
@@ -655,17 +661,18 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return map of string and list of trendvalue
 	 */
-	public Map<String, List<DataCount>> getTrendValuesMap(KpiRequest kpiRequest,
+	public Map<String, List<DataCount>> getTrendValuesMap(KpiRequest kpiRequest, KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
-
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement);
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
@@ -1140,4 +1147,53 @@ public abstract class ToolsKPIService<R, S> {
 		}
 		return AggregationUtils.percentilesLong(valueList, 90d);
 	}
+
+	/**
+	 * on selection of single project the fieldmapping threshold value will be
+	 * selected
+	 * 
+	 * @param selectIds
+	 *            projectIds
+	 * @param kpiElement
+	 *            kpiElement to set thresholdvalue
+	 */
+	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement) {
+		String basicProjectConfigId = null;
+
+		if (selectIds.size() == 1)
+			basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
+
+		if (StringUtils.isNotEmpty(basicProjectConfigId)) {
+			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+					.get(new ObjectId(basicProjectConfigId));
+			if (fieldMapping != null) {
+				kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
+			}
+		}
+	}
+
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param fieldValue
+	 *            fieldmapping thresholdvalue
+	 * @param kpiId
+	 *            KPICODE kpiId
+	 * @return
+	 */
+	public Double calculateThresholdValue(String fieldValue, String kpiId) { // NOSONAR
+		Double thresholdValue;
+		if (StringUtils.isEmpty(fieldValue)) {
+			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
+			thresholdValue = masterList.stream().filter(kpi -> kpi.getKpiId().equalsIgnoreCase(kpiId))
+					.mapToDouble(KpiMaster::getThresholdValue).sum();
+		} else {
+			thresholdValue = Double.valueOf(fieldValue);
+		}
+		return thresholdValue;
+	}
+
 }

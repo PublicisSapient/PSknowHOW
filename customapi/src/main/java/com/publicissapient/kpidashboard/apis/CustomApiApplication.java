@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis;
 
 import javax.validation.Validator;
 
+import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -53,6 +54,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  */
 @SpringBootApplication
 @EnableCaching
+@EnableMongock
 @EnableMongoRepositories(basePackages = { "com.publicissapient.**.repository" })
 @ComponentScan(basePackages = { "com.publicissapient.kpidashboard" })
 public class CustomApiApplication extends SpringBootServletInitializer {

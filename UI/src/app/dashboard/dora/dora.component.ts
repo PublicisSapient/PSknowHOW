@@ -64,6 +64,7 @@ export class DoraComponent implements OnInit {
   selectedJobFilter = 'Select';
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
+  kpiThresholdObj = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -355,6 +356,7 @@ export class DoraComponent implements OnInit {
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};

@@ -41,7 +41,7 @@
                         <ng-container
                                 *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData">
                           <ng-container *ngIf="showChart">
-                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi116']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="kpiThresholdObj['kpi116']"
                               [unit]="updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi116']"
                               [xCaption]="updatedConfigDataObj['kpi116']?.kpiDetail?.xaxisLabel"
@@ -122,7 +122,7 @@
                         <ng-container
                                 *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData3">
                           <ng-container *ngIf="showChart">
-                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi118']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="kpiThresholdObj['kpi118']"
                               [unit]="updatedConfigDataObj['kpi118']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi118']"
                               [xCaption]="updatedConfigDataObj['kpi118']?.kpiDetail?.xaxisLabel"
@@ -180,7 +180,7 @@
                         <ng-container
                           *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData4">
                           <ng-container *ngIf="showChart">
-                            <app-multiline [thresholdValue]="updatedConfigDataObj['kpi156']?.kpiDetail?.thresholdValue"
+                            <app-multiline [thresholdValue]="kpiThresholdObj['kpi156']"
                               [unit]="updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit"
                               [data]="kpiChartData['kpi156']"
                               [xCaption]="updatedConfigDataObj['kpi156']?.kpiDetail?.xaxisLabel"
