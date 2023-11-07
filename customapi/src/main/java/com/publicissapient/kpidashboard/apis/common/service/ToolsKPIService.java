@@ -30,6 +30,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
@@ -555,7 +556,7 @@ public abstract class ToolsKPIService<R, S> {
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
-		calculateThresholdValue(selectedIds, kpiElement);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
@@ -672,7 +673,7 @@ public abstract class ToolsKPIService<R, S> {
 		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
-		calculateThresholdValue(selectedIds, kpiElement);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
@@ -1155,15 +1156,14 @@ public abstract class ToolsKPIService<R, S> {
 	 * @param selectIds
 	 *            projectIds
 	 * @param kpiElement
-	 *            kpiElement to set thresholdvalue
+	 *            kpiElement
+	 * @param labelName
+	 *            labelName
 	 */
-	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement) {
-		String basicProjectConfigId = null;
-
-		if (selectIds.size() == 1)
-			basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
-
-		if (StringUtils.isNotEmpty(basicProjectConfigId)) {
+	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
+		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+			String basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(new ObjectId(basicProjectConfigId));
 			if (fieldMapping != null) {
@@ -1172,6 +1172,12 @@ public abstract class ToolsKPIService<R, S> {
 		}
 	}
 
+	/**
+	 *
+	 * @param fieldMapping
+	 *    fieldMapping
+	 * @return
+	 */
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return null;
 	}
