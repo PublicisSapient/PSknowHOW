@@ -597,4 +597,9 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	public String getQualifierType() {
 		return KPICode.SCOPE_CHURN.name();
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI164(), KPICode.SCOPE_CHURN.getKpiId());
+	}
 }
