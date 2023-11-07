@@ -8,10 +8,10 @@
     "createdDate" : "2023-04-25T19:26:31.000",
     "projectKey" : "TEST",
     "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
-    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "statusUpdationLog" : [
       {
-        "changedFrom" : "",
+        "changedFrom" : "Closed",
         "changedTo" : "Open",
         "updatedOn" : "2023-04-25T19:26:31.000"
       },
@@ -19,6 +19,11 @@
         "changedFrom" : "Open",
         "changedTo" : "In Analysis",
         "updatedOn" : "2023-05-25T11:43:22.000"
+      },
+      {
+        "changedFrom" : "In Analysis",
+        "changedTo" : "Closed",
+        "updatedOn" : "2023-05-26T11:43:22.000"
       }
     ],
     "assigneeUpdationLog" : [
@@ -81,7 +86,7 @@
     "createdDate" : "2023-05-22T18:28:39.000",
     "projectKey" : "TEST",
     "projectComponentId" : "Map Test_63d9280d5ce3ee7d77551313",
-    "basicProjectConfigId" : "63d9280d5ce3ee7d77551313",
+    "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "statusUpdationLog" : [
       {
         "changedFrom" : "",
@@ -157,6 +162,11 @@
       {
         "changedFrom" : "",
         "changedTo" : "AP v2.0.0",
+        "updatedOn" : "2023-05-22T18:28:39.000"
+      },
+      {
+        "changedFrom" : "AP v2.0.0",
+        "changedTo" : "AP v2.1.0,AP v2.0.0",
         "updatedOn" : "2023-05-22T18:28:39.000"
       }
     ],
