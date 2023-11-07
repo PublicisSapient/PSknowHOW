@@ -51,11 +51,11 @@ public class FlowEfficiencyKpi {
 
 	public void addFlowEfficiencyKpiToKpiMaster() {
 		Document kpiDocument = new Document().append("kpiId", "kpi170").append("kpiName", "Flow Efficiency")
-				.append("kpiUnit", "").append("isDeleted", "False").append("defaultOrder", 1)
+				.append("kpiUnit", "%").append("isDeleted", "False").append("defaultOrder", 1)
 				.append("kpiCategory", "Backlog").append("kpiSource", "Jira").append("groupId", 11)
 				.append("thresholdValue", "").append("kanban", false).append("chartType", "line")
 				.append("kpiInfo", new Document(DEFINITION,
-						"Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"))
+						"The percentage of time spent in work states vs wait states across the lifecycle of an issue"))
 				.append("xAxisLabel", "Duration").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
 				.append("kpiFilter", "dropDown").append("showTrend", false).append("aggregationCriteria", "average")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", false)

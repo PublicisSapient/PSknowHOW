@@ -3742,7 +3742,7 @@
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
-      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
     },
     "xAxisLabel" : "Duration",
     "yAxisLabel" : "Percentage",
