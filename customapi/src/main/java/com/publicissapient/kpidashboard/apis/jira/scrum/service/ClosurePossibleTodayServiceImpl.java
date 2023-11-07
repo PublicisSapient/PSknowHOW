@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -167,7 +168,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+				.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);

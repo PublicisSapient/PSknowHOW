@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
@@ -140,6 +141,9 @@ public class SonarTechDebtKanbanServiceImplTest {
 		setTreadValuesDataCount();
 		filterCategory.add("Project");
 		filterCategory.add("Sprint");
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
+
 	}
 
 	private void setTreadValuesDataCount() {

@@ -281,7 +281,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			List<JiraIssue> jiraIssueLinkedIssues = (List<JiraIssue>) resultMap.get(LINKED_ISSUES);
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 			Map<String, List<String>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();

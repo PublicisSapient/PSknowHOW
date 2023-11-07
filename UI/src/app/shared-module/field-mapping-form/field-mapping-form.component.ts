@@ -33,6 +33,7 @@ export class FieldMappingFormComponent implements OnInit {
   @Input() formData;
   @Input() selectedConfig;
   @Input() selectedToolConfig;
+  @Input() thresholdUnit;
   @Output() reloadKPI = new EventEmitter();
   populateDropdowns = true;
   selectedField = '';
@@ -78,7 +79,7 @@ private setting = {
         fieldMappingConfigration[field.section].push(field);
       }
     });
-    this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' })).reverse();
+    this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     this.formConfig = fieldMappingConfigration;
     
   }

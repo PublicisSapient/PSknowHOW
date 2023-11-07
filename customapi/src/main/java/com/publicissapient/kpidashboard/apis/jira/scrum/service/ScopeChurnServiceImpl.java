@@ -120,7 +120,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SCOPE_CHURN);
 
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.SCOPE_CHURN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SCOPE_CHURN);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -461,5 +461,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Override
 	public String getQualifierType() {
 		return KPICode.SCOPE_CHURN.name();
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI164(),KPICode.SCOPE_CHURN.getKpiId());
 	}
 }
