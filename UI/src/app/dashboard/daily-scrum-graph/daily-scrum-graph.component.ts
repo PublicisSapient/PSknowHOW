@@ -283,6 +283,8 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             } else if ((closedIssueStatus.includes(currentIssue['Issue Status']) && Object.keys(currentIssue['statusLogGroup']).length === 0) || currentIssue['preClosed']) {
               return x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 : 0;
             }
+          } else {
+            return x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 >= 0 ? x(self.formatDate(new Date(currentIssue['Change Date']))) + initialCoordinate / 2 : 0;
           }
         })
         .attr('cy', (d, i) => issues.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i) - 1) / 2)
