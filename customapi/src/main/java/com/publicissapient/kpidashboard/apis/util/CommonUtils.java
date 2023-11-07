@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 
 /**
  * Provides Common utilities.
@@ -502,4 +503,27 @@ public final class CommonUtils {
 		}
 		return returnString.toString();
 	}
+
+	// -- auth-N-auth changes starts here ------
+
+	/**
+	 *
+	 * @param apiKey
+	 * @param usingBasicAuth
+	 * @return
+	 */
+
+	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		if (apiKey != null && !apiKey.isEmpty()) {
+			if (usingBasicAuth) {
+				headers.set("x-api-key", apiKey);
+			} else {
+				headers.add("x-api-key", apiKey);
+			}
+		}
+		return headers;
+	}
+
+     // -- auth-N-auth changes ends here ------
 }

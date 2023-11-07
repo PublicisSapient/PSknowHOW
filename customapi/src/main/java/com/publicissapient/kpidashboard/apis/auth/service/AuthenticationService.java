@@ -18,10 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
+
+import java.util.List;
 
 /**
  * An Interface to provide authentication service.
@@ -204,4 +208,12 @@ public interface AuthenticationService {
 
 	Iterable<Authentication> getAuthenticationByApproved(boolean approved);
 
+	//---- auth-N-auth required code starts here ------
+	/**
+	 * fetch policies by resources from central auth
+	 * @return
+	 */
+	List<ActionPoliciesDTO> fetchActionPolicyByResource();
+
+	//---- auth-N-auth required code ends here ------
 }

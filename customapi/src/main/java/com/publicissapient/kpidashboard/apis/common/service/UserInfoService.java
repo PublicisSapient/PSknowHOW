@@ -166,4 +166,14 @@ public interface UserInfoService {
 	 * @return user info object
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
+
+	//----auth-N-auth----------
+
+	/**
+	 * get User info from cental auth
+	 * @param username
+	 * @return
+	 */
+	UserInfo getCentralAuthUserInfo(String username);
+	//----auth-N-auth----------
 }
