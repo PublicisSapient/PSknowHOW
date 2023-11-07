@@ -54,8 +54,8 @@ public class ForgotPasswordControllerTest extends Mockito {
 
 	private MockMvc mockMvc;
 
-	@InjectMocks
-	private ForgotPasswordController forgotPasswordController;
+	/*@InjectMocks
+	private ForgotPasswordController forgotPasswordController;*/
 
 	@Mock
 	private ForgotPasswordService forgotPasswordService;
@@ -65,10 +65,10 @@ public class ForgotPasswordControllerTest extends Mockito {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-	@Before
+	/*@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(forgotPasswordController).build();
-	}
+	}*/
 
 	@After
 	public void after() {

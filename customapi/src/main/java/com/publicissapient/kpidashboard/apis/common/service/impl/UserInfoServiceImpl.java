@@ -45,9 +45,16 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -416,7 +423,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	/*
-	to create Super admin User info for first time user
+	 * to create Super admin User info for first time user
 	 */
 	public UserInfo createSuperAdminUserInfo(String username, String email) {
 		UserInfo userInfo = new UserInfo();
@@ -527,4 +534,43 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 		return userInfo;
 	}
+
+	// -- auth-N-auth starts here -------------
+
+	/**
+	 * get user details from Central auth
+	 * 
+	 * @param username
+	 * @return
+	 */
+
+	@Override
+	public UserInfo getCentralAuthUserInfo(String username) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/");
+		uriBuilder.path(authProperties.getFetchUserDetailsEndPoint());
+		uriBuilder.path(username);
+
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<UserInfo> response = null;
+		try {
+			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST, entity, UserInfo.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return new UserInfo();
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
 }

@@ -320,6 +320,12 @@ public final class CommonConstant {
 
 	public static final String REPO = "Repo";
 
+	//-- auth-N-auth changes starts here --
+	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
+
+	//-- auth-N-auth changes ends here --
+
+
 	private CommonConstant() {
 
 	}

@@ -34,6 +34,7 @@ import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
+import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -74,11 +75,13 @@ const routes: Routes = [
     ], canActivate: [AuthGuard]
   },
   { path: 'authentication-fail', component: SsoAuthFailureComponent },
-  { path: '**', redirectTo: 'authentication' }
+  { path: 'pageNotFound', component: PageNotFoundComponent },
+  // { path: '**', redirectTo: 'authentication' }
+  { path: '**', redirectTo: 'pageNotFound' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, { useHash: false, relativeLinkResolution: 'legacy'})],
 
   exports: [RouterModule],
   providers: [

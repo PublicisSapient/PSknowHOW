@@ -29,6 +29,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { TabViewModule } from 'primeng/tabview';
 import { SharedModuleModule } from '../shared-module/shared-module.module';
+import { VerifyComponent } from './verify/verify.component';
 
 
 @NgModule({
@@ -47,6 +48,7 @@ import { SharedModuleModule } from '../shared-module/shared-module.module';
     RegisterComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
+    VerifyComponent,
   ],
   providers: [MessageService]
 })
