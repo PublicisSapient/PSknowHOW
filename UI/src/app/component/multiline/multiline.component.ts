@@ -89,9 +89,9 @@ export class MultilineComponent implements OnChanges {
         this.draw();
     } else {
       d3.select(this.elem).select('svg').remove();
-      d3.select(this.elem).select('.bstimeslider').remove(); 
+      d3.select(this.elem).select('.bstimeslider').remove();
       this.draw();
-    }    
+    }
     if(changes['activeTab']){
       /** settimeout applied because dom is loading late */
       setTimeout(() => {
