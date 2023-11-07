@@ -3576,7 +3576,8 @@
       "30-20" ,
       "20-10" ,
       "10-"
-    ]
+    ] ,
+    "kpiFilter" : "radioButton"
   } ,
   {
     "kpiId" : "kpi163" ,

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -30,7 +31,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
@@ -1152,7 +1152,7 @@ public abstract class ToolsKPIService<R, S> {
 	/**
 	 * on selection of single project the fieldmapping threshold value will be
 	 * selected
-	 * 
+	 *
 	 * @param selectIds
 	 *            projectIds
 	 * @param kpiElement
@@ -1175,7 +1175,7 @@ public abstract class ToolsKPIService<R, S> {
 	/**
 	 *
 	 * @param fieldMapping
-	 *    fieldMapping
+	 *            fieldMapping
 	 * @return
 	 */
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
