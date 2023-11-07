@@ -3483,11 +3483,11 @@ db.getCollection('field_mapping_structure').insertMany([
             },
             "options": [{
                  "label": "On",
-                 "value": true
+                 "value": "true"
             },
             {
                  "label": "Off",
-                 "value": false
+                 "value": "false"
             }
             ]
     },
@@ -5128,3 +5128,32 @@ db.kpi_master.updateMany(
 
 db.kpi_master.updateOne({ "kpiId": "kpi14" }, { $set: { "groupId": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi149" }, { $set: { "groupId": 16 } })
+
+//notificationEnabler fixed
+db.getCollection('field_mapping_structure').updateOne(
+    {"fieldName": "notificationEnabler"},
+    {
+        $set: {
+            "fieldLabel": "Processor Failure Notification",
+            "fieldType": "radiobutton",
+            "section": "Custom Fields Mapping",
+            "tooltip": {
+                "definition": "On/Off notification in case processor failure."
+            },
+            "options": [
+                {
+                    "label": "On",
+                    "value": true
+                },
+                {
+                    "label": "Off",
+                    "value": false
+                }
+            ]
+        }
+    }
+);
+db.kpi_master.updateMany(
+    { "kpiId": "kpi34" },
+    { $set: { "kpiInfo.formula.$[].operands": ["No. of defects in the iteration that are fixed", "Total no. of defects in an iteration"] } }
+);

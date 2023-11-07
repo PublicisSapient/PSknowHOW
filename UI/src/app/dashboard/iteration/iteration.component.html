@@ -172,13 +172,13 @@
                                         <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                           <app-groupstackchart *ngSwitchCase="'stackedColumn'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-groupstackchart>
                                           <app-group-bar-chart *ngSwitchCase="'GroupBarChart'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
@@ -190,7 +190,7 @@
 
 
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
-                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
@@ -295,13 +295,13 @@
                                         <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                           <app-groupstackchart *ngSwitchCase="'stackedColumn'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-groupstackchart>
                                           <app-group-bar-chart *ngSwitchCase="'GroupBarChart'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
@@ -313,7 +313,7 @@
 
 
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
-                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
@@ -418,13 +418,13 @@
                                         <ng-container *ngIf="kpiChartData[kpi?.kpiId]?.length > 0   ; else noData">
                                           <app-groupstackchart *ngSwitchCase="'stackedColumn'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-groupstackchart>
                                           <app-group-bar-chart *ngSwitchCase="'GroupBarChart'" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
                                             [yCaption]="kpi?.kpiDetail?.yaxisLabel" [unit]="kpi?.kpiDetail?.kpiUnit"
-                                            [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [data]="kpiChartData[kpi?.kpiId]"
+                                            [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [data]="kpiChartData[kpi?.kpiId]"
                                             [color]="chartColorList" [selectedtype]="selectedtype" [kpiId]="kpi?.kpiId"
                                             [legendType]="'normal'">
                                           </app-group-bar-chart>
@@ -436,7 +436,7 @@
 
 
                                           <app-piechart *ngSwitchCase="'pieChart'" [data]="kpiChartData[kpi?.kpiId]"></app-piechart>
-                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpi?.kpiDetail?.thresholdValue"
+                                          <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                             [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                             [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                             [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
