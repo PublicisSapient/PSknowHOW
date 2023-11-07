@@ -36,6 +36,9 @@ import java.util.List;
 public class FlowEfficiencyKpi {
 	private final MongoTemplate mongoTemplate;
 
+	private static final String DEFINITION = "definition";
+	private static final String FIELD_NAME = "fieldName";
+
 	public FlowEfficiencyKpi(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
@@ -51,7 +54,7 @@ public class FlowEfficiencyKpi {
 				.append("kpiUnit", "").append("isDeleted", "False").append("defaultOrder", 1)
 				.append("kpiCategory", "Backlog").append("kpiSource", "Jira").append("groupId", 11)
 				.append("thresholdValue", "").append("kanban", false).append("chartType", "line")
-				.append("kpiInfo", new Document("definition",
+				.append("kpiInfo", new Document(DEFINITION,
 						"Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"))
 				.append("xAxisLabel", "Duration").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
 				.append("kpiFilter", "dropDown").append("showTrend", false).append("aggregationCriteria", "average")
@@ -62,14 +65,14 @@ public class FlowEfficiencyKpi {
 
 	public void addFlowEfficiencyFieldMappingStructure() {
 
-		Document closeStatusDocument = new Document("fieldName", "jiraIssueClosedState170")
+		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedState170")
 				.append("fieldLabel", "Status to identify Close Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document("definition",
+				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
 
-		Document waitStatusDocument = new Document("fieldName", "jiraIssueWaitState170")
+		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitState170")
 				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document("definition",
+				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"The statuses wherein no activity takes place and signifies that issue is in queue"));
 
 		mongoTemplate.getCollection("field_mapping_structure")
@@ -91,7 +94,7 @@ public class FlowEfficiencyKpi {
 
 	public void addFlowEfficiencyFieldMappingStructureRollback() {
 		List<String> fieldNamesToDelete = Arrays.asList("jiraIssueClosedState170", "jiraIssueWaitState170");
-		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
+		Document filter = new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete));
 		mongoTemplate.getCollection("field_mapping_structure").deleteMany(filter);
 	}
 }

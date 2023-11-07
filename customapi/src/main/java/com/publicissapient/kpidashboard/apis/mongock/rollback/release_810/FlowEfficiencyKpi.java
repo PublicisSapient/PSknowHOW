@@ -18,20 +18,24 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.rollback.release_810;
 
-import io.mongock.api.annotations.ChangeUnit;
-import io.mongock.api.annotations.Execution;
-import io.mongock.api.annotations.RollbackExecution;
+import java.util.Arrays;
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.Arrays;
-import java.util.List;
+import io.mongock.api.annotations.ChangeUnit;
+import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 
 /**
  * @author kunkambl
  */
 @ChangeUnit(id = "r_flow_efficiency_kpi", order = "08107", author = "kunkambl", systemVersion = "8.1.0")
 public class FlowEfficiencyKpi {
+
+	private static final String DEFINITION = "definition";
+	private static final String FIELD_NAME = "fieldName";
 	private final MongoTemplate mongoTemplate;
 
 	public FlowEfficiencyKpi(MongoTemplate mongoTemplate) {
@@ -52,7 +56,7 @@ public class FlowEfficiencyKpi {
 
 	public void addFlowEfficiencyFieldMappingStructureRollback() {
 		List<String> fieldNamesToDelete = Arrays.asList("jiraIssueClosedState170", "jiraIssueWaitState170");
-		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
+		Document filter = new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete));
 		mongoTemplate.getCollection("field_mapping_structure").deleteMany(filter);
 	}
 
@@ -67,7 +71,7 @@ public class FlowEfficiencyKpi {
 				.append("kpiUnit", "").append("isDeleted", "False").append("defaultOrder", 1)
 				.append("kpiCategory", "Backlog").append("kpiSource", "Jira").append("groupId", 11)
 				.append("thresholdValue", "").append("kanban", false).append("chartType", "line")
-				.append("kpiInfo", new Document("definition",
+				.append("kpiInfo", new Document(DEFINITION,
 						"Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"))
 				.append("xAxisLabel", "Duration").append("yAxisLabel", "Percentage").append("isPositiveTrend", false)
 				.append("kpiFilter", "dropDown").append("showTrend", false).append("aggregationCriteria", "average")
@@ -78,14 +82,14 @@ public class FlowEfficiencyKpi {
 
 	public void addFlowEfficiencyFieldMappingStructure() {
 
-		Document closeStatusDocument = new Document("fieldName", "jiraIssueClosedState170")
+		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedState170")
 				.append("fieldLabel", "Status to identify Close Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document("definition",
+				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
 
-		Document waitStatusDocument = new Document("fieldName", "jiraIssueWaitState170")
+		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitState170")
 				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document("definition",
+				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"The statuses wherein no activity takes place and signifies that issue is in queue"));
 
 		mongoTemplate.getCollection("field_mapping_structure")
