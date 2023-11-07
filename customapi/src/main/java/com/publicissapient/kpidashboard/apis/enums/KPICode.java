@@ -476,6 +476,10 @@ public enum KPICode {
      */
     BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name()),
     /**
+     *  Meantime to Recover(Dora)
+     */
+    MEAN_TIME_TO_RECOVER("kpi166",KPISource.JIRA.name()),
+    /**
      * Flow Efficiency (Backlog)
      */
     FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name());

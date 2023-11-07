@@ -286,6 +286,9 @@ public enum KPIExcelColumn {
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
 
 	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+
+    MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
+            "Created Date", "Completion Date", "Time to Recover (In Hours)")),
 	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
 			"Wait Time", "Total Time", "Flow Efficiency"));
 
