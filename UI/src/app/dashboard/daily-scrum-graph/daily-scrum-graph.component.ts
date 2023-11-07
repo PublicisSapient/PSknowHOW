@@ -177,9 +177,9 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
-    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options;
-    const closedIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'done')?.options;
-    const inProgressIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options;
+    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options :[];
+    const closedIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'done')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'done')?.options : [];
+    const inProgressIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options : [];
     const onHoldIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options.length ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options : [];
 
     if (xCoordinates.length > 20) {
