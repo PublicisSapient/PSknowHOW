@@ -72,6 +72,7 @@ public class AuthProperties {// NOPMD
 	private String centralAuthBaseURL;
 	private String resourceAPIKey;
 	private String resourcePolicyEndPoint;
+	private String fetchUserDetailsEndPoint;
 
 	/**
 	 * Gets expiration time.
@@ -384,6 +385,23 @@ public class AuthProperties {// NOPMD
 	 */
 	public String getCentralAuthBaseURL() {
 		return centralAuthBaseURL;
+	}
+
+	/**
+	 * Set central auth userinfo url
+	 *
+	 * @param fetchUserDetailsEndPoint
+	 */
+	public void setFetchUserDetailsEndPoint(String fetchUserDetailsEndPoint) {
+		this.fetchUserDetailsEndPoint = fetchUserDetailsEndPoint;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 * @return
+	 */
+	public String getFetchUserDetailsEndPoint() {
+		return fetchUserDetailsEndPoint;
 	}
 
 	/**

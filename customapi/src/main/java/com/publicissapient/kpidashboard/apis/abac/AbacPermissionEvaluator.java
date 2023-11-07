@@ -52,7 +52,7 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 		String userName = (String) authentication.getPrincipal();
 		// --- auth-N-auth starts here -------
 		// --- We have to implement an api to fetch user info data from central auth
-		UserInfo user = userInfoService.getUserInfo(userName);
+		UserInfo user = userInfoService.getCentralAuthUserInfo(userName);
 		// --- auth-N-auth ends here -------
 
 		Map<String, Object> environment = new HashMap<>();
