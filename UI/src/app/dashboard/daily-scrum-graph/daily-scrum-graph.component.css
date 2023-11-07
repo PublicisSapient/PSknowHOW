@@ -107,8 +107,8 @@
 }
 
 :host ::ng-deep .modal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable {
-    height: 500px !important;
-    width: 500px !important;
+    height: 550px !important;
+    width: 60vw !important;
     max-width: 90vw !important;
     min-width: 480px;
 }
@@ -116,7 +116,6 @@
 :host ::ng-deep .modal .legend-item {
     height: 80px;
     text-align: center;
-    margin-top: 20px;
 }
 
 :host ::ng-deep #issueAxis {

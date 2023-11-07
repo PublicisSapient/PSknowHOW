@@ -182,7 +182,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const inProgressIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options : [];
     const onHoldIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options.length ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options : [];
 
-    if (xCoordinates.length > 20) {
+    if (xCoordinates.length > 30) {
       width = (xCoordinates.length * 50);
     }
 
