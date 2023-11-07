@@ -38,7 +38,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
@@ -393,7 +392,8 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	public List<ActionPoliciesDTO> fetchActionPolicyByResource() {
 		log.info("fetching Action Policy Rules from central auth");
-		String actionPolicyUrl = getAPIEndPointURL(authProperties.getResourcePolicyEndPoint());
+		String actionPolicyUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getResourcePolicyEndPoint(), "");
 		HttpEntity<?> httpEntity = new HttpEntity<>(CommonUtils.getHeaders(authProperties.getResourceAPIKey(), true));
 		log.info(HTTP_ENTITY, httpEntity);
 		ParameterizedTypeReference<ServiceResponse> typeReference = new ParameterizedTypeReference<ServiceResponse>() {
@@ -401,19 +401,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		return (List<ActionPoliciesDTO>) getAuthNAuthResponse(
 				restTemplate.exchange(actionPolicyUrl, HttpMethod.GET, httpEntity, typeReference), actionPolicyUrl)
 				.getData();
-	}
-
-	/**
-	 * This method returns api end Point url
-	 *
-	 * @return api end Point
-	 */
-	private String getAPIEndPointURL(String checkPolicyEndPoint) {
-
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/api/");
-		uriBuilder.path(checkPolicyEndPoint);
-		return uriBuilder.toUriString();
 	}
 
 	/**

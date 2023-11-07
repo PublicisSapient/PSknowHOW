@@ -81,7 +81,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
-	public static final String KNOWHOW = "KnowHow";
 	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	@Autowired
 	AuthenticationService authenticationService;
@@ -123,7 +122,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(KNOWHOW)) {
+			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
 				String token = userTokenAuthenticationDTO.getAuthToken();
 				if (StringUtils.isBlank(token)) {
 					return null;

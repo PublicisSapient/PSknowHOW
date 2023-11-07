@@ -24,8 +24,8 @@ export const environment = {
    production: false,
    baseUrl: '//customapi:8080',
    SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   RESOURCE: 'knowhow'
+   CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
+   RESOURCE: 'PSKnowHow'
 };
 
 /*

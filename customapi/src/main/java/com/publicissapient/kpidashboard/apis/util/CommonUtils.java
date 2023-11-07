@@ -40,7 +40,10 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.SymbolValueUnit;
@@ -48,7 +51,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 
 /**
  * Provides Common utilities.
@@ -525,5 +527,20 @@ public final class CommonUtils {
 		return headers;
 	}
 
-     // -- auth-N-auth changes ends here ------
+	/**
+	 * This method returns api end Point url
+	 *
+	 * @return api end Point
+	 */
+	public static String getAPIEndPointURL(String centralAuthEndPoint, String resourceEndPoint, String username) {
+
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(centralAuthEndPoint);
+		uriBuilder.path(resourceEndPoint);
+		if (!username.isEmpty()) {
+			uriBuilder.path(username);
+		}
+		return uriBuilder.toUriString();
+	}
+
+	// -- auth-N-auth changes ends here ------
 }

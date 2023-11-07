@@ -54,7 +54,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -73,6 +72,7 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.ProjectBasicConfigService;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
@@ -548,17 +548,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 	public UserInfo getCentralAuthUserInfo(String username) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
-		uriBuilder.path("/");
-		uriBuilder.path(authProperties.getFetchUserDetailsEndPoint());
-		uriBuilder.path(username);
-
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<UserInfo> response = null;
 		try {
-			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.POST, entity, UserInfo.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, entity, UserInfo.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
