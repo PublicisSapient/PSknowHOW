@@ -719,42 +719,45 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 */
 	private void setFilters(KpiElement kpiElement, FieldMapping fieldMapping, Set<String> allRoles,
 			JiraIssueReleaseStatus statusCategory) {
+
 		List<Filter> firstScreenFilter = new ArrayList<>();
 		// Role Filter on First Screen
+		// Filters on Second Screen in the order on hold->inprogress->open->done
+		List<Filter> secondScreenFilters = new ArrayList<>();
 		List<String> values = allRoles.stream().sorted().collect(Collectors.toList());
 		Filter filter = new Filter("role", "singleSelect", values);
 		firstScreenFilter.add(filter);
 
-		// Filters on Second Screen in the order on hold->inprogress->open->done
-		List<Filter> secondScreenFilters = new ArrayList<>();
-		// On Hold Status configured
-		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
-			secondScreenFilters.add(
-					new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(), FILTER_BUTTON, false, 3));
-		}
-		// In progress Filters
-		if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
-			secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2,
-					new ArrayList<>(statusCategory.getInProgressList().values()), FILTER_BUTTON, true, 1));
-		}
+		if (ObjectUtils.isNotEmpty(statusCategory)) {
 
-		// Open Filters
-		Filter openFilter;
-		List<String> openStatus = new ArrayList<>(statusCategory.getToDoList().values());
-		if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
-			openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
-		} else {
-			openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
-		}
-		openFilter = new Filter(FILTER_OPEN_SCR2, openStatus, FILTER_BUTTON, false, null);
-		secondScreenFilters.add(openFilter);
+			// On Hold Status configured
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
+				secondScreenFilters.add(new Filter(FILTER_ONHOLD_SCR2, fieldMapping.getJiraOnHoldStatusKPI154(),
+						FILTER_BUTTON, false, 3));
+			}
+			// In progress Filters
+			if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
+				secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2,
+						new ArrayList<>(statusCategory.getInProgressList().values()), FILTER_BUTTON, true, 1));
+			}
 
-		// closed filters
-		if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
-			secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2,
-					new ArrayList<>(statusCategory.getClosedList().values()), FILTER_BUTTON, true, 2));
-		}
+			// Open Filters
+			Filter openFilter;
+			List<String> openStatus = new ArrayList<>(statusCategory.getToDoList().values());
+			if (CollectionUtils.isNotEmpty(fieldMapping.getStoryFirstStatusKPI154())) {
+				openStatus.addAll(fieldMapping.getStoryFirstStatusKPI154());
+			} else {
+				openStatus.addAll(Arrays.asList(fieldMapping.getStoryFirstStatus()));
+			}
+			openFilter = new Filter(FILTER_OPEN_SCR2, openStatus, FILTER_BUTTON, false, null);
+			secondScreenFilters.add(openFilter);
 
+			// closed filters
+			if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
+				secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2,
+						new ArrayList<>(statusCategory.getClosedList().values()), FILTER_BUTTON, true, 2));
+			}
+		}
 		kpiElement.setFilterData(firstScreenFilter);
 		kpiElement.setStandUpStatusFilter(secondScreenFilters);
 	}
