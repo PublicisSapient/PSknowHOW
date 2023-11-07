@@ -32,13 +32,13 @@ import io.mongock.api.annotations.RollbackExecution;
  * @author kunkambl
  */
 @ChangeUnit(id = "r_flow_efficiency_kpi", order = "08107", author = "kunkambl", systemVersion = "8.1.0")
-public class FlowEfficiencyKpi {
+public class FlowEfficiencyKpiChangeUnit {
 
 	private static final String DEFINITION = "definition";
 	private static final String FIELD_NAME = "fieldName";
 	private final MongoTemplate mongoTemplate;
 
-	public FlowEfficiencyKpi(MongoTemplate mongoTemplate) {
+	public FlowEfficiencyKpiChangeUnit(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

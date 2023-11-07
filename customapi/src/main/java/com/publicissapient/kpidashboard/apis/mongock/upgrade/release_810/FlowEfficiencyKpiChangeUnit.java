@@ -33,13 +33,13 @@ import java.util.List;
  * @author kunkambl
  */
 @ChangeUnit(id = "flow_efficiency_kpi", order = "8107", author = "kunkambl", systemVersion = "8.1.0")
-public class FlowEfficiencyKpi {
+public class FlowEfficiencyKpiChangeUnit {
 	private final MongoTemplate mongoTemplate;
 
 	private static final String DEFINITION = "definition";
 	private static final String FIELD_NAME = "fieldName";
 
-	public FlowEfficiencyKpi(MongoTemplate mongoTemplate) {
+	public FlowEfficiencyKpiChangeUnit(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 

@@ -162,8 +162,9 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
 			mapTmp.get(leafNode.getId()).setValue(trendValueMap);
-		Collections.reverse(rangeList);
-		kpiElement.setxAxisValues(rangeList);
+		List<String> xAxisRange = new ArrayList<>(rangeList);
+		Collections.reverse(xAxisRange);
+		kpiElement.setxAxisValues(xAxisRange);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_EFFICIENCY.getColumns());
 	}
