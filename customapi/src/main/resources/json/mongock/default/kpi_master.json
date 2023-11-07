@@ -3732,7 +3732,7 @@
   {
     "kpiId" : "kpi170",
     "kpiName" : "Flow Efficiency",
-    "kpiUnit" : "",
+    "kpiUnit" : "%",
     "isDeleted" : "False",
     "defaultOrder" : 1,
     "kpiCategory" : "Backlog",
