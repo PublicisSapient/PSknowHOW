@@ -177,6 +177,15 @@
                          "Tech Story",
                          "Change request"
                      ]
+                 },
+                 {
+                     "type": "jiraStoryIdentificationKPI166",
+                     "value": [
+                         "Story",
+                         "Enabler Story",
+                         "Tech Story",
+                         "Change request"
+                     ]
                  }
               ],
                                                 "customfield": [
@@ -743,6 +752,12 @@
                     "value":[
                       "Closed",
                       "Done"
+                    ]
+                  },
+                  {
+                    "type": "jiraDodKPI166",
+                    "value": [
+                        "Closed"
                     ]
                   }
         ]

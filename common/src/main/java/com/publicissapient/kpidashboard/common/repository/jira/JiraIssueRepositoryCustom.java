@@ -113,6 +113,22 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 	 */
 	List<JiraIssue> findIssuesByType(Map<String, List<String>> mapOfFilters);
 
+	/**
+	 * Find issues with boolean field
+	 * 
+	 * @param mapOfFilters
+	 *            mapOfFilters
+	 * @param fieldName
+	 *            fieldName
+	 * @param dateFrom
+	 *            dateFrom
+	 * @param dateTo
+	 *            dateTo
+	 * @return List<JiraIssue>
+	 */
+	List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag, String dateFrom,
+										  String dateTo);
+
 	List<JiraIssue> findUnassignedIssues(String startDate, String endDate, Map<String, List<String>> mapOfFilters);
 
 	/**
@@ -257,8 +273,9 @@ public interface JiraIssueRepositoryCustom {// NOPMD
 
 	/**
 	 * find unique Release Version Name group by type name
+	 * 
 	 * @param mapOfFilters
-	 * @param  @return
+	 * @param @return
 	 */
 
 	List<ReleaseWisePI> findUniqueReleaseVersionByUniqueTypeName(Map<String, List<String>> mapOfFilters);
