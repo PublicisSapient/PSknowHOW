@@ -2540,6 +2540,24 @@
     }
   },
   {
+    "fieldName" : "jiraLabelsKPI82",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+  },
+  {
+    "fieldName" : "jiraLabelsKPI14",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+  },
+  {
     "fieldName": "jiraIssueWaitState170",
     "fieldLabel": "Status to identify Close Statuses",
     "fieldType": "chips",

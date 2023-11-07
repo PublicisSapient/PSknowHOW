@@ -155,6 +155,8 @@
     "jiraDodKPI166": [ "Done", "Closed" ],
     "jiraStoryIdentificationKPI166" : [ "Story", "Enabler Story" ],
     "jiraProductionIncidentIdentification": "Labels",
+    "jiraLabelsKPI14" : ["Java", "UI" ],
+    "jiraLabelsKPI82" : ["Java", "UI" ],
     "jiraIssueWaitState170": [ "Open", "On Hold", "Code Review" ],
     "jiraIssueClosedState170": [ "Done", "Closed", "Dropped"]
   }
