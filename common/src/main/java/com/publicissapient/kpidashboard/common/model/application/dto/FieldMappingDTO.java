@@ -432,6 +432,8 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraStoryIdentificationKPI166;
     private List<String> jiraDodKPI166;
 
+    private List<String> jiraLabelsKPI14;
+    private List<String> jiraLabelsKPI82;
     /**
      * Get jira issue type names string [ ].
      *
