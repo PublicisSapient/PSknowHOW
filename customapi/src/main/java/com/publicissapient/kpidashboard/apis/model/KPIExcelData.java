@@ -376,4 +376,14 @@ public class KPIExcelData {
 	@JsonProperty("Days/Weeks")
 	private String daysWeeks;
 
+	@JsonProperty("Wait Time")
+	private String waitTime;
+
+	@JsonProperty("Total Time")
+	private String totalTime;
+
+	@JsonProperty("Flow Efficiency")
+	private Long flowEfficiency;
+
+
 }

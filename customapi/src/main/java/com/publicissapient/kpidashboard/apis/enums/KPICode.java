@@ -474,7 +474,11 @@ public enum KPICode {
     /**
      * Epic Progress (Backlog)
      */
-    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name());
+    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name()),
+    /**
+     * Flow Efficiency (Backlog)
+     */
+    FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name());
 
 
     // @formatter:on

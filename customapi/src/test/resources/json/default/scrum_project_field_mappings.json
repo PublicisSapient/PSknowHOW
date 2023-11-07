@@ -151,6 +151,8 @@
     "jiraIssueTypeNamesKPI146": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI148": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI151": [ "Story", "Enabler Story", "Change request", "Defect" ],
-    "jiraIssueTypeNamesKPI152": [ "Story", "Enabler Story", "Change request", "Defect" ]
+    "jiraIssueTypeNamesKPI152": [ "Story", "Enabler Story", "Change request", "Defect" ],
+    "jiraIssueWaitState170": [ "Open", "On Hold", "Code Review" ],
+    "jiraIssueClosedState170": [ "Done", "Closed", "Dropped"]
   }
 ]

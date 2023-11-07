@@ -4324,5 +4324,30 @@
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory": "Epic View"
+  },
+  {
+    "kpiId" : "kpi170",
+    "kpiName" : "Flow Efficiency",
+    "kpiUnit" : "",
+    "isDeleted" : "False",
+    "defaultOrder" : "1",
+    "kpiCategory" : "Backlog",
+    "kpiSource" : "Jira",
+    "groupId" : 11,
+    "thresholdValue" : "",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+    },
+    "xAxisLabel" : "Duration",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "kpiFilter" : "dropDown",
+    "showTrend" : false,
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "kpiSubCategory" : "Flow KPIs"
   }
 ]

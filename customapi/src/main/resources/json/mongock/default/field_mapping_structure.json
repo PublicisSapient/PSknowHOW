@@ -2477,5 +2477,23 @@
     "tooltip": {
       "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
+  },
+  {
+    "fieldName": "jiraIssueWaitState170",
+    "fieldLabel": "Status to identify Close Statuses",
+    "fieldType": "chips",
+    "section":"WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+    }
+  },
+  {
+    "fieldName": "jiraIssueClosedState170",
+    "fieldLabel": "Status to identify Wait Statuses",
+    "fieldType": "chips",
+    "section":"WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "The statuses wherein no activity takes place and signifies that issue is in queue"
+    }
   }
 ]

@@ -285,6 +285,19 @@ export class BacklogComponent implements OnInit, OnDestroy{
                 });
             }
           }
+          if (localVariable['kpi170']) {
+            if (localVariable['kpi170'].trendValueList && localVariable['kpi170'].xAxisValues) {
+                localVariable['kpi170'].trendValueList.forEach(trendElem => {
+                    trendElem.value.forEach(valElem => {
+                        if (valElem.value.length === 5 && localVariable['kpi170'].xAxisValues.length === 5) {
+                            valElem.value.forEach((element, index) => {
+                                element['xAxisTick'] = localVariable['kpi170'].xAxisValues[index];
+                            });
+                        }
+                    });
+                });
+            }
+          }
           // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
           //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
           // }
