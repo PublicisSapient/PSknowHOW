@@ -42,6 +42,7 @@ import { ChipsModule } from 'primeng/chips';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AdditionalFilterFieldComponent } from './additional-filter-field/additional-filter-field.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { FeatureFlagDirective } from './custom-directives/feature-flag.directive';
 
 @NgModule({
   imports: [
@@ -62,7 +63,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     ButtonModule,
     ChipsModule,
     RadioButtonModule,
-    InputSwitchModule,
+    InputSwitchModule
   ],
   exports: [
     NgSelectModule,
@@ -72,7 +73,8 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     CalendarModule,
     FooterComponent,
     KpiFilterComponent,
-    FieldMappingFormComponent
+    FieldMappingFormComponent,
+    FeatureFlagDirective
   ],
   declarations: [
     ProjectFilterComponent,
@@ -82,7 +84,8 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     KpiFilterComponent,
     FieldMappingFormComponent,
     FieldMappingFieldComponent,
-    AdditionalFilterFieldComponent
+    AdditionalFilterFieldComponent,
+    FeatureFlagDirective
   ],
   providers : [ConfirmationService]
 })
