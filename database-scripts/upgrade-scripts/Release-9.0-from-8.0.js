@@ -547,6 +547,113 @@ db.getCollection('metadata_identifier').updateMany(
         }
     }
 );
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow": {
+               "type": "jiraStatusStartDevelopmentKPI154",
+               "value": [
+                  "In Analysis",
+                  "IN ANALYSIS",
+                  "In Development",
+                  "In Progress"
+               ]
+            }
+         }
+      }
+   }
+});
+
+metaDataOperations.push({
+   updateMany: {
+      filter: {
+         "templateCode": "7"
+      },
+      update: {
+         $push: {
+            "workflow":{
+                      "type": "storyFirstStatusKPI154",
+                      "value": [
+                          "Open"
+                      ]
+                  }
+         }
+      }
+   }
+});
+
+// Execute the bulk write operations
+db.getCollection('metadata_identifier').bulkWrite(metaDataOperations);
+
+//-------------Sonar Code Quality---------
+db.getCollection('kpi_master').insertOne(
+{
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar-with-y-axis-group",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yaxisOrder" : {
+            5 : 'E',
+            4 : 'D',
+            3 : 'C',
+            2 : 'B',
+            1 : 'A'
+        }
+  }
+);
+
+// Note : below code only For Opensource project
+// Sonar Code Quality KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
+                                                    		"categoryId": "categoryTwo",
+                                                    		"kpiOrder": 15,
+                                                    		"kanban": false
+                                                    	});
 metaDataOperations.push({
    updateMany: {
       filter: {

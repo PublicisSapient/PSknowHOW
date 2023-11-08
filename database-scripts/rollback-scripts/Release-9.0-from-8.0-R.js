@@ -74,3 +74,13 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }
 );
+
+// delete Sonar Code Quality Kpi
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi168" }
+);
+
+// delete kpi_category_mapping for Sonar Code Quality
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi168"
+});

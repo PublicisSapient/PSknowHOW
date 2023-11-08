@@ -122,7 +122,7 @@ import { DailyScrumGraphComponent } from './dashboard/daily-scrum-graph/daily-sc
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
 import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
-
+import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
 /******************************************************/
 
@@ -202,6 +202,7 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
+        BarWithYAxisGroupComponent
     ],
     imports: [
         DropdownModule,
