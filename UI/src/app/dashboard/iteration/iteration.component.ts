@@ -1040,7 +1040,8 @@ export class IterationComponent implements OnInit, OnDestroy {
   handleTabChange(e) {
     let index = e.index;
     if (index === 2) {
-      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, ['kpi154'], 13, 'Iteration');
+      let kpi154Data = this.masterData?.kpiList.filter(kpi => kpi.kpiId === 'kpi154')[0];
+      this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, ['kpi154'], kpi154Data['groupId'], 'Iteration');
       this.postJiraKpi(this.kpiJira, 'jira');
     }
   }
