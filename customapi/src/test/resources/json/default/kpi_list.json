@@ -76,7 +76,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-175","175-125","125-75","75-25","25-"]
+    "maturityRange": [
+      "-175",
+      "175-125",
+      "125-75",
+      "75-25",
+      "25-"
+    ]
   },
   {
     "kpiId": "kpi82",
@@ -156,7 +162,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-25","25-50","50-75","75-90","90-"]
+    "maturityRange": [
+      "-25",
+      "25-50",
+      "50-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi111",
@@ -239,7 +251,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-90","90-60","60-25","25-10","10-"]
+    "maturityRange": [
+      "-90",
+      "90-60",
+      "60-25",
+      "25-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi35",
@@ -318,7 +336,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-90","90-75","75-50","50-25","25-"]
+    "maturityRange": [
+      "-90",
+      "90-75",
+      "75-50",
+      "50-25",
+      "25-"
+    ]
   },
   {
     "kpiId": "kpi34",
@@ -397,7 +421,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-25","25-50","50-75","75-90","90-"]
+    "maturityRange": [
+      "-25",
+      "25-50",
+      "50-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi37",
@@ -476,7 +506,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-75","75-50","50-30","30-10","10-"]
+    "maturityRange": [
+      "-75",
+      "75-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi28",
@@ -685,7 +721,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi16",
@@ -760,7 +802,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi17",
@@ -831,8 +879,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi38",
@@ -946,8 +1000,14 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-100","100-50","50-30","30-10","10-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-100",
+      "100-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi116",
@@ -1027,8 +1087,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-50","50-30","30-20","20-10","10-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-50",
+      "50-30",
+      "30-20",
+      "20-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi70",
@@ -1106,7 +1172,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi40",
@@ -1210,7 +1282,13 @@
     "kpiFilter": "radioButton",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "maturityRange": ["-40","40-60","60-75","75-90","90-"]
+    "maturityRange": [
+      "-40",
+      "40-60",
+      "60-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi5",
@@ -1403,8 +1481,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": true,
     "calculateMaturity": true,
-    "hideOverallFilter" : false,
-    "maturityRange": ["-10","10-8","8-5","5-3","3-"]
+    "hideOverallFilter": false,
+    "maturityRange": [
+      "-10",
+      "10-8",
+      "8-5",
+      "5-3",
+      "3-"
+    ]
   },
   {
     "kpiId": "kpi84",
@@ -1470,8 +1554,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-16","16-8","8-4","4-2","2-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-16",
+      "16-8",
+      "8-4",
+      "4-2",
+      "2-"
+    ]
   },
   {
     "kpiId": "kpi11",
@@ -1535,8 +1625,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-2","2-4","4-8","8-16","16-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-2",
+      "2-4",
+      "4-8",
+      "8-16",
+      "16-"
+    ]
   },
   {
     "kpiId": "kpi8",
@@ -1602,8 +1698,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-45","45-30","30-15","15-5","5-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-45",
+      "45-30",
+      "30-15",
+      "15-5",
+      "5-"
+    ]
   },
   {
     "kpiId": "kpi3",
@@ -1649,7 +1751,6 @@
           "type": "paragraph",
           "value": "*Based on the configured sprints, the number of days data is considered for Lead time. So if 5 sprints are configured, total number of days considered is 5 *15days= 75 days"
         }
-
       ],
       "maturityLevels": [
         {
@@ -1774,23 +1875,53 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-60","60-45","45-30","30-10","10-"],
-
-    "maturityLevel": [{
-      "level": "LeadTime",
-      "range": ["-60", "60-45", "45-30", "30-10", "10-"]
-    },
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-10",
+      "10-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "LeadTime",
+        "range": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-"
+        ]
+      },
       {
         "level": "Intake-DoR",
-        "range": ["-30", "30-20", "20-10", "10-5", "5-"]
+        "range": [
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-"
+        ]
       },
       {
         "level": "DoR-DoD",
-        "range": ["-20", "20-10", "10-7", "7-3", "3-"]
+        "range": [
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-"
+        ]
       },
       {
         "level": "DoD-Live",
-        "range": ["-30", "30-15", "15-5", "5-2", "2-"]
+        "range": [
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+        ]
       }
     ]
   },
@@ -1864,7 +1995,13 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-1","1-2","2-5","5-10","10-"]
+    "maturityRange": [
+      "-1",
+      "1-2",
+      "2-5",
+      "5-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi73",
@@ -2241,7 +2378,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi62",
@@ -2312,8 +2455,14 @@
     "showTrend": true,
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi64",
@@ -2423,8 +2572,14 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-100","100-50","50-30","30-10","10-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-100",
+      "100-50",
+      "50-30",
+      "30-10",
+      "10-"
+    ]
   },
   {
     "kpiId": "kpi71",
@@ -2502,7 +2657,13 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-20","20-40","40-60","60-80","80-"]
+    "maturityRange": [
+      "-20",
+      "20-40",
+      "40-60",
+      "60-80",
+      "80-"
+    ]
   },
   {
     "kpiId": "kpi49",
@@ -2614,8 +2775,14 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-45","45-30","30-15","15-5","5-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-45",
+      "45-30",
+      "30-15",
+      "15-5",
+      "5-"
+    ]
   },
   {
     "kpiId": "kpi65",
@@ -2681,8 +2848,14 @@
     "aggregationCriteria": "sum",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "hideOverallFilter" : true,
-    "maturityRange": ["-2","2-4","4-8","8-16","16-"]
+    "hideOverallFilter": true,
+    "maturityRange": [
+      "-2",
+      "2-4",
+      "4-8",
+      "8-16",
+      "16-"
+    ]
   },
   {
     "kpiId": "kpi53",
@@ -2848,23 +3021,53 @@
     "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
-    "maturityRange": ["-60","60-45","45-30","30-10","10-"],
-
-    "maturityLevel": [{
-      "level": "LeadTime",
-      "range": ["-60", "60-45", "45-30", "30-10", "10-"]
-    },
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-10",
+      "10-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "LeadTime",
+        "range": [
+          "-60",
+          "60-45",
+          "45-30",
+          "30-10",
+          "10-"
+        ]
+      },
       {
         "level": "Open-Triage",
-        "range": ["-30", "30-20", "20-10", "10-5", "5-"]
+        "range": [
+          "-30",
+          "30-20",
+          "20-10",
+          "10-5",
+          "5-"
+        ]
       },
       {
         "level": "Triage-Complete",
-        "range": ["-20", "20-10", "10-7", "7-3", "3-"]
+        "range": [
+          "-20",
+          "20-10",
+          "10-7",
+          "7-3",
+          "3-"
+        ]
       },
       {
         "level": "Complete-Live",
-        "range": ["-30", "30-15", "15-5", "5-2", "2-"]
+        "range": [
+          "-30",
+          "30-15",
+          "15-5",
+          "5-2",
+          "2-"
+        ]
       }
     ]
   },
@@ -3258,8 +3461,8 @@
         {
           "type": "link",
           "kpiLinkDetail": {
-            "text":"Predicted completion date logic is detailed at",
-            "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            "text": "Predicted completion date logic is detailed at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
           }
         }
       ]
@@ -3295,8 +3498,8 @@
         {
           "type": "link",
           "kpiLinkDetail": {
-            "text":"Predicted completion date logic is detailed at",
-            "link":"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
+            "text": "Predicted completion date logic is detailed at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard+KPIs"
           }
         }
       ]
@@ -3708,7 +3911,8 @@
     "kpiSource": "Jira",
     "groupId": 8,
     "thresholdValue": "",
-    "kanban": false,"chartType": "pieChart",
+    "kanban": false,
+    "chartType": "pieChart",
     "kpiInfo": {
       "definition": "Defect count by status shows the breakup of all defects within an iteration by status. The pie chart representation gives the count of defects in each status"
     },
@@ -3755,26 +3959,26 @@
     "calculateMaturity": false
   },
   {
-    "kpiId":"kpi137",
-    "kpiName":"Defect Reopen Rate",
-    "kpiUnit":"Hours",
-    "isDeleted":"False",
-    "defaultOrder":2,
-    "kpiCategory":"Backlog",
-    "kpiSource":"Jira",
-    "groupId":2,
-    "thresholdValue":"",
-    "kanban":false,
+    "kpiId": "kpi137",
+    "kpiName": "Defect Reopen Rate",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 2,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
     "kpiInfo": {
-      "definition":"Defect reopen rate measures number of defects reopened out of the total number of defects raised."
+      "definition": "Defect reopen rate measures number of defects reopened out of the total number of defects raised."
     },
-    "isPositiveTrend":false,
-    "kpiFilter":"dropdown",
-    "showTrend":false,
+    "isPositiveTrend": false,
+    "kpiFilter": "dropdown",
+    "showTrend": false,
     "aggregationCriteria": "average",
-    "isAdditionalFilterSupport":true,
-    "hideOverallFilter" : true,
-    "calculateMaturity":false
+    "isAdditionalFilterSupport": true,
+    "hideOverallFilter": true,
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi141",
@@ -3885,56 +4089,56 @@
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kanban": false
-  }
-  ,{
-  "kpiId": "kpi139",
-  "kpiName": "Refinement Rejection Rate",
-  "kpiUnit": "Number",
-  "isDeleted": "False",
-  "defaultOrder": 4,
-  "kpiCategory": "Backlog",
-  "kpiSource": "Jira",
-  "groupId": 2,
-  "thresholdValue": "",
-  "kanban": false,
-  "chartType": "line",
-  "kpiInfo": {
-    "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
   },
-  "xAxisLabel": "Months",
-  "yAxisLabel": "Count",
-  "isPositiveTrend": false,
-  "kpiFilter": "multiSelectDropDown",
-  "showTrend": false,
-  "aggregationCriteria": "sum",
-  "isAdditionalFilterSupport": true,
-  "calculateMaturity": false
-},
-{
-  "kpiId": "kpi145",
-  "kpiName": "Release Progress",
-  "maxValue": "",
-  "kpiUnit": "Count",
-  "isDeleted": "False",
-  "defaultOrder": 1,
-  "kpiCategory": "Release",
-  "kpiSource": "Jira",
-  "groupId": 9,
-  "thresholdValue": "",
-  "kanban": false,
-  "chartType": "horizontalPercentBarChart",
-  "kpiInfo": {
-    "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+  {
+    "kpiId": "kpi139",
+    "kpiName": "Refinement Rejection Rate",
+    "kpiUnit": "Number",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Refinement rejection rate measures the percentage of stories rejected during refinement as compared to the overall stories discussed."
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "multiSelectDropDown",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": false
   },
-  "xAxisLabel": "",
-  "yAxisLabel": "",
-  "isPositiveTrend": true,
-  "showTrend": false,
-  "isAdditionalFilterSupport": false,
-  "kpiFilter": "dropdown",
-  "boxType": "chart",
-  "calculateMaturity": false
- },
+  {
+    "kpiId": "kpi145",
+    "kpiName": "Release Progress",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": "Release progress KPI explains the count of issues in To, In Progress, Done. It also gives the breakup (To, In Progress, Done) based on size (story points)"
+    },
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropdown",
+    "boxType": "chart",
+    "calculateMaturity": false
+  },
   {
     "kpiId": "kpi138",
     "kpiName": "Backlog Readiness Efficiency",
@@ -3969,29 +4173,29 @@
     "boxType": "3_column",
     "calculateMaturity": false
   },
- {
-   "kpiId": "kpi146",
-   "kpiName": "Flow Distribution",
-   "kpiUnit": "",
-   "isDeleted": "False",
-   "defaultOrder": 4,
-   "kpiCategory": "Backlog",
-   "kpiSource": "Jira",
-   "groupId": 2,
-   "thresholdValue": "",
-   "kanban": false,
-   "chartType": "stacked-area",
-   "kpiInfo": {
-     "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
-   },
-   "xAxisLabel": "Time",
-   "yAxisLabel": "Count",
-   "isPositiveTrend": false,
-   "kpiFilter": "",
-   "showTrend": false,
-   "aggregationCriteria": "sum",
-   "isAdditionalFilterSupport": false,
-   "calculateMaturity": false
+  {
+    "kpiId": "kpi146",
+    "kpiName": "Flow Distribution",
+    "kpiUnit": "",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stacked-area",
+    "kpiInfo": {
+      "definition": "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+    },
+    "xAxisLabel": "Time",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": false,
+    "kpiFilter": "",
+    "showTrend": false,
+    "aggregationCriteria": "sum",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   },
   {
     "kpiId": "kpi148",
@@ -4177,70 +4381,79 @@
     "calculateMaturity": false
   },
   {
-    "kpiId":"kpi163",
-    "kpiName":"Defect by Testing Phase",
-    "maxValue":"",
-    "kpiUnit":"Count",
-    "isDeleted":"False",
-    "defaultOrder":7,
-    "kpiCategory":"Release",
-    "kpiSource":"Jira",
-    "groupId":9,
-    "thresholdValue":"",
-    "kanban":false,
-    "chartType":"horizontalPercentBarChart",
-    "kpiInfo":{
-      "definition":" It gives a breakup of escaped defects by testing phase"
+    "kpiId": "kpi163",
+    "kpiName": "Defect by Testing Phase",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 7,
+    "kpiCategory": "Release",
+    "kpiSource": "Jira",
+    "groupId": 9,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "horizontalPercentBarChart",
+    "kpiInfo": {
+      "definition": " It gives a breakup of escaped defects by testing phase"
     },
-    "xAxisLabel":"",
-    "yAxisLabel":"",
-    "isPositiveTrend":true,
-    "showTrend":false,
-    "isAdditionalFilterSupport":false,
-    "kpiFilter":"multiSelectDropDown",
-    "boxType":"chart",
-    "calculateMaturity":false
+    "xAxisLabel": "",
+    "yAxisLabel": "",
+    "isPositiveTrend": true,
+    "showTrend": false,
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "chart",
+    "calculateMaturity": false
   },
   {
-    "kpiId" : "kpi164",
-    "kpiName" : "Scope Churn",
-    "maxValue" : "200",
-    "kpiUnit" : "%",
-    "isDeleted" : "False",
-    "defaultOrder" : 18,
-    "kpiSource" : "Jira",
-    "groupId" : 2,
-    "thresholdValue" : "85",
-    "kanban" : false,
-    "chartType" : "line",
-    "kpiInfo" : {
-      "definition" : "Scope churn explain the change in the scope of sprint since the start of iteration",
-      "formula" : [
+    "kpiId": "kpi164",
+    "kpiName": "Scope Churn",
+    "maxValue": "200",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 18,
+    "kpiSource": "Jira",
+    "groupId": 2,
+    "thresholdValue": "85",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Scope churn explain the change in the scope of sprint since the start of iteration",
+      "formula": [
         {
-          "lhs" : "Scope Churn",
-          "operator" : "division",
-          "operands" : [ "Count of Stories added + Stories removed", " Count of Stories in Initial Commitment at the time of Sprint start" ]
+          "lhs": "Scope Churn",
+          "operator": "division",
+          "operands": [
+            "Count of Stories added + Stories removed",
+            " Count of Stories in Initial Commitment at the time of Sprint start"
+          ]
         }
       ],
-      "details" : [
+      "details": [
         {
-          "type" : "link",
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
           }
         }
       ]
     },
-    "xAxisLabel" : "Sprints",
-    "yAxisLabel" : "Percentage",
-    "isPositiveTrend" : true,
-    "showTrend" : true,
-    "aggregationCriteria" : "average",
-    "kpiFilter" : "dropDown",
-    "isAdditionalFilterSupport" : true,
-    "calculateMaturity" : true,
-    "maturityRange" : [ "-40", "40-60", "60-75", "75-90", "90-" ]
+    "xAxisLabel": "Sprints",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "aggregationCriteria": "average",
+    "kpiFilter": "dropDown",
+    "isAdditionalFilterSupport": true,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "-40",
+      "40-60",
+      "60-75",
+      "75-90",
+      "90-"
+    ]
   },
   {
     "kpiId": "kpi156",
@@ -4324,5 +4537,42 @@
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory": "Epic View"
+  },
+  {
+    "kpiId": "kpi166",
+    "kpiName": "Mean Time to Recover",
+    "maxValue": "100",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "For all the production incident tickets raised during a time period, the time between start date and closed date of the incident ticket will be calculated."
+        },
+        {
+          "type": "paragraph",
+          "value": "The average of all such tickets will be shown."
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Hours",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
   }
 ]

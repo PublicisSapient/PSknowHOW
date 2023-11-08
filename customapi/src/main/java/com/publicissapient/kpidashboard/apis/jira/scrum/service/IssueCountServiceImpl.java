@@ -125,7 +125,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.ISSUE_COUNT);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.ISSUE_COUNT);
 
 		Map<String, List<DataCount>> sortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())

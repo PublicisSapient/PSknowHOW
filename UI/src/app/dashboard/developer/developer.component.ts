@@ -82,6 +82,7 @@ export class DeveloperComponent implements OnInit {
   enableByeUser: boolean;
   showChart = 'chart';
   iSAdditionalFilterSelected = false;
+  kpiThresholdObj = {};
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private messageService: MessageService) {
 
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
@@ -441,6 +442,7 @@ export class DeveloperComponent implements OnInit {
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
 
@@ -562,6 +564,22 @@ export class DeveloperComponent implements OnInit {
   // download excel functionality
   downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport) {
     this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, this.iSAdditionalFilterSelected);
+  }
+
+  reloadKPI(event) {
+    const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+    if (idx !== -1) {
+      this.allKpiArray.splice(idx, 1);
+    }
+    const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, event.kpiDetail?.groupId, 'developer');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+      if (this.service.getSelectedType().toLowerCase() === 'kanban') {
+        this.postBitBucketKanbanKpi(currentKPIGroup, 'bitbucket');
+      } else {
+        this.postBitBucketKpi(currentKPIGroup, 'bitbucket');
+      }
+    }
   }
 
 
