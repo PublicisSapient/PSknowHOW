@@ -320,6 +320,7 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
@@ -1133,5 +1134,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
 		this.flowKpiMonthCount = flowKpiMonthCount;
+	}
+
+	public Integer getSonarMonthCount() {
+		return sonarMonthCount;
+	}
+
+	public void setSonarMonthCount(Integer sonarMonthCount) {
+		this.sonarMonthCount = sonarMonthCount;
 	}
 }

@@ -1,4 +1,4 @@
-/*******************************************************************************
+<!--*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -14,22 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
-package com.publicissapient.kpidashboard.common.feature;
+ ******************************************************************************-->
 
-import org.togglz.core.Feature;
-import org.togglz.core.annotation.Label;
-import org.togglz.core.context.FeatureContext;
+ <div id="chart">
+    <div id="graphContainer">
+        <div id="verticalSVG" style="float:left;">
 
-/**
- * @author purgupta2
- */
-public enum FeatureEnum implements Feature {
+        </div>
+        <div id="horizontalSVG" style="overflow-x:auto;">
 
-    @Label("Custom-api Daily Standup")
-    DAILY_STANDUP;
+        </div>
+    </div>
+    <div id="legendContainer" style="position: relative;">
+        <div id="xCaptionContainer">
 
-    public boolean isActive() {
-        return FeatureContext.getFeatureManager().isActive(this);
-    }
-}
+        </div>
+    </div>
+</div>
