@@ -100,7 +100,6 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
   //generated dates on MM/DD format
   generateDates() {
     const currentDate = new Date();
-    console.log(this.selectedSprintInfo);
     const startDate = new Date(this.selectedSprintInfo.sprintStartDate);
     let endDate;
     if (this.selectedSprintInfo.sprintState.toLowerCase() === 'active' && this.compareDates(currentDate, this.selectedSprintInfo.sprintEndDate)) {

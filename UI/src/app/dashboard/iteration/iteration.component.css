@@ -261,6 +261,11 @@ padding: 0.75rem !important;
     background-color: transparent !important;
 }
 
+:host::ng-deep .p-tabview .p-tabview-nav-btn.p-link .pi {
+    font-weight: bolder;
+    z-index: 1001;
+}
+
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
     padding: 0;
 }

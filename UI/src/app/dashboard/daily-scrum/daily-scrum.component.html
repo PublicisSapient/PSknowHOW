@@ -48,16 +48,18 @@
                     class="assignee unassignedBtn">
                     <i class="pi pi-user-minus" style="font-size: 1rem"></i>
                 </button>
-               
-                <div class="assignee-scroller" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
-                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true" [style]="{ width: 'calc( 70vw - 100px )'}" (onChange)="handleTabChange(assigneeList[activeIndex2].assigneeId, assigneeList[activeIndex2].assigneeName)">
-                        <p-tabPanel *ngFor="let assignee of assigneeList" [headerStyleClass]="assignee" >
-                            <ng-template pTemplate="header" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'">
-                                <button 
-                                    [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-                                    class="assignee">
+
+                <div class="assignee-scroller">
+                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true"
+                        (onChange)="handleTabChange(assigneeList[activeIndex2 -1 ].assigneeId, assigneeList[activeIndex2 - 1].assigneeName)">
+                        <p-tabPanel [selected]="activeIndex2 === 0"></p-tabPanel>
+                        <p-tabPanel *ngFor="let assignee of assigneeList" [headerStyleClass]="assignee">
+                            <ng-template pTemplate="header">
+                                <div [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
+                                    [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
+                                    [pTooltip]="assignee.assigneeName" tooltipPosition="bottom" class="assignee">
                                     {{getNameInitials(assignee.assigneeName)}}
-                                </button>
+                                </div>
                             </ng-template>
                         </p-tabPanel>
                     </p-tabView>

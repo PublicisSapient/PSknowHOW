@@ -75,18 +75,24 @@
 }
 
 /* user button css */
-button.assignee {
+div.assignee, button.assignee {
     width: 40px;
     height: 40px;
+    line-height: 36px;
     border-radius: 50%;
     background-color: white;
     cursor: pointer;
     font-weight: bold;
     display: inline-block;
+    font-size: 14px;
+    color: #000;
     padding: 0;
     align-items: center;
     margin-left: 4px;
     border: 2px solid #000;
+    text-align: center;
+    font-family: Arial;
+    /* z-index: 1000; */
 }
 
 button.unassignedBtn {
@@ -94,13 +100,14 @@ button.unassignedBtn {
     height: 34px;
     margin-top: 4px;
     background-color: #EFEFEF;
+    line-height: 12px;
 }
 
-button.assignee.selected-user {
+div.assignee.selected-user {
     background: #437495 !important;
     color: white !important;
     font-weight: bold;
-    border: none;
+    border: 2px solid #437495;
 }
 
 /* user info table css */
@@ -141,6 +148,13 @@ button.assignee.selected-user {
     background-color: #fff;
 }
 
+
+.assignee-scroller {
+    max-height: 50px;
+    overflow-x: auto;
+    display: inline-block; 
+    max-width: calc(70vw - 100px);
+}
 
 :host ::ng-deep .assignee-scroller .p-tabview-panels {
     display: none !important;
