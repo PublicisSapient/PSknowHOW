@@ -398,9 +398,11 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		log.info(HTTP_ENTITY, httpEntity);
 		ParameterizedTypeReference<ServiceResponse> typeReference = new ParameterizedTypeReference<ServiceResponse>() {
 		};
-		return (List<ActionPoliciesDTO>) getAuthNAuthResponse(
+		List<ActionPoliciesDTO> data = (List<ActionPoliciesDTO>) getAuthNAuthResponse(
 				restTemplate.exchange(actionPolicyUrl, HttpMethod.GET, httpEntity, typeReference), actionPolicyUrl)
 				.getData();
+		log.info("Total policies fetched from central auth : {}" + data.size());
+		return data;
 	}
 
 	/**
