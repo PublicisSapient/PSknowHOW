@@ -149,11 +149,15 @@
   font-size: 12px;
   font-weight: 400;
 }
-.dashboard-config-block .save-kpi {
+
+.dashboard-config-block .drp-btn-section {
   position: absolute;
   right: 34px;
   top: 36px;
   z-index: 1;
+}
+
+.dashboard-config-block .save-kpi {
   background-color: #079FFF;
   color: #ffffff;
   border-radius: 5px;

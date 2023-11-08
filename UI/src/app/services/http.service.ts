@@ -945,8 +945,8 @@ export class HttpService {
   }
 
   /** get show/Hide kpi  data */
-  getShowHideKpi() {
-    return this.http.get<any>(this.showHideKpiUrl);
+  getShowHideKpi(projectID?) {
+    return this.http.get<any>(this.showHideKpiUrl+ '/' + projectID);
   }
   submitShowHideKpiData(data): Observable<any> {
     return this.http.post<object>(this.showHideKpiUrl, data);
