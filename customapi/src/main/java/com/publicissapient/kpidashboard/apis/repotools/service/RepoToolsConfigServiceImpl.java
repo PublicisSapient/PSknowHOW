@@ -135,9 +135,10 @@ public class RepoToolsConfigServiceImpl {
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
-		} catch (Exception ex) {
+		} catch (HttpClientErrorException ex) {
 			log.error("Exception occcured while enrolling project {}",
 					projectToolConfig.getBasicProjectConfigId().toString(), ex);
+			httpStatus = ex.getRawStatusCode();
 		}
 		return httpStatus;
 	}

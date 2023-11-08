@@ -171,9 +171,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
-		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)
-				&& setRepoToolConfig(projectToolConfig) == HttpStatus.NOT_FOUND.value()) {
-			return new ServiceResponse(false, "", null);
+		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
+			int httpStatus = setRepoToolConfig(projectToolConfig);
+			if (httpStatus == HttpStatus.NOT_FOUND.value())
+				return new ServiceResponse(false, "", null);
+			if (httpStatus == HttpStatus.BAD_REQUEST.value())
+				return new ServiceResponse(false, "Project with similar configuration already exists",
+						null);
 		}
 
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)
