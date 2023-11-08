@@ -392,11 +392,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-                           <groupId>org.sonarsource.scanner.maven</groupId>
-                           <artifactId>sonar-maven-plugin</artifactId>
-                           <version>5.0.1.3006</version> <!-- Specify the desired version -->
-                        </plugin>
-			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<executions>
