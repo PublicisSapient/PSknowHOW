@@ -113,7 +113,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.REGRESSION_AUTOMATION_COVERAGE);
 		// 3rd change : remove code to set trendValuelist and call getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.REGRESSION_AUTOMATION_COVERAGE);
 		kpiElement.setTrendValueList(trendValues);
 

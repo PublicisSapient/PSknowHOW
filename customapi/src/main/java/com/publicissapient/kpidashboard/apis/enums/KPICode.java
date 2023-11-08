@@ -474,7 +474,11 @@ public enum KPICode {
     /**
      * Epic Progress (Backlog)
      */
-    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name());
+    BACKLOG_EPIC_PROGRESS("kpi169", KPISource.JIRA.name()),
+    /**
+     *  Meantime to Recover(Dora)
+     */
+    MEAN_TIME_TO_RECOVER("kpi166",KPISource.JIRA.name());
 
 
     // @formatter:on

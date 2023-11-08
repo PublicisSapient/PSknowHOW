@@ -30,9 +30,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
-import {RadioButtonModule} from 'primeng/radiobutton';
-import {InputTextareaModule} from 'primeng/inputtextarea';
-import {AccordionModule} from 'primeng/accordion';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DatePipe } from '@angular/common';
 import { MenuModule } from 'primeng/menu';
@@ -95,7 +95,7 @@ import { TooltipComponent } from './component/tooltip/tooltip.component';
 import { GroupedColumnPlusLineChartComponent } from './component/grouped-column-plus-line-chart/grouped-column-plus-line-chart.component';
 import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 
 import { environment } from 'src/environments/environment';
@@ -119,20 +119,25 @@ import { MultilineStyleComponent } from './component/multiline-style/multiline-s
 import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 
+import { FeatureFlagsService } from './services/feature-toggle.service';
 /******************************************************/
 
-const initializeAppFactory = (http: HttpClient): () => void  =>{
+export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
     if (!environment.production) {
-        return  ()=> undefined;
+        return async () => {
+            return featureToggleService.loadConfig();
+        }
     } else {
         return async () => {
-        const env$ = http.get('assets/env.json').pipe(
+            const env$ = http.get('assets/env.json').pipe(
                 tap(env => {
                     environment['baseUrl'] = env['baseUrl'] || '';
                     environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
                 }));
 
-        await env$.toPromise().then(res => console.log);
+            await env$.toPromise().then(res => {
+                featureToggleService.loadConfig();
+            });
         };
     }
 };
@@ -188,7 +193,7 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         MultilineStyleComponent,
         DoraComponent,
         FeedbackComponent,
-        DeveloperComponent
+        DeveloperComponent,
     ],
     imports: [
         DropdownModule,
@@ -202,7 +207,6 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         // NgSelectModule,
         MultiSelectModule,
         BrowserAnimationsModule,
-        SharedModuleModule,
         InputSwitchModule,
         RippleModule,
         BadgeModule,
@@ -219,7 +223,8 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         DragDropModule,
         OverlayPanelModule,
         MenuModule,
-        SkeletonModule
+        SkeletonModule,
+        SharedModuleModule
     ],
     providers: [
         ExcelService,
@@ -231,14 +236,14 @@ const initializeAppFactory = (http: HttpClient): () => void  =>{
         JsonExportImportService,
         MessageService,
         DatePipe,
-        { provide: APP_CONFIG, useValue: AppConfig },
+        FeatureFlagsService,
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
             useFactory: initializeAppFactory,
-            deps: [HttpClient],
+            deps: [HttpClient, FeatureFlagsService],
             multi: true
-          }
+        }
     ],
     bootstrap: [AppComponent]
 })

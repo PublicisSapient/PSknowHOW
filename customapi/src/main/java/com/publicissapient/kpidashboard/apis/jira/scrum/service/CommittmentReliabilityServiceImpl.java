@@ -126,7 +126,7 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.COMMITMENT_RELIABILITY);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.COMMITMENT_RELIABILITY);
 		Map<String, List<DataCount>> unsortedMap = trendValuesMap.entrySet().stream().sorted(Map.Entry.comparingByKey())
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
@@ -545,6 +545,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),KPICode.COMMITMENT_RELIABILITY.getKpiId());
 	}
 
 	@Getter

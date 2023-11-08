@@ -65,6 +65,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   dragableConfigGlobalData;
   navigationTabs:Array<object>;
   activeIndex = 0;
+  kpiThresholdObj: any = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -372,7 +373,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
-
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
       if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
         const tempArr = {};
