@@ -320,7 +320,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          this.service.setSideNav(false);
+          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
