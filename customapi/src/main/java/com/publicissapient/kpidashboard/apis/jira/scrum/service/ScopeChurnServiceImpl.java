@@ -204,11 +204,14 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				initialCommitIssue.addAll(notCompletedIssues);
 				initialCommitIssue.addAll(removedIssues);
 				initialCommitIssue.removeAll(addedIssues);
-				sprintWiseAddedList = fetchedIssue.stream().filter(f -> addedIssues.contains(f.getNumber()))
+				Set<JiraIssue> totalJiraIssueFromSprintReport = KpiDataHelper
+						.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, new HashSet<>(),
+								fetchedIssue);
+				sprintWiseAddedList = totalJiraIssueFromSprintReport.stream().filter(f -> addedIssues.contains(f.getNumber()))
 						.collect(Collectors.toList());
-				sprintWiseRemovedList = fetchedIssue.stream().filter(f -> removedIssues.contains(f.getNumber()))
+				sprintWiseRemovedList = totalJiraIssueFromSprintReport.stream().filter(f -> removedIssues.contains(f.getNumber()))
 						.collect(Collectors.toList());
-				sprintWiseInitialComitList = fetchedIssue.stream()
+				sprintWiseInitialComitList = totalJiraIssueFromSprintReport.stream()
 						.filter(f -> initialCommitIssue.contains(f.getNumber())).collect(Collectors.toList());
 				// For Scope Change : Added + Removed Issue (duplicate incl)
 				List<JiraIssue> sprintWiseScopeChangeList = new ArrayList<>(sprintWiseAddedList);
@@ -307,7 +310,6 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		Set<String> totalIssue = new HashSet<>();
 		Set<String> scopeChangeIssue = new HashSet<>();
-		List<JiraIssue> totalJiraIssueFromSprints = new ArrayList<>();
 		sprintDetails.forEach(dbSprintDetail -> {
 			if (CollectionUtils.isNotEmpty(dbSprintDetail.getCompletedIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
@@ -329,12 +331,6 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				totalIssue.addAll(addedIssues);
 				scopeChangeIssue.addAll(addedIssues);
 			}
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
-					uniqueProjectMap);
-			Set<JiraIssue> totalJiraIssueFromSprintReport = KpiDataHelper
-					.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(dbSprintDetail, new HashSet<>(),
-							totalJiraIssue);
-			totalJiraIssueFromSprints.addAll(Optional.of(totalJiraIssueFromSprintReport).orElse(new HashSet<>()));
 		});
 
 		/** additional filter **/
@@ -345,8 +341,10 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssueCustomHistory> scopeChangeIssueHistories = new ArrayList<>();
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
+					uniqueProjectMap);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
-			resultListMap.put(TOTAL_ISSUE, totalJiraIssueFromSprints);
+			resultListMap.put(TOTAL_ISSUE, totalJiraIssue);
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 				// Fetching history only for change/removed issue date on Excel req
 				scopeChangeIssueHistories = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
@@ -354,7 +352,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 						basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 				resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, scopeChangeIssueHistories);
 			}
-			setDbQueryLogger(sprintDetails, totalJiraIssueFromSprints, scopeChangeIssueHistories);
+			setDbQueryLogger(sprintDetails, totalJiraIssue, scopeChangeIssueHistories);
 		}
 		return resultListMap;
 	}
