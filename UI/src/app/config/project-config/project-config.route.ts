@@ -26,48 +26,77 @@ import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
 import { KanbanFieldMappingComponent } from './kanban-field-mapping/kanban-field-mapping.component';
 import { JiraConfigComponent } from './jira-config/jira-config.component';
+import { FeatureGuard } from 'src/app/services/feature.guard';
 
 export const ProjectConfigRoutes: Routes = [
     {
         path: '',
         component: ProjectConfigComponent,
+        canActivateChild: [FeatureGuard],
         children: [
             {
                 path: '',
                 redirectTo: 'ProjectList',
-                pathMatch: 'full'
+                pathMatch: 'full',
+                data: {
+                    feature: "ProjectList"
+                }
             },
             {
                 path: 'BasicConfig',
-                component: BasicConfigComponent
+                component: BasicConfigComponent,
+                data: {
+                    feature: "BasicConfig"
+                }
             },
             {
                 path: 'ProjectList',
-                component: ProjectListComponent
+                component: ProjectListComponent,
+                data: {
+                    feature: "ProjectList"
+                }
             },
             {
                 path: 'ToolMenu',
-                component: ToolMenuComponent
+                component: ToolMenuComponent,
+                data: {
+                    feature: "ToolMenu"
+                }
             },
             {
                 path: 'MappingMenu',
-                component: ToolMenuComponent
+                component: ToolMenuComponent,
+                data: {
+                    feature: "MappingMenu"
+                }
             },
             {
                 path: 'FieldMapping',
-                component: FieldMappingComponent
+                component: FieldMappingComponent,
+                data: {
+                    feature: "FieldMapping"
+                }
             },
             {
                 path: 'KanbanFieldMapping',
-                component: KanbanFieldMappingComponent
+                component: KanbanFieldMappingComponent,
+                data: {
+                    feature: "KanbanFieldMapping"
+                }
             },
             {
                 path: 'connection-list',
-                component: ConnectionListComponent
+                component: ConnectionListComponent,
+                data: {
+                    feature: "connection-list"
+                }
             },
             {
                 path: 'JiraConfig',
-                component: JiraConfigComponent
+                component: JiraConfigComponent,
+                data: {
+                    feature: "JiraConfig"
+                }
             }
         ]
     }
