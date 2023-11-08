@@ -735,7 +735,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
                 this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             }else{
                 for(let i = 0;i<event[key]?.length;i++){
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
                 }
             }
         }
