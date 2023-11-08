@@ -430,6 +430,42 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	/**
+	 * Method to fetch true value of fieldName
+	 * 
+	 * @param mapOfFilters
+	 *            mapOfFilters
+	 * @param fieldName
+	 *            fieldName
+	 * @param flag
+	 *            boolean flag
+	 * @param dateFrom
+	 *            dateFrom
+	 * @param dateTo
+	 *            dateTo
+	 * @return List<JiraIssue>
+	 */
+	@Override
+	public List<JiraIssue> findIssuesWithBoolean(Map<String, List<String>> mapOfFilters, String fieldName, boolean flag,
+			String dateFrom, String dateTo) {
+
+		String startDate = dateFrom + START_TIME;
+		String endDate = dateTo + END_TIME;
+
+		Criteria criteria = new Criteria();
+
+		criteria = getCommonFiltersCriteria(mapOfFilters, criteria);
+		criteria = criteria.and(TICKET_CREATED_DATE_FIELD).gte(startDate).lte(endDate);
+		// Field to check for true
+		criteria = criteria.and(fieldName).is(flag);
+
+		Query query = new Query(criteria);
+		query.fields().include(NUMBER);
+
+		return operations.find(query, JiraIssue.class);
+
+	}
+
+	/**
 	 * Find defects without story link.
 	 *
 	 * @param mapOfFilters
@@ -832,6 +868,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	/**
 	 * find unique Release Version Name group by type name
+	 * 
 	 * @param mapOfFilters
 	 * @return
 	 */
@@ -844,16 +881,14 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group(
-				"typeName", "basicProjectConfigId", "releaseVersions.releaseName"
-		);
+		GroupOperation groupOperation = Aggregation.group("typeName", "basicProjectConfigId",
+				"releaseVersions.releaseName");
 
-		ProjectionOperation projectionOperation = Aggregation.project()
-				.andExpression("_id.typeName").as("uniqueTypeName")
-				.andExpression("_id.releaseName").as("releaseName")
+		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")
+				.as("uniqueTypeName").andExpression("_id.releaseName").as("releaseName")
 				.andExpression("_id.basicProjectConfigId").as("basicProjectConfigId");
 
-		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation , projectionOperation);
+		Aggregation aggregation = Aggregation.newAggregation(matchStage, groupOperation, projectionOperation);
 		return operations.aggregate(aggregation, JiraIssue.class, ReleaseWisePI.class).getMappedResults();
 	}
 

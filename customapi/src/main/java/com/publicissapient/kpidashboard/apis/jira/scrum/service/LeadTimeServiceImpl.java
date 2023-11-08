@@ -214,10 +214,10 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			List<JiraIssueCustomHistory> overAllDodLiveModalValues = new ArrayList<>();
 			List<JiraIssueCustomHistory> overAllLeadTimeModalValues = new ArrayList<>();
 
-			Long overAllIntakeDor = 0L;
-			Long overAllDorDod = 0L;
-			Long overAllDodLive = 0L;
-			Long overAllLeadTimeAvg = 0L;
+			Long overAllIntakeDor;
+			Long overAllDorDod;
+			Long overAllDodLive;
+			Long overAllLeadTimeAvg;
 
 			Map<String, List<JiraIssueCustomHistory>> typeWiseIssues = jiraIssueCustomHistoriesList.stream()
 					.collect(Collectors.groupingBy(JiraIssueCustomHistory::getStoryType));

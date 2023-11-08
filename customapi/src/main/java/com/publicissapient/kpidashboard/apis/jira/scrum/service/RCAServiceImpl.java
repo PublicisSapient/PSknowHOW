@@ -133,7 +133,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_COUNT_BY_RCA);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.DEFECT_COUNT_BY_RCA);
 
 		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
@@ -436,5 +436,10 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI36(),KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 	}
 }

@@ -85,6 +85,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     chartColorList = {};
     kpiSelectedFilterObj = {};
     kpiChartData = {};
+    kpiThresholdObj = {};
     noKpis = false;
     enableByUser = false;
     updatedConfigGlobalData;
@@ -808,6 +809,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
 
     getChartData(kpiId, idx, aggregationType) {
         const trendValueList = this.allKpiArray[idx]?.trendValueList;
+        this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
             if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
               if (kpiId === 'kpi17') {

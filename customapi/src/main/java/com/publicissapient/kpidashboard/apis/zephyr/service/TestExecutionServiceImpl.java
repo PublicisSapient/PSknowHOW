@@ -92,7 +92,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.TEST_EXECUTION_AND_PASS_PERCENTAGE);
 		kpiElement.setTrendValueList(trendValues);
 

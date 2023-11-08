@@ -329,6 +329,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 				issueTypeMap.getOrDefault(CommonConstant.JIRAQAKPI111ISSUETYPE, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKPI129(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI129, new ArrayList<>()));
+		fieldMapping.setJiraStoryIdentificationKPI166(
+				issueTypeMap.getOrDefault(CommonConstant.JIRASTORYIDENTIFICATIONKPI166, new ArrayList<>()));
 		fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
 				issueTypeMap.getOrDefault(CommonConstant.JIRASPRINTVELOCITYISSUETYPEKPI138, new ArrayList<>()));
 		fieldMapping.setJiraStoryIdentificationKpi40(
@@ -366,6 +368,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.JIRADODKPI14));
 		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.JIRADODKPI151));
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.JIRADODKPI152));
+		fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.JIRADODKPI166));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.JIRADODQAKPI111));
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.JIRADODKPI3));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.JIRADODKPI37));
@@ -568,6 +571,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
@@ -619,6 +623,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI129(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI166(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
@@ -687,6 +693,8 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKPI129(
 					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
+			fieldMapping.setJiraStoryIdentificationKPI166(
+					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
 			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
 					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
 			fieldMapping.setJiraStoryIdentificationKpi40(
@@ -727,6 +735,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));

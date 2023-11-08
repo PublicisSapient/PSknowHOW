@@ -68,6 +68,7 @@ export class MilestoneComponent implements OnInit {
   kpiCommentsCountObj: object = {};
   navigationTabs:Array<object>;
   activeIndex = 0;
+  kpiThresholdObj = {};
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
 
     /** When filter dropdown change */
@@ -391,6 +392,7 @@ export class MilestoneComponent implements OnInit {
 
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     /**if trendValueList is an object */
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')

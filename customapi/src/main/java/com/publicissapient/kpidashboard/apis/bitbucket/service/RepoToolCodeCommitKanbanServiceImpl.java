@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -109,7 +110,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.NUMBER_OF_CHECK_INS);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.NUMBER_OF_CHECK_INS);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -346,6 +347,11 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
 		return calculateKpiValueForLong(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI159(),KPICode.REPO_TOOL_NUMBER_OF_CHECK_INS.getKpiId());
 	}
 
 }
