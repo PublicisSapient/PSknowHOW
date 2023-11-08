@@ -270,7 +270,6 @@ public class JobController {
 	 * @return ResponseEntity
 	 */
 	@PostMapping("/startprojectwiseissuejob")
-	@FeatureAssociation(value = FeatureEnum.FEATURE_3)
 	public ResponseEntity<String> startProjectWiseIssueJob(
 			@RequestBody ProcessorExecutionBasicConfig processorExecutionBasicConfig) {
 		log.info("Request coming for fetching issue job");
