@@ -37,6 +37,7 @@ export class DailyScrumTabComponent implements OnInit {
   @Input() issueData = [];
   @Input() standUpStatusFilter = [];
   @Input() kpiData;
+  @Input() loader;
   displayModal = true;
   showLess = true;
   selectedRole = null;

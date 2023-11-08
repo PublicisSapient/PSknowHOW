@@ -32,7 +32,8 @@
     [issueData]="issueData"
     [standUpStatusFilter]="standUpStatusFilter"
     [kpiData]="kpiData"
-    (reloadKPITab)="reloadKPI($event)">
+    (reloadKPITab)="reloadKPI($event)"
+    [loader]="loader">
 </app-daily-scrum>
 <div class="expandCollapseModal">
 <p-dialog [(visible)]="displayModal">
@@ -52,7 +53,8 @@
     [issueData]="issueData"
     [standUpStatusFilter]="standUpStatusFilter"
     [kpiData]="kpiData"
-    (reloadKPITab)="reloadKPI($event)">
+    (reloadKPITab)="reloadKPI($event)"
+    [loader]="loader">
     </app-daily-scrum>
 </p-dialog>
 

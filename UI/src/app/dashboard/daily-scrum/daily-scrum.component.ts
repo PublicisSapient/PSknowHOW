@@ -55,7 +55,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
 
   @Input() kpiData;
   @Output() reloadKPITab = new EventEmitter<any>();
-  loader: boolean = false;
+  @Input() loader;
 
   constructor(private service: SharedService) { }
 
@@ -76,7 +76,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
         }
       }
     }
-    this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === this.selectedUser);
+    this.selectedUserInfo = this.assigneeList?.find(assignee => assignee.assigneeId === this.selectedUser);
     this.calculateTotal();
     this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
   }
@@ -88,7 +88,6 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       this.onSelectedUserChange.emit(assigneeId);
       this.getCurrentAssigneeIssueData(assigneeName);
     } else {
-      console.log(this.issueData.filter(issue => issue['Assignee'] === 'Unassigned'));
       this.onSelectedUserChange.emit('Unassigned');
       this.getCurrentAssigneeIssueData('Unassigned');
     }
@@ -114,7 +113,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   calculateTotal() {
-    this.totals['Team Member'] = this.assigneeList.length + ' Members';
+    this.totals['Team Member'] = this.assigneeList?.length + ' Members';
     this.columns?.forEach(col => {
       this.totals[col] = { ...this.assigneeList[0]?.cardDetails[col] };
       if ('value' in this.totals[col]) {
@@ -125,7 +124,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       }
     });
 
-    this.assigneeList.forEach((assignee) => {
+    this.assigneeList?.forEach((assignee) => {
       this.columns?.forEach(col => {
         this.totals[col].value += isNaN(assignee.cardDetails[col].value) ? 0 : +assignee.cardDetails[col].value;
         if ('value1' in this.totals[col]) {
@@ -212,8 +211,8 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   getCurrentAssigneeIssueData(assigneeName) {
-    this.currentAssigneeissueData = this.issueData.filter(issue => issue['Assignee'] === assigneeName);
-    this.currentAssigneeissueData.forEach(issue => {
+    this.currentAssigneeissueData = this.issueData?.filter(issue => issue['Assignee'] === assigneeName);
+    this.currentAssigneeissueData?.forEach(issue => {
       if ('subTask' in issue && typeof issue['subTask'][0] === 'string') {
         issue['subTask'] = this.getSubTaskIssueDetails(issue['subTask']);
       }

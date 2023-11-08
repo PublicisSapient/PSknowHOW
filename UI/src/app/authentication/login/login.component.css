@@ -244,9 +244,9 @@ input[type='password'],
     width: 100%;
 }
 
-.login-form form input[type='password'] {
+/* .login-form form input[type='password'] {
     letter-spacing: .3em;
-}
+} */
 
 .login-form form label {
     color: var(--color-gray-c6);
