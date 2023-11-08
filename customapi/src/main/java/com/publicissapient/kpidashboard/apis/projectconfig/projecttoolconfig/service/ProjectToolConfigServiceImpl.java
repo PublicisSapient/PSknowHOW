@@ -314,8 +314,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 		ProjectToolConfig tool = optionalProjectToolConfig.get();
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList, tool,
-					basicProjectConfigId)) {
+			if (isRepoTool(tool)
+					&& !repoToolsConfigService.updateRepoToolProjectConfiguration(
+							toolList.stream()
+									.filter(projectToolConfig -> projectToolConfig.getToolName()
+											.equals(CommonConstant.REPO_TOOLS))
+									.collect(Collectors.toList()),
+							tool, basicProjectConfigId)) {
 				return false;
 			}
 			cleanData(tool);

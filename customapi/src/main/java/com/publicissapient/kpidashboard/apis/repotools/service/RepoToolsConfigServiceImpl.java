@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -86,6 +87,8 @@ public class RepoToolsConfigServiceImpl {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+	@Autowired
+	private ConnectionRepository connectionRepository;
 
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
@@ -214,26 +217,34 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		long count = toolList.stream()
-				.filter(projectToolConfig -> projectToolConfig.getToolName().equals(CommonConstant.REPO_TOOLS)).count();
 		repoToolsClient = createRepoToolsClient();
-		ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
-		if (count > 1) {
-			// delete only the repository
-			String deleteRepoUrl = customApiConfig.getRepoToolURL() + String.format(
-					customApiConfig.getRepoToolDeleteRepoUrl(),
-					createProjectCode(basicProjectConfigId), tool.getRepositoryName());
-			httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
-					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
-
+		if (toolList.size() > 1) {
+			toolList.remove(tool);
+			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
+					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
+			if (toolList.size() > 1) {
+				// delete only the repository
+				String deleteRepoUrl = customApiConfig.getRepoToolURL()
+						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
+								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
+						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+			} else {
+				// configure debbie project with
+				List<String> branch = new ArrayList<>();
+				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
+				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
+				toolList.get(0).setIsNew(false);
+				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+			}
 		} else {
 			try {
+				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
 			} catch (Exception ex) {
-				log.error("Exception while deleting project {}", projectBasicConfig.getProjectName(), ex);
+				log.error("Exception while deleting project {}", ex);
 			}
-
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
@@ -301,9 +312,10 @@ public class RepoToolsConfigServiceImpl {
 	 * @return
 	 */
 	public int deleteRepoToolProject(ProjectBasicConfig projectBasicConfig, Boolean onlyData) {
+		String projectCode = (projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId()).replaceAll("\\s", "");
 		String deleteUrl = customApiConfig.getRepoToolURL()
 				+ String.format(customApiConfig.getRepoToolDeleteProjectUrl(),
-						projectBasicConfig.getProjectName() + "_" + projectBasicConfig.getId(), onlyData);
+						projectCode, onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
 			repoToolsClient = createRepoToolsClient();

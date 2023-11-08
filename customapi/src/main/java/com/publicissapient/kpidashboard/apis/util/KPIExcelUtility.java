@@ -977,7 +977,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setWeeks(m.getKey());
+					excelData.setDaysWeeks(m.getKey());
 					excelData.setPickupTime(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
@@ -988,7 +988,7 @@ public class KPIExcelUtility {
 	}
 
 	public static void populatePRSizeExcelData(String projectName, List<Map<String, Long>> repoWiseMRList,
-												   List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
+			List<String> repoList, List<String> branchList, List<KPIExcelData> kpiExcelData) {
 
 		if (CollectionUtils.isNotEmpty(repoWiseMRList)) {
 			for (int i = 0; i < repoWiseMRList.size(); i++) {
@@ -1000,7 +1000,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setWeeks(m.getKey());
+					excelData.setDaysWeeks(m.getKey());
 					excelData.setPrSize(m.getValue().toString());
 					kpiExcelData.add(excelData);
 				}
