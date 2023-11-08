@@ -192,7 +192,7 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 				epicWiseSize.put(epic, String.valueOf(statusWiseCountList.getSize()));
 				dataCountList.add(statusWiseCountList);
 
-				if (CollectionUtils.isEqualCollection(
+				if (!CollectionUtils.isEqualCollection(
 						ReleaseKpiHelper.filterIssuesByStatus(issues, jiraIssueReleaseStatus.getClosedList()),
 						issues)) {
 					openDataCountList.add(statusWiseCountList);

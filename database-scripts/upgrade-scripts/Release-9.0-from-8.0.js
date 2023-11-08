@@ -482,3 +482,7 @@ db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
                                                     	});
 
 db.kpi_master.updateOne({ "kpiId": "kpi169" }, { $set: { "kpiFilter": "radioButton" } })
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi151", "kpi152","kpi155"] } },
+   { $unset: { kpiFilter: 1 } }
+);

@@ -3077,7 +3077,6 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
       "kpiSubCategory": "Summary",
       "calculateMaturity": false
@@ -3102,7 +3101,6 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
       "kpiSubCategory": "Summary",
       "calculateMaturity": false
@@ -3178,7 +3176,6 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropdown",
     "boxType": "chart",
     "kpiSubCategory": "Summary",
     "calculateMaturity": false
