@@ -45,9 +45,9 @@ public enum KPICode {
      */
     DEFECT_INJECTION_RATE("kpi14", KPISource.JIRA.name()),
     /**
-     * Code quality kpi code.
+     * Sonar Code quality kpi code.
      */
-    CODE_QUALITY("kpi15", KPISource.SONAR.name()),
+    SONAR_CODE_QUALITY("kpi168", KPISource.SONAR.name()),
     /**
      * Automation test percentage kpi code.
      */

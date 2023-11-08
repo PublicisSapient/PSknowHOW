@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.common.model.application;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -96,4 +97,5 @@ public class KpiMaster extends BasicModel {
 	private Integer kpiWidth;
 	private List<MaturityLevel> maturityLevel;
 	private Boolean isRepoToolKpi;
+	private Map<Integer,String> yaxisOrder;
 }
