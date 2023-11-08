@@ -25,22 +25,21 @@ import { DashboardconfigComponent } from './dashboard-config/dashboard-config.co
 import { AdvancedSettingsComponent } from './advanced-settings/advanced-settings.component';
 import { AccessGuard } from '../services/access.guard';
 import { GuestGuard } from '../services/guest.guard';
+import { FeatureGuard } from '../services/feature.guard';
 
 export const ConfigRoutes: Routes = [
     {
         path: '',
         component: ConfigComponent,
+        canActivateChild : [FeatureGuard],
         children: [
-            // {
-            //     path: '',
-            //     redirectTo: 'ProjectConfig',
-            //     pathMatch: 'full'
-            // },
             {
                 path: '',
                 canActivate: [GuestGuard],
-                // loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule)
-                loadChildren: () => import('./project-config/project-config.module').then(m => m.ProjectConfigModule)
+                loadChildren: () => import('./project-config/project-config.module').then(m => m.ProjectConfigModule), canLoad: [FeatureGuard],
+                data: {
+                  feature: "Project Config"
+                }
             },
             {
                 path: 'Upload',
@@ -60,14 +59,16 @@ export const ConfigRoutes: Routes = [
             ,
             {
                 path: 'Profile',
-                // loadChildren: './profile/profile.module#ProfileModule',
                 canActivate: [GuestGuard],
-                loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule)
+                loadChildren: () => import('./profile/profile.module').then(m => m.ProfileModule), canLoad: [FeatureGuard],
+                data: {
+                  feature: "Profile"
+                }
             },
             {
                 path: 'AdvancedSettings',
                 component: AdvancedSettingsComponent,
-                canActivate: [AccessGuard  && GuestGuard]
+                canActivate: [AccessGuard && GuestGuard]
             }
         ]
     }
@@ -77,7 +78,7 @@ export const ConfigRoutes: Routes = [
     imports: [RouterModule.forChild(ConfigRoutes)],
     exports: [RouterModule],
     providers: [
-        AccessGuard
+        AccessGuard, FeatureGuard
     ]
 })
 
