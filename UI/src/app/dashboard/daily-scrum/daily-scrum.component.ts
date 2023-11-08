@@ -52,6 +52,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   allAssignee = [];
   selectedUserInfo;
   currentAssigneeissueData = [];
+  activeIndex2: number = -1;
 
   @Input() kpiData;
   @Output() reloadKPITab = new EventEmitter<any>();
@@ -81,7 +82,15 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     this.getCurrentAssigneeIssueData(this.selectedUserInfo?.assigneeName);
   }
 
+  handleTabChange(id, name) {
+    console.log(id, name);
+    this.setSelectedUser(id, name);
+  }
+
   setSelectedUser(assigneeId, assigneeName) {
+    if (assigneeId === 'Overall') {
+      this.activeIndex2 = -1;
+    }
     this.service.setIssueData(null);
     if (assigneeId) {
       this.selectedUserInfo = this.assigneeList.find(assignee => assignee.assigneeId === assigneeId);
@@ -173,7 +182,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     if (isLessThanZero) {
       val = '-' + val;
     }
-    if(val === '') {
+    if (val === '') {
       val = '0d'
     }
     return val;

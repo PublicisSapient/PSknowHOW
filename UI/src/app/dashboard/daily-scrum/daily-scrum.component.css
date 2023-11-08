@@ -141,6 +141,11 @@ button.assignee.selected-user {
     background-color: #fff;
 }
 
+
+:host ::ng-deep .assignee-scroller .p-tabview-panels {
+    display: none !important;
+}
+
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
 
     :host .container,

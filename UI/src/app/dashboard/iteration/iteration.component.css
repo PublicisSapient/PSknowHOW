@@ -249,6 +249,18 @@ padding: 0.75rem !important;
     padding: 10px !important;
     margin: 10px !important;
 }
+
+:host::ng-deep.iteration-tabs .assignee-scroller .p-tabview-nav-link{
+    border: none !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+:host::ng-deep.iteration-tabs .assignee-scroller li.p-highlight .p-tabview-nav-link {
+    background-color: transparent !important;
+}
+
 :host::ng-deep.iteration-tabs .p-tabview .p-tabview-nav-container{
     padding: 0;
 }

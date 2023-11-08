@@ -26,8 +26,11 @@
                     <ng-container [ngSwitch]="filter?.filterType">
                         <div class="filters" *ngSwitchCase="'singleSelect'">
                             <span class="p-float-label">
-                                <p-dropdown [showClear]="true" [style]="{'min-width' : '180px', 'font-size' : '16px'}" [(ngModel)]="filters[filter?.filterKey]" [autoDisplayFirst]="false" [options]="filter.options"
-                                (onChange)="handleSingleSelectChange($event,filter?.filterKey)" [disabled]="!filter.options || !filter.options.length || (filter.options.length === 1 && filter.options[0] === 'Unassigned')"></p-dropdown>
+                                <p-dropdown [showClear]="true" [style]="{'min-width' : '180px', 'font-size' : '16px'}"
+                                    [(ngModel)]="filters[filter?.filterKey]" [autoDisplayFirst]="false"
+                                    [options]="filter.options"
+                                    (onChange)="handleSingleSelectChange($event,filter?.filterKey)"
+                                    [disabled]="!filter.options || !filter.options.length || (filter.options.length === 1 && filter.options[0] === 'Unassigned')"></p-dropdown>
                                 <label for="dropdown">Domain</label>
                             </span>
                         </div>
@@ -45,16 +48,19 @@
                     class="assignee unassignedBtn">
                     <i class="pi pi-user-minus" style="font-size: 1rem"></i>
                 </button>
-                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
-                    <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
-                        <button *ngFor="let assignee of assigneeList" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
-                            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
-                            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
-                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee"
-                            >
-                            {{getNameInitials(assignee.assigneeName)}}
-                        </button>
-                    </div>
+               
+                <div class="assignee-scroller" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
+                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true" [style]="{ width: 'calc( 70vw - 100px )'}" (onChange)="handleTabChange(assigneeList[activeIndex2].assigneeId, assigneeList[activeIndex2].assigneeName)">
+                        <p-tabPanel *ngFor="let assignee of assigneeList" [headerStyleClass]="assignee" >
+                            <ng-template pTemplate="header" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'">
+                                <button 
+                                    [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+                                    class="assignee">
+                                    {{getNameInitials(assignee.assigneeName)}}
+                                </button>
+                            </ng-template>
+                        </p-tabPanel>
+                    </p-tabView>
                 </div>
             </div>
             <button class="assignee" (click)="handleViewExpandCollapse()">
@@ -77,14 +83,19 @@
                 '-') ? selectedUserInfo.cardDetails[col]['unit'] : ''}}
                 {{selectedUserInfo.cardDetails[col]['value1'] ? ' / ' + selectedUserInfo.cardDetails[col]['value1'] +'
                 '+ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
-                '' : ''}} 
+                '' : ''}}
             </p>
-            <p class="p-mt-2 font-bold" *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] !== '-'">
-                {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'], selectedUserInfo.cardDetails[col]['unit'])  }} / {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value1'],selectedUserInfo.cardDetails[col]['unit1'])  }}
+            <p class="p-mt-2 font-bold"
+                *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] !== '-'">
+                {{ convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value'],
+                selectedUserInfo.cardDetails[col]['unit']) }} / {{
+                convertToHoursIfTime(selectedUserInfo.cardDetails[col]['value1'],selectedUserInfo.cardDetails[col]['unit1'])
+                }}
                 {{ selectedUserInfo.cardDetails[col]['unit1'] !== 'day' ? selectedUserInfo.cardDetails[col]['unit1'] :
-                '' }}  
+                '' }}
             </p>
-            <p class="p-mt-2 font-bold" *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] === '-'">
+            <p class="p-mt-2 font-bold"
+                *ngIf="col === 'Remaining Work' && selectedUserInfo.cardDetails[col]['value'] === '-'">
                 -
             </p>
         </sapn>
@@ -105,8 +116,10 @@
                 <tr>
                     <th>{{totals['Team Member']}}</th>
                     <th *ngFor="let col of columns">
-                        {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ? totals[col]?.unit : ''}}
-                        {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +' '+ (totals[col]?.unit1 != 'day' ?
+                        {{convertToHoursIfTime(totals[col]?.value, totals[col]?.unit)}} {{totals[col]?.unit !== 'day' ?
+                        totals[col]?.unit : ''}}
+                        {{totals[col]?.unit1 ? ' / ' + convertToHoursIfTime(totals[col]?.value1, totals[col]?.unit1) +'
+                        '+ (totals[col]?.unit1 != 'day' ?
                         totals[col]?.unit1 : '') : ''}}
                     </th>
                 </tr>
@@ -132,7 +145,8 @@
     <ng-template #userInfo>
         <section class="user-info p-m-2">
             <app-assignee-board [issueDataList]="currentAssigneeissueData" [standUpStatusFilter]="standUpStatusFilter"
-                [onFullScreen]="onFullScreen" [kpiData]="kpiData" (reloadKPITab)="reloadKPI($event)"></app-assignee-board>
+                [onFullScreen]="onFullScreen" [kpiData]="kpiData"
+                (reloadKPITab)="reloadKPI($event)"></app-assignee-board>
         </section>
     </ng-template>
 </main>
