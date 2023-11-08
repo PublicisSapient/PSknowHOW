@@ -1,5 +1,6 @@
         db.getCollection('metadata_identifier').remove({});
-        db.metadata_identifier.insertMany([
+        db.metadata_identifier.insertMany(
+        [
 										{
                                                 "tool": "Jira",
                                                 "templateName": "Standard Template",

@@ -7027,7 +7027,8 @@ db.kpi_column_configs.insertMany([
 
 //field_mapping_structure
 db.getCollection('field_mapping_structure').insertMany(
-[{
+[
+{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
         "fieldType": "chips",
