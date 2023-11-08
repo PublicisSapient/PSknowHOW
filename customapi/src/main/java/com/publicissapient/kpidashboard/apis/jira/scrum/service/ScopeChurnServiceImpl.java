@@ -204,11 +204,14 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				initialCommitIssue.addAll(notCompletedIssues);
 				initialCommitIssue.addAll(removedIssues);
 				initialCommitIssue.removeAll(addedIssues);
-				sprintWiseAddedList = fetchedIssue.stream().filter(f -> addedIssues.contains(f.getNumber()))
+				Set<JiraIssue> totalJiraIssueFromSprintReport = KpiDataHelper
+						.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, new HashSet<>(),
+								fetchedIssue);
+				sprintWiseAddedList = totalJiraIssueFromSprintReport.stream().filter(f -> addedIssues.contains(f.getNumber()))
 						.collect(Collectors.toList());
-				sprintWiseRemovedList = fetchedIssue.stream().filter(f -> removedIssues.contains(f.getNumber()))
+				sprintWiseRemovedList = totalJiraIssueFromSprintReport.stream().filter(f -> removedIssues.contains(f.getNumber()))
 						.collect(Collectors.toList());
-				sprintWiseInitialComitList = fetchedIssue.stream()
+				sprintWiseInitialComitList = totalJiraIssueFromSprintReport.stream()
 						.filter(f -> initialCommitIssue.contains(f.getNumber())).collect(Collectors.toList());
 				// For Scope Change : Added + Removed Issue (duplicate incl)
 				List<JiraIssue> sprintWiseScopeChangeList = new ArrayList<>(sprintWiseAddedList);
