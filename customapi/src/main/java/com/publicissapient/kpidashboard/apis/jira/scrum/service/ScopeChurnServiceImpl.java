@@ -307,6 +307,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		Set<String> totalIssue = new HashSet<>();
 		Set<String> scopeChangeIssue = new HashSet<>();
+		List<JiraIssue> totalJiraIssueFromSprints = new ArrayList<>();
 		sprintDetails.forEach(dbSprintDetail -> {
 			if (CollectionUtils.isNotEmpty(dbSprintDetail.getCompletedIssues())) {
 				totalIssue.addAll(KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(dbSprintDetail,
@@ -328,6 +329,12 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				totalIssue.addAll(addedIssues);
 				scopeChangeIssue.addAll(addedIssues);
 			}
+			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
+					uniqueProjectMap);
+			Set<JiraIssue> totalJiraIssueFromSprintReport = KpiDataHelper
+					.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(dbSprintDetail, new HashSet<>(),
+							totalJiraIssue);
+			totalJiraIssueFromSprints.addAll(Optional.of(totalJiraIssueFromSprintReport).orElse(new HashSet<>()));
 		});
 
 		/** additional filter **/
@@ -338,10 +345,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		if (CollectionUtils.isNotEmpty(totalIssue)) {
 			List<JiraIssueCustomHistory> scopeChangeIssueHistories = new ArrayList<>();
-			List<JiraIssue> totalJiraIssue = jiraIssueRepository.findIssueByNumber(mapOfFilters, totalIssue,
-					uniqueProjectMap);
 			resultListMap.put(SPRINT_DETAILS, sprintDetails);
-			resultListMap.put(TOTAL_ISSUE, totalJiraIssue);
+			resultListMap.put(TOTAL_ISSUE, totalJiraIssueFromSprints);
 			if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 				// Fetching history only for change/removed issue date on Excel req
 				scopeChangeIssueHistories = jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(
@@ -349,7 +354,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 						basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 				resultListMap.put(SCOPE_CHANGE_ISSUE_HISTORY, scopeChangeIssueHistories);
 			}
-			setDbQueryLogger(sprintDetails, totalJiraIssue, scopeChangeIssueHistories);
+			setDbQueryLogger(sprintDetails, totalJiraIssueFromSprints, scopeChangeIssueHistories);
 		}
 		return resultListMap;
 	}
