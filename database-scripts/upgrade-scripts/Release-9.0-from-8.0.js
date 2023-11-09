@@ -742,44 +742,9 @@ db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
                                                     		"kpiOrder": 15,
                                                     		"kanban": false
                                                     	});
-metaDataOperations.push({
-   updateMany: {
-      filter: {
-         "templateCode": "7"
-      },
-      update: {
-         $push: {
-            "workflow": {
-               "type": "jiraStatusStartDevelopmentKPI154",
-               "value": [
-                  "In Analysis",
-                  "IN ANALYSIS",
-                  "In Development",
-                  "In Progress"
-               ]
-            }
-         }
-      }
-   }
-});
 
-metaDataOperations.push({
-   updateMany: {
-      filter: {
-         "templateCode": "7"
-      },
-      update: {
-         $push: {
-            "workflow":{
-                      "type": "storyFirstStatusKPI154",
-                      "value": [
-                          "Open"
-                      ]
-                  }
-         }
-      }
-   }
-});
-
-// Execute the bulk write operations
-db.getCollection('metadata_identifier').bulkWrite(metaDataOperations);
+db.kpi_master.updateOne({ "kpiId": "kpi169" }, { $set: { "kpiFilter": "radioButton" } })
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi151", "kpi152","kpi155"] } },
+   { $unset: { kpiFilter: 1 } }
+);

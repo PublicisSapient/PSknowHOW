@@ -84,3 +84,8 @@ db.getCollection('kpi_master').deleteOne(
 db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi168"
 });
+
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi169"] } },
+   { $unset: { kpiFilter: 1 } }
+);
