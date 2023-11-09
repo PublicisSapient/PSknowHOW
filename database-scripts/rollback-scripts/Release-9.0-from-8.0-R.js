@@ -57,3 +57,14 @@ db.getCollection('kpi_master').deleteOne(
 db.kpi_category_mapping.deleteOne({
     "kpiId": "kpi168"
 });
+
+// DTS-27379: rollback field mapping structure
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"]
+    }
+});
+// DTS-27379: delete flow efficiency KPI
+db.getCollection("kpi_master").deleteOne({
+      "kpiId": "kpi170"
+    });

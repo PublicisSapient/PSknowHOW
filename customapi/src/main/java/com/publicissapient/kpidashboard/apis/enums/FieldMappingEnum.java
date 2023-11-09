@@ -224,7 +224,7 @@ public enum FieldMappingEnum {
 
 	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
 			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue")),
-	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitState170", "jiraIssueClosedState170"));
+	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"));
 
 	private List<String> fields;
 	private String kpiName;
