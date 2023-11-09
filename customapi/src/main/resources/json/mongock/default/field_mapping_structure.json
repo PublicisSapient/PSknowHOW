@@ -2557,6 +2557,24 @@
     }
   },
   {
+    "fieldName": "jiraIssueWaitStateKPI170",
+    "fieldLabel": "Status to identify Close Statuses",
+    "fieldType": "chips",
+    "section":"WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+    }
+  },
+  {
+    "fieldName": "jiraIssueClosedStateKPI170",
+    "fieldLabel": "Status to identify Wait Statuses",
+    "fieldType": "chips",
+    "section":"WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "The statuses wherein no activity takes place and signifies that issue is in queue"
+    }
+  },
+  {
     "fieldName": "jiraStatusStartDevelopmentKPI154",
     "fieldLabel": "Status to identify start of development",
     "fieldType": "chips",

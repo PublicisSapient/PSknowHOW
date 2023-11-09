@@ -25,6 +25,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SprintTraceLogRepository extends MongoRepository<SprintTraceLog, ObjectId> {
-	SprintTraceLog findBySprintId(String sprintId);
+	SprintTraceLog findFirstBySprintId(String sprintId);
 
 }

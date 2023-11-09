@@ -3778,5 +3778,30 @@
       "2" : "B",
       "1" : "A"
     }
+  },
+  {
+    "kpiId" : "kpi170",
+    "kpiName" : "Flow Efficiency",
+    "kpiUnit" : "%",
+    "isDeleted" : "False",
+    "defaultOrder" : 1,
+    "kpiCategory" : "Backlog",
+    "kpiSource" : "Jira",
+    "groupId" : 11,
+    "thresholdValue" : "",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel" : "Duration",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "kpiFilter" : "dropDown",
+    "showTrend" : false,
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "kpiSubCategory" : "Flow KPIs"
   }
 ]

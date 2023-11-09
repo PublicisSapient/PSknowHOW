@@ -382,4 +382,14 @@ public class KPIExcelData {
 	@JsonProperty("Time to Recover (In Hours)")
 	private String timeToRecover;
 
+	@JsonProperty("Wait Time")
+	private String waitTime;
+
+	@JsonProperty("Total Time")
+	private String totalTime;
+
+	@JsonProperty("Flow Efficiency")
+	private Long flowEfficiency;
+
+
 }

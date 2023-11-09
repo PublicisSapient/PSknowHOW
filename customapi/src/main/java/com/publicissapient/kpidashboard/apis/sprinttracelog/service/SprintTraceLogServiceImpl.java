@@ -41,7 +41,7 @@ public class SprintTraceLogServiceImpl implements SprintTraceLogService {
 		}
 		// fetching the latest record from db
 		SprintTraceLog fetchRecord = sprintTraceLogRepository
-				.findBySprintId(sprintId);
+				.findFirstBySprintId(sprintId);
 
 		// checking if fetchRecord is not null
 		if (fetchRecord != null) {

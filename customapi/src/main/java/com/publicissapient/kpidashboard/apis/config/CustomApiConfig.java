@@ -231,6 +231,15 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private List<String> flowEfficiencyXAxisRange;
+
+	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
+		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;
+	}
+
+	public List<String> getFlowEfficiencyXAxisRange() {
+		return flowEfficiencyXAxisRange;
+	}
 
 	public void setRepoToolAPIKey(String repoToolAPIKey) {
 		this.repoToolAPIKey = repoToolAPIKey;

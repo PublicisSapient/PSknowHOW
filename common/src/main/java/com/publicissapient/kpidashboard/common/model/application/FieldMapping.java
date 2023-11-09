@@ -397,6 +397,8 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueTypeKPI156;
 	private List<String> jiraLabelsKPI14;
 	private List<String> jiraLabelsKPI82;
+	private List<String> jiraIssueWaitStateKPI170;
+	private List<String> jiraIssueClosedStateKPI170;
 
 	@Builder.Default
 	private String leadTimeConfigRepoTool = CommonConstant.JIRA;

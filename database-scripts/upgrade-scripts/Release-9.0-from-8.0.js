@@ -748,3 +748,53 @@ db.kpi_master.updateMany(
    { "kpiId" : { $in: ["kpi151", "kpi152","kpi155"] } },
    { $unset: { kpiFilter: 1 } }
 );
+
+
+// DTS-27379: add flow efficiency KPI
+db.getCollection("kpi_master").insertOne({
+    "kpiId": "kpi170",
+    "kpiName": "Flow Efficiency",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+        "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel": "Duration",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": false,
+    "kpiFilter": "dropDown",
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kpiSubCategory": "Flow KPIs"
+});
+
+// DTS-29379 add flow efficiency field mappings
+db.getCollection("field_mapping_structure").insertMany({
+    {
+        "fieldName": "jiraIssueClosedStateKPI170",
+        "fieldLabel": "Status to identify Close Statuses",
+        "fieldType": "chips",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+        }
+    },
+    {
+        "fieldName": "jiraIssueWaitStateKPI170",
+        "fieldLabel": "Status to identify Wait Statuses",
+        "fieldType": "chips",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
+        }
+    }
+})

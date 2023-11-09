@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -122,6 +123,9 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 					.append(projectConfig.getProjectToolConfig().getProjectKey()).append(") AND ");
 
 			query.append(JiraProcessorUtil.processJqlForSprintFetch(issueKeys));
+			if(StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getBoardQuery())){
+				query.append(" and (").append(projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0]).append(")");
+			}
 			log.info("jql query :{}", query);
 			Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
 					jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
