@@ -21,6 +21,7 @@
  import { HttpService } from '../../services/http.service';
  import { MessageService } from 'primeng/api';
  import { SharedService } from '../../services/shared.service';
+ import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
  @Component({
    selector: 'app-dashboard-config',
@@ -39,21 +40,22 @@
     loader = false;
     kpiToBeHidden;
     userName : string;
-     constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService) {
+    userProjects : Array<any>;
+    selectedProject : object;
+     constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService,
+     private getAuthorizationService : GetAuthorizationService) {
      }
      ngOnInit() {
-         this.getKpisData();
          this.service.currentUserDetailsObs.subscribe(details=>{
           if(details){
             this.userName = details['user_name'];
           }
         });
+        this.getProjects();
     }
-    getKpisData() {
+    getKpisData(projectID) {
        // api integration to get kpis data
-       if (this.isEmptyObject(this.kpiListData)) {
-        this.loader = true;
-        this.httpService.getShowHideKpi().subscribe((response) => {
+        this.httpService.getShowHideKpi(projectID).subscribe((response) => {
           this.loader = false;
           if (response[0] === 'error') {
             this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
@@ -77,7 +79,6 @@
             }
           }
         });
-      }
      }
      isEmptyObject(value) {
         return Object.keys(value).length === 0 && value.constructor === Object;
@@ -137,8 +138,10 @@
        delete this.kpiListData['id'];
      }
      this.kpiListData['username'] = this.userName;
+     this.kpiListData['basicProjectConfigId'] = this.selectedProject['id'];
    }
-     //update the changes to api
+
+  //Save show/hide configuration
    updateData() {
      this.assignUserNameForKpiData();
      this.loader = true;
@@ -227,4 +230,44 @@ return item.kpiId;
         selectedKpi.shown = shown;
       }
      }
+
+  // used to fetch projects
+  getProjects() {
+    const that = this;
+    this.httpService.getUserProjects()
+      .subscribe(response => {
+        if (response[0] !== 'error' && !response.error) {
+          if (this.getAuthorizationService.checkIfSuperUser()) {
+            that.userProjects = response.data.map((proj) => ({
+                name: proj.projectName,
+                id: proj.id
+              }));
+          } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
+            that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
+              .map((filteredProj) => ({
+                  name: filteredProj.projectName,
+                  id: filteredProj.id
+                }));
+          }
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'User needs to be assigned a project for the access to work on dashboards.' });
+        }
+
+        if (that.userProjects != null && that.userProjects.length > 0) {
+          that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+          that.selectedProject = that.userProjects[0];
+          this.loader = true;
+          this.getKpisData(that.selectedProject['id'])
+        }
+      });
+  }
+  
+  updateProjectSelection(projectSelectionEvent) {
+    const currentSelection = projectSelectionEvent.value;
+    if (currentSelection) {
+      this.selectedProject = currentSelection;
+    }
+    this.loader = true;
+    this.getKpisData(this.selectedProject['id'])
+  }
  }

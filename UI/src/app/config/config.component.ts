@@ -63,8 +63,8 @@ export class ConfigComponent implements OnInit {
             { label: 'Profile Mgmt.', icon: 'fas fa-user-circle', routerLink: '/dashboard/Config/Profile/MyProfile', id: 'Layout-ProfileMgmt', routerLinkActiveOptions: '{ exact: true }' },
         ];
 
-        if (this.getAuthorizationService.checkIfSuperUser()) {
-            // logged in as SuperAdmin
+        if (this.getAuthorizationService.checkIfSuperUser() || this.getAuthorizationService.checkIfProjectAdmin) {
+            // logged in as SuperAdmin or ProjectAdmin
             this.items.push(
                 { label: 'Dashboard Config.', icon: 'fas fa-life-ring', routerLink: '/dashboard/Config/Dashboardconfig', id: 'Layout-DashboardConfig', routerLinkActiveOptions: '{ exact: true }' },
                 // { label: 'Validation', icon: 'fas fa-chart-line', routerLink: '/dashboard/Config/DataValidation', id: 'Layout-DataValidation', routerLinkActiveOptions: '{ exact: true }' }
