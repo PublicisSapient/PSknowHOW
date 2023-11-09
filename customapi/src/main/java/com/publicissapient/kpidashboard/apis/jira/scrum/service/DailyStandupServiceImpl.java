@@ -534,7 +534,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				iterationKpiModalValue
 						.setIssueType(StringUtils.isNotEmpty(jiraIssue.getOriginalType()) ? jiraIssue.getOriginalType()
 								: jiraIssue.getTypeName());
-				setPreclosedSubTask(fieldMapping, closedStatus, jiraIssue, iterationKpiModalValue);
+				setPreclosedSubTask(fieldMapping, closedStatus, jiraIssue, iterationKpiModalValue, issueHistory);
 			}
 		}
 	}
@@ -556,8 +556,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	}
 
 	private void getMaxCompleteMaxTestDevStartTime(List<JiraHistoryChangeLog> filterStatusUpdationLogs,
-												   FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus,
-												   JiraIssue jiraIssue, String sprintStartDateInTime) {
+			FieldMapping fieldMapping, IterationKpiModalValue iterationKpiModalValue, Set<String> closedStatus,
+			JiraIssue jiraIssue, String sprintStartDateInTime) {
 
 		Set<String> testStatus = fieldMapping != null
 				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraQADoneStatusKPI154())
@@ -586,7 +586,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			getLatestCycleStatusMap(testStatus, statusUpdationLog, testClosedStatusMap, activityLocalDate);
 		}
 
-		if(StringUtils.isNotEmpty(iterationKpiModalValue.getActualStartDateInTime()) && iterationKpiModalValue.isSpill())
+		if (StringUtils.isNotEmpty(iterationKpiModalValue.getActualStartDateInTime())
+				&& iterationKpiModalValue.isSpill())
 			iterationKpiModalValue.setActualStartDateInTime(sprintStartDateInTime);
 
 		// Getting the max date of closed and test status.
@@ -703,7 +704,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * set preClosed to true to provide a different identification for this
 	 */
 	private void setPreclosedSubTask(FieldMapping fieldMapping, Set<String> closedStatus, JiraIssue jiraIssue,
-			IterationKpiModalValue iterationKpiModalValue) {
+			IterationKpiModalValue iterationKpiModalValue, JiraIssueCustomHistory issueHistory) {
 		if (fieldMapping != null && CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
 				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getOriginalType())
 				&& StringUtils.isEmpty(iterationKpiModalValue.getActualCompletionDateInTime())
@@ -711,7 +712,20 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			iterationKpiModalValue.setPreClosed(true);
 			iterationKpiModalValue.setTimeWithUser(Constant.DASH);
 			iterationKpiModalValue.setTimeWithStatus(Constant.DASH);
+			Map<String, LocalDateTime> closedStatusDateMap = new HashMap<>();
+			if (CollectionUtils.isNotEmpty(issueHistory.getStatusUpdationLog())) {
+				for (JiraHistoryChangeLog statusUpdationLog : issueHistory.getStatusUpdationLog()) {
+					LocalDateTime activityLocalDate = statusUpdationLog.getUpdatedOn();
+					if (closedStatus.contains(jiraIssue.getStatus())) {
+						getLatestCycleStatusMap(closedStatus, statusUpdationLog, closedStatusDateMap,
+								activityLocalDate);
+					}
+				}
+				iterationKpiModalValue.setChangeDate(closedStatusDateMap.values().stream().filter(Objects::nonNull)
+						.max(LocalDateTime::compareTo).map(a -> a.toLocalDate().toString()).orElse(null));
+			}
 		}
+
 	}
 
 	/*
