@@ -293,7 +293,9 @@ public enum KPIExcelColumn {
     MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
             "Created Date", "Completion Date", "Time to Recover (In Hours)")),
 
-	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month"));
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")),
+	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
+			"Wait Time", "Total Time", "Flow Efficiency"));
 
 	// @formatter:on
 
