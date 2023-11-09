@@ -36,6 +36,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
@@ -46,6 +47,7 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.Board;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.BoardDTO;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.BoardKpisDTO;
@@ -54,6 +56,7 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -87,6 +90,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private CacheService cacheService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	@Autowired
+	private ProjectAccessManager projectAccessManager;
+	@Autowired
+	private UserInfoCustomRepository userInfoCustomRepository;
 
 	/**
 	 * .This method return user board config if present in db else return a default
@@ -674,6 +681,90 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			userBoardConfig = mapper.map(userBoardConfigDTO, UserBoardConfig.class);
 		}
 		return userBoardConfig;
+	}
+
+	@Override
+	public UserBoardConfigDTO getProjBoardConfigAdmin(String basicProjectConfigId) {
+		String userName = authenticationService.getLoggedInUser();
+		UserBoardConfig existingProjBoardConfig = userBoardConfigRepository
+				.findByBasicProjectConfigIdAndUsername(basicProjectConfigId, userName);
+
+		Iterable<KpiMaster> allKPIs = configHelperService.loadKpiMaster();
+		Map<String, KpiMaster> kpiMasterMap = StreamSupport.stream(allKPIs.spliterator(), false)
+				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
+		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
+		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
+		if (null == existingProjBoardConfig) {
+			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+			defaultUserBoardConfigDTO.setBasicProjectConfigId(basicProjectConfigId);
+			return defaultUserBoardConfigDTO;
+		} else {
+			UserBoardConfigDTO existingProjBoardConfigDTO = convertToUserBoardConfigDTO(existingProjBoardConfig);
+			if ((checkKPIAddOrRemoveForExistingUser(existingProjBoardConfigDTO, kpiMasterMap)
+					&& checkCategories(existingProjBoardConfigDTO, kpiCategoryList))
+					|| checkKPISubCategory(existingProjBoardConfigDTO, kpiMasterMap)) {
+				setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
+				filtersBoardsAndSetKpisForExistingUser(existingProjBoardConfigDTO.getScrum(),
+						defaultUserBoardConfigDTO.getScrum());
+				filtersBoardsAndSetKpisForExistingUser(existingProjBoardConfigDTO.getKanban(),
+						defaultUserBoardConfigDTO.getKanban());
+				filtersBoardsAndSetKpisForExistingUser(existingProjBoardConfigDTO.getOthers(),
+						defaultUserBoardConfigDTO.getOthers());
+				return defaultUserBoardConfigDTO;
+			}
+			filterKpis(existingProjBoardConfigDTO, kpiMasterMap);
+			return existingProjBoardConfigDTO;
+		}
+	}
+
+	/**
+	 * This method save user board config of proj,Super admin with
+	 * basicProjectConfigId, also modify their project access users
+	 * user_board_config
+	 *
+	 * @param userBoardConfigDTO
+	 *            userBoardConfigDTO
+	 * @param basicProjectConfigId
+	 *            basicProjConfigId
+	 * @return UserBoardConfigDTO
+	 */
+	@Override
+	public UserBoardConfigDTO saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
+			String basicProjectConfigId) {
+		UserBoardConfig boardConfig = null;
+		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
+		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
+			boardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(basicProjectConfigId,
+					authenticationService.getLoggedInUser());
+			if (null != boardConfig) {
+				boardConfig.setScrum(userBoardConfig.getScrum());
+				boardConfig.setKanban(userBoardConfig.getKanban());
+				boardConfig.setOthers(userBoardConfig.getOthers());
+			} else {
+				boardConfig = userBoardConfig;
+			}
+			boardConfig = userBoardConfigRepository.save(boardConfig);
+			// if superAdmin it will hide for all the users
+			if (authorizedProjectsService.ifSuperAdminUser()) {
+				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
+				updateKpiDetails(userBoardConfigs, boardConfig);
+				userBoardConfigRepository.saveAll(userBoardConfigs);
+			} // if project Admin it will hide for all the users of his project
+			else {
+				// finding all the user who have that project access
+				List<UserInfo> userInfoList = userInfoCustomRepository.findByProjectAccess(basicProjectConfigId);
+				List<String> usersAccessToProj = userInfoList.stream().map(UserInfo::getUsername)
+						.collect(Collectors.toList());
+				// fetching their user_board_config
+				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository
+						.findByUsernameInAndBasicProjectConfigId(usersAccessToProj, basicProjectConfigId);
+				updateKpiDetails(userBoardConfigs, boardConfig);
+				userBoardConfigRepository.saveAll(userBoardConfigs);
+			}
+
+		}
+		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
+		return convertToUserBoardConfigDTO(boardConfig);
 	}
 
 }

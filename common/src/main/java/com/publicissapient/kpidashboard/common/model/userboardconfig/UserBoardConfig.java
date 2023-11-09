@@ -38,6 +38,7 @@ public class UserBoardConfig {
 	@Id
 	private ObjectId id;
 	private String username;
+	private String basicProjectConfigId;
 	private List<Board> scrum;
 	private List<Board> kanban;
 	private List<Board> others;
