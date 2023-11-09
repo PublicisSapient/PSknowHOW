@@ -133,7 +133,7 @@ export class HttpService {
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private showHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
@@ -173,6 +173,7 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -946,14 +947,10 @@ export class HttpService {
 
   /** get show/Hide kpi  data */
   getShowHideKpi(projectID?) {
-    return this.http.get<any>(this.showHideKpiUrl+ '/' + projectID);
+    return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
   }
-  submitShowHideKpiData(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
-  }
-
-  updateUserBoardConfig(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
+  submitShowHideKpiData(data,projectID?): Observable<any> {
+    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
   }
 
   getNewUserAccessRequestFromAPI() {

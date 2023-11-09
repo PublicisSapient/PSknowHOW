@@ -155,7 +155,7 @@
         iterationKpis.kpis = iterationData.kpis;
       }
     }
-     this.httpService.submitShowHideKpiData(kpiListPayload)
+     this.httpService.submitShowHideKpiData(kpiListPayload,this.selectedProject['id'])
        .subscribe(response => {
          this.loader = false;
          if (response[0] === 'error') {
@@ -257,6 +257,7 @@ return item.kpiId;
           that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = that.userProjects[0];
           this.loader = true;
+          this.tabHeaders = [];
           this.getKpisData(that.selectedProject['id'])
         }
       });
@@ -268,6 +269,7 @@ return item.kpiId;
       this.selectedProject = currentSelection;
     }
     this.loader = true;
+    this.tabHeaders = [];
     this.getKpisData(this.selectedProject['id'])
   }
  }

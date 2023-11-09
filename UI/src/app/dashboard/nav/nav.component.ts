@@ -212,7 +212,7 @@ export class NavComponent implements OnInit {
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
     this.service.setDashConfigData(this.kpiListData);
     this.selectTab(this.changedBoardName);
-    this.httpService.updateUserBoardConfig(this.kpiListData).subscribe(
+    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
       (data) => {
         if (data.success) {
           this.messageService.add({
