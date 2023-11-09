@@ -156,6 +156,10 @@ div.assignee.selected-user {
     max-width: calc(70vw - 100px);
 }
 
+.min-w-100.assignee-scroller {
+    min-width: 100px;
+}
+
 :host ::ng-deep .assignee-scroller .p-tabview-panels {
     display: none !important;
 }
