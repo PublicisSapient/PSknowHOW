@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -72,7 +73,7 @@ public class ReleaseBurnUpServiceImplTest {
 	@InjectMocks
 	private ReleaseBurnUpServiceImpl releaseBurnUpService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraReleaseServiceR jiraService;
 
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
@@ -130,7 +131,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -154,7 +155,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -179,7 +180,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -194,7 +195,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(new ArrayList<>());
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -219,7 +220,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

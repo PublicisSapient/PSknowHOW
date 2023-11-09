@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -66,7 +67,7 @@ public class ReleaseProgressServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
 	@InjectMocks
 	private ReleaseProgressServiceImpl releaseProgressService;
 	private KpiRequest kpiRequest;
@@ -111,7 +112,7 @@ public class ReleaseProgressServiceImplTest {
 		when(jiraService.getJiraIssueReleaseForProject())
 				.thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = releaseProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

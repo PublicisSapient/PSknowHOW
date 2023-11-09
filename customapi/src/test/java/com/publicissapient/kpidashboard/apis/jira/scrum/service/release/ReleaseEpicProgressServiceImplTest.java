@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseServiceR;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class ReleaseEpicProgressServiceImplTest {
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
-	JiraServiceR jiraService;
+	JiraReleaseServiceR jiraService;
 	@Mock
 	JiraIssueRepository jiraIssueRepository;
 	@InjectMocks
@@ -255,7 +256,7 @@ public class ReleaseEpicProgressServiceImplTest {
 				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
