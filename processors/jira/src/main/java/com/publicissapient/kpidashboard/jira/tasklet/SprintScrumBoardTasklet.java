@@ -78,7 +78,7 @@ public class SprintScrumBoardTasklet implements Tasklet {
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
         KerberosClient krb5Client = null;
-        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+        try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
             List<SprintDetails> sprintDetailsList = fetchSprintReport
                     .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
             sprintRepository.saveAll(sprintDetailsList);
