@@ -107,7 +107,7 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();
@@ -125,7 +125,7 @@ public class ReleaseDefectCountByRCAServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(bugList);
 		KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 		Map<String, Integer> value = (Map<String, Integer>) ((DataCount) ((ArrayList) trendValueList.get(1).getValue()
 				.get(0).getValue()).get(0)).getValue();

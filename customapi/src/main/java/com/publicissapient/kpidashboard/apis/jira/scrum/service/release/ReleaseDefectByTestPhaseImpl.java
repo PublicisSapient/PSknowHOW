@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String DEFECTS_COUNT = "Defects Count";
@@ -73,7 +74,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	 *            kpiRequest with request details
 	 * @param kpiElement
 	 *            basic details of KPI
-	 * @param treeAggregatorDetail
+	 * @param releaseNode
 	 *            details of project nodes
 	 * @return KpiElement with data
 	 * @throws ApplicationException
@@ -81,27 +82,27 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	 */
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+								 Node releaseNode) throws ApplicationException {
+		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
+			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
+		}
 		log.info("ReleaseDefectByTestPhaseImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
+		if (latestRelease == null) {
+			return;
+		}
 
 		if (latestRelease != null) {
 			Optional.of(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
 			Node leafNode = latestReleaseNode.stream().findFirst().orElse(null);
@@ -118,7 +119,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 
 	/**
 	 *
-	 * @param leafNodeList
+	 * @param leafNode
 	 *            project node details
 	 * @param startDate
 	 *            startDate
@@ -129,10 +130,10 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 	 * @return JiraIssues with test phases
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
+		//Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("ReleaseDefectByTestPhaseImpl -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -199,10 +200,6 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		return dataCount;
 	}
 
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
 
 	@Override
 	public String getQualifierType() {

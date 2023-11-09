@@ -111,7 +111,7 @@ public class ReleaseProgressServiceImplTest {
 		when(jiraService.getJiraIssueReleaseForProject())
 				.thenReturn(jiraIssueReleaseStatusList.get(0));
 		KpiElement kpiElement = releaseProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

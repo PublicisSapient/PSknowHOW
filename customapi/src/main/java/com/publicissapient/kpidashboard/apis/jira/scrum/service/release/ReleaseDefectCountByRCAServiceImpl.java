@@ -29,6 +29,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 // Defect count by RCA kpi on release tab
 @Slf4j
 @Component
-public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseDefectCountByRCAServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_DEFECT = "Total Defects";
 	private static final String OPEN_DEFECT = "Open Defects";
@@ -66,41 +67,35 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 	private ConfigHelperService configHelperService;
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_RCA_RELEASE.name();
 	}
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+								 Node releaseNode) throws ApplicationException {
+		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
+			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
+		}
 		log.info("ReleaseDefectCountByRCAServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
 	/**
-	 * @param releaseLeafNodeList
+	 * @param latestRelease
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-		Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
+		if (latestRelease == null) {
+			return;
+		}
 		if (latestRelease != null) {
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);
@@ -161,10 +156,9 @@ public class ReleaseDefectCountByRCAServiceImpl extends JiraKPIService<Integer, 
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Defect count by RCA Release -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()

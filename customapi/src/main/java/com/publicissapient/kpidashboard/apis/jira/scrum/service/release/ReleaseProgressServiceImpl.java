@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ReleaseProgressServiceImpl extends JiraReleaseKPIService {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String RELEASE_JIRA_ISSUE_STATUS = "releaseJiraIssueStatus";
@@ -83,15 +84,9 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 	private CommonServiceImpl commonService;
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Release Progress -> Requested sprint : {}", leafNode.getName());
 			List<JiraIssue> releaseIssues = getFilteredReleaseJiraIssuesFromBaseClass(null);
@@ -109,28 +104,27 @@ public class ReleaseProgressServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.RELEASE) {
-				releaseWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+			Node releaseNode) throws ApplicationException {
+		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
+			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
+		}
 		log.info("ReleaseProgressServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
 
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<Node> latestReleaseNode = new ArrayList<>();
-		Node latestRelease = releaseLeafNodeList.get(0);
-
+		if (latestRelease == null) {
+			return;
+		}
 		if (latestRelease != null) {
 			Object basicProjectConfigId = latestRelease.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			Optional.ofNullable(latestRelease).ifPresent(latestReleaseNode::add);
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestReleaseNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			JiraIssueReleaseStatus jiraIssueReleaseStatus = (JiraIssueReleaseStatus) resultMap
 					.get(RELEASE_JIRA_ISSUE_STATUS);

@@ -80,7 +80,7 @@ public class ReleaseDefectByTestPhaseImplTest {
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		KpiElement kpiElement = releaseDefectByTestingPhaseImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get(0).get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 
@@ -89,9 +89,5 @@ public class ReleaseDefectByTestPhaseImplTest {
 		assertNotNull(releaseDefectByTestingPhaseImpl.getQualifierType());
 	}
 
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(releaseDefectByTestingPhaseImpl.calculateKPIMetrics(new HashMap<>()));
 
-	}
 }
