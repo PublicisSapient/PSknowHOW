@@ -42,8 +42,8 @@ export class SharedService {
   public title = <any>{};
   public logoImage;
   public dashConfigData;
-  iterationCongifData = new BehaviorSubject({});
-  kpiListNewOrder = new BehaviorSubject([]);
+  iterationCongifData=new BehaviorSubject({});
+  kpiListNewOrder= new BehaviorSubject([]);
   private subject = new Subject<any>();
   private accountType;
   private selectedProject;
@@ -52,7 +52,7 @@ export class SharedService {
   public passErrorToErrorPage;
   public engineeringMaturityExcelData;
   public suggestionsData: any = [];
-  private passServerRole = new BehaviorSubject<boolean>(false);
+  private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
 
@@ -86,8 +86,8 @@ export class SharedService {
   public onTypeOrTabRefresh = new Subject<{ selectedTab: string, selectedType: string }>();
   noRelease = new BehaviorSubject<any>(false);
   noReleaseObs = this.noRelease.asObservable();
-  fieldMappingOptionsMetaData: any = []
-  kpiCardView: string = "chart";
+  fieldMappingOptionsMetaData : any = []
+  kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
@@ -115,7 +115,7 @@ export class SharedService {
   ngOnInit() {
   }
 
-  setCurrentSelectedSprint(selectedSprint) {
+  setCurrentSelectedSprint(selectedSprint){
     this.currentSelectedSprint = selectedSprint;
     this.currentSelectedSprintSub.next(selectedSprint);
   }
@@ -147,7 +147,7 @@ export class SharedService {
   // setter dash config data
   setDashConfigData(data) {
     this.dashConfigData = JSON.parse(JSON.stringify(data));
-    this.globalDashConfigData.emit(data);
+      this.globalDashConfigData.emit(data);
   }
 
   // getter kpi config data
@@ -207,10 +207,10 @@ export class SharedService {
     return this.sharedObject;
   }
 
-  setEmptyData(flag) {
+  setEmptyData(flag){
     this.setNoData.next(flag);
   }
-  getEmptyData() {
+  getEmptyData(){
     return this.setNoData.asObservable();
   }
 
@@ -229,9 +229,9 @@ export class SharedService {
     this.sharedObject.isAdditionalFilters = isAdditionalFilters;
     this.sharedObject.makeAPICall = makeAPICall;
     //emit once navigation complete
-    setTimeout(() => {
+    setTimeout(()=>{
       this.passDataToDashboard.emit(this.sharedObject);
-    }, 0);
+    },0);
   }
 
   /** KnowHOW Lite */
@@ -280,37 +280,37 @@ export class SharedService {
     this.passServerRole.next(value);
   }
 
-  setColorObj(value) {
+  setColorObj(value){
     this.mapColorToProject.next(value);
   }
 
-  setKpiSubFilterObj(value) {
+  setKpiSubFilterObj(value){
     this.selectedFilterOption.next(value);
   }
 
-  setNoSprints(value) {
+  setNoSprints(value){
     this.noSprints.next(value);
   }
-  setNoProjects(value) {
+  setNoProjects(value){
     this.noProjects.next(value);
   }
-  setClickedItem(event) {
+  setClickedItem(event){
     this.clickedItem.next(event);
   }
-  getClickedItem() {
+  getClickedItem(){
     return this.clickedItem.asObservable();
   }
-  setSelectedDateFilter(xLabel) {
+  setSelectedDateFilter(xLabel){
     this.xLabelValue = xLabel;
   }
-  getSelectedDateFilter() {
+  getSelectedDateFilter(){
     return this.xLabelValue;
   }
-  setShowTableView(val) {
+  setShowTableView(val){
     this.kpiCardView = val;
     this.showTableView.next(val);
   }
-  getKPICardView() {
+  getKPICardView(){
     return this.kpiCardView;
   }
 
@@ -322,19 +322,19 @@ export class SharedService {
       document.cookie = cookie + '=; expires=' + new Date(0).toUTCString();
     }
   }
-  setGlobalDownload(val) {
+   setGlobalDownload(val){
     this.isDownloadExcel.emit(val);
   }
-  setSelectedLevel(val) {
-    this.selectedLevel = { ...val };
+  setSelectedLevel(val){
+    this.selectedLevel = {...val};
   }
-  getSelectedLevel() {
+  getSelectedLevel(){
     return this.selectedLevel;
   }
-  setSelectedTrends(values) {
+  setSelectedTrends(values){
     this.selectedTrends = values;
   }
-  getSelectedTrends() {
+  getSelectedTrends(){
     return this.selectedTrends;
   }
 
@@ -344,36 +344,36 @@ export class SharedService {
     this.isSideNav.emit(flag);
   }
 
-  setCurrentUserDetails(details) {
+  setCurrentUserDetails(details){
 
-    if (!this.currentUserDetails || !details || Object.keys(details).length === 0) {
-      this.currentUserDetails = details;
-    } else {
-      this.currentUserDetails = { ...this.currentUserDetails, ...details };
+    if(!this.currentUserDetails  || !details || Object.keys(details).length === 0){
+      this.currentUserDetails=details;
+    }else{
+      this.currentUserDetails={...this.currentUserDetails,...details};
     }
     this.currentUserDetailsSubject.next(this.currentUserDetails);
   }
 
-  getCurrentUserDetails(key) {
-    if (this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)) {
-      return this.currentUserDetails[key];
-    }
+  getCurrentUserDetails(key){
+    if(this.currentUserDetails && this.currentUserDetails.hasOwnProperty(key)){
+      return this.currentUserDetails[key] ;
+     }
     return false;
   }
 
-  setNoRelease(value) {
+  setNoRelease(value){
     this.noRelease.next(value)
   }
 
-  setFieldMappingMetaData(metaDataObj) {
-    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData, metaDataObj];
+  setFieldMappingMetaData(metaDataObj){
+    this.fieldMappingOptionsMetaData = [...this.fieldMappingOptionsMetaData,metaDataObj];
   }
 
-  getFieldMappingMetaData() {
+  getFieldMappingMetaData(){
     return this.fieldMappingOptionsMetaData;
   }
 
-  setMaturiyTableLoader(value) {
+  setMaturiyTableLoader(value){
     this.maturityTableLoader.next(value)
   }
 }

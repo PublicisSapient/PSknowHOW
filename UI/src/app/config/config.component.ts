@@ -33,7 +33,7 @@ export class ConfigComponent implements OnInit {
     hasAccess = <boolean>false;
     activeTab: any;
 
-    constructor(private getAuthorizationService: GetAuthorizationService, private router: Router, private sharedService: SharedService) {
+    constructor(private getAuthorizationService: GetAuthorizationService, private router: Router,private sharedService: SharedService) {
     }
 
     ngOnInit() {

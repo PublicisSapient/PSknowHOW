@@ -63,9 +63,7 @@
                                         }}</label>
                                 </span>
                                 <span class="p-invalid"
-                                    *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">###, ~, ` and
-                                    !
-                                    are not allowed</span>
+                                    *ngIf="form.controls[field.hierarchyLevelId].errors?.stringValidator">Special Characters are not allowed.</span>
                             </div>
                         </div>
                         <div *ngSwitchCase="'boolean'" class="p-mb-3">

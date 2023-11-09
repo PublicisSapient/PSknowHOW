@@ -152,7 +152,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
                     tempObj[nodeName] = [];
                 }
-                this.kpiTableDataObj = {...tempObj}; 
+                this.kpiTableDataObj = {...tempObj};
                 if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
                     for (const key in this.kpiChartData) {
                         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
@@ -272,7 +272,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     for (const key in this.colorObj) {
                         const idx = key.lastIndexOf('_');
                         const nodeName = key.slice(0, idx);
-                        this.kpiTableDataObj[nodeName] = []; 
+                        this.kpiTableDataObj[nodeName] = [];
                     }
                 }
                 const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
@@ -294,14 +294,15 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             this.groupZypherKanbanKpi(kpiIdsForCurrentBoard);
                             this.groupBitBucketKanbanKpi(kpiIdsForCurrentBoard);
                         } else {
+
+                            this.groupJiraKpi(kpiIdsForCurrentBoard);
+                           // this.groupBitBucketKpi(kpiIdsForCurrentBoard);
+                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
-                            this.groupJiraKpi(kpiIdsForCurrentBoard);
-                            this.groupBitBucketKpi(kpiIdsForCurrentBoard);
-                            this.groupSonarKpi(kpiIdsForCurrentBoard);
                         }
                         this.createKpiTableHeads(this.selectedtype.toLowerCase());
-                        
+
                         let projectLevel = this.filterData.filter((x) => x.labelName == 'project')[0]?.level;
                         if(projectLevel){
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
@@ -953,7 +954,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         if(trendValueList?.length > 0){
             let selectedIdx:number = -1;
             let iterativeEle = JSON.parse(JSON.stringify(trendValueList));
-            let trendVals = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');           
+            let trendVals = trendValueList[0]?.hasOwnProperty('filter') || trendValueList[0]?.hasOwnProperty('filter1');
             if(trendVals){
                 if(kpiId == 'kpi17'){
                     selectedIdx = trendValueList?.findIndex(x => x['filter']?.toLowerCase() == 'average coverage');
@@ -965,12 +966,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         selectedIdx = 0;
                     }
                 }
-                iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+                if(selectedIdx != -1){
+                    iterativeEle = JSON.parse(JSON.stringify(trendValueList[selectedIdx]?.value));
+                }
             }
             let filtersApplied = Object.keys(this.colorObj);
-            
+
             filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
-            
+
             filtersApplied.forEach((hierarchyName) => {
                 let obj = {
                     'kpiId': kpiId,
@@ -981,7 +984,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     'order': enabledKpi?.order
                 }
                 let chosenItem = iterativeEle?.filter((item) => item['data'] == hierarchyName)[0];
-                
+
                 let trendData = this.kpiTrendsObj[kpiId]?.filter(x => x['hierarchyName']?.toLowerCase() == hierarchyName?.toLowerCase())[0];
                 obj['latest'] = trendData?.value || '-';
                 obj['trend'] = trendData?.trend || '-';
@@ -989,11 +992,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 for(let i=0; i<this.noOfDataPoints;i++){
                     let item = chosenItem?.value[i];
                     if(item){
-                        obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0 
+                        obj['hoverText']?.push((i+1) + ' - ' + (item?.['sprintNames']?.length > 0
                         ? item['sprintNames'].join(',') : item?.['sSprintName'] ? item['sSprintName'] : item?.['date']));
                         let val = item?.lineValue >=0 ? item?.lineValue : item?.value;
-                        obj[i+1] = val > 0 ? 
-                        (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') 
+                        obj[i+1] = val > 0 ?
+                        (Math.round(val * 10) / 10) + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '')
                         : val + (trendData?.kpiUnit ? ' ' + trendData?.kpiUnit : '') || '-';
                         if(kpiId === 'kpi153'){
                             obj[i+1] = item?.dataValue.find(pdata=> pdata['name'] === 'Achieved Value').value || '-';
@@ -1001,7 +1004,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }else{
                         obj[i+1] = '-';
                     }
-                    
+
                 }
                 let kpiIndex = this.kpiTableDataObj[hierarchyName]?.findIndex((x) => x.kpiId == kpiId);
                 if(kpiIndex > -1){

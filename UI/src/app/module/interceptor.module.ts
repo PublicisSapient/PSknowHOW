@@ -84,7 +84,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        if(!event?.url?.includes('api/authdetails') && 
+                        if(!event?.url?.includes('api/authdetails') &&
                         ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
                             this.httpService.getAuthDetails();
                         }
@@ -96,7 +96,6 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                         if (requestArea === 'internal') {
                             this.service.setCurrentUserDetails({});
                             if(!environment.SSO_LOGIN){
-                                this.service.setVisibleSideBar(false);
                                 this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
                             }
                         }
