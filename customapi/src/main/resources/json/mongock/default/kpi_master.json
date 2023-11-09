@@ -3057,7 +3057,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false
@@ -3082,7 +3081,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false
@@ -3158,7 +3156,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false

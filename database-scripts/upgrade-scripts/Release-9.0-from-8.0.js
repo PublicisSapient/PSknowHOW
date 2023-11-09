@@ -481,6 +481,13 @@ db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
                                                     		"kanban": false
                                                     	});
 
+db.kpi_master.updateOne({ "kpiId": "kpi169" }, { $set: { "kpiFilter": "radioButton" } })
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi151", "kpi152","kpi155"] } },
+   { $unset: { kpiFilter: 1 } }
+);
+
+
 // DTS-27379: add flow efficiency KPI
 db.getCollection("kpi_master").insertOne({
     "kpiId": "kpi170",
