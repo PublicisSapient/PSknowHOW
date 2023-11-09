@@ -201,14 +201,6 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
-
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
-						fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
-						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
-			}
 			List<String> status = new ArrayList<>();
 			if (Optional.ofNullable(fieldMapping.getJiraIssueClosedState170()).isPresent()) {
 				status.addAll(fieldMapping.getJiraIssueClosedState170());
