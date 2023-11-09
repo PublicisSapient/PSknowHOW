@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -55,6 +56,8 @@ public class NotificationHandler {
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
 	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
+	private static final String NOTIFICATION_MSG = "Notification_Msg";
+	private static final String NOTIFICATION_ERROR = "Notification_Error";
 	private static final String ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY = "Error_In_Jira_Processor";
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -68,24 +71,34 @@ public class NotificationHandler {
 	private NotificationService notificationService;
 
 	/**
-	 *
-	 * @param value
-	 *            value
-	 * @param projectBasicConfigId
-	 *            projectBasicConfigId
+	 * @param value                value
+	 * @param allFailureExceptions
+	 * @param projectBasicConfigId projectBasicConfigId
 	 */
-	public void sendEmailToProjectAdmin(String value, String projectBasicConfigId) {
-		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
+	public void sendEmailToProjectAdmin(String value, String allFailureExceptions, String projectBasicConfigId) {
+//		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
+		List<String> emailAddresses = new ArrayList<>();
+		emailAddresses.add("guptapurushottam123@gmail.com");
+		List<String> emailIncludedInDomain=new ArrayList<>();
+		if(null != jiraProcessorConfig.getDomainName()){
+			emailIncludedInDomain = emailAddresses.stream()
+					.filter(emailAddress -> {
+						String domain = emailAddress.split("@")[1].trim();
+						return domain.equalsIgnoreCase(jiraProcessorConfig.getDomainName().trim());
+					})
+					.collect(Collectors.toList());
+		}
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
 			Map<String, String> customData = new HashMap<>();
-			customData.put(NOTIFICATION_KEY, value);
+			customData.put(NOTIFICATION_MSG, value);
+			customData.put(NOTIFICATION_ERROR,allFailureExceptions);
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = jiraProcessorConfig.getMailTemplate()
 					.getOrDefault(ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY, "");
-			notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
+			notificationService.sendNotificationEvent(emailIncludedInDomain, customData, subject, NOTIFICATION_KEY,
 					jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,
 					templateKey, jiraProcessorConfig.isMailWithoutKafka());
 		} else {

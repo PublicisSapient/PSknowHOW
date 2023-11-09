@@ -82,9 +82,6 @@ public class SprintScrumBoardTasklet implements Tasklet {
             List<SprintDetails> sprintDetailsList = fetchSprintReport
                     .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
             sprintRepository.saveAll(sprintDetailsList);
-        } catch (Exception e) {
-            log.error("Exception while fetching sprint data for scrum project and board setup", e);
-            throw e;
         }
         log.info("**** Sprint report for Scrum Board ended * * *");
         return RepeatStatus.FINISHED;

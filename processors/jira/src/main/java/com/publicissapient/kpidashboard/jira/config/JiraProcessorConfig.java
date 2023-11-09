@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.jira.config;//NOPMD
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -84,4 +85,6 @@ public class JiraProcessorConfig {
 	private Integer prevMonthCountToFetchData;
 	private Integer daysToReduce;
 	private Integer chunkSize;
+	private String uiHost;
+	private String domainName;
 }
