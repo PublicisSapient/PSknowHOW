@@ -1588,4 +1588,38 @@ public class KpiHelperService { // NOPMD
 		return projectIssueWiseClosedDates;
 	}
 
+	/**
+	 * get weekend between two dates
+	 *
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return weekends between start date and end date
+	 */
+	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
+		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
+		if (countOfWeekEndDays != 0) {
+			return countOfWeekEndDays * 24;
+		} else {
+			return 0;
+		}
+	}
+
+	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
+		int countWeekEnd = 0;
+		while (!d1.isAfter(d2)) {
+			if (isWeekEnd(d1)) {
+				countWeekEnd++;
+			}
+			d1 = d1.plusDays(1);
+		}
+		return countWeekEnd;
+	}
+
+	public boolean isWeekEnd(LocalDateTime localDateTime) {
+		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
+		return dayOfWeek == 6 || dayOfWeek == 7;
+	}
+
 }

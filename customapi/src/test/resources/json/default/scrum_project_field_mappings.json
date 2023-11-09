@@ -157,7 +157,7 @@
     "jiraProductionIncidentIdentification": "Labels",
     "jiraLabelsKPI14" : ["Java", "UI" ],
     "jiraLabelsKPI82" : ["Java", "UI" ],
-    "jiraIssueWaitState170": [ "Open", "On Hold", "Code Review" ],
-    "jiraIssueClosedState170": [ "Done", "Closed", "Dropped"]
+    "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
+    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"]
   }
 ]

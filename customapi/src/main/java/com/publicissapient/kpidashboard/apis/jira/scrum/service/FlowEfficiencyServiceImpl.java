@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,9 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 
 	@Autowired
 	JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
+
+	@Autowired
+	KpiHelperService kpiHelperService;
 
 	/**
 	 * {@inheritDoc}
@@ -345,42 +349,9 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 * @return hours between start date and end date
 	 */
 	private long calculateWaitedTime(LocalDateTime start, LocalDateTime end) {
-		return HOURS.between(start, end) - minusHoursOfWeekEndDays(start, end);
+		return HOURS.between(start, end) - kpiHelperService.minusHoursOfWeekEndDays(start, end);
 	}
 
-	/**
-	 * get weekend between two dates
-	 * 
-	 * @param d1
-	 * 			start date
-	 * @param d2
-	 * 			end date
-	 * @return weekends between start date and end date
-	 */
-	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
-		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
-		if (countOfWeekEndDays != 0) {
-			return countOfWeekEndDays * 24;
-		} else {
-			return 0;
-		}
-	}
-
-	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
-		int countWeekEnd = 0;
-		while (!d1.isAfter(d2)) {
-			if (isWeekEnd(d1)) {
-				countWeekEnd++;
-			}
-			d1 = d1.plusDays(1);
-		}
-		return countWeekEnd;
-	}
-
-	public boolean isWeekEnd(LocalDateTime localDateTime) {
-		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
-		return dayOfWeek == 6 || dayOfWeek == 7;
-	}
 
 	/**
 	 *
