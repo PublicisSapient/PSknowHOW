@@ -233,7 +233,7 @@ public class BacklogEpicProgressServiceImplTest {
 		assertThat(epicWiseSize).hasSize(1);
 		assertThat(epicWiseSize.get("-")).isEqualTo(null);
 		assertThat(epicWiseSize.get("EPIC-2")).isEqualTo("57.0");
-		assertThat(iterationKpiValues).hasSize(1);
+		assertThat(iterationKpiValues).hasSize(2);
 		assertThat(iterationKpiValues.get(0).getValue()).hasSize(1);
 	}
 
