@@ -945,12 +945,21 @@ export class HttpService {
     return this.http.get<any>(this.autoApproveUrl);
   }
 
-  /** get show/Hide kpi  data */
-  getShowHideKpi(projectID?) {
+  /** show-Hide for dashboard config component  */
+  getShowHideKpi(projectID) {
     return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
   }
-  submitShowHideKpiData(data,projectID?): Observable<any> {
+  submitShowHideKpiData(data,projectID): Observable<any> {
     return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
+  }
+
+  /** show-Hide for other nav, filter component */
+  getShowHideOnDashboard(){
+    return this.http.get<any>(this.getShowHideKpiUrl);
+  }
+
+  submitShowHideOnDashboard(data){
+    return this.http.post<any>(this.getShowHideKpiUrl,data);
   }
 
   getNewUserAccessRequestFromAPI() {

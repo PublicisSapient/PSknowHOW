@@ -756,7 +756,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   getKpiOrderedList() {
     if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideKpi().subscribe(
+      this.httpService.getShowHideOnDashboard().subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
@@ -867,7 +867,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.assignUserNameForKpiData();
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -903,7 +903,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.kpiList = this.kpisNewOrder.filter((kpi) => kpi.kpiId !== 'kpi121');
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         this.kpisNewOrder = [];
         if (response.success === true) {
@@ -1384,7 +1384,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
-    this.httpService.getShowHideKpi().subscribe(response => {
+    this.httpService.getShowHideOnDashboard().subscribe(response => {
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();

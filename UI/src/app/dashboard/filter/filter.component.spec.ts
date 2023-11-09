@@ -617,7 +617,7 @@ const completeHierarchyData = {
 
   it('should get kpiorder list', fakeAsync(() => {
     component.kpiListData = {};
-    const spy = spyOn(httpService, 'getShowHideKpi').and.returnValue(of(configGlobalData));
+    const spy = spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(configGlobalData));
     const spyprocessKpiList = spyOn(component, 'processKpiList');
     const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderedList();
@@ -627,7 +627,7 @@ const completeHierarchyData = {
 
   it('should show error message on kpiList', fakeAsync(() => {
     component.kpiListData = {};
-    const spy = spyOn(httpService, 'getShowHideKpi').and.returnValue(throwError('Something went wrong'));
+    const spy = spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(throwError('Something went wrong'));
     const spyMessageService = spyOn(messageService, 'add');
     component.getKpiOrderedList();
     tick();
@@ -999,7 +999,7 @@ const completeHierarchyData = {
     });
 
     spyOn(component, 'assignUserNameForKpiData');
-    spyOn(httpService, 'submitShowHideKpiData').and.returnValue(of({ success: true }));
+    spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of({ success: true }));
     spyOn(sharedService, 'setDashConfigData');
     component.submitKpiConfigChange();
     tick();
@@ -1192,7 +1192,7 @@ const completeHierarchyData = {
       success : true
     }
     spyOn(messageService,'add');
-    spyOn(httpService,'submitShowHideKpiData').and.returnValue(of(fakeResponce))
+    spyOn(httpService,'submitShowHideOnDashboard').and.returnValue(of(fakeResponce))
      component.setKPIOrder();
      expect(messageService.add).toHaveBeenCalled();
    })
@@ -1205,7 +1205,7 @@ const completeHierarchyData = {
       success : false
     }
     spyOn(messageService,'add');
-    spyOn(httpService,'submitShowHideKpiData').and.returnValue(of(fakeResponce))
+    spyOn(httpService,'submitShowHideOnDashboard').and.returnValue(of(fakeResponce))
      component.setKPIOrder();
      expect(messageService.add).toHaveBeenCalled();
    })
@@ -1305,7 +1305,7 @@ const completeHierarchyData = {
     });
 
     it('navigate to dashboard should call navigateToSelectedTab',()=>{
-      spyOn(httpService,'getShowHideKpi').and.returnValue(of(configGlobalData));
+      spyOn(httpService,'getShowHideOnDashboard').and.returnValue(of(configGlobalData));
       spyOn(component,'getNotification');
       spyOn(component,'processKpiList');
       component.kanban=false;

@@ -30,6 +30,7 @@ import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { MessageService } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
 
 
 describe('DashboardconfigComponent', () => {
@@ -55,7 +56,8 @@ describe('DashboardconfigComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         RouterTestingModule.withRoutes([]),
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        DropdownModule
       ],
       declarations: [DashboardconfigComponent],
       providers: [SharedService, HttpService, MessageService

@@ -104,7 +104,7 @@ describe('NavComponent', () => {
     component.kpiListData = getDashConfData.data;
     component.kpiListData.scrum[0].boardName = 'My KnowHOW1';
     component.kpiListData.kanban[0].boardName = 'My KnowHOW1';
-    spyOn(httpService, 'updateUserBoardConfig').and.returnValue(of(getDashConfData));
+    spyOn(httpService, 'submitShowHideOnDashboard').and.returnValue(of(getDashConfData));
     component.editDashboardName();
     tick();
     expect(component.displayEditModal).toBe(false);
@@ -115,7 +115,7 @@ describe('NavComponent', () => {
       success : true
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
+    spyOn(httpService,'submitShowHideOnDashboard').and.returnValue(of(fakeRespose))
     spyOn(messageService,'add');
     component.editDashboardName();
     expect(component.displayEditModal).toBeFalsy();
@@ -126,7 +126,7 @@ describe('NavComponent', () => {
       success : false
     }
     component.changedBoardName = "Updated Board name";
-    spyOn(httpService,'updateUserBoardConfig').and.returnValue(of(fakeRespose))
+    spyOn(httpService,'submitShowHideOnDashboard').and.returnValue(of(fakeRespose))
     const spy = spyOn(messageService,'add');
     component.editDashboardName();
     expect(spy).toHaveBeenCalled();

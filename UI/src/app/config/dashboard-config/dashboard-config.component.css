@@ -164,13 +164,25 @@
   border: 0;
   display: flex;
   align-items: center;
+  width: 71px;
+  justify-content: space-around;
+  height: 100%;
 }
-.dashboard-config-block .save-icon {
-  padding: 2px 6px 5px 5px;
-}
+
 .dashboard-config-block .show-kpisList {
   display: block;
 }
 .dashboard-config-block .hide-kpisList {
   display: none;
+}
+
+::ng-deep .dashboard-config-block .drp-btn-section .drp{
+  min-width: 300px;
+  max-width: 300px;
+  max-height: 40px;
+}
+
+::ng-deep .dashboard-config-block .drp-btn-section .drp-pnl{
+  min-width: inherit;
+  max-width: inherit;
 }

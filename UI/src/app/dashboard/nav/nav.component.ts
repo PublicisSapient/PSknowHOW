@@ -142,7 +142,7 @@ export class NavComponent implements OnInit {
   getKpiOrderedList() {
     this.kpiListData = this.service.getDashConfigData();
     if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
-      this.httpService.getShowHideKpi().subscribe(
+      this.httpService.getShowHideOnDashboard().subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
@@ -212,7 +212,7 @@ export class NavComponent implements OnInit {
     this.kpiListData.kanban[0].boardName = this.changedBoardName;
     this.service.setDashConfigData(this.kpiListData);
     this.selectTab(this.changedBoardName);
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (data) => {
         if (data.success) {
           this.messageService.add({

@@ -20,13 +20,12 @@
     <div class="p-d-flex drp-btn-section">
         <div>
             <div class="d-flex align-items-center">
-                <span style="font-size: 0.8em;">
+                <span class="font-small">
                     Select Project
                 </span>
                 <span class="p-mr-3 p-ml-3">
                     <p-dropdown [options]="userProjects" [(ngModel)]="selectedProject" optionLabel="name"
-                        [style]="{'min-width':'300px', 'max-width':'300px'}"
-                        [panelStyle]="{'min-width':'inherit', 'max-width':'inherit'}" [filter]="true" filterBy="name"
+                        styleClass="drp" panelStyleClass="drp-pnl" [filter]="true" filterBy="name"
                         [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection($event)">
                         <ng-template pTemplate="selectedItem">
                             <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
@@ -44,7 +43,7 @@
             </div>
         </div>
         <div>
-            <button (click)="save()" class="p-p-2 save-kpi save-icon"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
+            <button (click)="save()" class="save-kpi save-icon"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
         </div>
     </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">

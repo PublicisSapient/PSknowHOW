@@ -238,10 +238,10 @@ return item.kpiId;
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
-            that.userProjects = response.data.map((proj) => ({
-                name: proj.projectName,
-                id: proj.id
-              }));
+            that.userProjects = [{
+                name: "ALL",
+                id: "all"
+              }]
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
