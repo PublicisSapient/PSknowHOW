@@ -94,11 +94,12 @@ public class TokenAuthenticationController {
 				data.setAuthToken(token);
 				if (!userData.getResource().equalsIgnoreCase(authProperties.getResourceName())) {
 					serviceResponse = new ServiceResponse(false, "In valid resource", data);
-					return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
+				} else {
+					serviceResponse = new ServiceResponse(true, "Valid resource", data);
 				}
+				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 
-			}
-			else {
+			} else {
 				serviceResponse = new ServiceResponse(false, "token is expired", null);
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			}
@@ -107,6 +108,5 @@ public class TokenAuthenticationController {
 			serviceResponse = new ServiceResponse(false, "Unauthorized", null);
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 		}
-		return null;
 	}
 }
