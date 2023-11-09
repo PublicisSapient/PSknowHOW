@@ -16,73 +16,76 @@
  */
 package com.publicissapient.kpidashboard.apis.data;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author hargupta15
  */
 @Slf4j
 @SuppressWarnings("java:S1075")
 public class KpiDefinationDataFactory {
-    private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
-    private List<KpiMaster> kpiList;
-    private ObjectMapper mapper;
+	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
+	private List<KpiMaster> kpiList;
+	private ObjectMapper mapper;
 
-    private KpiDefinationDataFactory() {
-    }
+	private KpiDefinationDataFactory() {
+	}
 
-    public static KpiDefinationDataFactory newInstance(String filePath) {
+	public static KpiDefinationDataFactory newInstance(String filePath) {
 
-        KpiDefinationDataFactory factory = new KpiDefinationDataFactory();
-        factory.createObjectMapper();
-        factory.init(filePath);
-        return factory;
-    }
+		KpiDefinationDataFactory factory = new KpiDefinationDataFactory();
+		factory.createObjectMapper();
+		factory.init(filePath);
+		return factory;
+	}
 
-    public static KpiDefinationDataFactory newInstance() {
+	public static KpiDefinationDataFactory newInstance() {
 
-        return newInstance(null);
-    }
+		return newInstance(null);
+	}
 
-    private void init(String filePath) {
-        try {
+	private void init(String filePath) {
+		try {
 
-            String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
 
-            kpiList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-                    new TypeReference<List<KpiMaster>>() {
-                    });
-        } catch (IOException e) {
-            log.error("Error in reading account hierarchies from file = " + filePath, e);
-        }
-    }
+			kpiList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<KpiMaster>>() {
+					});
+		} catch (IOException e) {
+			log.error("Error in reading account hierarchies from file = " + filePath, e);
+		}
+	}
 
-    private void createObjectMapper() {
+	private void createObjectMapper() {
 
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		if (mapper == null) {
+			mapper = new ObjectMapper();
+			mapper.registerModule(new JavaTimeModule());
+			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        }
-    }
+		}
+	}
 
-    public List<KpiMaster> getKpiList() {
-        return kpiList;
-    }
+	public List<KpiMaster> getKpiList() {
+		return kpiList;
+	}
 
-    public List<KpiMaster> getSpecificKpis(List<String> kpis) {
-        return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
-    }
+	public List<KpiMaster> getSpecificKpis(List<String> kpis) {
+		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
+	}
 }

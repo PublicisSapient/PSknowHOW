@@ -32,6 +32,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
+import { FeatureFlagsService } from 'src/app/services/feature-toggle.service';
 
 declare let require: any;
 
@@ -103,8 +104,10 @@ export class IterationComponent implements OnInit, OnDestroy {
   commitmentReliabilityKpi;
   kpiCommentsCountObj: object = {};
   currentSelectedSprint;
+  kpiThresholdObj = {};
 
-  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService) {
+  constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService,private messageService: MessageService,
+    private featureFlagService: FeatureFlagsService) {
     this.subscriptions.push(this.service.passDataToDashboard.subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'iteration') {
         this.allKpiArray = [];
@@ -149,9 +152,11 @@ export class IterationComponent implements OnInit, OnDestroy {
     if(this.service.currentSelectedSprint?.sprintState === 'ACTIVE'){
       this.navigationTabs =  [
         {'label':'Iteration Review', 'count': 0,width : 'half',kpis : [],fullWidthKpis : []},
-        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []},
-        {'label':'Daily Standup','count':1 , width : 'full',kpis : []}
+        {'label':'Iteration Progress', 'count': 0,width : 'full',kpis : []}
       ];
+      if(this.featureFlagService.isFeatureEnabled('DAILY_STANDUP')) {
+        this.navigationTabs.push({'label':'Daily Standup','count':1 , width : 'full',kpis : []});
+      }
     }else{
       this.navigationTabs =  [
         {'label':'Iteration Review', 'count': 0 , width : 'half',kpis : [],fullWidthKpis:[]},
@@ -498,6 +503,7 @@ export class IterationComponent implements OnInit, OnDestroy {
   }
   getChartData(kpiId, idx, aggregationType?) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList ? JSON.parse(JSON.stringify(this.allKpiArray[idx]?.trendValueList)) : {};
+    this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     /**if trendValueList is an object */
     if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList)) {
       if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')

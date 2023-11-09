@@ -16,17 +16,20 @@
  */
 package com.publicissapient.kpidashboard.apis.data;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.BaseFieldMappingStructure;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 
-import java.io.IOException;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author hargupta15
  */
@@ -34,7 +37,7 @@ import java.util.List;
 @SuppressWarnings("java:S1075")
 public class FieldMappingStructureDataFactory {
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/field_mapping_structure.json";
-	private List<BaseFieldMappingStructure> fieldMappingStructureList;
+	private List<FieldMappingStructureForMongock> fieldMappingStructureList;
 	private ObjectMapper mapper;
 
 	private FieldMappingStructureDataFactory() {
@@ -59,7 +62,7 @@ public class FieldMappingStructureDataFactory {
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
 
 			fieldMappingStructureList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<BaseFieldMappingStructure>>() {
+					new TypeReference<List<FieldMappingStructureForMongock>>() {
 					});
 		} catch (IOException e) {
 			log.error("Error in reading from file = " + filePath, e);
@@ -77,7 +80,7 @@ public class FieldMappingStructureDataFactory {
 		}
 	}
 
-	public List<BaseFieldMappingStructure> getFieldMappingStructureList() {
+	public List<FieldMappingStructureForMongock> getFieldMappingStructureList() {
 		return fieldMappingStructureList;
 	}
 

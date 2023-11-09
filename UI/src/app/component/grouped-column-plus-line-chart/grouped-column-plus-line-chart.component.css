@@ -25,7 +25,7 @@
   z-index: 2;
 }
 
-::ng-deep .xAxis .domain, ::ng-deep .yAxis .domain{
+:host ::ng-deep .xAxis .domain, :host ::ng-deep .yAxis .domain{
   display: none;
 }
 

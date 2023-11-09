@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.abac.policy.SimplePolicyDefinition;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
+
 /**
  * @author bogolesw
  */

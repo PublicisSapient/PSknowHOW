@@ -125,14 +125,14 @@ public class KanbanTemplateServiceImpl extends JiraKPIService<Long, List<Object>
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		// for simple chart
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue,
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
 		kpiElement.setTrendValueList(trendValues);
 		// simple aggregation implementation over
 
 		// for chart with filter,group stack and column chart
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.TICKET_OPEN_VS_CLOSED_RATE_BY_TYPE);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();

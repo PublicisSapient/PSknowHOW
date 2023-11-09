@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -92,7 +93,7 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(treeAggregatorDetail.getRoot(), nodeWiseKPIValue, KPICode.SONAR_TECH_DEBT);
 
-		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.SONAR_TECH_DEBT);
 
 		List<DataCountGroup> dataCountGroups = new ArrayList<>();
@@ -130,7 +131,8 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
-		getSonarHistoryForAllProjects(pList, null, false).forEach((projectNodeId, projectData) -> {
+		getSonarHistoryForAllProjects(pList, getScrumCurrentDateToFetchFromDb(CommonConstant.WEEK, (long) customApiConfig.getSonarWeekCount()))
+				.forEach((projectNodeId, projectData) -> {
 			List<String> projectList = new ArrayList<>();
 			List<String> debtList = new ArrayList<>();
 			List<String> versionDate = new ArrayList<>();
@@ -264,5 +266,10 @@ public class SonarTechDebtServiceImpl extends SonarKPIService<Long, List<Object>
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI27(),KPICode.SONAR_TECH_DEBT.getKpiId());
 	}
 }

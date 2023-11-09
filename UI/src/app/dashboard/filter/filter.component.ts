@@ -319,7 +319,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          this.service.setSideNav(false);
+          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -956,7 +956,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
     this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
-    this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === event?.toLowerCase()));
+    this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId?.toLowerCase() === event?.toLowerCase()));
     this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
   }
 

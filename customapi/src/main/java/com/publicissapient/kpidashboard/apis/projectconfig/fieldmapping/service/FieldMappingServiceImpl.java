@@ -202,6 +202,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	private void clearCache() {
 		cacheService.clearCache(CommonConstant.JIRAKANBAN_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
 	}
 
@@ -239,6 +241,13 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			List<String> productionDefectFieldList = Arrays.asList("productionDefectCustomField",
 					"productionDefectValue");
 			isUpdated = checkFieldsForUpdation(unsaved, saved, productionDefectFieldList);
+		}
+
+		if (!isUpdated
+				&& CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraProductionIncidentIdentification())) {
+			List<String> productionIncidentFieldList = Arrays.asList("jiraProdIncidentRaisedByCustomField",
+					"jiraProdIncidentRaisedByValue");
+			isUpdated = checkFieldsForUpdation(unsaved, saved, productionIncidentFieldList);
 		}
 
 		return isUpdated;
@@ -324,7 +333,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	/**
 	 * Checks if fields are updated and then unset changeDate in jira collections.
-	 * 
+	 *
 	 * @param basicProjectConfigId
 	 * @param fieldMapping
 	 * @param existingFieldMapping
@@ -439,7 +448,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraDefectInjectionIssueTypeKPI14",
 
 					"jiraDodKPI14", "jiraDodQAKPI111", "jiraDodKPI3", "jiraDodPDA", "jiraDodKPI152", "jiraDodKPI151",
-					"jiraDodKPI37",
+					"jiraDodKPI37", "jiraDodKPI166",
 
 					"jiraDefectCreatedStatusKPI14",
 
@@ -468,7 +477,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraDorKPI3", "storyFirstStatusKPI3",
 
 					"jiraIssueTypeKPI3", "jiraStoryIdentification", "jiraStoryIdentificationKpi40",
-					"jiraStoryIdentificationKPI164", "jiraStoryIdentificationKPI129",
+					"jiraStoryIdentificationKPI164", "jiraStoryIdentificationKPI129", "jiraStoryIdentificationKPI166",
 
 					"jiraLiveStatusKPI3", "jiraLiveStatusLTK", "jiraLiveStatusNOPK", "jiraLiveStatusNOSK",
 					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "jiraLiveStatusPDA", "jiraLiveStatusKPI152",
@@ -548,7 +557,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 
 	/**
 	 * Return true if zephyr tool is configured.
-	 * 
+	 *
 	 * @param fieldMapping
 	 * @return
 	 */

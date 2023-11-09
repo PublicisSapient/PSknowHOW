@@ -20,13 +20,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
+import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author bogolesw
  */

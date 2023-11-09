@@ -104,7 +104,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.TEST_EXECUTION_KANBAN);
 
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);

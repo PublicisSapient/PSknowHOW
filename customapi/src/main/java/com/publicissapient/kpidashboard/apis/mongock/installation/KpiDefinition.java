@@ -16,15 +16,27 @@
  */
 package com.publicissapient.kpidashboard.apis.mongock.installation;
 
-import com.publicissapient.kpidashboard.apis.data.*;
+import java.util.List;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.publicissapient.kpidashboard.apis.data.FieldMappingStructureDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiCategoryDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiCategoryMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiColumnConfigDataFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiDefinationDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
-import com.publicissapient.kpidashboard.common.model.application.*;
+import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
+import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import java.util.List;
+
 /**
  * @author hargupta15
  */
@@ -45,7 +57,7 @@ public class KpiDefinition {
 	List<KpiColumnConfig> kpiColumnConfigs;
 	List<KpiCategoryMapping> kpiCategoryMappingList;
 	List<KpiCategory> kpiCategoryList;
-	List<BaseFieldMappingStructure> fieldMappingStructureList;
+	List<FieldMappingStructureForMongock> fieldMappingStructureList;
 
 	public KpiDefinition(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;

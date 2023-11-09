@@ -16,40 +16,44 @@
  */
 package com.publicissapient.kpidashboard.apis.util;
 
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bson.Document;
+import org.springframework.data.mongodb.core.MongoTemplate;
+
+import com.mongodb.client.MongoCollection;
+
 public final class MongockUtil {
 
-    public static MongoCollection<Document> getOrCreateCollection(MongoTemplate mongoTemplate, String collectionName) {
-        if (!mongoTemplate.collectionExists(collectionName))
-            return mongoTemplate.createCollection(collectionName);
-        return mongoTemplate.getCollection(collectionName);
-    }
+	private MongockUtil() {
+	}
 
-    public static void saveListToDB(List<?> dataList, String collectionName, MongoTemplate mongoTemplate) {
-        MongoCollection<Document> collection = getOrCreateCollection(mongoTemplate, collectionName);
-        if (collection.countDocuments() == 0) {
-            List<Document> documentList = new ArrayList<>();
-            dataList.forEach(data -> {
-                Document document = new Document();
-                for (Field field : data.getClass().getDeclaredFields()) {
-                    field.setAccessible(true);
-                    try {
-                        Object value = field.get(data);
-                        document.append(field.getName(), value);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-                documentList.add(document);
-            });
-            mongoTemplate.insert(documentList, collectionName);
-        }
-    }
+	public static MongoCollection<Document> getOrCreateCollection(MongoTemplate mongoTemplate, String collectionName) {
+		if (!mongoTemplate.collectionExists(collectionName))
+			return mongoTemplate.createCollection(collectionName);
+		return mongoTemplate.getCollection(collectionName);
+	}
+
+	public static void saveListToDB(List<?> dataList, String collectionName, MongoTemplate mongoTemplate) {
+		MongoCollection<Document> collection = getOrCreateCollection(mongoTemplate, collectionName);
+		if (collection.countDocuments() == 0) {
+			List<Document> documentList = new ArrayList<>();
+			dataList.forEach(data -> {
+				Document document = new Document();
+				for (Field field : data.getClass().getDeclaredFields()) {
+					field.setAccessible(true);
+					try {
+						Object value = field.get(data);
+						document.append(field.getName(), value);
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					}
+				}
+				documentList.add(document);
+			});
+			mongoTemplate.insert(documentList, collectionName);
+		}
+	}
 }

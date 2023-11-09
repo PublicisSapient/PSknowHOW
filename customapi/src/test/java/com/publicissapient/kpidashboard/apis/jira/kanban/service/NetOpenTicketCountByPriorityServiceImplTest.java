@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -109,6 +110,9 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		kpiWiseAggregation.put("ticketCountByPriority", "sum");
 
 		setTreadValuesDataCount();
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		when(cacheService.getFullKanbanHierarchyLevel()).thenReturn(hierachyLevelFactory.getHierarchyLevels());
+
 
 	}
 

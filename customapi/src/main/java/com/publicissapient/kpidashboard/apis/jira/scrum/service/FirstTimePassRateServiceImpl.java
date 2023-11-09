@@ -125,7 +125,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -259,6 +259,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+		List<String> labelsList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			sprintList.add(leaf.getSprintFilter().getId());
@@ -285,6 +286,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI82()).orElse(new ArrayList<>()));
 		});
 
 		/** additional filter **/
@@ -294,6 +296,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put("labels", labelsList.stream().distinct().collect(Collectors.toList()));
 
 		// Fetch Story ID grouped by Sprint
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
@@ -389,5 +392,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiId) {
 		return calculateKpiValueForDouble(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI82(),KPICode.FIRST_TIME_PASS_RATE.getKpiId());
 	}
 }
