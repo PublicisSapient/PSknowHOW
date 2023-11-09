@@ -25,7 +25,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
-
+import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 import { DataViewModule } from 'primeng/dataview';
 
 import { environment } from 'src/environments/environment';
@@ -39,6 +39,7 @@ describe('ToolMenuComponent', () => {
   let sharedService: SharedService;
   let confirmationService: ConfirmationService;
   let messageService: MessageService;
+  let ga: GoogleAnalyticsService;
   let httpMock;
   let router: Router;
   const baseUrl = environment.baseUrl;
@@ -68,6 +69,7 @@ describe('ToolMenuComponent', () => {
         SharedService,
         MessageService,
         ConfirmationService,
+        GoogleAnalyticsService,
         { provide: APP_CONFIG, useValue: AppConfig }
       ]
     })
@@ -81,6 +83,7 @@ describe('ToolMenuComponent', () => {
     sharedService = TestBed.inject(SharedService);
     confirmationService = TestBed.inject(ConfirmationService);
     messageService = TestBed.inject(MessageService);
+    ga = TestBed.inject(GoogleAnalyticsService);
     sharedService.setSelectedProject(fakeProject);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
@@ -93,6 +96,7 @@ describe('ToolMenuComponent', () => {
   it('should fetch fetch all tool configs', () => {
     component.isAssigneeSwitchChecked = true;
     spyOn(httpService, 'getAllToolConfigs').and.callThrough();
+    spyOn(component, 'setGaData');
     component.ngOnInit();
     expect(httpService.getAllToolConfigs).toHaveBeenCalledTimes(1);
 
@@ -111,6 +115,52 @@ describe('ToolMenuComponent', () => {
       expect(component.isAssigneeSwitchDisabled).toBeTruthy();
     }
   });
+
+  it('should set tool data for ga event', () => {
+    component.selectedTools = [
+      {
+          "id": "6361050e3fa9e175755f0730",
+          "toolName": "Jira",
+      },
+      {
+          "id": "63615320c7a36b1d53797532",
+          "toolName": "Jenkins",
+      },
+      {
+          "id": "63615554c7a36b1d53797537",
+          "toolName": "GitHub",
+      },
+      {
+          "id": "6361ff31f6f1c850816cedfe",
+          "toolName": "Zephyr",
+      },
+      {
+          "id": "6390106ab3c061d8f778b1d2",
+          "toolName": "JiraTest",
+      },
+      {
+          "id": "6486f2796803f300a9fd2c14",
+          "toolName": "Sonar",
+      },
+      {
+          "id": "64c780f25fec906dbc18f1d7",
+          "toolName": "GitHubAction",
+      },
+    ]
+    component.selectedProject = {
+      "Project": "KnowHOW",
+      "Type": "Scrum",
+      "BU": "Internal",
+      "Vertical": "PS Internal",
+      "Account": "Methods and Tools",
+      "Portfolio": "DTS",
+      "id": "6360fefc3fa9e175755f0728",
+      "saveAssigneeDetails": true
+    };
+    const gaSpy = spyOn(ga, 'setProjectToolsData').and.callThrough();
+    component.setGaData();
+    expect(gaSpy).toHaveBeenCalled();
+  })
 
   it('should navigate back to Projects List if no selected project is there', () => {
     sharedService.setSelectedProject(null);
