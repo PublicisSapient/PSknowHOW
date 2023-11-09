@@ -1638,6 +1638,14 @@ public class KpiHelperService { // NOPMD
 		}
 	}
 
+	/**
+	 * check number of saturday, sunday between dates
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return number of sat, sun
+	 */
 	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
 		int countWeekEnd = 0;
 		while (!d1.isAfter(d2)) {
@@ -1649,6 +1657,12 @@ public class KpiHelperService { // NOPMD
 		return countWeekEnd;
 	}
 
+	/**
+	 * check if day is weekend
+	 * @param localDateTime
+	 * 			localdatetime of day
+	 * @return boolean
+	 */
 	public boolean isWeekEnd(LocalDateTime localDateTime) {
 		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
 		return dayOfWeek == 6 || dayOfWeek == 7;
