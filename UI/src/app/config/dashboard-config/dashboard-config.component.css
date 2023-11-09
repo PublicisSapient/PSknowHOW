@@ -167,6 +167,7 @@
   width: 71px;
   justify-content: space-around;
   height: 100%;
+  cursor: pointer;
 }
 
 .dashboard-config-block .show-kpisList {
@@ -180,6 +181,7 @@
   min-width: 300px;
   max-width: 300px;
   max-height: 40px;
+  align-items: center;
 }
 
 ::ng-deep .dashboard-config-block .drp-btn-section .drp-pnl{

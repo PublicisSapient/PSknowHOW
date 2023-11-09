@@ -17,10 +17,10 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
   <div class="dashboard-config-block p-p-3">
     <p-toast position="top-right"></p-toast>
-    <div class="p-d-flex drp-btn-section">
+    <div class="p-d-flex drp-btn-section fnt-size-16">
         <div>
             <div class="d-flex align-items-center">
-                <span class="font-small">
+                <span>
                     Select Project
                 </span>
                 <span class="p-mr-3 p-ml-3">
@@ -28,12 +28,12 @@
                         styleClass="drp" panelStyleClass="drp-pnl" [filter]="true" filterBy="name"
                         [showClear]="false" placeholder="Select a Project" (onChange)="updateProjectSelection($event)">
                         <ng-template pTemplate="selectedItem">
-                            <div class="userProject-item userProject-item-value" *ngIf="selectedProject">
+                            <div class="fnt-size-16" *ngIf="selectedProject">
                                 <div>{{selectedProject.name}}</div>
                             </div>
                         </ng-template>
                         <ng-template let-userProject pTemplate="item">
-                            <div class="userProject-item">
+                            <div>
                                 <div>{{userProject.name}}</div>
                             </div>
                         </ng-template>
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div>
-            <button (click)="save()" class="save-kpi save-icon"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
+            <button (click)="save()" class="save-kpi save-icon fnt-size-16"><img src="../../../assets/img/save_icon.svg" alt="save" />Save</button>
         </div>
     </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
