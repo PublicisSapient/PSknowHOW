@@ -327,6 +327,94 @@ db.field_mapping_structure.insertMany([
         }
     }
 ])
+
+db.kpi_master.bulkWrite([
+    {
+        updateMany: {
+            filter: { "kpiId": { $in: ["kpi150"] } },
+            update: { $set: { "defaultOrder": 1 } }
+        },
+    }
+]);
+db.getCollection("kpi_column_configs").insertMany([
+    {
+        "basicProjectConfigId": null,
+        "kpiId": "kpi166",
+        "kpiColumnDetails": [
+            {
+                "columnName": "Project Name",
+                "order": 0,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Date",
+                "order": 1,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Story ID",
+                "order": 2,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Issue Type",
+                "order": 3,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Issue Description",
+                "order": 4,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Created Date",
+                "order": 5,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Completion Date",
+                "order": 6,
+                "isShown": true,
+                "isDefault": true
+            },
+            {
+                "columnName": "Time to Recover (In Hours)",
+                "order": 7,
+                "isShown": true,
+                "isDefault": true
+            }
+        ]
+    }
+]);
+
+db.getCollection('metadata_identifier').updateMany(
+    { "templateCode": { $in: ["7"] } },
+    {
+        $push: {
+            "workflow": {
+                "type": "jiraDodKPI166",
+                "value": [
+                    "Closed"
+                ]
+            },
+            "issues": {
+                "type": "jiraStoryIdentificationKPI166",
+                "value": [
+                    "Story",
+                    "Enabler Story",
+                    "Tech Story",
+                    "Change request"
+                ]
+            }
+        }
+    }
+);
 //------------------------------DSV S2 Changes
 db.getCollection('field_mapping_structure').insertMany([
     {
