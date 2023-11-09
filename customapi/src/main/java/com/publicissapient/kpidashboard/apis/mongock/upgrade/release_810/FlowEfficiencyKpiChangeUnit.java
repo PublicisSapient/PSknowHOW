@@ -65,12 +65,12 @@ public class FlowEfficiencyKpiChangeUnit {
 
 	public void addFlowEfficiencyFieldMappingStructure() {
 
-		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedState170")
+		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedStateKPI170")
 				.append("fieldLabel", "Status to identify Close Statuses").append("fieldType", "chips")
 				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
 
-		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitState170")
+		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitStateKPI170")
 				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldType", "chips")
 				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
 						"The statuses wherein no activity takes place and signifies that issue is in queue"));
@@ -93,7 +93,7 @@ public class FlowEfficiencyKpiChangeUnit {
 	}
 
 	public void addFlowEfficiencyFieldMappingStructureRollback() {
-		List<String> fieldNamesToDelete = Arrays.asList("jiraIssueClosedState170", "jiraIssueWaitState170");
+		List<String> fieldNamesToDelete = Arrays.asList("jiraIssueClosedStateKPI170", "jiraIssueWaitStateKPI170");
 		Document filter = new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete));
 		mongoTemplate.getCollection("field_mapping_structure").deleteMany(filter);
 	}

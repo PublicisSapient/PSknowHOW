@@ -202,8 +202,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 
 			List<String> status = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraIssueClosedState170()).isPresent()) {
-				status.addAll(fieldMapping.getJiraIssueClosedState170());
+			if (Optional.ofNullable(fieldMapping.getJiraIssueClosedStateKPI170()).isPresent()) {
+				status.addAll(fieldMapping.getJiraIssueClosedStateKPI170());
 			}
 
 			mapOfProjectFilters.put("statusUpdationLog.story.changedTo", CommonUtils.convertToPatternList(status));
@@ -314,10 +314,10 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 				JiraHistoryChangeLog currentChangelog = statusUpdateLog.get(i);
 				JiraHistoryChangeLog nextChangeLog = statusUpdateLog.get(i + 1);
 
-				if (fieldMapping.getJiraIssueWaitState170().contains(currentChangelog.getChangedTo())) {
+				if (fieldMapping.getJiraIssueWaitStateKPI170().contains(currentChangelog.getChangedTo())) {
 					waitedTime += calculateWaitedTime(currentChangelog.getUpdatedOn(), nextChangeLog.getUpdatedOn());
 				}
-				if (fieldMapping.getJiraIssueClosedState170().contains(nextChangeLog.getChangedTo())) {
+				if (fieldMapping.getJiraIssueClosedStateKPI170().contains(nextChangeLog.getChangedTo())) {
 					closedDate = nextChangeLog.getUpdatedOn();
 					totalTime = calculateWaitedTime(
 							LocalDateTime.ofInstant(issueCustomHistory.getCreatedDate().toDate().toInstant(),

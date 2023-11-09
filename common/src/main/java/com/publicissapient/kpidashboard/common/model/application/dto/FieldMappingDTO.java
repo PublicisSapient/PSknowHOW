@@ -391,8 +391,8 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraDodKPI156;
     private List<String> jiraIssueTypeKPI156;
-    private List<String> jiraIssueWaitState170;
-    private List<String> jiraIssueClosedState170;
+    private List<String> jiraIssueWaitStateKPI170;
+    private List<String> jiraIssueClosedStateKPI170;
 
     @Builder.Default
     private String leadTimeConfigRepoTool = "Jira";
