@@ -99,11 +99,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
-		String jwt = Jwts.builder().setSubject(authentication.getName())
-				.claim(DETAILS_CLAIM, authentication.getDetails())
-				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
-				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
-				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
+		String jwt = createJwtToken(authentication);
 		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
 		data.setUserName(authentication.getName());
 		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
@@ -112,6 +108,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		response.addCookie(cookie);
    	    cookieUtil.addSameSiteCookieAttribute(response);
 		return data;
+	}
+
+	public String createJwtToken(Authentication authentication) {
+		return Jwts.builder().setSubject(authentication.getName())
+				.claim(DETAILS_CLAIM, authentication.getDetails())
+				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
+				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
+				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 	}
 
 	@SuppressWarnings("unchecked")
