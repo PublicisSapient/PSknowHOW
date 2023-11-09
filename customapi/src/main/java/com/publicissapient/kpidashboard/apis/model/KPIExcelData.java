@@ -151,6 +151,9 @@ public class KPIExcelData {
 	@JsonProperty("Sonar Violations")
 	private String sonarViolation;
 
+	@JsonProperty("Code Quality")
+	private String codeQuality;
+
 	@JsonProperty("Weeks")
 	private String weeks;
 
