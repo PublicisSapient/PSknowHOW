@@ -154,6 +154,9 @@ div.assignee.selected-user {
     overflow-x: auto;
     display: inline-block; 
     max-width: calc(70vw - 100px);
+}
+
+.min-w-100.assignee-scroller {
     min-width: 100px;
 }
 

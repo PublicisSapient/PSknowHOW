@@ -49,8 +49,8 @@
                     <i class="pi pi-user-minus" style="font-size: 1rem"></i>
                 </button>
 
-                <div class="assignee-scroller">
-                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true"
+                <div class="assignee-scroller" [ngClass]="{'min-w-100' : assigneeList?.length === 1 }">
+                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true" [style]="{maxWidth: '800px'}"
                         (onChange)="handleTabChange(assigneeList[activeIndex2 -1 ].assigneeId, assigneeList[activeIndex2 - 1].assigneeName)">
                         <p-tabPanel [selected]="activeIndex2 === 0"></p-tabPanel>
                         <p-tabPanel *ngFor="let assignee of assigneeList" [headerStyleClass]="assignee">
