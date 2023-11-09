@@ -332,8 +332,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 
 			if (closedDate != null && totalTime != 0) {
 				double flowEfficiency = calculatePercentage(waitedTime, totalTime);
-				waitTimeList.add(convertHoursToDaysString(waitedTime));
-				totalTimeList.add(convertHoursToDaysString(totalTime));
+				waitTimeList.add(kpiHelperService.convertHoursToDaysString(waitedTime));
+				totalTimeList.add(kpiHelperService.convertHoursToDaysString(totalTime));
 				flowEfficiencyMap.put(issueCustomHistory, flowEfficiency);
 			}
 		}
@@ -362,42 +362,11 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 * @return percentage of wait time byt total time
 	 */
 	private double calculatePercentage(long waitedTime, long totalTime) {
-		double wait = getTimeInWorkHours(waitedTime);
-		double total = getTimeInWorkHours(totalTime);
+		double wait = kpiHelperService.getTimeInWorkHours(waitedTime);
+		double total = kpiHelperService.getTimeInWorkHours(totalTime);
 		return (1 - (wait / total)) * 100;
 	}
 
-	/**
-	 * convert hours into work hours by 8 factor
-	 * 
-	 * @param timeInHours
-	 * 			time in hours
-	 * @return time in work hours
-	 */
-	private long getTimeInWorkHours(long timeInHours) {
-		long timeInHrs = (timeInHours / 24) * 8;
-		long remainingTimeInMin = (timeInHours % 24);
-		if (remainingTimeInMin >= 8) {
-			timeInHrs = timeInHrs + 8;
-		} else {
-			timeInHrs = timeInHrs + remainingTimeInMin;
-		}
-		return timeInHrs;
-	}
-
-	/**
-	 * convert total hours to days
-	 * 
-	 * @param hours
-	 * 			hours
-	 * @return time in days
-	 */
-	private String convertHoursToDaysString(long hours) {
-		hours = getTimeInWorkHours(hours);
-		long days = hours / 8;
-		long remainingHours = hours % 8;
-		return String.format("%dd %dhrs", days, remainingHours);
-	}
 
 	public double calculateAverage(List<JiraIssueCustomHistory> jiraIssueList,
 			Map<JiraIssueCustomHistory, Double> flowEfficiencyMap) {

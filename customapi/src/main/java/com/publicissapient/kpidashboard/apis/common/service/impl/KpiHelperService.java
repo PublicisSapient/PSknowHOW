@@ -1589,6 +1589,38 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
+	 * convert hours into work hours by 8 factor
+	 *
+	 * @param timeInHours
+	 * 			time in hours
+	 * @return time in work hours
+	 */
+	public long getTimeInWorkHours(long timeInHours) {
+		long timeInHrs = (timeInHours / 24) * 8;
+		long remainingTimeInMin = (timeInHours % 24);
+		if (remainingTimeInMin >= 8) {
+			timeInHrs = timeInHrs + 8;
+		} else {
+			timeInHrs = timeInHrs + remainingTimeInMin;
+		}
+		return timeInHrs;
+	}
+
+	/**
+	 * convert total hours to days
+	 *
+	 * @param hours
+	 * 			hours
+	 * @return time in days
+	 */
+	public String convertHoursToDaysString(long hours) {
+		hours = getTimeInWorkHours(hours);
+		long days = hours / 8;
+		long remainingHours = hours % 8;
+		return String.format("%dd %dhrs", days, remainingHours);
+	}
+
+	/**
 	 * get weekend between two dates
 	 *
 	 * @param d1

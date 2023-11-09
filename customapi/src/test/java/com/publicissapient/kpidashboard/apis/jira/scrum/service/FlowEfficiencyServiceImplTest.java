@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,6 +87,8 @@ public class FlowEfficiencyServiceImplTest {
 	FieldMappingRepository fieldMappingRepository;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private KpiHelperService kpiHelperService;
 	List<Node> leafNodeList = new ArrayList<>();
 	TreeAggregatorDetail treeAggregatorDetail;
 	private KpiRequest kpiRequest;
