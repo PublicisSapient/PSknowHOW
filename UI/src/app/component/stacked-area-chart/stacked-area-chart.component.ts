@@ -9,11 +9,15 @@ import * as d3 from 'd3';
 export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
   elem;
-  @Input() kpiId:string = ''; 
+  @Input() kpiId:string = '';
+  @Input() activeTab?: number = 0;
+  elemObserver = new ResizeObserver(() => {this.draw()});
   constructor(private viewContainerRef: ViewContainerRef) { }
 
   ngOnInit(): void {}
-
+  ngAfterViewInit(): void {
+    this.elemObserver.observe(this.elem);
+  }
   ngOnChanges(changes: SimpleChanges) {
     // only run when property "data" changed
     if (Object.keys(changes)?.length > 0) {
@@ -22,11 +26,15 @@ export class StackedAreaChartComponent implements OnInit {
         this.draw();
       }
     }
-
+    if(changes['activeTab']){
+      setTimeout(() => {
+        this.draw();
+      }, 0);
+    }
   }
 
   draw() {
-    /** Preventing Drop event for Bubbling */ 
+    /** Preventing Drop event for Bubbling */
     d3.select(this.elem).select('#stacked-area').on('mousedown', (event) => {
       event.stopPropagation();
     });
@@ -67,10 +75,10 @@ export class StackedAreaChartComponent implements OnInit {
       delete obj['value'];
       return obj;
     });
-    
+
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
-      width = document.getElementById('stacked-area').offsetWidth - 70,
+      width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0,
       height = 228;
 
     // append the svg object to the body of the page
@@ -245,7 +253,7 @@ export class StackedAreaChartComponent implements OnInit {
       const foreignObject = svg.append("foreignObject")
       .attr("width", width)
       .attr("height", 40)
-      .style('overflow-y', 'scroll')
+      .style('overflow-y', 'auto')
       .attr("transform", `translate(0,${(height+60)})`)
       .append("xhtml:div")
       .attr("id", "legend-container")
@@ -285,13 +293,14 @@ export class StackedAreaChartComponent implements OnInit {
       //   .on("mouseover", highlight)
       //   .on("mouseleave", noHighlight)
 
-    
+
   }
-  
-  
+
+
 
   ngOnDestroy(){
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
     this.data = [];
+    this.elemObserver.unobserve(this.elem);
   }
 }
