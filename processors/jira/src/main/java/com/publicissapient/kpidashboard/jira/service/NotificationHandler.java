@@ -75,11 +75,11 @@ public class NotificationHandler {
      */
     public void sendEmailToProjectAdmin(String value, String allFailureExceptions, String projectBasicConfigId) {
 		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-        if (StringUtils.isNotBlank(jiraProcessorConfig.getDomainName())) {
+        if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getDomainNames())) {
             emailAddresses = emailAddresses.stream()
                     .filter(emailAddress -> {
                         String domain = StringUtils.substringAfter(emailAddress, "@").trim();
-                        return StringUtils.equalsIgnoreCase(domain, jiraProcessorConfig.getDomainName().trim());
+                        return jiraProcessorConfig.getDomainNames().contains(domain);
                     })
                     .collect(Collectors.toList());
         }

@@ -86,5 +86,5 @@ public class JiraProcessorConfig {
 	private Integer daysToReduce;
 	private Integer chunkSize;
 	private String uiHost;
-	private String domainName;
+	private List<String> domainNames;
 }
