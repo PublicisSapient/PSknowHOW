@@ -25,30 +25,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Select IP
-      run: |
-        echo "Choose an IP:"
-        select IP in "192.168.1.1" "192.168.1.2" "192.168.1.3"; do
-          case $IP in
-            "192.168.1.1"|"192.168.1.2"|"192.168.1.3")
-              echo "Selected IP: $IP"
-              break
-              ;;
-            *)
-              echo "Invalid option, please try again."
-              ;;
-          esac
-        done
-    - name: Ask for User Input
-      id: user_input
-      uses: ./.github/actions/user-input-action
-      with:
-        options: '192.168.1.1,192.168.1.2,192.168.1.3'
-        prompt: 'Please select a server IP'
-
-    - name: Show Selected Option
-      run: |
-        echo "Selected Server IP: ${{ steps.user_input.outputs.selected_option }}"
+    - name: Run IP selection script
+      run: ./select_ip.py
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     #   - name: Sleep for 5 min 
     #     if: github.event_name == 'push'
