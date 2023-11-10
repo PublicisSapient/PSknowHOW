@@ -136,6 +136,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  showSwitchDropdown: boolean = false;
 
   constructor(
     private service: SharedService,
