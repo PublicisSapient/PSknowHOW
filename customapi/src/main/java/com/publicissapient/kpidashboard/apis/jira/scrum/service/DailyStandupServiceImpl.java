@@ -169,8 +169,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		// fetch from db
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
-		if (ObjectUtils.isNotEmpty(sprintDetails)
-				&& sprintDetails.getState().equalsIgnoreCase(SprintDetails.SPRINT_STATE_ACTIVE)) {
+		if (ObjectUtils.isNotEmpty(sprintDetails)) {
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
 			CapacityKpiData capacityKpiData = (CapacityKpiData) resultMap.get(ASSIGNEE_DETAILS);
 			List<JiraIssue> totalIssueList = new ArrayList<>((Set<JiraIssue>) resultMap.get(ISSUES));
@@ -269,7 +268,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			log.info("Daily Standup View -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails;
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
-			if (null != dbSprintDetail && dbSprintDetail.getState().equals(SprintDetails.SPRINT_STATE_ACTIVE)) {
+			if (null != dbSprintDetail) {
 				ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
