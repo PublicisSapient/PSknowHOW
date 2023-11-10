@@ -74,12 +74,9 @@ public class NotificationHandler {
      * @param projectBasicConfigId projectBasicConfigId
      */
     public void sendEmailToProjectAdmin(String value, String allFailureExceptions, String projectBasicConfigId) {
-//		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
-        List<String> emailAddresses = new ArrayList<>();
-        emailAddresses.add("guptapurushottam123@gmail.com");
-        List<String> emailIncludedInDomain = new ArrayList<>();
+		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
         if (null != jiraProcessorConfig.getDomainName()) {
-            emailIncludedInDomain = emailAddresses.stream()
+            emailAddresses = emailAddresses.stream()
                     .filter(emailAddress -> {
                         String domain = emailAddress.split("@")[1].trim();
                         return domain.equalsIgnoreCase(jiraProcessorConfig.getDomainName().trim());
@@ -96,7 +93,7 @@ public class NotificationHandler {
             log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
             String templateKey = jiraProcessorConfig.getMailTemplate()
                     .getOrDefault(ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY, "");
-            notificationService.sendNotificationEvent(emailIncludedInDomain, customData, subject, NOTIFICATION_KEY,
+            notificationService.sendNotificationEvent(emailAddresses, customData, subject, NOTIFICATION_KEY,
                     jiraProcessorConfig.getKafkaMailTopic(), jiraProcessorConfig.isNotificationSwitch(), kafkaTemplate,
                     templateKey, jiraProcessorConfig.isMailWithoutKafka());
         } else {
