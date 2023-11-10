@@ -143,7 +143,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 
         StringBuilder urlPath = new StringBuilder();
         if (StringUtils.isNotEmpty(jiraProcessorConfig.getUiHost())) {
-            urlPath.append("http").append(':').append(File.separator + File.separator)
+            urlPath.append("https").append(':').append(File.separator + File.separator)
                     .append(jiraProcessorConfig.getUiHost().trim());
         } else {
             throw new UnknownHostException("Api host not found in properties.");
@@ -155,7 +155,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
     private void sendNotification(Throwable stepFaliureException) throws UnknownHostException {
         FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
         ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findById(new ObjectId(projectId)).orElse(null);
-        if (fieldMapping.getNotificationEnabler()) {
+        if (fieldMapping.getNotificationEnabler() && projectBasicConfig != null) {
             handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()) + " on " + getApiHost() + " for " + projectBasicConfig.getProjectName(), ExceptionUtils.getStackTrace(stepFaliureException), projectId);
         } else {
             log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
