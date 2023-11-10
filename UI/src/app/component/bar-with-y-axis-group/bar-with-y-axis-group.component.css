@@ -20,8 +20,13 @@
     position: relative;
   }
   
-  ::ng-deep .yAxis line {
-    stroke: #dedede;
+  :host ::ng-deep .yAxis path {
+    stroke: #514f4f;
+    z-index: 2;
+  }
+
+  :host ::ng-deep .xAxis path {
+    stroke:  #afacac;
     z-index: 2;
   }
   
