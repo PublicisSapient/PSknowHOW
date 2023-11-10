@@ -189,7 +189,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		// setting the fetchStatus as false for the fetch sprint
 		if (HttpStatus.OK.value() == statuscode) {
-			SprintTraceLog sprintTrace = sprintTraceLogRepository.findBySprintId(sprintId);
+			SprintTraceLog sprintTrace = sprintTraceLogRepository.findFirstBySprintId(sprintId);
 			sprintTrace = sprintTrace == null ? new SprintTraceLog() : sprintTrace;
 			sprintTrace.setSprintId(sprintId);
 			sprintTrace.setFetchSuccessful(false);

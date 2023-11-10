@@ -23,6 +23,7 @@ import { HttpService } from '../../../services/http.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { KeyValue } from '@angular/common';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 @Component({
   selector: 'app-tool-menu',
   templateUrl: './tool-menu.component.html',
@@ -50,9 +51,16 @@ export class ToolMenuComponent implements OnInit {
   repoTools = ['BitBucket','GitLab','GitHub','Azure Repo'];
   repoToolsEnabled : boolean;
 
-  constructor(public router: Router, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private confirmationService: ConfirmationService, private getAuthorizationService: GetAuthorizationService) {
+  constructor(
+      public router: Router,
+      private sharedService: SharedService,
+      private http: HttpService,
+      private messenger: MessageService,
+      private confirmationService: ConfirmationService,
+      private getAuthorizationService: GetAuthorizationService,
+      private ga: GoogleAnalyticsService,) {
 
-  }
+    }
 
   ngOnInit(): void {
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
@@ -79,6 +87,7 @@ export class ToolMenuComponent implements OnInit {
         if (response && response['success'] && response['data']?.length) {
           this.sharedService.setSelectedToolConfig(response['data']);
           this.selectedTools = response['data'];
+          this.setGaData();
           const jiraOrAzure = response['data']?.filter(tool => tool.toolName === 'Jira' || tool.toolName === 'Azure');
           if (jiraOrAzure.length) {
             const fakeEvent = {
@@ -404,5 +413,24 @@ export class ToolMenuComponent implements OnInit {
 
    })
 
+  }
+
+  setGaData(){
+    let gaObj = {};
+    let toolArr = [];
+    this.selectedTools?.forEach((x)=>{
+      if(!toolArr.includes(x.toolName)){
+        toolArr?.push(x.toolName);
+      }
+    });
+    gaObj = {
+      'name': this.selectedProject.Project,
+      'tools': [...toolArr]
+    }
+    const hierarchyData = JSON.parse(localStorage.getItem('hierarchyData'));
+    hierarchyData?.forEach((item) => {
+      gaObj['category'+ item?.level] = this.selectedProject[item?.hierarchyLevelName];
+    })
+    this.ga.setProjectToolsData(gaObj);
   }
 }

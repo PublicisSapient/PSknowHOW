@@ -67,6 +67,7 @@ export class MultilineComponent implements OnChanges {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
   }
+
   ngOnInit(): void {
     this.service.showTableViewObs.subscribe(view => {
       this.viewType = view;
@@ -151,7 +152,8 @@ export class MultilineComponent implements OnChanges {
       '%' : '%',
       'check-ins' : 'CI',
       'tickets' : 'T',
-      'lines':'lines'
+      'lines':'lines',
+      'unit' : ''
     }
     const tempwidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
     width = tempwidth - 70;

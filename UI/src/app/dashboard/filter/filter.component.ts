@@ -1526,7 +1526,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         this.displayModal = false;
         if (activeSprintStatus['success']) {
-          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
               this.selectedProjectLastSyncStatus = '';
               this.lastSyncData = response['data'];

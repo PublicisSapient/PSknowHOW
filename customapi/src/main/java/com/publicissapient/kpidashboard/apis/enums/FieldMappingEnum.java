@@ -223,7 +223,8 @@ public enum FieldMappingEnum {
 	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI67")),
 
 	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
-			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue"));
+			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue")),
+	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"));
 
 	private List<String> fields;
 	private String kpiName;

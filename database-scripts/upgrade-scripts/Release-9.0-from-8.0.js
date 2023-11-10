@@ -415,3 +415,124 @@ db.getCollection('metadata_identifier').updateMany(
         }
     }
 );
+
+//-------------Sonar Code Quality---------
+db.getCollection('kpi_master').insertOne(
+{
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar-with-y-axis-group",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yaxisOrder" : {
+            5 : 'E',
+            4 : 'D',
+            3 : 'C',
+            2 : 'B',
+            1 : 'A'
+        }
+  }
+);
+
+// Note : below code only For Opensource project
+// Sonar Code Quality KPI category mapping
+db.getCollection('kpi_category_mapping').insertOne( {       "kpiId": "kpi168",
+                                                    		"categoryId": "categoryTwo",
+                                                    		"kpiOrder": 15,
+                                                    		"kanban": false
+                                                    	});
+
+db.kpi_master.updateOne({ "kpiId": "kpi169" }, { $set: { "kpiFilter": "radioButton" } })
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi151", "kpi152","kpi155"] } },
+   { $unset: { kpiFilter: 1 } }
+);
+
+
+// DTS-27379: add flow efficiency KPI
+db.getCollection("kpi_master").insertOne({
+    "kpiId": "kpi170",
+    "kpiName": "Flow Efficiency",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+        "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel": "Duration",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": false,
+    "kpiFilter": "dropDown",
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kpiSubCategory": "Flow KPIs"
+});
+
+// DTS-29379 add flow efficiency field mappings
+db.getCollection("field_mapping_structure").insertMany({
+    {
+        "fieldName": "jiraIssueClosedStateKPI170",
+        "fieldLabel": "Status to identify Close Statuses",
+        "fieldType": "chips",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+        }
+    },
+    {
+        "fieldName": "jiraIssueWaitStateKPI170",
+        "fieldLabel": "Status to identify Wait Statuses",
+        "fieldType": "chips",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
+        }
+    }
+})

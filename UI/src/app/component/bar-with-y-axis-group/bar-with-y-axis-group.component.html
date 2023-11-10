@@ -1,4 +1,4 @@
-/*******************************************************************************
+<!--*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
  *
@@ -14,17 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************-->
 
-package com.publicissapient.kpidashboard.common.repository.application;
+ <div id="chart">
+    <div id="graphContainer">
+        <div id="verticalSVG" style="float:left;">
 
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
+        </div>
+        <div id="horizontalSVG" style="overflow-x:auto;">
 
-@Repository
-public interface SprintTraceLogRepository extends MongoRepository<SprintTraceLog, ObjectId> {
-	SprintTraceLog findFirstBySprintId(String sprintId);
+        </div>
+    </div>
+    <div id="legendContainer" style="position: relative;">
+        <div id="xCaptionContainer">
 
-}
+        </div>
+    </div>
+</div>

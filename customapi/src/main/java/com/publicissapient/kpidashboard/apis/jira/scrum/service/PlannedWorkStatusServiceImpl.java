@@ -259,7 +259,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 									originalEstimatePlanned = KpiDataHelper.getOriginalEstimate(
 											overAllOriginalEstimatePlanned, originalEstimatePlanned, jiraIssue);
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
-											sprintDetails, allIssueHistories, jiraIssue);
+											sprintDetails, allIssueHistories, allCompletedIssuesList, jiraIssue);
 									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
 											.get(ACTUAL_COMPLETION_DATA);
 									if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
@@ -289,7 +289,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 									originalEstimatePlanned = KpiDataHelper.getOriginalEstimate(
 											overAllOriginalEstimatePlanned, originalEstimatePlanned, jiraIssue);
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
-											sprintDetails, allIssueHistories, jiraIssue);
+											sprintDetails, allIssueHistories, allCompletedIssuesList, jiraIssue);
 									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
 											.get(ACTUAL_COMPLETION_DATA);
 									if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
@@ -320,7 +320,7 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 								if (DateUtil.stringToLocalDate(jiraIssue.getDueDate(), DateUtil.TIME_FORMAT_WITH_SEC)
 										.isAfter(LocalDate.now().minusDays(1))) {
 									Map<String, Object> jiraIssueData = jiraIssueCalculation(fieldMapping,
-											sprintDetails, allIssueHistories, jiraIssue);
+											sprintDetails, allIssueHistories, allCompletedIssuesList, jiraIssue);
 									Map<String, Object> actualCompletionData = (Map<String, Object>) jiraIssueData
 											.get(ACTUAL_COMPLETION_DATA);
 									if (!jiraIssueData.get(ISSUE_DELAY).equals(Constant.DASH)) {
@@ -387,12 +387,13 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 * Method to calculate story start and completed date
 	 *
 	 * @param issueCustomHistory
+	 * @param allCompletedIssuesList
 	 * @param sprintDetail
 	 * @param fieldMapping
 	 * @return
 	 */
 	private Map<String, Object> calStartAndEndDate(JiraIssueCustomHistory issueCustomHistory,
-			SprintDetails sprintDetail, FieldMapping fieldMapping) {
+			List<String> allCompletedIssuesList, SprintDetails sprintDetail, FieldMapping fieldMapping) {
 		List<String> inProgressStatuses = new ArrayList<>();
 		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
 
@@ -429,7 +430,9 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 				isStartDateFound = true;
 			}
 
-			if (closedStatus.contains(statusUpdationLog.getChangedTo())) {
+			if (CollectionUtils.isNotEmpty(allCompletedIssuesList)
+					&& allCompletedIssuesList.contains(issueCustomHistory.getStoryID())
+					&& closedStatus.contains(statusUpdationLog.getChangedTo())) {
 				if (closedStatusDateMap.containsKey(statusUpdationLog.getChangedTo())) {
 					closedStatusDateMap.clear();
 				}
@@ -464,11 +467,12 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 	 * @param fieldMapping
 	 * @param sprintDetails
 	 * @param allIssueHistories
+	 * @param allCompletedIssuesList
 	 * @param jiraIssue
 	 * @return
 	 */
 	private Map<String, Object> jiraIssueCalculation(FieldMapping fieldMapping, SprintDetails sprintDetails,
-			List<JiraIssueCustomHistory> allIssueHistories, JiraIssue jiraIssue) {
+			List<JiraIssueCustomHistory> allIssueHistories, List<String> allCompletedIssuesList, JiraIssue jiraIssue) {
 		int jiraIssueDelay = 0;
 		Map<String, Object> resultList = new HashMap<>();
 
@@ -478,7 +482,8 @@ public class PlannedWorkStatusServiceImpl extends JiraKPIService<Integer, List<O
 
 		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI128());
 		// calling function for cal actual completion days
-		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory, sprintDetails, fieldMapping);
+		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory, allCompletedIssuesList,
+				sprintDetails, fieldMapping);
 
 		if (actualCompletionData.get(ACTUAL_COMPLETE_DATE) != null && jiraIssue.getDueDate() != null) {
 			LocalDate actualCompletedDate = (LocalDate) actualCompletionData.get(ACTUAL_COMPLETE_DATE);

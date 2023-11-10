@@ -48,3 +48,28 @@ db.getCollection('metadata_identifier').updateMany(
       }
    }}
 );
+// delete Sonar Code Quality Kpi
+db.getCollection('kpi_master').deleteOne(
+  { "kpiId": "kpi168" }
+);
+
+// delete kpi_category_mapping for Sonar Code Quality
+db.kpi_category_mapping.deleteOne({
+    "kpiId": "kpi168"
+});
+
+db.kpi_master.updateMany(
+   { "kpiId" : { $in: ["kpi169"] } },
+   { $unset: { kpiFilter: 1 } }
+);
+
+// DTS-27379: rollback field mapping structure
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"]
+    }
+});
+// DTS-27379: delete flow efficiency KPI
+db.getCollection("kpi_master").deleteOne({
+      "kpiId": "kpi170"
+    });
