@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.pushdata.service.impl;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -68,8 +69,8 @@ public class PushDataTraceLogServiceImplTest {
 
 	@Test
 	public void getByProjectConfigIdNull() {
-		when(pushDataTraceLogRepository.findByBasicProjectConfigId(any())).thenReturn(null);
-		Assert.assertNull(pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")));
+		when(pushDataTraceLogRepository.findByBasicProjectConfigId(any())).thenReturn(new ArrayList<>());
+		Assert.assertEquals(pushDataTraceLogService.getByProjectConfigId(new ObjectId("6360fefc3fa9e175755f0728")),new ArrayList<>());
 	}
 
 	@Test

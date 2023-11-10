@@ -67,7 +67,7 @@ public class JiraIssueSprintJobListener extends JobExecutionListenerSupport {
 		log.info("****** Creating Sprint trace log ********");
 		long endTime = System.currentTimeMillis();
 		// saving the execution details
-		SprintTraceLog fetchDetails = sprintTraceLogRepository.findBySprintId(sprintId);
+		SprintTraceLog fetchDetails = sprintTraceLogRepository.findFirstBySprintId(sprintId);
 		fetchDetails.setLastSyncDateTime(endTime);
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			fetchDetails.setErrorInFetch(false);

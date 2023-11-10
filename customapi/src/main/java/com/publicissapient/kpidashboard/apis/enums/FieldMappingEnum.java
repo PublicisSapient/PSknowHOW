@@ -62,7 +62,7 @@ public enum FieldMappingEnum {
 	KPI82("First Time Pass Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentKPI82", "jiraKPI82StoryIdentification",
 					"jiraIssueDeliverdStatusKPI82", "resolutionTypeForRejectionKPI82", "jiraDefectRejectionStatusKPI82",
-					"defectPriorityKPI82", "excludeRCAFromKPI82", "jiraStatusForQaKPI82", "jiraFtprRejectStatusKPI82", "thresholdValueKPI82")),
+					"defectPriorityKPI82", "excludeRCAFromKPI82", "jiraStatusForQaKPI82", "jiraFtprRejectStatusKPI82", "thresholdValueKPI82", "jiraLabelsKPI82")),
 
 	KPI135("First Time Pass Rate (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentKPI135", "jiraKPI135StoryIdentification",
@@ -97,7 +97,7 @@ public enum FieldMappingEnum {
 	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
 			Arrays.asList("excludeRCAFromKPI14", "resolutionTypeForRejectionKPI14", "jiraDefectRejectionStatusKPI14",
 					"defectPriorityKPI14", "jiraDefectInjectionIssueTypeKPI14", "jiraDefectCreatedStatusKPI14",
-					"jiraDodKPI14", "thresholdValueKPI14")),
+					"jiraDodKPI14", "thresholdValueKPI14", "jiraLabelsKPI14")),
 
 	KPI111("Defect Density", KPISource.JIRA.name(),
 			Arrays.asList("jiraDodQAKPI111", "jiraQAKPI111IssueType", "defectPriorityQAKPI111",
@@ -220,8 +220,11 @@ public enum FieldMappingEnum {
 
 	KPI27("Sonar Tech Debt", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI27")),
 
-	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI67"));
+	KPI67("Sonar Tech Debt (Kanban)", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI67")),
 
+	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
+			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue")),
+	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"));
 
 	private List<String> fields;
 	private String kpiName;

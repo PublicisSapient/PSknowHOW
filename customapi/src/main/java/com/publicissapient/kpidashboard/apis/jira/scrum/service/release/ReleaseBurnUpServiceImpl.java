@@ -143,16 +143,17 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 			List<String> releaseList = getReleaseList();
 			if (CollectionUtils.isNotEmpty(releaseList)) {
 				List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
+				final String basicProjConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
 				List<JiraIssue> releaseIssues = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
 						allIssuesHistory.stream().map(JiraIssueCustomHistory::getStoryID).collect(Collectors.toList()),
-						leafNode.getProjectFilter().getBasicProjectConfigId().toString());
+						basicProjConfigId);
 
 				Map<LocalDate, List<JiraIssue>> addedIssuesMap = new HashMap<>();
 				Map<LocalDate, List<JiraIssue>> removeIssueMap = new HashMap<>();
 				Map<LocalDate, List<JiraIssue>> fullReleaseMap = new HashMap<>();
 				Map<LocalDate, List<JiraIssue>> completedReleaseMap = new HashMap<>();
 				dateWiseLogs(allIssuesHistory, releaseList.stream().findFirst().orElse(null), releaseIssues,
-						addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap);
+						addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap, basicProjConfigId);
 				resultListMap.put(FULL_RELEASE, fullReleaseMap);
 				resultListMap.put(ADDED_TO_RELEASE, addedIssuesMap);
 				resultListMap.put(REMOVED_FROM_RELEASE, removeIssueMap);
@@ -182,10 +183,10 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * @param completedReleaseMap
 	 *            Map<LocalDate, List<JiraIssue>>
 	 */
-	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName,
+	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName,//NOSONAR
 			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, String basicProjConfigId) {
 
 		releaseName = releaseName != null ? releaseName : "";
 		String finalReleaseName = releaseName.toLowerCase();
@@ -228,7 +229,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 						}
 
 					});
-			createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, releaseIssue);
+			createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, releaseIssue, basicProjConfigId);
 
 		});
 	}
@@ -244,9 +245,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            List<JiraIssue>
 	 */
 	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
-			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(new ObjectId(issueHistory.getBasicProjectConfigId()));
+			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList, String basicProjConfigId) {
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(new ObjectId(basicProjConfigId));
 		List<JiraHistoryChangeLog> statusUpdateLog = issueHistory.getStatusUpdationLog();
 		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
 		statusUpdateLog = statusUpdateLog.stream()

@@ -72,6 +72,8 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	private static final String TO_DO = "To Do";
 	private static final String IN_PROGRESS = "In Progress";
 	private static final String DONE = "Done";
+	private static final String ALL_EPIC = "All Epics";
+	private static final String OPEN_EPIC = "Open Epics";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
 
@@ -170,8 +172,8 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 	 * @return map of epicnumber and the size of stories
 	 */
 	public Map<String, String> createDataCountGroupMap(List<JiraIssue> jiraIssueList,
-			JiraIssueReleaseStatus jiraIssueReleaseStatus, Set<JiraIssue> epicIssues, FieldMapping fieldMapping,
-			List<IterationKpiValue> iterationKpiValues) {
+													   JiraIssueReleaseStatus jiraIssueReleaseStatus, Set<JiraIssue> epicIssues, FieldMapping fieldMapping,
+													   List<IterationKpiValue> iterationKpiValues) {
 
 		Map<String, List<JiraIssue>> epicWiseJiraIssues = jiraIssueList.stream()
 				.filter(jiraIssue -> jiraIssue.getEpicLinked() != null)
@@ -180,6 +182,7 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 				.collect(Collectors.toMap(JiraIssue::getNumber, JiraIssue::getName));
 
 		List<DataCount> dataCountList = new ArrayList<>();
+		List<DataCount> openDataCountList = new ArrayList<>();
 		Map<String, String> epicWiseSize = new HashMap<>();
 		epicWiseJiraIssues.forEach((epic, issues) -> {
 			if (epicIssueMap.containsKey(epic)) {
@@ -188,12 +191,26 @@ public class BacklogEpicProgressServiceImpl extends JiraKPIService<Integer, List
 						fieldMapping);
 				epicWiseSize.put(epic, String.valueOf(statusWiseCountList.getSize()));
 				dataCountList.add(statusWiseCountList);
+
+				if (!CollectionUtils.isEqualCollection(
+						ReleaseKpiHelper.filterIssuesByStatus(issues, jiraIssueReleaseStatus.getClosedList()),
+						issues)) {
+					openDataCountList.add(statusWiseCountList);
+				}
 			}
 		});
-		IterationKpiValue iterationKpiValue = new IterationKpiValue();
+		IterationKpiValue allEpicIterationKpiValue = new IterationKpiValue();
 		sorting(dataCountList);
-		iterationKpiValue.setValue(dataCountList);
-		iterationKpiValues.add(iterationKpiValue);
+		allEpicIterationKpiValue.setFilter1(ALL_EPIC);
+		allEpicIterationKpiValue.setValue(dataCountList);
+
+		IterationKpiValue openEpicIterationKpiValue = new IterationKpiValue();
+		sorting(openDataCountList);
+		openEpicIterationKpiValue.setFilter1(OPEN_EPIC);
+		openEpicIterationKpiValue.setValue(openDataCountList);
+
+		iterationKpiValues.add(openEpicIterationKpiValue);
+		iterationKpiValues.add(allEpicIterationKpiValue);
 		return epicWiseSize;
 	}
 

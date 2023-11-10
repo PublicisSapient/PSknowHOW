@@ -391,6 +391,8 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraDodKPI156;
     private List<String> jiraIssueTypeKPI156;
+    private List<String> jiraIssueWaitStateKPI170;
+    private List<String> jiraIssueClosedStateKPI170;
 
     @Builder.Default
     private String leadTimeConfigRepoTool = "Jira";
@@ -425,6 +427,15 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI160;
     private String thresholdValueKPI164;
 
+    private String jiraProductionIncidentIdentification;
+    private String jiraProdIncidentRaisedByCustomField;
+    private List<String> jiraProdIncidentRaisedByValue;
+
+    private List<String> jiraStoryIdentificationKPI166;
+    private List<String> jiraDodKPI166;
+
+    private List<String> jiraLabelsKPI14;
+    private List<String> jiraLabelsKPI82;
     /**
      * Get jira issue type names string [ ].
      *
