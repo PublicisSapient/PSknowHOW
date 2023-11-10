@@ -27,8 +27,8 @@ jobs:
 
     - name: Run IP selection script
       run: |
-      chmod +x select_ip.py
-      ./select_ip.py
+         chmod +x select_ip.py
+         ./select_ip.py
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     #   - name: Sleep for 5 min 
     #     if: github.event_name == 'push'
