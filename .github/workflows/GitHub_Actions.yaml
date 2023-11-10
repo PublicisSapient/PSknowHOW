@@ -5,6 +5,16 @@ on:
   push:
     branches:
       - '*'
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
 env:
   GITHUB_HEAD_NAME: $GITHUB_HEAD_REF
   sonartoken: ${{secrets.SONARQUBE_TOKEN}}
@@ -25,10 +35,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Run IP selection script
-      run: |
-         chmod +x select_ip.py
-         ./select_ip.py
+ 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     #   - name: Sleep for 5 min 
     #     if: github.event_name == 'push'
