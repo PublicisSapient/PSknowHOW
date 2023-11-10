@@ -120,7 +120,6 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
             for (StepExecution stepExecution : jobExecution.getStepExecutions()) {
                 if (stepExecution.getStatus() == BatchStatus.FAILED) {
                     stepFaliureException = stepExecution.getFailureExceptions().get(0);
-                    log.info("step execution failure reason :{}", stepFaliureException);
                     break;
                 }
             }
