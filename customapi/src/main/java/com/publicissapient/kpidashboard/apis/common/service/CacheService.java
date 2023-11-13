@@ -104,7 +104,7 @@ public interface CacheService {
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
 
 	//-- auth-N-auth changes starts here---
-	List<ActionPoliciesDTO> getActionPoliciesFromCache();
+	//List<ActionPoliciesDTO> getActionPoliciesFromCache();
 
 	//-- auth-N-auth changes ends here---
 
