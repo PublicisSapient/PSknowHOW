@@ -46,7 +46,6 @@ public class JiraHelper {
 	};
 	private static final String ERROR_MSG_401 = "Error 401 connecting to JIRA server, your credentials are probably wrong. Note: Ensure you are using JIRA user name not your email address.";
 	private static final String ERROR_MSG_NO_RESULT_WAS_AVAILABLE = "No result was available from Jira unexpectedly - defaulting to blank response. The reason for this fault is the following : {}";
-	private static final String EXCEPTION = "Exception";
 	private static final String MSG_JIRA_CLIENT_SETUP_FAILED = "Jira client setup failed. No results obtained. Check your jira setup.";
 
 	public static Map<String, IssueField> buildFieldMap(Iterable<IssueField> fields) {
@@ -169,6 +168,7 @@ public class JiraHelper {
 				}
 			} catch (RestClientException e) {
 				exceptionBlockProcess(e);
+				throw e;
 			}
 		}
 
@@ -181,7 +181,6 @@ public class JiraHelper {
 		} else {
 			log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
 		}
-		log.debug(EXCEPTION, e);
 	}
 
 }

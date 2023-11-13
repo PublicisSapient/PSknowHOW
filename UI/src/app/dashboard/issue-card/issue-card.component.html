@@ -1,0 +1,60 @@
+<div class="p-m-3">
+
+    <div>
+        <div *ngIf="!issueData['parentStory'] || !issueData['parentStory'].length">
+            <div class="issueTypeIcon {{issueData['Issue Type'].split(' ').join('-')}}"
+                pTooltip="{{ issueData['Issue Type'] }}"></div>
+            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a target="_blank"
+                        [href]="issueData['Issue URL']"><i class="pi pi-window-maximize"
+                            [style]="{'font-size': '1rem','font-weight':'bold','color':'black'}"></i></a></span></h1>
+        </div>
+        <div *ngIf="issueData['parentStory'] && issueData['parentStory'][0]">
+            <div class="issueTypeIcon Story" pTooltip="Story"></div>
+            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['parentStory'][0]}} / </h1>
+            <div class="issueTypeIcon {{issueData['Issue Type'].split(' ').join('-')}}"
+                pTooltip="{{ issueData['Issue Type'] }}"></div>
+            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a target="_blank"
+                        [href]="issueData['Issue URL']"><i class="pi pi-window-maximize"
+                            [style]="{'font-size': '1rem','font-weight':'bold','color':'black'}"></i></a></span></h1>
+        </div>
+        <h3 class="font-grey p-mt-2 p-mb-2">{{issueData['Issue Description']}}</h3>
+        <h5 class="font-bold p-mt-2 p-mb-2" *ngIf="issueData['epicName']">{{issueData['epicName']}}</h5>
+        <h5 class="font-grey p-mt-2 p-mb-2">Fix Version: {{issueData['Release Name']}}</h5>
+    </div>
+
+    <div class="button-set p-mb-2">
+        <button (click)="isOverViewSelected = !isOverViewSelected" class="font-bold"
+            [ngClass]="{'selected-button':isOverViewSelected}"
+            [ngStyle]="{'pointer-events': issueData['subTask'] ? 'initial': 'none'}">OVERVIEW</button>
+        <button *ngIf="issueData['subTask']" (click)="isOverViewSelected = !isOverViewSelected" class="font-bold"
+            [ngClass]="{'selected-button':!isOverViewSelected}">SUBTASKS ({{issueData['subTask'].length}})</button>
+    </div>
+
+    <div *ngIf="isOverViewSelected" class="issue-status">
+        <p class="p-mt-2 p-mb-2">Status: <span>{{issueData['Issue Status']}}</span></p>
+        <p class="p-mt-2 p-mb-2">Priority: <span>{{issueData['Priority']}}</span></p>
+    </div>
+
+    <app-issue-body [issueData]="issueData" *ngIf="isOverViewSelected else subTaskSection"></app-issue-body>
+    <ng-template #subTaskSection>
+        <p-accordion class="p-mt-3">
+            <p-accordionTab *ngFor="let subTask of issueData['subTask']">
+                <ng-template pTemplate="header">
+                    <div class="p-d-flex p-flex-column">
+                        <div class="p-d-flex p-align-center">
+                            <h4 class="font-bold p-mb-1 p-mt-0 p-mr-2">{{subTask['Issue Id']}}</h4>
+                            <button class="assignee" [pTooltip]="subTask['Assignee']"
+                                tooltipPosition="bottom">{{getNameInitials(subTask['Assignee'])}}</button>
+                        </div>
+                        <h5 class="font-grey p-mt-1 p-mb-1">{{subTask['Issue Description']}}</h5>
+                        <p class="p-mt-0">Status: <span [style]="{'color':'#3F51B5'}">{{subTask['Issue Status']}}</span>
+                        </p>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="content">
+                    <app-issue-body [issueData]="subTask"></app-issue-body>
+                </ng-template>
+            </p-accordionTab>
+        </p-accordion>
+    </ng-template>
+</div>

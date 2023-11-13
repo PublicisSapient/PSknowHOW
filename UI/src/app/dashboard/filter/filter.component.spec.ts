@@ -225,7 +225,7 @@ const completeHierarchyData = {
     }
   ],
   scrum: [
-
+    
     {
       level: 4,
       hierarchyLevelId: "port",
@@ -1617,7 +1617,7 @@ const completeHierarchyData = {
     }
     component.selectedTab = 'my-knowhow';
     const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of(fakeCommentList['data']));
-
+    
     component.getRecentComments();
     tick();
     expect(spy).toHaveBeenCalled();

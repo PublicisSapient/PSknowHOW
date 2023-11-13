@@ -151,7 +151,7 @@ export class MilestoneComponent implements OnInit {
       }
       return tabDetails;
     });
-    
+
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {

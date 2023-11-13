@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.jira.service;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import org.json.simple.parser.ParseException;
+
+import java.io.IOException;
 
 public interface FetchScrumReleaseData {
 	/**
@@ -30,5 +33,5 @@ public interface FetchScrumReleaseData {
 	 *            krb5Client
 	 * @return ProjectRelease
 	 */
-	ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
+	ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) throws IOException, ParseException;
 }

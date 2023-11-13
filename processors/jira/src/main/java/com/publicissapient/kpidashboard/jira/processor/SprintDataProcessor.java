@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.io.IOException;
 import java.util.Set;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
@@ -37,5 +38,5 @@ public interface SprintDataProcessor {
 	 *            boardId
 	 * @return Set of SprintDetails
 	 */
-	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId);
+	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) throws IOException;
 }
