@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
@@ -90,6 +91,9 @@ public class RepoToolsConfigServiceImpl {
 	@Autowired
 	private ConnectionRepository connectionRepository;
 
+	@Autowired
+	private AesEncryptionService aesEncryptionService;
+
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
@@ -115,7 +119,8 @@ public class RepoToolsConfigServiceImpl {
 		try {
 
 			// create scanning account
-			ToolCredential toolCredential = new ToolCredential(connection.getUsername(), connection.getAccessToken(),
+			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
+					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
 					connection.getEmail());
 			LocalDateTime fistScan = LocalDateTime.now().minusMonths(6);
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository

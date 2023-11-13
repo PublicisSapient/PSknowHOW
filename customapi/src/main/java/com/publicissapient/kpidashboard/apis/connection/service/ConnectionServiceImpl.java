@@ -152,7 +152,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		if (null == type) {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
-		
+
 		List<Connection> typeList = getConnectionList(type);
 
 		if (CollectionUtils.isEmpty(typeList)) {
@@ -177,7 +177,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
 	}
-	
+
 	private List<Connection> getConnectionList(String type) {
 		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
 			return connectionRepository.findByType(REPO_TOOLS).stream()
@@ -489,7 +489,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection.setApiKey(connection.getApiKey());
 		}
 		existingConnection.setApiKeyFieldName(connection.getApiKeyFieldName());
-		existingConnection.setBaseUrl(connection.getBaseUrl());
+		if(connection.getType().equals(REPO_TOOLS))
+			setBaseUrlForRepoTool(existingConnection);
+		else
+			existingConnection.setBaseUrl(connection.getBaseUrl());
 		if (StringUtils.isNotEmpty(connection.getClientId())) {
 			existingConnection.setClientId(connection.getClientId());
 		}
@@ -644,6 +647,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
+		case ProcessorConstants.REPO_TOOLS:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:
