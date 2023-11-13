@@ -58,7 +58,7 @@ public class UserBoardConfigController {
 	 * 
 	 * @return response
 	 */
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/getConfig" ,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getUserBoardConfiguration(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
