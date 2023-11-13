@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
+import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
 
 /**
@@ -57,9 +58,9 @@ public class UserBoardConfigController {
 	 * 
 	 * @return response
 	 */
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ServiceResponse> getUserBoardConfiguration() {
-		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig();
+	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ServiceResponse> getUserBoardConfiguration(@Valid @RequestBody ProjectListRequested listOfRequestedProj) {
+		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigService.getUserBoardConfig(listOfRequestedProj);
 		ServiceResponse response = new ServiceResponse(false, "No data found", null);
 		if (null != userBoardConfigDTO) {
 			response = new ServiceResponse(true, "Fetched successfully", userBoardConfigDTO);

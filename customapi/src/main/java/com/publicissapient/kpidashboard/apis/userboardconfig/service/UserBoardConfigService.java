@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
+import com.publicissapient.kpidashboard.common.model.userboardconfig.ProjectListRequested;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfigDTO;
 
 /**
@@ -34,7 +35,7 @@ public interface UserBoardConfigService {
 	 * 
 	 * @return UserBoardConfigDTO
 	 */
-	UserBoardConfigDTO getUserBoardConfig();
+	UserBoardConfigDTO getUserBoardConfig(ProjectListRequested listOfRequestedProj);
 
 	/**
 	 * This method save user board config
