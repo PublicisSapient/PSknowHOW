@@ -149,6 +149,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				}
 			} catch (RestClientException e) {
 				JiraHelper.exceptionBlockProcess(e);
+				throw e;
 			}
 		}
 
@@ -170,6 +171,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				}
 			} catch (RestClientException e) {
 				JiraHelper.exceptionBlockProcess(e);
+				throw e;
 			}
 		}
 

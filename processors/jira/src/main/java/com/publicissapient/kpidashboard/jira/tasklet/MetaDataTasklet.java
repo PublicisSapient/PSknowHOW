@@ -73,13 +73,10 @@ public class MetaDataTasklet implements Tasklet {
         ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
         log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
         KerberosClient krb5Client = null;
-        try(ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
+        try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
             if (jiraProcessorConfig.isFetchMetadata()) {
                 createMetadata.collectMetadata(projConfFieldMapping, client);
             }
-        } catch (Exception e) {
-            log.error("Exception while fetching metadata for the project : {}", projectId, e);
-            throw e;
         }
         return RepeatStatus.FINISHED;
     }
