@@ -65,6 +65,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 	public static final String STATUS_UPDATION_LOG_STORY_CHANGED_TO = "statusUpdationLog.story.changedTo";
 	public static final String URL = "url";
 	public static final String DESCRIPTION = "description";
+	public static final String ESTIMATE = "estimate";
 	/** The operations. */
 	@Autowired
 	private MongoOperations operations;
@@ -307,6 +308,7 @@ public class JiraIssueCustomHistoryRepositoryImpl implements JiraIssueHistoryCus
 		query.fields().include(TICKET_CREATED_DATE_FIELD);
 		query.fields().include(URL);
 		query.fields().include(DESCRIPTION);
+		query.fields().include(ESTIMATE);
 		return operations.find(query, JiraIssueCustomHistory.class);
 	}
 

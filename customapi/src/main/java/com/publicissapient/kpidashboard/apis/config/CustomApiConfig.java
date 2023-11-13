@@ -231,6 +231,15 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private List<String> flowEfficiencyXAxisRange;
+
+	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
+		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;
+	}
+
+	public List<String> getFlowEfficiencyXAxisRange() {
+		return flowEfficiencyXAxisRange;
+	}
 
 	public void setRepoToolAPIKey(String repoToolAPIKey) {
 		this.repoToolAPIKey = repoToolAPIKey;
@@ -320,6 +329,7 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
@@ -1133,5 +1143,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
 		this.flowKpiMonthCount = flowKpiMonthCount;
+	}
+
+	public Integer getSonarMonthCount() {
+		return sonarMonthCount;
+	}
+
+	public void setSonarMonthCount(Integer sonarMonthCount) {
+		this.sonarMonthCount = sonarMonthCount;
 	}
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -358,14 +359,14 @@ public class KPIExcelUtility {
 				if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE_KANBAN.getKpiId())) {
 					excelData.setUnitCoverage(kpiSpecificDataList.get(i));
-				}
-				if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT_KANBAN.getKpiId())) {
 					excelData.setTechDebt(kpiSpecificDataList.get(i));
-				}
-				if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())
 						|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS_KANBAN.getKpiId())) {
 					excelData.setSonarViolation(kpiSpecificDataList.get(i));
+				} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+					excelData.setCodeQuality(kpiSpecificDataList.get(i));
 				}
 				setSonarKpiWeekDayMonthColumn(versionDate.get(i), excelData, kpiId);
 				kpiExcelData.add(excelData);
@@ -374,12 +375,12 @@ public class KPIExcelUtility {
 	}
 
 	private static void setSonarKpiWeekDayMonthColumn(String versionDate, KPIExcelData excelData, String kpiId) {
-
 		if (kpiId.equalsIgnoreCase(KPICode.UNIT_TEST_COVERAGE.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_TECH_DEBT.getKpiId())
 				|| kpiId.equalsIgnoreCase(KPICode.SONAR_VIOLATIONS.getKpiId())) {
 			excelData.setWeeks(versionDate);
-
+		} else if (kpiId.equalsIgnoreCase(KPICode.SONAR_CODE_QUALITY.getKpiId())) {
+			excelData.setMonth(versionDate);
 		} else {
 			excelData.setDayWeekMonth(versionDate);
 		}
@@ -1797,4 +1798,24 @@ public class KPIExcelUtility {
 		}
 
 	}
+
+	public static void populateFlowEfficiency(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
+			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
+		AtomicInteger i = new AtomicInteger();
+		flowEfficiency.forEach((issue, value) -> {
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			Map<String, String> url = new HashMap<>();
+			url.put(issue.getStoryID(), checkEmptyURL(issue));
+			kpiExcelData.setIssueID(url);
+			kpiExcelData.setIssueType(issue.getStoryType());
+			kpiExcelData.setIssueDesc(issue.getDescription());
+			kpiExcelData.setSizeInStoryPoints(issue.getEstimate());
+			kpiExcelData.setWaitTime(waitTimeList.get(i.get()));
+			kpiExcelData.setTotalTime(totalTimeList.get(i.get()));
+			kpiExcelData.setFlowEfficiency(value.longValue());
+			excelDataList.add(kpiExcelData);
+			i.set(i.get() + 1);
+		});
+	}
+
 }
