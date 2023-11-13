@@ -18,8 +18,8 @@
 }
 .tooltip-wrapper{
     text-align: left;
-    max-height: 250px;
-    overflow-y: auto;
+    height: fit-content;
+    overflow-y: hidden;
     overflow-x: hidden;
 }
 
