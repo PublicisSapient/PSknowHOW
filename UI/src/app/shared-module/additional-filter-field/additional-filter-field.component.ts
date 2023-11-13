@@ -37,6 +37,7 @@ export class AdditionalFilterFieldComponent implements OnInit {
   selectedFieldMapping: any = {};
   additionalFilterOptions: any = [];
   additionalFilterConfig = [];
+  
   populateDropdowns = true;
   selectedField = '';
   singleSelectionDropdown = false;

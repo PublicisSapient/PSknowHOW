@@ -402,7 +402,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDIR((double) defects.size());
+			jiraIssueModalObject.setDefectInjectRate((double) defects.size());
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)

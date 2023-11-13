@@ -140,7 +140,7 @@
                             </div>
                           </ng-template>
                         </ng-container>
-                      </div>  
+                      </div>
                       <div *ngIf="board.kpiPart1?.length>0" class="subKPi p-sm-6" cdkDropList (cdkDropListDropped)="drop($event,board)"
                         [cdkDropListData]="board.kpiPart1">
                         <ng-container *ngFor="let kpi of board.kpiPart1">

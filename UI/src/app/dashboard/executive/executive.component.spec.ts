@@ -6015,7 +6015,7 @@ expect(result[1]).toEqual('-ve');
       "maturity": "M3",
       "order": '1'
     }]}
-    
+
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
@@ -6062,7 +6062,7 @@ expect(result[1]).toEqual('-ve');
         "maturity": "NA",
         "order": '1'
     }]}
-    
+
     component.getTableData('kpi28', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
   });
