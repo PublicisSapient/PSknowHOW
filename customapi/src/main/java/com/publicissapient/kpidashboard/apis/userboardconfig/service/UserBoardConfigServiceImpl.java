@@ -98,7 +98,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	@Autowired
 	private UserInfoRepository userInfoRepository;
 
-
 	/**
 	 * .This method return user board config if present in db else return a default
 	 * configuration.
@@ -107,17 +106,17 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	 */
 	public UserBoardConfigDTO getUserBoardConfig(ProjectListRequested listOfRequestedProj) {
 		final String loggedInUser = authenticationService.getLoggedInUser();
-		UserBoardConfig existingUserBoardConfig = userBoardConfigRepository
-				.findByBasicProjectConfigIdAndUsername(null, loggedInUser);
+		UserBoardConfig existingUserBoardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(null,
+				loggedInUser);
 		Iterable<KpiMaster> allKPIs = configHelperService.loadKpiMaster();
 		Map<String, KpiMaster> kpiMasterMap = StreamSupport.stream(allKPIs.spliterator(), false)
 				.collect(Collectors.toMap(KpiMaster::getKpiId, Function.identity()));
 		List<KpiCategory> kpiCategoryList = kpiCategoryRepository.findAll();
 		UserBoardConfigDTO defaultUserBoardConfigDTO = new UserBoardConfigDTO();
 		List<String> listOfBasicProjIds = listOfRequestedProj.getBasicProjectConfigIds().stream()
-				.map(s -> s.substring(s.lastIndexOf("_") + 1))
-				.collect(Collectors.toList());
-		List<UserBoardConfig> userAccessProjConfig = userBoardConfigRepository.findByBasicProjectConfigIdIn(listOfBasicProjIds);
+				.map(s -> s.substring(s.lastIndexOf("_") + 1)).collect(Collectors.toList());
+		List<UserBoardConfig> userAccessProjConfig = userBoardConfigRepository
+				.findByBasicProjectConfigIdIn(listOfBasicProjIds);
 		if (null == existingUserBoardConfig) {
 			setUserBoardConfigBasedOnCategoryForFreshUser(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 			updateKpiDetailsProj(defaultUserBoardConfigDTO, userAccessProjConfig);
@@ -138,7 +137,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				return defaultUserBoardConfigDTO;
 			}
 			filterKpis(existingUserBoardConfigDTO, kpiMasterMap);
-			updateKpiDetailsProj(defaultUserBoardConfigDTO, userAccessProjConfig);
+			updateKpiDetailsProj(existingUserBoardConfigDTO, userAccessProjConfig);
 			return existingUserBoardConfigDTO;
 		}
 	}
@@ -621,7 +620,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		UserBoardConfig boardConfig = null;
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
 		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
-			boardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(null ,authenticationService.getLoggedInUser());
+			boardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(null,
+					authenticationService.getLoggedInUser());
 			if (null != boardConfig) {
 				boardConfig.setScrum(userBoardConfig.getScrum());
 				boardConfig.setKanban(userBoardConfig.getKanban());
@@ -682,8 +682,11 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * Method to mask the config of project to users config
-	 * @param userBoardConfig userBoardConfig
-	 * @param userAccessProjConfig userAccessProjConfig
+	 * 
+	 * @param userBoardConfig
+	 *            userBoardConfig
+	 * @param userAccessProjConfig
+	 *            userAccessProjConfig
 	 */
 	private void updateKpiDetailsProj(UserBoardConfigDTO userBoardConfig, List<UserBoardConfig> userAccessProjConfig) {
 		Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
@@ -805,21 +808,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				updateKpiDetails(userBoardConfigs, boardConfig);
 				userBoardConfigRepository.saveAll(userBoardConfigs);
 			}
-			/*else {
-				// finding all the user who have that project access
-				List<UserInfo> userInfoList = userInfoCustomRepository.findByProjectAccess(basicProjectConfigId);
-				List<String> usersAccessToProj = userInfoList.stream().map(UserInfo::getUsername)
-						.collect(Collectors.toList());
-				// fetching their user_board_config
-				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository
-						.findByUsernameInAndBasicProjectConfigId(usersAccessToProj, basicProjectConfigId);
-				updateKpiDetails(userBoardConfigs, boardConfig);
-				userBoardConfigRepository.saveAll(userBoardConfigs);
-			}*/
 
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-//		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
 		return convertToUserBoardConfigDTO(boardConfig);
 	}
 
