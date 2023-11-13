@@ -203,6 +203,16 @@ public class UserBoardConfigServiceImplTest {
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
+	@Test
+	public void testGetAdminUserBoardConfigNull_success() {
+		String username = "testuser";
+		String projId = "id";
+		doReturn(username).when(authenticationService).getLoggedInUser();
+		doReturn(getData(username, true)).when(userBoardConfigRepository).findByBasicProjectConfigIdAndUsername(ArgumentMatchers.anyString(),ArgumentMatchers.anyString());
+		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getProjBoardConfigAdmin(projId);
+		assertNotNull(userBoardConfigDTO);
+		assertEquals(userBoardConfigDTO.getUsername(), username);
+	}
 
 	@Test
 	public void testGetUserBoardConfig_DefaultUserBoardConfig_success() {
