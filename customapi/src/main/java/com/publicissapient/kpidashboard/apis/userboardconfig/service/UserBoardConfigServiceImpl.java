@@ -791,31 +791,32 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	@Override
 	public UserBoardConfigDTO saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
 			String basicProjectConfigId) {
-		UserBoardConfig boardConfig = null;
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
 		final boolean isAllFilterSelected = basicProjectConfigId.equalsIgnoreCase("all");
 		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())
 				&& !isAllFilterSelected) {
-			boardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(basicProjectConfigId,
-					authenticationService.getLoggedInUser());
-			if (null != boardConfig) {
-				boardConfig.setScrum(userBoardConfig.getScrum());
-				boardConfig.setKanban(userBoardConfig.getKanban());
-				boardConfig.setOthers(userBoardConfig.getOthers());
+			List<UserBoardConfig> listOfProjBoardConfig = userBoardConfigRepository
+					.findByBasicProjectConfigId(basicProjectConfigId);
+			// when proj admin changes it should change for all the proj admins
+			if (CollectionUtils.isNotEmpty(listOfProjBoardConfig)) {
+				listOfProjBoardConfig.forEach(projBoardConfig -> {
+					projBoardConfig.setScrum(userBoardConfig.getScrum());
+					projBoardConfig.setKanban(userBoardConfig.getKanban());
+					projBoardConfig.setOthers(userBoardConfig.getOthers());
+				});
+				userBoardConfigRepository.saveAll(listOfProjBoardConfig);
 			} else {
-				boardConfig = userBoardConfig;
+				userBoardConfigRepository.save(userBoardConfig);
 			}
-			boardConfig = userBoardConfigRepository.save(boardConfig);
 		}
-		// if "all" it will change for all the projects
+		// if "all" it will change for all the docs
 		if (isAllFilterSelected && userBoardConfig != null) {
 			List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
-			boardConfig = userBoardConfig;
 			updateKpiDetails(userBoardConfigs, userBoardConfig);
 			userBoardConfigRepository.saveAll(userBoardConfigs);
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		return convertToUserBoardConfigDTO(boardConfig);
+		return convertToUserBoardConfigDTO(userBoardConfig);
 	}
 
 }

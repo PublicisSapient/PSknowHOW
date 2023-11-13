@@ -71,5 +71,13 @@ public interface UserBoardConfigRepository extends MongoRepository<UserBoardConf
 	 */
 	List<UserBoardConfig> findByBasicProjectConfigIdIn(List<String> basicProjectConfigId);
 
+	/**
+	 * Fetch all the doc with basicProjConfigId
+	 * 
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return List<UserBoardConfig>
+	 */
+	List<UserBoardConfig> findByBasicProjectConfigId(String basicProjectConfigId);
 
 }
