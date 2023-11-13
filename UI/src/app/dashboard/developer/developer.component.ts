@@ -408,6 +408,7 @@ export class DeveloperComponent implements OnInit {
         } else {
           this.bitBucketKpiData = getData;
         }
+        this.kpiLoader = false;
       });
   }
 
