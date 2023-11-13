@@ -142,7 +142,7 @@ export class NavComponent implements OnInit {
   getKpiOrderedList() {
     this.kpiListData = this.service.getDashConfigData();
     if (!this.kpiListData || !Object.keys(this.kpiListData).length) {
-      this.httpService.getShowHideOnDashboard().subscribe(
+      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;

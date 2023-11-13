@@ -86,7 +86,7 @@ describe('NavComponent', () => {
       router = TestBed.get(Router);
       // httpMock.expectOne(baseUrl + '/api/file/logo').flush(getLogo);
       // httpMock.expectOne(baseUrl + '/api/getversionmetadata').flush(getversionData);
-      httpMock.expectOne(baseUrl + '/api/user-board-config').flush(getDashConfData);
+      httpMock.expectOne(baseUrl + '/api/user-board-config/getConfig').flush(getDashConfData);
       document.dispatchEvent(new MouseEvent('click'));
   }));
 

@@ -238,11 +238,18 @@ return item.kpiId;
       .subscribe(response => {
         if (response[0] !== 'error' && !response.error) {
           if (this.getAuthorizationService.checkIfSuperUser()) {
-            that.userProjects = [{
-                name: "ALL",
-                id: "all"
-              }]
+            that.userProjects = [];
+           const all = {
+            name: "ALL",
+            id: "all"
+          };
+            that.userProjects = response.data.map((filteredProj) => ({
+                name: filteredProj.projectName,
+                id: filteredProj.id
+              }));
+              that.userProjects.unshift(all);
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
+            that.userProjects = [];
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
                   name: filteredProj.projectName,

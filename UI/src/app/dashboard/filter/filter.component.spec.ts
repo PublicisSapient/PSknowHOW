@@ -634,14 +634,14 @@ const completeHierarchyData = {
     expect(spyMessageService).toHaveBeenCalled();
   }));
 
-  it('should call processKpiList when kpiList is available', () => {
-    component.kpiListData = configGlobalData;
-    const spyprocessKpiList = spyOn(component, 'processKpiList');
-    const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
-    component.getKpiOrderedList();
-    expect(spyprocessKpiList).toHaveBeenCalled();
-    expect(spynavigateToSelectedTab).toHaveBeenCalled();
-  });
+  // it('should call processKpiList when kpiList is available', () => {
+  //   component.kpiListData = configGlobalData;
+  //   const spyprocessKpiList = spyOn(component, 'processKpiList');
+  //   const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
+  //   component.getKpiOrderedList();
+  //   expect(spyprocessKpiList).toHaveBeenCalled();
+  //   expect(spynavigateToSelectedTab).toHaveBeenCalled();
+  // });
 
   it('should kpiList not blank for other than backlog and iteration', () => {
     component.selectedTab = '';

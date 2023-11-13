@@ -954,8 +954,8 @@ export class HttpService {
   }
 
   /** show-Hide for other nav, filter component */
-  getShowHideOnDashboard(){
-    return this.http.get<any>(this.getShowHideKpiUrl);
+  getShowHideOnDashboard(payload){
+    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
   }
 
   submitShowHideOnDashboard(data){
