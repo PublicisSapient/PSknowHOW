@@ -90,8 +90,8 @@ ul.kpi-info-list {
 .tooltip-kpi{
     top: 30px;
     left: -170px;
-    width: 550px !important;
-    min-width: 550px;
+    width: 450px !important;
+    /* min-width: 550px; */
 }
 
 .tooltip-width{
