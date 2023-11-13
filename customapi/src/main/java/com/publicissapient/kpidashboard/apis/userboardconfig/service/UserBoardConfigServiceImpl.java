@@ -696,12 +696,21 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		}
 		// Populate kpiWiseIsShownFlag from userAccessProjConfig
 		userAccessProjConfig.forEach(finalBoardConfig -> {
-			finalBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis()
-					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
-			finalBoardConfig.getKanban().forEach(boardDTO -> boardDTO.getKpis()
-					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
-			finalBoardConfig.getOthers().forEach(boardDTO -> boardDTO.getKpis()
-					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
+			finalBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
+				if (!boardKpis.isShown()) {
+					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
+				}
+			}));
+			finalBoardConfig.getKanban().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
+				if (!boardKpis.isShown()) {
+					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
+				}
+			}));
+			finalBoardConfig.getOthers().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
+				if (!boardKpis.isShown()) {
+					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
+				}
+			}));
 		});
 
 		// Update userBoardConfig with kpiWiseIsShownFlag values
@@ -771,8 +780,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	/**
 	 * This method save user board config of proj,Super admin with
-	 * basicProjectConfigId, also modify their project access users
-	 * user_board_config
+	 * basicProjectConfigId
 	 *
 	 * @param userBoardConfigDTO
 	 *            userBoardConfigDTO
@@ -785,7 +793,9 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 			String basicProjectConfigId) {
 		UserBoardConfig boardConfig = null;
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
-		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
+		final boolean isAllFilterSelected = basicProjectConfigId.equalsIgnoreCase("all");
+		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())
+				&& !isAllFilterSelected) {
 			boardConfig = userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(basicProjectConfigId,
 					authenticationService.getLoggedInUser());
 			if (null != boardConfig) {
@@ -796,13 +806,13 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				boardConfig = userBoardConfig;
 			}
 			boardConfig = userBoardConfigRepository.save(boardConfig);
-			// if "all" it will change for all the projects
-			if (basicProjectConfigId.equalsIgnoreCase("all")) {
-				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
-				updateKpiDetails(userBoardConfigs, boardConfig);
-				userBoardConfigRepository.saveAll(userBoardConfigs);
-			}
-
+		}
+		// if "all" it will change for all the projects
+		if (isAllFilterSelected && userBoardConfig != null) {
+			List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
+			boardConfig = userBoardConfig;
+			updateKpiDetails(userBoardConfigs, userBoardConfig);
+			userBoardConfigRepository.saveAll(userBoardConfigs);
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		return convertToUserBoardConfigDTO(boardConfig);
