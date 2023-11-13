@@ -691,23 +691,17 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private void updateKpiDetailsProj(UserBoardConfigDTO userBoardConfig, List<UserBoardConfig> userAccessProjConfig) {
 		Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
 
+		if (CollectionUtils.isEmpty(userAccessProjConfig)) {
+			return;
+		}
 		// Populate kpiWiseIsShownFlag from userAccessProjConfig
 		userAccessProjConfig.forEach(finalBoardConfig -> {
-			finalBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
-				if (!boardKpis.isShown()) {
-					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
-				}
-			}));
-			finalBoardConfig.getKanban().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
-				if (!boardKpis.isShown()) {
-					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
-				}
-			}));
-			finalBoardConfig.getOthers().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
-				if (!boardKpis.isShown()) {
-					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
-				}
-			}));
+			finalBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis()
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
+			finalBoardConfig.getKanban().forEach(boardDTO -> boardDTO.getKpis()
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
+			finalBoardConfig.getOthers().forEach(boardDTO -> boardDTO.getKpis()
+					.forEach(boardKpis -> kpiWiseIsShownFlag.put(boardKpis.getKpiId(), boardKpis.isShown())));
 		});
 
 		// Update userBoardConfig with kpiWiseIsShownFlag values
@@ -802,7 +796,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				boardConfig = userBoardConfig;
 			}
 			boardConfig = userBoardConfigRepository.save(boardConfig);
-			// if superAdmin it will hide for all the users
+			// if "all" it will change for all the projects
 			if (basicProjectConfigId.equalsIgnoreCase("all")) {
 				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
 				updateKpiDetails(userBoardConfigs, boardConfig);
