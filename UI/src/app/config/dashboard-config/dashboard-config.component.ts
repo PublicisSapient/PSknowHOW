@@ -73,6 +73,7 @@
                         this.kpiToBeHidden = iterationData.kpis.splice(kpiIndex,1);
                       }
                       this.tabListContent[i] =  this.kpiListData[i];
+                      if(!this.tabHeaders.includes(i))
                       this.tabHeaders.push(i);
                   }
               }
@@ -241,7 +242,8 @@ return item.kpiId;
             that.userProjects = [];
            const all = {
             name: "ALL",
-            id: "all"
+            id: "all",
+            isSort : false
           };
             that.userProjects = response.data.map((filteredProj) => ({
                 name: filteredProj.projectName,
@@ -261,7 +263,7 @@ return item.kpiId;
         }
 
         if (that.userProjects != null && that.userProjects.length > 0) {
-          that.userProjects.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+          that.userProjects.sort((a, b) => b.isSort === false ? 0 : a.name.localeCompare(b.name, undefined, { numeric: true }));
           that.selectedProject = that.userProjects[0];
           this.loader = true;
           this.tabHeaders = [];
@@ -276,7 +278,6 @@ return item.kpiId;
       this.selectedProject = currentSelection;
     }
     this.loader = true;
-    this.tabHeaders = [];
     this.getKpisData(this.selectedProject['id'])
   }
  }

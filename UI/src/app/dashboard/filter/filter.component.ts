@@ -413,8 +413,6 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.setHierarchyLevels();
     this.ga.setPageLoad(data);
-    // this.getKpiOrderedList();
-    // this.processKpiList();
     this.navigateToSelectedTab();
   }
 
@@ -667,7 +665,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         }
       }
       this.getKpiOrderedList();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, isAdditionalFilters, filterApplied,); 
     }
   }
 
@@ -766,6 +763,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
+            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             this.service.setDashConfigData(this.kpiListData);
             this.processKpiList();
             this.navigateToSelectedTab();
@@ -1178,9 +1176,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
-        this.getKpiOrderedList();
-        this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
-      }
+        this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+        this.getKpiOrderedList()
+       }
     }
   }
 
@@ -1449,8 +1447,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray = [];
       this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
       this.createFilterApplyData();
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
       this.getKpiOrderedList();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
     } else {
       this.filterForm.controls['selectedRelease'].reset();
       this.service.setNoRelease(true);
