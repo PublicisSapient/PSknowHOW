@@ -29,13 +29,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
@@ -54,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class DefectCountByRCAServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String TOTAL_ISSUES = "Total Issues";
@@ -93,15 +92,9 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Defect count by RCA -> Requested sprint : {}", leafNode.getName());
 			String basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
@@ -185,13 +178,11 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
+		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
+			sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		}
 		log.info("DefectCountByRCAServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}
@@ -201,20 +192,15 @@ public class DefectCountByRCAServiceImpl extends JiraKPIService<Integer, List<Ob
 	 * of logic to show data for P1, P2, P3, P4 and "Overall" Priorities as per the
 	 * accepted JSON structure.
 	 *
-	 * @param sprintLeafNodeList
+	 * @param latestSprint
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 		if (latestSprint != null) {
-			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+			Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
 			if (fieldMapping != null) {

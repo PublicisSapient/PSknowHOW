@@ -51,13 +51,12 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -89,7 +88,7 @@ public class WastageServiceImplTest {
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList = new ArrayList<>();
@@ -153,8 +152,8 @@ public class WastageServiceImplTest {
 
 		try {
 			KpiElement kpiElement = wastageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull((DataCount) kpiElement.getTrendValueList());
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 
@@ -179,8 +178,8 @@ public class WastageServiceImplTest {
 
 		try {
 			KpiElement kpiElement = wastageServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
-			assertNotNull((DataCount) kpiElement.getTrendValueList());
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
+			assertNotNull(kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
 
@@ -191,11 +190,6 @@ public class WastageServiceImplTest {
 	@Test
 	public void testGetQualifierType() {
 		assertThat(wastageServiceImpl.getQualifierType(), equalTo("WASTAGE"));
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertThat("Total Defects value :", wastageServiceImpl.calculateKPIMetrics(null), equalTo(null));
 	}
 
 	@After

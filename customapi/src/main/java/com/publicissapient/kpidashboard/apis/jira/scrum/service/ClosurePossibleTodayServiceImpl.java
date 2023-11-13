@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -56,12 +55,10 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationPotentialDelay;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -69,7 +66,7 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 @Component
-public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final Logger LOGGER = LoggerFactory.getLogger(ClosurePossibleTodayServiceImpl.class);
@@ -83,16 +80,11 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	private ConfigHelperService configHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
+		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
+			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
@@ -102,15 +94,9 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			LOGGER.info("Closure Possible Today -> Requested sprint : {}", leafNode.getName());
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
@@ -124,8 +110,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetail = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI122(),
+				sprintDetail = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -148,26 +134,18 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 	/**
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
-	 * 
-	 * @param sprintLeafNodeList
-	 * @param trendValue
+	 *
+	 * @param latestSprintNode
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprintNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+				.get(latestSprintNode.getProjectFilter().getBasicProjectConfigId());
 
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT_DETAILS);
@@ -250,11 +228,10 @@ public class ClosurePossibleTodayServiceImpl extends JiraKPIService<Integer, Lis
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setSprint(latestSprint.getName());
+			kpiElement.setSprint(latestSprintNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.CLOSURES_POSSIBLE_TODAY.getColumns());
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setTrendValueList(iterationKpiValues);
 		}
 	}
 

@@ -26,8 +26,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +51,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -84,15 +82,10 @@ public class DefectCountByRCAServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 
 	@Mock
 	FieldMapping fieldMapping;
-
-	@Test
-	public void testGetCalculateKPIMetrics() {
-		assertThat(defectCountByRCAService.calculateKPIMetrics(new HashMap<>()), equalTo(null));
-	}
 
 	@Test
 	public void testGetQualifierType() {
@@ -135,7 +128,7 @@ public class DefectCountByRCAServiceImplTest {
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 			KpiElement kpiElement = defectCountByRCAService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement);
 
 		} catch (ApplicationException applicationException) {
@@ -153,8 +146,8 @@ public class DefectCountByRCAServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = defectCountByRCAService.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
-				kpiRequest);
+		Map<String, Object> returnMap = defectCountByRCAService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
+				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}
 }

@@ -33,7 +33,7 @@ import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -64,12 +64,7 @@ public class DefectCountByPriorityServiceImplTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
-	private JiraServiceR jiraService;
-
-	@Test
-	public void testGetCalculateKPIMetrics() {
-		assertThat(defectCountByPriorityService.calculateKPIMetrics(new HashMap<>()), equalTo(null));
-	}
+	private JiraIterationServiceR jiraService;
 
 	@Test
 	public void testGetQualifierType() {
@@ -112,7 +107,7 @@ public class DefectCountByPriorityServiceImplTest {
 			when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 			when(jiraIssueRepository.findLinkedDefects(anyMap(), any(), anyMap())).thenReturn(bugList);
 			KpiElement kpiElement = defectCountByPriorityService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull(kpiElement);
 
 		} catch (ApplicationException applicationException) {
@@ -130,7 +125,7 @@ public class DefectCountByPriorityServiceImplTest {
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
-		Map<String, Object> returnMap = defectCountByPriorityService.fetchKPIDataFromDb(leafNodeList, startDate,
+		Map<String, Object> returnMap = defectCountByPriorityService.fetchKPIDataFromDb(leafNodeList.get(0), startDate,
 				endDate, kpiRequest);
 		assertNotNull(returnMap);
 	}

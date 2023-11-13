@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,7 +36,7 @@ import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -46,12 +45,10 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -61,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
@@ -74,16 +71,11 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private ConfigHelperService configHelperService;
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
-				projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
+		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
+			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
@@ -93,15 +85,9 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Estimate Vs Actual -> Requested sprint : {}", leafNode.getName());
 			SprintDetails dbSprintDetail = getSprintDetailsFromBaseClass();
@@ -139,29 +125,20 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
 	 * 
-	 * @param sprintLeafNodeList
-	 * @param trendValue
+	 * @param sprintLeafNode
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		List<JiraIssue> allIssues = (List<JiraIssue>) resultMap.get(ISSUES);
 		if (CollectionUtils.isNotEmpty(allIssues)) {
 			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(sprintLeafNode.getProjectFilter().getBasicProjectConfigId());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
@@ -215,11 +192,10 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			// Create kpi level filters
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
-			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setSprint(latestSprint.getName());
+			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.ESTIMATE_VS_ACTUAL.getColumns());
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setTrendValueList(iterationKpiValues);
 		}
 	}
 
