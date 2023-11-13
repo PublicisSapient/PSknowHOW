@@ -151,6 +151,13 @@
     "jiraIssueTypeNamesKPI146": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI148": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI151": [ "Story", "Enabler Story", "Change request", "Defect" ],
-    "jiraIssueTypeNamesKPI152": [ "Story", "Enabler Story", "Change request", "Defect" ]
+    "jiraIssueTypeNamesKPI152": [ "Story", "Enabler Story", "Change request", "Defect" ],
+    "jiraDodKPI166": [ "Done", "Closed" ],
+    "jiraStoryIdentificationKPI166" : [ "Story", "Enabler Story" ],
+    "jiraProductionIncidentIdentification": "Labels",
+    "jiraLabelsKPI14" : ["Java", "UI" ],
+    "jiraLabelsKPI82" : ["Java", "UI" ],
+    "jiraIssueWaitStateKPI170": [ "Open", "On Hold", "Code Review" ],
+    "jiraIssueClosedStateKPI170": [ "Done", "Closed", "Dropped"]
   }
 ]

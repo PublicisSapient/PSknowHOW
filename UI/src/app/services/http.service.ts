@@ -1121,4 +1121,8 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
+  getFeatureFlags() {
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
+  }
+
 }

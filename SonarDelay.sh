@@ -54,7 +54,7 @@ do
     wait_for_success=false
   fi
 
-  sleep 5
+  sleep 10
 
 done
 

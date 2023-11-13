@@ -67,6 +67,7 @@ export class MultilineComponent implements OnChanges {
     // used to make chart independent from previous made chart
     this.elem = this.viewContainerRef.element.nativeElement;
   }
+
   ngOnInit(): void {
     this.service.showTableViewObs.subscribe(view => {
       this.viewType = view;
@@ -89,9 +90,9 @@ export class MultilineComponent implements OnChanges {
         this.draw();
     } else {
       d3.select(this.elem).select('svg').remove();
-      d3.select(this.elem).select('.bstimeslider').remove(); 
+      d3.select(this.elem).select('.bstimeslider').remove();
       this.draw();
-    }    
+    }
     if(changes['activeTab']){
       /** settimeout applied because dom is loading late */
       setTimeout(() => {
@@ -150,7 +151,8 @@ export class MultilineComponent implements OnChanges {
       'min' : 'Min',
       '%' : '%',
       'check-ins' : 'CI',
-      'tickets' : 'T'
+      'tickets' : 'T',
+      'unit' : ''
     }
     const tempwidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;
     width = tempwidth - 70;

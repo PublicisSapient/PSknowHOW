@@ -319,7 +319,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          this.service.setSideNav(false);
+          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -1345,6 +1345,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
+        this.service.setVisibleSideBar(false);
         this.router.navigate(['./authentication/login']);
       }
     });
@@ -1385,6 +1386,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     this.httpService.getShowHideKpi().subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
@@ -1525,7 +1528,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         this.displayModal = false;
         if (activeSprintStatus['success']) {
-          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
               this.selectedProjectLastSyncStatus = '';
               this.lastSyncData = response['data'];

@@ -286,6 +286,7 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));

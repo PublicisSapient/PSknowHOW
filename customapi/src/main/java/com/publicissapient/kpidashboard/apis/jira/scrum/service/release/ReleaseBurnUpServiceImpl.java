@@ -157,42 +157,50 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
             List<String> releaseList = getReleaseList();
             if (CollectionUtils.isNotEmpty(releaseList)) {
                 List<JiraIssueCustomHistory> allIssuesHistory = getJiraIssuesCustomHistoryFromBaseClass();
+				final String basicProjConfigId = leafNode.getProjectFilter().getBasicProjectConfigId().toString();
                 List<JiraIssue> releaseIssues = jiraIssueRepository.findByNumberInAndBasicProjectConfigId(
                         allIssuesHistory.stream().map(JiraIssueCustomHistory::getStoryID).collect(Collectors.toList()),
-                        leafNode.getProjectFilter().getBasicProjectConfigId().toString());
+						basicProjConfigId);
 
-                Map<LocalDate, List<JiraIssue>> addedIssuesMap = new HashMap<>();
-                Map<LocalDate, List<JiraIssue>> removeIssueMap = new HashMap<>();
-                Map<LocalDate, List<JiraIssue>> fullReleaseMap = new HashMap<>();
-                Map<LocalDate, List<JiraIssue>> completedReleaseMap = new HashMap<>();
-                dateWiseLogs(allIssuesHistory, releaseList.stream().findFirst().orElse(null), releaseIssues,
-                        addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap);
-                resultListMap.put(FULL_RELEASE, fullReleaseMap);
-                resultListMap.put(ADDED_TO_RELEASE, addedIssuesMap);
-                resultListMap.put(REMOVED_FROM_RELEASE, removeIssueMap);
-                resultListMap.put(TOTAL_ISSUES, releaseIssues);
-                resultListMap.put(RELEASE_PROGRESS, completedReleaseMap);
-            }
+				Map<LocalDate, List<JiraIssue>> addedIssuesMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssue>> removeIssueMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssue>> fullReleaseMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssue>> completedReleaseMap = new HashMap<>();
+				dateWiseLogs(allIssuesHistory, releaseList.stream().findFirst().orElse(null), releaseIssues,
+						addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap, basicProjConfigId);
+				resultListMap.put(FULL_RELEASE, fullReleaseMap);
+				resultListMap.put(ADDED_TO_RELEASE, addedIssuesMap);
+				resultListMap.put(REMOVED_FROM_RELEASE, removeIssueMap);
+				resultListMap.put(TOTAL_ISSUES, releaseIssues);
+				resultListMap.put(RELEASE_PROGRESS, completedReleaseMap);
+			}
 
         }
         return resultListMap;
     }
 
-    /**
-     * Used to Create Date wise log
-     *
-     * @param allIssuesHistory    List<JiraIssueCustomHistory>
-     * @param releaseName         Name of release
-     * @param releaseIssue        List<JiraIssue>
-     * @param addedIssuesMap      Map<LocalDate, List<JiraIssue>>
-     * @param removeIssueMap      Map<LocalDate, List<JiraIssue>>
-     * @param fullReleaseMap      Map<LocalDate, List<JiraIssue>>
-     * @param completedReleaseMap Map<LocalDate, List<JiraIssue>>
-     */
-    private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName,
-                              List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
-                              Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
-                              Map<LocalDate, List<JiraIssue>> completedReleaseMap) {
+	/**
+	 * Used to Create Date wise log
+	 *
+	 * @param allIssuesHistory
+	 *            List<JiraIssueCustomHistory>
+	 * @param releaseName
+	 *            Name of release
+	 * @param releaseIssue
+	 *            List<JiraIssue>
+	 * @param addedIssuesMap
+	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param removeIssueMap
+	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param fullReleaseMap
+	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param completedReleaseMap
+	 *            Map<LocalDate, List<JiraIssue>>
+	 */
+	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName,//NOSONAR
+			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
+			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, String basicProjConfigId) {
 
         releaseName = releaseName != null ? releaseName : "";
         String finalReleaseName = releaseName.toLowerCase();
@@ -234,47 +242,49 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
                             removeIssueMap.putIfAbsent(updatedLog, removeJiraIssueLIst);
                         }
 
-                    });
-            createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, releaseIssue);
+					});
+			createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, releaseIssue, basicProjConfigId);
 
         });
     }
 
-    /**
-     * Create Completed Issue Date Wise
-     *
-     * @param issueHistory    Issue History
-     * @param completedIssues Map<LocalDate, List<JiraIssue>>
-     * @param totalIssueList  List<JiraIssue>
-     */
-    private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
-                                                  Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList) {
-        FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-                .get(new ObjectId(issueHistory.getBasicProjectConfigId()));
-        List<JiraHistoryChangeLog> statusUpdateLog = issueHistory.getStatusUpdationLog();
-        JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
-        statusUpdateLog = statusUpdateLog.stream()
-                .filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
-                        || jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
-                .collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(statusUpdateLog)) {
-            final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdateLog,
-                    jiraIssueReleaseStatus, fieldMapping);
-            // Getting the min date of closed status.
-            LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
-                    .min(LocalDate::compareTo).orElse(null);
-            List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
-            jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(updatedLog)
-                    ? LocalDate.parse(issue.getUpdateDate().split("T")[0], DATE_TIME_FORMATTER).toString()
-                    : updatedLog.toString()));
-            completedIssues.computeIfPresent(updatedLog, (k, v) -> {
-                v.addAll(jiraIssueList);
-                return v;
-            });
-            completedIssues.putIfAbsent(updatedLog, jiraIssueList);
-            completedIssues.remove(null);
-        }
-    }
+	/**
+	 * Create Completed Issue Date Wise
+	 *
+	 * @param issueHistory
+	 *            Issue History
+	 * @param completedIssues
+	 *            Map<LocalDate, List<JiraIssue>>
+	 * @param totalIssueList
+	 *            List<JiraIssue>
+	 */
+	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
+			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList, String basicProjConfigId) {
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(new ObjectId(basicProjConfigId));
+		List<JiraHistoryChangeLog> statusUpdateLog = issueHistory.getStatusUpdationLog();
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
+		statusUpdateLog = statusUpdateLog.stream()
+				.filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
+						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
+				.collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(statusUpdateLog)) {
+			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdateLog,
+					jiraIssueReleaseStatus, fieldMapping);
+			// Getting the min date of closed status.
+			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
+					.min(LocalDate::compareTo).orElse(null);
+			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
+			jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(updatedLog)
+					? LocalDate.parse(issue.getUpdateDate().split("T")[0], DATE_TIME_FORMATTER).toString()
+					: updatedLog.toString()));
+			completedIssues.computeIfPresent(updatedLog, (k, v) -> {
+				v.addAll(jiraIssueList);
+				return v;
+			});
+			completedIssues.putIfAbsent(updatedLog, jiraIssueList);
+			completedIssues.remove(null);
+		}
+	}
 
     /**
      * Populate Release Wise Leaf Node Value

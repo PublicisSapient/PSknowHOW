@@ -141,7 +141,7 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 	@SuppressWarnings("java:S3776")
 	private void projectWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
-		Object basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
+		Object basicProjectConfigId = Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprint, null, null, kpiRequest);

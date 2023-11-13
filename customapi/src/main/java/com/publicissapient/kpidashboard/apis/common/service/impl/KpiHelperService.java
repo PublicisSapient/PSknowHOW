@@ -380,6 +380,7 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
+		List<String> labelsList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -402,7 +403,10 @@ public class KpiHelperService { // NOPMD
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueTypeKPI14()));
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI14(), fieldMapping.getJiraDefectRejectionStatusKPI14());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI14(),
+					fieldMapping.getJiraDefectRejectionStatusKPI14());
+			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI14()).orElse(new ArrayList<>()));
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -411,6 +415,7 @@ public class KpiHelperService { // NOPMD
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put("labels", labelsList.stream().distinct().collect(Collectors.toList()));
 
 		List<SprintWiseStory> sprintWiseStoryList = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
@@ -1589,6 +1594,86 @@ public class KpiHelperService { // NOPMD
 			}
 		});
 		return projectIssueWiseClosedDates;
+	}
+
+	/**
+	 * convert hours into work hours by 8 factor
+	 *
+	 * @param timeInHours
+	 * 			time in hours
+	 * @return time in work hours
+	 */
+	public long getTimeInWorkHours(long timeInHours) {
+		long timeInHrs = (timeInHours / 24) * 8;
+		long remainingTimeInMin = (timeInHours % 24);
+		if (remainingTimeInMin >= 8) {
+			timeInHrs = timeInHrs + 8;
+		} else {
+			timeInHrs = timeInHrs + remainingTimeInMin;
+		}
+		return timeInHrs;
+	}
+
+	/**
+	 * convert total hours to days
+	 *
+	 * @param hours
+	 * 			hours
+	 * @return time in days
+	 */
+	public String convertHoursToDaysString(long hours) {
+		hours = getTimeInWorkHours(hours);
+		long days = hours / 8;
+		long remainingHours = hours % 8;
+		return String.format("%dd %dhrs", days, remainingHours);
+	}
+
+	/**
+	 * get weekend between two dates
+	 *
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return weekends between start date and end date
+	 */
+	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
+		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
+		if (countOfWeekEndDays != 0) {
+			return countOfWeekEndDays * 24;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * check number of saturday, sunday between dates
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return number of sat, sun
+	 */
+	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
+		int countWeekEnd = 0;
+		while (!d1.isAfter(d2)) {
+			if (isWeekEnd(d1)) {
+				countWeekEnd++;
+			}
+			d1 = d1.plusDays(1);
+		}
+		return countWeekEnd;
+	}
+
+	/**
+	 * check if day is weekend
+	 * @param localDateTime
+	 * 			localdatetime of day
+	 * @return boolean
+	 */
+	public boolean isWeekEnd(LocalDateTime localDateTime) {
+		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
+		return dayOfWeek == 6 || dayOfWeek == 7;
 	}
 
 	/**

@@ -28,11 +28,13 @@ import { MyprofileComponent } from './myprofile/myprofile.component';
 import { AccessMgmtComponent } from './access-mgmt/access-mgmt.component';
 import { AutoApprovalComponent } from './auto-approval/auto-approval.component';
 import { ViewNewUserAuthRequestComponent } from './view-new-user-auth-request/view-new-user-auth-request.component';
+import { FeatureGuard } from 'src/app/services/feature.guard';
 
 export const ProfileRoutes: Routes = [
     {
         path: '',
         component: ProfileComponent,
+        canActivateChild: [FeatureGuard],
         children: [
             {
                 path: '',
@@ -41,38 +43,62 @@ export const ProfileRoutes: Routes = [
             },
             {
                 path: 'MyProfile',
-                component: MyprofileComponent
+                component: MyprofileComponent,
+                data: {
+                    feature: "MyProfile"
+                }
             },
             {
                 path: 'GrantRequests',
                 component: ViewRequestsComponent,
-                canActivate: [RoleGuard]
+                canActivate: [RoleGuard],
+                data: {
+                    feature: "GrantRequests"
+                }
             },
             {
                 path: 'GrantNewUserAuthRequests',
                 component: ViewNewUserAuthRequestComponent,
-                canActivate: [RoleGuard]
+                canActivate: [RoleGuard],
+                data: {
+                    feature: "GrantNewUserAuthRequests"
+                }
             },
             {
                 path: 'RaiseRequest',
-                component: RaiseAccessRequestComponent
+                component: RaiseAccessRequestComponent,
+                data: {
+                    feature: "RaiseRequest"
+                }
             },
             {
                 path: 'RequestStatus',
-                component: RequestStatusComponent
+                component: RequestStatusComponent,
+                data: {
+                    feature: "RequestStatus"
+                }
             },
             {
                 path: 'AccessMgmt',
                 component: AccessMgmtComponent,
-                canActivate: [RoleGuard]
+                canActivate: [RoleGuard],
+                data: {
+                    feature: "AccessMgmt"
+                }
             },
             {
                 path: 'UserSettings',
-                component: UserMgmtComponent
+                component: UserMgmtComponent,
+                data: {
+                    feature: "UserSettings"
+                }
             },
             {
                 path: 'AutoApprove',
-                component: AutoApprovalComponent
+                component: AutoApprovalComponent,
+                data: {
+                    feature: "AutoApprove"
+                }
             }
         ]
     }

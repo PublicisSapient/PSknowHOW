@@ -3077,7 +3077,6 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
       "kpiSubCategory": "Summary",
       "calculateMaturity": false
@@ -3102,7 +3101,6 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "dropdown",
       "boxType": "chart",
       "kpiSubCategory": "Summary",
       "calculateMaturity": false
@@ -3178,7 +3176,6 @@ db.getCollection('kpi_master').insertMany(
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropdown",
     "boxType": "chart",
     "kpiSubCategory": "Summary",
     "calculateMaturity": false
@@ -3641,7 +3638,7 @@ db.getCollection('kpi_master').insertMany(
       "isPositiveTrend": true,
       "showTrend": false,
       "isAdditionalFilterSupport": false,
-      "kpiFilter": "multiSelectDropDown",
+      "kpiFilter": "radioButton",
       "boxType": "chart",
       "calculateMaturity": false,
       "kpiSubCategory": "Epic View"
@@ -3672,6 +3669,87 @@ db.getCollection('kpi_master').insertMany(
         "boxType": "chart",
         "calculateMaturity": false
     }
+     "calculateMaturity":false,
+  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+ },
+ {
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar-with-y-axis-group",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yaxisOrder" : {
+            5 : 'E',
+            4 : 'D',
+            3 : 'C',
+            2 : 'B',
+            1 : 'A'
+        }
+  },
+  {
+    "kpiId": "kpi170",
+    "kpiName": "Flow Efficiency",
+    "kpiUnit": "%",
+    "isDeleted": "False",
+    "defaultOrder": 1,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+        "definition": "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel": "Duration",
+    "yAxisLabel": "Percentage",
+    "isPositiveTrend": false,
+    "kpiFilter": "dropDown",
+    "showTrend": false,
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false,
+    "kpiSubCategory": "Flow KPIs"
+  }
 ]
 );
 
@@ -3795,6 +3873,12 @@ db.getCollection('kpi_category_mapping').insertMany(
 		"kpiId": "kpi27",
 		"categoryId": "categoryTwo",
 		"kpiOrder": 14,
+		"kanban": false
+	},
+    {
+		"kpiId": "kpi168",
+		"categoryId": "categoryTwo",
+		"kpiOrder": 15,
 		"kanban": false
 	},
 	{
@@ -6965,7 +7049,8 @@ db.kpi_column_configs.insertMany([
 
 //field_mapping_structure
 db.getCollection('field_mapping_structure').insertMany(
-[{
+[
+{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
         "fieldType": "chips",
@@ -8929,6 +9014,88 @@ db.getCollection('field_mapping_structure').insertMany(
       }
     },
     {
+        "fieldName": "jiraStatusStartDevelopmentKPI154",
+        "fieldLabel": "Status to identify start of development",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
+        }
+    },
+    {
+        "fieldName": "jiraDevDoneStatusKPI154",
+        "fieldLabel": "Status to identify Dev completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+        }
+    },
+    {
+        "fieldName": "jiraQADoneStatusKPI154",
+        "fieldLabel": "Status to identify QA completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
+        }
+    },
+    {
+        "fieldName": "jiraIterationCompletionStatusKPI154",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+        }
+    },
+    {
+        "fieldName": "jiraStatusForInProgressKPI154",
+        "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "chips",
+        "readOnly": true,
+        "tooltip": {
+            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
+        }
+    },
+    {
+       "fieldName": "jiraSubTaskIdentification",
+       "fieldLabel": "Sub-Task Issue Types",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
+       "tooltip": {
+       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify open statuses.",
+
+        }
+    },
+    {
+        "fieldName": "jiraOnHoldStatusKPI154",
+        "fieldLabel": "Status when issue type is put on Hold",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify hold/blocked statuses.",
+
+        }
+    },
+    {
        "fieldName":"jiraDefectRejectionStatusKPI155",
        "fieldLabel":"Ticket Rejected/Dropped Status",
        "fieldType":"text",
@@ -9387,5 +9554,86 @@ db.getCollection('field_mapping_structure').insertMany(
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     }
+
+},
+{
+    "fieldName": "jiraStoryIdentificationKPI166",
+    "fieldLabel": "Issue type to identify Production incidents",
+    "fieldType": "chips",
+    "fieldCategory": "Issue_Type",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+        "definition": "All issue types that are used as/equivalent to Production incidents.",
+
+    }
+},
+{
+    "fieldName": "jiraProductionIncidentIdentification",
+    "fieldLabel": "Production incidents identification",
+    "fieldType": "radiobutton",
+    "section": "Defects Mapping",
+    "tooltip": {
+        "definition": "This field is used to identify if a production incident is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: PROD_DEFECT (This has to be one value).<hr>"
+    },
+    "options": [{
+        "label": "CustomField",
+        "value": "CustomField"
+    },
+    {
+        "label": "Labels",
+        "value": "Labels"
+    }
+    ],
+    "nestedFields": [
+
+        {
+            "fieldName": "jiraProdIncidentRaisedByCustomField",
+            "fieldLabel": "Production Incident Custom Field",
+            "fieldType": "text",
+            "fieldCategory": "fields",
+            "filterGroup": ["CustomField"],
+            "tooltip": {
+                "definition": "Provide customfield name to identify Production Incident. <br> Example: customfield_13907<hr>"
+            }
+        },
+        {
+            "fieldName": "jiraProdIncidentRaisedByValue",
+            "fieldLabel": "Production Incident Values",
+            "fieldType": "chips",
+            "filterGroup": ["CustomField", "Labels"],
+            "tooltip": {
+                "definition": "Provide label name to identify Production IncidentProduction IncideProd_Incidentxample: Clone_by_QA <hr>"
+            }
+        }
+    ]
+},
+{
+    "fieldName": "jiraDodKPI166",
+    "fieldLabel": "DOD Status",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status/es that identify that an issue is completed based on Definition of Done (DoD)."
+    }
+},
+{
+    "fieldName": "jiraIssueClosedStateKPI170",
+    "fieldLabel": "Status to identify Close Statuses",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"
+    }
+    },
+{
+    "fieldName": "jiraIssueWaitStateKPI170",
+    "fieldLabel": "Status to identify Wait Statuses",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
+    }
+}
 
 ]);

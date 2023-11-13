@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -138,7 +139,7 @@ public class EstimateVsActualServiceImpl extends JiraIterationKPIService {
 			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(sprintLeafNode.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(sprintLeafNode).getProjectFilter().getBasicProjectConfigId());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()

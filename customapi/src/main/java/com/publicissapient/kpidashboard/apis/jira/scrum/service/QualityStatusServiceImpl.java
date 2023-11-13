@@ -258,7 +258,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			List<JiraIssue> jiraIssueLinkedIssues = (List<JiraIssue>) resultMap.get(LINKED_ISSUES);
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 			Map<String, List<String>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
@@ -378,7 +378,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDIR((double) defects.size());
+			jiraIssueModalObject.setDefectInjectRate((double) defects.size());
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)

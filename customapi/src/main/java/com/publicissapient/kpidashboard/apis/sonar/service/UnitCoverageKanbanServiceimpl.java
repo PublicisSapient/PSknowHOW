@@ -145,7 +145,7 @@ public class UnitCoverageKanbanServiceimpl
 	@Override
 	public Map<String, List<SonarHistory>> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
-		return getSonarHistoryForAllProjects(leafNodeList, startDate, true);
+		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
 	@Override
