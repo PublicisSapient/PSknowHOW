@@ -61,7 +61,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     private httpService: HttpService,
     private renderer: Renderer2,
   ) {
-    this.sideNavStyle ={toggled:this.isApply};
+    this.sideNavStyle ={ 'toggled' :this.isApply};
     this.renderer.listen('document', 'click', (e: Event) => {
 
       // setting document click event data to identify outside click for show/hide kpi filter
@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
     });
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
-      this.sideNavStyle ={toggled:this.isApply};
+      this.sideNavStyle ={ 'toggled' : this.isApply };
     });
 
     this.router.events.subscribe(event => {
@@ -109,5 +109,11 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   ngAfterContentInit() {
     this.cdRef.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this.isApply = false;
+    this.sideNavStyle ={ 'toggled' : this.isApply };
+    this.service.setSideNav(false);
   }
 }

@@ -9,7 +9,7 @@ import * as d3 from 'd3';
 export class StackedAreaChartComponent implements OnInit {
   @Input() data: any; // json data
   elem;
-  @Input() kpiId:string = ''; 
+  @Input() kpiId:string = '';
   @Input() activeTab?: number = 0;
   elemObserver = new ResizeObserver(() => {this.draw()});
   constructor(private viewContainerRef: ViewContainerRef) { }
@@ -34,7 +34,7 @@ export class StackedAreaChartComponent implements OnInit {
   }
 
   draw() {
-    /** Preventing Drop event for Bubbling */ 
+    /** Preventing Drop event for Bubbling */
     d3.select(this.elem).select('#stacked-area').on('mousedown', (event) => {
       event.stopPropagation();
     });
@@ -75,7 +75,7 @@ export class StackedAreaChartComponent implements OnInit {
       delete obj['value'];
       return obj;
     });
-    
+
     // set the dimensions and margins of the graph
     const margin = { top: 20, right: 20, bottom: 150, left: 50 },
       width = this.elem.offsetWidth ? this.elem.offsetWidth - 70 : 0,
@@ -293,10 +293,10 @@ export class StackedAreaChartComponent implements OnInit {
       //   .on("mouseover", highlight)
       //   .on("mouseleave", noHighlight)
 
-    
+
   }
-  
-  
+
+
 
   ngOnDestroy(){
     d3.select(this.elem).select('#stacked-area').select('svg').remove();

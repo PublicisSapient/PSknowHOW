@@ -39,7 +39,7 @@ public enum FieldMappingEnum {
 					"productionDefectCustomField", "productionDefectIdentifier", "productionDefectValue",
 					"productionDefectComponentValue", "notificationEnabler", "epicPlannedValue", "epicAchievedValue",
 					"epicLink", "jiraSubTaskDefectType", "testingPhaseDefectCustomField", "testingPhaseDefectsIdentifier",
-					"testingPhaseDefectValue", "testingPhaseDefectComponentValue")),
+					"testingPhaseDefectValue", "testingPhaseDefectComponentValue", "jiraSubTaskIdentification")),
 
 	KPI1("Processor (Kanban)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNames", "storyFirstStatus",
 			"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
@@ -175,6 +175,10 @@ public enum FieldMappingEnum {
 			"jiraDefectRejectionStatusKPI152", "jiraLiveStatusKPI152", "jiraIssueTypeNamesKPI152")),
 
 	KPI153("PI Predictability", KPISource.JIRA.name(), Arrays.asList("jiraIssueEpicTypeKPI153")),
+
+	KPI154("Daily StandUp View", KPISource.JIRA.name(),
+			Arrays.asList("jiraStatusStartDevelopmentKPI154", "jiraDevDoneStatusKPI154", "jiraQADoneStatusKPI154",
+					"jiraIterationCompletionStatusKPI154", "jiraStatusForInProgressKPI154","storyFirstStatusKPI154", "jiraOnHoldStatusKPI154")),
 
 	// DTS-26123 start
 	KPI155("Defect Count By Type", KPISource.JIRA.name(),

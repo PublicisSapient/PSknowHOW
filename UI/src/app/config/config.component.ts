@@ -85,4 +85,8 @@ export class ConfigComponent implements OnInit {
     setActiveTabOnClick(url) {
         this.activeTab = this.items.filter((item) => item.routerLink === url)[0];
     }
+
+    ngOnDestroy() {
+        this.sharedService.setSideNav(false);
+    }
 }

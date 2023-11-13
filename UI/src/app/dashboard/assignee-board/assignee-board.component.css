@@ -1,0 +1,77 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+.container{
+    min-height: 400px;
+    display: flex;
+    padding: 0.25rem;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.graph-container{
+    border: 1px solid #c0c0c0;
+    margin-right: 0.25rem;
+    flex-basis: 75%;
+    flex: 1 1 auto;
+    height: calc(100vh - 220px);
+    overflow: hidden;
+    margin-top: 50px;
+}
+
+.noFullScreen .graph-container {
+    max-height: unset;
+    height: calc(100vh - 455px);
+}
+
+.issue-card-container{
+    flex-basis: 24%;
+    border: 1px solid #c0c0c0;
+    height: calc(100vh - 220px);
+    overflow-y: auto;
+    margin-top: 50px;
+}
+
+.issue-nav{
+    display: flex;
+    justify-content: space-between;
+}
+
+:host::ng-deep .prev .p-button,:host::ng-deep .next .p-button{
+    color: black;
+    background: #EFEFEF;
+}
+
+.noFullScreen, .container.noFullScreen #scroller {
+    height: calc(100vh - 395px);
+    overflow-y: auto;
+    min-height: unset;
+    max-height: unset;
+}
+
+.noFullScreen .issue-card-container {
+    height: fit-content;
+    overflow-y: unset;
+}
+
+@media only screen and (min-width: 1321px) {
+
+    .noFullScreen .graph-container {
+        height: calc(100vh - 470px);
+    }
+}

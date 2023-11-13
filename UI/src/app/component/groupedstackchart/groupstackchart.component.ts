@@ -193,7 +193,7 @@ export class GroupstackchartComponent implements OnChanges {
     groupData = Array.from(groupData).map(function (d) {
       return d[1];
     });
-    
+
 
     const stackData = stack
       .keys(keys)(groupData);
@@ -348,14 +348,14 @@ export class GroupstackchartComponent implements OnChanges {
       legendDiv.html(htmlString);
 
     }
-    
+
     const content = this.elem.querySelector('#horizontalSVG');
     content.scrollLeft += width;
   }
 
 
   formatData(dataObj) {
-    
+
     if (dataObj?.length > 0) {
       // dataObj = this.padData(dataObj);
       let max = 0;
@@ -364,7 +364,7 @@ export class GroupstackchartComponent implements OnChanges {
         const sprintValue = index + 1;
         if (typeof (item?.value) === 'object' && Object.keys(item?.value)?.length > 0) {
           const types = Object.keys(item.value);
-          // if (types.length >= 1) {      
+          // if (types.length >= 1) {
           types?.forEach(function (type) {
             const obj = {};
             obj['group'] = item?.sSprintName;

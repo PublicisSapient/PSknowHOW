@@ -59,7 +59,7 @@ public class DataCount implements Serializable {
 	private transient Object value;
 	private transient Object drillDown;
 	private String kanbanDate;
-	private transient Map<String, Object> hoverValue;
+	private Map<String, Object> hoverValue;
 	private Map<String, ArrayList<Double>> hoverMap;
 	private Map<String, Integer> lineHoverValue;
 	private String executed;

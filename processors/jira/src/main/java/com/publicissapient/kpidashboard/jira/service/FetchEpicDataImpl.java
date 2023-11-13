@@ -61,10 +61,10 @@ public class FetchEpicDataImpl implements FetchEpicData {
 	@Override
 	public List<Issue> fetchEpic(ProjectConfFieldMapping projectConfig, String boardId,
 			ProcessorJiraRestClient client, KerberosClient krb5Client)
-			throws InterruptedException, RestClientException, IOException {
+			throws InterruptedException, IOException {
 
 		List<String> epicList = new ArrayList<>();
-
+		try {
 		JiraToolConfig jiraToolConfig = projectConfig.getJira();
 		if (null != jiraToolConfig) {
 			boolean isLast = false;
@@ -78,15 +78,22 @@ public class FetchEpicDataImpl implements FetchEpicData {
 			} while (!isLast);
 
 		}
-		List<Issue> epicIssue = getEpicIssuesQuery(epicList,client);
-		return epicIssue;
+		} catch (RestClientException rce) {
+			log.error("Client exception when loading epic data", rce);
+			throw rce;
+		} catch (MalformedURLException mfe) {
+			log.error("Malformed url for loading epic data", mfe);
+			throw mfe;
+		}
+
+		return getEpicIssuesQuery(epicList,client);
 	}
 
-	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProcessorJiraRestClient client) throws InterruptedException, RestClientException {
+	private List<Issue> getEpicIssuesQuery(List<String> epicKeyList, ProcessorJiraRestClient client) throws InterruptedException {
 
 		List<Issue> issueList = new ArrayList<>();
 		SearchResult searchResult = null;
-
+		try {
 		if (CollectionUtils.isNotEmpty(epicKeyList)) {
 			String query = "key in (" + String.join(",", epicKeyList) + ")";
 			int pageStart = 0;
@@ -117,7 +124,10 @@ public class FetchEpicDataImpl implements FetchEpicData {
 				}
 				TimeUnit.MILLISECONDS.sleep(jiraProcessorConfig.getSubsequentApiCallDelayInMilli());
 			} while (totalEpic < fetchedEpic || continueFlag);
-
+		}
+		} catch (RestClientException e) {
+			log.error("Error while fetching issues", e.getCause());
+			throw e;
 		}
 		return issueList;
 	}
