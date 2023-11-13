@@ -413,7 +413,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.setHierarchyLevels();
     this.ga.setPageLoad(data);
-    this.getKpiOrderedList();
+    this.navigateToSelectedTab();
   }
 
   makeUniqueArrayList(arr) {
@@ -552,7 +552,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       delete this.kpiListData['id'];
     }
     this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
-  }
+      }
 
   closeAllDropdowns() {
     for (const key in this.toggleDropdownObj) {
@@ -593,7 +593,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // this method would be called on click of apply button of filter
   applyChanges(applySource?, filterApplied = true): void {
-    let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
     let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId === selectedLevelId)[0];
     if (selectedTrendIds !== '' || selectedTrendIds?.length > 0) {
@@ -664,7 +664,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           isAdditionalFilters = true;
         }
       }
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, isAdditionalFilters, filterApplied,);
+      this.getKpiOrderedList();
     }
   }
 
@@ -755,11 +755,15 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getKpiOrderedList() {
-    if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideKpi().subscribe(
+  let projectList = [];
+      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
+        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+      }
+      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
+            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             this.service.setDashConfigData(this.kpiListData);
             this.processKpiList();
             this.navigateToSelectedTab();
@@ -772,10 +776,6 @@ export class FilterComponent implements OnInit, OnDestroy {
           });
         },
       );
-    } else {
-      this.processKpiList();
-      this.navigateToSelectedTab();
-    }
   }
 
   processKpiList() {
@@ -867,7 +867,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.assignUserNameForKpiData();
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -903,7 +903,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.kpiList = this.kpisNewOrder.filter((kpi) => kpi.kpiId !== 'kpi121');
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         this.kpisNewOrder = [];
         if (response.success === true) {
@@ -1176,8 +1176,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
-        this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
-      }
+        this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+        this.getKpiOrderedList()
+       }
     }
   }
 
@@ -1385,7 +1386,11 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
-    this.httpService.getShowHideKpi().subscribe(response => {
+    let projectList = [];
+      if(this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project'){
+        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+      }
+    this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
       this.service.setDashConfigData(response.data);
@@ -1445,7 +1450,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray = [];
       this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
       this.createFilterApplyData();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+      this.getKpiOrderedList();
     } else {
       this.filterForm.controls['selectedRelease'].reset();
       this.service.setNoRelease(true);

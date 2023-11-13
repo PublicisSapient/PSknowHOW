@@ -97,9 +97,9 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
-        if (this.sharedObject || this.service.getFilterObject()) {
-          this.receiveSharedData(this.service.getFilterObject());
-        }
+        // if (this.sharedObject || this.service.getFilterObject()) {
+        //   this.receiveSharedData(this.service.getFilterObject());
+        // }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }

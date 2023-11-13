@@ -85,9 +85,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(this.sharedObject || this.service.getFilterObject()){
-        this.receiveSharedData(this.service.getFilterObject());
-      }
+      // if(this.sharedObject || this.service.getFilterObject()){
+      //   this.receiveSharedData(this.service.getFilterObject());
+      // }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
