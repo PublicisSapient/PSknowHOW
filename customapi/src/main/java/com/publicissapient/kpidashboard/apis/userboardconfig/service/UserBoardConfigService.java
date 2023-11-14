@@ -54,7 +54,7 @@ public interface UserBoardConfigService {
 	void deleteUser(String userName);
 
 	/**
-	 * This method fetch admin / superAdmin user board config
+	 * This method fetch admin / superAdmin project level board config
 	 * 
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId

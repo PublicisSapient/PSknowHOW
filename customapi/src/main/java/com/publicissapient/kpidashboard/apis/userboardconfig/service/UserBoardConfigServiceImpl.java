@@ -36,7 +36,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
@@ -56,8 +55,6 @@ import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardCo
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiCategoryRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.userboardconfig.UserBoardConfigRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +70,7 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 
 	private static final String ITERATION = "Iteration";
 	private static final String DEFAULT_BOARD_NAME = "My KnowHow";
+	public static final String SUPER_ADMIN_ALL_PROJ_SELECTED = "all";
 	@Autowired
 	private UserBoardConfigRepository userBoardConfigRepository;
 	@Autowired
@@ -91,12 +89,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	private CacheService cacheService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
-	@Autowired
-	private ProjectAccessManager projectAccessManager;
-	@Autowired
-	private UserInfoCustomRepository userInfoCustomRepository;
-	@Autowired
-	private UserInfoRepository userInfoRepository;
 
 	/**
 	 * .This method return user board config if present in db else return a default
@@ -196,7 +188,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		setUserBoardConfigBasedOnCategory(defaultUserBoardConfigDTO, kpiCategoryList, kpiMasterMap);
 
 		Optional<UserBoardConfig> findFirstUserBoard = CollectionUtils
-				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream().findFirst();
+				.emptyIfNull(configHelperService.loadUserBoardConfig()).stream() // filtering user_board_config only
+				.filter(config -> config.getBasicProjectConfigId() == null).findFirst();
 		if (findFirstUserBoard.isPresent()) {
 			UserBoardConfig finalBoardConfig = findFirstUserBoard.get();
 			List<Board> scrum = finalBoardConfig.getScrum();
@@ -630,15 +623,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				boardConfig = userBoardConfig;
 			}
 			boardConfig = userBoardConfigRepository.save(boardConfig);
-
-			if (authorizedProjectsService.ifSuperAdminUser()) {
-				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
-				updateKpiDetails(userBoardConfigs, boardConfig);
-				userBoardConfigRepository.saveAll(userBoardConfigs);
-			}
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
-		cacheService.clearCache(CommonConstant.JIRA_KPI_CACHE);
 		return convertToUserBoardConfigDTO(boardConfig);
 	}
 
@@ -681,21 +667,22 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	}
 
 	/**
-	 * Method to mask the config of project to users config
+	 * Method to mask the disabled config of project level to users level config
 	 * 
 	 * @param userBoardConfig
 	 *            userBoardConfig
-	 * @param userAccessProjConfig
-	 *            userAccessProjConfig
+	 * @param listOfProjectBoardConfig
+	 *            listOfProjectBoardConfig
 	 */
-	private void updateKpiDetailsProj(UserBoardConfigDTO userBoardConfig, List<UserBoardConfig> userAccessProjConfig) {
+	private void updateKpiDetailsProj(UserBoardConfigDTO userBoardConfig,
+			List<UserBoardConfig> listOfProjectBoardConfig) {
 		Map<String, Boolean> kpiWiseIsShownFlag = new HashMap<>();
 
-		if (CollectionUtils.isEmpty(userAccessProjConfig)) {
+		if (CollectionUtils.isEmpty(listOfProjectBoardConfig)) {
 			return;
 		}
-		// Populate kpiWiseIsShownFlag from userAccessProjConfig
-		userAccessProjConfig.forEach(finalBoardConfig -> {
+		// Populate kpiWiseIsShownFlag from listOfProjectBoardConfig
+		listOfProjectBoardConfig.forEach(finalBoardConfig -> {
 			finalBoardConfig.getScrum().forEach(boardDTO -> boardDTO.getKpis().forEach(boardKpis -> {
 				if (!boardKpis.isShown()) {
 					kpiWiseIsShownFlag.put(boardKpis.getKpiId(), false);
@@ -744,6 +731,13 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		return userBoardConfig;
 	}
 
+	/**
+	 * This method fetch admin / superAdmin project level board config
+	 *
+	 * @param basicProjectConfigId
+	 *            basicProjectConfigId
+	 * @return admin user board config
+	 */
 	@Override
 	public UserBoardConfigDTO getProjBoardConfigAdmin(String basicProjectConfigId) {
 		String userName = authenticationService.getLoggedInUser();
@@ -792,12 +786,10 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 	public UserBoardConfigDTO saveUserBoardConfigAdmin(UserBoardConfigDTO userBoardConfigDTO,
 			String basicProjectConfigId) {
 		UserBoardConfig userBoardConfig = convertDTOToUserBoardConfig(userBoardConfigDTO);
-		final boolean isAllFilterSelected = basicProjectConfigId.equalsIgnoreCase("all");
-		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())
-				&& !isAllFilterSelected) {
+		if (userBoardConfig != null && authenticationService.getLoggedInUser().equals(userBoardConfig.getUsername())) {
 			List<UserBoardConfig> listOfProjBoardConfig = userBoardConfigRepository
 					.findByBasicProjectConfigId(basicProjectConfigId);
-			// when proj admin changes it should change for all the proj admins
+			// when proj admin changes it should change for all other proj admins docs
 			if (CollectionUtils.isNotEmpty(listOfProjBoardConfig)) {
 				listOfProjBoardConfig.forEach(projBoardConfig -> {
 					projBoardConfig.setScrum(userBoardConfig.getScrum());
@@ -805,15 +797,14 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 					projBoardConfig.setOthers(userBoardConfig.getOthers());
 				});
 				userBoardConfigRepository.saveAll(listOfProjBoardConfig);
-			} else {
-				userBoardConfigRepository.save(userBoardConfig);
 			}
-		}
-		// if "all" it will change for all the docs
-		if (isAllFilterSelected && userBoardConfig != null) {
-			List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
-			updateKpiDetails(userBoardConfigs, userBoardConfig);
-			userBoardConfigRepository.saveAll(userBoardConfigs);
+			// if "all" it will change for all the docs
+			if (basicProjectConfigId.equalsIgnoreCase(SUPER_ADMIN_ALL_PROJ_SELECTED)) {
+				List<UserBoardConfig> userBoardConfigs = userBoardConfigRepository.findAll();
+				updateKpiDetails(userBoardConfigs, userBoardConfig);
+				userBoardConfigRepository.saveAll(userBoardConfigs);
+			}
+			userBoardConfigRepository.save(userBoardConfig);
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		return convertToUserBoardConfigDTO(userBoardConfig);
