@@ -112,10 +112,10 @@
 
      handleTabChange(event) {
         this.selectedTab = this.tabHeaders[event.index];
-        if(this.selectedTab?.toLowerCase() === 'scrum' || this.selectedTab?.toLowerCase() === 'kanban'){
+        if(this.selectedTab?.toLowerCase() === 'kanban'){
           this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
         }else{
-          this.userProjects = this.backupUserProjects;
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
         }
         if(this.userProjects != null && this.userProjects.length > 0) {
           this.selectedProject = this.userProjects[0];
