@@ -331,7 +331,7 @@ export class HelperService {
 
     // calculate gross maturity
     calculateGrossMaturity(data, globalConfig) {
-        if (data && Object.keys(data)?.length) {
+        if (data && Object.keys(data)?.length && globalConfig?.length && globalConfig[0] !== undefined) {
             const self = this;
             self.grossMaturityObj = {};
             Object.keys(data)?.forEach(key => {
@@ -368,9 +368,10 @@ export class HelperService {
                     self.grossMaturityObj[key] = self.grossMaturityObj[key] / divisor;
                 }
             });
-            setInterval(() => {
-                this.passMaturityToFilter.emit(self.grossMaturityObj);
-            }, 500);
+            // setInterval(() => {
+            //     this.passMaturityToFilter.emit(self.grossMaturityObj);
+            // }, 500);
+            this.passMaturityToFilter.emit(self.grossMaturityObj);
         }
     }
 

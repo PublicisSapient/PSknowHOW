@@ -137,6 +137,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
 
+  showHideLoader: boolean = false;
+
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -851,6 +853,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
   submitKpiConfigChange() {
+    this.showHideLoader = true;
     for (let i = 0; i < this.kpiList.length; i++) {
       this.kpiList[i]['isEnabled'] =
         this.kpiFormValue['kpis'].value[this.kpiList[i]['kpiId']];
@@ -883,12 +886,14 @@ export class FilterComponent implements OnInit, OnDestroy {
             summary: 'Error in Saving Configuraion',
           });
         }
+        this.showHideLoader = false;
       },
       (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error in saving kpis. Please try after some time.',
         });
+        this.showHideLoader = false;
       },
     );
   }
