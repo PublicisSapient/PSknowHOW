@@ -797,6 +797,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 					projBoardConfig.setOthers(userBoardConfig.getOthers());
 				});
 				userBoardConfigRepository.saveAll(listOfProjBoardConfig);
+			} else {
+				userBoardConfigRepository.save(userBoardConfig);
 			}
 			// if "all" it will change for all the docs
 			if (basicProjectConfigId.equalsIgnoreCase(SUPER_ADMIN_ALL_PROJ_SELECTED)) {
@@ -804,7 +806,6 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 				updateKpiDetails(userBoardConfigs, userBoardConfig);
 				userBoardConfigRepository.saveAll(userBoardConfigs);
 			}
-			userBoardConfigRepository.save(userBoardConfig);
 		}
 		cacheService.clearCache(CommonConstant.CACHE_USER_BOARD_CONFIG);
 		return convertToUserBoardConfigDTO(userBoardConfig);

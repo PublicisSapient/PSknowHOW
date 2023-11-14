@@ -120,7 +120,6 @@ public class UserBoardConfigServiceImplTest {
 		String projId = "id";
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
-//		when(userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(projId,username)).thenReturn(getData(username, true));
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfig(userBoardConfigDTO);
 		assertNotNull(response);
@@ -132,7 +131,6 @@ public class UserBoardConfigServiceImplTest {
 		String projId = "id";
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
-		when(userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(projId,username)).thenReturn(getData(username, true));
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
 		assertNotNull(response);
@@ -144,7 +142,6 @@ public class UserBoardConfigServiceImplTest {
 		String projId = "all";
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
-		when(userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(projId,username)).thenReturn(getData(username, true));
 		when(userBoardConfigRepository.save(getData(username, true))).thenReturn(getData(username, true));
 		UserBoardConfigDTO response = userBoardConfigServiceImpl.saveUserBoardConfigAdmin(userBoardConfigDTO,projId);
 		assertNotNull(response);
@@ -170,7 +167,6 @@ public class UserBoardConfigServiceImplTest {
 		String projId = "id";
 		UserBoardConfigDTO userBoardConfigDTO = convertToUserBoardConfigDTO(getData(username, true));
 		when(authenticationService.getLoggedInUser()).thenReturn(username);
-//		when(userBoardConfigRepository.findByBasicProjectConfigIdAndUsername(projId,username)).thenReturn(null);
 		assertNull(userBoardConfigServiceImpl.saveUserBoardConfig(userBoardConfigDTO));
 	}
 
@@ -198,7 +194,6 @@ public class UserBoardConfigServiceImplTest {
 		String username = "testuser";
 		String projId = "id";
 		doReturn(username).when(authenticationService).getLoggedInUser();
-//		doReturn(getData(username, true)).when(userBoardConfigRepository).findByBasicProjectConfigIdAndUsername(ArgumentMatchers.isNull(),ArgumentMatchers.anyString());
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getProjBoardConfigAdmin(projId);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
@@ -242,8 +237,6 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfig data = getData(username, true);
 		data.getScrum().get(0).getKpis().get(0).setShown(false);
 		doReturn(username).when(authenticationService).getLoggedInUser();
-		doReturn(false).when(userAuthorizedProjectsService).ifSuperAdminUser();
-//		doReturn(data).when(userBoardConfigRepository).findByBasicProjectConfigIdAndUsername(projId,username);
 		when(userBoardConfigRepository.save(data)).thenReturn(data);
 		UserBoardConfigDTO userBoardConfigDTO1 = convertToUserBoardConfigDTO(data);
 
@@ -260,8 +253,6 @@ public class UserBoardConfigServiceImplTest {
 		UserBoardConfig data = getData(username, true);
 		data.getScrum().get(0).getKpis().get(0).setShown(false);
 		doReturn(username).when(authenticationService).getLoggedInUser();
-		doReturn(true).when(userAuthorizedProjectsService).ifSuperAdminUser();
-//		doReturn(data).when(userBoardConfigRepository).findByBasicProjectConfigIdAndUsername(projId,username);
 		when(userBoardConfigRepository.save(data)).thenReturn(data);
 		UserBoardConfigDTO userBoardConfigDTO1 = convertToUserBoardConfigDTO(data);
 
