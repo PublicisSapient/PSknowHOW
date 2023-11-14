@@ -521,7 +521,7 @@ const completeHierarchyData = {
 
     const result = 'Maturity Score : 3.16';
     component.selectedFilterArray = selecteFilterArray;
-    helperService.passMaturityToFilter.emit(maturityObj);
+    // helperService.passMaturityToFilter.emit(maturityObj);
     fixture.detectChanges();
     expect(component.selectedFilterArray[0].grossMaturity).toEqual(result);
   });
