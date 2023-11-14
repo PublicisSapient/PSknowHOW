@@ -128,10 +128,10 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if (globalConfig && this.sharedObject) {
-        if (this.sharedObject || this.service.getFilterObject()) {
-          this.receiveSharedData(this.service.getFilterObject());
-        }
+      if(globalConfig && this.sharedObject){
+        // if(this.sharedObject || this.service.getFilterObject()){
+        //   this.receiveSharedData(this.service.getFilterObject());
+        // }
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
         this.checkForAssigneeDataAndSetupTabs();
         this.processKpiConfigData();

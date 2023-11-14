@@ -56,6 +56,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
 
   @Input() kpiData;
   @Output() reloadKPITab = new EventEmitter<any>();
+  @Output() closeModal = new EventEmitter<any>();
   @Input() loader;
 
   constructor(private service: SharedService) { }
@@ -235,5 +236,11 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   reloadKPI(event) {
     this.loader = true;
     this.reloadKPITab.emit(event);
+  }
+
+  /**back to iteration review tab */
+  backToIterationTab() {
+    this.onFullScreen = false;
+    this.closeModal.emit(this.onFullScreen);
   }
 }

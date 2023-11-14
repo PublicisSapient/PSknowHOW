@@ -49,21 +49,30 @@
                     <i class="pi pi-user-minus" style="font-size: 1rem"></i>
                 </button>
 
-                <div class="assignee-scroller" [ngClass]="{'min-w-100' : assigneeList?.length === 1 }">
-                    <p-tabView [(activeIndex)]="activeIndex2" [scrollable]="true" [style]="{maxWidth: '780px'}"
-                        (onChange)="handleTabChange(assigneeList[activeIndex2 -1 ].assigneeId, assigneeList[activeIndex2 - 1].assigneeName)">
-                        <p-tabPanel [selected]="activeIndex2 === 0"></p-tabPanel>
-                        <p-tabPanel *ngFor="let assignee of assigneeList" [headerStyleClass]="assignee">
-                            <ng-template pTemplate="header">
-                                <div [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
-                                    [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
-                                    [pTooltip]="assignee.assigneeName" tooltipPosition="bottom" class="assignee">
-                                    {{getNameInitials(assignee.assigneeName)}}
-                                </div>
-                            </ng-template>
-                        </p-tabPanel>
-                    </p-tabView>
+                <div class="" style="width: 70vw; max-height: 50px;overflow-x: auto; display: inline-block;">
+                    <div class="btn-wrapper" style="width: fit-content; max-height: 100%; display: flex;">
+                        <button *ngFor="let assignee of assigneeList" [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
+                            (click)="setSelectedUser(assignee.assigneeId,assignee.assigneeName)"
+                            [pTooltip]="assignee.assigneeName" tooltipPosition="bottom"
+                            [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}" class="assignee"
+                            >
+                            {{getNameInitials(assignee.assigneeName)}}
+                        </button>
+                    </div>
                 </div>
+
+                <!-- <div class="assignee-scroller">
+                    <p-carousel [value]="assigneeList" [numVisible]="16" [numScroll]="16">
+                        <ng-template let-assignee pTemplate="item">
+                            <div [style.display]="assignee['assigneeId'] !== 'Unassigned' ? 'block' : 'none'"
+                                [ngClass]="{'selected-user' : selectedUser === assignee.assigneeId}"
+                                (click)="handleTabChange(assignee.assigneeId, assignee.assigneeName)"
+                                [pTooltip]="assignee.assigneeName" tooltipPosition="bottom" class="assignee">
+                                {{getNameInitials(assignee.assigneeName)}}
+                            </div>
+                        </ng-template>
+                    </p-carousel>
+                </div> -->
             </div>
             <button class="assignee" (click)="handleViewExpandCollapse()">
                 <i class=" fas" [ngClass]="{'fa-compress' : displayModal , 'fa-expand': !displayModal}"></i>
@@ -154,6 +163,8 @@
 </main>
 <ng-template #noData>
     <div *ngIf="!loader" class="noDataDiv">
+        <button pButton pRipple type="button" icon="pi pi-arrow-left" class="p-button-rounded p-mr-4" *ngIf="onFullScreen"
+                    (click)="backToIterationTab()"></button>
         <h1>No Data Available</h1>
     </div>
     <div *ngIf="loader" class="noDataDiv">

@@ -44,6 +44,7 @@ export class DailyScrumTabComponent implements OnInit {
   selectedUser = 'Overall';
   filters = {};
   @Output() reloadKPITab = new EventEmitter<any>();
+  @Output() backToIteration = new EventEmitter<any>();
   constructor(private sharedService: SharedService) { }
 
   ngOnInit(): void {
@@ -71,5 +72,9 @@ export class DailyScrumTabComponent implements OnInit {
   /** Reload KPI once field mappoing updated */
   reloadKPI(event) {
     this.reloadKPITab.emit(event);
+  }
+
+  closeModal() {
+    this.displayModal = false;
   }
 }

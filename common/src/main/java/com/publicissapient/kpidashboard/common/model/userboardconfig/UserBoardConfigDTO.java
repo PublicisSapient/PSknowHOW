@@ -33,6 +33,7 @@ import lombok.Data;
 public class UserBoardConfigDTO {
 	private ObjectId id;
 	private String username;
+	private String basicProjectConfigId;
 	private List<BoardDTO> scrum;
 	private List<BoardDTO> kanban;
 	private List<BoardDTO> others;

@@ -153,15 +153,24 @@ div.assignee.selected-user {
     max-height: 50px;
     overflow-x: auto;
     display: inline-block; 
-    max-width: calc(70vw - 100px);
+    max-width: 440px; 
 }
 
 .min-w-100.assignee-scroller {
     min-width: 100px;
 }
 
-:host ::ng-deep .assignee-scroller .p-tabview-panels {
+:host ::ng-deep .assignee-scroller .p-tabview-panels,
+:host ::ng-deep .assignee-scroller .p-carousel .p-carousel-indicators {
     display: none !important;
+}
+
+:host ::ng-deep .assignee-scroller ul.p-tabview-nav {
+    width: fit-content;
+}
+
+:host ::ng-deep .assignee-scroller .p-carousel-item {
+    flex: unset !important;
 }
 
 @media only screen and (min-device-width : 320px) and (max-width: 1320px) {
@@ -188,4 +197,8 @@ div.assignee.selected-user {
     :host::ng-deep .legends-button {
         font-size: 14px;
     }
+
+    /* .assignee-scroller {
+        max-width: 880px; 
+    } */
 }

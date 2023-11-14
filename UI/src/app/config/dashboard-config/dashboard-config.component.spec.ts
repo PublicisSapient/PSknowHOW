@@ -30,6 +30,8 @@ import { HttpService } from '../../services/http.service';
 import { environment } from 'src/environments/environment';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { MessageService } from 'primeng/api';
+import { DropdownModule } from 'primeng/dropdown';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
 
 describe('DashboardconfigComponent', () => {
@@ -40,6 +42,7 @@ describe('DashboardconfigComponent', () => {
   let httpMock;
   let httpService;
   let messageService;
+  let getAuthorizationService;
 
   const fakeGetDashData = require('../../../test/resource/fakeShowHideApi.json');
   let fakeGetDashDataOthers = fakeGetDashData.data['scrum'][0].kpis.concat(fakeGetDashData.data['kanban'][0].kpis).concat(fakeGetDashData.data['others'][0].kpis);
@@ -55,7 +58,8 @@ describe('DashboardconfigComponent', () => {
         ReactiveFormsModule,
         CommonModule,
         RouterTestingModule.withRoutes([]),
-        HttpClientTestingModule
+        HttpClientTestingModule,
+        DropdownModule
       ],
       declarations: [DashboardconfigComponent],
       providers: [SharedService, HttpService, MessageService
@@ -74,6 +78,7 @@ describe('DashboardconfigComponent', () => {
     httpService = TestBed.inject(HttpService);
     messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
+   getAuthorizationService = TestBed.inject(GetAuthorizationService);
     fixture.detectChanges();
   });
 
@@ -81,43 +86,76 @@ describe('DashboardconfigComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('on load get dashboard data ', waitForAsync(() => {
-    fixture.detectChanges();
-    const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config');
+  it('should get dashboard data ', waitForAsync(() => {
+    component.getKpisData('pid');
+    const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config/pid');
     httpreq.flush(fakeGetDashData);
-    console.log(component.kpiFormValue);
-    console.log(fakeGetDashDataOthers);
     expect(Object.keys(component.kpiFormValue['kpis']['controls']).length + 4).toBe(fakeGetDashDataOthers.length);
   }));
 
-  it('on load get dashboard data with error  ', waitForAsync(() => {
-    fixture.detectChanges();
-    const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config');
+  it('should get dashboard data with error  ', waitForAsync(() => {
+    component.getKpisData('pid');
+    const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config/pid');
     httpreq.flush(['error']);
   }));
 
-  it('save dashboard config ', waitForAsync(() => {
+  it('should update dashboard config ', waitForAsync(() => {
     component.userName = "dummyName"
-    fixture.detectChanges();
-    const httpreq1 = httpMock.expectOne(baseUrl + '/api/user-board-config');
+    component.selectedProject = {
+      name : "fakeName",
+      id :'fakeid'
+    }
+    component.kpiData = fakeGetDashData['data']['scrum'];
+    component.kpiToBeHidden = [{
+        "kpiId": "kpi121",
+        "kpiName": "Defect Count by Status",
+        "isEnabled": true,
+        "order": 1,
+        "kpiDetail": {
+          "kpiInfo": {
+            "definition": "Defect count by Status shows the breakup of all defects within an iteration by Status. The pie chart representation gives the count of defects in each Status"
+          },
+          "kpiFilter": "",
+          "trendCalculative": false,
+          "xaxisLabel": "",
+          "yaxisLabel": "",
+          "additionalFilterSupport": false
+        },
+        "shown": true
+    }]
+    component.kpiListData = fakeGetDashData['data'];
+    component.updateData();
+    const httpreq1 = httpMock.expectOne(baseUrl + '/api/user-board-config/saveAdmin/fakeid');
     httpreq1.flush(fakeGetDashData);
-    fixture.detectChanges();
-    component.save();
-    const httpreq = httpMock.match(baseUrl + '/api/user-board-config');
-    httpreq[0].flush(fakeGetDashData);
-    expect(Object.keys(service.getDashConfigData()).length).toBe(Object.keys(fakeGetDashData.data).length);
   }));
 
-  it('save dashboard config  with error', waitForAsync(() => {
-    fixture.detectChanges();
-    const httpreq1 = httpMock.expectOne(baseUrl + '/api/user-board-config');
-    httpreq1.flush(fakeGetDashData);
-    fixture.detectChanges();
-    component.save();
-    const httpreq = httpMock.match(baseUrl + '/api/user-board-config');
-    httpreq[0].flush(['error']);
 
-  }));
+  it('should fetch all user projects', () => {
+    const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
+    component.getProjects();
+    fixture.detectChanges();
+    httpMock.match(baseUrl + '/api/basicconfigs')[0].flush(getProjectsResponse);
+  });
+
+  it('should allow user to select project', () => {
+    const selectedProjects = { originalEvent: { isTrusted: true }, value: {id: '601bca9569515b0001d68182', name: 'test'}, itemValue: '601bca9569515b0001d68182' };
+    const processorName = 'Jira';
+    component.updateProjectSelection(selectedProjects);
+    fixture.detectChanges();
+    expect(component.selectedProject).toEqual({id: '601bca9569515b0001d68182', name: 'test'});
+  });
+
+  it('should reset form when tab changes',()=>{
+    
+    component.tabHeaders = ['scrum','kanban'];
+    const spy = spyOn(component,'setFormControlData');
+    component.handleTabChange({
+      event : {
+        index : 1
+      }
+    });
+    expect(spy).toHaveBeenCalled();
+  })
 });
 
 
