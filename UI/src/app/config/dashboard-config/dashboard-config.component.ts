@@ -42,6 +42,7 @@
     userName : string;
     userProjects : Array<any>;
     selectedProject : object;
+    backupUserProjects : Array<any> = [];
      constructor(private httpService: HttpService, private service: SharedService, private messageService: MessageService,
      private getAuthorizationService : GetAuthorizationService) {
      }
@@ -111,8 +112,20 @@
 
      handleTabChange(event) {
         this.selectedTab = this.tabHeaders[event.index];
+        if(this.selectedTab?.toLowerCase() === 'kanban'){
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+        }else{
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === 'scrum') || (project.type === 'common'))
+        }
+        if(this.userProjects != null && this.userProjects.length > 0) {
+          this.selectedProject = this.userProjects[0];
+          this.loader = true;
+          this.getKpisData(this.selectedProject['id']);
+        }else{
+          this.selectedProject = {}
+        }
         this.setFormControlData();
-        this.kpiChangesObj = {};
+        this.kpiChangesObj = {};  
      }
      get kpiFormValue() {
          return this.kpiForm.controls;
@@ -243,11 +256,13 @@ return item.kpiId;
            const all = {
             name: "ALL",
             id: "all",
+            type : 'common',
             isSort : false
           };
             that.userProjects = response.data.map((filteredProj) => ({
                 name: filteredProj.projectName,
-                id: filteredProj.id
+                id: filteredProj.id,
+                type : filteredProj.kanban ? 'kanban' : 'scrum'
               }));
               that.userProjects.unshift(all);
           } else if (this.getAuthorizationService.checkIfProjectAdmin()) {
@@ -255,7 +270,8 @@ return item.kpiId;
             that.userProjects = response.data.filter(proj => !this.getAuthorizationService.checkIfViewer(proj))
               .map((filteredProj) => ({
                   name: filteredProj.projectName,
-                  id: filteredProj.id
+                  id: filteredProj.id,
+                  type : filteredProj.kanban ? 'kanban' : 'scrum'
                 }));
           }
         } else {
@@ -268,6 +284,8 @@ return item.kpiId;
           this.loader = true;
           this.tabHeaders = [];
           this.getKpisData(that.selectedProject['id'])
+          this.backupUserProjects = this.userProjects;
+          this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
         }
       });
   }

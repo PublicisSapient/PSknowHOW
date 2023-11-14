@@ -48,7 +48,7 @@
     </div>
     <p-tabView (onChange)="handleTabChange($event)" class="dashboard-config-tabs">
         <p-tabPanel *ngFor='let item of tabHeaders' header="{{item}}" headerStyleClass="tab-{{item}}">
-            <form [formGroup]="kpiForm" autocomplete="off" *ngIf="item === selectedTab">
+            <form [formGroup]="kpiForm" autocomplete="off" *ngIf="(item === selectedTab) && (this.userProjects.length > 0)">
                 <div *ngFor="let boardData of tabListContent[item]; let i=index" class="kpi-category-header-block">
                     <div class="kpi-category-header p-mb-3"
                         *ngIf="((boardData?.boardName && boardData?.boardName?.toLowerCase() != 'dora' && boardData?.kpis.length > 0) 
