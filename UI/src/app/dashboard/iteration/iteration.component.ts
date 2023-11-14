@@ -825,12 +825,12 @@ export class IterationComponent implements OnInit, OnDestroy {
     const basicConfigId = this.service.selectedTrends[0].basicProjectConfigId;
     const idx = this.ifKpiExist(kpi?.kpiId);
     this.markerInfo = [];
-    if (this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo) {
-      for (const key in this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo) {
-        this.markerInfo.push({ color: key, info: this.allKpiArray[idx]?.trendValueList?.value[0]?.markerInfo[key] });
+    if (this.allKpiArray[idx]?.trendValueList?.markerInfo) {
+      for (const key in this.allKpiArray[idx]?.trendValueList?.markerInfo) {
+        this.markerInfo.push({ color: key, info: this.allKpiArray[idx]?.trendValueList?.markerInfo[key] });
       }
     }
-    this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.value[0]?.metaDataColumns : [];
+    this.excludeColumns = this.allKpiArray[idx]?.trendValueList?.metaDataColumns ? this.allKpiArray[idx]?.trendValueList?.metaDataColumns : [];
     this.httpService.getkpiColumns(basicConfigId, kpi.kpiId).subscribe(response => {
       if (response['success']) {
         this.tableColumns = response['data']['kpiColumnDetails'];

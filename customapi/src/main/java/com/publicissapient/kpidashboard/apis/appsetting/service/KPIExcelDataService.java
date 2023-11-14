@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanba
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.NonTrendServiceFactory;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelValidationDataResponse;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -53,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceKanbanR;
 import com.publicissapient.kpidashboard.apis.sonar.service.SonarServiceR;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrService;
 import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrServiceKanban;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.repository.application.KpiMasterRepository;
@@ -119,6 +122,9 @@ public class KPIExcelDataService {
 
 	@Autowired
 	private ConfigHelperService configHelperService;
+
+	@Autowired
+	NonTrendServiceFactory serviceFactory;
 
 	/**
 	 * Processes the request for fetching the source wise KPI data. It leverages
@@ -545,7 +551,14 @@ public class KPIExcelDataService {
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
 				pair.getValue().getRequestTrackerId());
 
-		Callable<List<KpiElement>> jiraKpiDataTask = () -> jiraServiceR.process(pair.getValue());
+		Callable<List<KpiElement>> jiraKpiDataTask;
+		List<String> category = Arrays.asList(CommonConstant.ITERATION, CommonConstant.RELEASE, CommonConstant.BACKLOG);
+		if (category.contains(pair.getValue().getKpiList().get(0).getKpiCategory())) {
+			jiraKpiDataTask = () -> serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
+					.process(pair.getValue());
+		} else {
+			jiraKpiDataTask = () -> jiraServiceR.process(pair.getValue());
+		}
 
 		jiraKpiDataFuture = executor.submit(jiraKpiDataTask);
 		return jiraKpiDataFuture;
