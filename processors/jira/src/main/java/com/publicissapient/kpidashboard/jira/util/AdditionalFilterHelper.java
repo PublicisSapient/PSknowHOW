@@ -116,15 +116,15 @@ public class AdditionalFilterHelper {
 
 		return values;
 	}
-
 	private Set<String> getLabels(Issue issue, AdditionalFilterConfig additionalFilterConfig) {
 		Set<String> configuredLabels = additionalFilterConfig.getValues();
-		Set<String> labels = issue.getLabels();
-		Set<String> common = new HashSet<>(labels);
-		common.retainAll(configuredLabels);
-		return common;
+		Set<String> issueLabels = issue.getLabels();
+		Set<String> commonLabels = issueLabels.stream()
+				.filter(label -> configuredLabels.stream()
+						.anyMatch(configuredLabel -> configuredLabel.equalsIgnoreCase(label)))
+				.collect(Collectors.toSet());
+		return commonLabels;
 	}
-
 	private Set<BasicComponent> getComponents(Issue issue, AdditionalFilterConfig additionalFilterConfig) {
 		Set<String> configuredComponentNames = additionalFilterConfig.getValues();
 		Iterable<BasicComponent> components = issue.getComponents();
