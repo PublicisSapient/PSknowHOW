@@ -74,7 +74,7 @@
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
-                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"*ngIf="kpiChartData[kpi.kpiId]?.length"
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
