@@ -162,7 +162,8 @@ public class UserBoardConfigServiceImpl implements UserBoardConfigService {
 		if (fetchProjBoardConfigsSize < listOfBasicProjIds.size()) {
 			UserBoardConfigDTO missingProjConfig = new UserBoardConfigDTO();
 			setUserBoardConfigBasedOnCategoryForFreshUser(missingProjConfig, kpiCategoryList, kpiMasterMap);
-			adminProjectBoardConfig.add(convertDTOToUserBoardConfig(missingProjConfig));
+			final UserBoardConfig missingConfig = convertDTOToUserBoardConfig(missingProjConfig);
+			adminProjectBoardConfig.add(missingConfig);
 		}
 		return adminProjectBoardConfig;
 	}
