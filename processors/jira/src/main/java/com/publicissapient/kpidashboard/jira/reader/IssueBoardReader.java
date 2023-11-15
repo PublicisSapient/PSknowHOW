@@ -149,7 +149,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
             }
 
             if ((null == projectConfFieldMapping)
-                    || !boardIterator.hasNext() && (issueIterator == null && boardIssueSize < pageSize)) {
+                    || !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
                 log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
                 readData = null;
             }
