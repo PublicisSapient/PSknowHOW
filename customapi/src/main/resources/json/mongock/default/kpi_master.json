@@ -3025,7 +3025,16 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "Count" ,
@@ -3179,6 +3188,13 @@
         {
           "type" : "paragraph" ,
           "value" : "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        },
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes"
+          }
         }
       ] ,
       "maturityLevels" : []
@@ -3712,6 +3728,13 @@
         {
           "type": "paragraph",
           "value": "The average of all such tickets will be shown."
+        },
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+          }
         }
       ],
       "maturityLevels": []
