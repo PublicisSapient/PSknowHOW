@@ -2559,6 +2559,7 @@
   {
     "fieldName": "jiraIssueWaitStateKPI170",
     "fieldLabel": "Status to identify Close Statuses",
+    "fieldCategory": "workflow",
     "fieldType": "chips",
     "section":"WorkFlow Status Mapping",
     "tooltip": {
@@ -2568,6 +2569,7 @@
   {
     "fieldName": "jiraIssueClosedStateKPI170",
     "fieldLabel": "Status to identify Wait Statuses",
+    "fieldCategory": "workflow",
     "fieldType": "chips",
     "section":"WorkFlow Status Mapping",
     "tooltip": {

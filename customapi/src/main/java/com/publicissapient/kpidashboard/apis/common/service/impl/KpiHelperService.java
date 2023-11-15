@@ -1617,7 +1617,8 @@ public class KpiHelperService { // NOPMD
 		hours = getTimeInWorkHours(hours);
 		long days = hours / 8;
 		long remainingHours = hours % 8;
-		return String.format("%dd %dhrs", days, remainingHours);
+		return (days == 0 && remainingHours == 0) ? "0"
+				: (remainingHours == 0) ? String.format("%dd", days) : String.format("%dd %dhrs", days, remainingHours);
 	}
 
 	/**
