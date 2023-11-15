@@ -428,9 +428,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
 
     }
-    if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
 
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
@@ -631,9 +631,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
       this.kpiChartData[kpiId] = [];
     }
 
-    if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
   }
 
   getkpi3Data(kpiId, trendValueList) {
