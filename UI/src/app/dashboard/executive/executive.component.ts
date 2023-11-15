@@ -889,9 +889,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
           }
 
         // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-        if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-            this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-        }
+        // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
+        //     this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+        // }
         // For kpi3 and kpi53 generating table column headers and table data
         if (kpiId === 'kpi3' || kpiId === 'kpi53') {
             //generating column headers

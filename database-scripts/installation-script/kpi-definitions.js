@@ -3749,7 +3749,51 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kpiSubCategory": "Flow KPIs"
-  }
+  },
+  {
+      "kpiId": "kpi166",
+      "kpiName": "Mean Time to Recover",
+      "maxValue": "100",
+      "kpiUnit": "Hours",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiSource": "Jira",
+      "kpiCategory": "Dora",
+      "groupId": 15,
+      "thresholdValue": 0,
+      "kanban": false,
+      "chartType": "line",
+      "kpiInfo": {
+        "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+          },
+          {
+            "type": "paragraph",
+            "value": "The average of all such tickets will be shown."
+          }
+          {
+            "type" : "link",
+            "kpiLinkDetail" : {
+                "text" : "Detailed Information at",
+                "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+            }
+		  }
+        ],
+        "maturityLevels": []
+      },
+      "xAxisLabel": "Weeks",
+      "yAxisLabel": "Hours",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "",
+      "aggregationCriteria": "sum",
+      "aggregationCircleCriteria": "average",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    }
 ]
 );
 
