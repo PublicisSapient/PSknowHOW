@@ -27,6 +27,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
@@ -51,6 +53,7 @@ public class MeanTimeToRecoverChangeUnit {
 		dodStatusFieldMapping();
 		insertKpiColumnConfig();
 		updateMetadataIdentifier();
+		addLinkDetailToLeadTimeForChange();
 	}
 
 	public void insertMeanTimeToRecover() {
@@ -67,6 +70,13 @@ public class MeanTimeToRecoverChangeUnit {
 		detail2.append("type", "paragraph");
 		detail2.append("value", "The average of all such tickets will be shown.");
 		details.add(detail2);
+
+		Document detail3 = new Document();
+		detail3.append("type", "link");
+		detail3.append("kpiLinkDetail", new Document("text", "Detailed Information at").append("link",
+				"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"));
+		details.add(detail3);
+
 
 		kpiInfo.append("definition",
 				"Mean time to recover will be based on the Production incident tickets raised during a certain period of time.");
@@ -174,6 +184,17 @@ public class MeanTimeToRecoverChangeUnit {
 		mongoTemplate.updateMulti(query, update, "metadata_identifier");
 	}
 
+	public void addLinkDetailToLeadTimeForChange() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
+
+		Update kpiUpdate = new Update()
+				.push("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
+	}
+
 	@RollbackExecution
 	public void rollback() {
 		rollbackMeanTimeToRecover();
@@ -182,6 +203,7 @@ public class MeanTimeToRecoverChangeUnit {
 		rollbackDodStatusFieldMapping();
 		rollbackInsertKpiColumnConfig();
 		rollbackUpdateMetadataIdentifier();
+		removeLinkDetailFromLeadTimeForChange();
 	}
 
 	public void rollbackMeanTimeToRecover() {
@@ -217,4 +239,16 @@ public class MeanTimeToRecoverChangeUnit {
 
 		mongoTemplate.updateMulti(query, update, "metadata_identifier");
 	}
+
+	public void removeLinkDetailFromLeadTimeForChange() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
+
+		Update kpiUpdate = new Update()
+				.pull("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
+	}
+
 }

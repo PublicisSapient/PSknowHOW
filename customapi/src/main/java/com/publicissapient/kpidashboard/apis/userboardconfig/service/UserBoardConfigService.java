@@ -63,9 +63,8 @@ public interface UserBoardConfigService {
 	UserBoardConfigDTO getProjBoardConfigAdmin(String basicProjectConfigId);
 
 	/**
-	 * This method save user board config of proj,Super admin with
-	 * basicProjectConfigId, also modify their project access users
-	 * user_board_config
+	 * This method save project board config of proj/Super admin with
+	 * basicProjectConfigId, also modify other admin configs of that project
 	 *
 	 * @param userBoardConfigDTO
 	 *            userBoardConfigDTO

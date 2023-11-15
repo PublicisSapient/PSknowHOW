@@ -249,7 +249,14 @@ db.kpi_master.insertOne({
             {
                 "type": "paragraph",
                 "value": "The average of all such tickets will be shown."
-            }
+            },
+            {
+                "type" : "link",
+                "kpiLinkDetail" : {
+                    "text" : "Detailed Information at",
+                    "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+                }
+    		}
         ],
         "maturityLevels": []
     },
