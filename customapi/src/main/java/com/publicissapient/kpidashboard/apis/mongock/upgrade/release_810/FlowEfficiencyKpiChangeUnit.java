@@ -66,13 +66,15 @@ public class FlowEfficiencyKpiChangeUnit {
 	public void addFlowEfficiencyFieldMappingStructure() {
 
 		Document closeStatusDocument = new Document(FIELD_NAME, "jiraIssueClosedStateKPI170")
-				.append("fieldLabel", "Status to identify Close Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
+				.append("fieldLabel", "Status to identify Close Statuses").append("fieldCategory", "workflow")
+				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping")
+				.append("tooltip", new Document(DEFINITION,
 						"All statuses that signify an issue is 'DONE' based on 'Definition Of Done'"));
 
 		Document waitStatusDocument = new Document(FIELD_NAME, "jiraIssueWaitStateKPI170")
-				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldType", "chips")
-				.append("section", "WorkFlow Status Mapping").append("tooltip", new Document(DEFINITION,
+				.append("fieldLabel", "Status to identify Wait Statuses").append("fieldCategory", "workflow")
+				.append("fieldType", "chips").append("section", "WorkFlow Status Mapping")
+				.append("tooltip", new Document(DEFINITION,
 						"The statuses wherein no activity takes place and signifies that issue is in queue"));
 
 		mongoTemplate.getCollection("field_mapping_structure")
