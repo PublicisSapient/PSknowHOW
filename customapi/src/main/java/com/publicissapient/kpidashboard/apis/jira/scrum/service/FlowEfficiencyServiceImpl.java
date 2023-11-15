@@ -176,13 +176,11 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		List<String> waitTimeList = new ArrayList<>();
 		List<String> totalTimeList = new ArrayList<>();
 		LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap = new LinkedHashMap<>();
-		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
-		if (CollectionUtils.isNotEmpty(allIssueHistory)) {
-			filterDataBasedOnXAxisRangeWise(rangeList, allIssueHistory, rangeAndStatusWiseJiraIssueMap,
-					flowEfficiencyMap, waitTimeList, totalTimeList, fieldMapping);
-			dataCountMap = setDataCountMap(rangeAndStatusWiseJiraIssueMap, flowEfficiencyMap, leafNode);
-			populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
-		}
+		filterDataBasedOnXAxisRangeWise(rangeList, allIssueHistory, rangeAndStatusWiseJiraIssueMap, flowEfficiencyMap,
+				waitTimeList, totalTimeList, fieldMapping);
+		LinkedHashMap<String, List<DataCount>> dataCountMap = setDataCountMap(rangeAndStatusWiseJiraIssueMap,
+				flowEfficiencyMap, leafNode);
+		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
 			mapTmp.get(leafNode.getId()).setValue(dataCountMap);
 		
