@@ -132,7 +132,8 @@ public class RepoToolsConfigServiceImpl {
 					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
 					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames);
+					fistScan.toString().replace("T", " "), toolCredential, branchNames,
+					connection.getIsCloneable());
 
 			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
