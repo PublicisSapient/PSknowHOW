@@ -41,4 +41,5 @@ public class UserTokenAuthenticationDTO {
 	private List<String> userRoles;
 	private String authToken;
 	private String resource;
+	private boolean isResourceValid;
 }
