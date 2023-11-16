@@ -1664,4 +1664,12 @@ export class FilterComponent implements OnInit, OnDestroy {
     const final = pId.replace(sortName, longName);
     return final;
   }
+
+  checkResourceValidity(resourceName){
+    this.httpService.handleValidateResource({"resource": resourceName}).subscribe((response) => {
+      console.log(response);
+    }, (error) => {
+      console.log(error);
+    });
+  }
 }

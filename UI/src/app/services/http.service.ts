@@ -174,6 +174,7 @@ export class HttpService {
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
+  private validateResourceUrl = this.baseUrl + '/api/validateResource';
 
   constructor(
     private router: Router,
@@ -1124,5 +1125,9 @@ export class HttpService {
 
   getUserValidation(data){
     return this.http.post<object>(this.validateTokenUrl, data);
+  }
+
+  handleValidateResource(data){
+    return this.http.post<object>(this.validateResourceUrl, data);
   }
 }

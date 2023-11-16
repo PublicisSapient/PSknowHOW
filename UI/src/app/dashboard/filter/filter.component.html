@@ -3,8 +3,8 @@
       <div>
          <img src="assets/img/icon-dice.png" class="icon-dice p-mr-2" (click)="showSwitchDropdown = !showSwitchDropdown" alt="Switch" width="50"/>
          <ul class="switch-dropdown" *ngIf="showSwitchDropdown">
-            <li class="app-links"><a href="javascript:void(0)">Assessment</a></li>
-            <li class="app-links"><a href="javascript:void(0)" >Retro</a></li>
+            <li class="app-links"><a href="javascript:void(0)" (click)="checkResourceValidity('map')">Assessment</a></li>
+            <li class="app-links"><a href="javascript:void(0)" (click)="checkResourceValidity('retro')">Retro</a></li>
          </ul>
       </div>
       <div class="logo cursor-pointer">
