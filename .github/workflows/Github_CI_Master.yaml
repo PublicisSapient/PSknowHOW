@@ -55,6 +55,7 @@ jobs:
         id: BuildUI
         run: |
           hostname
+          date
           java -version
           cd UI
           sudo chmod -R 777 /usr/local/lib/node_modules
@@ -125,12 +126,15 @@ jobs:
         if: steps.customapi.outputs.customapi == 'true'
         id: unittestcustomapi
         run: |
+               java -version
+               date
                mvn clean install -Pcustomapi
       - name: Running sonarqube CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
         id: sonartestcustomapi
         run: |
                java -version
+               date
                mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$GITHUB_HEAD_REF -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f customapi/pom.xml -X
       - name: Running sonarqube quality gates CustomApi processor
         if: steps.customapi.outputs.customapi == 'true'
