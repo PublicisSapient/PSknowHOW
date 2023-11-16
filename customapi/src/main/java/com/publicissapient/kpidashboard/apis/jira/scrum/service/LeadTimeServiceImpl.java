@@ -29,7 +29,7 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -38,7 +38,6 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -55,12 +54,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
+public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	private static final String INTAKE_TO_DOR = "Intake - DOR";
 	private static final String DOR_TO_DOD = "DOR - DOD";
 	private static final String DOD_TO_LIVE = "DOD - Live";
-	private static final String PROJECT = "project";
 	private static final String LEAD_TIME = "Lead Time";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String SEARCH_BY_DURATION = "Duration";
@@ -76,50 +74,42 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private CustomApiConfig customApiConfig;
 
 	@Override
-	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return 0L;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
 		List<String> basicProjectConfigIds = new ArrayList<>();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
+		basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
+		if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
 
-				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
-						fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
-						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
-			}
-			List<String> status = new ArrayList<>();
-			if (Optional.ofNullable(fieldMapping.getJiraDodKPI3()).isPresent()) {
-				status.addAll(fieldMapping.getJiraDodKPI3());
-			}
-
-			if (Optional.ofNullable(fieldMapping.getJiraDorKPI3()).isPresent()) {
-				status.addAll(fieldMapping.getJiraDorKPI3());
-			}
-
-			if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI3()).isPresent()) {
-				status.addAll(fieldMapping.getJiraLiveStatusKPI3());
-			}
-			mapOfProjectFilters.put("statusUpdationLog.story.changedTo", CommonUtils.convertToPatternList(status));
+			KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+					fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
+					JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
-		});
+		}
+		List<String> status = new ArrayList<>();
+		if (Optional.ofNullable(fieldMapping.getJiraDodKPI3()).isPresent()) {
+			status.addAll(fieldMapping.getJiraDodKPI3());
+		}
+
+		if (Optional.ofNullable(fieldMapping.getJiraDorKPI3()).isPresent()) {
+			status.addAll(fieldMapping.getJiraDorKPI3());
+		}
+
+		if (Optional.ofNullable(fieldMapping.getJiraLiveStatusKPI3()).isPresent()) {
+			status.addAll(fieldMapping.getJiraLiveStatusKPI3());
+		}
+		mapOfProjectFilters.put("statusUpdationLog.story.changedTo", CommonUtils.convertToPatternList(status));
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
@@ -135,22 +125,20 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 
 		log.info("LEAD-TIME -> requestTrackerId[{}]", kpiRequest.getRequestTrackerId());
-		Node root = treeAggregatorDetail.getRoot();
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
 		DataCount dataCount = new DataCount();
-		projectWiseLeafNodeValue(projectList, kpiElement, kpiRequest, dataCount);
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest, dataCount);
 
 		log.debug("[LEAD-TIME-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
-				kpiRequest.getRequestTrackerId(), root);
+				kpiRequest.getRequestTrackerId(), projectNode);
 		return kpiElement;
 	}
 
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest,
 			DataCount dataCount) {
 		KpiElement leadTimeReq = kpiRequest.getKpiList().stream().filter(k -> k.getKpiId().equalsIgnoreCase("kpi3"))
 				.findFirst().orElse(new KpiElement());
@@ -170,29 +158,27 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		} else if (duration.equalsIgnoreCase(CommonConstant.MONTH)) {
 			startDate = LocalDate.now().minusMonths(value).toString();
 		}
-		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
 		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
 
 		Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue = ticketList.stream()
 				.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
 
-		kpiWithFilter(projectWiseJiraIssue, leafNodeList, kpiElement, dataCount);
+		kpiWithFilter(projectWiseJiraIssue, leafNode, kpiElement, dataCount);
 
 	}
 
-	private void kpiWithFilter(Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue, List<Node> leafNodeList,
+	private void kpiWithFilter(Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue, Node node,
 			KpiElement kpiElement, DataCount dataCount) {
 
-		leafNodeList.forEach(node -> {
-			List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
-					.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+		List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
+				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 
-				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(node.getProjectFilter().getBasicProjectConfigId());
-				List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
-				getCycleTime(issueCustomHistoryList, fieldMapping, cycleTimeList, kpiElement, dataCount);
-		});
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+				.get(node.getProjectFilter().getBasicProjectConfigId());
+		List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
+		getCycleTime(issueCustomHistoryList, fieldMapping, cycleTimeList, kpiElement, dataCount);
 		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
 	}
 
@@ -395,11 +381,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			cycleTime.setLiveTime(updatedOn);
 			cycleTimeValidationData.setLiveDate(updatedOn);
 		}
-	}
-
-	@Override
-	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
-		return calculateKpiValueForLong(valueList, kpiName);
 	}
 
 	private void transitionExist(List<Long> overAllTimeList, List<JiraIssueCustomHistory> overAllTransitionModalValues,
