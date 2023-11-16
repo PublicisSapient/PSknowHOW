@@ -1,8 +1,10 @@
 package com.publicissapient.kpidashboard.jira.helper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -181,6 +183,15 @@ public class JiraHelper {
 		} else {
 			log.error(ERROR_MSG_NO_RESULT_WAS_AVAILABLE, e.getCause());
 		}
+	}
+
+	public static String convertDateToCustomFormat(long currentTimeMillis) {
+		Date inputDate = new Date(currentTimeMillis);
+		SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy, EEEE, hh:mm:ss a");
+
+		String outputStr = outputFormat.format(inputDate);
+
+		return outputStr;
 	}
 
 }
