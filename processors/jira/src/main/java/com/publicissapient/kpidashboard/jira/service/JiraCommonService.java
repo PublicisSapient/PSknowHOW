@@ -143,7 +143,8 @@ public class JiraCommonService {
 			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
 		} else {
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		}		request.connect();
+		}
+		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
 				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
