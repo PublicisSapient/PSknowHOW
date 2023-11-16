@@ -156,7 +156,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
         FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
         ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findById(new ObjectId(projectId)).orElse(null);
         if (fieldMapping.getNotificationEnabler() && projectBasicConfig != null) {
-            handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()) + " on " + getApiHost() + " for " + projectBasicConfig.getProjectName(), ExceptionUtils.getStackTrace(stepFaliureException), projectId);
+            handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()) + " on " + getApiHost() + " for \"" + projectBasicConfig.getProjectName() + "\"", ExceptionUtils.getStackTrace(stepFaliureException), projectId);
         } else {
             log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
         }
