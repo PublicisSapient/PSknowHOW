@@ -51,7 +51,7 @@
                               </div>
                            </ng-template>
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}}
+                              {{item.nodeName}} 
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                            <ng-template ng-footer-tmp>
@@ -75,7 +75,7 @@
                            [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}}
+                              {{item.nodeName}} 
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                         </ng-select>
@@ -229,7 +229,8 @@
                            (click)="toggleDropdown['showHide'] = false"></button>
 
                         <button type="submit" pButton pRipple class="p-button-sm p-button-success p-button-raised"
-                           icon="pi pi-check" iconPos="left" label="Save" (click)="kpisNewOrder = []"></button>
+                           icon="{{ showHideLoader ? 'pi pi-spin pi-spinner' : 'pi pi-check' }}" iconPos="left" label="Save" (click)="kpisNewOrder = []"
+                           [ngClass]="{'active': toggleDropdown['showHide'],'disabled': showHideLoader}"></button>
                      </div>
 
                   </form>

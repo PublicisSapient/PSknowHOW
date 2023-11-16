@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public interface FetchSprintReport {
 	 * @return Set of SprintDetails
 	 */
 	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch);
+			KerberosClient krb5Client, boolean isSprintFetch) throws IOException;
 
 	/**
 	 * @param projectConfig
@@ -51,7 +52,7 @@ public interface FetchSprintReport {
 	 *            krb5Client
 	 * @return List of SprintDetails
 	 */
-	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client);
+	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) throws IOException;
 
 	/**
 	 * @param projectConfig
@@ -62,5 +63,5 @@ public interface FetchSprintReport {
 	 *            krb5Client
 	 * @return List of SprintDetails
 	 */
-	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client);
+	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client) throws IOException;
 }

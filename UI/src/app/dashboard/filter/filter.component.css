@@ -483,7 +483,7 @@
   height: 3rem;
 }
 
-.btn-custom.disabled {
+.btn-custom.disabled, .disabled {
   pointer-events: none;
   cursor: not-allowed;
   opacity: 0.6;

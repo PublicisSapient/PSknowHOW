@@ -127,7 +127,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 				.antMatchers("/getversionmetadata").permitAll()
 
 				// management metrics
-				.antMatchers("/env").permitAll().antMatchers(HttpMethod.POST, "/validateToken").permitAll()
+				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
+				.antMatchers("/metrics").permitAll()
+				.antMatchers("/actuator/togglz**").permitAll()
+				.antMatchers("/togglz-console**").permitAll()
+				.antMatchers("/actuator**").permitAll().antMatchers("/forgotPassword").permitAll()
+				.antMatchers("/validateToken**").permitAll().antMatchers("/resetPassword").permitAll()
 				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
 				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()

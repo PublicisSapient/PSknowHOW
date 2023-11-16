@@ -32,10 +32,17 @@
                 </tr>
                 <tr>
                     <td>
-                        <div>The last Jira processor run that started at <em th:text="${Error_In_Jira_Processor}"> </em>
+                        <div>The last Jira processor run that started at <em th:text="${Notification_Msg}"> </em>
                             was not successful.
                         </div>
-                        <div>Please re-run the processor by logging into KnowHOW.</div>
+
+                        <div>
+                            <details>
+                                <summary>The reason for failure was</summary>
+                                <p><em th:text="${Notification_Error}"> </em></p>
+                            </details>
+                        </div>
+                        <div><p>Please re-run the processor by logging into KnowHOW.</p></div>
                     </td>
                 </tr>
                 <tr>

@@ -163,3 +163,8 @@ label.btn-import-label {
 ::ng-deep .mapping-selection-popup .p-dialog-content{
   overflow-y: hidden;;
 }
+
+:host ::ng-deep .p-multiselect-panel .p-multiselect-items .p-multiselect-item,
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+  font-size: 14px;
+}
