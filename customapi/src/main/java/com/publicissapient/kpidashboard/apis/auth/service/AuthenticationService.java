@@ -208,12 +208,16 @@ public interface AuthenticationService {
 
 	Iterable<Authentication> getAuthenticationByApproved(boolean approved);
 
+/*
 	//---- auth-N-auth required code starts here ------
-	/**
+	*/
+/**
 	 * fetch policies by resources from central auth
 	 * @return
-	 */
+	 *//*
+
 	List<ActionPoliciesDTO> fetchActionPolicyByResource();
 
 	//---- auth-N-auth required code ends here ------
+*/
 }

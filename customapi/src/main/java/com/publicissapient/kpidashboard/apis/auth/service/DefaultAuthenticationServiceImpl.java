@@ -389,7 +389,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 * 
 	 * @return
 	 */
-	@Override
+	/*@Override
 	public List<ActionPoliciesDTO> fetchActionPolicyByResource() {
 		log.info("fetching Action Policy Rules from central auth");
 		String actionPolicyUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
@@ -403,7 +403,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 				.getData();
 		log.info("Total policies fetched from central auth : {}" + data.size());
 		return data;
-	}
+	}*/
 
 	/**
 	 *

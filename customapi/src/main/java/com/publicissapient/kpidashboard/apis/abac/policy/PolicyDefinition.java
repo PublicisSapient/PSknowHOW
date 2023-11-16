@@ -20,8 +20,8 @@ package com.publicissapient.kpidashboard.apis.abac.policy;
 
 import java.util.List;
 
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
+import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
 
 public interface PolicyDefinition {
-	public List<ActionPoliciesDTO> getAllPolicyRules();
+	public List<ActionPolicyRule> getAllPolicyRules();
 }

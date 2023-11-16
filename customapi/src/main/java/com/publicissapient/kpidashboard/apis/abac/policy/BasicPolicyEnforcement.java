@@ -25,9 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.EvaluationException;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ActionPolicyRule;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,12 +47,12 @@ public class BasicPolicyEnforcement implements PolicyEnforcement {
 	public boolean check(Object projectAccessManager, Object subject, Object resource, Object action,
 			Object environment) {
 		// Get all policy rules
-		List<ActionPoliciesDTO> allRules = policyDefinition.getAllPolicyRules();
+		List<ActionPolicyRule> allRules = policyDefinition.getAllPolicyRules();
 		// Wrap the context
 		SecurityAccessContext cxt = new SecurityAccessContext(projectAccessManager, subject, resource, action,
 				environment);
 		// Filter the rules according to context.
-		List<ActionPolicyRule> matchedRules = filterRules(convertDtoToEntity(allRules), cxt);
+		List<ActionPolicyRule> matchedRules = filterRules(allRules, cxt);
 		// finally, check if any of the rules are satisfied, otherwise return false.
 		return checkRules(matchedRules, cxt);
 	}
@@ -66,11 +63,11 @@ public class BasicPolicyEnforcement implements PolicyEnforcement {
 	 * @return
 	 */
 
-	private static List<ActionPolicyRule> convertDtoToEntity(List<ActionPoliciesDTO> allRules) {
+	/*private static List<ActionPolicyRule> convertDtoToEntity(List<ActionPoliciesDTO> allRules) {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.convertValue(allRules, new TypeReference<List<ActionPolicyRule>>() {
 		});
-	}
+	}*/
 
 	private List<ActionPolicyRule> filterRules(List<ActionPolicyRule> allRules, SecurityAccessContext cxt) {
 		List<ActionPolicyRule> matchedRules = new ArrayList<>();
