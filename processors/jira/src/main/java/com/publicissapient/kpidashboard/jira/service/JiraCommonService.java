@@ -138,8 +138,12 @@ public class JiraCommonService {
 				password = decryptJiraPassword(connectionOptional.map(Connection::getPassword).orElse(null));
 			}
 		}
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
-		request.connect();
+		if (connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
+			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
+			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
+		} else {
+			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		}		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
 				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
