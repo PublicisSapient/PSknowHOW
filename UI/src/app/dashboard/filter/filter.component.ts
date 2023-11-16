@@ -138,7 +138,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayModal: boolean = false;
 
   showHideLoader: boolean = false;
-
+  
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -805,7 +805,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const kpiObj = {};
       let count = 0;
       this.showKpisList = [];
-      for (let i = 0; i < this.kpiList?.length; i++) {
+            for (let i = 0; i < this.kpiList?.length; i++) {
         let showKpi = false;
         if (this.kpiList[i]['shown']) {
           if (this.kpiList[i]['isEnabled']) {
@@ -818,6 +818,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
+        }else{
+          kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
       if (this.showKpisList?.length > 0) {
@@ -835,6 +837,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     const kpiObj = {};
     for (let i = 0; i < this.showKpisList.length; i++) {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
+    }
+    for (let i = 0; i < this.kpiList?.length; i++) {
+      if(!this.kpiList[i]['shown']){
+        kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
+      }
     }
     this.kpiFormValue['kpis'].setValue(kpiObj);
   }

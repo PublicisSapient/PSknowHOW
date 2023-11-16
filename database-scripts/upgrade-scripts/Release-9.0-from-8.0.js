@@ -789,6 +789,7 @@ db.getCollection("field_mapping_structure").insertMany({
     {
         "fieldName": "jiraIssueClosedStateKPI170",
         "fieldLabel": "Status to identify Close Statuses",
+        "fieldCategory": "workflow",
         "fieldType": "chips",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -798,6 +799,7 @@ db.getCollection("field_mapping_structure").insertMany({
     {
         "fieldName": "jiraIssueWaitStateKPI170",
         "fieldLabel": "Status to identify Wait Statuses",
+        "fieldCategory": "workflow",
         "fieldType": "chips",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
