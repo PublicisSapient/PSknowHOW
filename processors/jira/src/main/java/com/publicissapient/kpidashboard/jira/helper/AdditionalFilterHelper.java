@@ -133,15 +133,19 @@ public class AdditionalFilterHelper {
 		Set<String> configuredLabelsValuesFromUI = additionalFilterConfig.getValues();
 		Set<String> issueLabelsValuesFromJira = issue.getLabels();
 		Set<String> commonLabels = new HashSet<>();
-		// Convert configuredLabels to uppercase once
-		Set<String> configuredLabelsUpper = new HashSet<>();
+		// Convert configuredLabels to lowercase once
+		Set<String> configuredLabelsLower = new HashSet<>();
 		for (String label : configuredLabelsValuesFromUI) {
-			configuredLabelsUpper.add(label.toUpperCase());
+			configuredLabelsLower.add(label.toLowerCase());
 		}
+		// Convert issueLabelsValuesFromJira to lowercase once
+		Set<String> issueLabelsFromJiraLower = new HashSet<>();
 		for (String label : issueLabelsValuesFromJira) {
-			if (configuredLabelsUpper.contains(label.toUpperCase())) {
-				commonLabels.add(label);
-			}
+			issueLabelsFromJiraLower.add(label.toLowerCase());
+		}
+		if (CollectionUtils.containsAll(issueLabelsFromJiraLower, configuredLabelsLower)) {
+			commonLabels = new HashSet<>(configuredLabelsLower);
+			commonLabels.retainAll(issueLabelsFromJiraLower);
 		}
 		return commonLabels;
 	}
