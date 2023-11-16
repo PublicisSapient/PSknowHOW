@@ -97,9 +97,9 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
-        if (this.sharedObject || this.service.getFilterObject()) {
-          this.receiveSharedData(this.service.getFilterObject());
-        }
+        // if (this.sharedObject || this.service.getFilterObject()) {
+        //   this.receiveSharedData(this.service.getFilterObject());
+        // }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -151,7 +151,7 @@ export class MilestoneComponent implements OnInit {
       }
       return tabDetails;
     });
-    
+
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -493,9 +493,9 @@ export class MilestoneComponent implements OnInit {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
   }
 
   getKpiChartType(kpiId) {

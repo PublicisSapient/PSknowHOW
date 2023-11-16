@@ -81,14 +81,14 @@
     <div class="dialog-panel" style="width: 450px; min-height: 450px; overflow: hidden;">
         <div *ngIf="singleSelectionDropdown">
             <p-dropdown *ngIf="populateDropdowns" inputId="singleSelectionDropdown" autoWidth="false"
-                [style]="{'width':'100%', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                [style]="{'width':'100%', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
                 placeholder="Select Value" [(ngModel)]="selectedValue" optionLabel="key" optionValue="data"
                 filter="true" showClear="true">
             </p-dropdown>
         </div>
         <div *ngIf="!singleSelectionDropdown" class="multiselect-container p-field p-col-12">
             <p-multiSelect *ngIf="populateDropdowns" inputId="multiSelectionDropdown"
-                [style]="{'width':'436px', 'max-width': '100%'}" [options]="fieldMappingMultiSelectValues"
+                [style]="{'width':'436px', 'max-width': '100%', 'font-size': '14px'}" [options]="fieldMappingMultiSelectValues"
                 defaultLabel="Select Values" [(ngModel)]="selectedMultiValue" optionLabel="key" display="chip">
             </p-multiSelect>
         </div>

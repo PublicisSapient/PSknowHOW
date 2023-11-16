@@ -167,7 +167,7 @@ jobs:
                   -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS \
                   -Dsonar.host.url=${{secrets.SONARQUBE_HOST}} \
                   -Dsonar.branch.name=$GITHUB_HEAD_REF \
-                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml
+                  -Dsonar.login=${{secrets.SONARQUBE_TOKEN}} -f processors/pom.xml -X
       - name: Checking code Quality using SonarQube qg for processor
         id: Sonarqgprocessor
         if: steps.processors.outputs.processors == 'true'

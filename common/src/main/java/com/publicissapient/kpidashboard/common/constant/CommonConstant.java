@@ -216,6 +216,7 @@ public final class CommonConstant {
 	public static final String JIRADODKPI152="jiraDodKPI152";
 	public static final String JIRADODKPI151="jiraDodKPI151";
 	public static final String JIRADODKPI37="jiraDodKPI37";
+	public static final String JIRASTARTDEVKPI54="jiraStatusStartDevelopmentKPI154";
 	public static final String JIRADODKPI155="jiraDodKPI155";
 	public static final String JIRADODKPI163="jiraDodKPI163";
 	public static final String JIRAISSUETYPEKPI35="jiraIssueTypeKPI35";
@@ -233,6 +234,7 @@ public final class CommonConstant {
 	public static final String JIRA_STORY_IDENTIFICATION_KPI164="jiraStoryIdentificationKPI164";
 
 	public static final String STORYFIRSTSTATUSKPI148="storyFirstStatusKPI148";
+	public static final String STORYFIRSTSTATUSKPI154="storyFirstStatusKPI154";
 	public static final String STORYFIRSTSTATUSKPI3="storyFirstStatusKPI3";
 	public static final String JIRASTATUSFORQAKPI148="jiraStatusForQaKPI148";
 	public static final String JIRASTATUSFORQAKPI135="jiraStatusForQaKPI135";
@@ -305,6 +307,7 @@ public final class CommonConstant {
 	public static final String JIRASTATUSFORINPROGRESSKPI128="jiraStatusForInProgressKPI128";
 	public static final String JIRASTATUSFORINPROGRESSKPI123="jiraStatusForInProgressKPI123";
 	public static final String JIRASTATUSFORINPROGRESSKPI119="jiraStatusForInProgressKPI119";
+	public static final String JIRASTATUSFORINPROGRESSKPI154="jiraStatusForInProgressKPI154";
 
 	public static final String JIRASTORYPOINTSCUSTOMFIELD="jiraStoryPointsCustomField";
 	public static final String EPICCOSTOFDELAY="epicCostOfDelay";

@@ -3749,7 +3749,51 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kpiSubCategory": "Flow KPIs"
-  }
+  },
+  {
+      "kpiId": "kpi166",
+      "kpiName": "Mean Time to Recover",
+      "maxValue": "100",
+      "kpiUnit": "Hours",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiSource": "Jira",
+      "kpiCategory": "Dora",
+      "groupId": 15,
+      "thresholdValue": 0,
+      "kanban": false,
+      "chartType": "line",
+      "kpiInfo": {
+        "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+        "details": [
+          {
+            "type": "paragraph",
+            "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+          },
+          {
+            "type": "paragraph",
+            "value": "The average of all such tickets will be shown."
+          }
+          {
+            "type" : "link",
+            "kpiLinkDetail" : {
+                "text" : "Detailed Information at",
+                "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+            }
+		  }
+        ],
+        "maturityLevels": []
+      },
+      "xAxisLabel": "Weeks",
+      "yAxisLabel": "Hours",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "",
+      "aggregationCriteria": "sum",
+      "aggregationCircleCriteria": "average",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false
+    }
 ]
 );
 
@@ -7049,7 +7093,8 @@ db.kpi_column_configs.insertMany([
 
 //field_mapping_structure
 db.getCollection('field_mapping_structure').insertMany(
-[{
+[
+{
         "fieldName": "jiraStoryIdentificationKpi40",
         "fieldLabel": "Issue type to identify Story",
         "fieldType": "chips",
@@ -9013,6 +9058,88 @@ db.getCollection('field_mapping_structure').insertMany(
       }
     },
     {
+        "fieldName": "jiraStatusStartDevelopmentKPI154",
+        "fieldLabel": "Status to identify start of development",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status from workflow on which issue is started development. <br> Example: In Analysis<hr>"
+        }
+    },
+    {
+        "fieldName": "jiraDevDoneStatusKPI154",
+        "fieldLabel": "Status to identify Dev completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+        }
+    },
+    {
+        "fieldName": "jiraQADoneStatusKPI154",
+        "fieldLabel": "Status to identify QA completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "Status that confirms that the QA work is completed and an issue can be ready for signoff/close",
+        }
+    },
+    {
+        "fieldName": "jiraIterationCompletionStatusKPI154",
+        "fieldLabel": "Status to identify completed issues",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All statuses that signify completion for a team. (If more than one status configured, then the first status that the issue transitions to will be counted as Completion)"
+        }
+    },
+    {
+        "fieldName": "jiraStatusForInProgressKPI154",
+        "fieldLabel": "Status to identify In Progress issues",
+        "section": "WorkFlow Status Mapping",
+        "fieldType": "chips",
+        "readOnly": true,
+        "tooltip": {
+            "definition": "All statuses that issues have moved from the Created status and also has not been completed. <br> This field is same as the configuration field of Work Remaining KPI",
+        }
+    },
+    {
+       "fieldName": "jiraSubTaskIdentification",
+       "fieldLabel": "Sub-Task Issue Types",
+       "fieldType": "chips",
+       "fieldCategory": "Issue_Type",
+       "section": "Issue Types Mapping",
+       "tooltip": {
+       "definition": "Any issue type mentioned will be considered as sub-task linked with story"
+       }
+    },
+    {
+        "fieldName": "storyFirstStatusKPI154",
+        "fieldLabel": "Status when 'Story' issue type is created",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify open statuses.",
+
+        }
+    },
+    {
+        "fieldName": "jiraOnHoldStatusKPI154",
+        "fieldLabel": "Status when issue type is put on Hold",
+        "fieldType": "chips",
+        "fieldCategory": "workflow",
+        "section": "WorkFlow Status Mapping",
+        "tooltip": {
+            "definition": "All status that identify hold/blocked statuses.",
+
+        }
+    },
+    {
        "fieldName":"jiraDefectRejectionStatusKPI155",
        "fieldLabel":"Ticket Rejected/Dropped Status",
        "fieldType":"text",
@@ -9537,6 +9664,7 @@ db.getCollection('field_mapping_structure').insertMany(
 {
     "fieldName": "jiraIssueClosedStateKPI170",
     "fieldLabel": "Status to identify Close Statuses",
+    "fieldCategory": "workflow",
     "fieldType": "chips",
     "section": "WorkFlow Status Mapping",
     "tooltip": {
@@ -9546,6 +9674,7 @@ db.getCollection('field_mapping_structure').insertMany(
 {
     "fieldName": "jiraIssueWaitStateKPI170",
     "fieldLabel": "Status to identify Wait Statuses",
+    "fieldCategory": "workflow",
     "fieldType": "chips",
     "section": "WorkFlow Status Mapping",
     "tooltip": {

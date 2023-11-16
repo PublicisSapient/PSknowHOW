@@ -1,0 +1,252 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+#chart-main-container {
+    background-color: #fff;
+    display: flex;
+    height: 100%;
+    overflow-y: auto;
+}
+
+#chart-container {
+    display: flex;
+    background-color: #fff;
+    z-index: 1000;
+    position: relative;
+    width: 100%;
+}
+
+#scroller {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding-bottom: 30px;
+}
+
+.container.noFullScreen #scroller {
+    height: calc(100vh - 385px);
+    overflow-y: auto;
+    min-height: unset;
+    max-height: unset;
+}
+
+#chart {
+    max-width: 88%;
+    margin-top: -32px;
+    float: left;
+}
+
+.tooltip-container {
+    position: relative;
+}
+
+:host ::ng-deep.tooltip {
+    display: none;
+    font-size: 10px;
+    position: absolute;
+    border-radius: 5px;
+    opacity: 0.5;
+    pointer-events: none;
+    color: white;
+    background-color: black;
+    padding: 0.5rem;
+
+}
+
+:host ::ng-deep.tooltip p {
+    margin: 0rem;
+}
+
+:host ::ng-deep.tick text {
+    font-size: 1rem;
+}
+
+.legends-button {
+    position: absolute;
+    top: 28px;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: blue;
+}
+
+:host ::ng-deep .p-dropdown.statusFilterDropDown {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    line-height: 6px;
+}
+
+:host ::ng-deep .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
+    font-size: 14px;
+}
+
+:host ::ng-deep .modal .p-dialog-header {
+    display: flex !important;
+}
+
+:host ::ng-deep.modal .p-dialog-content {
+    padding: 0;
+    overflow-x: hidden;
+}
+
+:host ::ng-deep .modal .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable {
+    height: 550px !important;
+    width: 60vw !important;
+    max-width: 90vw !important;
+    min-width: 480px;
+}
+
+:host ::ng-deep .modal .legend-item {
+    height: 80px;
+    text-align: center;
+}
+
+:host ::ng-deep #issueAxis {
+    width: 12%;
+    display: inline;
+    position: sticky;
+    left: 0;
+    float: left;
+}
+
+#dateLine {
+    position: relative;
+    display: flex;
+}
+
+#dateAxis {
+    background-color: transparent;
+    position: sticky;
+    z-index: 1001;
+    top: 0;
+}
+
+
+:host ::ng-deep .issueStatus {
+    margin-top: 5px;
+    display: block;
+}
+
+:host ::ng-deep .issueStatus::before {
+    content: '';
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    height: 7px;
+    width: 7px;
+    margin-right: 5px;
+    display: inline-block;
+    background-color: #898989;
+}
+
+:host ::ng-deep .issueStatus.in_progress::before {
+    background-color: #E8E831;
+}
+
+:host ::ng-deep .issueStatus.closed::before {
+    background-color: #20E24D;
+}
+
+:host ::ng-deep .issueStatus.on_hold::before {
+    background-color: #EB4545;
+}
+
+:host ::ng-deep .issueTypeIcon {
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    margin-top: 5px;
+    display: inline-block;
+    background-size: cover;
+    margin-bottom: -3px;
+    background-image: url('/assets/img/GenericIssue.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Task,
+:host ::ng-deep .issueTypeIcon.Studio-Task {
+    background-image: url('/assets/img/Subtask_icon.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Bug,
+:host ::ng-deep .issueTypeIcon.Defect {
+    background-image: url('/assets/img/Bug.svg');
+}
+
+:host ::ng-deep .issueTypeIcon.Story {
+    background-image: url('/assets/img/Story.svg');
+}
+
+:host ::ng-deep text.assigneeChangeText {
+    text-align: center;
+}
+
+.kpi-card-icons {
+    top: 24px;
+    position: absolute;
+    right: 45px;
+    cursor: pointer;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping {
+    width: 90vw !important;
+    max-width: 90vw;
+    max-height: 50vh !important;
+    font-size: 16px !important;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .mapping-selection-popup {
+    width: 50vw !important;
+    max-width: 50vw;
+    max-height: 30vh !important;
+    font-size: 16px !important;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-header {
+    display: block;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-content {
+    overflow-y: auto;
+}
+
+:host::ng-deep .p-dialog.p-component.p-dialog-draggable.p-dialog-resizable.field-mapping .p-dialog-footer span.p-button-label {
+    font-size: 14px;
+}
+
+@media only screen and (min-device-width : 320px) and (max-width: 1320px) {
+
+    :host ::ng-deep .tick text {
+        font-size: 10px;
+    }
+}
+
+@media only screen and (min-width: 1321px) {
+
+    :host ::ng-deep .tick text {
+        font-size: 14px;
+    }
+
+    .kpi-card-icons {
+        right: 60px;
+    }
+}
+
+:host ::ng-deep .fixed_position {
+    position: fixed;
+}

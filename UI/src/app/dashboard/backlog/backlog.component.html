@@ -16,10 +16,11 @@
                       [cdkDropListData]="board.fullWidthKpis">
                       <ng-container *ngFor="let kpi of board.fullWidthKpis">
                         <div class="card-type-1" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
-                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi.kpiId]"
                             (optionSelected)="handleSelectedOptionForCard($event, kpi)" [showExport]="false"
+                            [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? false : true"
                             [isShow]="true" [showChartView]="'table'" [showCommentIcon]="true"
                             [commentCount]="kpiCommentsCountObj[kpi.kpiId]"
                             (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
@@ -73,13 +74,13 @@
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
-                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                               [showChartView]="'chart'"
-                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
+                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? false : true"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                               (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -154,12 +155,13 @@
                       [cdkDropListData]="board.kpiPart1">
                       <ng-container *ngFor="let kpi of board.kpiPart1">
                         <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
-                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                             (optionSelected)="handleSelectedOptionForCard($event, kpi)" [showExport]="false"
                             [isShow]="true" [showChartView]="'table'" [showCommentIcon]="true"
                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
+                            [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                             (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                               <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
@@ -211,13 +213,13 @@
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
-                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                               [showChartView]="'chart'"
-                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
+                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                               (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -292,12 +294,13 @@
                       [cdkDropListData]="board.kpiPart2">
                       <ng-container *ngFor="let kpi of board.kpiPart2">
                         <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
-                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                             (optionSelected)="handleSelectedOptionForCard($event, kpi)" [showExport]="false"
                             [isShow]="true" [showChartView]="'table'" [showCommentIcon]="true"
                             [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
+                            [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                             (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                             <ng-container *ngIf="!noTabAccess else noDataAccess">
                               <div *ngIf="ifKpiExist(kpi.kpiId) != -1; else loader">
@@ -349,13 +352,13 @@
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
-                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                               [showChartView]="'chart'"
-                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
+                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                               (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -432,11 +435,12 @@
                       [cdkDropListData]="board.kpis">
                       <ng-container *ngFor="let kpi of board.kpis">
                         <div class="card-type-1 p-sm-12" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
-                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi.kpiId]"
                             (optionSelected)="handleSelectedOptionForCard($event, kpi)" [showExport]="false"
                             [isShow]="true" [showChartView]="'table'" [showCommentIcon]="true"
+                            [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                             [commentCount]="kpiCommentsCountObj[kpi.kpiId]"
                             (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                             <ng-container *ngIf="!noTabAccess else noDataAccess">
@@ -489,13 +493,13 @@
                         <ng-template #showGraph>
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
-                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                            <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
                               [trendData]="kpiChartData[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
                               [showChartView]="'chart'"
-                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
+                              [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId]"
                               [showCommentIcon]="true" [commentCount]="kpiCommentsCountObj[kpi?.kpiId]"
                               (getCommentCountByKpi)="getKpiCommentsCount($event)" (reloadKPITab)="reloadKPI($event)">
                               <ng-container *ngIf="!noTabAccess else noDataAccess">

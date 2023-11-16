@@ -1148,6 +1148,12 @@
     "defectStoryID": [
       "TEST-18557"
     ],
+    "parentStoryId": [
+      "TEST-18557",
+      "TEST-18547"
+    ],
+    "epicLinked": "TEST-18557",
+    "originalType" : "Task",
     "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "releaseVersions": [
@@ -1597,6 +1603,10 @@
     "defectStoryID": [
       "TEST-18547"
     ],
+    "parentStoryId": [
+      "TEST-18547"
+    ],
+    "originalType" : "Task",
     "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "releaseVersions": [
@@ -3498,6 +3508,8 @@
     "defectRaisedBy" : "",
     "jiraStatus" : "Closed",
     "defectStoryID" : [ "TEST-18922" ],
+    "parentStoryId" : [ "TEST-18922" ],
+    "originalType" : "Task",
     "timeSpentInMinutes" : 0,
     "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "releaseVersions" : [

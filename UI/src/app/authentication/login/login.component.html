@@ -33,10 +33,9 @@
                   <div class="group">
                     <input autocomplete="new-username" type="text" name="username" id="Layout-UserName"
                       formControlName="username" [ngClass]="{ 'is-invalid': submitted && adf.username.errors }"
-                      required="required" />
+                      required="required" placeholder="User Name" />
                     <span class="highlight"></span>
                     <span class="bar"></span>
-                    <label>User Name</label>
       
       
                     <div *ngIf="submitted && adf.username.errors" class="invalid-text">
@@ -48,11 +47,10 @@
                   <div class="group" data-validate="Password is required">
                     <input autocomplete="new-password" type="password" name="password" id="Layout-Password"
                       formControlName="password" [ngClass]="{ 'is-invalid': submitted && adf.password.errors }"
-                      required="required" />
+                      required="required" placeholder="Password"/>
       
                     <span class="highlight"></span>
                     <span class="bar"></span>
-                    <label>Password</label>
       
       
                     <div *ngIf="submitted && adf.password.errors" class="invalid-text">
@@ -72,10 +70,9 @@
                 <form class="w-100" [formGroup]="loginForm" (ngSubmit)="onSubmit('standard')">
                   <div class="group">
                     <input autocomplete="off" type="text" name="username" id="Layout-UserName" formControlName="username"
-                      [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required" />
+                      [ngClass]="{ 'is-invalid': submitted && f.username.errors }" required="required" placeholder="User Name"/>
                     <span class="highlight"></span>
                     <span class="bar"></span>
-                    <label>User Name</label>
       
                     <!-- User validation-->
                     <div *ngIf="submitted && f.username.errors" class="invalid-text">
@@ -86,11 +83,10 @@
       
                   <div class="group" data-validate="Password is required">
                     <input type="password" name="password" id="Layout-Password" formControlName="password"
-                      [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" />
+                      [ngClass]="{ 'is-invalid': submitted && f.password.errors }" required="required" placeholder="Password"/>
       
                     <span class="highlight"></span>
                     <span class="bar"></span>
-                    <label>Password</label>
       
                     <!-- Password validation-->
                     <div *ngIf="submitted && f.password.errors" class="invalid-text">

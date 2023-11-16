@@ -113,7 +113,7 @@ export class MultilineComponent implements OnChanges {
       const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName,'') : XValue;
        return {...details,sortSprint:removeProject};
     })
-    const isAllBelowFromThreshold = this.data[0].value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
+    const isAllBelowFromThreshold = this.data[0]?.value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
     this.data[0].value = formatedData;
     const viewType = this.viewType;
     const selectedProjectCount = this.service.getSelectedTrends().length;

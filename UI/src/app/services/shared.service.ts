@@ -90,6 +90,12 @@ export class SharedService {
   kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
   globalConfigData : any
+  visibleSideBarSubject = new BehaviorSubject(false);
+  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+
+
+  private currentIssue = new BehaviorSubject({});
+  currentData = this.currentIssue.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -99,6 +105,11 @@ export class SharedService {
     this.passEventToNav = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
+  }
+
+  // for DSV
+  setIssueData(data) {
+    this.currentIssue.next(data);
   }
 
 
@@ -156,6 +167,10 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
+  }
+
+  setVisibleSideBar(value) {
+    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {
