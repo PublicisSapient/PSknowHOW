@@ -59,7 +59,6 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 
     @Autowired
     private NotificationHandler handler;
-
     private String projectId;
 
     @Autowired
