@@ -141,8 +141,10 @@ public class JiraCommonService {
 		if (connectionOptional.isPresent() && connectionOptional.get().isBearerToken()) {
 			String patOAuthToken = decryptJiraPassword(connectionOptional.get().getPatOAuthToken());
 			request.setRequestProperty("Authorization", "Bearer " + patOAuthToken); // NOSONAR
+			log.info("Connection through Bearer token");
 		} else {
 			request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+			log.info("Connection through Basic Authentication");
 		}
 		request.connect();
 		StringBuilder sb = new StringBuilder();
