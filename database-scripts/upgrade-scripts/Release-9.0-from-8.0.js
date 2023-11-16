@@ -536,3 +536,33 @@ db.getCollection("field_mapping_structure").insertMany({
         }
     }
 })
+
+// DTS-29397 update repo tools
+db.getCollection("repo_tools_provider").bulkWrite([
+  {
+    updateOne: {
+      filter: { "toolName": "bitbucket" },
+      update: {
+        $set: {
+          "testServerApiUrl": "/bitbucket/rest/api/1.0/projects/",
+          "testApiUrl": "https://api.bitbucket.org/2.0/workspaces/"
+        }
+      }
+    }
+  },
+  // Update for gitlab tool
+  {
+    updateOne: {
+      filter: { "toolName": "gitlab" },
+      update: {
+        $set: {
+          "testApiUrl": "/api/v4/projects/"
+        }
+      }
+    }
+  }
+], { ordered: false });
+
+
+// Change PR size maturity
+db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : false } })

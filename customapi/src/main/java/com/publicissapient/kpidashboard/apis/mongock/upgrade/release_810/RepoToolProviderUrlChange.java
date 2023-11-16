@@ -24,6 +24,7 @@ public class RepoToolProviderUrlChange {
 	@Execution
 	public void execution() {
 		changeRepoToolProviderTestApiUrls();
+		changePRSizeMaturity();
 	}
 
 	public void changeRepoToolProviderTestApiUrls() {
@@ -40,6 +41,13 @@ public class RepoToolProviderUrlChange {
 				new Document("$set", new Document("testApiUrl", "/api/v4/projects/"))));
 		BulkWriteOptions options = new BulkWriteOptions().ordered(false);
 		mongoTemplate.getCollection("repo_tools_provider").bulkWrite(bulkUpdateOps, options);
+	}
+
+	public void changePRSizeMaturity() {
+
+		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi162"),
+				new Document("$set", new Document("calculateMaturity", false)));
+
 	}
 
 	@RollbackExecution
@@ -60,6 +68,13 @@ public class RepoToolProviderUrlChange {
 				new Document("$set", new Document("testApiUrl", "https://gitlab.com/api/v4/projects/"))));
 		BulkWriteOptions options = new BulkWriteOptions().ordered(false);
 		mongoTemplate.getCollection("repo_tools_provider").bulkWrite(bulkUpdateOps, options);
+	}
+
+	public void changePRSizeMaturityRollback() {
+
+		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi162"),
+				new Document("$set", new Document("calculateMaturity", true)));
+
 	}
 
 }

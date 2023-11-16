@@ -73,3 +73,32 @@ db.getCollection("field_mapping_structure").deleteMany({
 db.getCollection("kpi_master").deleteOne({
       "kpiId": "kpi170"
     });
+
+// DTS-29397 rollback repo tools
+db.getCollection("repo_tools_provider").bulkWrite([
+  {
+    updateOne: {
+      filter: { "toolName": "bitbucket" },
+      update: {
+        $set: {
+          "testServerApiUrl": "",
+          "testApiUrl": "https://api.bitbucket.org/2.0/repositories/"
+        }
+      }
+    }
+  },
+  // Update for gitlab tool
+  {
+    updateOne: {
+      filter: { "toolName": "gitlab" },
+      update: {
+        $set: {
+          "testApiUrl": "https://gitlab.com/api/v4/projects/""
+        }
+      }
+    }
+  }
+], { ordered: false });
+
+// Change PR size maturity
+db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : true } })
