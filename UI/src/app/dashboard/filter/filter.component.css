@@ -1157,6 +1157,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   box-shadow: 1px 1px 1px rgba(0, 0, 0, .2);
   background: #fff;
   list-style: none;
+  z-index: 1;
 }
 .switch-dropdown::before{
   position: absolute;
@@ -1169,6 +1170,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-bottom: 10px solid #fff;
+  z-index: 1;
 }
 .switch-dropdown .app-links{
   padding: 5px 5px;
