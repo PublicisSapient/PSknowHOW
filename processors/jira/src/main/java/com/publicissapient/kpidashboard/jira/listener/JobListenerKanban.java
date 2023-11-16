@@ -28,6 +28,7 @@ import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
@@ -107,7 +108,7 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
                 sendNotification();
             }
         } catch (Exception e) {
-            log.error("An Exception has occured in scrum jobListener", e);
+            log.error("An Exception has occured in kanban jobListener", e);
         } finally {
             log.info("removing project with basicProjectConfigId {}", projectId);
             // Mark the execution as completed
@@ -117,10 +118,10 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 
     private void sendNotification() {
         FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-        if (fieldMapping.getNotificationEnabler()) {
+        if (fieldMapping == null || fieldMapping.getNotificationEnabler()) {
             handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()), projectId);
         } else {
-            log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
+            log.info("Notification Switch is Off for the project {}. No email is sent to project admin.", projectId);
         }
     }
 

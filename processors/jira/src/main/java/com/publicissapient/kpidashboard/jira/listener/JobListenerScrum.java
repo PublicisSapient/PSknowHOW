@@ -107,10 +107,10 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 
     private void sendNotification() {
         FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-        if (fieldMapping.getNotificationEnabler()) {
+        if (fieldMapping == null || fieldMapping.getNotificationEnabler()) {
             handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()), projectId);
         } else {
-            log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
+            log.info("Notification Switch is Off for the project {}. No email is sent to project admin.", projectId);
         }
     }
 
