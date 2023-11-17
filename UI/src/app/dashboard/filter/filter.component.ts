@@ -1484,8 +1484,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (unreleasedReleases?.length > 0) {
         /** If there are unreleased releases, find the nearest one in the future */
         unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
-        const nearestUnreleased = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > new Date());
-        this.selectedRelease = nearestUnreleased ? nearestUnreleased : unreleasedReleases[0];
+        const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > new Date());
+        this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
        } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
