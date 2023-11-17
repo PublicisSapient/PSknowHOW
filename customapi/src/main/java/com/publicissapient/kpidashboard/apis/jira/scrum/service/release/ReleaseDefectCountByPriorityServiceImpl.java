@@ -23,12 +23,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -41,13 +39,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -71,8 +68,8 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 	}
 
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 Node releaseNode) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
 		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
 			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		}
@@ -85,14 +82,9 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		if (latestRelease == null) {
-			return;
-		}
 		if (latestRelease != null) {
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) resultMap.get(TOTAL_DEFECT);

@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
@@ -129,8 +128,7 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 			throws ApplicationException {
 
 		log.info("LEAD-TIME -> requestTrackerId[{}]", kpiRequest.getRequestTrackerId());
-		DataCount dataCount = new DataCount();
-		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest, dataCount);
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 
 		log.debug("[LEAD-TIME-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), projectNode);
@@ -138,8 +136,7 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest,
-			DataCount dataCount) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		KpiElement leadTimeReq = kpiRequest.getKpiList().stream().filter(k -> k.getKpiId().equalsIgnoreCase("kpi3"))
 				.findFirst().orElse(new KpiElement());
 
@@ -165,12 +162,12 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 		Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue = ticketList.stream()
 				.collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
 
-		kpiWithFilter(projectWiseJiraIssue, leafNode, kpiElement, dataCount);
+		kpiWithFilter(projectWiseJiraIssue, leafNode, kpiElement);
 
 	}
 
 	private void kpiWithFilter(Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue, Node node,
-			KpiElement kpiElement, DataCount dataCount) {
+			KpiElement kpiElement) {
 
 		List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
 				.get(node.getProjectFilter().getBasicProjectConfigId().toString());
@@ -178,12 +175,12 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(node.getProjectFilter().getBasicProjectConfigId());
 		List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
-		getCycleTime(issueCustomHistoryList, fieldMapping, cycleTimeList, kpiElement, dataCount);
+		getCycleTime(issueCustomHistoryList, fieldMapping, cycleTimeList, kpiElement);
 		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
 	}
 
 	private void getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
-			List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement, DataCount trendValue) {
+			List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement) {
 
 		Set<String> issueTypeFilter = new LinkedHashSet<>();
 
@@ -321,8 +318,7 @@ public class LeadTimeServiceImpl extends JiraBacklogKPIService {
 		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 		// Modal Heads Options
 		kpiElement.setFilters(iterationKpiFilters);
-		trendValue.setValue(dataList);
-		kpiElement.setTrendValueList(trendValue);
+		kpiElement.setTrendValueList(dataList);
 	}
 
 	private List<IterationKpiModalValue> getIterationKpiModalValue(List<JiraIssueCustomHistory> modalJiraIssues,

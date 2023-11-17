@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -552,7 +551,10 @@ public class KPIExcelDataService {
 				pair.getValue().getRequestTrackerId());
 
 		Callable<List<KpiElement>> jiraKpiDataTask;
-		List<String> category = Arrays.asList(CommonConstant.ITERATION, CommonConstant.RELEASE, CommonConstant.BACKLOG);
+		HashSet<String> category = new HashSet<>();
+		category.add(CommonConstant.ITERATION);
+		category.add(CommonConstant.RELEASE);
+		category.add(CommonConstant.BACKLOG);
 		if (category.contains(pair.getValue().getKpiList().get(0).getKpiCategory())) {
 			jiraKpiDataTask = () -> serviceFactory.getService(pair.getValue().getKpiList().get(0).getKpiCategory())
 					.process(pair.getValue());

@@ -19,11 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +33,12 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -81,8 +78,8 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	 *             exception while processing request
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-								 Node releaseNode) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node releaseNode)
+			throws ApplicationException {
 		if (Filters.getFilter(releaseNode.getGroupName()) == Filters.RELEASE) {
 			releaseWiseLeafNodeValue(releaseNode, kpiElement, kpiRequest);
 		}
@@ -91,24 +88,17 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void releaseWiseLeafNodeValue(Node latestRelease, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		List<Node> latestReleaseNode = new ArrayList<>();
-		if (latestRelease == null) {
-			return;
-		}
 
 		if (latestRelease != null) {
-			Optional.of(latestRelease).ifPresent(latestReleaseNode::add);
 			Map<String, Object> resultMap = fetchKPIDataFromDb(latestRelease, null, null, kpiRequest);
 			List<JiraIssue> releaseIssues = (List<JiraIssue>) resultMap.get(TOTAL_ISSUES);
 			List<IterationKpiValue> filterDataList = new ArrayList<>();
-			Node leafNode = latestReleaseNode.stream().findFirst().orElse(null);
-			if (CollectionUtils.isNotEmpty(releaseIssues) && leafNode != null) {
+			if (CollectionUtils.isNotEmpty(releaseIssues)) {
 				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-						.get(leafNode.getProjectFilter().getBasicProjectConfigId());
+						.get(latestRelease.getProjectFilter().getBasicProjectConfigId());
 				populateExcelDataObject(requestTrackerId, excelData, releaseIssues);
 				createExcelDataAndTrendValueList(kpiElement, filterDataList, releaseIssues, fieldMapping, excelData,
 						latestRelease);
@@ -133,7 +123,6 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		//Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("ReleaseDefectByTestPhaseImpl -> Requested sprint : {}", leafNode.getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
@@ -199,7 +188,6 @@ public class ReleaseDefectByTestPhaseImpl extends JiraReleaseKPIService {
 		dataCount.setValue(dataCountList);
 		return dataCount;
 	}
-
 
 	@Override
 	public String getQualifierType() {
