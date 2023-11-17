@@ -22,10 +22,12 @@
 
 export const environment = {
    production: false,
-   baseUrl: '//localhost:8080',
+   baseUrl: '//localhost:8081',
    SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
-   RESOURCE: 'PSKnowHOW'
+   CENTRAL_LOGIN_URL: 'http://localhost:3000',
+   RESOURCE: 'PSKnowHOW',
+   MAP: "https://google.com",
+   RNR: "https://tengine.tremend.com/retrospective/dashboard"
 };
 
 /*
