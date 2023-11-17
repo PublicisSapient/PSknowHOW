@@ -93,10 +93,10 @@ public class TokenAuthenticationController {
 				data.setResource(userData.getResource());
 				data.setAuthToken(token);
 				if (!userData.getResource().equalsIgnoreCase(authProperties.getResourceName())) {
-					data.setResourceValid(false);
+					data.setResourceTokenValid(false);
 					serviceResponse = new ServiceResponse(true, "Invalid resource", data);
 				} else {
-					data.setResourceValid(true);
+					data.setResourceTokenValid(true);
 					serviceResponse = new ServiceResponse(true, "Valid resource", data);
 				}
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
