@@ -1682,7 +1682,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   checkResourceValidity(resourceName){
     this.httpService.handleValidateResource({"resource": resourceName}).subscribe((response) => {
       if(response && !response?.['data']?.resourceTokenValid){
-        window.location.href = process.env.CENTRAL_LOGIN_URL + '?authToken=' + response?.['data']?.authToken;
+        window.location.href = environment.CENTRAL_LOGIN_URL + '?authToken=' + response?.['data']?.authToken + '&redirect_uri=' + environment[resourceName?.toUpperCase()] + '&resource=' + resourceName;
       }
     }, (error) => {
       console.log(error);
