@@ -3319,7 +3319,7 @@ db.getCollection('kpi_master').insertMany(
           "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
         }
       ],
-      "maturityLevel": [
+      "maturityLevels": [
         {
           "level": "M5",
           "bgColor": "#6cab61",
@@ -3400,7 +3400,7 @@ db.getCollection('kpi_master').insertMany(
               "Maturity of the KPI is calculated based on the average of the last 5 weeks",
           },
         ],
-        "maturityLevel": [
+        "maturityLevels": [
           {
             "level": "M5",
             "bgColor": "#6cab61",
@@ -3469,7 +3469,7 @@ db.getCollection('kpi_master').insertMany(
               "value": "Maturity of the KPI is calculated based on the latest value"
             }
           ],
-          "maturityLevel": [
+          "maturityLevels": [
             {
               "level": "M5",
               "bgColor": "#6cab61",
@@ -3538,7 +3538,7 @@ db.getCollection('kpi_master').insertMany(
               "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
             }
           ],
-          "maturityLevel": [
+          "maturityLevels": [
             {
               "level": "M5",
               "bgColor": "#6cab61",
@@ -3853,7 +3853,14 @@ db.getCollection('kpi_master').insertMany(
               {
                   "type": "paragraph",
                   "value": "The average of all such tickets will be shown."
-              }
+              },
+              {
+                   "type" : "link",
+                    "kpiLinkDetail" : {
+                    "text" : "Detailed Information at",
+                    "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+                    }
+               }
           ]
       },
       "xAxisLabel": "Weeks",

@@ -107,3 +107,64 @@ db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 5 } })
 db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 5 } })
+
+
+
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi116" },
+  {
+    $set: {
+      "maturityRange": [
+        "-50",
+        "50-30",
+        "30-20",
+        "20-10",
+        "10-"
+      ],
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi118" },
+  {
+    $set: {
+      "maturityRange": [
+        "-1",
+        "1-2",
+        "2-5",
+        "5-10",
+        "10-"
+      ],
+      "aggregationCircleCriteria" : "average",
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi156" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi166" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+
