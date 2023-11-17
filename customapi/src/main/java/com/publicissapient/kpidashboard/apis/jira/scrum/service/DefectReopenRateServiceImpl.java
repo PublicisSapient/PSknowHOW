@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -30,7 +31,7 @@ import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
@@ -39,11 +40,9 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -56,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
+public class DefectReopenRateServiceImpl extends JiraBacklogKPIService {
 
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Reopen Rate";
@@ -94,38 +93,32 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 *
 	 * @param kpiRequest
 	 * @param kpiElement
-	 * @param treeAggregatorDetail
+	 * @param projectNode
 	 * @return kpi data
 	 * @throws ApplicationException
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
 		log.info("DEFECT-REOPEN-RATE Kpi {}", kpiRequest.getRequestTrackerId());
-		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				projectWiseLeafNodeValues(v, trendValue, kpiElement, kpiRequest);
-			}
-		});
+		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
+			projectWiseLeafNodeValues(projectNode, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
 	/**
 	 * Update Kpi data based on kpi request
 	 *
-	 * @param projectList
-	 * @param trendValue
+	 * @param leafNode
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 
 	@SuppressWarnings("java:S3776")
-	private void projectWiseLeafNodeValues(List<Node> projectList, DataCount trendValue, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
-		Node leafNode = projectList.stream().findFirst().orElse(null);
+	private void projectWiseLeafNodeValues(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		if (leafNode != null) {
-			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(projectList, null, null, kpiRequest);
+			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(leafNode, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_DEFECTS);
 			List<JiraIssueCustomHistory> reopenJiraHistory = (List<JiraIssueCustomHistory>) kpiResultDbMap
 					.get(JIRA_REOPEN_HISTORY);
@@ -181,20 +174,17 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 						}
 					}
 				});
-				addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration
-				);
+				addToIterationKpiValues(iterationKpiValues, priority, jiraIssueList, modalValues, totalDuration);
 				overAllModalValues.addAll(modalValues);
 				overAllDuration.set(0, overAllDuration.get(0) + totalDuration.get(0));
 
 			});
-			addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration
-			);
+			addToIterationKpiValues(iterationKpiValues, OVERALL, totalDefects, overAllModalValues, overAllDuration);
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 			kpiElement.setFilters(iterationKpiFilters);
-			trendValue.setValue(iterationKpiValues);
 			kpiElement.setModalHeads(KPIExcelColumn.DEFECT_REOPEN_RATE.getColumns());
-			kpiElement.setTrendValueList(trendValue);
+			kpiElement.setTrendValueList(iterationKpiValues);
 		}
 	}
 
@@ -260,70 +250,51 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	}
 
 	/**
-	 * Calculates KPI Metrics
-	 *
-	 * @param stringObjectMap
-	 *            type of db object
-	 * @return KPI value
-	 */
-	@Override
-	public Double calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	/**
 	 * Fetches KPI Data from DB
 	 *
-	 * @param leafNodeList
+	 * @param leafNode
 	 * @param startDate
 	 * @param endDate
 	 * @param kpiRequest
 	 * @return
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, List<String>> mapOfFiltersForHistory = new LinkedHashMap<>();
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
 		Map<String, List<String>> closedStatusListBasicConfigMap = new HashMap<>();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			basicProjectConfigIds.add(basicProjectConfigId);
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			List<String> defectTypeList = new ArrayList<>();
-			if (fieldMapping.getJiradefecttype() != null) {
-				defectTypeList.addAll(fieldMapping.getJiradefecttype());
-			}
-			defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
-			List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
-					.collect(Collectors.toList());
-			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
-					CommonUtils.convertToPatternList(defectList));
-			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-		});
+		ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		List<String> defectTypeList = new ArrayList<>();
+		if (fieldMapping.getJiradefecttype() != null) {
+			defectTypeList.addAll(fieldMapping.getJiradefecttype());
+		}
+		defectTypeList.add(NormalizedJira.DEFECT_TYPE.getValue());
+		List<String> defectList = defectTypeList.stream().filter(Objects::nonNull).distinct()
+				.collect(Collectors.toList());
+		mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
+				CommonUtils.convertToPatternList(defectList));
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
+				Collections.singletonList(basicProjectConfigId.toString()));
 		List<JiraIssue> jiraIssues = jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters,
 				uniqueProjectMap);
 
 		List<String> jiraDefectID = jiraIssues.stream().map(JiraIssue::getNumber).collect(Collectors.toList());
-		basicProjectConfigIds.forEach(basicProjectConfigObjectId -> {
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigObjectId);
-			List<String> closedStatusList = (List<String>) CollectionUtils
-					.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
-			closedStatusListBasicConfigMap.put(basicProjectConfigObjectId.toString(), closedStatusList);
-			mapOfProjectFilters.put("statusUpdationLog.story.changedTo",
-					CommonUtils.convertToPatternList(closedStatusList));
-			uniqueProjectMap.put(basicProjectConfigObjectId.toString(), mapOfProjectFilters);
-		});
+		Map<String, Object> mapOfProjectFiltersForClosedStatus = new LinkedHashMap<>();
+		List<String> closedStatusList = (List<String>) CollectionUtils
+				.emptyIfNull(fieldMapping.getJiraDefectClosedStatusKPI137());
+		closedStatusListBasicConfigMap.put(basicProjectConfigId.toString(), closedStatusList);
+		mapOfProjectFiltersForClosedStatus.put("statusUpdationLog.story.changedTo",
+				CommonUtils.convertToPatternList(closedStatusList));
+		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFiltersForClosedStatus);
 		mapOfFiltersForHistory.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().map(ObjectId::toString).distinct().collect(Collectors.toList()));
+				Collections.singletonList(basicProjectConfigId.toString()));
 		mapOfFiltersForHistory.put(JiraFeatureHistory.STORY_ID.getFieldValueInFeature(), jiraDefectID);
 		// we get all the data that are once closed
 		List<JiraIssueCustomHistory> jiraReopenIssueCustomHistories = jiraIssueCustomHistoryRepository

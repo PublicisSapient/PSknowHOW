@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
@@ -29,14 +28,13 @@ import com.publicissapient.kpidashboard.apis.data.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -56,7 +54,7 @@ public class DefectReopenRateServiceImplTest {
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
@@ -107,11 +105,10 @@ public class DefectReopenRateServiceImplTest {
 		try {
 
 			KpiElement kpiElement = defectReopenRateService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement);
 			assertNotNull(kpiElement.getTrendValueList());
-			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
-			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 			IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
 					.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
 			assertNotNull(iterationKpiValue);
@@ -119,11 +116,6 @@ public class DefectReopenRateServiceImplTest {
 		} catch (ApplicationException applicationException) {
 
 		}
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertNull(defectReopenRateService.calculateKPIMetrics(null));
 	}
 
 	@Test

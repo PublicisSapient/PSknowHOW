@@ -46,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
@@ -55,13 +55,11 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -70,7 +68,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 @Component
-public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService {
 
 	private static final String TESTCASES_WITHOUT_STORY_LINK = "Test Cases Without Story Link";
 	private static final String DEFECTS_WITHOUT_STORY_LINK = "Defects Without Story Link";
@@ -85,7 +83,6 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	private static final String NIN = "nin";
 	private static final String DEFECT_LIST = "Total Defects";
 	private static final String OVERALL = "Overall";
-	private static final String PROJECT = "project";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	@Autowired
@@ -101,34 +98,26 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 	private KpiHelperService kpiHelperService;
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
-	}
-
-	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		DataCount trendValue = new DataCount();
-		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
-		projectWiseLeafNodeValue(trendValue, projectList, kpiElement, kpiRequest);
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
+			throws ApplicationException {
+		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> map = new HashMap<>();
-		Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(leafNodeList);
+		Map<String, Object> resultMapForTestWithoutStory = fetchKPIDataFromDbForTestWithoutStory(leafNode);
 		map.put(TEST_WITHOUT_STORY_LIST, resultMapForTestWithoutStory.get(STORY_LIST));
 		map.put(TEST_WITHOUT_STORY_TEST_CASES, resultMapForTestWithoutStory.get(TOTAL_TEST_CASES));
-		Map<String, Object> resultMapDefectsWithoutStoryLink = fetchKPIDataFromDbForDefectsWithoutStoryLink(
-				leafNodeList);
+		Map<String, Object> resultMapDefectsWithoutStoryLink = fetchKPIDataFromDbForDefectsWithoutStoryLink(leafNode);
 		map.put(DEFECTS_WITHOUT_STORY_LIST, resultMapDefectsWithoutStoryLink.get(STORY_LIST));
 		map.put(DEFECTS_WITHOUT_STORY_DEFECTS_LIST, resultMapDefectsWithoutStoryLink.get(DEFECT_LIST));
 		return map;
 	}
 
-	public Map<String, Object> fetchKPIDataFromDbForTestWithoutStory(List<Node> leafNodeList) {
+	public Map<String, Object> fetchKPIDataFromDbForTestWithoutStory(Node leafNode) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = Maps.newLinkedHashMap();
@@ -139,52 +128,52 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap = (Map<ObjectId, Map<String, List<ProjectToolConfig>>>) cacheService
 				.cacheProjectToolConfigMapData();
 		Map<ObjectId, FieldMapping> basicProjetWiseConfig = configHelperService.getFieldMappingMap();
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			List<String> regressionLabels = new ArrayList<>();
-			List<String> sprintAutomationFolderPath = new ArrayList<>();
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
-			List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
-					TOOL_ZEPHYR);
 
-			List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
-					TOOL_JIRA_TEST);
+		ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+		List<String> regressionLabels = new ArrayList<>();
+		List<String> sprintAutomationFolderPath = new ArrayList<>();
+		basicProjectConfigIds.add(basicProjectConfigId.toString());
+		List<ProjectToolConfig> zephyrTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+				TOOL_ZEPHYR);
 
-			FieldMapping fieldMapping = basicProjetWiseConfig.get(basicProjectConfigId);
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			Map<String, Object> mapOfStoriesFilter = new LinkedHashMap<>();
+		List<ProjectToolConfig> jiraTestTools = getToolConfigBasedOnProcessors(toolMap, basicProjectConfigId,
+				TOOL_JIRA_TEST);
 
-			if (CollectionUtils.isNotEmpty(zephyrTools)) {
-				setZephyrScaleConfig(zephyrTools, regressionLabels, sprintAutomationFolderPath);
-			}
-			if (CollectionUtils.isNotEmpty(jiraTestTools)) {
-				setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
-			}
-			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(), Arrays.asList("Regression"));
-			if (CollectionUtils.isNotEmpty(regressionLabels)) {
-				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(regressionLabels));
-			}
+		FieldMapping fieldMapping = basicProjetWiseConfig.get(basicProjectConfigId);
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		Map<String, Object> mapOfStoriesFilter = new LinkedHashMap<>();
 
-			if (CollectionUtils.isNotEmpty(sprintAutomationFolderPath)) {
-				mapOfProjectFilters.put(JiraFeature.ATM_TEST_FOLDER.getFieldValueInFeature(),
-						CommonUtils.convertTestFolderToPatternList(sprintAutomationFolderPath));
-			}
+		if (CollectionUtils.isNotEmpty(zephyrTools)) {
+			setZephyrScaleConfig(zephyrTools, regressionLabels, sprintAutomationFolderPath);
+		}
+		if (CollectionUtils.isNotEmpty(jiraTestTools)) {
+			setZephyrSquadConfig(jiraTestTools, regressionLabels, mapOfProjectFilters);
+		}
+		mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(), Arrays.asList("Regression"));
+		if (CollectionUtils.isNotEmpty(regressionLabels)) {
+			mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(regressionLabels));
+		}
 
-			if (MapUtils.isNotEmpty(mapOfProjectFilters)) {
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			}
+		if (CollectionUtils.isNotEmpty(sprintAutomationFolderPath)) {
+			mapOfProjectFilters.put(JiraFeature.ATM_TEST_FOLDER.getFieldValueInFeature(),
+					CommonUtils.convertTestFolderToPatternList(sprintAutomationFolderPath));
+		}
+
+		if (MapUtils.isNotEmpty(mapOfProjectFilters)) {
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+		}
+		if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
+
 			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
-
-				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter, fieldMapping.getJiradefecttype(),
-							fieldMapping.getJiraStoryIdentificationKPI129(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
-				}
-
-				uniqueProjectMapForStories.put(basicProjectConfigId.toString(), mapOfStoriesFilter);
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfStoriesFilter,
+						fieldMapping.getJiradefecttype(), fieldMapping.getJiraStoryIdentificationKPI129(),
+						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
-			storyType.addAll(fieldMapping.getJiraStoryIdentificationKPI129());
-		});
+
+			uniqueProjectMapForStories.put(basicProjectConfigId.toString(), mapOfStoriesFilter);
+		}
+		storyType.addAll(fieldMapping.getJiraStoryIdentificationKPI129());
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
@@ -257,7 +246,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		});
 	}
 
-	public Map<String, Object> fetchKPIDataFromDbForDefectsWithoutStoryLink(List<Node> leafNodeList) {
+	public Map<String, Object> fetchKPIDataFromDbForDefectsWithoutStoryLink(Node leafNode) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -266,30 +255,29 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		Map<String, Map<String, Object>> uniqueProjectIssueTypeNotIn = new HashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
-		leafNodeList.forEach(leaf -> {
-			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
-			Map<String, Object> uniqueProjectIssueStatusMap = new HashMap<>();
-			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
-			basicProjectConfigIds.add(basicProjectConfigId.toString());
+		ObjectId basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
+		Map<String, Object> uniqueProjectIssueStatusMap = new HashMap<>();
+		Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
+		basicProjectConfigIds.add(basicProjectConfigId.toString());
 
-			List<String> excludeStatusList = new ArrayList<>();
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
+		List<String> excludeStatusList = new ArrayList<>();
+		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
-			if (null != fieldMapping) {
-				if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
-					KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters, fieldMapping.getJiradefecttype(),
-							fieldMapping.getJiraStoryIdentificationKPI129(), JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
-				}
-				excludeStatusList.addAll(
-						CollectionUtils.isEmpty(fieldMapping.getExcludeStatusKpi129()) ? Lists.newArrayList()
-								: fieldMapping.getExcludeStatusKpi129());
-				uniqueProjectIssueStatusMap.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
-						CommonUtils.convertToPatternList(excludeStatusList));
-				uniqueProjectIssueTypeNotIn.put(basicProjectConfigId.toString(), uniqueProjectIssueStatusMap);
-				uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-
+		if (null != fieldMapping) {
+			if (Optional.ofNullable(fieldMapping.getJiraStoryIdentificationKPI129()).isPresent()) {
+				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
+						fieldMapping.getJiradefecttype(), fieldMapping.getJiraStoryIdentificationKPI129(),
+						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
-		});
+			excludeStatusList
+					.addAll(CollectionUtils.isEmpty(fieldMapping.getExcludeStatusKpi129()) ? Lists.newArrayList()
+							: fieldMapping.getExcludeStatusKpi129());
+			uniqueProjectIssueStatusMap.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
+					CommonUtils.convertToPatternList(excludeStatusList));
+			uniqueProjectIssueTypeNotIn.put(basicProjectConfigId.toString(), uniqueProjectIssueStatusMap);
+			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
+
+		}
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
@@ -311,8 +299,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
 	}
 
-	private void projectWiseLeafNodeValue(DataCount trendValue, List<Node> leafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -323,8 +310,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(15);
 		String startDate = dateRange.getStartDate().format(DATE_FORMATTER);
 		String endDate = dateRange.getEndDate().format(DATE_FORMATTER);
-		Node latestNode = leafNodeList.get(0);
-		Map<String, Object> returnMap = fetchKPIDataFromDb(leafNodeList, startDate, endDate, kpiRequest);
+		Map<String, Object> returnMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 
 		List<String> storiesInProject = (List<String>) returnMap.get(TEST_WITHOUT_STORY_LIST);
 		List<TestCaseDetails> totalTestNonRegression = (List<TestCaseDetails>) returnMap
@@ -343,7 +329,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 						.collect(Collectors.toList()));
 		if (CollectionUtils.isNotEmpty(totalTestNonRegression)) {
 			populateExcelDataObject(requestTrackerId, totalTestNonRegression, testWithoutStory,
-					latestNode.getProjectFilter().getName(), excelDataDefectsWithoutStoryLink);
+					leafNode.getProjectFilter().getName(), excelDataDefectsWithoutStoryLink);
 		}
 		kpiElement.setExcelData(excelDataForTestWithoutStory);
 		kpiElement.setExcelColumns(KPIExcelColumn.TEST_WITHOUT_STORY_LINK.getColumns());
@@ -351,7 +337,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		if (CollectionUtils.isNotEmpty(defectWithoutStory)
 				&& requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateDefectWithoutIssueLinkExcelData(defectWithoutStory,
-					excelDataDefectsWithoutStoryLink, latestNode.getProjectFilter().getName());
+					excelDataDefectsWithoutStoryLink, leafNode.getProjectFilter().getName());
 		}
 
 		kpiElement.setExcelData(excelDataDefectsWithoutStoryLink);
@@ -376,9 +362,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraKPIService<Integer, List<Obj
 		data.add(defectWithoutStoryLink);
 		IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 		iterationKpiValues.add(overAllIterationKpiValue);
-		trendValue.setValue(iterationKpiValues);
 		kpiElement.setModalHeads(KPIExcelColumn.ISSUES_WITHOUT_STORY_LINK.getColumns());
-		kpiElement.setTrendValueList(trendValue);
+		kpiElement.setTrendValueList(iterationKpiValues);
 
 	}
 

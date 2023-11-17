@@ -111,7 +111,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		totalIssueBacklogList = JiraIssueDataFactory.newInstance().getJiraIssues();
-		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(),anyMap(),anyString(),anyString(),anyString(),anyString(),anyBoolean())).thenReturn(totalIssueBacklogList);
+		when(jiraIssueRepository.findIssuesByDateAndTypeAndStatus(anyMap(), anyMap(), anyString(), anyString(),
+				anyString(), anyString(), anyBoolean())).thenReturn(totalIssueBacklogList);
 
 	}
 
@@ -135,7 +136,8 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
 		try {
 			KpiElement kpiElement = productionIssuesByPriorityAndAgingService.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+					kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(dc -> {
 
@@ -182,16 +184,10 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = productionIssuesByPriorityAndAgingService
-				.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
+				.fetchKPIDataFromDb(leafNodeList.get(0), null, null, kpiRequest);
 
 		assertThat("Total Defects issue list :", ((List<JiraIssue>) defectDataListMap.get(RANGE_TICKET_LIST)).size(),
 				equalTo(0));
-	}
-
-	@Test
-	public void testCalculateKPIMetrics() {
-		assertThat("Total Aging value :", productionIssuesByPriorityAndAgingService.calculateKPIMetrics(null),
-				equalTo(0L));
 	}
 
 	@Test
