@@ -25,9 +25,7 @@ export const environment = {
    baseUrl: '//localhost:8081',
    SSO_LOGIN: false,
    CENTRAL_LOGIN_URL: 'http://localhost:3000',
-   RESOURCE: 'PSKnowHOW',
-   MAP: "https://google.com",
-   RNR: "https://tengine.tremend.com/retrospective/dashboard"
+   RESOURCE: 'PSKnowHOW'
 };
 
 /*
