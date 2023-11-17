@@ -191,9 +191,8 @@ public class LeadTimeServiceImplTest {
 		try {
 			KpiElement kpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			DataCount dataCountGroups = (DataCount) kpiElement.getTrendValueList();
 
-			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) dataCountGroups.getValue();
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) kpiElement.getTrendValueList();
 			iterationKpiValues.stream().forEach(iteration -> {
 				String cycleFilter = iteration.getFilter1();
 				switch (cycleFilter) {
