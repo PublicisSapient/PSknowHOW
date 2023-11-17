@@ -217,7 +217,7 @@
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "Measure of percentage of story linked defects fixed against the total number of defects raised in  the sprint." ,
+      "definition" : "Measure of percentage of defects closed against the total count tagged to the iteration" ,
       "formula" : [
         {
           "lhs" : "DRE for a sprint" ,
