@@ -226,7 +226,8 @@ db.getCollection('field_mapping_structure').insertMany([{
     }
 ])
 }]);
-db.kpi_master.insertOne({
+db.kpi_master.insertOne(
+{
     "kpiId": "kpi166",
     "kpiName": "Mean Time to Recover",
     "maxValue": "100",
@@ -261,7 +262,15 @@ db.kpi_master.insertOne({
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+     "maturityRange": [
+          "48-",
+          "24-48",
+          "12-24",
+          "1-12",
+          "-1"
+        ]
+
 })
 
 db.field_mapping_structure.insertMany([

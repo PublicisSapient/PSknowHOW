@@ -749,11 +749,33 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": true,
     "hideOverallFilter": true,
     "maturityRange": [
-      "-50",
-      "50-30",
-      "30-20",
-      "20-10",
-      "10-"
+          "-60",
+          "60-45",
+          "45-30",
+          "30-15",
+          "15-"
+     ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
     ]
   },
   {
@@ -1198,12 +1220,39 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
-      "-1",
-      "1-2",
-      "2-5",
-      "5-10",
-      "10-"
-    ]
+      "0-2" ,
+      "2-4" ,
+      "4-8" ,
+      "8-16" ,
+      "16-"
+    ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": ">= 2 per week"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "Once per week"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "Once in 2 weeks"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "Once in 4 weeks"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": "< Once in 8 weeks"
+        }
+     ]
   },
   {
     "kpiId": "kpi73",
@@ -3200,8 +3249,7 @@ db.getCollection('kpi_master').insertMany(
           "type": "paragraph",
           "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ],
-      "maturityLevels": []
+      ]
     },
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
@@ -3211,7 +3259,41 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ]
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": "< 1 Day"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "< 7 Days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "< 30 Days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "< 90 Days"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": ">= 90 Days"
+        }
+      ]
   },
   {
     "kpiId": "kpi157",
@@ -3237,7 +3319,7 @@ db.getCollection('kpi_master').insertMany(
           "value": "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
         }
       ],
-      "maturityLevels": [
+      "maturityLevel": [
         {
           "level": "M5",
           "bgColor": "#6cab61",
@@ -3318,7 +3400,7 @@ db.getCollection('kpi_master').insertMany(
               "Maturity of the KPI is calculated based on the average of the last 5 weeks",
           },
         ],
-        "maturityLevels": [
+        "maturityLevel": [
           {
             "level": "M5",
             "bgColor": "#6cab61",
@@ -3387,7 +3469,7 @@ db.getCollection('kpi_master').insertMany(
               "value": "Maturity of the KPI is calculated based on the latest value"
             }
           ],
-          "maturityLevels": [
+          "maturityLevel": [
             {
               "level": "M5",
               "bgColor": "#6cab61",
@@ -3456,7 +3538,7 @@ db.getCollection('kpi_master').insertMany(
               "value": "Maturity of the KPI is calculated based on the average of the last 5 weeks"
             }
           ],
-          "maturityLevels": [
+          "maturityLevel": [
             {
               "level": "M5",
               "bgColor": "#6cab61",
@@ -3667,10 +3749,8 @@ db.getCollection('kpi_master').insertMany(
         "isAdditionalFilterSupport": false,
         "kpiFilter": "",
         "boxType": "chart",
-        "calculateMaturity": false
-    }
-     "calculateMaturity":false,
-  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+        "calculateMaturity": false,
+        "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  },
  {
     "kpiId": "kpi168",
@@ -3749,6 +3829,71 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": false,
     "kpiSubCategory": "Flow KPIs"
+  },
+  {
+      "kpiId": "kpi166",
+      "kpiName": "Mean Time to Recover",
+      "maxValue": "100",
+      "kpiUnit": "Hours",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiSource": "Jira",
+      "kpiCategory": "Dora",
+      "groupId": 15,
+      "thresholdValue": 0,
+      "kanban": false,
+      "chartType": "line",
+      "kpiInfo": {
+          "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+          "details": [
+              {
+                  "type": "paragraph",
+                  "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "The average of all such tickets will be shown."
+              }
+          ]
+      },
+      "xAxisLabel": "Weeks",
+      "yAxisLabel": "Hours",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "",
+      "aggregationCriteria": "sum",
+      "aggregationCircleCriteria": "average",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": true,
+       "maturityRange": [
+            "48-",
+            "24-48",
+            "12-24",
+            "1-12",
+            "-1"
+          ],
+ "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
+      ]
   }
 ]
 );
