@@ -137,6 +137,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
 
+  showHideLoader: boolean = false;
+  
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -803,7 +805,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const kpiObj = {};
       let count = 0;
       this.showKpisList = [];
-      for (let i = 0; i < this.kpiList?.length; i++) {
+            for (let i = 0; i < this.kpiList?.length; i++) {
         let showKpi = false;
         if (this.kpiList[i]['shown']) {
           if (this.kpiList[i]['isEnabled']) {
@@ -816,6 +818,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
+        }else{
+          kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
       if (this.showKpisList?.length > 0) {
@@ -834,6 +838,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.showKpisList.length; i++) {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
     }
+    for (let i = 0; i < this.kpiList?.length; i++) {
+      if(!this.kpiList[i]['shown']){
+        kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
+      }
+    }
     this.kpiFormValue['kpis'].setValue(kpiObj);
   }
   handleKpiChange(event) {
@@ -851,6 +860,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
   submitKpiConfigChange() {
+    this.showHideLoader = true;
     for (let i = 0; i < this.kpiList.length; i++) {
       this.kpiList[i]['isEnabled'] =
         this.kpiFormValue['kpis'].value[this.kpiList[i]['kpiId']];
@@ -883,12 +893,14 @@ export class FilterComponent implements OnInit, OnDestroy {
             summary: 'Error in Saving Configuraion',
           });
         }
+        this.showHideLoader = false;
       },
       (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error in saving kpis. Please try after some time.',
         });
+        this.showHideLoader = false;
       },
     );
   }
@@ -1468,21 +1480,13 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
-      const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
-      if (letestPassedRelease?.length > 1) {
-        /** When more than one passed release */
-        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
-        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
-        if (letestPassedReleaseOnSameStartDate?.length > 1) {
-          this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
-        } else {
-          /** First release with letest end date */
-          this.selectedRelease = letestPassedRelease[0];
-        }
-      } else if (letestPassedRelease?.length === 1) {
-        /** First release with letest end date */
-        this.selectedRelease = letestPassedRelease[0];
-      } else {
+      const unreleasedReleases = this.filteredAddFilters['release'].filter(release => release.releaseState?.toLowerCase() === "unreleased");
+      if (unreleasedReleases?.length > 0) {
+        /** If there are unreleased releases, find the nearest one in the future */
+        unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
+        const nearestUnreleased = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > new Date());
+        this.selectedRelease = nearestUnreleased ? nearestUnreleased : unreleasedReleases[0];
+       } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
       }

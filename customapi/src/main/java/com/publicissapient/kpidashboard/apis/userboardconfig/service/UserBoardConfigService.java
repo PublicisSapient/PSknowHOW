@@ -54,7 +54,7 @@ public interface UserBoardConfigService {
 	void deleteUser(String userName);
 
 	/**
-	 * This method fetch admin / superAdmin user board config
+	 * This method fetch admin / superAdmin project level board config
 	 * 
 	 * @param basicProjectConfigId
 	 *            basicProjectConfigId
@@ -63,9 +63,8 @@ public interface UserBoardConfigService {
 	UserBoardConfigDTO getProjBoardConfigAdmin(String basicProjectConfigId);
 
 	/**
-	 * This method save user board config of proj,Super admin with
-	 * basicProjectConfigId, also modify their project access users
-	 * user_board_config
+	 * This method save project board config of proj/Super admin with
+	 * basicProjectConfigId, also modify other admin configs of that project
 	 *
 	 * @param userBoardConfigDTO
 	 *            userBoardConfigDTO

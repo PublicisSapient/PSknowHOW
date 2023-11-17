@@ -20,9 +20,13 @@ package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -45,6 +49,7 @@ public class ReleaseBurnUpChangeUnit {
 	public void execution() {
 		releaseBurnUpDefaultOrderUpdate();
 		releaseBurnUpFieldMappingInsert();
+		addLinkDetailToReleaseBurnUpKpi();
 	}
 
 	public void releaseBurnUpDefaultOrderUpdate() {
@@ -65,11 +70,23 @@ public class ReleaseBurnUpChangeUnit {
 		mongoTemplate.insert(document, "field_mapping_structure");
 
 	}
+	public void addLinkDetailToReleaseBurnUpKpi() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi150"));
+
+		Update kpiUpdate = new Update()
+				.push("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
+	}
+
 
 	@RollbackExecution
 	public void rollback() {
 		releaseBurnUpDefaultOrderRollback();
 		releaseBurnUpFieldMappingRollback();
+		removeLinkDetailFromLeadTimeForChange();
 	}
 
 	public void releaseBurnUpDefaultOrderRollback() {
@@ -87,6 +104,17 @@ public class ReleaseBurnUpChangeUnit {
 		// Remove the document from the collection
 		mongoTemplate.getCollection("field_mapping_structure").deleteOne(filter);
 
+	}
+
+	public void removeLinkDetailFromLeadTimeForChange() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
+
+		Update kpiUpdate = new Update()
+				.pull("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
 
 }

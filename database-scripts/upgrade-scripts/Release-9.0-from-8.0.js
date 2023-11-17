@@ -250,7 +250,14 @@ db.kpi_master.insertOne(
             {
                 "type": "paragraph",
                 "value": "The average of all such tickets will be shown."
-            }
+            },
+            {
+                "type" : "link",
+                "kpiLinkDetail" : {
+                    "text" : "Detailed Information at",
+                    "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+                }
+    		}
         ],
         "maturityLevels": []
     },
@@ -791,6 +798,7 @@ db.getCollection("field_mapping_structure").insertMany({
     {
         "fieldName": "jiraIssueClosedStateKPI170",
         "fieldLabel": "Status to identify Close Statuses",
+        "fieldCategory": "workflow",
         "fieldType": "chips",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -800,6 +808,7 @@ db.getCollection("field_mapping_structure").insertMany({
     {
         "fieldName": "jiraIssueWaitStateKPI170",
         "fieldLabel": "Status to identify Wait Statuses",
+        "fieldCategory": "workflow",
         "fieldType": "chips",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
@@ -807,3 +816,10 @@ db.getCollection("field_mapping_structure").insertMany({
         }
     }
 })
+
+db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 1 } })
+db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 3 } })
+db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 5 } })
+db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 4 } })
+db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 2 } })
+db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 6 } })
