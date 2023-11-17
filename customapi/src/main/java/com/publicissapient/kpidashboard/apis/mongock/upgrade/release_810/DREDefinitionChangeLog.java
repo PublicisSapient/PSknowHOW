@@ -27,12 +27,12 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author eswbogol
  */
-@ChangeUnit(id = "dir_definition_changeLog", order = "8112", author = "eswbogol", systemVersion = "8.1.0")
-public class DIRDefinitionChangeLog {
+@ChangeUnit(id = "dre_definition_changeLog", order = "8112", author = "eswbogol", systemVersion = "8.1.0")
+public class DREDefinitionChangeLog {
 
 	private final MongoTemplate mongoTemplate;
 
-	public DIRDefinitionChangeLog(MongoTemplate mongoTemplate) {
+	public DREDefinitionChangeLog(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
