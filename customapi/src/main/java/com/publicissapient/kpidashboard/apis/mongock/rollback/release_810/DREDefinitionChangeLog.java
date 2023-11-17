@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author eswbogol
  */
-@ChangeUnit(id = "r_dir_definition_changeLog", order = "08112", author = "eswbogol", systemVersion = "8.1.0")
+@ChangeUnit(id = "r_dre_definition_changeLog", order = "08112", author = "eswbogol", systemVersion = "8.1.0")
 public class DREDefinitionChangeLog {
 
 	private final MongoTemplate mongoTemplate;
