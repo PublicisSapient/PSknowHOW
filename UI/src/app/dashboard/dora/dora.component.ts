@@ -391,6 +391,7 @@ export class DoraComponent implements OnInit {
     // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
     //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     // }
+    this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -457,22 +458,94 @@ export class DoraComponent implements OnInit {
     this.globalConfig = null;
   }
 
-   reloadKPI(event) {
-          const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
-          if(idx !== -1){
-              this.allKpiArray.splice(idx,1);
-          }
-          const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
-          if (currentKPIGroup?.kpiList?.length > 0) {
-              const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
-                  switch (kpiSource) {
-                      case 'jenkins':
-                          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
-                          break;
-                      default:
-                          this.postJiraKpi(currentKPIGroup, 'jira');
-              }
-          }
+  reloadKPI(event) {
+    const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+    if (idx !== -1) {
+      this.allKpiArray.splice(idx, 1);
+    }
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+      const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+      switch (kpiSource) {
+        case 'jenkins':
+          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+          break;
+        default:
+          this.postJiraKpi(currentKPIGroup, 'jira');
       }
+    }
+  }
+
+  setMaturityColor(kpiId, selectedFilter = null) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+    let maturity = '';
+    if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length && selectedKPI) {
+      if (!selectedFilter) {
+        maturity = 'M' + this.kpiChartData[kpiId][0].maturity;
+      } else {
+        maturity = this.calculateMaturity(kpiId, selectedKPI.maturityRange);
+      }
+      let maturityColor = selectedKPI.maturityLevel.filter((level) => level.level === maturity)[0]?.bgColor;
+      this.kpiChartData[kpiId][0].maturityColor = maturityColor;
+    }
+  }
+
+  calculateMaturity(kpiId, maturityRange) {
+    if (maturityRange && maturityRange.length) {
+      let aggregatedValue = this.kpiChartData[kpiId][0]?.['aggregationValue'];
+      let maturity = '';
+
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+
+      switch (findIncrementalOrDecrementalRange) {
+        case 'incremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const lowerBound = parseInt(range[0]);
+            const upperBound = range[1] === '' ? Infinity : parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+
+        case 'decremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const upperBound = range[0] === '' ? Infinity : parseInt(range[0]);
+            const lowerBound = parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+      }
+      return maturity;
+    }
+  }
+
+  findIncrementalOrDecrementalRange(range) {
+    if (range[0].split('-')[1] > range[1].split('-')[1]) {
+      return 'decremental';
+    } else {
+      return 'incremental';
+    }
+  }
 
 }
