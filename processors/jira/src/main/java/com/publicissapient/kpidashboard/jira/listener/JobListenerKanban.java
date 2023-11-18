@@ -117,7 +117,9 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
                     }
                 }
                 sendNotification(stepFaliureException);
-                setExecutionSuccessFalse();
+                setExecutionInfoInTraceLog(false);
+            } else {
+                setExecutionInfoInTraceLog(true);
             }
         } catch (Exception e) {
             log.error("An Exception has occured in kanban jobListener", e);
@@ -138,13 +140,13 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
         }
     }
 
-    private void setExecutionSuccessFalse() {
+    private void setExecutionInfoInTraceLog(boolean status) {
         List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
                 .findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
         if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
             for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
                 processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-                processorExecutionTraceLog.setExecutionSuccess(false);
+                processorExecutionTraceLog.setExecutionSuccess(status);
             }
             processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
         }
