@@ -24,8 +24,9 @@
     border: 1px solid #707070;
     color: #707070;
     border-radius: 5px;
-    padding: 2px 5px;
+    padding: 4px 5px;
     cursor: pointer;
+    line-height: 1;
 }
 
 .kpi-card-name-placeholder {

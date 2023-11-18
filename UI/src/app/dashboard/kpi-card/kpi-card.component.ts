@@ -38,6 +38,11 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Input() colors : Array<any>;
   selectedTabIndex : number = 0;
   @Input() sprintsOverlayVisible : boolean;
+
+  @Input() kpiChartData: any;
+  @Input() chartColorList: any; 
+  @Input() thresholdValue: number;
+
   projectList : Array<string>;
   displaySprintDetailsModal : boolean = false;
   columnList = [
@@ -60,6 +65,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
  @Output() getCommentCountByKpi = new EventEmitter();
  userRole : string;
  checkIfViewer : boolean;
+
+ displayMagnifyModal: boolean = false;
 
   constructor(public service: SharedService,
     private http : HttpService,
@@ -337,6 +344,10 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   handleGetCount(event){
     this.getCommentCountByKpi.emit(event);
+  }
+
+  openMagnifyModal() {
+
   }
 
 

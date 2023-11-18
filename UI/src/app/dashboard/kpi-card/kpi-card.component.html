@@ -116,6 +116,9 @@
         <ng-content></ng-content>
     </div>
     <div class="kpi-card-footer p-d-flex justify-content-between">
+        <div class="kpi-card-icons">
+            <i class="fa fa-search-plus p-mr-1" (click)="displayMagnifyModal = true;" pTooltip="Magnify" tooltipPosition="top"></i>
+        </div>
         <div class="kpi-card-icons"
             [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 ||  service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase() !== 'project' ||  userRole === 'roleViewer' || checkIfViewer)}">
             <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting"
@@ -199,4 +202,13 @@
             <div class="loading-img"></div>
         </div>
     </ng-container>
+</p-dialog>
+
+<p-dialog [header]="kpiData?.kpiName" [(visible)]="displayMagnifyModal" [modal]="true" styleClass="field-mapping">
+    <hr>
+    <ng-template pTemplate="content">
+        <app-kpi-modal [kpi]="kpiData" [thresholdValue]="thresholdValue"
+        [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" 
+        [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"></app-kpi-modal>
+    </ng-template>
 </p-dialog>

@@ -25,7 +25,7 @@
           <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
             <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;">
               <div [ngClass]="{'p-sm-6':!(showChart==='large'),'p-sm-12':showChart==='large'}">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                 [trendData]="kpiTrendsObj[kpi?.kpiId]" [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders"
                 [showTrendIndicator]="showKpiTrendIndicator[kpi?.kpiId] ==false ? showKpiTrendIndicator[kpi?.kpiId] : true"
                 (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport)"
