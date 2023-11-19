@@ -29,24 +29,16 @@ import com.publicissapient.kpidashboard.common.repository.rbac.ActionPolicyRuleR
 
 @Component("simplePolicyDefinition")
 public class SimplePolicyDefinition implements PolicyDefinition {
-	/*@Autowired
-	CacheService cacheService;*/
 	@Autowired
 	ActionPolicyRuleRepository actionPolicyRuleRepository;
 	private List<ActionPolicyRule> rules;
-	/*private List<ActionPoliciesDTO> rules;*/ //-- to delete authNauth
 
-	/*@PostConstruct*/
 	public void init() {
 		rules = actionPolicyRuleRepository.findAll();
-		//rules = cacheService.getActionPoliciesFromCache(); //-- to delete authNauth
 	}
 
 	public List<ActionPolicyRule> getAllPolicyRules() {
 		return rules;
 	}
-	/*public List<ActionPoliciesDTO> getAllPolicyRules() { //-- to delete authNauth
-		return rules;
-	}*/
 
 }

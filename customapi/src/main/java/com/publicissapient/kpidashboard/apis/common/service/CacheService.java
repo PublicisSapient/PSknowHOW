@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
@@ -102,12 +100,5 @@ public interface CacheService {
 	Map<String, HierarchyLevel> getFullKanbanHierarchyLevelMap();
 
 	Map<String, AdditionalFilterCategory> getAdditionalFilterHierarchyLevel();
-
-/*
-	//-- auth-N-auth changes starts here---
-	List<ActionPoliciesDTO> getActionPoliciesFromCache();
-
-	//-- auth-N-auth changes ends here---
-*/
 
 }

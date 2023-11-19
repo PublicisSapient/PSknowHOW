@@ -57,18 +57,6 @@ public class BasicPolicyEnforcement implements PolicyEnforcement {
 		return checkRules(matchedRules, cxt);
 	}
 
-	/**
-	 *
-	 * @param allRules
-	 * @return
-	 */
-
-	/*private static List<ActionPolicyRule> convertDtoToEntity(List<ActionPoliciesDTO> allRules) {
-		ObjectMapper mapper = new ObjectMapper();
-		return mapper.convertValue(allRules, new TypeReference<List<ActionPolicyRule>>() {
-		});
-	}*/
-
 	private List<ActionPolicyRule> filterRules(List<ActionPolicyRule> allRules, SecurityAccessContext cxt) {
 		List<ActionPolicyRule> matchedRules = new ArrayList<>();
 		for (ActionPolicyRule rule : allRules) {

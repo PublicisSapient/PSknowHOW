@@ -33,7 +33,6 @@ import org.springframework.cache.support.SimpleValueWrapper;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -262,14 +261,4 @@ public class CacheServiceImpl implements CacheService {
 
 	}
 
-	/**
-	 *
-	 * @param
-	 * @return
-	 */
-	/*@Override
-	@Cacheable(value = CommonConstant.ACTION_POLICY_RULES_CACHE)
-	public List<ActionPoliciesDTO> getActionPoliciesFromCache() {
-		return authNAuthService.fetchActionPolicyByResource();
-	}*/
 }
