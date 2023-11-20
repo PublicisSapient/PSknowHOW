@@ -32,6 +32,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
+@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "epic_progress_enhnc1", order = "8109", author = "shi6", systemVersion = "8.1.0")
 public class EpicProgressEnhnc1 {
 	private final MongoTemplate mongoTemplate;

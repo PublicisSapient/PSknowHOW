@@ -40,6 +40,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
+@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "dsv_screen2", order = "8108", author = "shi6", systemVersion = "8.1.0")
 public class DSVScreen2 {
 

@@ -101,6 +101,13 @@ db.getCollection("kpi_master").deleteOne({
       "kpiId": "kpi170"
     });
 
+db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 8 } })
+db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 2 } })
+db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 3 } })
+db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 5 } })
+db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 4 } })
+db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 5 } })
+
 // DTS-29397 rollback repo tools
 db.getCollection("repo_tools_provider").bulkWrite([
   {

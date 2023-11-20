@@ -808,6 +808,13 @@ db.getCollection("field_mapping_structure").insertMany({
     }
 })
 
+db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 1 } })
+db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 3 } })
+db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 5 } })
+db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 4 } })
+db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 2 } })
+db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 6 } })
+
 // DTS-29397 update repo tools
 db.getCollection("repo_tools_provider").bulkWrite([
   {
