@@ -63,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService {
+public class BacklogEpicProgressServiceImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String EPIC_LINKED = "epicLinked";

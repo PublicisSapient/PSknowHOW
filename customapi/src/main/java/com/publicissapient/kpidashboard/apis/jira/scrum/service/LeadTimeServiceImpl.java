@@ -53,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LeadTimeServiceImpl extends JiraBacklogKPIService {
+public class LeadTimeServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	private static final String INTAKE_TO_DOR = "Intake - DOR";
 	private static final String DOR_TO_DOD = "DOR - DOD";

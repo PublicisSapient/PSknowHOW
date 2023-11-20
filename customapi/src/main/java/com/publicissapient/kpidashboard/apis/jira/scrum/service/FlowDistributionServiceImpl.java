@@ -57,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class FlowDistributionServiceImpl extends JiraBacklogKPIService {
+public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, List<Object>> {
 	public static final String BACKLOG_CUSTOM_HISTORY = "backlogCustomHistory";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	@Autowired

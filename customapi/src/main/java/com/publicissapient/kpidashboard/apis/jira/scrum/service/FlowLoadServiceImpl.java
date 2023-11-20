@@ -58,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class FlowLoadServiceImpl extends JiraBacklogKPIService {
+public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Object>> {
 	private static final String ISSUE_HISTORY = "Issue History";
 
 	@Autowired

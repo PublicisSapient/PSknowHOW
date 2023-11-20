@@ -68,7 +68,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.zephyr.TestCaseDetailsRepository;
 
 @Component
-public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService {
+public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String TESTCASES_WITHOUT_STORY_LINK = "Test Cases Without Story Link";
 	private static final String DEFECTS_WITHOUT_STORY_LINK = "Defects Without Story Link";

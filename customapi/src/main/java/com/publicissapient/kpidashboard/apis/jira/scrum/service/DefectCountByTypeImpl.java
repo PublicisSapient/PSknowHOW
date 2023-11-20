@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class DefectCountByTypeImpl extends JiraBacklogKPIService {
+public class DefectCountByTypeImpl extends JiraBacklogKPIService<Integer, List<Object>> {
 
 	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 

@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DefectReopenRateServiceImpl extends JiraBacklogKPIService {
+public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, List<Object>> {
 
 	private static final String SEARCH_BY_PRIORITY = "Filter by priority";
 	private static final String DEFECT_REOPEN_RATE = "Reopen Rate";

@@ -70,7 +70,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService {
+public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Double, List<Object>> {
 
 	public static final String UNCHECKED = "unchecked";
 	private static final String UNASSIGNED_JIRA_ISSUE_HISTORY = "Unassigned Jira Issue History";

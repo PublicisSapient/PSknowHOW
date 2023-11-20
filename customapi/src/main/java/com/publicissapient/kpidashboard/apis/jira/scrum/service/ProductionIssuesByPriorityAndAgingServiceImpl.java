@@ -57,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKPIService {
+public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKPIService<Long, List<Object>> {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String RANGE = "range";

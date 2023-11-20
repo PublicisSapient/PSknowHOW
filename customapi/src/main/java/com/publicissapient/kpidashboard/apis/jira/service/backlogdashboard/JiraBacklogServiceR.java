@@ -16,6 +16,7 @@ package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -48,6 +49,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -81,6 +83,8 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
     private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
     @Autowired
     private JiraIssueReleaseStatusRepository jiraIssueReleaseStatusRepository;
+    @Autowired
+    private CustomApiConfig customApiConfig;
     private List<SprintDetails> futureSprintDetails;
     private List<JiraIssue> jiraIssueList;
     private List<JiraIssueCustomHistory> jiraIssueCustomHistoryList;
@@ -288,5 +292,23 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
             long processTime = System.currentTimeMillis() - startTime;
             log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
         }
+    }
+
+    /**
+     * This method return list of 5 distinct future sprint names
+     *
+     * @return return list of sprintNames
+     */
+    public List<String> getFutureSprintsList() {
+        List<String> sprintNames = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
+            sprintNames = futureSprintDetails.stream()
+                    .sorted(Comparator.comparing(SprintDetails::getStartDate,
+                            Comparator.nullsLast(Comparator.naturalOrder())))
+                    .map(SprintDetails::getSprintName).distinct()
+                    .limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
+
+        }
+        return sprintNames;
     }
 }
