@@ -188,6 +188,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			jiraIssue.setOriginalType(JiraProcessorUtil.deodeUTF8String(issueType.getName()));
 
 			setEpicLinked(fieldMapping, jiraIssue, fields);
+			setSubTaskLinkage(jiraIssue, fieldMapping, issue, fields);
 			processJiraIssueData(jiraIssue, issue, fields, fieldMapping);
 			setURL(issue.getKey(), jiraIssue, projectConfig);
 			setRCA(fieldMapping, issue, jiraIssue, fields);
@@ -200,6 +201,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
+//			ADD Production Incident field to feature
+			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
 			setIssueEpics(issueEpics, epic, jiraIssue);
@@ -227,6 +230,16 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		if (StringUtils.isNotEmpty(fieldMapping.getEpicLink()) && fields.get(fieldMapping.getEpicLink()) != null
 				&& fields.get(fieldMapping.getEpicLink()).getValue() != null) {
 			jiraIssue.setEpicLinked(fields.get((fieldMapping.getEpicLink()).trim()).getValue().toString());
+		}
+	}
+
+	private void setSubTaskLinkage(JiraIssue jiraIssue, FieldMapping fieldMapping, Issue issue,
+			Map<String, IssueField> fields) {
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiraSubTaskIdentification())
+				&& fieldMapping.getJiraSubTaskIdentification().contains(jiraIssue.getTypeName())) {
+			Set<String> mainStorySet = new HashSet<>();
+			storyWithSubTaskDefect(issue, fields, mainStorySet);
+			jiraIssue.setParentStoryId(mainStorySet);
 		}
 	}
 
@@ -961,4 +974,31 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		}
 	}
 
+	private void setProdIncidentIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
+												Map<String, IssueField> fields) {
+		try {
+			if (CollectionUtils.isNotEmpty(featureConfig.getJiradefecttype()) && featureConfig.getJiradefecttype()
+					.stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+				if (null != featureConfig.getJiraProductionIncidentIdentification() && featureConfig
+						.getJiraProductionIncidentIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+					List<String> commonLabel = issue.getLabels().stream()
+							.filter(x -> featureConfig.getJiraProdIncidentRaisedByValue().contains(x))
+							.collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(commonLabel)) {
+						feature.setProductionIncident(true);
+					}
+				} else feature.setProductionIncident(null != featureConfig.getJiraProductionIncidentIdentification()
+                        && featureConfig.getJiraProductionIncidentIdentification().trim()
+                        .equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+                        && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
+                        && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue() != null
+                        && isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraProdIncidentRaisedByValue(),
+                        fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue(), null));
+			}
+
+		} catch (Exception e) {
+			log.error("Error while parsing Production Incident field", e);
+		}
+
+	}
 }

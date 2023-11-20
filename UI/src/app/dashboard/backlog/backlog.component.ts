@@ -12,7 +12,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   templateUrl: './backlog.component.html',
   styleUrls: ['./backlog.component.css']
 })
-export class BacklogComponent implements OnInit, OnDestroy{
+export class BacklogComponent implements OnInit, OnDestroy {
   @ViewChild('exportExcel') exportExcelComponent: ExportExcelComponent;
   subscriptions: any[] = [];
   masterData = <any>{};
@@ -44,7 +44,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   trendBoxColorObj: any;
   kpiChartData = {};
   allKpiArray: any = [];
-  showKpiTrendIndicator={};
+  showKpiTrendIndicator = {};
   kpiDropdowns: object = {};
   chartColorList: Array<string> = ['#079FFF', '#00E6C3', '#CDBA38', '#FC6471', '#BD608C', '#7D5BA6'];
   displayModal = false;
@@ -57,37 +57,38 @@ export class BacklogComponent implements OnInit, OnDestroy{
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-  kpiSpecificLoader =[];
-  durationFilter='Past 2 Weeks';
-  kpiPart1 : any = []
-  kpiPart2 : any = []
-  leadTime : object;
+  kpiSpecificLoader = [];
+  durationFilter = 'Past 2 Weeks';
+  kpiPart1: any = []
+  kpiPart2: any = []
+  leadTime: object;
   dragableConfigGlobalData;
-  navigationTabs:Array<object>;
+  navigationTabs: Array<object>;
   activeIndex = 0;
   kpiThresholdObj: any = [];
+  fullPageLoader: boolean = true;
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if(sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
+      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'backlog') {
         this.allKpiArray = [];
         this.kpiChartData = {};
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
-        if(this.globalConfig || this.service.getDashConfigData()){
+        if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
-    }
+      }
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(this.sharedObject || this.service.getFilterObject()){
-        this.receiveSharedData(this.service.getFilterObject());
-      }
+      // if(this.sharedObject || this.service.getFilterObject()){
+      //   this.receiveSharedData(this.service.getFilterObject());
+      // }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
@@ -117,28 +118,28 @@ export class BacklogComponent implements OnInit, OnDestroy{
     }));
 
     this.service.getEmptyData().subscribe((val) => {
-      if(val){
-          this.noTabAccess = true;
-      } else{
-          this.noTabAccess = false;
+      if (val) {
+        this.noTabAccess = true;
+      } else {
+        this.noTabAccess = false;
       }
 
-  });
+    });
 
-  this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
-    this.noProjects = res;
-  }));
-}
-  processKpiConfigData(){
+    this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {
+      this.noProjects = res;
+    }));
+  }
+  processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Summary', 'count': 0,kpis : [],width :'half'},
-      {'label':'Backlog Health', 'count': 0,kpis : [],width :'half'},
-      {'label':'Epic View', 'count': 0,kpis : [],width :'full', fullWidthKpis : []},
-      {'label':'Flow KPIs', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
+      { 'label': 'Summary', 'count': 0, kpis: [], width: 'half' },
+      { 'label': 'Backlog Health', 'count': 0, kpis: [], width: 'half' },
+      { 'label': 'Epic View', 'count': 0, kpis: [], width: 'full', fullWidthKpis: [] },
+      { 'label': 'Flow KPIs', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
     ];
     this.kpiConfigData = {};
-    for(let i=0;i<this.configGlobalData?.length; i++){
-      if (this.configGlobalData[i]?.shown ===false && this.configGlobalData[i]?.isEnabled === true) {
+    for (let i = 0; i < this.configGlobalData?.length; i++) {
+      if (this.configGlobalData[i]?.shown === false && this.configGlobalData[i]?.isEnabled === true) {
         this.kpiConfigData[this.configGlobalData[i]?.kpiId] = this.configGlobalData[i]?.shown;
       } else {
         this.kpiConfigData[this.configGlobalData[i]?.kpiId] = this.configGlobalData[i]?.isEnabled;
@@ -150,34 +151,34 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
 
     const kpi3Index = this.updatedConfigGlobalData.findIndex(kpi => kpi.kpiId === 'kpi3');
-    const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index,1);
-    this.updatedConfigGlobalData.splice(0,0,kpi3[0]);
-    if(kpi3Index >= 0){
-      this.leadTime = this.updatedConfigGlobalData.find(kpi=>kpi.kpiId === 'kpi3')
-    }else{
+    const kpi3 = this.updatedConfigGlobalData.splice(kpi3Index, 1);
+    this.updatedConfigGlobalData.splice(0, 0, kpi3[0]);
+    if (kpi3Index >= 0) {
+      this.leadTime = this.updatedConfigGlobalData.find(kpi => kpi.kpiId === 'kpi3')
+    } else {
       this.leadTime = undefined;
     }
     this.dragableConfigGlobalData = this.updatedConfigGlobalData;
-    for(let i = 0; i<this.dragableConfigGlobalData?.length; i++){
+    for (let i = 0; i < this.dragableConfigGlobalData?.length; i++) {
       let board = this.dragableConfigGlobalData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx != -1) {
         this.navigationTabs[idx]['count']++;
         this.navigationTabs[idx]['kpis'].push(this.dragableConfigGlobalData[i]);
       }
     }
-    if(kpi3?.isEnabled){
+    if (kpi3?.isEnabled) {
       this.navigationTabs[0]['count']++;
     }
 
     this.navigationTabs.map(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -193,23 +194,24 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // noKpis - if true, all kpis are not shown to the user (not showing kpis to the user)
     const showKpisCount = (Object.values(this.kpiConfigData).filter(item => item === true))?.length;
     if (showKpisCount === 0) {
-        this.noKpis = true;
+      this.noKpis = true;
     } else {
-        this.noKpis = false;
+      this.noKpis = false;
     }
   }
-/**
-    Used to receive all filter data from filter component when user
-    click apply and call kpi
- **/
+  /**
+      Used to receive all filter data from filter component when user
+      click apply and call kpi
+   **/
   receiveSharedData($event) {
+    this.fullPageLoader = true;
     this.configGlobalData = this.service.getDashConfigData()['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
     this.processKpiConfigData();
     this.masterData = $event.masterData;
     this.filterData = $event.filterData;
     this.filterApplyData = $event.filterApplyData;
     this.noOfFilterSelected = Object.keys(this.filterApplyData).length;
-    if(this.filterData?.length) {
+    if (this.filterData?.length) {
       this.noTabAccess = false;
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
@@ -220,7 +222,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
     } else {
       this.noTabAccess = true;
-  }
+    }
 
   }
   // Used for grouping all Sonar kpi from master data and calling Sonar kpi.(only for scrum).
@@ -237,11 +239,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
     // sending requests after grouping the the KPIs according to group Id
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        const currentPayload = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
-        if(Object.keys(this.kpiJira).length){
-          this.kpiJira = {...currentPayload,kpiList : currentPayload.kpiList.concat(this.kpiJira.kpiList)}
-        }else{
-          this.kpiJira = {...currentPayload}
+        const currentPayload = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Backlog');
+        if (Object.keys(this.kpiJira).length) {
+          this.kpiJira = { ...currentPayload, kpiList: currentPayload.kpiList.concat(this.kpiJira.kpiList) }
+        } else {
+          this.kpiJira = { ...currentPayload }
         }
         if (currentPayload?.kpiList?.length > 0) {
           this.postJiraKpi(currentPayload, 'jira');
@@ -250,19 +252,19 @@ export class BacklogComponent implements OnInit, OnDestroy{
     });
 
   }
-   // post request of Jira(scrum) hygiene
-   postJiraKpi(postData, source): void {
-     this.kpiLoader = true;
+  // post request of Jira(scrum) hygiene
+  postJiraKpi(postData, source): void {
+    this.kpiLoader = true;
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
 
     const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
-    if(kpi3)(
-    kpi3['filterDuration'] = {
-      duration:'WEEKS',
-      value:2
-    });
+    if (kpi3) (
+      kpi3['filterDuration'] = {
+        duration: 'WEEKS',
+        value: 2
+      });
 
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
@@ -274,15 +276,28 @@ export class BacklogComponent implements OnInit, OnDestroy{
           }
           if (localVariable['kpi127']) {
             if (localVariable['kpi127'].trendValueList && localVariable['kpi127'].xAxisValues) {
-                localVariable['kpi127'].trendValueList.forEach(trendElem => {
-                    trendElem.value.forEach(valElem => {
-                        if (valElem.value.length === 5 && localVariable['kpi127'].xAxisValues.length === 5) {
-                            valElem.value.forEach((element, index) => {
-                                element['xAxisTick'] = localVariable['kpi127'].xAxisValues[index];
-                            });
-                        }
+              localVariable['kpi127'].trendValueList.forEach(trendElem => {
+                trendElem.value.forEach(valElem => {
+                  if (valElem.value.length === 5 && localVariable['kpi127'].xAxisValues.length === 5) {
+                    valElem.value.forEach((element, index) => {
+                      element['xAxisTick'] = localVariable['kpi127'].xAxisValues[index];
                     });
+                  }
                 });
+              });
+            }
+          }
+          if (localVariable['kpi170']) {
+            if (localVariable['kpi170'].trendValueList && localVariable['kpi170'].xAxisValues) {
+              localVariable['kpi170'].trendValueList.forEach(trendElem => {
+                trendElem.value.forEach(valElem => {
+                  if (valElem.value.length === 5 && localVariable['kpi170'].xAxisValues.length === 5) {
+                    valElem.value.forEach((element, index) => {
+                      element['xAxisTick'] = localVariable['kpi170'].xAxisValues[index];
+                    });
+                  }
+                });
+              });
             }
           }
           // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
@@ -298,6 +313,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
         }
 
         this.kpiLoader = false;
+        this.fullPageLoader = false;
       });
   }
 
@@ -313,7 +329,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
     groupIdSet.forEach((groupId) => {
       if (groupId) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId,'Backlog');
+        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Backlog');
         if (this.kpiZypher?.kpiList?.length > 0) {
           this.postZypherKpi(this.kpiZypher, 'zypher');
         }
@@ -344,7 +360,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
       this.zypherKpiData = getData;
     }
     this.kpiLoader = false;
-
+    this.fullPageLoader = false;
   }
   // Return boolean flag based on link is available and video is enabled
   isVideoLinkAvailable(kpiId) {
@@ -375,7 +391,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
     this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
     if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-      if (this.kpiSelectedFilterObj[kpiId]?.length > 1) {
+      if (Object.values(this.kpiSelectedFilterObj[kpiId]).length > 1) {
         const tempArr = {};
         for (let i = 0; i < this.kpiSelectedFilterObj[kpiId]?.length; i++) {
 
@@ -387,13 +403,25 @@ export class BacklogComponent implements OnInit, OnDestroy{
           this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
         }
       } else {
-        if(this.kpiSelectedFilterObj[kpiId]?.length > 0){
-          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == this.kpiSelectedFilterObj[kpiId][0])[0]?.value;
+        if(Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1){
+          this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == Object.values(this.kpiSelectedFilterObj[kpiId])[0])[0]?.value;
       }else{
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
       }
       }
-    } else {
+    } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
+        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+        let preAggregatedValues = [];
+        for (let i = 0; i < filters?.length; i++) {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+        }
+        if (preAggregatedValues?.length > 1) {
+          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+        } else {
+          this.kpiChartData[kpiId] = [...preAggregatedValues];
+        }
+    }
+    else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
       } else if(trendValueList?.hasOwnProperty('value')){
@@ -403,9 +431,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
       }
 
     }
-    if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
 
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
@@ -415,7 +443,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
   }
 
-  getChartType(kpiId){
+  getChartType(kpiId) {
     return this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === kpiId)?.kpiDetail?.chartType;
   }
 
@@ -437,9 +465,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
         }
       }
     }
-    const kpiChartData =obj[Object.keys(obj)[0]];
-    kpiChartData[0].value[0].maxValue=maxValue;
-    kpiChartData[0].value[0].value=value;
+    const kpiChartData = obj[Object.keys(obj)[0]];
+    kpiChartData[0].value[0].maxValue = maxValue;
+    kpiChartData[0].value[0].value = value;
     return kpiChartData;
   }
 
@@ -451,7 +479,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
 
   handleSelectedOptionForCard(event, kpi) {
-    this.kpiSelectedFilterObj['action']='update'
+    this.kpiSelectedFilterObj['action'] = 'update'
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     if (event && Object.keys(event)?.length !== 0) {
       for (const key in event) {
@@ -469,7 +497,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   createAllKpiArray(data) {
-    this.kpiSelectedFilterObj['action']='new'
+    this.kpiSelectedFilterObj['action'] = 'new'
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -487,6 +515,28 @@ export class BacklogComponent implements OnInit, OnDestroy{
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
           this.getDropdownArray(data[key]?.kpiId);
+        } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+          this.getDropdownArray(data[key]?.kpiId);
+          const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
+          if (formType?.toLowerCase() == 'radiobutton') {
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
+          }
+          else if (formType?.toLowerCase() == 'dropdown') {
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          }
+          else if (filters && Object.keys(filters)?.length > 0) {
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+            const tempObj = {};
+            for (const key in filters) {
+              tempObj[key] = ['Overall'];
+            }
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+          } else {
+            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          }
+          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
         }
 
         const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
@@ -498,7 +548,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
-            if(data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Duration'){
+            if (data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Duration') {
               tempObj[prop] = "Past 2 Weeks";
             }
           }
@@ -536,9 +586,9 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
         }
         if (preAggregatedValues?.length > 1) {
-          if(kpiId === 'kpi138'){
+          if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else{
+          } else {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
@@ -552,41 +602,41 @@ export class BacklogComponent implements OnInit, OnDestroy{
           preAggregatedValues = [...preAggregatedValues, ...trendValueList['value']?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
         if (preAggregatedValues?.length > 1) {
-          if(kpiId === 'kpi138'){
+          if (kpiId === 'kpi138') {
             this.kpiChartData[kpiId] = this.applyAggregationLogicForkpi138(preAggregatedValues);
-          } else{
+          } else {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
           this.kpiChartData[kpiId] = [...preAggregatedValues];
         }
-      }else if(this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
+      } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
         !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
-      )){
+      )) {
         if (kpiId === 'kpi3') {
-          this.getkpi3Data(kpiId,trendValueList);
-        }else{
-          this.getChartDataForCardWithCombinationFilter(kpiId,trendValueList);
+          this.getkpi3Data(kpiId, trendValueList);
+        } else {
+          this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
         }
       } else {
         /** when there are no kpi level filters */
         this.kpiChartData[kpiId] = [];
         if (trendValueList && trendValueList?.hasOwnProperty('value') && trendValueList['value']?.length > 0) {
           this.kpiChartData[kpiId]?.push(trendValueList['value']?.filter((x) => x['filter1'] == 'Overall')[0]);
-        } else if(trendValueList?.length > 0){
+        } else if (trendValueList?.length > 0) {
           this.kpiChartData[kpiId] = [...trendValueList];
-        }  else {
+        } else {
           const obj = JSON.parse(JSON.stringify(trendValueList));
           this.kpiChartData[kpiId]?.push(obj);
         }
       }
-    }else{
+    } else {
       this.kpiChartData[kpiId] = [];
     }
 
-    if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
   }
 
   getkpi3Data(kpiId, trendValueList) {
@@ -614,14 +664,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
       kpi3Payload.kpiList = [kpi3];
 
-      this.httpService.postKpi(kpi3Payload, 'jira').subscribe(data =>{
+      this.httpService.postKpi(kpi3Payload, 'jira').subscribe(data => {
         const kpi3Data = data.find(kpi => kpi.kpiId === kpiId);
         this.allKpiArray.push(kpi3Data);
         this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi3Data.trendValueList)));
         this.kpiSpecificLoader.pop();
       });
 
-    }else{
+    } else {
       this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
     }
 
@@ -630,11 +680,11 @@ export class BacklogComponent implements OnInit, OnDestroy{
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     let filters = this.kpiSelectedFilterObj[kpiId];
     if (kpiId === 'kpi3') {
-    const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter2') ? this.kpiSelectedFilterObj[kpiId]['filter2'] : ['Overall'];
-    filters = {
-      filter1: issueFilter
-    };
-  }
+      const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter2') ? this.kpiSelectedFilterObj[kpiId]['filter2'] : ['Overall'];
+      filters = {
+        filter1: issueFilter
+      };
+    }
 
     let preAggregatedValues = [];
     for (const filter in filters) {
@@ -663,7 +713,7 @@ export class BacklogComponent implements OnInit, OnDestroy{
 
         kpi3preAggregatedValues = this.applyAggregationLogic(kpi3preAggregatedValues);
 
-        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value:  (labelData.value1 > 0 ?  Math.round(labelData.value / labelData.value1) : 0) }));
+        kpi3preAggregatedValues[0].data = kpi3preAggregatedValues[0].data.map(labelData => ({ ...labelData, value: (labelData.value1 > 0 ? Math.round(labelData.value / labelData.value1) : 0) }));
         this.kpiChartData[kpiId] = [...kpi3preAggregatedValues];
       } else {
         this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
@@ -680,21 +730,41 @@ export class BacklogComponent implements OnInit, OnDestroy{
     const optionsArr = [];
 
     if (idx != -1) {
-        trendValueList = this.allKpiArray[idx]?.trendValueList;
-        if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-            const obj = {};
-            for (let i = 0; i < trendValueList?.length; i++) {
-                if(trendValueList[i]?.filter?.toLowerCase() != 'overall'){
-                    optionsArr?.push(trendValueList[i]?.filter);
-                }
-            }
-            obj['filterType'] = 'Select a filter';
-            obj['options'] = optionsArr;
-            this.kpiDropdowns[kpiId] = [];
-            this.kpiDropdowns[kpiId].push(obj);
+      trendValueList = this.allKpiArray[idx]?.trendValueList;
+      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          // if (trendValueList[i]?.filter?.toLowerCase() != 'overall') 
+          {
+            optionsArr?.push(trendValueList[i]?.filter);
+          }
         }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = optionsArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        const obj = {};
+        for (let i = 0; i < trendValueList?.length; i++) {
+          let ifExist = optionsArr.findIndex(x => x == trendValueList[i]?.filter1);
+          if (ifExist == -1) {
+            optionsArr?.push(trendValueList[i]?.filter1);
+          }
+        }
+        const kpiObj = this.updatedConfigGlobalData?.filter(x => x['kpiId'] == kpiId)[0];
+        if (kpiObj && kpiObj['kpiDetail']?.hasOwnProperty('kpiFilter') && (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'multiselectdropdown' || (kpiObj['kpiDetail']['kpiFilter']?.toLowerCase() == 'dropdown' && kpiObj['kpiDetail'].hasOwnProperty('hideOverallFilter') && kpiObj['kpiDetail']['hideOverallFilter']))) {
+          const index = optionsArr?.findIndex(x => x?.toLowerCase() == 'overall');
+          if (index > -1) {
+            optionsArr?.splice(index, 1);
+          }
+        }
+        obj['filterType'] = 'Select a filter';
+        obj['options'] = optionsArr;
+        this.kpiDropdowns[kpiId] = [];
+        this.kpiDropdowns[kpiId].push(obj);
+      }
     }
-}
+  }
 
   getDropdownArrayForCard(kpiId) {
     const idx = this.ifKpiExist(kpiId);
@@ -713,29 +783,29 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   handleSelectedOption(event, kpi) {
-    this.kpiSelectedFilterObj['action']='update'
-    this.kpiSelectedFilterObj[kpi?.kpiId] = [];
+    this.kpiSelectedFilterObj['action'] = 'update'
+    this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
-        for (const key in event) {
-            if (event[key]?.length == 0) {
-                delete event[key];
-                this.kpiSelectedFilterObj[kpi?.kpiId] = event;
-            }else{
-                for(let i = 0;i<event[key]?.length;i++){
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
-                }
-            }
+      for (const key in event) {
+        if (typeof event[key] === 'string') {
+          // delete event[key];
+          this.kpiSelectedFilterObj[kpi?.kpiId] = event;
+        } else {
+          for (let i = 0; i < event[key]?.length; i++) {
+            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+          }
         }
+      }
     } else {
-        this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
-  downloadExcel(kpiId, kpiName, isKanban,additionalFilterSupport, chartType?) {
-    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport,this.filterApplyData,this.filterData,false, chartType);
-}
+  downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, chartType?) {
+    this.exportExcelComponent.downloadExcel(kpiId, kpiName, isKanban, additionalFilterSupport, this.filterApplyData, this.filterData, false, chartType);
+  }
 
   convertToHoursIfTime(val, unit) {
     if (unit?.toLowerCase() == 'hours') {
@@ -754,14 +824,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return val;
   }
 
-   checkSprint(value, unit, kpiId){
-      if((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter1'][0]?.toLowerCase() !== 'overall')
-      || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')){
-        return '-'
-      } else{
-        return Math.floor(value) < value ? `>${Math.round(value)} ${unit}` : `=${value} ${unit}`;
-      }
+  checkSprint(value, unit, kpiId) {
+    if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter1'][0]?.toLowerCase() !== 'overall')
+      || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')) {
+      return '-'
+    } else {
+      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `=${value} ${unit}`;
     }
+  }
 
   handleArrowClick(kpi, label, tableValues) {
     this.displayModal = true;
@@ -771,14 +841,14 @@ export class BacklogComponent implements OnInit, OnDestroy{
     this.modalDetails['tableValues'] = tableValues;
   }
 
-  applyAggregationLogicForkpi138(arr){
+  applyAggregationLogicForkpi138(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr));
-    aggregatedArr.forEach(x =>{
+    aggregatedArr.forEach(x => {
       x.data[2].value = x.data[2].value * x.data[0].value;
     });
 
     const kpi138 = this.applyAggregationLogic(aggregatedArr);
-    kpi138[0].data[2].value = Math.round(kpi138[0].data[2].value/kpi138[0].data[0].value);
+    kpi138[0].data[2].value = Math.round(kpi138[0].data[2].value / kpi138[0].data[0].value);
     return kpi138;
   }
 
@@ -818,40 +888,40 @@ export class BacklogComponent implements OnInit, OnDestroy{
     return aggregatedArr;
   }
   generateExcel() {
-      const kpiData = {
-        headerNames: [],
-        excelData: []
-      };
-      this.modalDetails['tableHeadings'].forEach(colHeader => {
-        kpiData.headerNames.push({
-          header: colHeader,
-          key: colHeader,
-          width: 25
-        });
+    const kpiData = {
+      headerNames: [],
+      excelData: []
+    };
+    this.modalDetails['tableHeadings'].forEach(colHeader => {
+      kpiData.headerNames.push({
+        header: colHeader,
+        key: colHeader,
+        width: 25
       });
-      this.modalDetails['tableValues'].forEach(colData => {
-        kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
-      });
+    });
+    this.modalDetails['tableValues'].forEach(colData => {
+      kpiData.excelData.push({ ...colData, ['Issue Id']: { text: colData['Issue Id'], hyperlink: colData['Issue URL'] } })
+    });
 
-      this.excelService.generateExcel(kpiData, this.modalDetails['header']);
-    }
-   typeOf(value) {
-       return typeof value === 'object' && value !== null;
-   }
+    this.excelService.generateExcel(kpiData, this.modalDetails['header']);
+  }
+  typeOf(value) {
+    return typeof value === 'object' && value !== null;
+  }
 
-  getKpiCommentsCount(kpiId?){
+  getKpiCommentsCount(kpiId?) {
     let requestObj = {
       "nodes": [...this.filterApplyData?.ids],
-      "level":this.filterApplyData?.level,
+      "level": this.filterApplyData?.level,
       "nodeChildId": "",
       'kpiIds': []
     };
-    if(kpiId){
+    if (kpiId) {
       requestObj['kpiIds'] = [kpiId];
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj[kpiId] = res[kpiId];
       });
-    }else{
+    } else {
       requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
         this.kpiCommentsCountObj = res;
@@ -860,35 +930,35 @@ export class BacklogComponent implements OnInit, OnDestroy{
   }
 
   /** Reload KPI once field mappoing updated */
-  reloadKPI(event){
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Backlog');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Backlog');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(currentKPIGroup, 'jira');
+      this.postJiraKpi(currentKPIGroup, 'jira');
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
-    if(event?.previousIndex !== event.currentIndex) {
+  drop(event: CdkDragDrop<string[]>, tab) {
+    if (event?.previousIndex !== event.currentIndex) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+      if (tab.width === 'half') {
+        const updatedTabsDetails = this.navigationTabs.find(tabs => tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
       }
       this.updatedConfigGlobalData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.updatedConfigGlobalData  = this.updatedConfigGlobalData.concat(tabs['kpis']);
+      this.navigationTabs.forEach(tabs => {
+        this.updatedConfigGlobalData = this.updatedConfigGlobalData.concat(tabs['kpis']);
       })
       this.updatedConfigGlobalData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
       disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
       hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
-      this.service.kpiListNewOrder.next([this.leadTime,...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
+      this.service.kpiListNewOrder.next([this.leadTime, ...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
     }
   }
 
-  handleTabChange(event){
+  handleTabChange(event) {
     this.activeIndex = event.index;
   }
 

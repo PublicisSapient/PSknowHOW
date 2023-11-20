@@ -19,13 +19,13 @@
 
     <div class="p-inputgroup" *ngSwitchCase="'text'">
         <input type="text" pInputText id="fieldConfig?.fieldName" placeholder="Enter {{fieldConfig?.fieldLabel}}"
-        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()">
+        styleClass="p-w-100" [(ngModel)]="value" (change)="setValue()" [disabled]="fieldConfig?.readOnly">
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
         (click)="showDialogToAddValue(true, fieldConfig?.fieldName, fieldConfig?.fieldCategory)"></button>
     </div>
 
     <div class="p-inputgroup" *ngSwitchCase="'chips'">
-        <p-chips styleClass="p-w-100" inputId="fieldConfig?.fieldName"
+        <p-chips styleClass="p-w-100" [disabled]="fieldConfig?.readOnly" inputId="fieldConfig?.fieldName"
             placeholder="Enter {{fieldConfig?.fieldLabel}}" addOnBlur="true" [(ngModel)]="value" (onAdd)="setValue()" (onRemove)="setValue()">
         </p-chips>
         <button type="button" pButton pRipple icon="pi pi-search" *ngIf="fieldConfig?.fieldCategory"
@@ -52,7 +52,7 @@
     <div *ngSwitchCase="'number'">
         <input type="number" id="fieldConfig?.fieldName" [(ngModel)]="value" (change)="setValue()" min="0"  pInputText class="form-control p-p-2 mb-2 mr-sm-2" (keydown)="enterNumericValue($event)"
         (input)="numericInputUpDown($event)" [ngClass]="fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 ? 'w-80' : ''">
-        ( {{ fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 && thresholdUnit ? thresholdUnit : '' }} )
+         {{ fieldConfig?.fieldName.indexOf('thresholdValue') !== -1 && thresholdUnit ? '( ' + thresholdUnit + ' )' : '' }} 
     </div>
 
     <div *ngSwitchCase="'toggle'">

@@ -133,7 +133,7 @@ export class HttpService {
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private showHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
@@ -173,6 +173,7 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
 
   constructor(
@@ -1120,6 +1121,10 @@ export class HttpService {
   /** This method is responsible for getting field mapping configuration for specfic KPI and processor */
   getKPIFieldMappingConfig(KPIID) {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
+  }
+
+  getFeatureFlags() {
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
   }
 
   getUserValidation(data){

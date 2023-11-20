@@ -23,7 +23,7 @@
       <div class="{{selectedtype}}" id="{{selectedtype}}">
         <div class="clearfix">
           <div class="right-container col">
-            <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex">
+            <p-tabView class="iteration-tabs" [(activeIndex)]="activeIndex" (onChange)="handleTabChange($event)">
               <p-tabPanel *ngFor="let board of navigationTabs" [header]="board.label" [disabled]="board.count == 0">
                 <ng-container *ngIf="(updatedConfigGlobalData | json) !== '{}' && updatedConfigGlobalData != undefined && activeIndex!==2">
                   <div class="p-grid p-pr-2 p-pl-2 iteration-dashboard">
@@ -102,7 +102,7 @@
                       <!-- kpi part 1 render start -->
                       <div class="subKPi p-sm-6 p-pt-0" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.kpiPart1">
                         <ng-container *ngFor="let kpi of board.kpiPart1">
-                          <div class="p-pt-3 p-h-fit-content" cdkDrag cdkDragLockAxis="y" [cdkDragData]="kpi">
+                          <div class="p-pt-3 p-h-fit-content" cdkDrag [cdkDragData]="kpi">
                             <!-- card container -->
                             <div class="card-type-1 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -225,7 +225,7 @@
                        <!-- kpi part 2 render start -->
                        <div class="subKPi p-sm-6 p-pt-0" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.kpiPart2">
                         <ng-container *ngFor="let kpi of board.kpiPart2">
-                          <div class="p-pt-3 p-h-fit-content" cdkDrag cdkDragLockAxis="y" [cdkDragData]="kpi">
+                          <div class="p-pt-3 p-h-fit-content" cdkDrag [cdkDragData]="kpi">
                             <!-- card container -->
                             <div class="card-type-1 p-pl-0" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -350,7 +350,7 @@
                     <ng-container *ngIf="board.width === 'full'">
                       <div class="subKPi p-sm-12" cdkDropList (cdkDropListDropped)="drop($event,board)" [cdkDropListData]="board.kpis">
                         <ng-container *ngFor="let kpi of board.kpis">
-                          <div cdkDrag cdkDragLockAxis="y" class="p-sm-12 p-pr-0 p-pl-0 p-h-fit-content" [cdkDragData]="kpi">
+                          <div cdkDrag class="p-sm-12 p-pr-0 p-pl-0 p-h-fit-content" [cdkDragData]="kpi">
                             <!-- card container -->
                             <div class="card-type-1" *ngIf="kpi?.kpiDetail?.boxType !== 'chart' ;else chart">
                               <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
@@ -481,7 +481,12 @@
                   <app-daily-scrum-tab
                     [assigneeList]="kpiChartData['kpi154']"
                     [columns]="jiraKpiData['kpi154']?.modalHeads"
-                    [filterData]="jiraKpiData['kpi154']?.filterData">
+                    [filterData]="jiraKpiData['kpi154']?.filterData"
+                    [issueData]="jiraKpiData['kpi154']?.issueData"
+                    [standUpStatusFilter]="jiraKpiData['kpi154']?.standUpStatusFilter"
+                    [kpiData]="dailyStandupData"
+                    (reloadKPITab)="reloadKPI($event)"
+                    [loader]=" loaderJiraArray.includes('kpi154')">
                   </app-daily-scrum-tab>
                 </ng-container>
               </p-tabPanel>

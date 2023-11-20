@@ -217,7 +217,7 @@
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "Measure of percentage of story linked defects fixed against the total number of defects raised in  the sprint." ,
+      "definition" : "Measure of percentage of defects closed against the total count tagged to the iteration" ,
       "formula" : [
         {
           "lhs" : "DRE for a sprint" ,
@@ -2518,7 +2518,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 2 ,
+    "defaultOrder" : 3 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 11 ,
@@ -2551,7 +2551,7 @@
     "kpiName" : "Production Defects Ageing" ,
     "kpiUnit" : "Number" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 4 ,
+    "defaultOrder" : 2 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
@@ -2576,7 +2576,7 @@
     "kpiName" : "Refinement Rejection Rate" ,
     "kpiUnit" : "%" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 5 ,
+    "defaultOrder" : 6 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
@@ -2627,7 +2627,7 @@
     "kpiName" : "Defect Reopen Rate" ,
     "kpiUnit" : "Hours" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 3 ,
+    "defaultOrder" : 5 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
@@ -2844,7 +2844,7 @@
     "maxValue" : "" ,
     "kpiUnit" : "Count" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 8 ,
+    "defaultOrder" : 1 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 11 ,
@@ -3025,7 +3025,16 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "Count" ,
@@ -3057,7 +3066,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false
@@ -3082,7 +3090,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false
@@ -3158,7 +3165,6 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "dropdown" ,
     "boxType" : "chart" ,
     "kpiSubCategory" : "Summary" ,
     "calculateMaturity" : false
@@ -3182,6 +3188,13 @@
         {
           "type" : "paragraph" ,
           "value" : "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        },
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes"
+          }
         }
       ] ,
       "maturityLevels" : []
@@ -3576,7 +3589,8 @@
       "30-20" ,
       "20-10" ,
       "10-"
-    ]
+    ] ,
+    "kpiFilter" : "radioButton"
   } ,
   {
     "kpiId" : "kpi163" ,
@@ -3671,7 +3685,7 @@
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 5,
+    "defaultOrder": 4,
     "kpiCategory": "Backlog",
     "kpiSource": "Jira",
     "groupId": 11,
@@ -3690,5 +3704,127 @@
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory" : "Backlog Health"
+  },
+  {
+    "kpiId": "kpi166",
+    "kpiName": "Mean Time to Recover",
+    "maxValue": "100",
+    "kpiUnit": "Hours",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+        },
+        {
+          "type": "paragraph",
+          "value": "The average of all such tickets will be shown."
+        },
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+          }
+        }
+      ],
+      "maturityLevels": []
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Hours",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": false
+  },
+  {
+    "kpiId": "kpi168",
+    "kpiName": "Sonar Code Quality",
+    "kpiUnit": "unit",
+    "maxValue": "90",
+    "isDeleted": "False",
+    "defaultOrder": 14,
+    "kpiSource": "Sonar",
+    "groupId": 1,
+    "kanban": false,
+    "chartType": "bar-with-y-axis-group",
+    "kpiInfo": {
+      "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
+      "details": [
+        {
+          "type": "paragraph",
+          "value": "Code Quality in Sonarqube is shown as Grades (A to E)."
+        },
+        {
+          "type": "paragraph",
+          "value": "A is the highest (best) and,"
+        },
+        {
+          "type": "paragraph",
+          "value": "E is the least"
+        },
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+          }
+        }
+      ]
+    },
+    "xAxisLabel": "Months",
+    "yAxisLabel": "Code Quality",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "dropDown",
+    "aggregationCriteria": "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "hideOverallFilter": true,
+    "maturityRange": ["5", "4", "3", "2", "1"],
+    "yaxisOrder" : {
+      "5" : "E",
+      "4" : "D",
+      "3" : "C",
+      "2" : "B",
+      "1" : "A"
+    }
+  },
+  {
+    "kpiId" : "kpi170",
+    "kpiName" : "Flow Efficiency",
+    "kpiUnit" : "%",
+    "isDeleted" : "False",
+    "defaultOrder" : 1,
+    "kpiCategory" : "Backlog",
+    "kpiSource" : "Jira",
+    "groupId" : 11,
+    "thresholdValue" : "",
+    "kanban" : false,
+    "chartType" : "line",
+    "kpiInfo" : {
+      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+    },
+    "xAxisLabel" : "Duration",
+    "yAxisLabel" : "Percentage",
+    "isPositiveTrend" : false,
+    "kpiFilter" : "dropDown",
+    "showTrend" : false,
+    "aggregationCriteria" : "average",
+    "isAdditionalFilterSupport" : false,
+    "calculateMaturity" : false,
+    "kpiSubCategory" : "Flow KPIs"
   }
 ]

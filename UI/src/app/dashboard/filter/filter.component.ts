@@ -137,6 +137,8 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
 
+  showHideLoader: boolean = false;
+
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -319,7 +321,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         label: 'Settings',
         icon: 'fa fa-cog',
         command: () => {
-          this.service.setSideNav(false);
+          // this.service.setSideNav(false);
           this.router.navigate(['/dashboard/Config/']);
         },
       });
@@ -413,7 +415,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.setHierarchyLevels();
     this.ga.setPageLoad(data);
-    this.getKpiOrderedList();
+    this.navigateToSelectedTab();
   }
 
   makeUniqueArrayList(arr) {
@@ -552,7 +554,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       delete this.kpiListData['id'];
     }
     this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
-  }
+      }
 
   closeAllDropdowns() {
     for (const key in this.toggleDropdownObj) {
@@ -593,7 +595,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // this method would be called on click of apply button of filter
   applyChanges(applySource?, filterApplied = true): void {
-    let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
     let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId === selectedLevelId)[0];
     if (selectedTrendIds !== '' || selectedTrendIds?.length > 0) {
@@ -664,7 +666,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           isAdditionalFilters = true;
         }
       }
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab, isAdditionalFilters, filterApplied,);
+      this.getKpiOrderedList();
     }
   }
 
@@ -755,11 +757,15 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getKpiOrderedList() {
-    if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideKpi().subscribe(
+  let projectList = [];
+      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
+        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+      }
+      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
+            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             this.service.setDashConfigData(this.kpiListData);
             this.processKpiList();
             this.navigateToSelectedTab();
@@ -772,10 +778,6 @@ export class FilterComponent implements OnInit, OnDestroy {
           });
         },
       );
-    } else {
-      this.processKpiList();
-      this.navigateToSelectedTab();
-    }
   }
 
   processKpiList() {
@@ -803,7 +805,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const kpiObj = {};
       let count = 0;
       this.showKpisList = [];
-      for (let i = 0; i < this.kpiList?.length; i++) {
+            for (let i = 0; i < this.kpiList?.length; i++) {
         let showKpi = false;
         if (this.kpiList[i]['shown']) {
           if (this.kpiList[i]['isEnabled']) {
@@ -816,6 +818,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
+        }else{
+          kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
       if (this.showKpisList?.length > 0) {
@@ -834,6 +838,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.showKpisList.length; i++) {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
     }
+    for (let i = 0; i < this.kpiList?.length; i++) {
+      if(!this.kpiList[i]['shown']){
+        kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
+      }
+    }
     this.kpiFormValue['kpis'].setValue(kpiObj);
   }
   handleKpiChange(event) {
@@ -851,6 +860,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
   submitKpiConfigChange() {
+    this.showHideLoader = true;
     for (let i = 0; i < this.kpiList.length; i++) {
       this.kpiList[i]['isEnabled'] =
         this.kpiFormValue['kpis'].value[this.kpiList[i]['kpiId']];
@@ -867,7 +877,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.assignUserNameForKpiData();
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         if (response.success === true) {
           this.messageService.add({
@@ -883,12 +893,14 @@ export class FilterComponent implements OnInit, OnDestroy {
             summary: 'Error in Saving Configuraion',
           });
         }
+        this.showHideLoader = false;
       },
       (error) => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error in saving kpis. Please try after some time.',
         });
+        this.showHideLoader = false;
       },
     );
   }
@@ -903,7 +915,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }
     this.kpiList = this.kpisNewOrder.filter((kpi) => kpi.kpiId !== 'kpi121');
-    this.httpService.submitShowHideKpiData(this.kpiListData).subscribe(
+    this.httpService.submitShowHideOnDashboard(this.kpiListData).subscribe(
       (response) => {
         this.kpisNewOrder = [];
         if (response.success === true) {
@@ -1176,8 +1188,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedFilterArray = [];
         this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
-        this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
-      }
+        this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+        this.getKpiOrderedList()
+       }
     }
   }
 
@@ -1345,6 +1358,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
+        this.service.setVisibleSideBar(false);
+        this.router.navigate(['./authentication/login']);
         window.location.href = environment.CENTRAL_LOGIN_URL;
       }
     });
@@ -1384,7 +1399,13 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
-    this.httpService.getShowHideKpi().subscribe(response => {
+    let projectList = [];
+      if(this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project'){
+        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+      }
+    this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
+      this.service.setSideNav(false);
+      this.service.setVisibleSideBar(false);
       this.service.setDashConfigData(response.data);
       this.kpiListData = response.data;
       this.getNotification();
@@ -1442,7 +1463,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray = [];
       this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
       this.createFilterApplyData();
-      this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+      this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
+      this.getKpiOrderedList();
     } else {
       this.filterForm.controls['selectedRelease'].reset();
       this.service.setNoRelease(true);
@@ -1459,21 +1481,14 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     if (this.filteredAddFilters['release'].length) {
       this.filteredAddFilters['release'] = this.sortAlphabetically(this.filteredAddFilters['release']);
-      const letestPassedRelease = this.findLatestPassedRelease(this.filteredAddFilters['release']);
-      if (letestPassedRelease?.length > 1) {
-        /** When more than one passed release */
-        const letestPassedReleaseStartDate = letestPassedRelease[0].releaseEndDate;
-        const letestPassedReleaseOnSameStartDate = letestPassedRelease.filter(release => release.releaseStartDate && (new Date(release.releaseEndDate).getTime() === new Date(letestPassedReleaseStartDate).getTime()));
-        if (letestPassedReleaseOnSameStartDate?.length > 1) {
-          this.selectedRelease = letestPassedReleaseOnSameStartDate.sort((a, b) => new Date(a.releaseStartDate).getTime() - new Date(b.releaseStartDate).getTime())[0];
-        } else {
-          /** First release with letest end date */
-          this.selectedRelease = letestPassedRelease[0];
-        }
-      } else if (letestPassedRelease?.length === 1) {
-        /** First release with letest end date */
-        this.selectedRelease = letestPassedRelease[0];
-      } else {
+      const unreleasedReleases = this.filteredAddFilters['release'].filter(release => release.releaseState?.toLowerCase() === "unreleased");
+      if (unreleasedReleases?.length > 0) {
+        /** If there are unreleased releases, find the nearest one in the future */
+        unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
+        const todayEOD = new Date(new Date().setHours(0,0,0,0));
+        const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > todayEOD);
+        this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
+       } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
       }
@@ -1525,7 +1540,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.httpService.getActiveIterationStatus({ sprintId }).subscribe(activeSprintStatus => {
         this.displayModal = false;
         if (activeSprintStatus['success']) {
-          interval(10000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
+          interval(3000).pipe(switchMap(() => this.httpService.getactiveIterationfetchStatus(sprintId)), takeUntil(this.subject)).subscribe((response) => {
             if (response?.['success']) {
               this.selectedProjectLastSyncStatus = '';
               this.lastSyncData = response['data'];

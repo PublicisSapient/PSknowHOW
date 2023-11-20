@@ -20,9 +20,13 @@ package com.publicissapient.kpidashboard.apis.mongock.rollback.release_810;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -31,6 +35,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
+@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_release_burnUp_changes", order = "08102", author = "shunaray", systemVersion = "8.1.0")
 public class ReleaseBurnUpChangeUnit {
 
@@ -44,6 +49,7 @@ public class ReleaseBurnUpChangeUnit {
 	public void execution() {
 		releaseBurnUpDefaultOrderRollback();
 		releaseBurnUpFieldMappingRollback();
+		removeLinkDetailFromLeadTimeForChange();
 	}
 
 	public void releaseBurnUpDefaultOrderUpdate() {
@@ -64,11 +70,22 @@ public class ReleaseBurnUpChangeUnit {
 		mongoTemplate.insert(document, "field_mapping_structure");
 
 	}
+	public void removeLinkDetailFromLeadTimeForChange() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi156"));
+
+		Update kpiUpdate = new Update()
+				.pull("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
+	}
 
 	@RollbackExecution
 	public void rollback() {
 		releaseBurnUpDefaultOrderUpdate();
 		releaseBurnUpFieldMappingInsert();
+		addLinkDetailToReleaseBurnUpKpi();
 	}
 
 	public void releaseBurnUpDefaultOrderRollback() {
@@ -86,6 +103,17 @@ public class ReleaseBurnUpChangeUnit {
 		// Remove the document from the collection
 		mongoTemplate.getCollection("field_mapping_structure").deleteOne(filter);
 
+	}
+
+	public void addLinkDetailToReleaseBurnUpKpi() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is("kpi150"));
+
+		Update kpiUpdate = new Update()
+				.push("kpiInfo.details", new Document("type", "link")
+						.append("kpiLinkDetail", new Document("text", "Detailed Information at")
+								.append("link", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
 
 }
