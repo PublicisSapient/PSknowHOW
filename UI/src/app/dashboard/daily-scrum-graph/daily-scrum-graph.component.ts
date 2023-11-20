@@ -624,7 +624,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
             issueClass = 'on_hold'
           }
 
-          if (d['Issue Type'] && d['Issue Type'] === 'Story' && d['subTask']) {
+          if (d['subTask']) {
             return `<div class="issueIDContainer"><i class="fas ${parentIssue && d['Issue Id'] === parentIssue['Issue Id'] ? 'fa-angle-down' : 'fa-angle-right'} p-mr-1"></i><div style="display: inline;"><div class='issueTypeIcon ${d['Issue Type'].split(' ').join('-')}'></div><a class="issue_Id">${d['Issue Id']}</a></div>
                     <div><span class="issueStatus ${issueClass}">${d['Issue Status']}</div></div>`;
           } else {
