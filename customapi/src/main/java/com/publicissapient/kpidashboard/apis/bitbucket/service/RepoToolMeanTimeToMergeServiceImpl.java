@@ -172,13 +172,12 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 			List<Map<String, Double>> repoWiseMRList = new ArrayList<>();
 			List<String> repoList = new ArrayList<>();
 			List<String> branchList = new ArrayList<>();
-			Map<String, Double> excelDataLoader = new HashMap<>();
-
 			Map<String, List<DataCount>> aggDataMap = new HashMap<>();
 			Map<String, Double> aggMeanTimeToMerge = new HashMap<>();
 			reposList.forEach(repo -> {
 				if (!CollectionUtils.isEmpty(repo.getProcessorItemList())
 						&& repo.getProcessorItemList().get(0).getId() != null) {
+					Map<String, Double> excelDataLoader = new HashMap<>();
 					String branchName = getBranchSubFilter(repo, projectName);
 					Map<String, Double> dateWiseMeanTimeToMerge = new HashMap<>();
 					createDateLabelWiseMap(repoToolKpiMetricRespons, repo.getRepositoryName(), repo.getBranch(),
@@ -193,7 +192,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 
 				}
 			});
-			List<DataCount> dataCountList = setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, excelDataLoader,
+			List<DataCount> dataCountList = setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, new HashMap<>(),
 					projectName, duration, dataPoints);
 			aggDataMap.put(Constant.AGGREGATED_VALUE, dataCountList);
 
