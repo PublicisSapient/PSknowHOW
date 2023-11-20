@@ -25,7 +25,7 @@
             <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
               <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
               <div class="p-sm-5 p-pl-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi116']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi116']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [filterApplyData]="filterApplyData"
                   [trendData]="kpiTrendsObj['kpi116']" [dropdownArr]="kpiDropdowns['kpi116']"
                               (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi116']?.kpiName, updatedConfigDataObj['kpi116']?.kpiDetail.kanban,updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport)"
                   (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi116'])" [showExport]="true"
@@ -106,7 +106,7 @@
                 </div>
               </div>
               <div class="p-sm-5 p-pr-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi118']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi118']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [filterApplyData]="filterApplyData"
                   [trendData]="kpiTrendsObj['kpi118']" [dropdownArr]="kpiDropdowns['kpi118']"
                               (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
                               (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi118']?.kpiId, updatedConfigDataObj['kpi118']?.kpiName, updatedConfigDataObj['kpi118']?.kpiDetail.kanban,updatedConfigDataObj['kpi118']?.kpiDetail?.additionalFilterSupport)"
@@ -164,7 +164,7 @@
             <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
               <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
               <div class="p-sm-5 p-pl-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi156']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi156']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [filterApplyData]="filterApplyData"
                   [trendData]="kpiTrendsObj['kpi156']" [dropdownArr]="kpiDropdowns['kpi156']"
                               (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi156']?.kpiId, updatedConfigDataObj['kpi156']?.kpiName, updatedConfigDataObj['kpi156']?.kpiDetail.kanban,updatedConfigDataObj['kpi156']?.kpiDetail?.additionalFilterSupport)"
                   (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi156'])" [showExport]="true"
@@ -246,7 +246,7 @@
                 </div>
               </div>
               <div class="p-sm-5 p-pr-4">
-                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi166']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
+                <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi166']" [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [iSAdditionalFilterSelected]="iSAdditionalFilterSelected" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [filterApplyData]="filterApplyData"
                   [trendData]="kpiTrendsObj['kpi166']" [dropdownArr]="kpiDropdowns['kpi166']"
                   (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi166'])"
                   (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi166']?.kpiId, updatedConfigDataObj['kpi166']?.kpiName, updatedConfigDataObj['kpi166']?.kpiDetail.kanban,updatedConfigDataObj['kpi166']?.kpiDetail?.additionalFilterSupport)"

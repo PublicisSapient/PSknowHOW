@@ -94,7 +94,7 @@
         </div>
     </div>
     <div class="kpi-card-body" [ngStyle]="{'height': !(showChartView === 'table') ? '400px' : '150px',
-    'min-height': !(showChartView === 'table')  ? '330px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}">
+    'min-height': !(showChartView === 'table')  ? '330px' : '100px'}" [ngClass]="{'smallChart':board == 'dora'}" (click)="displayMagnifyModal = true;">
         <div class="kpi-card-indicator p-jc-evenly p-flex-wrap"
             *ngIf=" (showChartView !== 'large') && isShow && trendData?.length >= 1 && showTrendIndicator && kpiData?.kpiId !== 'kpi17'">
             <div *ngFor="let item of trendData; let i = index;" class="trend-box">
@@ -117,7 +117,7 @@
     </div>
     <div class="kpi-card-footer p-d-flex justify-content-between">
         <div class="kpi-card-icons">
-            <i class="fa fa-search-plus p-mr-1" (click)="displayMagnifyModal = true;" pTooltip="Magnify" tooltipPosition="top"></i>
+            <i class="fa fa-search-plus p-mr-1" [ngClass]="{'disable-setting-icon':service.getSelectedTrends().length > 1}" (click)="displayMagnifyModal = true;" pTooltip="Magnify" tooltipPosition="top"></i>
         </div>
         <div class="kpi-card-icons"
             [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 ||  service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase() !== 'project' ||  userRole === 'roleViewer' || checkIfViewer)}">
@@ -204,11 +204,12 @@
     </ng-container>
 </p-dialog>
 
-<p-dialog [header]="kpiData?.kpiName" [(visible)]="displayMagnifyModal" [modal]="true" styleClass="field-mapping">
+<p-dialog [header]="kpiData?.kpiName" [(visible)]="displayMagnifyModal" [modal]="true" styleClass="magnify-modal">
     <hr>
     <ng-template pTemplate="content">
-        <app-kpi-modal [kpi]="kpiData" [thresholdValue]="thresholdValue"
-        [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" 
+        <app-kpi-modal [kpi]="kpiData" [thresholdValue]="thresholdValue" [trendData]="trendData" [trendBoxColorObj]="trendBoxColorObj"
+        [kpiChartData]="kpiChartData" [chartColorList]="chartColorList" [kpiThresholdObj]="kpiThresholdObj"
+        [filterApplyData]="filterApplyData" [trendValueList]="kpiChartData[kpiData?.kpiId]"
         [iSAdditionalFilterSelected]="iSAdditionalFilterSelected"></app-kpi-modal>
     </ng-template>
 </p-dialog>

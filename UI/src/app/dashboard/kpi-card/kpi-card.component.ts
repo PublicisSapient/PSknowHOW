@@ -42,6 +42,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   @Input() kpiChartData: any;
   @Input() chartColorList: any; 
   @Input() thresholdValue: number;
+  @Input() filterApplyData: any;
+  @Input() kpiThresholdObj: any;
 
   projectList : Array<string>;
   displaySprintDetailsModal : boolean = false;

@@ -188,10 +188,22 @@
     min-height: 20vh !important;
 
 }
+
+
+:host::ng-deep .p-dialog.magnify-modal {
+    min-width: 95vw !important;
+    width: auto !important;
+    max-width: 100vw;
+    min-height: 95vh !important;
+
+}
 .kpi-card-body{
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    cursor: -moz-zoom-in; 
+    cursor: -webkit-zoom-in; 
+    cursor: zoom-in;
 }
 
 .disable-setting-icon{

@@ -1,0 +1,60 @@
+ul li.selectedfilter {
+    font-size: 0.8rem;
+    display: flex;
+    line-height: 1.4rem;
+    margin-bottom: .5rem;
+}
+
+.align-marker {
+    margin: 0 1rem 0 0;
+}
+
+ul li.selectedfilter .selected-node-label .align-list-marker {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.trend-box {
+    flex: 0 0 33.3333%;
+}
+
+::ng-deep .p-tabview-ink-bar {
+    display: none !important;
+}
+
+::ng-deep .sprint-hover-project1 [aria-selected="true"] {
+    background-color: #079FFF !important;
+    color: black !important;
+}
+
+::ng-deep .sprint-hover-project2 [aria-selected="true"] {
+    background-color: #cdba38 !important;
+    color: black !important;
+}
+
+::ng-deep .sprint-hover-project3 [aria-selected="true"] {
+    background-color: #00E6C3 !important;
+    color: black !important;
+}
+
+::ng-deep .sprint-hover-project4 [aria-selected="true"] {
+    background-color: #fc6471 !important;
+    color: black !important;
+}
+
+::ng-deep .sprint-hover-project5 [aria-selected="true"] {
+    background-color: #bd608c !important;
+    color: black !important;
+}
+
+::ng-deep .sprint-hover-project6 [aria-selected="true"] {
+    background-color: #7d5ba6 !important;
+    color: black !important;
+}
+
+:host ::ng-deep .p-tabview .p-tabview-nav {
+    display: none;
+}

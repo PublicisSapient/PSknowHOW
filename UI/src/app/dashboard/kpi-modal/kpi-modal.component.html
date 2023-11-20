@@ -1,42 +1,64 @@
+
+<div>
+    <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
+        <ng-container *ngFor="let item of colorObj; let i = index;">
+            <li class="selectedfilter p-mr-3">
+                <div class="selected-node-label p-pl-0">
+                    <span class="align-list-marker" [title]="item?.nodeName" [ngStyle]="{'background':item?.color}"></span>
+                    {{ item?.nodeName }}
+                </div>
+            </li>
+        </ng-container>
+    </ul>
+</div>
 <div class="chart-container">
+    <div class="kpi-card-indicator p-d-flex p-jc-evenly p-flex-wrap"
+    *ngIf="trendData?.length >= 1 && kpi?.kpiId !== 'kpi17'">
+    <div *ngFor="let item of trendData; let i = index;" class="trend-box">
+        <app-trend-indicator *ngIf="item" [dataTrend]="item"
+            [color]="trendBoxColorObj[item?.hierarchyName]?.color" [kpiData]="kpiData"
+            [noOfBox]="trendData?.length">
+        </app-trend-indicator>
+    </div>
+</div>
     <div class="p-pl-3 p-pr-3" [ngSwitch]="kpi?.kpiDetail?.chartType">
     <ng-container
       *ngIf="(kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && !iSAdditionalFilterSelected) || (kpiChartData[kpi?.kpiId]?.length > 0 && chartColorList[kpi?.kpiId]?.length>0 && kpi?.kpiDetail?.additionalFilterSupport && iSAdditionalFilterSelected); else noData">
       <ng-container *ngIf="!(showChart === 'table')">
-        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'"
+        <app-groupstackchart *ngSwitchCase="'stackedColumn'" [legendType]="'tooltip'" [viewType]="'magnified'"
           [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
-          [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="thresholdValue"
+          [unit]="kpi?.kpiDetail?.kpiUnit" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
           [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList[kpi?.kpiId]"
           [selectedtype]="selectedtype"></app-groupstackchart>
         <app-table *ngSwitchCase="'table'" [trendBoxColorObj]="trendBoxColorObj" [data]="kpiChartData[kpi?.kpiId].data"
           [cols]="kpiChartData[kpi?.kpiId]?.columnHeaders" [showMarker]="'true'"
           [showMarkerColumnNumber]="0"></app-table>
-        <app-multiline *ngSwitchCase="'line'" [thresholdValue]="thresholdValue"
+        <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [viewType]="'magnified'"
           [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
           [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
           [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-          [selectedtype]="selectedtype" [viewType]="showChart" [board]="'executive'" 
+          [selectedtype]="selectedtype" [board]="'executive'" 
           [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
         </app-multiline>
-        <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="thresholdValue"
+        <app-multiline-style *ngSwitchCase="'multipleline'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [viewType]="'magnified'"
           [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
           [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
           [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList[kpi?.kpiId]"
-          [selectedtype]="selectedtype" [viewType]="showChart">
+          [selectedtype]="selectedtype">
         </app-multiline-style>
-        <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
+        <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'" [viewType]="'magnified'"
           [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"
-          [thresholdValue]="thresholdValue" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
+          [thresholdValue]="kpiThresholdObj[kpi?.kpiId]" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
           [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
-          [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
+          [selectedtype]="selectedtype" [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
         </app-grouped-column-plus-line-chart>
-        <app-bar-with-y-axis-group *ngSwitchCase="'bar-with-y-axis-group'"
+        <app-bar-with-y-axis-group *ngSwitchCase="'bar-with-y-axis-group'" [viewType]="'magnified'"
           [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true" [unit]="kpi?.kpiDetail?.kpiUnit"
           [thresholdValue]="kpi?.kpiDetail?.thresholdValue" [xCaption]="kpi?.kpiDetail?.xaxisLabel"
           [yCaption]="kpi?.kpiDetail?.yaxisLabel" [color]="chartColorList[kpi?.kpiId]"
           [barLegend]="kpi?.kpiDetail?.barLegend" [lineLegend]="kpi?.kpiDetail?.lineLegend"
-          [selectedtype]="selectedtype" [viewType]="showChart"  [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
+          [selectedtype]="selectedtype" [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG"
           [yAxisOrder]="kpi?.kpiDetail?.yaxisOrder">
         </app-bar-with-y-axis-group>
       </ng-container>
@@ -52,4 +74,45 @@
         </div>
       </ng-template>
   </div>
-</div>>
+  <div class="p-pb-6">
+    <p-tabView [(activeIndex)]="selectedTabIndex">
+
+        <ng-container *ngFor="let project of projectList;  let i = index;">
+            <p-tabPanel header="{{project.length > 15 ? project.substring(0,15)+'..' : project}}"
+                [headerStyleClass]="getColorCssClasses(selectedTabIndex)">
+                <p-table
+                    *ngIf="(sprintDetailsList[selectedTabIndex] && sprintDetailsList[selectedTabIndex]['hoverList'].length >0 ) ; else showNoDataMessage"
+                    [columns]="columnList" [value]="sprintDetailsList[selectedTabIndex]['hoverList']"
+                    styleClass="p-datatable-gridlines kpi-table" [scrollable]="true" scrollHeight="250px">
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <ng-container *ngFor="let col of columns">
+                                <th *ngIf="hasData(col.field)" [pSortableColumn]="col.field"
+                                    [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                    {{ col.header }}
+                                    <p-sortIcon *ngIf="col.field === 'value'" [field]="col.field"></p-sortIcon>
+                                </th>
+                            </ng-container>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                        <tr>
+                            <ng-container *ngFor="let col of columns">
+                                <td *ngIf="hasData(col.field)"
+                                    [innerHTML]="col.field == 'value' || col.field.includes('value') ? rowData[col.field]+rowData['unit'] : rowData[col.field]"
+                                    class="p-overflowlabel" [ngClass]="{'kpi-value-center': col.field ==='value'}">
+                                </td>
+                            </ng-container>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+
+            </p-tabPanel>
+        </ng-container>
+        <ng-template #showNoDataMessage>
+            <h2 class="p-text-center">No Data Available</h2>
+        </ng-template>
+    </p-tabView>
+  </div>
+</div>

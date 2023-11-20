@@ -979,6 +979,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       colorObj[this.selectedFilterArray[i].nodeId] = { nodeName: this.selectedFilterArray[i].nodeName, color: colorsArr[i] }
     }
     this.service.setColorObj(colorObj);
+    this.service.colorObjSetter(colorObj);
   }
 
   resetFilterApplyObj() {
