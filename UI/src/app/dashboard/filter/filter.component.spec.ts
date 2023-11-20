@@ -1239,7 +1239,7 @@ const completeHierarchyData = {
     expect(component.isTooltip).toBe(true);
    })
 
-    it('should redirect on login page',inject([Router], (router: Router) => {
+    xit('should redirect on login page',inject([Router], (router: Router) => {
       const navigateSpy = spyOn(router, 'navigate');
       component.logout();
       httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);

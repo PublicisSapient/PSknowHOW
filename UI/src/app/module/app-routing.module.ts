@@ -34,8 +34,8 @@ import { SsoAuthFailureComponent } from '../component/sso-auth-failure/sso-auth-
 import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/unauthorised-access.component';
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
-import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 import { FeatureGuard } from '../services/feature.guard';
+import { PageNotFoundComponent } from '../page-not-found/page-not-found.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -64,7 +64,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
+        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Iteration"
         }

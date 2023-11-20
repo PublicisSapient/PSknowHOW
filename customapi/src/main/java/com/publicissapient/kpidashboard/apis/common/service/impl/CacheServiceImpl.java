@@ -262,3 +262,14 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 }
+	/**
+	 *
+	 * @param
+	 * @return
+	 */
+	/*@Override
+	@Cacheable(value = CommonConstant.ACTION_POLICY_RULES_CACHE)
+	public List<ActionPoliciesDTO> getActionPoliciesFromCache() {
+		return authNAuthService.fetchActionPolicyByResource();
+	}
+*/}

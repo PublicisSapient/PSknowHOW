@@ -139,7 +139,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   showSwitchDropdown: boolean = false;
 
   showHideLoader: boolean = false;
-  
+
   constructor(
     private service: SharedService,
     private httpService: HttpService,
@@ -1360,8 +1360,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+        this.router.navigate(['./authentication/login']);
         window.location.href = environment.CENTRAL_LOGIN_URL;
-        // this.router.navigate(['./authentication/login']);
       }
     });
   }
@@ -1486,8 +1486,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (unreleasedReleases?.length > 0) {
         /** If there are unreleased releases, find the nearest one in the future */
         unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
-        const nearestUnreleased = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > new Date());
-        this.selectedRelease = nearestUnreleased ? nearestUnreleased : unreleasedReleases[0];
+        const todayEOD = new Date(new Date().setHours(0,0,0,0));
+        const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > todayEOD);
+        this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
        } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
