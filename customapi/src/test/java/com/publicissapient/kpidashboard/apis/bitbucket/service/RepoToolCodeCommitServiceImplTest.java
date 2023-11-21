@@ -203,7 +203,7 @@ public class RepoToolCodeCommitServiceImplTest {
 				.thenReturn(repoToolKpiMetricResponseList);
 		try {
 			KpiElement kpiElement = repoToolCodeCommitService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 				String projectName = data.getFilter();
 				switch (projectName) {

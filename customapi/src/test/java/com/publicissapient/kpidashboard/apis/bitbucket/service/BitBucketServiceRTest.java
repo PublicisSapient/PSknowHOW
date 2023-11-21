@@ -129,7 +129,7 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
 		commitKpiElement = kpiRequest.getKpiList().get(0);
 
@@ -164,7 +164,7 @@ public class BitBucketServiceRTest {
 					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
 		}
 
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
 		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
 
@@ -204,7 +204,7 @@ public class BitBucketServiceRTest {
 					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
 		}
 
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
@@ -241,7 +241,7 @@ public class BitBucketServiceRTest {
 					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
 		}
 
-		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
+		when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 

@@ -234,7 +234,7 @@ public class CodeCommitKanbanServiceImplTest {
 						.thenReturn(kpiRequestTrackerId);
 
 		KpiElement kpiElement = codeCommitServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		((List<DataCountGroup>) kpiElement.getTrendValueList()).forEach(data -> {
 			String projectName = data.getFilter();
 			switch (projectName) {

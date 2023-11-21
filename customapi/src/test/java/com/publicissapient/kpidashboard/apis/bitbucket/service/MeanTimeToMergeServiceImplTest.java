@@ -203,7 +203,7 @@ public class MeanTimeToMergeServiceImplTest {
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
 
 		KpiElement kpiElement = meanTimeToMergeServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 		List<BranchMergeReqCount> out = (List<BranchMergeReqCount>) kpiElement.getTrendValueList();
 		assertThat("merge requests", out.size(), equalTo(2));
 	}

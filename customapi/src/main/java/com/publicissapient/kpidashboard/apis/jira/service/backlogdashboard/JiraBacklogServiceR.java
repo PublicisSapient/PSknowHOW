@@ -114,8 +114,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
             } else {
                 log.error("label name for selected hierarchy not found");
             }
-//            List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-//                    groupName);
             List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
             if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
                 projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
