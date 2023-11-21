@@ -204,7 +204,7 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent
+        BarWithYAxisGroupComponent,
         DeveloperComponent,
         PageNotFoundComponent
     ],

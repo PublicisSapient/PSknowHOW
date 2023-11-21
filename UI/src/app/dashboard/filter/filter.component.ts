@@ -1360,7 +1360,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        this.router.navigate(['./authentication/login']);
+        // this.router.navigate(['./authentication/login']);
         window.location.href = environment.CENTRAL_LOGIN_URL;
       }
     });

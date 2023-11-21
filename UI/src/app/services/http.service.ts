@@ -176,7 +176,6 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
-  private validateTokenUrl = this.baseUrl + '/api/validateToken';
 
   constructor(
     private router: Router,
@@ -948,16 +947,21 @@ export class HttpService {
     return this.http.get<any>(this.autoApproveUrl);
   }
 
-  /** get show/Hide kpi  data */
-  getShowHideKpi() {
-    return this.http.get<any>(this.showHideKpiUrl);
+  /** show-Hide for dashboard config component  */
+  getShowHideKpi(projectID) {
+    return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
   }
-  submitShowHideKpiData(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
+  submitShowHideKpiData(data,projectID): Observable<any> {
+    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
   }
 
-  updateUserBoardConfig(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
+  /** show-Hide for other nav, filter component */
+  getShowHideOnDashboard(payload){
+    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  }
+
+  submitShowHideOnDashboard(data){
+    return this.http.post<any>(this.getShowHideKpiUrl,data);
   }
 
   getNewUserAccessRequestFromAPI() {

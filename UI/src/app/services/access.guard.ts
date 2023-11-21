@@ -28,14 +28,12 @@ export class AccessGuard implements CanActivate {
     constructor(private router: Router, private getAuthorization: GetAuthorizationService, private sharedService: SharedService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        /**To-do: To be handled */
-        // if (this.getAuthorization.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
-        if(this.sharedService.currentUserDetails){
+        if (this.getAuthorization.checkIfSuperUser() || (this.sharedService.getCurrentUserDetails('projectsAccess') && this.sharedService.getCurrentUserDetails('projectsAccess') !== 'undefined' && this.sharedService.getCurrentUserDetails('projectsAccess').length)) {
             this.hasAccess = true;
             return this.hasAccess;
         }
 
-        // this.router.navigate(['./dashboard/Config/Profile']);
+        this.router.navigate(['./dashboard/Config/Profile']);
         return this.hasAccess;
     }
 }

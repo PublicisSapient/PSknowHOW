@@ -34,8 +34,7 @@ export class AuthGuard implements CanActivate {
         const currentUserDetails = this.sharedService.currentUserDetails;
         console.log("inside auth guard", currentUserDetails)
         if (currentUserDetails) {
-            /** changing this currentUserDetails['authorities'] to currentUserDetails['userName'] */
-            if (currentUserDetails['userName']) {
+            if (currentUserDetails['authorities']) {
                 return true;
             } else {
                 this.router.navigate(['./authentication']);
