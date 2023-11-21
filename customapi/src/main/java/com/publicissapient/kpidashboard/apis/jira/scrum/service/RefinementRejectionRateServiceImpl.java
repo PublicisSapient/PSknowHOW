@@ -118,9 +118,8 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
 		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -146,11 +145,9 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 	/**
 	 * Prepare Data for Refinement Rejected Rate KPI
 	 *
-	 * @param trendValueList
 	 * @param kpiElement
 	 */
-	private void projectWiseLeafNodeValue(Node node, List<DataCount> trendValueList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node node, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		CustomDateRange dateRange = KpiDataHelper.getDayForPastDataHistory(customApiConfig.getBacklogWeekCount() * 5);
 
@@ -187,6 +184,7 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 		Map<String, Map<String, List<JiraIssue>>> weekAndTypeMap = populateWeekAndTypeMap(weekMap);
 		List<DataCount> dataList = new ArrayList<>();
 		List<JiraIssue> issuesExcel = new ArrayList<>();
+		List<DataCount> trendValueList = new ArrayList<>();
 		if (null != projectWiseMap.get(node.getId()) && !rejectedInRefinementJiraIssues.isEmpty()
 				&& !readyForRefinementJiraIssues.isEmpty() && !acceptedInRefinementJiraIssues.isEmpty()) {
 			getWeekWiseRecord(projectWiseMap.get(node.getId()), weekAndTypeMap, weekMap, jiraDateMap);

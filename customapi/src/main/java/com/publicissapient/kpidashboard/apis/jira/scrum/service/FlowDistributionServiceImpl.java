@@ -82,9 +82,8 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		}
 		log.info("FlowDistributionServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
@@ -120,13 +119,11 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 	 * level.
 	 *
 	 * @param leafNode
-	 * @param trendValueList
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		// this method fetch dates for past history data
 		CustomDateRange dateRange = KpiDataHelper.getMonthsForPastDataHistory(customApiConfig.getFlowKpiMonthCount());
@@ -137,6 +134,7 @@ public class FlowDistributionServiceImpl extends JiraBacklogKPIService<Double, L
 
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		List<DataCount> trendValueList = new ArrayList<>();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNode, startDate, endDate, kpiRequest);
 

@@ -101,15 +101,14 @@ public class FlowLoadServiceImpl extends JiraBacklogKPIService<Double, List<Obje
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
 		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValue(projectNode, trendValueList, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
 
-	private void projectWiseLeafNodeValue(Node leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+		List<DataCount> trendValueList = new ArrayList<>();
 
 		int monthToSubtract = customApiConfig.getFlowKpiMonthCount();
 
