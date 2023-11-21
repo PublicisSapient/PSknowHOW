@@ -154,9 +154,15 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       } else {
         this.optionSelected.emit(this.filterOptions);
       }
-      console.log("filterOptions", this.filterOptions) 
       // this.showFilterTooltip(true);
     }
+    const gaObj = {
+      "kpiName": this.kpiData?.kpiName,
+      "filter1": this.filterOptions?.['filter1'] || [value],
+      "filter2": this.filterOptions?.['filter2'] || null,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
+    }
+    this.triggerGaEvent(gaObj);
   }
   getColor(nodeName) {
     let color = '';
@@ -343,9 +349,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   }
 
   handleKpiClick(){
-    console.log(this.kpiData);
     const obj = {
-      'kpiName': this.kpiData?.kpiName
+      'kpiName': this.kpiData?.kpiName,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
     }
     this.triggerGaEvent(obj)
   }
