@@ -79,7 +79,7 @@
                     <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
                     (mouseover)="showTooltip(true, 'kpi116')" (mouseleave)="showTooltip(false, 'kpi116')"
                         [style]="{'position': 'relative'}">
-                        <app-tooltip *ngIf="isTooltip.includes('kpi116')" [data]="getMaturityRange('kpi116')" [showingMaturityRange]="true"
+                        <app-tooltip [hidden]="!isTooltip.includes('kpi116')" [data]="maturityObj['kpi116']" [showingMaturityRange]="true"
                             (mouseleave)="showTooltip(false, 'kpi116')"
                             [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </span>
@@ -102,7 +102,7 @@
                     <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
                         (mouseover)="showTooltip(true, 'kpi118')" (mouseleave)="showTooltip(false, 'kpi118')"
                         [style]="{'position': 'relative'}">
-                        <app-tooltip *ngIf="isTooltip.includes('kpi118')" [data]="getMaturityRange('kpi118')" [showingMaturityRange]="true"
+                        <app-tooltip [hidden]="!isTooltip.includes('kpi118')" [data]="maturityObj['kpi118']" [showingMaturityRange]="true"
                             (mouseleave)="showTooltip(false, 'kpi118')"
                             [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </span>
@@ -232,7 +232,7 @@
                     <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
                     (mouseover)="showTooltip(true, 'kpi156')" (mouseleave)="showTooltip(false, 'kpi156')"
                         [style]="{'position': 'relative'}">
-                        <app-tooltip *ngIf="isTooltip.includes('kpi156')" [data]="getMaturityRange('kpi156')" [showingMaturityRange]="true"
+                        <app-tooltip [hidden]="!isTooltip.includes('kpi156')" [data]="maturityObj['kpi156']" [showingMaturityRange]="true"
                             (mouseleave)="showTooltip(false, 'kpi156')"
                             [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </span>
@@ -256,7 +256,7 @@
                     <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
                     (mouseover)="showTooltip(true, 'kpi166')" (mouseleave)="showTooltip(false, 'kpi166')"
                         [style]="{'position': 'relative'}">
-                        <app-tooltip *ngIf="isTooltip.includes('kpi166')" [data]="getMaturityRange('kpi166')" [showingMaturityRange]="true"
+                        <app-tooltip [hidden]="!isTooltip.includes('kpi166')" [data]="maturityObj['kpi166']" [showingMaturityRange]="true"
                             (mouseleave)="showTooltip(false, 'kpi166')"
                             [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </span>

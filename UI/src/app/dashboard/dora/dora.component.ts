@@ -66,6 +66,7 @@ export class DoraComponent implements OnInit {
   updatedConfigDataObj: object = {};
   kpiThresholdObj = {};
   isTooltip = [];
+  maturityObj = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -488,6 +489,7 @@ export class DoraComponent implements OnInit {
       }
       let maturityColor = selectedKPI.maturityLevel.filter((level) => level.level === maturity)[0]?.bgColor;
       this.kpiChartData[kpiId][0].maturityColor = maturityColor;
+      this.getMaturityData(kpiId);
     }
   }
 
@@ -537,12 +539,13 @@ export class DoraComponent implements OnInit {
           }
           break;
       }
+      
       return maturity;
     }
   }
 
   findIncrementalOrDecrementalRange(range) {
-    if (range[0].split('-')[1] > range[1].split('-')[1]) {
+    if (parseInt(range[1].split('-')[1] + 1) > parseInt(range[2].split('-')[1] + 1)) {
       return 'decremental';
     } else {
       return 'incremental';
@@ -550,33 +553,39 @@ export class DoraComponent implements OnInit {
   }
 
   showTooltip(val, kpiId) {
-    if(val) {
+    if (val) {
       this.isTooltip.push(kpiId);
     } else {
       this.isTooltip.splice(this.isTooltip.indexOf(kpiId), 1);
     }
   }
 
-  getMaturityRange(kpiId) {
+  getMaturityData(kpiId) {
     let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
-    let obj =  {
-      maturityLevels: []
-    }; 
-    let maturityRange = selectedKPI.maturityRange;
-    let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(selectedKPI.maturityRange);
-    
-    if(findIncrementalOrDecrementalRange === 'decremental') {
-      maturityRange = maturityRange.reverse();
-    }
 
-    selectedKPI.maturityLevel.forEach((element, index) => {
-      obj.maturityLevels.push({
-        level: element.level,
-        range: maturityRange[index],
-        color: element.bgColor
+    if (!this.maturityObj[kpiId]) {
+
+      this.maturityObj[kpiId] = {
+        maturityLevels: [],
+      };
+
+      let maturityRange = selectedKPI.maturityRange;
+      let maturityLevel = selectedKPI.maturityLevel;
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+      console.log(findIncrementalOrDecrementalRange, kpiId);
+      console.log(maturityRange);
+      if (findIncrementalOrDecrementalRange === 'decremental') {
+        maturityRange = maturityRange.reverse();
+      }
+
+      maturityLevel.forEach((element, index) => {
+        this.maturityObj[kpiId]['maturityLevels'].push({
+          level: element.level,
+          range: maturityRange[index],
+          color: element.bgColor
+        });
       });
-    });
-    return obj;
+    }
   }
 
 }

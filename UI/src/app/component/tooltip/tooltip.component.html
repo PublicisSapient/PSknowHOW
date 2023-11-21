@@ -45,7 +45,7 @@
             </div>
             <div *ngIf="data?.maturityLevels?.length > 0" class="p-d-flex p-flex-wrap p-pl-4 p-grid">
                 <div *ngFor="let maturity of data?.maturityLevels.slice().reverse()" class="paragraph p-col-3">
-                    <div *ngIf="showingMaturityRange" class="maturity-indicator" [ngStyle]="{ 'background-color' : maturity.color}"></div>
+                    <div *ngIf="maturity.color" class="maturity-indicator" [ngStyle]="{ 'background-color' : maturity.color}"></div>
                     <span class="paragraph p-pr-2">{{maturity?.level}}</span><span *ngIf="showingMaturityRange">: </span> {{maturity?.range}}
                 </div>
             </div>
