@@ -28,6 +28,7 @@ export class TooltipComponent implements OnInit {
     @Input() showChartView = 'chart';
     @Input() filterNo?: string = '';
     @Input() kpiName;
+    @Input() showingMaturityRange: boolean;
 
     constructor() {
 

@@ -76,6 +76,13 @@
                   <h4 class="p-m-0">Change Failure Rate</h4>
                   <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
                     <div class="p-mt-3 summary-circle p-text-center" [ngStyle]="{'background-color': kpiChartData['kpi116']?.[0]?.maturityColor}">{{kpiChartData['kpi116']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}</div>
+                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                    (mouseover)="showTooltip(true, 'kpi116')" (mouseleave)="showTooltip(false, 'kpi116')"
+                        [style]="{'position': 'relative'}">
+                        <app-tooltip *ngIf="isTooltip.includes('kpi116')" [data]="getMaturityRange('kpi116')" [showingMaturityRange]="true"
+                            (mouseleave)="showTooltip(false, 'kpi116')"
+                            [kpiName]="kpiData?.kpiName"></app-tooltip>
+                    </span>
                   </div>
                   <ng-template #noData1>
                     <div class="overlay"
@@ -89,9 +96,16 @@
                   </ng-template>
                 </div>
                 <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0">Deployment Frequency / Week </h4>
+                  <h4 class="p-m-0">Deployment Frequency </h4>
                   <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
                     <div class="p-mt-3 summary-circle p-text-center"  [ngStyle]="{'background-color': kpiChartData['kpi118']?.[0]?.maturityColor}">{{kpiChartData['kpi118']?.[0]?.aggregationValue}}</div>
+                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                        (mouseover)="showTooltip(true, 'kpi118')" (mouseleave)="showTooltip(false, 'kpi118')"
+                        [style]="{'position': 'relative'}">
+                        <app-tooltip *ngIf="isTooltip.includes('kpi118')" [data]="getMaturityRange('kpi118')" [showingMaturityRange]="true"
+                            (mouseleave)="showTooltip(false, 'kpi118')"
+                            [kpiName]="kpiData?.kpiName"></app-tooltip>
+                    </span>
                   </div>
                   <ng-template #noData2>
                     <div class="overlay"
@@ -215,6 +229,13 @@
                   <h4 class="p-m-0">Lead Time For Change</h4>
                   <div *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
                     <div class="p-mt-3 summary-circle p-text-center"  [ngStyle]="{'background-color': kpiChartData['kpi156']?.[0]?.maturityColor}">{{kpiChartData['kpi156']?.[0]?.aggregationValue + " " + updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}</div>
+                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                    (mouseover)="showTooltip(true, 'kpi156')" (mouseleave)="showTooltip(false, 'kpi156')"
+                        [style]="{'position': 'relative'}">
+                        <app-tooltip *ngIf="isTooltip.includes('kpi156')" [data]="getMaturityRange('kpi156')" [showingMaturityRange]="true"
+                            (mouseleave)="showTooltip(false, 'kpi156')"
+                            [kpiName]="kpiData?.kpiName"></app-tooltip>
+                    </span>
                   </div>
                   <ng-template #noData5>
                     <div class="overlay"
@@ -232,6 +253,13 @@
                   <div *ngIf="(kpiChartData['kpi166']?.length > 0 && chartColorList['kpi166']?.length>0); else noData6">
                     <div class="p-mt-3 summary-circle p-text-center"  [ngStyle]="{'background-color': kpiChartData['kpi166']?.[0]?.maturityColor}">{{kpiChartData['kpi166']?.[0]?.aggregationValue  + " " + updatedConfigDataObj['kpi166']?.kpiDetail?.kpiUnit}}
                     </div>
+                    <span class="fa fa-info-circle kpi-info-icon" aria-hidden="true"
+                    (mouseover)="showTooltip(true, 'kpi166')" (mouseleave)="showTooltip(false, 'kpi166')"
+                        [style]="{'position': 'relative'}">
+                        <app-tooltip *ngIf="isTooltip.includes('kpi166')" [data]="getMaturityRange('kpi166')" [showingMaturityRange]="true"
+                            (mouseleave)="showTooltip(false, 'kpi166')"
+                            [kpiName]="kpiData?.kpiName"></app-tooltip>
+                    </span>
                   </div>
                   <ng-template #noData6>
                     <div class="overlay"

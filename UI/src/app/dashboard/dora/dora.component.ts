@@ -65,6 +65,7 @@ export class DoraComponent implements OnInit {
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
   kpiThresholdObj = {};
+  isTooltip = [];
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -546,6 +547,36 @@ export class DoraComponent implements OnInit {
     } else {
       return 'incremental';
     }
+  }
+
+  showTooltip(val, kpiId) {
+    if(val) {
+      this.isTooltip.push(kpiId);
+    } else {
+      this.isTooltip.splice(this.isTooltip.indexOf(kpiId), 1);
+    }
+  }
+
+  getMaturityRange(kpiId) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+    let obj =  {
+      maturityLevels: []
+    }; 
+    let maturityRange = selectedKPI.maturityRange;
+    let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(selectedKPI.maturityRange);
+    
+    if(findIncrementalOrDecrementalRange === 'decremental') {
+      maturityRange = maturityRange.reverse();
+    }
+
+    selectedKPI.maturityLevel.forEach((element, index) => {
+      obj.maturityLevels.push({
+        level: element.level,
+        range: maturityRange[index],
+        color: element.bgColor
+      });
+    });
+    return obj;
   }
 
 }
