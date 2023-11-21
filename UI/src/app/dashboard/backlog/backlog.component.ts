@@ -829,7 +829,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')) {
       return '-'
     } else {
-      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `=${value} ${unit}`;
+      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `${value} ${unit}`;
     }
   }
 
