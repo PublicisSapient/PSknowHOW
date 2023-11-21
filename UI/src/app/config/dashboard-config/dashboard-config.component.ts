@@ -278,12 +278,12 @@ return item.kpiId;
 
         if (that.userProjects != null && that.userProjects.length > 0) {
           that.userProjects.sort((a, b) => b.isSort === false ? 0 : a.name.localeCompare(b.name, undefined, { numeric: true }));
-          that.selectedProject = that.userProjects[0];
           this.loader = true;
           this.tabHeaders = [];
-          this.getKpisData(that.selectedProject['id'])
           this.backupUserProjects = this.userProjects;
           this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+          that.selectedProject = that.userProjects[0];
+          this.getKpisData(that.selectedProject['id']);
         }
       });
   }
