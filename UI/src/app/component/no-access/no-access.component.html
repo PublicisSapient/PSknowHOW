@@ -8,7 +8,7 @@
       <ng-template #noAccessToKpis>
         <div class="no-access-content p-pt-5" *ngIf="!isSuperAdmin else normalUserText">
           <p>You will not be able to access the {{this.selectedTab}} dashboard and configuration options because it is disabled</p>
-          <p>Connect with SUPERADMIN to get it enabled</p>
+          <p>Connect with SUPERADMIN/PROJECT Admin to get it enabled</p>
         </div>
         <ng-template #normalUserText>
           <div class="no-access-content p-pt-5">

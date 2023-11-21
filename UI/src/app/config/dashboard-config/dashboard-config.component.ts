@@ -177,8 +177,6 @@
          } else {
            if (response.success === true) {
              this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
-             // setting in global Service
-             this.service.setDashConfigData(response.data);
            } else {
              this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
            }
