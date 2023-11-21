@@ -89,6 +89,7 @@ describe('DashboardconfigComponent', () => {
   it('should get dashboard data ', waitForAsync(() => {
     component.getKpisData('pid');
     const httpreq = httpMock.expectOne(baseUrl + '/api/user-board-config/pid');
+    component.userProjects = [{name : "p1",id:'id1',type : 'common'}]
     httpreq.flush(fakeGetDashData);
     expect(Object.keys(component.kpiFormValue['kpis']['controls']).length + 4).toBe(fakeGetDashDataOthers.length);
   }));
