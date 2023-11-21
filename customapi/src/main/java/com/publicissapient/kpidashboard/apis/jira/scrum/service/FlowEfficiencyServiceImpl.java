@@ -348,7 +348,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	}
 
 	/**
-	 * 
+	 * sets jira issue by closed date and issue type
+	 *
 	 * @param rangeWiseJiraIssuesMap
 	 * 			map of jira issues by data points
 	 * @param issueCustomHistory
