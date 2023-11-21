@@ -32,7 +32,6 @@ export class AuthGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const currentUserDetails = this.sharedService.currentUserDetails;
-        console.log("inside auth guard", currentUserDetails)
         if (currentUserDetails) {
             if (currentUserDetails['authorities']) {
                 return true;

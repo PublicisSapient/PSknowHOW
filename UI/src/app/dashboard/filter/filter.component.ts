@@ -1687,6 +1687,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     }, (error) => {
       console.log(error);
+      this.messageService.add({
+        severity: 'error',
+        summary: error.message,
+      });
     });
   }
 }
