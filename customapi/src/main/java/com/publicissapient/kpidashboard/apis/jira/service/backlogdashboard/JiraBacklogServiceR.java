@@ -206,25 +206,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
                 )
                 .collect(Collectors.toList());
     }
-
-//    private List<Node> getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
-//        List<AccountHierarchyData> sprintWiseAccountHierarchyData = filteredAccountDataList.stream().filter(accountHierarchyData -> accountHierarchyData.getLabelName().equalsIgnoreCase(CommonConstant.SPRINT)).collect(Collectors.toList());
-//        List<AccountHierarchyData> projectWiseAccountHierarchyData = filteredAccountDataList.stream().filter(accountHierarchyData -> accountHierarchyData.getLabelName().equalsIgnoreCase(CommonConstant.PROJECT)).collect(Collectors.toList());
-//        List<Node> filteredNodes = new ArrayList<>();
-//        sprintWiseAccountHierarchyData.forEach(s -> filteredNodes.add(s.getNode().get(kpiRequest.getLevel())));
-//
-//        for (Node node : filteredNodes) {
-//            node.setParent(sprintWiseAccountHierarchyData.get(0).getNode().get(kpiRequest.getLevel() - 1));
-//            if (null != node.getAccountHierarchy()) {
-//                node.setProjectFilter(new ProjectFilter(node.getId(), node.getName(), node.getAccountHierarchy().getBasicProjectConfigId()));
-//            } else {
-//                node.setProjectFilter(new ProjectFilter(node.getId(), node.getName(), node.getAccountHierarchyKanban().getBasicProjectConfigId()));
-//            }
-//
-//        }
-//        return filteredNodes;
-//    }
-
     private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
         futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(), SprintDetails.SPRINT_STATE_FUTURE);
         fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);

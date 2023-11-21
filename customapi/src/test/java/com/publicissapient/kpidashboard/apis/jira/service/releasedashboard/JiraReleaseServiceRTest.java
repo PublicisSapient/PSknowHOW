@@ -156,6 +156,8 @@ public class JiraReleaseServiceRTest {
     public void testProcessException() throws Exception {
 
         KpiRequest kpiRequest = createKpiRequest(6);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
 
         when(cacheService.cacheAccountHierarchyData()).thenThrow(ApplicationException.class);
 
@@ -174,6 +176,9 @@ public class JiraReleaseServiceRTest {
         when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
                 .thenReturn(mockKpiElementList);
         when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
+        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
 
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -207,6 +212,8 @@ public class JiraReleaseServiceRTest {
         when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream().filter(s -> s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b")).collect(Collectors.toList()));
         when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
         when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
         resultList.forEach(k -> {
@@ -239,7 +246,7 @@ public class JiraReleaseServiceRTest {
         kpiRequest.setRequestTrackerId();
         kpiRequest.setLabel("release");
         Map<String, List<String>> s = new HashMap<>();
-        s.put("Release", Arrays.asList("38296_Scrum Project_6335363749794a18e8a4479b"));
+        s.put("release", Arrays.asList("38296_Scrum Project_6335363749794a18e8a4479b"));
         kpiRequest.setSelectedMap(s);
         return kpiRequest;
     }

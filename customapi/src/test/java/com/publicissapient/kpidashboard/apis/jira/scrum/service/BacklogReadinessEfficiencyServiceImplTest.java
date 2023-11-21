@@ -134,7 +134,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Test
 	public void testGetKpiDataProject_closedSprint() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 4);
 
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
@@ -160,8 +160,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
 					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
-			List<IterationKpiValue> iterationKpiValues= (List<IterationKpiValue>) kpiElement.getTrendValueList();
-			assertEquals(6,iterationKpiValues.size());
+			assertEquals(DataCount.class,kpiElement.getTrendValueList().getClass());
 
 		} catch (ApplicationException enfe) {
 

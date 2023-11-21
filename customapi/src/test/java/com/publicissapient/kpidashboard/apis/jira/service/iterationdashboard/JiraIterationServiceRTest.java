@@ -118,7 +118,6 @@ public class JiraIterationServiceRTest {
 
     @Before
     public void setup() {
-        mockKpiElementList.add(ibKpiElement);
 
         when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
                 .thenReturn(mockKpiElementList);
@@ -191,8 +190,10 @@ public class JiraIterationServiceRTest {
 
         when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
                 .thenReturn(mockKpiElementList);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
         when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-
+        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
         assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("ITERATION_BURNUP"));
@@ -224,6 +225,8 @@ public class JiraIterationServiceRTest {
         when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
         when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream().filter(s->s.getLeafNodeId().equalsIgnoreCase("38296_Scrum Project_6335363749794a18e8a4479b")).collect(Collectors.toList()));
         when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
         resultList.forEach(k -> {
