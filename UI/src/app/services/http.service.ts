@@ -173,6 +173,8 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private validateTokenUrl = this.baseUrl + '/api/validateToken';
+  private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
 
@@ -1123,11 +1125,14 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
-  }
-
   getUserValidation(data){
     return this.http.post<object>(this.validateTokenUrl, data);
+  }
+
+  handleValidateResource(data){
+    return this.http.post<object>(this.validateResourceUrl, data);
+  }
+  getFeatureFlags() {
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
   }
 }

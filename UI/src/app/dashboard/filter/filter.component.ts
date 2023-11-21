@@ -136,6 +136,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  showSwitchDropdown: boolean = false;
 
   showHideLoader: boolean = false;
 
@@ -1677,5 +1678,15 @@ export class FilterComponent implements OnInit, OnDestroy {
     const longName = ` ${oneLevelUp['hierarchyLevelName']}`;
     const final = pId.replace(sortName, longName);
     return final;
+  }
+
+  checkResourceValidity(resourceName){
+    this.httpService.handleValidateResource({"resource": resourceName}).subscribe((response) => {
+      if(response && !response?.['data']?.resourceTokenValid){
+        window.location.href = environment.CENTRAL_LOGIN_URL + '?authToken=' + response?.['data']?.authToken + '&resource=' + resourceName;
+      }
+    }, (error) => {
+      console.log(error);
+    });
   }
 }

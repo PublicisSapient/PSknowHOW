@@ -27,9 +27,6 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,12 +38,10 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
@@ -68,7 +63,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	private final UserInfoRepository userInfoRepository;
 
 	// ------- auth-N-auth required code starts here -------
-	private static final String HTTP_ENTITY = "httpEntity {}";
 	private static final String RESPONSE = "response {}";
 	private static final String DATA_FOUND = "data found";
 	private static final String FETCHED_RESPONSE = "fetched response {}";
@@ -383,27 +377,6 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	}
 
 	// ---- auth-N-auth required code starts here ----
-
-	/**
-	 * fetch action policy rule resource wise
-	 * 
-	 * @return
-	 */
-	@Override
-	public List<ActionPoliciesDTO> fetchActionPolicyByResource() {
-		log.info("fetching Action Policy Rules from central auth");
-		String actionPolicyUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
-				authProperties.getResourcePolicyEndPoint(), "");
-		HttpEntity<?> httpEntity = new HttpEntity<>(CommonUtils.getHeaders(authProperties.getResourceAPIKey(), true));
-		log.info(HTTP_ENTITY, httpEntity);
-		ParameterizedTypeReference<ServiceResponse> typeReference = new ParameterizedTypeReference<ServiceResponse>() {
-		};
-		List<ActionPoliciesDTO> data = (List<ActionPoliciesDTO>) getAuthNAuthResponse(
-				restTemplate.exchange(actionPolicyUrl, HttpMethod.GET, httpEntity, typeReference), actionPolicyUrl)
-				.getData();
-		log.info("Total policies fetched from central auth : {}" + data.size());
-		return data;
-	}
 
 	/**
 	 *
