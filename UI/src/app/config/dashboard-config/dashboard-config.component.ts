@@ -61,6 +61,7 @@
           if (response[0] === 'error') {
             this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
           } else {
+            this.selectedProject = this.userProjects[0];
             if (response.success === true) {
               this.kpiListData = response.data;
               this.setFormControlData();
@@ -177,8 +178,6 @@
          } else {
            if (response.success === true) {
              this.messageService.add({ severity: 'success', summary: 'Successfully Saved', detail: '' });
-             // setting in global Service
-             this.service.setDashConfigData(response.data);
            } else {
              this.messageService.add({ severity: 'error', summary: 'Error in Saving Configuraion' });
            }
@@ -280,12 +279,12 @@ return item.kpiId;
 
         if (that.userProjects != null && that.userProjects.length > 0) {
           that.userProjects.sort((a, b) => b.isSort === false ? 0 : a.name.localeCompare(b.name, undefined, { numeric: true }));
-          that.selectedProject = that.userProjects[0];
           this.loader = true;
           this.tabHeaders = [];
-          this.getKpisData(that.selectedProject['id'])
           this.backupUserProjects = this.userProjects;
           this.userProjects = this.backupUserProjects.filter(project=> (project.type === this.selectedTab) || (project.type === 'common'))
+          that.selectedProject = that.userProjects[0];
+          this.getKpisData(that.selectedProject['id']);
         }
       });
   }
