@@ -391,5 +391,11 @@ public class KPIExcelData {
 	@JsonProperty("Flow Efficiency")
 	private Long flowEfficiency;
 
+	@JsonProperty("Release Tag Latest Date")
+	private String latestReleaseTagDate;
+
+	@JsonProperty("Dev Complete Date")
+	private String devCompleteDate;
+
 
 }

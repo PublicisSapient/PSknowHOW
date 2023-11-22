@@ -1825,4 +1825,59 @@ public class KPIExcelUtility {
 		});
 	}
 
+	/**
+	 * Method to populate the Release BurnUp Excel
+	 * 
+	 * @param jiraIssues
+	 *            jiraIssues
+	 * @param issueWiseReleaseTagDateMap
+	 *            issueWiseReleaseTagDateMap
+	 * @param completeDateIssueMap
+	 *            completeDateIssueMap
+	 * @param devCompleteDateIssueMap
+	 *            devCompleteDateIssueMap
+	 * @param kpiExcelData
+	 *            kpiExcelData
+	 * @param fieldMapping
+	 *            fieldMapping
+	 */
+	public static void populateReleaseBurnUpExcelData(List<JiraIssue> jiraIssues,
+			Map<String, LocalDate> issueWiseReleaseTagDateMap, Map<String, LocalDate> completeDateIssueMap,
+			Map<String, LocalDate> devCompleteDateIssueMap, List<KPIExcelData> kpiExcelData,
+			FieldMapping fieldMapping) {
+		if (CollectionUtils.isNotEmpty(jiraIssues)) {
+			jiraIssues.forEach(jiraIssue -> {
+				KPIExcelData excelData = new KPIExcelData();
+				Map<String, String> issueDetails = new HashMap<>();
+				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
+				excelData.setIssueID(issueDetails);
+				excelData.setIssueDesc(checkEmptyName(jiraIssue));
+				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setIssueType(jiraIssue.getTypeName());
+				populateAssignee(jiraIssue, excelData);
+				excelData.setPriority(jiraIssue.getPriority());
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(Double.toString(roundingOff));
+				} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
+					double totalOriginalEstimate = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
+					excelData.setStoryPoint(
+							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+									+ roundingOff(totalOriginalEstimate) + " hrs");
+				}
+				excelData.setLatestReleaseTagDate(DateUtil.dateTimeConverter(
+						String.valueOf(issueWiseReleaseTagDateMap.get(jiraIssue.getNumber())), DateUtil.DATE_FORMAT,
+						DateUtil.DISPLAY_DATE_FORMAT));
+				excelData.setDevCompleteDate(
+						DateUtil.dateTimeConverter(String.valueOf(devCompleteDateIssueMap.get(jiraIssue.getNumber())),
+								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				excelData.setCompletionDate(
+						DateUtil.dateTimeConverter(String.valueOf(completeDateIssueMap.get(jiraIssue.getNumber())),
+								DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				kpiExcelData.add(excelData);
+			});
+		}
+
+	}
 }
