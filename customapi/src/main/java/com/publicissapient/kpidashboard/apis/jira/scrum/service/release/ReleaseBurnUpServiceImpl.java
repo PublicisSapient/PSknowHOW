@@ -273,11 +273,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 				.collect(Collectors.toList());
 		// making QA completion date map
 		if (CollectionUtils.isNotEmpty(qaCompletionStatusLog)) {
-			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(qaCompletionStatusLog,
-					jiraReleaseDoneStatus, fieldMapping);
-			// Getting the min date of closed status.
-			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
-					.min(LocalDate::compareTo).orElse(null);
+			final LocalDate updatedLog = getDoneDateBasedOnStatus(qaCompletionStatusLog, jiraReleaseDoneStatus,
+					fieldMapping);
 			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
 			completedIssues.computeIfPresent(updatedLog, (k, v) -> {
 				v.addAll(jiraIssueList);
@@ -288,11 +285,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 		}
 		// making dev completion date map
 		if (CollectionUtils.isNotEmpty(devCompletionStatusLog)) {
-			final Map<String, LocalDate> devClosedStatusDateMap = getMapOfCloseStatus(devCompletionStatusLog,
-					devDoneStatus, fieldMapping);
-			// Getting the min date of closed status.
-			LocalDate updatedLog = devClosedStatusDateMap.values().stream().filter(Objects::nonNull)
-					.min(LocalDate::compareTo).orElse(null);
+			final LocalDate updatedLog = getDoneDateBasedOnStatus(devCompletionStatusLog, devDoneStatus, fieldMapping);
 			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
 			devCompletedReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
 				v.addAll(jiraIssueList);
@@ -304,8 +297,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	}
 
 	/**
-	 * Method to create map of done Status vs done date
-	 * 
+	 * Method to find first close date of last close cycle
+	 *
 	 * @param statusUpdateLog
 	 *            statusUpdateLog
 	 * @param devOrQaDoneStatus
@@ -314,7 +307,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            fieldMapping
 	 * @return Map<String,LocalDate>
 	 */
-	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdateLog,
+	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
 			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
 		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
 		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
@@ -333,7 +326,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo().toLowerCase(), activityDate);
 			}
 		}
-		return closedStatusDateMap;
+		// Getting the min date of closed status.
+		return closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null);
 	}
 
 	/**
@@ -986,11 +980,17 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * Method to Populate Excel Data Object
 	 *
 	 * @param requestTrackerId
-	 *            request Tracker id
+	 *            requestTrackerId
 	 * @param excelData
-	 *            List<KPIExcelData>
+	 *            excelData
 	 * @param jiraIssueList
-	 *            List<JiraIssue>
+	 *            jiraIssueList
+	 * @param issueReleaseTagMap
+	 *            issueReleaseTagMap
+	 * @param completedReleaseMap
+	 *            completedReleaseMap
+	 * @param devCompletedIssueMap
+	 *            devCompletedIssueMap
 	 * @param fieldMapping
 	 *            fieldMapping
 	 */
