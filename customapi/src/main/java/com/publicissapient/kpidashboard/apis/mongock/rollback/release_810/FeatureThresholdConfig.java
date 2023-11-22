@@ -59,7 +59,6 @@ public class FeatureThresholdConfig {
 				"thresholdValueKPI11", "thresholdValueKPI62", "thresholdValueKPI64", "thresholdValueKPI67",
 				"thresholdValueKPI65", "thresholdValueKPI157", "thresholdValueKPI158", "thresholdValueKPI159",
 				"thresholdValueKPI160", "thresholdValueKPI164");
-		//TODO:DEBBIE
 		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
 		fieldMappingStructure.deleteMany(filter);
 		return true;
