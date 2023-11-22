@@ -210,7 +210,7 @@ public class TestConnectionController {
 
 	}
 
-	@PostMapping("/repoTools")
+	@PostMapping("/repotool")
 	public ResponseEntity<ServiceResponse> validateRepoToolsConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Sonar connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();

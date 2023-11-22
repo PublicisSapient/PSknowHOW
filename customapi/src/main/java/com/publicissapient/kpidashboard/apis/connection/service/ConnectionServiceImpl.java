@@ -38,6 +38,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -51,6 +53,8 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -75,6 +79,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private static final String CONNECTION_EMPTY_MSG = "Connection name cannot be empty";
 	private static final String ERROR_MSG = "A connection with same details already exists. Connection name is ";
+	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -96,6 +101,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+
+	@Autowired
+	private RepoToolsProviderRepository repoToolsProviderRepository;
 
 	/**
 	 * Fetch all connection data.
@@ -144,7 +152,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
 
-		List<Connection> typeList = connectionRepository.findByType(type);
+		List<Connection> typeList = getConnectionList(type);
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -167,6 +175,16 @@ public class ConnectionServiceImpl implements ConnectionService {
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
+	}
+
+	// To do - Handle scenario once github action screen is developed
+	private List<Connection> getConnectionList(String type) {
+		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
+			return connectionRepository.findByType(REPO_TOOLS).stream()
+					.filter(connection -> connection.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB))
+					.collect(Collectors.toList());
+		}
+		return connectionRepository.findByType(type);
 	}
 
 	/**
@@ -209,8 +227,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
-				if(conn.getType().equals(REPO_TOOLS))
-					conn.setBaseUrl(conn.getHttpUrl());
+				if(conn.getType().equals(REPO_TOOLS)) {
+					setBaseUrlForRepoTool(conn);
+				}
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -230,6 +249,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name",
 				null);
+	}
+
+	private void setBaseUrlForRepoTool(Connection conn) {
+		if(conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
+			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(TOOL_GITHUB.toLowerCase());
+			Matcher matcher = URL_PATTERN.matcher(repoToolsProvider.getTestApiUrl());
+			if(matcher.find())
+				conn.setBaseUrl(matcher.group(1).concat(matcher.group(2)));
+		}
 	}
 
 	/*
@@ -461,7 +489,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection.setApiKey(connection.getApiKey());
 		}
 		existingConnection.setApiKeyFieldName(connection.getApiKeyFieldName());
-		existingConnection.setBaseUrl(connection.getBaseUrl());
+		if(connection.getType().equals(REPO_TOOLS))
+			setBaseUrlForRepoTool(existingConnection);
+		else
+			existingConnection.setBaseUrl(connection.getBaseUrl());
 		if (StringUtils.isNotEmpty(connection.getClientId())) {
 			existingConnection.setClientId(connection.getClientId());
 		}
@@ -616,6 +647,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
+		case ProcessorConstants.REPO_TOOLS:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:

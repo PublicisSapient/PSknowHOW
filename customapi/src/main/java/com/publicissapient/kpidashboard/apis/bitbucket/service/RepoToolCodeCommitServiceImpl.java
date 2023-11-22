@@ -260,9 +260,14 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 	/**
 	 * create data count object by day/week filter
 	 * @param mergeCountForRepo
+	 * 			list of merge request
 	 * @param commitCountForRepo
+	 *			list of commits
 	 * @param excelDataLoader
+	 * 			map of filter and commits
 	 * @param mergeRequestExcelDataLoader
+	 * 			map of filter and merge requests
+	 * @return list of data count
 	 */
 	private List<DataCount> setDayWiseCountForProject(Map<String, Long> commitCountForRepo,
 			Map<String, Long> mergeCountForRepo, Map<String, Long> excelDataLoader, String projectName,
@@ -302,6 +307,7 @@ public class RepoToolCodeCommitServiceImpl extends BitBucketKPIService<Long, Lis
 			dayWiseCommitCount.add(dataCount);
 			currentDate = getNextRangeDate(duration, currentDate);
 		}
+		Collections.reverse(dayWiseCommitCount);
 		return dayWiseCommitCount;
 
 	}

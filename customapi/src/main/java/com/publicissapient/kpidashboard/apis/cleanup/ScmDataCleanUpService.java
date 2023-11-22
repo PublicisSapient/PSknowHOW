@@ -104,7 +104,8 @@ public class ScmDataCleanUpService implements ToolDataCleanUpService {
 		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.BITBUCKET)
 				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITLAB)
 				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITHUB)
-				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.AZUREREPO)) {
+				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.AZUREREPO)
+				|| tool.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
 			cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 		}
 		if (tool.getToolName().equalsIgnoreCase(ProcessorConstants.GITLAB)) {

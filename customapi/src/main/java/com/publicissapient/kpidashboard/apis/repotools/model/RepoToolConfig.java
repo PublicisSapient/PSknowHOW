@@ -51,4 +51,6 @@ public class RepoToolConfig {
     private ToolCredential scanningAccount;
     @SerializedName("scanning_branches")
     private List<String> scanningBranches;
+    @SerializedName("is_cloneable")
+    private Boolean isCloneable;
 }

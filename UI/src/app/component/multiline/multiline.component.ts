@@ -152,6 +152,7 @@ export class MultilineComponent implements OnChanges {
       '%' : '%',
       'check-ins' : 'CI',
       'tickets' : 'T',
+      'lines':'lines',
       'unit' : ''
     }
     const tempwidth = d3.select(this.elem).select('#graphContainer').node().offsetWidth || window.innerWidth;

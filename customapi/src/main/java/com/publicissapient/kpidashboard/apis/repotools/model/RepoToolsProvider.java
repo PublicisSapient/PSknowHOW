@@ -40,4 +40,5 @@ public class RepoToolsProvider extends BasicModel {
     private String toolName;
     private String repoToolProvider;
     private String testApiUrl;
+    private String testServerApiUrl;
 }
