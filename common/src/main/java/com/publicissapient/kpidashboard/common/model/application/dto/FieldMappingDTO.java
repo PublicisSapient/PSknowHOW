@@ -18,15 +18,17 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-
-import java.util.List;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
@@ -400,6 +402,8 @@ public class FieldMappingDTO extends BasicModel {
     @Builder.Default
     private String toBranchForMRKPI156 = "master";
     private Integer startDateCountKPI150;
+    private List<String> jiraDevDoneStatusKPI150;
+    private boolean populateByDevDoneKPI150;
 
     //threshold field
     private String thresholdValueKPI14;
