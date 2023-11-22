@@ -138,6 +138,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayModal: boolean = false;
 
   showHideLoader: boolean = false;
+  kpiListDataProjectLevel : any = {};
   
   constructor(
     private service: SharedService,
@@ -416,6 +417,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.setHierarchyLevels();
     this.ga.setPageLoad(data);
+    this.getKpiOrderedList();
     this.navigateToSelectedTab();
   }
 
@@ -667,7 +669,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           isAdditionalFilters = true;
         }
       }
-      this.getKpiOrderedList();
+      this.getKpiOrderListProjectLevel();
     }
   }
 
@@ -758,16 +760,39 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   getKpiOrderedList() {
-  let projectList = [];
+    if (this.isEmptyObject(this.kpiListData)) {
+      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
+        (response) => {
+          if (response.success === true) {
+            this.kpiListData = response.data;
+            this.service.setDashConfigData(this.kpiListData);
+          }
+        },
+        (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error in fetching roles. Please try after some time.',
+          });
+        },
+      );
+    }else{
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData);
+      this.service.setDashConfigData(this.kpiListData);
+    }
+  }
+
+  getKpiOrderListProjectLevel(){
+    let projectList = [];
       if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
         projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
       }
       this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(
         (response) => {
           if (response.success === true) {
-            this.kpiListData = response.data;
-            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+            this.kpiListDataProjectLevel = response.data;
+            this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData)
             this.service.setDashConfigData(this.kpiListData);
+            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
             this.processKpiList();
             this.navigateToSelectedTab();
           }
@@ -1190,7 +1215,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.selectedFilterArray.push(this.selectedSprint);
         this.createFilterApplyData();
         this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
-        this.getKpiOrderedList()
+        this.getKpiOrderListProjectLevel()
        }
     }
   }
@@ -1406,8 +1431,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
-      this.service.setDashConfigData(response.data);
-      this.kpiListData = response.data;
+      this.kpiListDataProjectLevel = response.data;
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.service.getDashConfigData())
+      this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;
       this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -1464,7 +1490,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.selectedFilterArray.push(this.filteredAddFilters['release'].filter(rel => rel['nodeId'] === this.filterForm.get('selectedRelease').value)[0]);
       this.createFilterApplyData();
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
-      this.getKpiOrderedList();
+      this.getKpiOrderListProjectLevel();
     } else {
       this.filterForm.controls['selectedRelease'].reset();
       this.service.setNoRelease(true);

@@ -103,7 +103,7 @@ button.unassignedBtn {
     line-height: 12px;
 }
 
-div.assignee.selected-user {
+.assignee.selected-user {
     background: #437495 !important;
     color: white !important;
     font-weight: bold;

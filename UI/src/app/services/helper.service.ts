@@ -537,6 +537,26 @@ export class HelperService {
         }));
     }
 
+    /** sync shown property of project level and user level */
+    makeSyncShownProjectLevelAndUserLevelKpis(projectLevelKpi, userLevelKpi) {
+        Object.keys(userLevelKpi).forEach(boards => {
+          if (Array.isArray(userLevelKpi[boards])) {
+            userLevelKpi[boards].forEach(boardA => {
+              const boardB = projectLevelKpi[boards].find(b => b.boardId === boardA.boardId);
+              if (boardB) {
+                boardA.kpis.forEach(kpiA => {
+                  const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
+                  if (kpiB) {
+                    kpiA.shown = kpiB.shown;
+                  }
+                });
+              }
+            });
+          }
+        });
+        return userLevelKpi
+      }
+
     getGlobalConfig(){
         this.httpService.getConfigDetails().subscribe(res=>{
           if(res && res['success']){

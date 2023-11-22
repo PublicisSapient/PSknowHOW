@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @ChangeUnit(id = "r_repo_tool_provider_url_change", order = "08110", author = "kunkambl", systemVersion = "8.1.0")
@@ -25,6 +26,8 @@ public class RepoToolProviderUrlChange {
     public void execution() {
         changeRepoToolProviderTestApiUrlsRollback();
         changePRSizeMaturityRollback();
+        updateThresholdsRollback();
+        updateKpi162Rollback();
     }
 
     public void changeRepoToolProviderTestApiUrlsRollback() {
@@ -49,10 +52,25 @@ public class RepoToolProviderUrlChange {
 
     }
 
+	public void updateThresholdsRollback() {
+		mongoTemplate.getCollection("kpi_master").updateMany(
+				new Document("kpiId", new Document("$in", Arrays.asList("kpi160", "kpi158"))),
+
+				new Document("$set", new Document("upperThresholdBG", "").append("lowerThresholdBG", "")));
+	}
+
+    public void updateKpi162Rollback() {
+        Document filter = new Document("kpiId", "kpi162");
+        Document update = new Document("$set", new Document("calculateMaturity", true).append("showTrend", true));
+        mongoTemplate.getCollection("kpi_master").updateOne(filter, update);
+    }
+
     @RollbackExecution
     public void rollback() {
         changeRepoToolProviderTestApiUrls();
         changePRSizeMaturity();
+        updateThresholds();
+        updateKpi162();
     }
 
     public void changeRepoToolProviderTestApiUrls() {
@@ -76,5 +94,19 @@ public class RepoToolProviderUrlChange {
         mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi162"),
                 new Document("$set", new Document("calculateMaturity", false)));
 
+    }
+
+    public void updateThresholds() {
+        mongoTemplate.getCollection("kpi_master").updateMany(
+                new Document("kpiId", new Document("$in", Arrays.asList("kpi160", "kpi158"))),
+
+                new Document("$set", new Document("upperThresholdBG", "red").append("lowerThresholdBG", "white")));
+    }
+
+    public void updateKpi162() {
+        Document filter = new Document("kpiId", "kpi162");
+        Document update = new Document("$set", new Document("calculateMaturity", false).append("showTrend", false));
+
+        mongoTemplate.getCollection("kpi_master").updateOne(filter, update);
     }
 }

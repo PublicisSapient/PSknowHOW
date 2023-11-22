@@ -844,3 +844,28 @@ db.getCollection("repo_tools_provider").bulkWrite([
 
 // Change PR size maturity
 db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : false } })
+
+db.kpi_master.updateOne(
+{
+    "kpiId": "kpi162"
+},
+{ $set: {
+        "calculateMaturity": false,
+        "showTrend": false
+    }
+}
+)
+db.kpi_master.updateMany(
+{
+    "kpiId": { $in: [
+            "kpi160",
+            "kpi158"
+        ]
+    }
+},
+{ $set: {
+        "upperThresholdBG": "red",
+        "lowerThresholdBG": "white"
+    }
+}
+);
