@@ -1222,9 +1222,9 @@ db.getCollection('kpi_master').insertMany(
     "maturityRange": [
       "0-2" ,
       "2-4" ,
-      "4-8" ,
-      "8-16" ,
-      "16-"
+      "4-6" ,
+      "6-8" ,
+      "8-"
     ],
     "maturityLevel": [
         {

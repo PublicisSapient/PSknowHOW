@@ -96,7 +96,7 @@ public class DoraMaturity {
 		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("label", "< Once in 8 weeks"));
 
 		collection.updateOne(new Document("kpiId", "kpi118"),
-				new Document("$set", new Document("maturityRange", Arrays.asList("0-2", "2-4", "4-8", "8-16", "16-"))
+				new Document("$set", new Document("maturityRange", Arrays.asList("0-2", "2-4", "4-6", "6-8", "8-"))
 						.append("maturityLevel", documentList).append("aggregationCircleCriteria", "sum")));
 	}
 
