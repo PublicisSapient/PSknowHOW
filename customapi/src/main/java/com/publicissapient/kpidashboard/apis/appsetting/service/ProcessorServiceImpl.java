@@ -85,15 +85,14 @@ public class ProcessorServiceImpl implements ProcessorService {
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
 				String processorName = p.getProcessorName();
-				boolean isGitLab = processorName.equalsIgnoreCase(ProcessorConstants.GITLAB);
-				boolean isGitHub = processorName.equalsIgnoreCase(ProcessorConstants.GITHUB);
-				boolean isBitbucket = processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET);
-				boolean isAzureRepo = processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO);
 				boolean isRepoTool = processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS);
-				if (repoToolFlag.equals(Boolean.FALSE)
-						&& !isRepoTool)
-					listProcessor.add(p);
-				else if (repoToolFlag.equals(Boolean.TRUE) && !isGitLab && !isGitHub && !isBitbucket && !isAzureRepo) {
+				boolean shouldAddToList = (repoToolFlag.equals(Boolean.FALSE) && !isRepoTool)
+						|| (repoToolFlag.equals(Boolean.TRUE)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITLAB)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITHUB)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO));
+				if (shouldAddToList) {
 					listProcessor.add(p);
 				}
 			}

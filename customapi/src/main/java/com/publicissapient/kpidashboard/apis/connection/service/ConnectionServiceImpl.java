@@ -177,6 +177,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return new ServiceResponse(true, "Found type@" + type, typeList);
 	}
 
+	// To do - Handle scenario once github action screen is developed
 	private List<Connection> getConnectionList(String type) {
 		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
 			return connectionRepository.findByType(REPO_TOOLS).stream()
