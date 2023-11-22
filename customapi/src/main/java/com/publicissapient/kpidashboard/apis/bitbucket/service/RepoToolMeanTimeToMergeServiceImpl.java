@@ -206,11 +206,16 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
 	/**
 	 * create data count object by day/week filter
 	 * @param mergeReqList
+	 * 			list of merge request
 	 * @param excelDataLoader
+	 * 			map of filter and mean time
 	 * @param projectName
+	 * 			project name
 	 * @param duration
+	 * 			x axis duration
 	 * @param dataPoints
-	 * @return
+	 * 			x axis dates
+	 * @return list of data count
 	 */
 	private List<DataCount> setWeekWiseMeanTimeToMergeForRepoTools(Map<String, Double> mergeReqList,
 			Map<String, Double> excelDataLoader, String projectName, String duration, Integer dataPoints) {
