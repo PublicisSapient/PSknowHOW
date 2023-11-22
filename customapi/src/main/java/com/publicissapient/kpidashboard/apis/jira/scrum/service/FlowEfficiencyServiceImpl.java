@@ -34,7 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import org.apache.commons.collections.CollectionUtils;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -57,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -253,16 +251,9 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		initializeRangeMapForProjects(rangeWiseJiraIssuesMap, xAxisRange, monthRangeMap);
 
 		projectWiseJiraIssueList.forEach(issue -> {
-			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(issue.getCreatedDate().toString()),
-					LocalDate.now());
-			monthRangeMap.forEach((noOfDay, range) -> {
-				if (noOfDay > daysBetween) {
-					rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
-							.computeIfAbsent(issue.getStoryType(), k -> new ArrayList<>()).add(issue);
-					if (!flowEfficiencyMap.containsKey(issue))
-						calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap);
-				}
-			});
+			if (!flowEfficiencyMap.containsKey(issue))
+				calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap,
+						monthRangeMap, rangeWiseJiraIssuesMap);
 		});
 	}
 
@@ -310,7 +301,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 */
 	private void calculateFlowEfficiency(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping,
 			List<String> waitTimeList, List<String> totalTimeList,
-			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap) {
+			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Map<Long, String> monthRangeMap,
+			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap) {
 		List<JiraHistoryChangeLog> statusUpdateLog = issueCustomHistory.getStatusUpdationLog();
 		long waitedTime = 0;
 		long totalTime = 0;
@@ -333,6 +325,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			}
 
 			if (closedDate != null && totalTime != 0) {
+				setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, issueCustomHistory, closedDate, monthRangeMap);
 				double flowEfficiency = calculatePercentage(waitedTime, totalTime);
 				waitTimeList.add(kpiHelperService.convertHoursToDaysString(waitedTime));
 				totalTimeList.add(kpiHelperService.convertHoursToDaysString(totalTime));
@@ -352,6 +345,30 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 */
 	private long calculateWaitedTime(LocalDateTime start, LocalDateTime end) {
 		return HOURS.between(start, end) - kpiHelperService.minusHoursOfWeekEndDays(start, end);
+	}
+
+	/**
+	 * sets jira issue by closed date and issue type
+	 *
+	 * @param rangeWiseJiraIssuesMap
+	 * 			map of jira issues by data points
+	 * @param issueCustomHistory
+	 * 			jira issue custom history
+	 * @param closedDate
+	 * 			closed date of jira issue
+	 * @param monthRangeMap
+	 * 			month range map
+	 */
+	public void setRangeWiseJiraIssuesMap(Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap,
+			JiraIssueCustomHistory issueCustomHistory, LocalDateTime closedDate, Map<Long, String> monthRangeMap) {
+		long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(closedDate.toString()), LocalDate.now());
+		monthRangeMap.forEach((noOfDay, range) -> {
+			if (noOfDay > daysBetween) {
+				rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
+						.computeIfAbsent(issueCustomHistory.getStoryType(), k -> new ArrayList<>())
+						.add(issueCustomHistory);
+			}
+		});
 	}
 
 
