@@ -107,3 +107,19 @@ db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 5 } })
 db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 5 } })
+
+//------------------------- 8.2.0 changes----------------------------------------------------------------------------------
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["populateByDevDoneKPI150", "jiraDevDoneStatusKPI150"]
+    }
+});
+
+db.getCollection("kpi_master").updateOne(
+    { "kpiId": "kpi150" },
+    {
+        $set: {
+            "kpiInfo.definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+        }
+    }
+);
