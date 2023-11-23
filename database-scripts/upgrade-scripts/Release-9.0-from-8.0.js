@@ -335,14 +335,6 @@ db.field_mapping_structure.insertMany([
     }
 ])
 
-db.kpi_master.bulkWrite([
-    {
-        updateMany: {
-            filter: { "kpiId": { $in: ["kpi150"] } },
-            update: { $set: { "defaultOrder": 1 } }
-        },
-    }
-]);
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
@@ -563,6 +555,24 @@ db.kpi_master.bulkWrite([
         },
     }
 ]);
+
+db.kpi_master.updateOne(
+   { "kpiId": "kpi150" },
+   {
+      $set: {
+         "kpiInfo.details": [
+            {
+               "type": "link",
+               "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+               }
+            }
+         ]
+      }
+   }
+)
+
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
