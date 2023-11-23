@@ -64,3 +64,9 @@
   div.normal-legend{
     height: auto;
   }
+
+  :host::ng-deep .link{
+    color : var(--color-secondary-blue);
+    text-decoration: underline;
+    cursor: pointer;
+  }
