@@ -95,8 +95,8 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			json.put(USER_AUTHORITIES, userinfo.getAuthorities());
 			//Gson gson = new Gson();
 			json.put(PROJECTS_ACCESS, new JSONArray());
+			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 		}
-		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
 		/*List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
