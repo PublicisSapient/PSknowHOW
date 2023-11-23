@@ -240,7 +240,7 @@ public class JiraCommonService {
                 String userQuery = projectConfig.getJira().getBoardQuery().toLowerCase().split(JiraConstants.ORDERBY)[0];
                 query.append(userQuery);
                 query.append(" and issuetype in (" + issueTypes + " ) and updatedDate>='" + deltaDate + "' ");
-                query.append(" order BY updated asc");
+                query.append(" order BY updatedDate asc");
                 log.info("jql query :{}", query);
                 Promise<SearchResult> promisedRs = client.getProcessorSearchClient().searchJql(query.toString(),
                         jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
