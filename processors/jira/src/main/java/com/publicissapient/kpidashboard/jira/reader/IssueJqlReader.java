@@ -84,6 +84,8 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     private String projectId;
     private ReaderRetryHelper retryHelper;
 
+    Boolean flag=false;
+
     @Autowired
     public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
         this.projectId = projectId;
@@ -113,26 +115,27 @@ public class IssueJqlReader implements ItemReader<ReadData> {
         if (null != projectConfFieldMapping) {
             KerberosClient krb5Client = null;
             try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-                if (null == issueIterator) {
-                    pageNumber = 0;
-                    fetchIssues(client);
-                }
+                if (!flag) {
+                    if (issueIterator == null || !issueIterator.hasNext()) {
+                        fetchIssues(client);
+                        if (CollectionUtils.isNotEmpty(issues)) {
+                            issueIterator = issues.iterator();
+                        }
+                    }
 
-                if (null != issueIterator && !issueIterator.hasNext()) {
-                    fetchIssues(client);
-                }
+                    if (null != issueIterator && issueIterator.hasNext()) {
+                        Issue issue = issueIterator.next();
+                        readData = new ReadData();
+                        readData.setIssue(issue);
+                        readData.setProjectConfFieldMapping(projectConfFieldMapping);
+                        readData.setSprintFetch(false);
+                    }
 
-                if (null != issueIterator && issueIterator.hasNext()) {
-                    Issue issue = issueIterator.next();
-                    readData = new ReadData();
-                    readData.setIssue(issue);
-                    readData.setProjectConfFieldMapping(projectConfFieldMapping);
-                    readData.setSprintFetch(false);
-                }
-
-                if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-                    log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                    readData = null;
+                    if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+                        log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+                        flag=true;
+                        return readData;
+                    }
                 }
             }
         }
@@ -147,13 +150,10 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
                     pageNumber / pageSize);
             String deltaDate = getDeltaDateFromTraceLog();
-            issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
+            issues=jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
                     deltaDate);
             issueSize = issues.size();
             pageNumber += pageSize;
-            if (CollectionUtils.isNotEmpty(issues)) {
-                issueIterator = issues.iterator();
-            }
             return null;
         };
 
@@ -180,20 +180,19 @@ public class IssueJqlReader implements ItemReader<ReadData> {
                     .findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA,
                             Arrays.asList(projectConfFieldMapping.getBasicProjectConfigId().toString()));
             if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
-                String lastSuccessfulRun = null;
+                String lastSuccessfulRun = deltaDate;
                 for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-                    lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
+                        lastSuccessfulRun=processorExecutionTraceLog.getLastSuccessfulRun();
                 }
-                if (!StringUtils.isBlank(lastSuccessfulRun)) {
                     log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
                             projectConfFieldMapping.getProjectName(), lastSuccessfulRun);
-                    deltaDate = lastSuccessfulRun;
-                }
                 projectWiseDeltaDate = new HashMap<>();
-                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), deltaDate);
+                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), lastSuccessfulRun);
             } else {
                 log.info("project: {} not found in trace log so data will be fetched from beginning",
                         projectConfFieldMapping.getProjectName());
+                projectWiseDeltaDate = new HashMap<>();
+                projectWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), deltaDate);
             }
         }
         if (MapUtils.isNotEmpty(projectWiseDeltaDate) && !StringUtils

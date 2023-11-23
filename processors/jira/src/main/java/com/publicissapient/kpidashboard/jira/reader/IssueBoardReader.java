@@ -88,6 +88,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
 
+    Boolean flag=false;
     @Autowired
     public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
         this.projectId = projectId;
@@ -113,45 +114,48 @@ public class IssueBoardReader implements ItemReader<ReadData> {
         }
         ReadData readData = null;
         KerberosClient krb5Client = null;
-        try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-            if (boardIterator == null
-                    && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
-                boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
-            }
-            if (issueIterator == null || !issueIterator.hasNext()) {
-                List<Issue> epicIssues;
-                if (null == issueIterator || boardIssueSize < pageSize) {
-                    pageNumber = 0;
-                    if (boardIterator.hasNext()) {
-                        BoardDetails boardDetails = boardIterator.next();
-                        boardId = boardDetails.getBoardId();
-                        fetchIssues(client);
-                        epicIssues = fetchEpics(krb5Client, client);
-                        if (CollectionUtils.isNotEmpty(epicIssues)) {
-                            issues.addAll(epicIssues);
+        if (!flag) {
+            try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+                if (boardIterator == null
+                        && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+                    boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
+                }
+                if (issueIterator == null || !issueIterator.hasNext()) {
+                    List<Issue> epicIssues;
+                    if (null == issueIterator || boardIssueSize < pageSize) {
+                        pageNumber = 0;
+                        if (boardIterator.hasNext()) {
+                            BoardDetails boardDetails = boardIterator.next();
+                            boardId = boardDetails.getBoardId();
+                            fetchIssues(client);
+                            epicIssues = fetchEpics(krb5Client, client);
+                            if (CollectionUtils.isNotEmpty(epicIssues)) {
+                                issues.addAll(epicIssues);
+                            }
                         }
+                    } else {
+                        fetchIssues(client);
                     }
-                } else {
-                    fetchIssues(client);
+
+                    if (CollectionUtils.isNotEmpty(issues)) {
+                        issueIterator = issues.iterator();
+                    }
+                }
+                if (null != issueIterator && issueIterator.hasNext()) {
+                    Issue issue = issueIterator.next();
+                    readData = new ReadData();
+                    readData.setIssue(issue);
+                    readData.setProjectConfFieldMapping(projectConfFieldMapping);
+                    readData.setBoardId(boardId);
+                    readData.setSprintFetch(false);
                 }
 
-                if (CollectionUtils.isNotEmpty(issues)) {
-                    issueIterator = issues.iterator();
+                if ((null == projectConfFieldMapping)
+                        || !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
+                    log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+                    flag=true;
+                    return readData;
                 }
-            }
-            if (null != issueIterator && issueIterator.hasNext()) {
-                Issue issue = issueIterator.next();
-                readData = new ReadData();
-                readData.setIssue(issue);
-                readData.setProjectConfFieldMapping(projectConfFieldMapping);
-                readData.setBoardId(boardId);
-                readData.setSprintFetch(false);
-            }
-
-            if ((null == projectConfFieldMapping)
-                    || !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
-                log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                readData = null;
             }
         }
         return readData;
@@ -195,7 +199,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 
         if (MapUtils.isNotEmpty(projectBoardWiseDeltaDate) && MapUtils.isNotEmpty(
                 projectBoardWiseDeltaDate.get(projectConfFieldMapping.getBasicProjectConfigId().toString()))) {
-            deltaDate = updateDeltaDateFromBoardWiseData(deltaDate);
+            deltaDate = updateDeltaDateFromBoardWiseData(deltaDate);//here that link which returns issues there issues are sorted by changeDate/updatedDate
         }
 
         return deltaDate;
@@ -236,6 +240,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
         } else {
             log.info("project: {} not found in trace log so data will be fetched from beginning",
                     projectConfFieldMapping.getProjectName());
+            Map<String, String> boardWiseDate = new HashMap<>();
+            if(StringUtils.isEmpty(boardId)){
+                boardWiseDate.put(boardId,deltaDate);
+            } else{
+                boardWiseDate.put(NOBOARD_MSG,deltaDate);
+            }
+            projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), boardWiseDate);
         }
     }
 
