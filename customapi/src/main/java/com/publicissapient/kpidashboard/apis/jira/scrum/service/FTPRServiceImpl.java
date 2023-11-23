@@ -104,6 +104,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 						jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusKPI135()))
 						.collect(Collectors.toList());
 			}
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI135())) {
+				totalStoryList = totalStoryList.stream().filter(jiraIssue -> fieldMapping.getJiraLabelsKPI135().stream()
+						.anyMatch(label -> jiraIssue.getLabels().contains(label))).collect(Collectors.toList());
+			}
 		}
 		return totalStoryList;
 	}
