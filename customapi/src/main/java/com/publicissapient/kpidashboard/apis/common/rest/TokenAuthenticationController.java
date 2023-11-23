@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
+import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 /**
@@ -49,6 +51,9 @@ public class TokenAuthenticationController {
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
+
+	@Autowired
+	private CustomAnalyticsService customAnalyticsService;
 	@Autowired
 	private AuthProperties authProperties;
 	@Autowired
@@ -66,10 +71,15 @@ public class TokenAuthenticationController {
 			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
 			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
 			if (value) {
-				serviceResponse = new ServiceResponse(true, "success_valid_token", userData);
+				JSONObject json = customAnalyticsService.addAnalyticsData(response, userData.getUserName());
+				json.put("resourceTokenValid", true);
+				serviceResponse = new ServiceResponse(true, "success_valid_token", json);
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 			} else {
-				serviceResponse = new ServiceResponse(false, "token is expired", null);
+				JSONObject json = new JSONObject();
+				json.put("user_name", userData.getUserName());
+				json.put("resourceTokenValid", false);
+				serviceResponse = new ServiceResponse(false, "token is expired", json);
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			}
 		} else {
