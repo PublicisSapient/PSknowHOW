@@ -174,6 +174,6 @@ public interface UserInfoService {
 	 * @param username
 	 * @return
 	 */
-	UserInfo getCentralAuthUserInfo(String username);
+	UserInfo getCentralAuthUserInfo(String username , String token);
 	//----auth-N-auth----------
 }

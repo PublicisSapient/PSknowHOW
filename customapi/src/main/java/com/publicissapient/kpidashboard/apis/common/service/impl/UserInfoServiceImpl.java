@@ -545,9 +545,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public UserInfo getCentralAuthUserInfo(String username) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	public UserInfo getCentralAuthUserInfo(String username , String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -555,7 +554,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<UserInfo> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, entity, UserInfo.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, UserInfo.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
