@@ -2655,5 +2655,14 @@
     "tooltip": {
       "definition": "All status that identify hold/blocked statuses."
     }
+  },
+  {
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
   }
 ]

@@ -161,3 +161,8 @@ db.kpi_master.updateMany(
     }
 }
 );
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.deleteOne({
+    "fieldName" : "jiraLabelsKPI135"
+})

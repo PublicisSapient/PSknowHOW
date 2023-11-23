@@ -9680,6 +9680,15 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
     }
+},
+{
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
 }
 
 ]);
