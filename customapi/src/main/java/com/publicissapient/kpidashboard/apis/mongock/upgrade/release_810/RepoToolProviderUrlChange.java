@@ -17,18 +17,13 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
-import com.mongodb.client.model.BulkWriteOptions;
-import com.mongodb.client.model.UpdateOneModel;
-import com.mongodb.client.model.WriteModel;
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author kunkambl
@@ -52,20 +47,19 @@ public class RepoToolProviderUrlChange {
 	}
 
 	public void changeRepoToolProviderTestApiUrls() {
-		List<WriteModel<Document>> bulkUpdateOps = new ArrayList<>();
 
 		// Update for bitbucket tool
-		bulkUpdateOps.add(new UpdateOneModel<>(new Document("toolName", "bitbucket"),
+		Document filter_bitbuckrt = new Document("toolName", "bitbucket");
+		Document update_gitlab = new Document("$set",
+				new Document().append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/").append("testApiUrl",
+						"https://api.bitbucket.org/2.0/workspaces/"));
 
-				new Document("$set", new Document().append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/")
-						.append("testApiUrl", "https://api.bitbucket.org/2.0/workspaces/"))));
-
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bitbuckrt, update_gitlab);
 		// Update for gitlab tool
-		bulkUpdateOps.add(new UpdateOneModel<>(new Document("toolName", "gitlab"),
-				new Document("$set", new Document("testApiUrl", "/api/v4/projects/")).append("repoToolProvider",
-						"gitlab")));
-		BulkWriteOptions options = new BulkWriteOptions().ordered(false);
-		mongoTemplate.getCollection("repo_tools_provider").bulkWrite(bulkUpdateOps, options);
+		Document filter_gl = new Document("toolName", "gitlab");
+		Document update_gl = new Document("$set", new Document().append("testApiUrl", "/api/v4/projects/"));
+
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_gl, update_gl);
 	}
 
 	public void changePRSizeMaturity() {
@@ -98,18 +92,17 @@ public class RepoToolProviderUrlChange {
 	}
 
 	public void changeRepoToolProviderTestApiUrlsRollback() {
-		List<WriteModel<Document>> bulkUpdateOps = new ArrayList<>();
-		bulkUpdateOps.add(new UpdateOneModel<>(new Document("toolName", "bitbucket"),
+		Document filter_bb = new Document("toolName", "bitbucket");
+		Document update_bb = new Document("$set", new Document()
+				.append("testServerApiUrl", "https://api.bitbucket.org/2.0/repositories/")
+				.append("testApiUrl", ""));
 
-				new Document("$set",
-						new Document().append("testServerApiUrl", "https://api.bitbucket.org/2.0/repositories/")
-								.append("testApiUrl", ""))));
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bb, update_bb);
 
-		// Update for gitlab tool
-		bulkUpdateOps.add(new UpdateOneModel<>(new Document("toolName", "gitlab"),
-				new Document("$set", new Document("testApiUrl", "https://gitlab.com/api/v4/projects/"))));
-		BulkWriteOptions options = new BulkWriteOptions().ordered(false);
-		mongoTemplate.getCollection("repo_tools_provider").bulkWrite(bulkUpdateOps, options);
+		Document filter = new Document("toolName", "gitlab");
+		Document update = new Document("$set", new Document("testApiUrl", "https://gitlab.com/api/v4/projects/"));
+
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter, update);
 	}
 
 	public void changePRSizeMaturityRollback() {
