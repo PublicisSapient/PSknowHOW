@@ -15,23 +15,31 @@
  * limitations under the License.
  *
  ******************************************************************************/
+package com.publicissapient.kpidashboard.apis.common;
 
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-export const environment = {
-   production: false,
-   baseUrl: '//customapi:8080',
-   SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
-   RESOURCE: 'PSKnowHOW'
-};
+import java.util.List;
 
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
+/**
+ * aksshriv1
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+@Data
+@Builder
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserTokenAuthenticationDTO {
+
+	private String userName;
+	private List<String> userRoles;
+	private String authToken;
+	private String resource;
+	private boolean resourceTokenValid;
+}

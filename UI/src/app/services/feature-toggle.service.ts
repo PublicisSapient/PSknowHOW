@@ -19,7 +19,7 @@ export class FeatureFlagsService {
   }
 
   isFeatureEnabled(key: string) {
-    if (this.config.length) {
+    if (this.config?.length) {
       let requiredConfig = this.config.filter(feature => feature['name'].toLowerCase() === key.toLowerCase())[0];
       if (requiredConfig) {
         if (requiredConfig.enabled) {

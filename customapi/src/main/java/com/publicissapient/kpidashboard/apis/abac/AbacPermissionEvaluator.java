@@ -50,7 +50,9 @@ public class AbacPermissionEvaluator implements PermissionEvaluator {
 	@Override
 	public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
 		String userName = (String) authentication.getPrincipal();
-		UserInfo user = userInfoService.getUserInfo(userName);
+		// --- auth-N-auth starts here -------
+		UserInfo user = userInfoService.getCentralAuthUserInfo(userName);
+		// --- auth-N-auth ends here -------
 
 		Map<String, Object> environment = new HashMap<>();
 

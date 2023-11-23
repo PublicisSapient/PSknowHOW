@@ -68,6 +68,13 @@ public class AuthProperties {// NOPMD
 	private Integer accountLockedThreshold;
 	private int accountLockedPeriod;
 
+	// --- auth-N-auth changes starts here ----
+	private String centralAuthBaseURL;
+	private String resourceAPIKey;
+	private String resourcePolicyEndPoint;
+	private String fetchUserDetailsEndPoint;
+	private String resourceName;
+
 	/**
 	 * Gets expiration time.
 	 *
@@ -371,6 +378,90 @@ public class AuthProperties {// NOPMD
 	public void setAccountLockedPeriod(int accountLockedPeriod) {
 		this.accountLockedPeriod = accountLockedPeriod;
 	}
+
+	/**
+	 * Get central auth base url
+	 *
+	 * @return
+	 */
+	public String getCentralAuthBaseURL() {
+		return centralAuthBaseURL;
+	}
+
+	/**
+	 * Set central auth base url
+	 *
+	 * @param centralAuthBaseURL
+	 */
+	public void setCentralAuthBaseURL(String centralAuthBaseURL) {
+		this.centralAuthBaseURL = centralAuthBaseURL;
+	}
+
+	/**
+	 * Set resourceName
+	 *
+	 * @param resourceName
+	 */
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	/**
+	 * get resource Name
+	 * @return resourceName
+	 */
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	/**
+	 * Set central auth userinfo url
+	 *
+	 * @param fetchUserDetailsEndPoint
+	 */
+	public void setFetchUserDetailsEndPoint(String fetchUserDetailsEndPoint) {
+		this.fetchUserDetailsEndPoint = fetchUserDetailsEndPoint;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 * @return
+	 */
+	public String getFetchUserDetailsEndPoint() {
+		return fetchUserDetailsEndPoint;
+	}
+
+
+	/**
+	 * get resourceAPIKey
+	 * @return
+	 */
+	public String getResourceAPIKey() {
+		return resourceAPIKey;
+	}
+
+	/**
+	 * Set resourcePolicyEndPoint
+	 *
+	 * @param resourcePolicyEndPoint
+	 */
+	public void setResourcePolicyEndPoint(String resourcePolicyEndPoint) {
+		this.resourcePolicyEndPoint = resourcePolicyEndPoint;
+	}
+
+	public String getResourcePolicyEndPoint() {
+		return resourcePolicyEndPoint;
+	}
+
+	/**
+	 * Set resourceAPIKey
+	 *
+	 * @param resourceAPIKey
+	 */
+	public void setResourceAPIKey(String resourceAPIKey) {
+		this.resourceAPIKey = resourceAPIKey;
+	}
+
 
 	/**
 	 * Apply defaults if needed.

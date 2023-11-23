@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.auth.token;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -35,6 +36,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -49,7 +52,7 @@ import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -57,7 +60,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessReque
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import io.jsonwebtoken.Claims;
@@ -79,6 +81,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private static final String USER_EMAIL = "emailAddress";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final Object USER_AUTHORITIES = "authorities";
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	@Autowired
 	AuthenticationService authenticationService;
 	@Autowired
@@ -95,26 +98,49 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	private CookieUtil cookieUtil;
 
 	@Override
-	public void addAuthentication(HttpServletResponse response, Authentication authentication) {
-		String jwt = Jwts.builder().setSubject(authentication.getName())
+	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
+		String jwt = createJwtToken(authentication);
+		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
+		data.setUserName(authentication.getName());
+		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
+		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
+		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
+		response.addCookie(cookie);
+   	    cookieUtil.addSameSiteCookieAttribute(response);
+		return data;
+	}
+
+	public String createJwtToken(Authentication authentication) {
+		return Jwts.builder().setSubject(authentication.getName())
 				.claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
 				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
-		UserTokenData data = new UserTokenData();
-		data.setUserName(authentication.getName());
-		data.setUserToken(jwt);
-		userTokenReopository.deleteAllByUserName(authentication.getName());
-		userTokenReopository.save(data);
-		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
-		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
-		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
+	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
+											HttpServletResponse response) {
+
+		if (customApiConfig.isSsoLogin()) {
+			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+		} else {
+			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
+				String token = userTokenAuthenticationDTO.getAuthToken();
+				if (StringUtils.isBlank(token)) {
+					return null;
+				}
+				return createAuthentication(token, response);
+			} else {
+				return null;
+			}
+		}
+
+	}
+
+	@Override
+	public Authentication validateAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
@@ -131,7 +157,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			}
 			return createAuthentication(token, response);
 		}
-
 	}
 
 	private Authentication createAuthentication(String token, HttpServletResponse response) {
@@ -144,8 +169,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(username, null,
 					authorities);
 			authentication.setDetails(claims.get(DETAILS_CLAIM));
-			List<UserTokenData> userTokenData = userTokenReopository.findAllByUserName(username);
-			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(userTokenData));
+			Date tokenExpiration = claims.getExpiration();
+			response.setHeader(AUTH_DETAILS_UPDATED_FLAG, setUpdateAuthFlag(tokenExpiration));
 
 			return authentication;
 
@@ -226,15 +251,17 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	}
 
 	@Override
-	public String setUpdateAuthFlag(List<UserTokenData> userTokenDataList) {
-		UserTokenData userTokenData = getLatestUser(userTokenDataList);
-		if (userTokenData != null) {
-			String expiryDate = userTokenData.getExpiryDate();
+	public String setUpdateAuthFlag(Date tokenExpiration) {
+		if (tokenExpiration != null) {
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_TIME_FORMAT);
+			String expiryDate = dateFormat.format(tokenExpiration);
+
 			DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern(DateUtil.TIME_FORMAT)
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
-			if (LocalDateTime.parse(expiryDate, formatter).isBefore(LocalDateTime.now())) {
-				return Boolean.toString(true);
+			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
+			return Boolean.toString(true);
 			}
 		}
 		return Boolean.toString(false);

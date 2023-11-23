@@ -124,6 +124,8 @@ import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -202,7 +204,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent
+        BarWithYAxisGroupComponent,
+        DeveloperComponent,
+        PageNotFoundComponent
     ],
     imports: [
         DropdownModule,

@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************//*
+
 
 package com.publicissapient.kpidashboard.apis.auth.rest;
 
@@ -47,31 +48,38 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
+*/
 /**
  * This controller class managed all forgot password and reset new password rest
  * requests
  * 
  * @author vijmishr1
  *
- */
+ *//*
+
 @RestController
 @Slf4j
 public class ForgotPasswordController {
 
-	/**
+	*/
+/**
 	 * Relative path of reset password of UI
-	 */
+	 *//*
+
 	private static final String UI_RESET_PATH = "/authentication/resetPassword?resetToken="; // NOSONAR
-	/**
+	*/
+/**
 	 * Relative path of accountType of UI
-	 */
+	 *//*
+
 	private static final String UI_ACCOUNT_PATH = "/authentication/accountType?resetTokenStatus="; // NOSONAR
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	/**
+	*/
+/**
 	 * Creates token for an user account.
 	 * 
 	 * <p>
@@ -86,7 +94,8 @@ public class ForgotPasswordController {
 	 *         <tt>authentication</tt> object if email is sent successfully.
 	 *         <tt>logError</tt> message and <tt>null</tt> incase of
 	 *         <tt>UnknownHostException</tt> occurred.
-	 */
+	 *//*
+
 
 	@RequestMapping(value = "/forgotPassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> processForgotPassword(@RequestBody ForgotPasswordRequest request,
@@ -111,7 +120,8 @@ public class ForgotPasswordController {
 		}
 	}
 
-	/**
+	*/
+/**
 	 * Validates token generated for reset password.
 	 *
 	 * <p>
@@ -124,7 +134,8 @@ public class ForgotPasswordController {
 	 * @return RedirectView with <tt>UI_RESET_PATH</tt> if the token valid and
 	 *         <tt>UI_ACCOUNT_PATH</tt> incase of invalid token.
 	 * @throws UnknownHostException
-	 */
+	 *//*
+
 	@RequestMapping(value = "/validateToken", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public RedirectView validateToken(HttpServletRequest httpServletRequest, @RequestParam("token") UUID token)
 			throws UnknownHostException {
@@ -139,7 +150,8 @@ public class ForgotPasswordController {
 
 	}
 
-	/**
+	*/
+/**
 	 * Resets the password after validating the token
 	 * <p>
 	 * resetPassword method accepts ResetPasswordRequest object as param and
@@ -151,7 +163,8 @@ public class ForgotPasswordController {
 	 * @return ServiceResponse with <tt>sucess</tt> if the request is valid and
 	 *         incase of a invalid request appends the logError message with
 	 *         response code <tt>-14</tt>
-	 */
+	 *//*
+
 	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
 		boolean isSuccess = false;
@@ -172,10 +185,12 @@ public class ForgotPasswordController {
 		return ResponseEntity.ok().body(new ServiceResponse(isSuccess, "Success", authentication));
 	}
 
-	/**
+	*/
+/**
 	 * 
 	 * Gets api host
-	 **/
+	 **//*
+
 	private String getApiHost() throws UnknownHostException {
 
 		StringBuilder urlPath = new StringBuilder();
@@ -192,12 +207,14 @@ public class ForgotPasswordController {
 		return urlPath.toString();
 	}
 
-	/**
+	*/
+/**
 	 * Returns a String <tt>uiHost</tt> from customapi.properties with separator
 	 * 
 	 * @return
 	 * @throws UnknownHostException
-	 */
+	 *//*
+
 	private String getUIHost() throws UnknownHostException {
 		StringBuilder urlPath = new StringBuilder();
 		urlPath.append(':').append(File.separator + File.separator);
@@ -219,3 +236,4 @@ public class ForgotPasswordController {
 	}
 
 }
+*/

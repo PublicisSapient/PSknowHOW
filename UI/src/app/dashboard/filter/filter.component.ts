@@ -136,10 +136,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  showSwitchDropdown: boolean = false;
 
   showHideLoader: boolean = false;
   kpiListDataProjectLevel : any = {};
-  
+
   constructor(
     private service: SharedService,
     private httpService: HttpService,

@@ -32,25 +32,26 @@ export class AuthGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const currentUserDetails = this.sharedService.currentUserDetails;
-
         if (currentUserDetails) {
             if (currentUserDetails['authorities']) {
                 return true;
             } else {
-                this.router.navigate(['./authentication/register']);
+                this.router.navigate(['./authentication']);
                 return false;
             }
-        } else {
-            return this.httpService.getCurrentUserDetails().pipe(map(details => {
-                if (details['success']) {
-                    this.sharedService.setCurrentUserDetails(details['data']);
-                    if (details['data']['authorities']) {
-                        return true;
-                    }
-                    this.router.navigate(['./authentication/register']);
-                    return false;
-                }
-            }));
-        }
+        } 
+        /**To-do: To be handled when BE sends data in userData api */
+        // else {
+        //     return this.httpService.getCurrentUserDetails().pipe(map(details => {
+        //         if (details['success']) {
+        //             this.sharedService.setCurrentUserDetails(details['data']);
+        //             if (details['data']['authorities']) {
+        //                 return true;
+        //             }
+        //             this.router.navigate(['./authentication']);
+        //             return false;
+        //         }
+        //     }));
+        // }
     }
 }
