@@ -48,16 +48,19 @@ export class ToolMenuComponent implements OnInit {
   isAssigneeSwitchDisabled : boolean = false;
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
   userName : string;
-  constructor(
-    public router: Router, 
-    private sharedService: SharedService, 
-    private http: HttpService, 
-    private messenger: MessageService, 
-    private confirmationService: ConfirmationService, 
-    private getAuthorizationService: GetAuthorizationService,
-    private ga: GoogleAnalyticsService,) {
+  repoTools = ['BitBucket','GitLab','GitHub','Azure Repo'];
+  repoToolsEnabled : boolean;
 
-  }
+  constructor(
+      public router: Router,
+      private sharedService: SharedService,
+      private http: HttpService,
+      private messenger: MessageService,
+      private confirmationService: ConfirmationService,
+      private getAuthorizationService: GetAuthorizationService,
+      private ga: GoogleAnalyticsService,) {
+
+    }
 
   ngOnInit(): void {
     this.sharedService.currentUserDetailsObs.subscribe(details=>{
@@ -73,6 +76,7 @@ export class ToolMenuComponent implements OnInit {
     this.isProjectAdmin = this.getAuthorizationService.checkIfProjectAdmin();
     this.isSuperAdmin = this.getAuthorizationService.checkIfSuperUser();
      this.isAssigneeSwitchChecked = this.selectedProject?.saveAssigneeDetails;
+     this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
 
     if (!this.selectedProject) {
       this.router.navigate(['./dashboard/Config/ProjectList']);
@@ -242,6 +246,15 @@ export class ToolMenuComponent implements OnInit {
     if(this.isAssigneeSwitchChecked){
       this.isAssigneeSwitchDisabled = true;
     }
+
+       // filtering tolls based on repoToolFlag
+       this.tools = this.tools.filter(details=>{
+         if(this.repoToolsEnabled){
+            return !this.repoTools.includes(details.toolName)
+         }else{
+           return details.toolName !== 'RepoTool';
+         }
+       })
   }
 
   projectTypeChange(event, isClicked) {

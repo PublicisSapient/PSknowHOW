@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +85,9 @@ public class RepoToolsConfigServiceImplTest {
 
     @Mock
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+    @Mock
+    private AesEncryptionService aesEncryptionService;
 
     RepoToolsClient repoToolsClient = Mockito.mock(RepoToolsClient.class);
 
