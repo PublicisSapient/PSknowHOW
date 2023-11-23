@@ -91,11 +91,11 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		json.put(USER_EMAIL, email);
 		json.put(USER_ID, userinfo.getId().toString());
 		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
-		Gson gson = new Gson();
-
+		//Gson gson = new Gson();
+		json.put(PROJECTS_ACCESS, new JSONArray());
 		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
-		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+		/*List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
 		if (projectAccessesWithRole != null) {
 			JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
@@ -103,7 +103,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			json.put(PROJECTS_ACCESS, element.getAsJsonArray());
 		} else {
 			json.put(PROJECTS_ACCESS, new JSONArray());
-		}
+		}*/
 		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
