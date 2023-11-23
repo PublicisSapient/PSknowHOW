@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -86,13 +87,15 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		UserInfo userinfo = userInfoRepository.findByUsername(username);
 		Authentication authentication = authenticationRepository.findByUsername(username);
-		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
 		json.put(USER_NAME, username);
-		json.put(USER_EMAIL, email);
-		json.put(USER_ID, userinfo.getId().toString());
-		json.put(USER_AUTHORITIES, userinfo.getAuthorities());
-		//Gson gson = new Gson();
-		json.put(PROJECTS_ACCESS, new JSONArray());
+		if(Objects.nonNull(userinfo)) {
+			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+			json.put(USER_EMAIL, email);
+			json.put(USER_ID, userinfo.getId().toString());
+			json.put(USER_AUTHORITIES, userinfo.getAuthorities());
+			//Gson gson = new Gson();
+			json.put(PROJECTS_ACCESS, new JSONArray());
+		}
 		userLoginHistoryService.createUserLoginHistoryInfo(userinfo, SUCCESS);
 
 		/*List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
