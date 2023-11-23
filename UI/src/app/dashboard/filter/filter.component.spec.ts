@@ -618,7 +618,7 @@ const completeHierarchyData = {
   it('should get kpiorder list', fakeAsync(() => {
     component.kpiListData = {};
     const spy = spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(configGlobalData));
-    const spyprocessKpiList = spyOn(component, 'processKpiList');
+    const spyprocessKpiList = spyOn(sharedService, 'setDashConfigData');
     const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderedList();
     tick();
@@ -1317,6 +1317,8 @@ const completeHierarchyData = {
         "hierarchyLevelName": "Project"
     });
       spyOn(component,'checkIfFilterAlreadySelected');
+      spyOn(helperService,'makeSyncShownProjectLevelAndUserLevelKpis')
+      spyOn(sharedService,'setDashConfigData')
       component.navigateToDashboard();
       fixture.detectChanges();
       expect(navigateToSelectedTabSpy).toHaveBeenCalled();

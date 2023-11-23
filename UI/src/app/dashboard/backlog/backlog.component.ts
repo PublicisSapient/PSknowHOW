@@ -829,7 +829,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && this.kpiSelectedFilterObj[kpiId]['filter2']?.length > 0 && this.kpiSelectedFilterObj[kpiId]['filter2'][0]?.toLowerCase() !== 'overall')) {
       return '-'
     } else {
-      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `=${value} ${unit}`;
+      return Math.floor(value) < value ? `${Math.round(value)} ${unit}` : `${value} ${unit}`;
     }
   }
 
@@ -954,7 +954,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
       const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
       hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
-      this.service.kpiListNewOrder.next([this.leadTime, ...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
+      this.service.kpiListNewOrder.next([...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
     }
   }
 
