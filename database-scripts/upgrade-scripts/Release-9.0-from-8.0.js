@@ -879,3 +879,24 @@ db.kpi_master.updateMany(
     }
 }
 );
+
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for Issue closure",
+            "tooltip": {
+                "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Backlog Overview" }
+    }
+);
