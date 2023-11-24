@@ -77,14 +77,13 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     List<Issue> issues = new ArrayList<>();
     Map<String, String> projectWiseDeltaDate;
     int issueSize = 0;
+    Boolean fetchLastIssue = false;
     @Autowired
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
     private Iterator<Issue> issueIterator;
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
     private ReaderRetryHelper retryHelper;
-
-    Boolean fetchLastIssue=false;
 
     @Autowired
     public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
@@ -115,26 +114,26 @@ public class IssueJqlReader implements ItemReader<ReadData> {
         if (null != projectConfFieldMapping && !fetchLastIssue) {
             KerberosClient krb5Client = null;
             try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-                    if (issueIterator == null || !issueIterator.hasNext()) {
-                        fetchIssues(client);
-                        if (CollectionUtils.isNotEmpty(issues)) {
-                            issueIterator = issues.iterator();
-                        }
+                if (issueIterator == null || !issueIterator.hasNext()) {
+                    fetchIssues(client);
+                    if (CollectionUtils.isNotEmpty(issues)) {
+                        issueIterator = issues.iterator();
                     }
+                }
 
-                    if (null != issueIterator && issueIterator.hasNext()) {
-                        Issue issue = issueIterator.next();
-                        readData = new ReadData();
-                        readData.setIssue(issue);
-                        readData.setProjectConfFieldMapping(projectConfFieldMapping);
-                        readData.setSprintFetch(false);
-                    }
+                if (null != issueIterator && issueIterator.hasNext()) {
+                    Issue issue = issueIterator.next();
+                    readData = new ReadData();
+                    readData.setIssue(issue);
+                    readData.setProjectConfFieldMapping(projectConfFieldMapping);
+                    readData.setSprintFetch(false);
+                }
 
-                    if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
-                        log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                        fetchLastIssue=true;
-                        return readData;
-                    }
+                if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
+                    log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
+                    fetchLastIssue = true;
+                    return readData;
+                }
             }
         }
         return readData;
@@ -148,7 +147,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             log.info("Reading issues for project : {}, page No : {}", projectConfFieldMapping.getProjectName(),
                     pageNumber / pageSize);
             String deltaDate = getDeltaDateFromTraceLog();
-            issues=jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
+            issues = jiraCommonService.fetchIssuesBasedOnJql(projectConfFieldMapping, client, pageNumber,
                     deltaDate);
             issueSize = issues.size();
             pageNumber += pageSize;
@@ -180,7 +179,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
                 String lastSuccessfulRun = deltaDate;
                 for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-                    lastSuccessfulRun=processorExecutionTraceLog.getLastSuccessfulRun();
+                    lastSuccessfulRun = processorExecutionTraceLog.getLastSuccessfulRun();
                 }
                 log.info("project: {}  found in trace log. Data will be fetched from one day before {}",
                         projectConfFieldMapping.getProjectName(), lastSuccessfulRun);

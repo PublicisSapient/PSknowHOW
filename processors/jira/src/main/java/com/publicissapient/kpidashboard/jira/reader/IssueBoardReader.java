@@ -80,6 +80,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     List<Issue> issues = new ArrayList<>();
     Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
     int boardIssueSize = 0;
+    Boolean fetchLastIssue = false;
     private ReaderRetryHelper retryHelper;
     @Autowired
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -88,7 +89,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
 
-    Boolean fetchLastIssue=false;
     @Autowired
     public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
         this.projectId = projectId;
@@ -153,7 +153,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
                 if ((null == projectConfFieldMapping)
                         || !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
                     log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                    fetchLastIssue=true;
+                    fetchLastIssue = true;
                     return readData;
                 }
             }
@@ -241,10 +241,10 @@ public class IssueBoardReader implements ItemReader<ReadData> {
             log.info("project: {} not found in trace log so data will be fetched from beginning",
                     projectConfFieldMapping.getProjectName());
             Map<String, String> boardWiseDate = new HashMap<>();
-            if(StringUtils.isEmpty(boardId)){
-                boardWiseDate.put(boardId,deltaDate);
-            } else{
-                boardWiseDate.put(NOBOARD_MSG,deltaDate);
+            if (StringUtils.isEmpty(boardId)) {
+                boardWiseDate.put(boardId, deltaDate);
+            } else {
+                boardWiseDate.put(NOBOARD_MSG, deltaDate);
             }
             projectBoardWiseDeltaDate.put(projectConfFieldMapping.getBasicProjectConfigId().toString(), boardWiseDate);
         }
