@@ -73,8 +73,8 @@ public final class JiraConstants {
 	public static final String SPACE = " ";
 	public static final String EPIC = "Epic";
 	public static final String WORKLOG = "timespent";
-	public static final String FLAG_STATUS_FOR_SERVER = "Requires attention";
-	public static final String FLAG_STATUS_FOR_CLOUD = "Impediment";
+	public static final String FLAG_STATUS_FOR_SERVER = "Flag as Impediment";
+	public static final String FLAG_STATUS_FOR_CLOUD = "Flagged";
 	public static final String QUERYDATEFORMAT = "yyyy-MM-dd HH:mm";
 	public static final String TO_DO = "To Do";
 	public static final String DONE = "Done";
