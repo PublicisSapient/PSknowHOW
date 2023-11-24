@@ -53,15 +53,13 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.CalculatePCDHelper;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import com.publicissapient.kpidashboard.apis.model.Filter;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -97,7 +95,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, List<Object>, Map<String, Object>> {
+public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	public static final String UNCHECKED = "unchecked";
 	public static final String UNASSIGNED = "Unassigned";
 	private static final String SPRINT = "sprint";
@@ -142,13 +140,11 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * {@inheritDoc}
 	 */
 	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
+	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
+			throws ApplicationException {
+		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
+			sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+		}
 		return kpiElement;
 	}
 
@@ -157,17 +153,14 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * analysis at sprint wise.
 	 */
 	@SuppressWarnings(UNCHECKED)
-	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-		Object basicProjectConfigId = Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId();
+	private void sprintWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
+				.getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 		List<UserWiseCardDetail> userWiseCardDetails = new ArrayList<>();
 
 		// fetch from db
-		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
 		SprintDetails sprintDetails = (SprintDetails) resultMap.get(SPRINT);
 		if (ObjectUtils.isNotEmpty(sprintDetails)) {
 			List<JiraIssue> notCompletedJiraIssue = (List<JiraIssue>) resultMap.get(NOT_COMPLETED_JIRAISSUE);
@@ -260,10 +253,9 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Map<String, Object> fetchKPIDataFromDb(final List<Node> leafNodeList, final String startDate,
-			final String endDate, final KpiRequest kpiRequest) {
+	public Map<String, Object> fetchKPIDataFromDb(final Node leafNode, final String startDate, final String endDate,
+			final KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Daily Standup View -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails;
@@ -277,8 +269,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI119(),
+				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -290,15 +282,14 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 						CommonConstant.COMPLETED_ISSUES));
 
 				if (CollectionUtils.isNotEmpty(allIssues)) {
-					List<JiraIssue> filteredAllJiraIssue = IterationKpiHelper.getFilteredJiraIssue(allIssues,
-							totalJiraIssueList);
+					List<JiraIssue> filteredAllJiraIssue = getFilteredJiraIssue(allIssues, totalJiraIssueList);
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
 							sprintDetails, null, filteredAllJiraIssue);
 
-					List<JiraIssue> filteredNotCompletedJiraIssue = IterationKpiHelper
-							.getFilteredJiraIssue(notCompletedIssues, new ArrayList<>(totalIssueList));
+					List<JiraIssue> filteredNotCompletedJiraIssue = getFilteredJiraIssue(notCompletedIssues,
+							new ArrayList<>(totalIssueList));
 
-					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
+					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(
 							totalIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							totalHistoryList);
 
@@ -781,14 +772,6 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	@Override
 	public String getQualifierType() {
 		return KPICode.DAILY_STANDUP_VIEW.name();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Map<String, Long> calculateKPIMetrics(Map<String, Object> objectMap) {
-		return new HashMap<>();
 	}
 
 	@Data

@@ -56,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -111,7 +110,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetail = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetail = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -119,8 +118,8 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 				List<String> notCompletedIssues = KpiDataHelper
 						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> notCompltedJiraIssueList = IterationKpiHelper
-							.getFilteredJiraIssue(notCompletedIssues, totalJiraIssueList);
+					List<JiraIssue> notCompltedJiraIssueList = getFilteredJiraIssue(notCompletedIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetail,
 									sprintDetail.getNotCompletedIssues(), notCompltedJiraIssueList);

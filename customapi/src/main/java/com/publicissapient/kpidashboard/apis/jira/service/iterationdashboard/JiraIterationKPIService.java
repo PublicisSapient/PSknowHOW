@@ -18,12 +18,30 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
+import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
@@ -33,14 +51,6 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * This class is extention of ApplicationKPIService. All Jira KPIs service have
@@ -48,140 +58,229 @@ import java.util.stream.Collectors;
  */
 public abstract class JiraIterationKPIService implements NonTrendKPIService {
 
-    @Autowired
-    private CacheService cacheService;
+	@Autowired
+	private CacheService cacheService;
 
+	@Autowired
+	private JiraIterationServiceR jiraIterationServiceR;
 
-    @Autowired
-    private JiraIterationServiceR jiraIterationServiceR;
+	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
-    /**
-     * Returns API Request tracker Id to be used for logging/debugging and using it
-     * for maintaining any sort of cache.
-     *
-     * @return Scrum Request Tracker Id
-     */
-    public String getRequestTrackerId() {
-        return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
-    }
+	/**
+	 * Returns API Request tracker Id to be used for logging/debugging and using it
+	 * for maintaining any sort of cache.
+	 *
+	 * @return Scrum Request Tracker Id
+	 */
+	public String getRequestTrackerId() {
+		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
+	}
 
-    public void populateIterationStatusData(List<IterationKpiModalValue> overAllmodalValues,
-                                            List<IterationKpiModalValue> modalValues, IterationStatus iterationStatus) {
-        IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
-        iterationKpiModalVal.setIssueId(iterationStatus.getIssueId());
-        iterationKpiModalVal.setIssueURL(iterationStatus.getUrl());
-        iterationKpiModalVal.setIssueType(iterationStatus.getTypeName());
-        iterationKpiModalVal.setPriority(iterationStatus.getPriority());
-        iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
-        iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
-        iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(),
-                DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
-        if (iterationStatus.getRemainingEstimateMinutes() != null)
-            iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
-        else
-            iterationKpiModalVal.setRemainingTime(0);
-        iterationKpiModalVal.setDelay(iterationStatus.getDelay());
-        modalValues.add(iterationKpiModalVal);
-        overAllmodalValues.add(iterationKpiModalVal);
-    }
+	public void populateIterationStatusData(List<IterationKpiModalValue> overAllmodalValues,
+			List<IterationKpiModalValue> modalValues, IterationStatus iterationStatus) {
+		IterationKpiModalValue iterationKpiModalVal = new IterationKpiModalValue();
+		iterationKpiModalVal.setIssueId(iterationStatus.getIssueId());
+		iterationKpiModalVal.setIssueURL(iterationStatus.getUrl());
+		iterationKpiModalVal.setIssueType(iterationStatus.getTypeName());
+		iterationKpiModalVal.setPriority(iterationStatus.getPriority());
+		iterationKpiModalVal.setDescription(iterationStatus.getIssueDescription());
+		iterationKpiModalVal.setIssueStatus(iterationStatus.getIssueStatus());
+		iterationKpiModalVal.setDueDate(DateUtil.dateTimeConverter(iterationStatus.getDueDate(),
+				DateUtil.TIME_FORMAT_WITH_SEC, DateUtil.DISPLAY_DATE_FORMAT));
+		if (iterationStatus.getRemainingEstimateMinutes() != null)
+			iterationKpiModalVal.setRemainingTime(iterationStatus.getRemainingEstimateMinutes());
+		else
+			iterationKpiModalVal.setRemainingTime(0);
+		iterationKpiModalVal.setDelay(iterationStatus.getDelay());
+		modalValues.add(iterationKpiModalVal);
+		overAllmodalValues.add(iterationKpiModalVal);
+	}
 
-    public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-                                                         TestCaseDetails testCaseDetails) {
-        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-        iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
-        iterationKpiModalValue.setDescription(testCaseDetails.getName());
-        overAllModalValues.add(iterationKpiModalValue);
-    }
+	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+			TestCaseDetails testCaseDetails) {
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
+		iterationKpiModalValue.setDescription(testCaseDetails.getName());
+		overAllModalValues.add(iterationKpiModalValue);
+	}
 
-    public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-                                                           JiraIssue jiraIssue) {
+	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+			JiraIssue jiraIssue) {
 
-        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-        iterationKpiModalValue.setDescription(jiraIssue.getName());
-        overAllModalValues.add(iterationKpiModalValue);
-    }
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+		iterationKpiModalValue.setDescription(jiraIssue.getName());
+		overAllModalValues.add(iterationKpiModalValue);
+	}
 
-    public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
-        String devCompleteDate = Constant.DASH;
-        List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
-        if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
-            devCompleteDate = filterStatusUpdationLog.stream()
-                    .filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
-                            && jiraHistoryChangeLog.getUpdatedOn() != null)
-                    .findFirst()
-                    .map(jiraHistoryChangeLog -> LocalDate
-                            .parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
-                                    DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT))
-                            .toString())
-                    .orElse(devCompleteDate);
-        }
-        return devCompleteDate;
-    }
+	public String getDevCompletionDate(JiraIssueCustomHistory issueCustomHistory, List<String> fieldMapping) {
+		String devCompleteDate = Constant.DASH;
+		List<JiraHistoryChangeLog> filterStatusUpdationLog = issueCustomHistory.getStatusUpdationLog();
+		if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping)) {
+			devCompleteDate = filterStatusUpdationLog.stream()
+					.filter(jiraHistoryChangeLog -> fieldMapping.contains(jiraHistoryChangeLog.getChangedTo())
+							&& jiraHistoryChangeLog.getUpdatedOn() != null)
+					.findFirst()
+					.map(jiraHistoryChangeLog -> LocalDate
+							.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+									DateTimeFormatter.ofPattern(DateUtil.DATE_FORMAT))
+							.toString())
+					.orElse(devCompleteDate);
+		}
+		return devCompleteDate;
+	}
 
-    /**
-     * to maintain values upto 2 places of decimal
-     *
-     * @param value
-     * @return
-     */
-    public double roundingOff(double value) {
-        return (double) Math.round(value * 100) / 100;
-    }
+	/**
+	 * to maintain values upto 2 places of decimal
+	 *
+	 * @param value
+	 * @return
+	 */
+	public double roundingOff(double value) {
+		return (double) Math.round(value * 100) / 100;
+	}
 
-    /**
-     * For Assigning IterationKPiData
-     *
-     * @param label
-     * @param fieldMapping
-     * @param issueCount
-     * @param storyPoint
-     * @param originalEstimate
-     * @param modalvalue
-     * @return
-     */
-    public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
-                                                   Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
-        IterationKpiData iterationKpiData;
-        if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-                && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-            iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null,
-                    "", CommonConstant.SP, modalvalue);
-        } else {
-            iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
-                    null, "", CommonConstant.DAY, modalvalue);
-        }
-        return iterationKpiData;
-    }
+	/**
+	 * For Assigning IterationKPiData
+	 *
+	 * @param label
+	 * @param fieldMapping
+	 * @param issueCount
+	 * @param storyPoint
+	 * @param originalEstimate
+	 * @param modalvalue
+	 * @return
+	 */
+	public IterationKpiData createIterationKpiData(String label, FieldMapping fieldMapping, Integer issueCount,
+			Double storyPoint, Double originalEstimate, List<IterationKpiModalValue> modalvalue) {
+		IterationKpiData iterationKpiData;
+		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(storyPoint), null,
+					"", CommonConstant.SP, modalvalue);
+		} else {
+			iterationKpiData = new IterationKpiData(label, Double.valueOf(issueCount), roundingOff(originalEstimate),
+					null, "", CommonConstant.DAY, modalvalue);
+		}
+		return iterationKpiData;
+	}
 
-    public SprintDetails getSprintDetailsFromBaseClass() {
-        SprintDetails sprintDetails;
-        try {
-            sprintDetails = (SprintDetails) jiraIterationServiceR.getCurrentSprintDetails().clone();
-        } catch (CloneNotSupportedException e) {
-            sprintDetails = null;
-        }
-        return sprintDetails;
-    }
+	public SprintDetails getSprintDetailsFromBaseClass() {
+		SprintDetails sprintDetails;
+		try {
+			sprintDetails = (SprintDetails) jiraIterationServiceR.getCurrentSprintDetails().clone();
+		} catch (CloneNotSupportedException e) {
+			sprintDetails = null;
+		}
+		return sprintDetails;
+	}
 
-    public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
-        return jiraIterationServiceR.getJiraIssuesForCurrentSprint().stream()
-                .filter(jiraIssue -> numbersList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
-    }
+	public List<JiraIssue> getJiraIssuesFromBaseClass(List<String> numbersList) {
+		return jiraIterationServiceR.getJiraIssuesForCurrentSprint().stream()
+				.filter(jiraIssue -> numbersList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+	}
 
-    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass(List<String> numbersList) {
-        return jiraIterationServiceR.getJiraIssuesCustomHistoryForCurrentSprint().stream()
-                .filter(jiraIssueCustomHistory -> numbersList.contains(jiraIssueCustomHistory.getStoryID()))
-                .collect(Collectors.toList());
-    }
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass(List<String> numbersList) {
+		return jiraIterationServiceR.getJiraIssuesCustomHistoryForCurrentSprint().stream()
+				.filter(jiraIssueCustomHistory -> numbersList.contains(jiraIssueCustomHistory.getStoryID()))
+				.collect(Collectors.toList());
+	}
 
-    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
-        return jiraIterationServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
-    }
+	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
+		return jiraIterationServiceR.getJiraIssuesCustomHistoryForCurrentSprint();
+	}
 
-    public List<JiraIssue> getJiraIssuesFromBaseClass() {
-        return jiraIterationServiceR.getJiraIssuesForCurrentSprint();
-    }
+	public List<JiraIssue> getJiraIssuesFromBaseClass() {
+		return jiraIterationServiceR.getJiraIssuesForCurrentSprint();
+	}
+
+	/*
+	 * filter all jiraIssues
+	 */
+	public static List<JiraIssue> getFilteredJiraIssue(List<String> issueNumberList, List<JiraIssue> allJiraIssues) {
+		List<JiraIssue> filterJiraIssueList = new ArrayList<>();
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issueNumberList)
+				&& org.apache.commons.collections4.CollectionUtils.isNotEmpty(allJiraIssues)) {
+			filterJiraIssueList = allJiraIssues.stream()
+					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+		}
+		return filterJiraIssueList;
+	}
+
+	/*
+	 * filter all issueHistory
+	 */
+	public static List<JiraIssueCustomHistory> getFilteredJiraIssueHistory(List<String> issueNumberList,
+			List<JiraIssueCustomHistory> jiraIssueCustomHistoryList) {
+		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(issueNumberList)
+				&& org.apache.commons.collections4.CollectionUtils.isNotEmpty(jiraIssueCustomHistoryList)) {
+			jiraIssueCustomHistories = jiraIssueCustomHistoryList.stream()
+					.filter(jiraIssue -> issueNumberList.contains(jiraIssue.getStoryID())).collect(Collectors.toList());
+		}
+		return jiraIssueCustomHistories;
+	}
+
+	/*
+	 * to transform sprintdetails for iteration kpis
+	 */
+	public static SprintDetails transformIterSprintdetail(List<JiraIssueCustomHistory> jiraIssueCustomHistoryList,
+			Set<String> issues, SprintDetails dbSprintDetail, List<String> completeIssueType,
+			List<String> completionStatus, ObjectId projectConfigId) {
+		Map<ObjectId, Map<String, List<LocalDateTime>>> projectIssueWiseClosedDates = new HashMap<>();
+		Map<String, List<LocalDateTime>> issueWiseMinDateTime = new HashMap<>();
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(completionStatus)) {
+			for (String issue : issues) {
+				List<JiraHistoryChangeLog> statusUpdationLog = jiraIssueCustomHistoryList.stream()
+						.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equalsIgnoreCase(issue))
+						.flatMap(history -> history.getStatusUpdationLog().stream())
+						.sorted(Comparator.comparing(JiraHistoryChangeLog::getUpdatedOn)).collect(Collectors.toList());
+				/*
+				 * iterate over status logs and if some not completed status appears then that
+				 * has to be considered as reopen scenario, and at that time whatever statuses
+				 * present in minimumCompletedStatusWiseMap, out of them the minimum date has to
+				 * be considered of that closed cycle.
+				 */
+				if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(statusUpdationLog)) {
+					Map<String, LocalDateTime> minimumCompletedStatusWiseMap = new HashMap<>();
+					List<LocalDateTime> minimumDate = new ArrayList<>();
+
+					KpiDataHelper.getMiniDateOfCompleteCycle(completionStatus, statusUpdationLog,
+							minimumCompletedStatusWiseMap, minimumDate);
+					// if some status is left in the last cycle then that has to added in the
+					// minimum set
+					if (MapUtils.isNotEmpty(minimumCompletedStatusWiseMap)) {
+						LocalDateTime minDate = minimumCompletedStatusWiseMap.values().stream()
+								.min(LocalDateTime::compareTo).orElse(null);
+						if (minDate != null) {
+							minimumDate.add(minDate);
+							minimumCompletedStatusWiseMap.clear();
+						}
+					}
+					issueWiseMinDateTime.put(issue, minimumDate);
+				}
+			}
+			projectIssueWiseClosedDates.put(projectConfigId, issueWiseMinDateTime);
+		}
+		return KpiDataHelper.processSprintBasedOnFieldMappings(dbSprintDetail, completeIssueType, completionStatus,
+				projectIssueWiseClosedDates);
+	}
+
+	// Filtering the history which happened inside the sprint on basis of activity
+	// date
+	public List<JiraHistoryChangeLog> getInSprintStatusLogs(List<JiraHistoryChangeLog> issueHistoryLogs,
+															LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(issueHistoryLogs)) {
+			filterStatusUpdationLogs = issueHistoryLogs.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
+							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
+									DateTimeFormatter.ofPattern(TIME_FORMAT)),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		return filterStatusUpdationLogs;
+	}
 
 }

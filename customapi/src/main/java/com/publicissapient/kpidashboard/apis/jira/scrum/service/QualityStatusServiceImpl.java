@@ -56,7 +56,6 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -131,8 +130,8 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI133(),
+				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI133(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> totalIssue = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -161,8 +160,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				List<String> typeNameList = fieldMapping.getJiraItrQSIssueTypeKPI133();
 
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
-					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssue,
-							totalJiraIssueList);
+					List<JiraIssue> filteredJiraIssue = getFilteredJiraIssue(totalIssue, totalJiraIssueList);
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), filteredJiraIssue);
@@ -200,8 +198,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStories));
 				}
 				if (CollectionUtils.isNotEmpty(completedIssue)) {
-					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue,
-							totalJiraIssueList);
+					List<JiraIssue> completedIssueList = getFilteredJiraIssue(completedIssue, totalJiraIssueList);
 					Set<JiraIssue> completedJiraIssue = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);

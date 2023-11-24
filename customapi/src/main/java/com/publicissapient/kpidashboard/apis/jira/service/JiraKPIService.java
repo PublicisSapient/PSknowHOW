@@ -30,7 +30,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.Node;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -74,7 +73,6 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
  */
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
-	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
 	@Autowired
 	private CacheService cacheService;
@@ -235,21 +233,6 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 		return devCompleteDate;
 	}
 
-	// Filtering the history which happened inside the sprint on basis of activity
-	// date
-	public List<JiraHistoryChangeLog> getInSprintStatusLogs(List<JiraHistoryChangeLog> issueHistoryLogs,
-			LocalDate sprintStartDate, LocalDate sprintEndDate) {
-		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(issueHistoryLogs)) {
-			filterStatusUpdationLogs = issueHistoryLogs.stream()
-					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
-							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
-									DateTimeFormatter.ofPattern(TIME_FORMAT)),
-							sprintStartDate, sprintEndDate))
-					.collect(Collectors.toList());
-		}
-		return filterStatusUpdationLogs;
-	}
 	/**
 	 * to maintain values upto 2 places of decimal
 	 * 

@@ -51,7 +51,6 @@ import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -116,20 +115,20 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList,
-						dbSprintDetail, fieldMapping.getJiraIterationCompletionStatusKPI119(),
+				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
 				List<String> notCompletedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(
 						sprintDetails, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> notCompletedJiraIssueList = IterationKpiHelper
-							.getFilteredJiraIssue(notCompletedIssues, totalJiraIssueList);
+					List<JiraIssue> notCompletedJiraIssueList = getFilteredJiraIssue(notCompletedIssues,
+							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getNotCompletedIssues(), notCompletedJiraIssueList);
-					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(
+					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(
 							notCompletedJiraIssueList.stream().map(JiraIssue::getNumber).collect(Collectors.toList()),
 							totalHistoryList);
 					resultListMap.put(ISSUES, new ArrayList<>(filtersIssuesList));
@@ -153,7 +152,8 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
-		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter().getBasicProjectConfigId();
+		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
+				.getBasicProjectConfigId();
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
@@ -169,8 +169,8 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 					Collectors.groupingBy(JiraIssue::getTypeName, Collectors.groupingBy(JiraIssue::getStatus)));
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper
 					.calculatePotentialDelay(sprintDetails, allIssues, fieldMapping.getJiraStatusForInProgressKPI119());
-			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper
-					.checkMaxDelayAssigneeWise(iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI119());
+			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
+					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI119());
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> statuses = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
