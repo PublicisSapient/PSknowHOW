@@ -40,7 +40,10 @@ export class StackedAreaChartComponent implements OnInit {
     });
     d3.select(this.elem).select('#stacked-area').select('svg').remove();
     let kpiId = this.kpiId;
-    let keys = Object.keys(this.data[0]?.value);
+    let keys = [];
+    if(this.data[0]){
+      keys = Object.keys(this.data[0]?.value);
+    }
     let yMax = 0;
     let keyWiseYMax = {};
     for(let i = 0; i<keys.length;i++){

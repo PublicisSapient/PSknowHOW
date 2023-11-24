@@ -163,6 +163,28 @@ db.kpi_master.updateMany(
 }
 );
 
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for defect closure",
+            "tooltip": {
+                "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Summary" }
+    }
+);
+
+
 //DTS-29689 FTPR Iteration kpi labels
 db.field_mapping_structure.deleteOne({
     "fieldName" : "jiraLabelsKPI135"
