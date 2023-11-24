@@ -23,6 +23,7 @@ import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
+import { HelperService } from 'src/app/services/helper.service';
 
 declare const require: any;
 @Component({
@@ -58,13 +59,14 @@ export class ProjectListComponent implements OnInit {
   @ViewChild(Table) table: Table;
 
   constructor(private http: HttpService, private sharedService: SharedService, private messenger: MessageService, private router: Router, private confirmationService: ConfirmationService,
-    private authorization: GetAuthorizationService) { }
+    private authorization: GetAuthorizationService,private helper : HelperService) { }
 
   ngOnInit(): void {
     this.getData();
     this.roleAccessAssign();
     this.getHierarchy();
     this.sharedService.setSelectedToolConfig(null);
+    this.helper.getGlobalConfig();
   }
 
   /* Assign role along with project Id */

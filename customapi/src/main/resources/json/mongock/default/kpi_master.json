@@ -3338,6 +3338,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count(Hours)" ,
     "isPositiveTrend" : false ,
@@ -3488,6 +3490,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (Hours)" ,
     "isPositiveTrend" : false ,
@@ -3524,11 +3528,11 @@
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (No. of Lines)" ,
     "isPositiveTrend" : false ,
-    "showTrend" : true ,
+    "showTrend" : false ,
     "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : true ,
+    "calculateMaturity" : false ,
     "hideOverallFilter" : true ,
     "maturityRange" : [
       "-16" ,

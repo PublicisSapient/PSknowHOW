@@ -335,14 +335,6 @@ db.field_mapping_structure.insertMany([
     }
 ])
 
-db.kpi_master.bulkWrite([
-    {
-        updateMany: {
-            filter: { "kpiId": { $in: ["kpi150"] } },
-            update: { $set: { "defaultOrder": 1 } }
-        },
-    }
-]);
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
@@ -563,6 +555,24 @@ db.kpi_master.bulkWrite([
         },
     }
 ]);
+
+db.kpi_master.updateOne(
+   { "kpiId": "kpi150" },
+   {
+      $set: {
+         "kpiInfo.details": [
+            {
+               "type": "link",
+               "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+               }
+            }
+         ]
+      }
+   }
+)
+
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
@@ -814,6 +824,61 @@ db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 5 } })
 db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 2 } })
 db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 6 } })
+
+// DTS-29397 update repo tools
+db.getCollection("repo_tools_provider").bulkWrite([
+  {
+    updateOne: {
+      filter: { "toolName": "bitbucket" },
+      update: {
+        $set: {
+          "testServerApiUrl": "/bitbucket/rest/api/1.0/projects/",
+          "testApiUrl": "https://api.bitbucket.org/2.0/workspaces/"
+        }
+      }
+    }
+  },
+  // Update for gitlab tool
+  {
+    updateOne: {
+      filter: { "toolName": "gitlab" },
+      update: {
+        $set: {
+          "testApiUrl": "/api/v4/projects/"
+        }
+      }
+    }
+  }
+], { ordered: false });
+
+
+// Change PR size maturity
+db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : false } })
+
+db.kpi_master.updateOne(
+{
+    "kpiId": "kpi162"
+},
+{ $set: {
+        "calculateMaturity": false,
+        "showTrend": false
+    }
+}
+)
+db.kpi_master.updateMany(
+{
+    "kpiId": { $in: [
+            "kpi160",
+            "kpi158"
+        ]
+    }
+},
+{ $set: {
+        "upperThresholdBG": "red",
+        "lowerThresholdBG": "white"
+    }
+}
+);
 
 //------------------------- 8.2.0 changes----------------------------------------------------------------------------------
 db.getCollection('field_mapping_structure').insertMany([

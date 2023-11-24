@@ -38,6 +38,9 @@ public class GlobalConfigChangeLog {
 	private final MongoTemplate mongoTemplate;
 	private static final String CLASS_KEY = "_class";
 	private static final String BUILD = "BUILD";
+	private static final String REPO_TOOL_PROVIDER = "repoToolProvider";
+	private static final String TOOL_NAME = "toolName";
+	private static final String TEST_API_URL = "testApiUrl";
 
 	public GlobalConfigChangeLog(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
@@ -47,6 +50,7 @@ public class GlobalConfigChangeLog {
 	public void executeGlobalConfig() {
 		insertGlobalConfigData();
 		insertProcessorData();
+		insertRepoToolProviderData();
 	}
 
 	public void insertGlobalConfigData() {
@@ -118,6 +122,18 @@ public class GlobalConfigChangeLog {
 				"major_violations", "blocker_violations", "minor_violations", "info_violations", "tests",
 				"test_success_density", "test_errors", "test_failures", "coverage", "line_coverage", "sqale_index",
 				"alert_status", "quality_gate_details", "sqale_rating");
+	}
+
+//	repo tool related info used by repo tool processor
+	public void insertRepoToolProviderData() {
+		mongoTemplate.getCollection("repo_tools_provider").insertMany(Arrays.asList(
+				new Document(TOOL_NAME, "bitbucket").append(TEST_API_URL, "https://api.bitbucket.org/2.0/workspaces/")
+						.append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/")
+						.append(REPO_TOOL_PROVIDER, "bitbucket_oauth2"),
+				new Document(TOOL_NAME, "gitlab").append(REPO_TOOL_PROVIDER, "/api/v4/projects/").append(TEST_API_URL,
+						"https://gitlab.com/api/v4/projects/"),
+				new Document(TOOL_NAME, "github").append(TEST_API_URL, "https://api.github.com/users/")
+						.append(REPO_TOOL_PROVIDER, "github")));
 	}
 
 	@RollbackExecution

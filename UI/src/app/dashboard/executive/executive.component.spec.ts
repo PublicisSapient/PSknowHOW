@@ -6168,7 +6168,7 @@ expect(result[1]).toEqual('-ve');
     const data = {
       "noOfDataPoints": 5
     }
-    spyOn(httpService, 'getTooltipData').and.returnValue(of(data));
+    spyOn(httpService, 'getConfigDetails').and.returnValue(of(data));
     component.ngOnInit();
     expect(component.noOfDataPoints).toEqual(data.noOfDataPoints);
   })
