@@ -61,7 +61,7 @@ public class JiraClient {
 
 	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
 			KerberosClient krb5Client) {
-		Optional<Connection> connectionOptional=projectConfFieldMapping.getJira().getConnection();
+		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
 			boolean isOauth = connection.getIsOAuth();
@@ -106,8 +106,7 @@ public class JiraClient {
 		} else if (conn.isBearerToken()) {
 			password = jiraCommonService.decryptJiraPassword(conn.getPatOAuthToken());
 			log.info("bearer token authentication");
-		}
-		else {
+		} else {
 			username = conn.getUsername();
 			password = jiraCommonService.decryptJiraPassword(conn.getPassword());
 		}

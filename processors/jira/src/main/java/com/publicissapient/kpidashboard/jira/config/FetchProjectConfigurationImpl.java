@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
@@ -86,8 +86,8 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 		ProjectConfFieldMapping projectConfFieldMapping = null;
 		ProjectBasicConfig projectBasicConfig = projectConfigRepository.findById(projectConfigId).orElse(null);
 		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(projectConfigId);
-		List<ProjectToolConfig> projectToolConfigs = toolRepository.findByToolNameAndBasicProjectConfigId(
-				ProcessorConstants.JIRA, projectConfigId);
+		List<ProjectToolConfig> projectToolConfigs = toolRepository
+				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, projectConfigId);
 		if (CollectionUtils.isNotEmpty(projectToolConfigs)) {
 			ProjectToolConfig projectToolConfig = projectToolConfigs.get(0);
 			if (null != projectToolConfig.getConnectionId()) {
@@ -115,7 +115,7 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 	}
 
 	private ProjectConfFieldMapping createProjectConfFieldMapping(FieldMapping fieldMapping,
-																  ProjectBasicConfig projectConfig, ProjectToolConfig projectToolConfig, JiraToolConfig jiraToolConfig) {
+			ProjectBasicConfig projectConfig, ProjectToolConfig projectToolConfig, JiraToolConfig jiraToolConfig) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 
 		if (projectConfig != null) {

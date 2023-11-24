@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.jira;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.SpringApplication;
@@ -31,8 +33,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * @author pankumar8
