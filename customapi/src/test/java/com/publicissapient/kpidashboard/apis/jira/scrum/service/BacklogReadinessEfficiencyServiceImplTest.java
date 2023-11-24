@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -12,6 +13,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard.JiraBacklogServiceR;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +74,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraBacklogServiceR jiraService;
 	@Mock
 	private SprintVelocityServiceHelper velocityServiceHelper;
 	@Mock
@@ -79,6 +83,8 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Mock
 	private JiraIssueRepository jiraIssueRepository;
+	@Mock
+	private FilterHelperService filterHelperService;
 
 	private KpiRequest kpiRequest;
 	private List<JiraIssue> storyList = new ArrayList<>();
@@ -128,7 +134,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 	@Test
 	public void testGetKpiDataProject_closedSprint() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 4);
 
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
@@ -150,10 +156,11 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 				.thenReturn(kpiRequestTrackerId);
 		when(backlogReadinessEfficiencyServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
 		when(customApiConfig.getSprintCountForBackLogStrength()).thenReturn(5);
+		when(filterHelperService.getFilteredBuilds(any(),any())).thenReturn(accountHierarchyDataList);
 		try {
 			KpiElement kpiElement = backlogReadinessEfficiencyServiceImpl.getKpiData(kpiRequest,
-					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
-			assertNotNull((DataCount) kpiElement.getTrendValueList());
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
+			assertEquals(DataCount.class,kpiElement.getTrendValueList().getClass());
 
 		} catch (ApplicationException enfe) {
 

@@ -161,7 +161,9 @@ public class JiraBacklogServiceRTest {
 
         KpiRequest kpiRequest = createKpiRequest(6);
 
-        when(filterHelperService.getFilteredBuilds(any(),any())).thenThrow(ApplicationException.class);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
+        when(cacheService.cacheAccountHierarchyData()).thenThrow(ApplicationException.class);
 
         jiraServiceR.process(kpiRequest);
 
@@ -177,7 +179,9 @@ public class JiraBacklogServiceRTest {
         when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
                 .thenReturn(mockKpiElementList);
         when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
+        when(cacheService.cacheAccountHierarchyData()).thenReturn(accountHierarchyDataList);
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
         assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("FLOW_LOAD"));
@@ -211,6 +215,8 @@ public class JiraBacklogServiceRTest {
         when(authorizedProjectsService.filterProjects(any())).thenReturn(accountHierarchyDataList.stream().filter(s->s.getLeafNodeId().equalsIgnoreCase("Scrum Project_6335363749794a18e8a4479b")).collect(Collectors.toList()));
         when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
         when(cacheService.cacheFieldMappingMapData()).thenReturn(fieldMappingMap);
+        when(kpiHelperService.getAuthorizedFilteredList(any(),any())).thenReturn(accountHierarchyDataList);
+        when(kpiHelperService.getProjectKeyCache(any(),any())).thenReturn(kpiRequest.getIds());
         List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
         resultList.forEach(k -> {

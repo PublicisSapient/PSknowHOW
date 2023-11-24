@@ -18,16 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.SerializationUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.bitbucket.factory.BitBucketKPIServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
@@ -40,154 +30,158 @@ import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
-import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.SerializationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Bitbucket service to process bitbucket data.
- * 
+ *
  * @author anisingh4
  */
 @Service
 @Slf4j
 public class BitBucketServiceR {
 
-	@Autowired
-	private KpiHelperService kpiHelperService;
+    @Autowired
+    private KpiHelperService kpiHelperService;
 
-	@Autowired
-	private FilterHelperService filterHelperService;
+    @Autowired
+    private FilterHelperService filterHelperService;
 
-	@Autowired
-	private CacheService cacheService;
+    @Autowired
+    private CacheService cacheService;
 
-	@Autowired
-	private UserAuthorizedProjectsService authorizedProjectsService;
+    @Autowired
+    private UserAuthorizedProjectsService authorizedProjectsService;
 
-	@SuppressWarnings("unchecked")
-	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
+    @SuppressWarnings("unchecked")
+    public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
-		log.info("[BITBUCKET][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
-				kpiRequest.getKpiList());
-		List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
-				.collect(Collectors.toList());
-		List<KpiElement> responseList = new ArrayList<>();
-		String[] projectKeyCache = null;
-		try {
-			Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
-			String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
-					false);
-			if (null != groupName) {
-				kpiRequest.setLabel(groupName.toUpperCase());
-			}
-			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
-					groupName);
-			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
+        log.info("[BITBUCKET][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),
+                kpiRequest.getKpiList());
+        List<KpiElement> origRequestedKpis = kpiRequest.getKpiList().stream().map(KpiElement::new)
+                .collect(Collectors.toList());
+        List<KpiElement> responseList = new ArrayList<>();
+        String[] projectKeyCache = null;
+        try {
+            Integer groupId = kpiRequest.getKpiList().get(0).getGroupId();
+            String groupName = filterHelperService.getHierarachyLevelId(kpiRequest.getLevel(), kpiRequest.getLabel(),
+                    false);
+            if (null != groupName) {
+                kpiRequest.setLabel(groupName.toUpperCase());
+            }
+            List<AccountHierarchyData> filteredAccountDataList = getFilteredAccountHierarchyData(kpiRequest);
+            if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
+                projectKeyCache = kpiHelperService.getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
-				if (filteredAccountDataList.isEmpty()) {
-					return responseList;
-				}
+                filteredAccountDataList = kpiHelperService.getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+                if (filteredAccountDataList.isEmpty()) {
+                    return responseList;
+                }
+                Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(), groupId, kpiRequest.getSprintIncluded());
+                if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase()) && null != cachedData) {
+                    log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
+                            kpiRequest.getIds());
+                    return (List<KpiElement>) cachedData;
+                }
 
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.BITBUCKET.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData) {
-					log.info("[BITBUCKET][{}]. Fetching value from cache for {}", kpiRequest.getRequestTrackerId(),
-							kpiRequest.getIds());
-					return (List<KpiElement>) cachedData;
-				}
+                Node filteredNode = getFilteredNodes(kpiRequest, filteredAccountDataList);
+                kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
+                kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
 
-				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
-						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
-						filterHelperService.getHierarchyIdLevelMap(false)
-								.getOrDefault(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT, 0));
-				kpiRequest.setXAxisDataPoints(Integer.parseInt(kpiRequest.getIds()[0]));
-				kpiRequest.setDuration(kpiRequest.getSelectedMap().get(CommonConstant.date).get(0));
-				for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+                for (KpiElement kpiEle : kpiRequest.getKpiList()) {
+                    calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
+                }
 
-					calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, treeAggregatorDetail);
-				}
-				List<KpiElement> missingKpis = origRequestedKpis.stream()
-						.filter(reqKpi -> responseList.stream()
-								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
-						.collect(Collectors.toList());
-				responseList.addAll(missingKpis);
-				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
-			} else {
-				responseList.addAll(origRequestedKpis);
-			}
+                List<KpiElement> missingKpis = origRequestedKpis.stream()
+                        .filter(reqKpi -> responseList.stream()
+                                .noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
+                        .collect(Collectors.toList());
+                responseList.addAll(missingKpis);
+                setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+            } else {
+                responseList.addAll(origRequestedKpis);
+            }
 
-		} catch (ApplicationException e) {
-			log.error("[BITBUCKET][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
-					kpiRequest.getKpiList(), e);
-			throw new HttpMessageNotWritableException(e.getMessage(), e);
-		}
+        } catch (Exception e) {
+            log.error("[BITBUCKET][{}]. Error while KPI calculation for data {} {}", kpiRequest.getRequestTrackerId(),
+                    kpiRequest.getKpiList(), e);
+            throw new HttpMessageNotWritableException(e.getMessage(), e);
+        }
 
-		return responseList;
-	}
+        return responseList;
+    }
 
-	private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
-			KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+    private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+        Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-		BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
+        if (null != filteredNode.getAccountHierarchy()) {
+            filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+                    filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
+        }
 
-		KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
+        return filteredNode;
+    }
 
-		bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
+    private List<AccountHierarchyData> getFilteredAccountHierarchyData(KpiRequest kpiRequest) {
+        List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
+                .cacheAccountHierarchyData();
 
-		long startTime = System.currentTimeMillis();
+        return accountDataListAll.stream()
+                .filter(accountHierarchyData ->
+                        accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0))
+                )
+                .collect(Collectors.toList());
+    }
 
-		TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
-				.clone(treeAggregatorDetail);
-		responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+    private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+                                                  KpiElement kpiElement, Node filteredAccountNode) throws ApplicationException {
 
-		long processTime = System.currentTimeMillis() - startTime;
-		log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
+        BitBucketKPIService<?, ?, ?> bitBucketKPIService = null;
 
-	}
+        KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
 
-	/**
-	 * @param kpiRequest
-	 * @param filteredAccountDataList
-	 * @return
-	 */
-	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
-		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
-			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
-		}
-		return filteredAccountDataList;
-	}
+        bitBucketKPIService = BitBucketKPIServiceFactory.getBitBucketKPIService(kpi.name());
 
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+        long startTime = System.currentTimeMillis();
 
-		return authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
+        Node nodeDataClone = (Node) SerializationUtils
+                .clone(filteredAccountNode);
+        responseList.add(bitBucketKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
 
-	}
+        long processTime = System.currentTimeMillis() - startTime;
+        log.info("[BITBUCKET-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
 
-	/**
-	 * Cache response.
-	 * 
-	 * @param kpiRequest
-	 * @param responseList
-	 * @param groupId
-	 * @param projectKeyCache
-	 */
-	private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
-			String[] projectKeyCache) {
-		Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
-				.get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
-		if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-				&& projectLevel >= kpiRequest.getLevel()) {
+    }
 
-			cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.BITBUCKET.name(), groupId,
-					kpiRequest.getSprintIncluded());
-		}
-	}
+    /**
+     * Cache response.
+     *
+     * @param kpiRequest
+     * @param responseList
+     * @param groupId
+     * @param projectKeyCache
+     */
+    private void setIntoApplicationCache(KpiRequest kpiRequest, List<KpiElement> responseList, Integer groupId,
+                                         String[] projectKeyCache) {
+        Integer projectLevel = filterHelperService.getHierarchyIdLevelMap(false)
+                .get(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT);
+        if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
+                && projectLevel >= kpiRequest.getLevel()) {
+
+            cacheService.setIntoApplicationCache(projectKeyCache, responseList, KPISource.BITBUCKET.name(), groupId,
+                    kpiRequest.getSprintIncluded());
+        }
+    }
 }
