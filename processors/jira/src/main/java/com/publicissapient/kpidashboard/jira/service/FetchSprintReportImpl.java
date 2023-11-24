@@ -110,7 +110,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 			for (SprintDetails sprint : sprintDetailsSet) {
 				boolean fetchReport = false;
 				String boardId = sprint.getOriginBoardId().get(0);
-				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} " + sprint.getSprintID(),
+				log.info("processing sprint with sprintId: {}, state: {} and boardId: {} ", sprint.getSprintID(),
 						sprint.getState(), boardId);
 				sprint.setProcessorId(jiraProcessorId);
 				sprint.setBasicProjectConfigId(projectConfig.getBasicProjectConfigId());
@@ -137,7 +137,7 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 						fetchReport = false;
 					}
 				} else {
-					log.info("sprint id {} not found in db." + sprint.getSprintID());
+					log.info("sprint id {} not found in db.", sprint.getSprintID());
 					fetchReport = true;
 				}
 
@@ -468,16 +468,13 @@ public class FetchSprintReportImpl implements FetchSprintReport {
 
 	@Override
 	public List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
-			KerberosClient krb5Client) throws IOException {
-		List<BoardDetails> boardDetailsList = projectConfig.getProjectToolConfig().getBoards();
+			KerberosClient krb5Client, BoardDetails boardDetails) throws IOException {
 		List<SprintDetails> sprintDetailsBasedOnBoard = new ArrayList<>();
-		for (BoardDetails boardDetails : boardDetailsList) {
 			List<SprintDetails> sprintDetailsList = getSprints(projectConfig, boardDetails.getBoardId(), krb5Client);
 			if (CollectionUtils.isNotEmpty(sprintDetailsList)) {
 				Set<SprintDetails> sprintDetailSet = limitSprint(sprintDetailsList);
 				sprintDetailsBasedOnBoard.addAll(fetchSprints(projectConfig, sprintDetailSet, krb5Client, false));
 			}
-		}
 		return sprintDetailsBasedOnBoard;
 	}
 

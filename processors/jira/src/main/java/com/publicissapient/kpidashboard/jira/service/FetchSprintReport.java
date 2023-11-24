@@ -17,51 +17,44 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-
 /**
  * @author pankumar8
- *
  */
 public interface FetchSprintReport {
 
-	/**
-	 * @param projectConfig
-	 *            projectConfig
-	 * @param sprintDetailsSet
-	 *            sprintDetailsSet
-	 * @param krb5Client
-	 *            krb5Client
-	 * @param isSprintFetch
-	 *            isSprintFetch
-	 * @return Set of SprintDetails
-	 */
-	Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
-			KerberosClient krb5Client, boolean isSprintFetch) throws IOException;
+    /**
+     * @param projectConfig    projectConfig
+     * @param sprintDetailsSet sprintDetailsSet
+     * @param krb5Client       krb5Client
+     * @param isSprintFetch    isSprintFetch
+     * @return Set of SprintDetails
+     */
+    Set<SprintDetails> fetchSprints(ProjectConfFieldMapping projectConfig, Set<SprintDetails> sprintDetailsSet,
+                                    KerberosClient krb5Client, boolean isSprintFetch) throws IOException;
 
-	/**
-	 * @param projectConfig
-	 *            projectConfig
-	 * @param krb5Client
-	 *            krb5Client
-	 * @return List of SprintDetails
-	 */
-	List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) throws IOException;
+    /**
+     * @param projectConfig projectConfig
+     * @param krb5Client    krb5Client
+     * @param boardDetails  boardDetails
+     * @return List of SprintDetails
+     */
+    List<SprintDetails> createSprintDetailBasedOnBoard(ProjectConfFieldMapping projectConfig,
+                                                       KerberosClient krb5Client, BoardDetails boardDetails) throws IOException;
 
-	/**
-	 * @param projectConfig
-	 *            projectConfig
-	 * @param boardId
-	 *            boardId
-	 * @param krb5Client
-	 *            krb5Client
-	 * @return List of SprintDetails
-	 */
-	List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client) throws IOException;
+    /**
+     * @param projectConfig projectConfig
+     * @param boardId       boardId
+     * @param krb5Client    krb5Client
+     * @return List of SprintDetails
+     */
+    List<SprintDetails> getSprints(ProjectConfFieldMapping projectConfig, String boardId, KerberosClient krb5Client) throws IOException;
 }

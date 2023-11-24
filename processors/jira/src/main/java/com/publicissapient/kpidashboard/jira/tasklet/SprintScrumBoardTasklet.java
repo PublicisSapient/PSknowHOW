@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -79,9 +81,12 @@ public class SprintScrumBoardTasklet implements Tasklet {
         log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
         KerberosClient krb5Client = null;
         try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
-            List<SprintDetails> sprintDetailsList = fetchSprintReport
-                    .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
-            sprintRepository.saveAll(sprintDetailsList);
+            List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
+            for (BoardDetails boardDetails : boardDetailsList) {
+                List<SprintDetails> sprintDetailsList = fetchSprintReport
+                        .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client,boardDetails);
+                sprintRepository.saveAll(sprintDetailsList);
+            }
         }
         log.info("**** Sprint report for Scrum Board ended * * *");
         return RepeatStatus.FINISHED;
