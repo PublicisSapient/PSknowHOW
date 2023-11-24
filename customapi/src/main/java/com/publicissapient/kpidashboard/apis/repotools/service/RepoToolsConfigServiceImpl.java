@@ -98,7 +98,7 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
-	public static final String GIT_REPO_SUFFIX = ".git;";
+	public static final String GIT_REPO_SUFFIX = ".git";
 
 	private RepoToolsClient repoToolsClient;
 
