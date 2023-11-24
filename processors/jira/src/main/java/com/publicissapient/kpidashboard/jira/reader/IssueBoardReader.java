@@ -88,7 +88,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
     private ProjectConfFieldMapping projectConfFieldMapping;
     private String projectId;
 
-    Boolean flag=false;
+    Boolean fetchLastIssue=false;
     @Autowired
     public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
         this.projectId = projectId;
@@ -114,7 +114,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
         }
         ReadData readData = null;
         KerberosClient krb5Client = null;
-        if (!flag) {
+        if (!fetchLastIssue) {
             try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
                 if (boardIterator == null
                         && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
@@ -153,7 +153,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
                 if ((null == projectConfFieldMapping)
                         || !boardIterator.hasNext() && (!issueIterator.hasNext() && boardIssueSize < pageSize)) {
                     log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                    flag=true;
+                    fetchLastIssue=true;
                     return readData;
                 }
             }

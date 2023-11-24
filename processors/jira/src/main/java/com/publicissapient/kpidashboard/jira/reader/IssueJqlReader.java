@@ -84,7 +84,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
     private String projectId;
     private ReaderRetryHelper retryHelper;
 
-    Boolean flag=false;
+    Boolean fetchLastIssue=false;
 
     @Autowired
     public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
@@ -112,7 +112,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             initializeReader(projectId);
         }
         ReadData readData = null;
-        if (null != projectConfFieldMapping && !flag) {
+        if (null != projectConfFieldMapping && !fetchLastIssue) {
             KerberosClient krb5Client = null;
             try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
                     if (issueIterator == null || !issueIterator.hasNext()) {
@@ -132,7 +132,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 
                     if (null == issueIterator || (!issueIterator.hasNext() && issueSize < pageSize)) {
                         log.info("Data has been fetched for the project : {}", projectConfFieldMapping.getProjectName());
-                        flag=true;
+                        fetchLastIssue=true;
                         return readData;
                     }
             }
