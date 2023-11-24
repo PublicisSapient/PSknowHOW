@@ -24,7 +24,8 @@ db.field_mapping_structure.deleteMany({
             "thresholdValueKPI158",
             "thresholdValueKPI159",
             "thresholdValueKPI160",
-            "thresholdValueKPI164"]
+            "thresholdValueKPI164",
+            "startDateCountKPI150"]
     }
 });
 // delete lead time for change
