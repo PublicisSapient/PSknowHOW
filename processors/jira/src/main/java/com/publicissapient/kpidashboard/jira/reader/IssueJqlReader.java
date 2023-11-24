@@ -112,10 +112,9 @@ public class IssueJqlReader implements ItemReader<ReadData> {
             initializeReader(projectId);
         }
         ReadData readData = null;
-        if (null != projectConfFieldMapping) {
+        if (null != projectConfFieldMapping && !flag) {
             KerberosClient krb5Client = null;
             try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-                if (!flag) {
                     if (issueIterator == null || !issueIterator.hasNext()) {
                         fetchIssues(client);
                         if (CollectionUtils.isNotEmpty(issues)) {
@@ -136,7 +135,6 @@ public class IssueJqlReader implements ItemReader<ReadData> {
                         flag=true;
                         return readData;
                     }
-                }
             }
         }
         return readData;
