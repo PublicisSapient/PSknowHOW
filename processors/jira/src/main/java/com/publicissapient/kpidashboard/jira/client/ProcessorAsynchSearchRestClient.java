@@ -51,7 +51,8 @@ import io.atlassian.util.concurrent.Promise;
 
 public class ProcessorAsynchSearchRestClient extends AbstractAsynchronousRestClient implements SearchRestClient {
 
-	private static final Function<IssueRestClient.Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); // NOSONAR
+	private static final Function<IssueRestClient.Expandos, String> EXPANDO_TO_PARAM = from -> from.name()
+			.toLowerCase(); // NOSONAR
 	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
 	private final FilterJsonParser filterJsonParser = new FilterJsonParser();
 	private final GenericJsonArrayParser<Filter> filtersParser = GenericJsonArrayParser.create(new FilterJsonParser());
