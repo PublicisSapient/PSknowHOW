@@ -174,7 +174,7 @@ export class HttpService {
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
-  private validateResourceUrl = this.baseUrl + '/api/validateResource';
+  // private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
 
   constructor(
@@ -1129,13 +1129,13 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getUserValidation(data){
-    return this.http.post<object>(this.validateTokenUrl, data);
+  getUserValidation(){
+    return this.http.get<object>(this.validateTokenUrl);
   }
 
-  handleValidateResource(data){
-    return this.http.post<object>(this.validateResourceUrl, data);
-  }
+  // handleValidateResource(data){
+  //   return this.http.post<object>(this.validateResourceUrl, data);
+  // }
   getFeatureFlags() {
     return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
   }

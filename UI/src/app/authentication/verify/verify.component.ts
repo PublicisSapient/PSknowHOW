@@ -23,22 +23,22 @@ export class VerifyComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(){
-    let authToken:string = '';
-    let redirect_uri:string = '';
-    this.route.queryParams.subscribe(params => {
-      authToken = params['authToken'];
-      redirect_uri = params['redirect_uri'];
-    });
-    this.validateUser(authToken, redirect_uri);
+    // let authToken:string = '';
+    // let redirect_uri:string = '';
+    // this.route.queryParams.subscribe(params => {
+    //   authToken = params['authToken'];
+    //   redirect_uri = params['redirect_uri'];
+    // });
+    this.validateUser();
   }
 
-  validateUser(authToken, redirect_uri){
-    let obj = {
-      'resource': environment.RESOURCE,
-      'authToken': authToken
-    };
+  validateUser(){
+    // let obj = {
+    //   'resource': environment.RESOURCE,
+    //   'authToken': authToken
+    // };
     
-    this.http.getUserValidation(obj).subscribe((response) => {
+    this.http.getUserValidation().subscribe((response) => {
       if(response && response['success']){
         this.sharedService.setCurrentUserDetails(response?.['data'])
         localStorage.setItem("userName", response?.['data']?.userName)
