@@ -251,7 +251,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             }
           })
           .on('mouseout', (event, d) => {
-            {
+            if(this.data.length >1){
               d3.select(elem).select('#legendContainer').selectAll('div').remove();
               this.showLegend(subgroups, width, margin, color, elem, data, height);
             }
@@ -275,10 +275,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             .style('cursor', this.isDrilledDown ? 'default' : 'pointer')
         }
 
-
-
-        this.showLegend(subgroups, width, margin, color, elem, data, height);
-        this.loader = false;
+       this.loader = false;
+        if(this.data.length > 1 || this.isDrilledDown){
+          this.showLegend(subgroups, width, margin, color, elem, data, height);
+        }
+        if(this.data.length == 1 && !this.isDrilledDown){
+          this.showTooltip(subgroups, width, margin, color, data[0], elem, height);
+        }
       }
     }
   }

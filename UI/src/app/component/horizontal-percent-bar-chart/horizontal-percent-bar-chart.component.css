@@ -67,6 +67,5 @@
 
   :host::ng-deep .link{
     color : var(--color-secondary-blue);
-    text-decoration: underline;
     cursor: pointer;
   }
