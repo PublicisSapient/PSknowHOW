@@ -54,6 +54,7 @@ import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.LeadTimeChangeData;
 import com.publicissapient.kpidashboard.apis.model.MeanTimeRecoverData;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.LeadTimeData;
 import com.publicissapient.kpidashboard.common.model.application.ProjectVersion;
@@ -639,24 +640,19 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateLeadTime(List<KPIExcelData> kpiExcelData, String projectName,
-			LeadTimeData leadTimeData) {
-
-		if (!leadTimeData.getIssueNumber().isEmpty()) {
-			for (int i = 0; i < leadTimeData.getIssueNumber().size(); i++) {
+	public static void populateLeadTime(List<CycleTimeValidationData> cycleTimeList,
+										List<KPIExcelData> excelDataList ) {
+			for (CycleTimeValidationData leadTimeData: cycleTimeList){
 				KPIExcelData excelData = new KPIExcelData();
-				excelData.setProjectName(projectName);
 				Map<String, String> storyId = new HashMap<>();
-				storyId.put(leadTimeData.getIssueNumber().get(i), leadTimeData.getUrlList().get(i));
+				storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
 				excelData.setStoryId(storyId);
-				excelData.setIssueDesc(leadTimeData.getIssueDiscList().get(i));
-				excelData.setIntakeToDOR(leadTimeData.getIntakeToDor().get(i));
-				excelData.setDorToDod(leadTimeData.getDorToDOD().get(i));
-				excelData.setDodToLive(leadTimeData.getDodToLive().get(i));
-				excelData.setLeadTime(leadTimeData.getIntakeToLive().get(i));
-
-				kpiExcelData.add(excelData);
-			}
+				excelData.setIssueDesc(leadTimeData.getIssueDesc());
+				excelData.setIssueType(leadTimeData.getIssueType());
+				excelData.setCreatedDate(leadTimeData.getIntakeDate().toString().split("T")[0]);
+				excelData.setCloseDate(leadTimeData.getLiveDate().toString().split("T")[0]);
+				excelData.setLeadTime(leadTimeData.getLeadTime().toString());
+				excelDataList.add(excelData);
 		}
 	}
 
@@ -1807,6 +1803,25 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateFlowEfficiency(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
+			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
+		AtomicInteger i = new AtomicInteger();
+		flowEfficiency.forEach((issue, value) -> {
+			KPIExcelData kpiExcelData = new KPIExcelData();
+			Map<String, String> url = new HashMap<>();
+			url.put(issue.getStoryID(), checkEmptyURL(issue));
+			kpiExcelData.setIssueID(url);
+			kpiExcelData.setIssueType(issue.getStoryType());
+			kpiExcelData.setIssueDesc(issue.getDescription());
+			kpiExcelData.setSizeInStoryPoints(issue.getEstimate());
+			kpiExcelData.setWaitTime(waitTimeList.get(i.get()));
+			kpiExcelData.setTotalTime(totalTimeList.get(i.get()));
+			kpiExcelData.setFlowEfficiency(value.longValue());
+			excelDataList.add(kpiExcelData);
+			i.set(i.get() + 1);
+		});
+	}
+
+	public static void populateLeadTime(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
 			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
 		AtomicInteger i = new AtomicInteger();
 		flowEfficiency.forEach((issue, value) -> {
