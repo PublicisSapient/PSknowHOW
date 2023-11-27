@@ -161,6 +161,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }
                 }
             }
+            this.kpiLoader = true;
             return this.service.passDataToDashboard;
         }), distinctUntilChanged()).subscribe((sharedobject: any) => {
             // used to get all filter data when user click on apply button in filter
