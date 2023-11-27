@@ -130,8 +130,8 @@ public class GlobalConfigChangeLog {
 				new Document(TOOL_NAME, "bitbucket").append(TEST_API_URL, "https://api.bitbucket.org/2.0/workspaces/")
 						.append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/")
 						.append(REPO_TOOL_PROVIDER, "bitbucket_oauth2"),
-				new Document(TOOL_NAME, "gitlab").append(REPO_TOOL_PROVIDER, "/api/v4/projects/").append(TEST_API_URL,
-						"https://gitlab.com/api/v4/projects/"),
+				new Document(TOOL_NAME, "gitlab").append(REPO_TOOL_PROVIDER, "gitlab").append(TEST_API_URL,
+						"/api/v4/projects/"),
 				new Document(TOOL_NAME, "github").append(TEST_API_URL, "https://api.github.com/users/")
 						.append(REPO_TOOL_PROVIDER, "github")));
 	}
