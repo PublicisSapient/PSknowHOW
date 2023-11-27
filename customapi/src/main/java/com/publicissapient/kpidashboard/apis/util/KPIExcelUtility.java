@@ -646,12 +646,12 @@ public class KPIExcelUtility {
 				KPIExcelData excelData = new KPIExcelData();
 				Map<String, String> storyId = new HashMap<>();
 				storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
-				excelData.setStoryId(storyId);
+				excelData.setIssueID(storyId);
 				excelData.setIssueDesc(leadTimeData.getIssueDesc());
 				excelData.setIssueType(leadTimeData.getIssueType());
 				excelData.setCreatedDate(leadTimeData.getIntakeDate().toString().split("T")[0]);
 				excelData.setCloseDate(leadTimeData.getLiveDate().toString().split("T")[0]);
-				excelData.setLeadTime(leadTimeData.getLeadTime().toString());
+				excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
 				excelDataList.add(excelData);
 		}
 	}

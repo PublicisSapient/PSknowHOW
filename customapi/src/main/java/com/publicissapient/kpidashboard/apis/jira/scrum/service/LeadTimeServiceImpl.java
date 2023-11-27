@@ -1,13 +1,34 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -49,12 +70,18 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * lead time kpi is a line graph to depict the lead time of issues in past 6
+ * months with trends
+ * author @shi6
+ */
 @Component
 @Slf4j
 public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	public static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
+
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
@@ -105,7 +132,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		priorityTypeProjectWiseDc.forEach((filter, projectWiseDc) -> {
 			DataCountGroup dataCountGroup = new DataCountGroup();
 			List<DataCount> dataList = new ArrayList<>();
-			projectWiseDc.entrySet().forEach(trend -> dataList.addAll(trend.getValue()));
+			projectWiseDc.forEach((key, value) -> dataList.addAll(value));
 			dataCountGroup.setFilter(filter);
 			dataCountGroup.setValue(dataList);
 			dataCountGroups.add(dataCountGroup);
@@ -140,8 +167,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			LinkedHashMap<String, List<DataCount>> leadTime = getLeadTime(issueCustomHistoryList, fieldMapping,
 					cycleTimeList, node);
 			populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
-			if (node != null)
-				mapTmp.get(node.getId()).setValue(leadTime);
+			mapTmp.get(node.getId()).setValue(leadTime);
 		}
 		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
 		kpiElement.setExcelData(excelData);
@@ -161,11 +187,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
-
 			if (Optional.ofNullable(fieldMapping.getJiraIssueTypeKPI3()).isPresent()) {
-
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
 						fieldMapping.getJiradefecttype(), fieldMapping.getJiraIssueTypeKPI3(),
 						JiraFeatureHistory.STORY_TYPE.getFieldValueInFeature());
@@ -189,18 +212,30 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		return resultListMap;
 	}
 
+	/**
+	 * prepareLeadtime list
+	 * 
+	 * @param jiraIssueCustomHistoriesList
+	 *            historylist
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @param leadTimeList
+	 *            leadTimeList
+	 * @param node
+	 *            projectNode
+	 * @return dataCountMap
+	 */
 	private LinkedHashMap<String, List<DataCount>> getLeadTime(
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
-			List<CycleTimeValidationData> cycleTimeList, Node node) {
+			List<CycleTimeValidationData> leadTimeList, Node node) {
 
 		Map<Long, String> monthRangeMap = new HashMap<>();
-		List<String> rangeList = customApiConfig.getFlowEfficiencyXAxisRange();
-		Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new HashMap<>();
+		List<String> rangeList = customApiConfig.getLeadTimeRange();
+		Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
 		BacklogKpiHelper.initializeRangeMapForProjects(rangeWiseJiraIssuesMap, rangeList, monthRangeMap);
 
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoriesList) {
-
 				CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 				cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
 				cycleTimeValidationData.setUrl(jiraIssueCustomHistory.getUrl());
@@ -224,11 +259,11 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						cycleTime.getLiveTime());
 				if (!leadTime.equalsIgnoreCase(Constant.NOT_AVAILABLE))
 					cycleTimeValidationData.setLeadTime(KpiDataHelper.calculateTimeInDays(Long.parseLong(leadTime)));
-				cycleTimeList.add(cycleTimeValidationData);
+				leadTimeList.add(cycleTimeValidationData);
 			}
-			return setDataCountMap(rangeWiseJiraIssuesMap, cycleTimeList, node);
+			return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node);
 		}
-		return null;
+		return new LinkedHashMap<>();
 	}
 
 	/**
@@ -246,7 +281,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeAndStatusWiseJiraIssueMap,
 			List<CycleTimeValidationData> leadTimeFullList, Node leafNode) {
 		Map<String, Long> map = leadTimeFullList.stream().collect(
-				Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime));
+				Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime,  (existing, replacement) -> existing));
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 
 		List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
@@ -292,12 +327,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 */
 	public void setDataCount(String projectName, String filter, String dateRange, Long value,
 			Map<String, List<DataCount>> dataCountMap, int count) {
-		double LeadTime = Math.round(ObjectUtils.defaultIfNull(value, 0L).doubleValue() / 480);
+		double leadTime = Math.round(ObjectUtils.defaultIfNull(value, 0L).doubleValue() / 480);
 		Map<String, Object> hoverMap = new HashMap<>();
 		hoverMap.put(ISSUE_COUNT, count);
 		DataCount dataCount = new DataCount();
-		dataCount.setValue(LeadTime);
-		dataCount.setData(String.valueOf(LeadTime));
+		dataCount.setValue(leadTime);
+		dataCount.setData(String.valueOf(leadTime));
 		dataCount.setSSprintName(dateRange);
 		dataCount.setSSprintID(dateRange);
 		dataCount.setDate(dateRange);
@@ -308,41 +343,25 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	}
 
 	/**
-	 * populate excel data
-	 *
+	 * 
 	 * @param requestTrackerId
-	 *            tracker id for kpi request
+	 *            requestTrackerId
+	 * @param leadTimeList
+	 *            leadTimeList
 	 * @param excelData
-	 *            excel data
-	 * @param flowEfficiencyMap
-	 *            map of flow efficiency by jira issue
-	 * @param waitTimeList
-	 *            wait time list
-	 * @param totalTimeList
-	 *            total time list
+	 *            excelData
 	 */
-	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, List<String> waitTimeList,
-			List<String> totalTimeList) {
-
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateFlowEfficiency(flowEfficiencyMap, waitTimeList, totalTimeList, excelData);
-		}
-
-	}
-
-	private void populateExcelDataObject(String requestTrackerId, List<CycleTimeValidationData> cycleTimeList,
+	private void populateExcelDataObject(String requestTrackerId, List<CycleTimeValidationData> leadTimeList,
 			List<KPIExcelData> excelData) {
-
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateLeadTime(cycleTimeList, excelData);
+			KPIExcelUtility.populateLeadTime(leadTimeList, excelData);
 		}
 
 	}
 
 	@Override
-	public Long calculateKpiValue(List<Long> valueList, String kpiName) {
-		return calculateKpiValueForLong(valueList, kpiName);
+	public Double calculateThresholdValue(FieldMapping fieldMapping){
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI3(),KPICode.LEAD_TIME.getKpiId());
 	}
 
 }
