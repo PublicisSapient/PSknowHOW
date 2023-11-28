@@ -46,6 +46,7 @@ public class Node implements Serializable {
 	private ProjectFilter projectFilter;
 	private SprintFilter sprintFilter;
 	private ReleaseFilter releaseFilter;
+	private boolean isFromCache;
 
 	public Node() {
 		super();
@@ -84,9 +85,17 @@ public class Node implements Serializable {
 		this.sprintFilter = sprintFilter;
 	}
 
+	public boolean isFromCache() {
+		return isFromCache;
+	}
+
+	public void setFromCache(boolean fromCache) {
+		isFromCache = fromCache;
+	}
+
 	public Node(Object object, String childId, String name, String parentId, String groupName,
-			AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
-			ReleaseFilter releaseFilter) {
+				AccountHierarchy accountHierarchy, ProjectFilter projectFilter, SprintFilter sprintFilter,
+				ReleaseFilter releaseFilter) {
 		this.value = object;
 		this.id = childId;
 		this.name = name;

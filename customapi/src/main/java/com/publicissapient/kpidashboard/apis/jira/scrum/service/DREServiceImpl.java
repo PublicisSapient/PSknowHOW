@@ -21,59 +21,38 @@
  */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class calculated KPI value for DRE and its trend analysis.
@@ -111,7 +90,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private SprintRepository sprintRepository;
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
+	@Autowired
+	private CacheService cacheService;
 
 	@Override
 	public String getQualifierType() {
@@ -125,13 +105,50 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		List<Node> projects=treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache=new ArrayList<>();
+		projects.forEach(project -> {
+			DataCountKpiData dataCountKpiData= (DataCountKpiData) cacheService.getFromApplicationCache(new String[]{project.getId()},"JIRA",null,Arrays.asList("closed"));
+			if(dataCountKpiData!=null) {
+				trendValueList.addAll(dataCountKpiData.getDataCountList());
+				projectsFromCache.add(project);
+			}
+		});
+
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				v.forEach(node -> {
+					if(projectsFromCache.stream().filter(projectNode->projectNode.getId().equals(node.getParentId())).count()>0)
+							node.setFromCache(true);
+						}
+				);
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
-			}
+				System.out.println("v.size()==" + v.size());
 
+			}
 		});
+		Map<String, List<DataCount>> map = new HashMap<>();
+		trendValueList.stream().filter(dataCount -> projectsFromCache.stream().filter(projectFromCache->projectFromCache.getId().equals(dataCount.getSProjectName()+"_"+dataCount.getBasicProjectConfigId())).count()==0).forEach(dataCount ->
+				{
+					String key=dataCount.getSProjectName()+"_"+dataCount.getBasicProjectConfigId();
+					if(map.get(key)==null){
+						map.put(key,new ArrayList<>(Arrays.asList(dataCount)));
+					}
+					else
+					{
+						List<DataCount> list= 	map.get(key);
+						list.add(dataCount);
+						map.put(key,list);
+					}
+
+				}
+		);
+
+		map.forEach((k, v) -> {
+			cacheService.setIntoApplicationCache(new String[]{k},new DataCountKpiData(KPICode.DEFECT_REMOVAL_EFFICIENCY,v),"JIRA",null,Arrays.asList("closed"));
+				});
+
 
 		log.debug("[DRE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -229,7 +246,6 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
 
 		}
-
 		return resultListMap;
 
 	}
@@ -263,8 +279,12 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		List<KPIExcelData> excelData = new ArrayList<>();
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
+		List<Node> sprintLeafNodeListUpdated=sprintLeafNodeList.stream().filter(node->!node.isFromCache()).collect(Collectors.toList());
+		Map<String, Object> storyDefectDataListMap =new HashMap<>();
+		if(CollectionUtils.isNotEmpty(sprintLeafNodeListUpdated))
+		storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate,
 				kpiRequest);
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
 		List<JiraIssue> subTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
@@ -277,7 +297,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotaldDefectListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCloseddDefectListMap = new HashMap<>();
-		List<KPIExcelData> excelData = new ArrayList<>();
+
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
 			sprintDetails.forEach(sd -> {
@@ -334,39 +354,45 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		}
 
 		sprintLeafNodeList.forEach(node -> {
+			if (!node.isFromCache()) {
+				String trendLineName = node.getProjectFilter().getName();
 
-			String trendLineName = node.getProjectFilter().getName();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+				double dreForCurrentLeaf;
 
-			double dreForCurrentLeaf;
+				if (sprintWiseDREMap.containsKey(currentNodeIdentifier)) {
+					dreForCurrentLeaf = sprintWiseDREMap.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseClosedDefectList = sprintWiseCloseddDefectListMap.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseTotaldDefectList = sprintWiseTotaldDefectListMap.get(currentNodeIdentifier);
+					populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
+							sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
 
-			if (sprintWiseDREMap.containsKey(currentNodeIdentifier)) {
-				dreForCurrentLeaf = sprintWiseDREMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseClosedDefectList = sprintWiseCloseddDefectListMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseTotaldDefectList = sprintWiseTotaldDefectListMap.get(currentNodeIdentifier);
-				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseClosedDefectList, sprintWiseTotaldDefectList);
+				} else {
+					dreForCurrentLeaf = 0.0d;
+				}
+				log.debug("[DRE-SPRINT-WISE][{}]. DRE for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), dreForCurrentLeaf);
 
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setValue(dreForCurrentLeaf);
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+				// #deepak add projectid to datacount
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
 			} else {
-				dreForCurrentLeaf = 0.0d;
+				List<DataCount> dataCountList=trendValueList.stream().filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct().collect(Collectors.toList());
+				if(CollectionUtils.isNotEmpty(dataCountList))
+						mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
-			log.debug("[DRE-SPRINT-WISE][{}]. DRE for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), dreForCurrentLeaf);
-
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(dreForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(dreForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
-
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns());
