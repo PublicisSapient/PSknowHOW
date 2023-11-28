@@ -28,6 +28,7 @@ public class CookieUtil {
 		cookie.setSecure(customApiConfig.isAuthCookieSecured());
 		cookie.setHttpOnly(customApiConfig.isAuthCookieHttpOnly());
 		cookie.setPath("/api");
+		cookie.setDomain("localhost");
 		return cookie;
 
 	}
