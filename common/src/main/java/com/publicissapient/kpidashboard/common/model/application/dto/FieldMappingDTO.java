@@ -18,15 +18,17 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-
-import java.util.List;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
@@ -446,6 +448,11 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraSubTaskIdentification;
     private List<String> jiraStatusStartDevelopmentKPI154;
+
+    private List<String> jiraStatusForInProgressKPI161;
+    private List<String> jiraStatusForRefinedKPI161;
+    private List<String> jiraStatusForNotRefinedKPI161;
+
 
     /**
      * Get jira issue type names string [ ].
