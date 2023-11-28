@@ -20,15 +20,13 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -150,6 +148,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			KpiRequest kpiRequest) {
 
 		List<KPIExcelData> excelData = new ArrayList<>();
+		List<String> rangeList = customApiConfig.getLeadTimeRange();
 		Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, LocalDate.now().minusMonths(6).toString(),
 				LocalDate.now().toString(), kpiRequest);
 		List<JiraIssueCustomHistory> ticketList = (List<JiraIssueCustomHistory>) resultMap.get(STORY_HISTORY_DATA);
@@ -165,11 +164,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					.get(node.getProjectFilter().getBasicProjectConfigId());
 			List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
 			LinkedHashMap<String, List<DataCount>> leadTime = getLeadTime(issueCustomHistoryList, fieldMapping,
-					cycleTimeList, node);
+					cycleTimeList, node, rangeList);
 			populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
 			mapTmp.get(node.getId()).setValue(leadTime);
 		}
-		kpiElement.setModalHeads(KPIExcelColumn.LEAD_TIME.getColumns());
+		List<String> xAxisRange = new ArrayList<>(rangeList);
+		Collections.reverse(xAxisRange);
+		kpiElement.setxAxisValues(xAxisRange);
+		kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME.getColumns());
 		kpiElement.setExcelData(excelData);
 
 	}
@@ -223,14 +225,15 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            leadTimeList
 	 * @param node
 	 *            projectNode
+	 * @param rangeList
+	 * 			rangeList
 	 * @return dataCountMap
 	 */
 	private LinkedHashMap<String, List<DataCount>> getLeadTime(
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
-			List<CycleTimeValidationData> leadTimeList, Node node) {
+			List<CycleTimeValidationData> leadTimeList, Node node, List<String> rangeList) {
 
 		Map<Long, String> monthRangeMap = new HashMap<>();
-		List<String> rangeList = customApiConfig.getLeadTimeRange();
 		Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
 		BacklogKpiHelper.initializeRangeMapForProjects(rangeWiseJiraIssuesMap, rangeList, monthRangeMap);
 
@@ -302,7 +305,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 					.flatMap(List::stream).collect(Collectors.toList());
 			List<Long> leadTimeList = totalRangeWiseIssues.stream().map(JiraIssueCustomHistory::getStoryID)
 					.filter(map::containsKey).map(map::get).collect(Collectors.toList());
-			setDataCount(leafNode.getProjectFilter().getName(), "OVERALL", dateRange,
+			setDataCount(leafNode.getProjectFilter().getName(), "Overall", dateRange,
 					AggregationUtils.averageLong(leadTimeList), dataCountMap, totalRangeWiseIssues.size());
 		});
 

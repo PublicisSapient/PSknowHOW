@@ -57,7 +57,11 @@ public class LeadTimeLine {
 				.append("kpiInfo.details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
 						new Document().append("text", "Detailed Information at").append("link",
 								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"))))
-				.append("yAxisLabel", "Days").append("boxType", null)
+				.append("yAxisLabel", "Days")
+				.append("xAxisLabel", "Range")
+				.append("boxType", null)
+				.append("kpiWidth", null)
+				.append("showTrend", true)
 				.append("maturityRange", Arrays.asList("-60", "60-45", "45-30", "30-10", "10-")));
 
 		// Perform the update
@@ -74,8 +78,6 @@ public class LeadTimeLine {
 	public void rollbackOrdering() {
 		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
 		Document filter = new Document("kpiId", "kpi3");
-
-		// Define the update using the Updates class
 		Document update = new Document("$set", new Document().append("thresholdValue", "20").append("kpiUnit", "Days")
 				.append("chartType", "")
 				.append("kpiInfo.definition",
@@ -83,7 +85,12 @@ public class LeadTimeLine {
 				.append("kpiInfo.formula",
 						Arrays.asList(new Document("lhs",
 								"It is calculated as the sum Ideation time, Development time & Release time")))
-				.append("yAxisLabel", "").append("boxType", "2_column").append("maturityRange", null));
+				.append("kpiInfo.details",Arrays.asList())
+				.append("yAxisLabel", "")
+				.append("xAxisLabel", "")
+				.append("kpiWidth", 100)
+				.append("showTrend", false)
+				.append("boxType", "2_column").append("maturityRange", null));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
@@ -99,13 +106,11 @@ public class LeadTimeLine {
 				new Document().append("text", "Detailed Information at").append("link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time")));
 
-		Document pushObjects = (Document) Updates.pushEach("kpiInfo.details", newDetailsObjects);
+		Document pushObjects =new Document("$push", new Document("kpiInfo.details", new Document("$each", newDetailsObjects)));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, pushObjects);
-
-		mongoTemplate.getCollection("field_mapping_structure")
-				.deleteOne(new Document("fieldName", "thresholdValueKPI3"));
+		mongoTemplate.getCollection("field_mapping_structure").deleteOne(new Document("fieldName", "thresholdValueKPI3"));
 
 	}
 }

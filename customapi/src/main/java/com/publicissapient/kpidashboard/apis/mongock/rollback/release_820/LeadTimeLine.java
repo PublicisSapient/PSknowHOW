@@ -66,7 +66,11 @@ public class LeadTimeLine {
 						Arrays.asList(new Document("lhs",
 								"It is calculated as the sum Ideation time, Development time & Release time")))
 				.append("kpiInfo.details",Arrays.asList())
-				.append("yAxisLabel", "").append("boxType", "2_column").append("maturityRange", null));
+				.append("yAxisLabel", "")
+				.append("xAxisLabel", "")
+				.append("kpiWidth", 100)
+				.append("showTrend", false)
+				.append("boxType", "2_column").append("maturityRange", null));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
