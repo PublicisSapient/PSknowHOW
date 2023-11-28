@@ -54,8 +54,9 @@ public class RepoToolProviderUrlChange {
 
         mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bb, update_bb);
 
-        Document filter = new Document("toolName", "gitlab");
-        Document update = new Document("$set", new Document("testApiUrl", "https://gitlab.com/api/v4/projects/"));
+		Document filter = new Document("toolName", "gitlab");
+		Document update = new Document("$set", new Document()
+				.append("testApiUrl", "https://gitlab.com/api/v4/projects/").append("repoToolProvider", ""));
 
         mongoTemplate.getCollection("repo_tools_provider").updateOne(filter, update);
     }
@@ -95,10 +96,11 @@ public class RepoToolProviderUrlChange {
                 new Document().append("testServerApiUrl", "/bitbucket/rest/api/1.0/projects/").append("testApiUrl",
                         "https://api.bitbucket.org/2.0/workspaces/"));
 
-        mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bb, update_bb);
-        // Update for gitlab tool
-        Document filter_gl = new Document("toolName", "gitlab");
-        Document update_gl = new Document("$set", new Document().append("testApiUrl", "/api/v4/projects/"));
+		mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_bb, update_bb);
+		// Update for gitlab tool
+		Document filter_gl = new Document("toolName", "gitlab");
+		Document update_gl = new Document("$set",
+				new Document().append("testApiUrl", "/api/v4/projects/").append("repoToolProvider", "gitlab"));
 
         mongoTemplate.getCollection("repo_tools_provider").updateOne(filter_gl, update_gl);
     }
