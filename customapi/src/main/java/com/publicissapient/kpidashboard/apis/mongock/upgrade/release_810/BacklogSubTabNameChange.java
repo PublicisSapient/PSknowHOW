@@ -17,6 +17,9 @@
 
 package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_810;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -25,46 +28,42 @@ import io.mongock.api.annotations.Execution;
 import io.mongock.api.annotations.RollbackExecution;
 
 /**
- * @author eswbogol
+ * @author shunaray
  */
-@ChangeUnit(id = "dre_definition_changeLog", order = "8112", author = "eswbogol", systemVersion = "8.1.0")
-public class DREDefinitionChangeLog {
-
+@ChangeUnit(id = "backlog_sub_tab_name_change", order = "8113", author = "shunaray", systemVersion = "8.1.0")
+public class BacklogSubTabNameChange {
 	private final MongoTemplate mongoTemplate;
 
-	public DREDefinitionChangeLog(MongoTemplate mongoTemplate) {
+	public BacklogSubTabNameChange(MongoTemplate mongoTemplate) {
 		this.mongoTemplate = mongoTemplate;
 	}
 
 	@Execution
 	public void execution() {
-		updateKpiDefinition();
-		updateDREFieldMappingStructure();
+		updateKpiSubCategory();
 	}
+	public void updateKpiSubCategory() {
+		List<String> kpiIdsToUpdate = Arrays.asList("kpi152", "kpi155", "kpi151");
 
-	public void updateKpiDefinition() {
-		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi34"),
-				new Document("$set", new Document("kpiInfo.definition",
-						"Measure of percentage of defects closed against the total count tagged to the iteration")));
-	}
+		Document filter = new Document("kpiId", new Document("$in", kpiIdsToUpdate));
+		Document update = new Document("$set", new Document("kpiSubCategory", "Backlog Overview"));
 
-	public void updateDREFieldMappingStructure() {
-		Document filter = new Document("fieldName", "jiraDodKPI14");
-		Document update = new Document("$set", new Document()
-				.append("fieldLabel", "Status considered for Issue closure")
-				.append("tooltip", new Document("definition",
-						"Status considered for issue closure (Mention completed status of all types of issues)")));
-
-		mongoTemplate.getCollection("field_mapping_structure").updateOne(filter, update);
+		mongoTemplate.getCollection("kpi_master").updateMany(filter, update);
 	}
 
 	@RollbackExecution
 	public void rollback() {
-		rollbackFieldMappingStructure();
+		rollbackUpdateKpiSubCategory();
 	}
 
-	public void rollbackFieldMappingStructure() {
-		// provide rollback script
+	public void rollbackUpdateKpiSubCategory() {
+		List<String> kpiIdsToRollback = Arrays.asList("kpi152", "kpi155", "kpi151");
+
+		Document filter = new Document("kpiId", new Document("$in", kpiIdsToRollback));
+		Document update = new Document("$set", new Document("kpiSubCategory", "Summary"));
+
+		mongoTemplate.getCollection("kpi_master").updateMany(filter, update);
 	}
+
 
 }
