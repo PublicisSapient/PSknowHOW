@@ -2479,6 +2479,15 @@
     }
   } ,
   {
+    "fieldName": "thresholdValueKPI3",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  } ,
+  {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
     "fieldType": "chips",

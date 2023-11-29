@@ -900,3 +900,52 @@ db.kpi_master.updateMany(
         $set: { "kpiSubCategory": "Backlog Overview" }
     }
 );
+
+
+//--------------8.2.0-------------------------------
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi3" },
+  {
+    $set: {
+      "thresholdValue": "20",
+      "kpiUnit": "Days",
+      "chartType": "line",
+      "kpiInfo.definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+      "kpiInfo.formula":null,
+      "boxType":null,
+      "kpiWidth":null,
+      "showTrend":true,
+      "kpiInfo.details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "
+            https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+          }
+        }
+      ],
+      "yAxisLabel": "Days",
+      "xAxisLabel": "Range",
+      "maturityRange": [
+        "-60",
+        "60-45",
+        "45-30",
+        "30-10",
+        "10-"
+      ]
+    }
+  }
+)
+
+db.getCollection('field_mapping_structure').insertMany([{
+        "fieldName": "thresholdValueKPI3",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    }
+}])
