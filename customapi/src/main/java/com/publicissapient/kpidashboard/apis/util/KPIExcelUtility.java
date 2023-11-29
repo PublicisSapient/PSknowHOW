@@ -640,19 +640,20 @@ public class KPIExcelUtility {
 		}
 	}
 
-	public static void populateLeadTime(List<CycleTimeValidationData> cycleTimeList,
-										List<KPIExcelData> excelDataList ) {
-			for (CycleTimeValidationData leadTimeData: cycleTimeList){
-				KPIExcelData excelData = new KPIExcelData();
-				Map<String, String> storyId = new HashMap<>();
-				storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
-				excelData.setIssueID(storyId);
-				excelData.setIssueDesc(leadTimeData.getIssueDesc());
-				excelData.setIssueType(leadTimeData.getIssueType());
-				excelData.setCreatedDate(leadTimeData.getIntakeDate().toString().split("T")[0]);
-				excelData.setCloseDate(leadTimeData.getLiveDate().toString().split("T")[0]);
-				excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
-				excelDataList.add(excelData);
+	public static void populateLeadTime(List<CycleTimeValidationData> cycleTimeList, List<KPIExcelData> excelDataList) {
+		for (CycleTimeValidationData leadTimeData : cycleTimeList) {
+			KPIExcelData excelData = new KPIExcelData();
+			Map<String, String> storyId = new HashMap<>();
+			storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
+			excelData.setIssueID(storyId);
+			excelData.setIssueDesc(leadTimeData.getIssueDesc());
+			excelData.setIssueType(leadTimeData.getIssueType());
+			excelData.setCreatedDate(DateUtil.dateTimeConverter(leadTimeData.getIntakeDate().toString().split("T")[0],
+					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+			excelData.setCloseDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
+					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+			excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
+			excelDataList.add(excelData);
 		}
 	}
 
