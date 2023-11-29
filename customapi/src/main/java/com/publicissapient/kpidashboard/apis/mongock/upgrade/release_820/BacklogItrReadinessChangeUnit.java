@@ -67,7 +67,7 @@ public class BacklogItrReadinessChangeUnit {
 
 	public void makeKpiFilterToRadioBtn() {
 		mongoTemplate.getCollection("kpi_master").updateOne(
-				new Document("kpiId", new Document("$in", Collections.singletonList("kpi164"))),
+				new Document("kpiId", new Document("$in", Collections.singletonList("kpi161"))),
 				new Document("$set", new Document("kpiFilter", "radioButton")));
 	}
 
@@ -86,7 +86,7 @@ public class BacklogItrReadinessChangeUnit {
 
 	public void rollbackKpiFilterToRadioBtn() {
 		mongoTemplate.getCollection("kpi_master").updateOne(
-				new Document("kpiId", new Document("$in", Collections.singletonList("kpi164"))),
+				new Document("kpiId", new Document("$in", Collections.singletonList("kpi161"))),
 				new Document("$unset", new Document("kpiFilter", "")));
 	}
 }
