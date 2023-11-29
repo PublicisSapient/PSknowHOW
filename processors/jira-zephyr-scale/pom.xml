@@ -23,7 +23,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<description>Zephyr Processor Microservice</description>
 	<packaging>jar</packaging>
-	<version>8.1.2-SNAPSHOT</version>
+	<version>8.1.1-SNAPSHOT</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
