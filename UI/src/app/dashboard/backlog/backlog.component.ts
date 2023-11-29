@@ -67,6 +67,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   activeIndex = 0;
   kpiThresholdObj: any = [];
   fullPageLoader: boolean = true;
+  kpiTrendObject = {};
 
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -76,6 +77,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.kpiSelectedFilterObj = {};
         this.kpiDropdowns = {};
         this.sharedObject = sharedobject;
+        this.kpiTrendObject = {}
         if (this.globalConfig || this.service.getDashConfigData()) {
           this.receiveSharedData(sharedobject);
         }
@@ -301,6 +303,20 @@ export class BacklogComponent implements OnInit, OnDestroy {
               });
             }
           }
+
+          if (localVariable['kpi3']) {
+            if (localVariable['kpi3'].trendValueList && localVariable['kpi3'].xAxisValues) {
+              localVariable['kpi3'].trendValueList.forEach(trendElem => {
+                trendElem.value.forEach(valElem => {
+                  if (valElem.value.length === 5 && localVariable['kpi3'].xAxisValues.length === 5) {
+                    valElem.value.forEach((element, index) => {
+                      element['xAxisTick'] = localVariable['kpi3'].xAxisValues[index];
+                    });
+                  }
+                });
+              });
+            }
+          }
           // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
           //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
           // }
@@ -435,10 +451,10 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
     //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     // }
-
+    this.createTrendData(kpiId);
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
-        this.showKpiTrendIndicator[kpiId] = false;
+        this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
       }
     });
 
@@ -961,6 +977,77 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   handleTabChange(event) {
     this.activeIndex = event.index;
+  }
+
+  createTrendData(kpiId){
+    if(kpiId === 'kpi3'){
+      console.log(this.kpiChartData[kpiId]);
+    }
+    const kpiDetail = this.configGlobalData.find(details=>details.kpiId == kpiId)
+    const trendingList = this.kpiChartData[kpiId];
+      if(trendingList.length){
+        this.kpiTrendObject[kpiId] = [];
+        if(trendingList[0]?.value?.length > 0 && kpiDetail){
+          let trendObj = {};
+          const [latest, trend,unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
+          trendObj = {
+              "hierarchyName": trendingList[0]?.data,
+              "trend": trend,
+              "maturity":'M'+trendingList[0]?.maturity,
+              "maturityValue":trendingList[0]?.maturityValue,
+              "kpiUnit" : unit
+          };
+          this.kpiTrendObject[kpiId]?.push(trendObj);
+      }
+      }
+     
+  }
+  
+  checkMaturity(item) {
+    let maturity = item.maturity;
+    if (maturity == undefined) {
+      return 'NA';
+    }
+    if (item.value.length >= 5) {
+      const last5ArrItems = item.value.slice(item.value.length - 5, item.value.length);
+      const tempArr = last5ArrItems.filter(x => x.data != 0);
+      if (tempArr.length == 0) {
+        maturity = '--';
+      }
+    } else {
+      maturity = '--';
+    }
+    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
+    return maturity;
+  }
+
+  checkLatestAndTrendValue(kpiData, item) {
+    let latest: string = '';
+    let trend: string = '';
+    if (item?.value?.length > 0) {
+      let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
+      var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets' ? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
+      latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
+    }
+    if (item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
+      let lastVal = item?.value[item?.value?.length - 1]?.value;
+      let secondLastVal = item?.value[item?.value?.length - 2]?.value;
+      let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
+      if (secondLastVal > lastVal && !isPositive) {
+        trend = '+ve';
+      } else if (secondLastVal < lastVal && !isPositive) {
+        trend = '-ve';
+      } else if (secondLastVal < lastVal && isPositive) {
+        trend = '+ve';
+      } else if (secondLastVal > lastVal && isPositive) {
+        trend = '-ve';
+      } else {
+        trend = '-- --';
+      }
+    } else {
+      trend = 'NA';
+    }
+    return [latest, trend, unit];
   }
 
   ngOnDestroy() {
