@@ -3067,7 +3067,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3091,7 +3091,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3166,7 +3166,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {

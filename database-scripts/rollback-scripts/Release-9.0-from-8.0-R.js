@@ -128,7 +128,7 @@ db.getCollection("repo_tools_provider").bulkWrite([
       filter: { "toolName": "gitlab" },
       update: {
         $set: {
-          "testApiUrl": "https://gitlab.com/api/v4/projects/""
+          "testApiUrl": "https://gitlab.com/api/v4/projects/"
         }
       }
     }
@@ -162,6 +162,28 @@ db.kpi_master.updateMany(
     }
 }
 );
+
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for defect closure",
+            "tooltip": {
+                "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Summary" }
+    }
+);
+
 
 //------------------------- 8.2.0 changes----------------------------------------------------------------------------------
 db.getCollection("field_mapping_structure").deleteMany({

@@ -1269,7 +1269,7 @@ public class KPIExcelUtility {
 					repoUrl.put(repoList.get(i), repoList.get(i));
 					excelData.setRepositoryURL(repoUrl);
 					excelData.setBranch(branchList.get(i));
-					excelData.setDays(date);
+					excelData.setDaysWeeks(date);
 					excelData.setNumberOfCommit(repoWiseCommitList.get(i).get(date).toString());
 					kpiExcelData.add(excelData);
 				}

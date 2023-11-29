@@ -98,6 +98,7 @@ public class RepoToolsConfigServiceImpl {
 	public static final String SCM = "scm";
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
+	public static final String VALID_REPO = ".git";
 
 	private RepoToolsClient repoToolsClient;
 
@@ -115,9 +116,11 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public int configureRepoToolProject(ProjectToolConfig projectToolConfig, Connection connection,
 			List<String> branchNames) {
-		int httpStatus = HttpStatus.NOT_FOUND.value();
+		int httpStatus;
+		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
+			return HttpStatus.NO_CONTENT.value();
+		}
 		try {
-
 			// create scanning account
 			ToolCredential toolCredential = new ToolCredential(connection.getUsername(),
 					aesEncryptionService.decrypt(connection.getAccessToken(), customApiConfig.getAesEncryptionKey()),
@@ -132,8 +135,7 @@ public class RepoToolsConfigServiceImpl {
 					connection.getHttpUrl(), repoToolsProvider.getRepoToolProvider(), connection.getHttpUrl(),
 					projectToolConfig.getDefaultBranch(),
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
-					fistScan.toString().replace("T", " "), toolCredential, branchNames,
-					connection.getIsCloneable());
+					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
 
 			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project

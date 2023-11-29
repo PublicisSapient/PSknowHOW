@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -259,7 +260,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		List<String> labelsList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			sprintList.add(leaf.getSprintFilter().getId());
@@ -278,6 +278,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 						fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
 						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
 			}
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI82())) {
+				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI82()));
+			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
 					fieldMapping.getJiraIssueDeliverdStatusKPI82());
@@ -286,7 +290,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI82()).orElse(new ArrayList<>()));
 		});
 
 		/** additional filter **/
@@ -296,7 +299,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put("labels", labelsList.stream().distinct().collect(Collectors.toList()));
 
 		// Fetch Story ID grouped by Sprint
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,

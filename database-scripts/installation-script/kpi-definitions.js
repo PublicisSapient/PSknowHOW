@@ -3087,7 +3087,7 @@ db.getCollection('kpi_master').insertMany(
       "showTrend": false,
       "isAdditionalFilterSupport": false,
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3111,7 +3111,7 @@ db.getCollection('kpi_master').insertMany(
       "showTrend": false,
       "isAdditionalFilterSupport": false,
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3186,7 +3186,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "boxType": "chart",
-    "kpiSubCategory": "Summary",
+    "kpiSubCategory": "Backlog Overview",
     "calculateMaturity": false
   },
   {
@@ -7802,12 +7802,12 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiraDodKPI14",
-        "fieldLabel": "Status considered for defect closure",
+        "fieldLabel": "Status considered for Issue closure",
         "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
         }
     },
     {

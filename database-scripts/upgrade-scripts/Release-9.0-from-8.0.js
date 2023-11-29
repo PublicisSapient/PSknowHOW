@@ -224,8 +224,7 @@ db.getCollection('field_mapping_structure').insertMany([{
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     }
-])
-}]);
+]);
 db.kpi_master.insertOne({
     "kpiId": "kpi166",
     "kpiName": "Mean Time to Recover",
@@ -795,7 +794,7 @@ db.getCollection("kpi_master").insertOne({
 });
 
 // DTS-29379 add flow efficiency field mappings
-db.getCollection("field_mapping_structure").insertMany({
+db.getCollection("field_mapping_structure").insertMany([
     {
         "fieldName": "jiraIssueClosedStateKPI170",
         "fieldLabel": "Status to identify Close Statuses",
@@ -816,7 +815,7 @@ db.getCollection("field_mapping_structure").insertMany({
             "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
         }
     }
-})
+])
 
 db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 1 } })
 db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 3 } })
@@ -879,6 +878,28 @@ db.kpi_master.updateMany(
     }
 }
 );
+
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for Issue closure",
+            "tooltip": {
+                "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Backlog Overview" }
+    }
+);
+
 
 //------------------------- 8.2.0 changes----------------------------------------------------------------------------------
 db.getCollection('field_mapping_structure').insertMany([

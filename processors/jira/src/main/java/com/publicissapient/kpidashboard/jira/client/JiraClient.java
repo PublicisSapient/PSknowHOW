@@ -61,7 +61,7 @@ public class JiraClient {
 
 	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
 			KerberosClient krb5Client) {
-		Optional<Connection> connectionOptional=projectConfFieldMapping.getJira().getConnection();
+		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
 			boolean isOauth = connection.getIsOAuth();
@@ -106,8 +106,7 @@ public class JiraClient {
 		} else if (conn.isBearerToken()) {
 			password = jiraCommonService.decryptJiraPassword(conn.getPatOAuthToken());
 			log.info("bearer token authentication");
-		}
-		else {
+		} else {
 			username = conn.getUsername();
 			password = jiraCommonService.decryptJiraPassword(conn.getPassword());
 		}
@@ -159,9 +158,14 @@ public class JiraClient {
 			}
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-					password, jiraProcessorConfig);
-
+			if (jiraInfo.isBearerToken()) {
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
+						password, jiraProcessorConfig);
+				log.info("bearer token authentication");
+			} else {
+				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
+						password, jiraProcessorConfig);
+			}
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 			log.debug("Exception", e);
@@ -193,14 +197,8 @@ public class JiraClient {
 			}
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
-			if (jiraInfo.isBearerToken()) {
-				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
-						password, jiraProcessorConfig);
-				log.info("bearer token authentication");
-			} else {
-				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
-						password, jiraProcessorConfig);
-			}
+			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
+			
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 
