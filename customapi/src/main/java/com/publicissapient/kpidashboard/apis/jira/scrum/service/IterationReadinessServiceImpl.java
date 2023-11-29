@@ -16,7 +16,6 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -177,27 +176,32 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
 					storyPointDc.setSSprintName(sprint);
 					storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
-					Map<String, StatusWiseIssue> statusWiseStoryCountAndPointMap = new LinkedHashMap<>();
+					HashMap<Object, Integer> mapOfIssueCount = new HashMap<>();
+					HashMap<Object, Double> mapOfStoryPoint = new HashMap<>();
+//					Map<String, StatusWiseIssue> statusWiseStoryCountAndPointMap = new LinkedHashMap<>();
 					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
 //						TreeMap<String, List<JiraIssue>> sortedStatusJiraMap = new TreeMap<>(statusWiseJiraIssue);
 						statusWiseJiraIssue.forEach((status, jiraIssue) -> {
 							filteredJiraIssue.addAll(jiraIssue);
 							StatusWiseIssue statusWiseData = getStatusWiseStoryCountAndPointList(jiraIssue,
 									fieldMapping);
-							issueCountDc.setData(String.valueOf(jiraIssue.size()));
-							storyPointDc.setData(String.valueOf(KpiDataHelper.calculateStoryPoints(jiraIssue,fieldMapping)));
-							HashMap<Object, Object> mapOfIssueCount = new HashMap<>();
+
+
 							mapOfIssueCount.put(status,jiraIssue.size());
-							issueCountDc.setValue(mapOfIssueCount);
-							HashMap<Object, Object> mapOfStoryPoint = new HashMap<>();
+
+
 							mapOfStoryPoint.put(status,KpiDataHelper.calculateStoryPoints(jiraIssue,fieldMapping));
-							storyPointDc.setValue(mapOfStoryPoint);
+
 //							issueCountDc.setValue(statusWiseData.getIssueCount());
 //							storyPointDc.setValue(statusWiseData.getIssueStoryPoint());
-							statusWiseStoryCountAndPointMap.put(status, statusWiseData);
+//							statusWiseStoryCountAndPointMap.put(status, statusWiseData);
 						});
-						issueCountDcList.add(issueCountDc);
-						storyPointDcList.add(storyPointDc);
+						issueCountDc.setData(String.valueOf(mapOfIssueCount.values().stream()
+								.mapToInt(Integer::intValue)
+								.sum()));
+						storyPointDc.setData(String.valueOf(mapOfStoryPoint.values().stream()
+								.mapToDouble(Double::doubleValue)
+								.sum()));
 						/*dataCount.setData(
 								String.valueOf(sortedStatusJiraMap.values().stream().mapToInt(List::size).sum()));*/
 					} else {
@@ -205,8 +209,11 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						issueCountDc.setData(String.valueOf(0));
 						storyPointDc.setData(String.valueOf(0));
 					}
-
+					issueCountDc.setValue(mapOfIssueCount);
+					storyPointDc.setValue(mapOfStoryPoint);
 //					dataCount.setValue(statusWiseStoryCountAndPointMap);
+					issueCountDcList.add(issueCountDc);
+					storyPointDcList.add(storyPointDc);
 //					dataCountList.add(dataCount);
 
 				});
