@@ -372,15 +372,9 @@ export class GroupstackchartComponent implements OnChanges {
             const obj = {};
             obj['group'] = item?.sSprintName;
             obj['type'] = type;
-            obj['value'] = item?.value[type][Object.keys(item?.value[type])?.[0]];
+            obj['value'] = item?.value[type];
             obj['hoverText'] = {};
-            obj['hoverText'][type] = '(';
-            // obj['hoverText'] = type +': ' + '(';
-            let lastEle = Object.keys(item?.value[type])?.length - 1;
-            Object.keys(item?.value[type])?.forEach((x, i) => {
-              obj['hoverText'][type] += item?.value[type][x] + (i != lastEle ? ', ' : '');
-            })
-            obj['hoverText'][type] += ')';
+            obj['hoverText'][type] = item?.value[type];
             obj['xName'] = sprintValue;
             targetList.push(obj);
             max = Math.max(max, item?.data);
