@@ -34,6 +34,7 @@ import io.mongock.api.annotations.RollbackExecution;
 @ChangeUnit(id = "r_release_burnUp_dev_comp", order = "08202", author = "shunaray", systemVersion = "8.2.0")
 public class ReleaseBurnUpDevCompleteEnc {
 
+	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
 	private final MongoTemplate mongoTemplate;
 
 	public ReleaseBurnUpDevCompleteEnc(MongoTemplate mongoTemplate) {
@@ -44,6 +45,8 @@ public class ReleaseBurnUpDevCompleteEnc {
 	public void execution() {
 		rollBackFieldMappingStructure();
 		rollbackUpdateKpiInfo();
+		rollbackToggleLabelKpi16();
+		rollbackToggleLabelKpi42();
 	}
 
 	public void rollBackFieldMappingStructure() {
@@ -51,7 +54,7 @@ public class ReleaseBurnUpDevCompleteEnc {
 		Document filter = new Document("fieldName", new Document("$in", fieldNamesToDelete));
 
 		// Delete documents that match the filter
-		mongoTemplate.getCollection("field_mapping_structure").deleteMany(filter);
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).deleteMany(filter);
 	}
 
 	public void rollbackUpdateKpiInfo() {
@@ -60,10 +63,25 @@ public class ReleaseBurnUpDevCompleteEnc {
 						"It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.")));
 	}
 
+	public void rollbackToggleLabelKpi42() {
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
+				new Document("fieldName", "uploadDataKPI42"),
+				new Document("$rename", new Document("toggleLabelRight", "toggleLabel"))
+		);
+	}
+	public void rollbackToggleLabelKpi16() {
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
+				new Document("fieldName", "uploadDataKPI16"),
+				new Document("$rename", new Document("toggleLabelRight", "toggleLabel"))
+		);
+	}
+
 	@RollbackExecution
 	public void rollback() {
 		insertFieldMappingStructure();
 		updateKpiInfo();
+		updateToggleLabelKpi16();
+		updateToggleLabelKpi42();
 	}
 
 	public void insertFieldMappingStructure() {
@@ -81,13 +99,26 @@ public class ReleaseBurnUpDevCompleteEnc {
 				.append("tooltip", new Document("definition",
 						"Status that confirms that the development work is completed and an issue can be passed on for testing"));
 
-		mongoTemplate.getCollection("field_mapping_structure").insertMany(Arrays.asList(document1, document2));
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).insertMany(Arrays.asList(document1, document2));
 	}
 
 	public void updateKpiInfo() {
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi150"),
 				new Document("$set", new Document("kpiInfo.definition",
 						"It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues")));
+	}
+
+	public void updateToggleLabelKpi42() {
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
+				new Document("fieldName", "uploadDataKPI42"),
+				new Document("$rename", new Document("toggleLabel", "toggleLabelRight"))
+		);
+	}
+	public void updateToggleLabelKpi16() {
+		mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE).updateOne(
+				new Document("fieldName", "uploadDataKPI16"),
+				new Document("$rename", new Document("toggleLabel", "toggleLabelRight"))
+		);
 	}
 
 }

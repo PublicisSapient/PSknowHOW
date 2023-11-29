@@ -935,3 +935,13 @@ db.getCollection("kpi_master").updateOne(
         }
     }
 );
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
+);

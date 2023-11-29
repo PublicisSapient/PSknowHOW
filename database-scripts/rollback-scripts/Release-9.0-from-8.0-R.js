@@ -200,3 +200,13 @@ db.getCollection("kpi_master").updateOne(
         }
     }
 );
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);

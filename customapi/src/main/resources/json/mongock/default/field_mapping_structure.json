@@ -2044,7 +2044,7 @@
     "fieldName" : "uploadDataKPI42" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {
@@ -2055,7 +2055,7 @@
     "fieldName" : "uploadDataKPI16" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {

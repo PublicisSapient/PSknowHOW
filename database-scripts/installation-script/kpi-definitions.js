@@ -9182,7 +9182,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI42",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9193,7 +9193,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI16",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
