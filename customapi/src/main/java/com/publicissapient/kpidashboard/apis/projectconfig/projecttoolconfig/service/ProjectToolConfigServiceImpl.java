@@ -482,7 +482,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			return new ServiceResponse(false, "", null);
 		if (httpStatus == HttpStatus.BAD_REQUEST.value())
 			return new ServiceResponse(false, "Project with similar configuration already exists", null);
-		if (httpStatus == HttpStatus.NO_CONTENT.value())
+		if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR.value())
 			return new ServiceResponse(false, "Invalid Repository Name", null);
 		return new ServiceResponse(true, "", null);
 	}
