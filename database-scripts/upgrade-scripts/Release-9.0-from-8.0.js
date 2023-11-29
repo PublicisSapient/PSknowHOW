@@ -908,7 +908,7 @@ db.getCollection('field_mapping_structure').insertMany([
 	"fieldLabel": "Prediction logic",
 	"fieldType": "toggle",
 	"toggleLabelLeft" : "Overall completion",
-	"toggleLabel": "Dev Completion",
+	"toggleLabelRight": "Dev Completion",
 	"section": "WorkFlow Status Mapping",
 	"processorCommon": false,
 	"tooltip": {

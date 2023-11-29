@@ -46,6 +46,7 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldCategory;
 	private String toggleLabel;
 	private String toggleLabelLeft;
+	private String toggleLabelRight;
 	private String section;
 	private boolean processorCommon;
 	private MappingToolTip tooltip;
