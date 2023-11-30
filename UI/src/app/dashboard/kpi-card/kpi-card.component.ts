@@ -3,6 +3,7 @@ import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -63,7 +64,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   constructor(public service: SharedService,
     private http : HttpService,
-    private authService : GetAuthorizationService) {
+    private authService : GetAuthorizationService,
+    private ga: GoogleAnalyticsService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -154,6 +156,13 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       }
       // this.showFilterTooltip(true);
     }
+    const gaObj = {
+      "kpiName": this.kpiData?.kpiName,
+      "filter1": this.filterOptions?.['filter1'] || [value],
+      "filter2": this.filterOptions?.['filter2'] || null,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
+    }
+    this.triggerGaEvent(gaObj);
   }
   getColor(nodeName) {
     let color = '';
@@ -339,6 +348,17 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.getCommentCountByKpi.emit(event);
   }
 
+  handleKpiClick(){
+    const obj = {
+      'kpiName': this.kpiData?.kpiName,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
+    }
+    this.triggerGaEvent(obj)
+  }
+
+  triggerGaEvent(gaObj){
+    this.ga.setKpiData(gaObj);
+  }
 
   ngOnDestroy() {
     this.kpiData = {};
