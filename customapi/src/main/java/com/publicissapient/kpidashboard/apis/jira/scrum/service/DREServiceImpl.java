@@ -46,6 +46,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -53,6 +55,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 /**
  * This class calculated KPI value for DRE and its trend analysis.
@@ -92,6 +96,9 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+	@Qualifier("cacheManager")
+	private CacheManager cacheManager;
 
 	@Override
 	public String getQualifierType() {
@@ -105,50 +112,30 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		/* #deepak starts changes */
 		List<Node> projects=treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
 		List<Node> projectsFromCache=new ArrayList<>();
-		projects.forEach(project -> {
-			DataCountKpiData dataCountKpiData= (DataCountKpiData) cacheService.getFromApplicationCache(new String[]{project.getId()},"JIRA",null,Arrays.asList("closed"));
-			if(dataCountKpiData!=null) {
-				trendValueList.addAll(dataCountKpiData.getDataCountList());
-				projectsFromCache.add(project);
-			}
-		});
-
+		processCacheBeforeDBHit(projects,projectsFromCache,trendValueList,KPICode.DEFECT_REMOVAL_EFFICIENCY);
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
+			/* #deepak starts changes */
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				/* #deepak starts changes */
 				v.forEach(node -> {
 					if(projectsFromCache.stream().filter(projectNode->projectNode.getId().equals(node.getParentId())).count()>0)
 							node.setFromCache(true);
 						}
 				);
+				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
-				System.out.println("v.size()==" + v.size());
-
 			}
 		});
-		Map<String, List<DataCount>> map = new HashMap<>();
-		trendValueList.stream().filter(dataCount -> projectsFromCache.stream().filter(projectFromCache->projectFromCache.getId().equals(dataCount.getSProjectName()+"_"+dataCount.getBasicProjectConfigId())).count()==0).forEach(dataCount ->
-				{
-					String key=dataCount.getSProjectName()+"_"+dataCount.getBasicProjectConfigId();
-					if(map.get(key)==null){
-						map.put(key,new ArrayList<>(Arrays.asList(dataCount)));
-					}
-					else
-					{
-						List<DataCount> list= 	map.get(key);
-						list.add(dataCount);
-						map.put(key,list);
-					}
 
-				}
-		);
-
-		map.forEach((k, v) -> {
-			cacheService.setIntoApplicationCache(new String[]{k},new DataCountKpiData(KPICode.DEFECT_REMOVAL_EFFICIENCY,v),"JIRA",null,Arrays.asList("closed"));
-				});
-
+		/* #deepak starts changes */
+		Map<String, List<DataCount>> map =mapForCache(projectsFromCache, trendValueList);
+		processCacheAfterDBHit(map,KPICode.DEFECT_REMOVAL_EFFICIENCY);
+		/* #deepak ends changes */
 
 		log.debug("[DRE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -246,6 +233,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			resultListMap.put(PROJECT_WISE_DEFECT_REMOVEL_STATUS, projectWiseDefectRemovelStatus);
 
 		}
+
 		return resultListMap;
 
 	}
@@ -280,12 +268,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		List<KPIExcelData> excelData = new ArrayList<>();
-
+		/* #deepak start changes */
 		List<Node> sprintLeafNodeListUpdated=sprintLeafNodeList.stream().filter(node->!node.isFromCache()).collect(Collectors.toList());
 		Map<String, Object> storyDefectDataListMap =new HashMap<>();
 		if(CollectionUtils.isNotEmpty(sprintLeafNodeListUpdated))
 		storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate,
 				kpiRequest);
+		/* #deepak ends changes */
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
 		List<JiraIssue> subTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
 		List<JiraIssue> sprintReportedBugs = (List<JiraIssue>) storyDefectDataListMap.get(SPRINT_REPORTED_BUGS);
@@ -334,7 +323,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						&& CollectionUtils.isNotEmpty(subCategoryWiseTotalDefectList)) {
 
 					dreForCurrentLeaf = calculateKPIMetrics(subCategoryWiseClosedAndTotalDefectList);
-				} else if (CollectionUtils.isEmpty(subCategoryWiseTotalDefectList)) {
+				} else if (isEmpty(subCategoryWiseTotalDefectList)) {
 					// Adding check when total defects injected is 0n, DRE will be
 					// 100.0 in this case
 					dreForCurrentLeaf = 100.0d;
@@ -354,7 +343,9 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		}
 
 		sprintLeafNodeList.forEach(node -> {
+			/* #deepak starts changes */
 			if (!node.isFromCache()) {
+				/* #deepak ends changes */
 				String trendLineName = node.getProjectFilter().getName();
 
 				Pair<String, String> currentNodeIdentifier = Pair
@@ -388,11 +379,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
 				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 				trendValueList.add(dataCount);
+				/* #deepak starts changes */
 			} else {
 				List<DataCount> dataCountList=trendValueList.stream().filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct().collect(Collectors.toList());
 				if(CollectionUtils.isNotEmpty(dataCountList))
 						mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
+			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns());

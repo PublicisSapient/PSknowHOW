@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class DataCountKpiData {
+public class DataCountKpiData<S> {
     KPICode kpiName;
-    List<DataCount> dataCountList;
+    List<S> dataCountList;
 }

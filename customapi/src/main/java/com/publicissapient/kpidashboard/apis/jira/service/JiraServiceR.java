@@ -156,13 +156,13 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
+				/*Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
 						groupId, kpiRequest.getSprintIncluded());
 				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
 					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					return (List<KpiElement>) cachedData;
-				}
+					//return (List<KpiElement>) cachedData; // #deepak
+				}*/
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -192,7 +192,7 @@ public class JiraServiceR {
 						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
 
-				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
+				//setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}

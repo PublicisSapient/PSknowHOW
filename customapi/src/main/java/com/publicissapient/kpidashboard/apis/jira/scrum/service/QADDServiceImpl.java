@@ -60,6 +60,8 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 /**
  * This class calculates the QA Defect Density KPI and trend analysis of the
  * same.
@@ -114,13 +116,29 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		/* #deepak starts changes*/
+		List<Node> projects=treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache=new ArrayList<>();
+		processCacheBeforeDBHit(projects,projectsFromCache,trendValueList,KPICode.DEFECT_DENSITY);
+		/* #deepak ends changes*/
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				/* #deepak starts changes*/
+				v.forEach(node -> {
+				if(projectsFromCache.stream().filter(projectNode->projectNode.getId().equals(node.getParentId())).count()>0)
+				node.setFromCache(true);
+					}
+				);
+				/* #deepak ends changes*/
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
+
+		/* #deepak starts changes*/
+		Map<String, List<DataCount>> map =mapForCache(projectsFromCache, trendValueList);
+		processCacheAfterDBHit(map,KPICode.DEFECT_DENSITY);
+		/* #deepak ends changes*/
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_DENSITY);
@@ -159,30 +177,42 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		long time = System.currentTimeMillis();
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
+
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated=sprintLeafNodeList.stream().filter(node->!node.isFromCache()).collect(Collectors.toList());
+		Map<String, Object> storyDefectDataListMap =new HashMap<>();
+		if(isNotEmpty(sprintLeafNodeListUpdated))
+			storyDefectDataListMap= fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate,
 				kpiRequest);
+		/* #deepak ends changes */
 		log.info("QADD taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
-		List<JiraIssue> storyFilteredList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS);
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap.get(STORY_DATA);
+			List<JiraIssue> storyFilteredList = (List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS);
+			Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = new HashMap<>();
+			if(isNotEmpty(sprintWiseStoryList))
+			sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+					.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+			Map<Pair<String, String>, Double> sprintWiseQADDMap = new HashMap<>();
+			List<KPIExcelData> excelData = new ArrayList<>();
+			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 
-		Map<Pair<String, String>, Double> sprintWiseQADDMap = new HashMap<>();
-		List<KPIExcelData> excelData = new ArrayList<>();
-		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
+			Map<Pair<String, String>, List<String>> sprintWiseStoryMAP = new HashMap<>();
+			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap = new HashMap<>();
+			processHowerMap(sprintWiseMap, storyDefectDataListMap, sprintWiseQADDMap, sprintWiseHowerMap, storyFilteredList,
+					sprintWiseStoryMAP, sprintWiseDefectListMap, fieldMapping);
 
-		Map<Pair<String, String>, List<String>> sprintWiseStoryMAP = new HashMap<>();
-		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap = new HashMap<>();
-		processHowerMap(sprintWiseMap, storyDefectDataListMap, sprintWiseQADDMap, sprintWiseHowerMap, storyFilteredList,
-				sprintWiseStoryMAP, sprintWiseDefectListMap, fieldMapping);
 
-		Map<String, JiraIssue> allStoryMap = new HashMap<>();
-		storyFilteredList.stream().forEach(story -> allStoryMap.putIfAbsent(story.getNumber(), story));
+			Map<String, JiraIssue> allStoryMap = new HashMap<>();
+			if(isNotEmpty(storyFilteredList))
+			storyFilteredList.stream().forEach(story -> allStoryMap.putIfAbsent(story.getNumber(), story));
+
 
 		sprintLeafNodeList.forEach(node -> {
-
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+			/* #deepak ends changes */
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair
@@ -218,9 +248,17 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 			dataCount.setValue(qaddForCurrentLeaf);
 			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+			// #deepak add projectid to datacount
+			dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
 			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-
 			trendValueList.add(dataCount);
+				/* #deepak starts changes */
+			} else {
+			List<DataCount> dataCountList=trendValueList.stream().filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct().collect(Collectors.toList());
+			if(isNotEmpty(dataCountList))
+			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
+			}
+			/* #deepak ends changes */
 		});
 
 		kpiElement.setExcelData(excelData);

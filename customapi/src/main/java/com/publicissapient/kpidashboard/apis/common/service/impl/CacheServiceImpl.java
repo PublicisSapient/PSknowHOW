@@ -171,6 +171,13 @@ public class CacheServiceImpl implements CacheService {
 	}
 
 	@Override
+	public void setIntoApplicationCache(String[] keyList, Object value, String kpiSource,
+										List<String> sprintIncluded) {
+		this.setIntoApplicationCache(keyList,value, kpiSource, null, sprintIncluded);
+		cacheManager.getCache("jiraKpiCache");
+	}
+
+	@Override
 	public Object getFromApplicationCache(String[] keyList, String kpiSource, Integer groupId,
 			List<String> sprintIncluded) {
 
@@ -200,6 +207,12 @@ public class CacheServiceImpl implements CacheService {
 			return s.get();
 		}
 		return null;
+	}
+
+	@Override
+	public Object getFromApplicationCache(String[] keyList, String kpiSource, List<String> sprintIncluded){
+		cacheManager.getCache("jiraKpiCache");
+		return this.getFromApplicationCache(keyList, kpiSource, null, sprintIncluded);
 	}
 
 	@Override

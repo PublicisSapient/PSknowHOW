@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 /**
- * 
+ *
  */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
@@ -68,7 +68,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DSR and trend analysis of the DSR.
- * 
+ *
  * @author pkum34
  *
  */
@@ -99,7 +99,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+								 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
@@ -124,7 +124,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+												  KpiRequest kpiRequest) {
 
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
@@ -208,7 +208,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param kpiElement
 	 * @param sprintLeafNodeList
@@ -216,7 +216,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+										 List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 
@@ -333,7 +333,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				}
 			} else {
 				subCategoryWiseUatBugList = testCaseList.stream().filter(
-						f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue().equalsIgnoreCase(f.getDefectRaisedBy()))
+								f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue().equalsIgnoreCase(f.getDefectRaisedBy()))
 						.collect(Collectors.toList());
 			}
 		}
@@ -342,14 +342,14 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	/**
 	 * Sets map to show on hover of sprint node.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
 	 * @param sprint
 	 * @param uat
 	 * @param total
 	 */
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
-			Pair<String, String> sprint, List<JiraIssue> uat, List<JiraIssue> total) {
+							 Pair<String, String> sprint, List<JiraIssue> uat, List<JiraIssue> total) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
 		if (CollectionUtils.isNotEmpty(uat)) {
 			howerMap.put(UAT, uat.size());
