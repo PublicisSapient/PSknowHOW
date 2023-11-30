@@ -210,3 +210,9 @@ db.field_mapping_structure.find(
     { "fieldName" : "uploadDataKPI16" },
     { $rename: { "toggleLabelRight": "toggleLabel" } }
 );
+
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.deleteOne({
+    "fieldName" : "jiraLabelsKPI135"
+})

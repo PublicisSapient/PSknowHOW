@@ -2679,6 +2679,15 @@
     }
   },
   {
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+  },
+  {
     "fieldName": "jiraStatusForInProgressKPI161",
     "fieldLabel": "Status to identify In Progress issues",
     "section": "WorkFlow Status Mapping",
