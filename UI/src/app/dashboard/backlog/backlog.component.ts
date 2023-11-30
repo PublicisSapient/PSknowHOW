@@ -749,7 +749,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
-          // if (trendValueList[i]?.filter?.toLowerCase() != 'overall') 
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) 
           {
             optionsArr?.push(trendValueList[i]?.filter);
           }
@@ -807,7 +807,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else {
           for (let i = 0; i < event[key]?.length; i++) {
-            this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+            this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];
           }
         }
       }
@@ -980,7 +980,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   createTrendData(kpiId){
     const kpiDetail = this.configGlobalData.find(details=>details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
-      if(trendingList.length){
+      if(trendingList?.length){
         this.kpiTrendObject[kpiId] = [];
         if(trendingList[0]?.value?.length > 0 && kpiDetail){
           let trendObj = {};
