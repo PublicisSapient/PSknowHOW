@@ -224,8 +224,7 @@ db.getCollection('field_mapping_structure').insertMany([{
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     }
-])
-}]);
+]);
 db.kpi_master.insertOne({
     "kpiId": "kpi166",
     "kpiName": "Mean Time to Recover",
@@ -795,7 +794,7 @@ db.getCollection("kpi_master").insertOne({
 });
 
 // DTS-29379 add flow efficiency field mappings
-db.getCollection("field_mapping_structure").insertMany({
+db.getCollection("field_mapping_structure").insertMany([
     {
         "fieldName": "jiraIssueClosedStateKPI170",
         "fieldLabel": "Status to identify Close Statuses",
@@ -816,7 +815,7 @@ db.getCollection("field_mapping_structure").insertMany({
             "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
         }
     }
-})
+])
 
 db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 1 } })
 db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 3 } })
@@ -899,4 +898,50 @@ db.kpi_master.updateMany(
     {
         $set: { "kpiSubCategory": "Backlog Overview" }
     }
+);
+
+
+//------------------------- 8.2.0 changes----------------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+{
+	"fieldName": "populateByDevDoneKPI150",
+	"fieldLabel": "Prediction logic",
+	"fieldType": "toggle",
+	"toggleLabelLeft" : "Overall completion",
+	"toggleLabelRight": "Dev Completion",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+	}
+},
+{
+    "fieldName": "jiraDevDoneStatusKPI150",
+    "fieldLabel": "Status to identify Dev completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+    }
+}
+]);
+
+db.getCollection("kpi_master").updateOne(
+    { "kpiId": "kpi150" },
+    {
+        $set: {
+            "kpiInfo.definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
+        }
+    }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
 );

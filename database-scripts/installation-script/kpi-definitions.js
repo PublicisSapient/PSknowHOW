@@ -3045,7 +3045,7 @@ db.getCollection('kpi_master').insertMany(
     "kanban": false,
     "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues",
       "details" : [
         {
           "type" : "link",
@@ -9182,7 +9182,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI42",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9193,7 +9193,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI16",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9689,6 +9689,27 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
     }
+},
+{
+ "fieldName": "populateByDevDoneKPI150",
+ "fieldLabel": "Prediction logic",
+ "fieldType": "toggle",
+ "toggleLabelLeft" : "Overall completion",
+ "toggleLabelRight": "Dev Completion",
+ "section": "WorkFlow Status Mapping",
+ "processorCommon": false,
+ "tooltip": {
+   "definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+ }
+},
+{
+ "fieldName": "jiraDevDoneStatusKPI150",
+ "fieldLabel": "Status to identify Dev completed issues",
+ "fieldType": "chips",
+ "fieldCategory": "workflow",
+ "section": "WorkFlow Status Mapping",
+ "tooltip": {
+   "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+ }
 }
-
 ]);
