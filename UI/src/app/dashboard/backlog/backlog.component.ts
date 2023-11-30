@@ -109,14 +109,12 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
         this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
+       this.trendBoxColorObj = { ...x };
           for (const key in this.trendBoxColorObj) {
             const idx = key.lastIndexOf('_');
             const nodeName = key.slice(0, idx);
             this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
           }
-        }
       }
     }));
 
@@ -980,9 +978,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   createTrendData(kpiId){
-    if(kpiId === 'kpi3'){
-      console.log(this.kpiChartData[kpiId]);
-    }
     const kpiDetail = this.configGlobalData.find(details=>details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
       if(trendingList.length){
