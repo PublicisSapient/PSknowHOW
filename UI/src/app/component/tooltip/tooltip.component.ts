@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 
 @Component({
     selector: 'app-tooltip',
@@ -29,9 +29,12 @@ export class TooltipComponent implements OnInit {
     @Input() filterNo?: string = '';
     @Input() kpiName;
     @Input() showingMaturityRange: boolean;
+    @Input() toolTipTop = 0;
 
     constructor() {
+    }
 
+    ngOnchanges(changes: SimpleChanges) {
     }
 
     ngOnInit() {

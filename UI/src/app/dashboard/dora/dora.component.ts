@@ -67,6 +67,7 @@ export class DoraComponent implements OnInit {
   kpiThresholdObj = {};
   isTooltip = [];
   maturityObj = {};
+  toolTipTop: number = 0;
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
@@ -540,7 +541,7 @@ export class DoraComponent implements OnInit {
           }
           break;
       }
-      
+
       return maturity;
     }
   }
@@ -553,7 +554,13 @@ export class DoraComponent implements OnInit {
     }
   }
 
-  showTooltip(val, kpiId) {
+  showTooltip(event, val, kpiId) {
+    if (event) {
+      const { top, left, width, height } = event.target.getBoundingClientRect();
+      this.toolTipTop = top;
+    } else {
+      this.toolTipTop = 0;
+    }
     if (val) {
       this.isTooltip.push(kpiId);
     } else {
