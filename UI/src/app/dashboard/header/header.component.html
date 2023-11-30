@@ -1,0 +1,6 @@
+<header>
+    <nav>
+        <img *ngIf="clientLogo" src={{clientLogo}} (click)="navigateToHomePage()" alt="Logo" />
+        <img *ngIf="!clientLogo" src="assets/img/sapientLogo.png" (click)="navigateToHomePage()" alt="Logo" />
+    </nav>
+</header>
