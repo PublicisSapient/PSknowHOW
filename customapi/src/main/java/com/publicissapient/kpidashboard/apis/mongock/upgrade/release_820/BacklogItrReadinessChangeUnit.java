@@ -23,8 +23,12 @@ import java.util.List;
 
 import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import com.publicissapient.kpidashboard.apis.util.MongockUtil;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -38,6 +42,7 @@ import io.mongock.api.annotations.RollbackExecution;
 public class BacklogItrReadinessChangeUnit {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
+	public static final String KPI_161 = "kpi161";
 	private final MongoTemplate mongoTemplate;
 
 	public BacklogItrReadinessChangeUnit(MongoTemplate mongoTemplate) {
@@ -48,6 +53,7 @@ public class BacklogItrReadinessChangeUnit {
 	public void execution() {
 		insertFieldMappings();
 		makeKpiFilterToRadioBtn();
+		addKpiLink();
 	}
 
 	public void insertFieldMappings() {
@@ -67,14 +73,25 @@ public class BacklogItrReadinessChangeUnit {
 
 	public void makeKpiFilterToRadioBtn() {
 		mongoTemplate.getCollection("kpi_master").updateOne(
-				new Document("kpiId", new Document("$in", Collections.singletonList("kpi161"))),
+				new Document("kpiId", new Document("$in", Collections.singletonList(KPI_161))),
 				new Document("$set", new Document("kpiFilter", "radioButton")));
+	}
+
+	public void addKpiLink() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is(KPI_161));
+
+		Update kpiUpdate = new Update().push("kpiInfo.details", new Document("type", "link").append("kpiLinkDetail",
+				new Document("text", "Detailed Information at").append("link",
+						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
 	}
 
 	@RollbackExecution
 	public void rollback() {
 		deleteFieldMapping();
 		rollbackKpiFilterToRadioBtn();
+		removeLinkDetail();
 	}
 
 	public void deleteFieldMapping() {
@@ -86,7 +103,18 @@ public class BacklogItrReadinessChangeUnit {
 
 	public void rollbackKpiFilterToRadioBtn() {
 		mongoTemplate.getCollection("kpi_master").updateOne(
-				new Document("kpiId", new Document("$in", Collections.singletonList("kpi161"))),
+				new Document("kpiId", new Document("$in", Collections.singletonList(KPI_161))),
 				new Document("$unset", new Document("kpiFilter", "")));
 	}
+
+	public void removeLinkDetail() {
+		Query kpiQuery = new Query(Criteria.where("kpiId").is(KPI_161));
+
+		Update kpiUpdate = new Update().pull("kpiInfo.details", new Document("type", "link").append("kpiLinkDetail",
+				new Document("text", "Detailed Information at").append("link",
+						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness")));
+
+		mongoTemplate.updateFirst(kpiQuery, kpiUpdate, KpiMaster.class);
+	}
+
 }

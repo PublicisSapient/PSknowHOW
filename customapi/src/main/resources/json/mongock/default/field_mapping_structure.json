@@ -2655,5 +2655,35 @@
     "tooltip": {
       "definition": "All status that identify hold/blocked statuses."
     }
+  },
+  {
+    "fieldName": "jiraStatusForInProgressKPI161",
+    "fieldLabel": "Status to identify In Progress issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that issues have moved from the Created status and also has not been completed."
+    }
+  },
+  {
+    "fieldName": "jiraStatusForRefinedKPI161",
+    "fieldLabel": "Status to identify In Refined issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that correspond to refined status of Iteration Readiness."
+    }
+  },
+  {
+    "fieldName": "jiraStatusForNotRefinedKPI161",
+    "fieldLabel": "Status to identify In Not Refined issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that correspond to not refined status of Iteration Readiness."
+    }
   }
 ]
