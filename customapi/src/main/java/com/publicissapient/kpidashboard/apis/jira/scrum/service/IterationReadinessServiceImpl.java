@@ -62,9 +62,11 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 	public static final String SPRINT_LIST = "Sprint List";
-	public static final String SP = " SP";
 	public static final String ISSUE_COUNT = "Issue Count";
 	public static final String STORY_POINT = "Story point";
+	public static final String IN_PROGRESS = "In Progress";
+	public static final String READY_FOR_DEV = "Ready for Dev";
+	public static final String NOT_REFINED = "Not Refined";
 	@Autowired
 	private JiraServiceR jiraService;
 	@Autowired
@@ -106,10 +108,11 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
 			final List<String> filterByIssueTypeKPI161 = Optional.ofNullable(fieldMapping.getJiraIssueTypeNamesKPI161())
 					.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
-			// filtering by type only when type is updated in fieldMapping else all types will be shown
+			// filtering by type only when type is updated in fieldMapping else all types
+			// will be shown
 			if (CollectionUtils.isNotEmpty(filterByIssueTypeKPI161)) {
-				totalJiraIssue = totalJiraIssue.stream().filter(
-						jiraIssue -> filterByIssueTypeKPI161.contains(jiraIssue.getTypeName().toLowerCase()))
+				totalJiraIssue = totalJiraIssue.stream()
+						.filter(jiraIssue -> filterByIssueTypeKPI161.contains(jiraIssue.getTypeName().toLowerCase()))
 						.collect(Collectors.toList());
 			}
 			List<String> totalSprint = jiraService.getFutureSprintsList();
@@ -165,9 +168,9 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						.stream().map(String::toLowerCase).collect(Collectors.toList());
 				sprintList.forEach(sprint -> {
 					Map<String, List<JiraIssue>> statusWiseJiraIssue = new LinkedHashMap<>();
-					statusWiseJiraIssue.put("In Progress", filterByStatus(sprint, jiraIssues, inProgressStatus));
-					statusWiseJiraIssue.put("Ready for Dev", filterByStatus(sprint, jiraIssues, backlogRefinedStatus));
-					statusWiseJiraIssue.put("Not Refined", filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
+					statusWiseJiraIssue.put(IN_PROGRESS, filterByStatus(sprint, jiraIssues, inProgressStatus));
+					statusWiseJiraIssue.put(READY_FOR_DEV, filterByStatus(sprint, jiraIssues, backlogRefinedStatus));
+					statusWiseJiraIssue.put(NOT_REFINED, filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
 					DataCount issueCountDc = new DataCount();
 					DataCount storyPointDc = new DataCount();
 					issueCountDc.setSSprintName(sprint);
