@@ -2044,7 +2044,7 @@
     "fieldName" : "uploadDataKPI42" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {
@@ -2055,7 +2055,7 @@
     "fieldName" : "uploadDataKPI16" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {
@@ -2654,6 +2654,28 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All status that identify hold/blocked statuses."
+    }
+  },
+  {
+    "fieldName": "populateByDevDoneKPI150",
+    "fieldLabel": "Prediction logic",
+    "fieldType": "toggle",
+    "toggleLabelLeft" : "Overall completion",
+    "toggleLabelRight": "Dev Completion",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+    }
+  },
+  {
+    "fieldName": "jiraDevDoneStatusKPI150",
+    "fieldLabel": "Status to identify Dev completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing"
     }
   },
   {

@@ -3025,7 +3025,7 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
       "details" : [
         {
           "type" : "link",

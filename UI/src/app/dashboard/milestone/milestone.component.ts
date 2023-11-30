@@ -696,6 +696,19 @@ export class MilestoneComponent implements OnInit {
     this.activeIndex = event.index;
   }
 
+  checkIfDataPresent(data) {
+    let dataCount = 0;
+    if(data[0]?.value && data[0]?.value[0]?.value[0]?.data) {
+      dataCount = data[0]?.value[0]?.value[0]?.data;
+    } else if(data[0]?.value && data[0]?.value[0]?.value[0]?.value){
+      dataCount = data[0]?.value[0]?.value[0]?.value;
+    }
+    if(parseInt(dataCount + '') > 0) {
+      return true;
+    }
+    return false;
+  }
+
   /** unsubscribing all Kpi Request  */
   ngOnDestroy() {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
