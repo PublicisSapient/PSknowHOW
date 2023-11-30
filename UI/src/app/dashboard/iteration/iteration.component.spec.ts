@@ -2809,21 +2809,49 @@ describe('IterationComponent', () => {
     it('should get chartdata for kpi when trendValueList is an Array of filters', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
-            trendValueList:  [
-                { filter1 : 'hold' , value : [{count : 1}] },
-                { filter1 : 'hold' , value : [{count : 1}] },
-                { filter1 : 'in progress' , value : [{count : 2}] },
-                { filter1 : 'in progress' , value : [{count : 2}] }
-            ]
+            trendValueList: {
+                "value": [
+                    {
+                        "filter1": "Defect",
+                        "data": [
+                            {
+                                "label": "Issue without estimates",
+                                "value": 6,
+                                "value1": 6,
+                                "unit": "",
+                            },
+                            {
+                                "label": "Issue with missing worklogs",
+                                "value": 1,
+                                "value1": 6,
+                                "unit": "",
+                            }
+                        ]
+                    },
+                    {
+                        "filter1": "Overall",
+                        "filter2": "Overall",
+                        "data": [
+                            {
+                                "label": "Issue without estimates",
+                                "value": 11,
+                                "value1": 42,
+                                "unit": "",
+                            },
+                            
+                        ]
+                    }
+                ]
+            } 
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
-            filter1 : ['hold','in progress']
+            filter1 : ['Defect']
         }
 
         const spyObj = spyOn(component, 'applyAggregationLogic');
         // spyOn(component,'getKpiChartType');
         component.getChartData('kpi124', 0);
-        expect(component.kpiChartData['kpi124'].length).toEqual(4);
+        expect(component.kpiChartData['kpi124'].length).toEqual(1);
         // expect(spyObj).toHaveBeenCalled();
     })
 
