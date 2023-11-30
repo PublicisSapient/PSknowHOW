@@ -142,6 +142,16 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           .attr('class', 'yAxis')
           .call(d3.axisLeft(y).tickSize(0));
 
+        // Creating y-axis text as hyperlink
+        yAxis.selectAll("text")
+        .data(data)
+        .classed("link", (d)=>d.url ? true : false )
+        .on("click", function(event){
+          if(event.target.__data__.url){
+            window.open(event.target.__data__.url, "_blank");
+          }
+        });
+
         yAxis.selectAll('text')
           .style('font-size', '10px')
           .call(this.wrap, this.kpiWidth);
@@ -241,7 +251,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             }
           })
           .on('mouseout', (event, d) => {
-            {
+            if(this.data.length >1){
               d3.select(elem).select('#legendContainer').selectAll('div').remove();
               this.showLegend(subgroups, width, margin, color, elem, data, height);
             }
@@ -265,10 +275,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             .style('cursor', this.isDrilledDown ? 'default' : 'pointer')
         }
 
-
-
-        this.showLegend(subgroups, width, margin, color, elem, data, height);
-        this.loader = false;
+       this.loader = false;
+        if(this.data.length > 1 || this.isDrilledDown){
+          this.showLegend(subgroups, width, margin, color, elem, data, height);
+        }
+        if(this.data.length == 1 && !this.isDrilledDown){
+          this.showTooltip(subgroups, width, margin, color, data[0], elem, height);
+        }
       }
     }
   }
