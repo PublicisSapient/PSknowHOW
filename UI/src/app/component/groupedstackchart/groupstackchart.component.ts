@@ -177,10 +177,12 @@ export class GroupstackchartComponent implements OnChanges {
       const keys = z.domain();
       let groupData = d3.rollup(data, function (d, i) {
         const d2 = { xName: d[0].xName, group: d[0].group };
+        d2['hoverSum'] = 0
         d2['hoverText'] = {};
         d.forEach((dx) => {
           d2[dx.type] = dx.value;
           for (let key in dx?.hoverText) {
+            d2['hoverSum'] += dx?.hoverText[key];
             d2['hoverText'][key] = dx?.hoverText[key];
           }
         });
@@ -307,8 +309,7 @@ export class GroupstackchartComponent implements OnChanges {
               dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
             }
   
-  
-            div.html(`${d?.data?.group}` + ' : ' + '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
+            div.html(`${d?.data?.group}` + ' : ' + `${d?.data?.hoverSum}`+ '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
               .style('left', xPosition + 20 + 'px')
               // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
               .style('top', yPosition + 'px')
