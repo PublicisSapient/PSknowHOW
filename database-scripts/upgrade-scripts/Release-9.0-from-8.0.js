@@ -224,10 +224,8 @@ db.getCollection('field_mapping_structure').insertMany([{
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
     }
-])
-}]);
-db.kpi_master.insertOne(
-{
+]);
+db.kpi_master.insertOne({
     "kpiId": "kpi166",
     "kpiName": "Mean Time to Recover",
     "maxValue": "100",
@@ -344,14 +342,6 @@ db.field_mapping_structure.insertMany([
     }
 ])
 
-db.kpi_master.bulkWrite([
-    {
-        updateMany: {
-            filter: { "kpiId": { $in: ["kpi150"] } },
-            update: { $set: { "defaultOrder": 1 } }
-        },
-    }
-]);
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
@@ -572,6 +562,24 @@ db.kpi_master.bulkWrite([
         },
     }
 ]);
+
+db.kpi_master.updateOne(
+   { "kpiId": "kpi150" },
+   {
+      $set: {
+         "kpiInfo.details": [
+            {
+               "type": "link",
+               "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+               }
+            }
+         ]
+      }
+   }
+)
+
 db.getCollection("kpi_column_configs").insertMany([
     {
         "basicProjectConfigId": null,
@@ -794,7 +802,7 @@ db.getCollection("kpi_master").insertOne({
 });
 
 // DTS-29379 add flow efficiency field mappings
-db.getCollection("field_mapping_structure").insertMany({
+db.getCollection("field_mapping_structure").insertMany([
     {
         "fieldName": "jiraIssueClosedStateKPI170",
         "fieldLabel": "Status to identify Close Statuses",
@@ -815,7 +823,7 @@ db.getCollection("field_mapping_structure").insertMany({
             "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
         }
     }
-})
+])
 
 db.kpi_master.updateOne({ "kpiId": "kpi138" }, { $set: { "defaultOrder": 1 } })
 db.kpi_master.updateOne({ "kpiId": "kpi129" }, { $set: { "defaultOrder": 3 } })
@@ -823,6 +831,129 @@ db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 5 } })
 db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 2 } })
 db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 6 } })
+
+// DTS-29397 update repo tools
+db.getCollection("repo_tools_provider").bulkWrite([
+  {
+    updateOne: {
+      filter: { "toolName": "bitbucket" },
+      update: {
+        $set: {
+          "testServerApiUrl": "/bitbucket/rest/api/1.0/projects/",
+          "testApiUrl": "https://api.bitbucket.org/2.0/workspaces/"
+        }
+      }
+    }
+  },
+  // Update for gitlab tool
+  {
+    updateOne: {
+      filter: { "toolName": "gitlab" },
+      update: {
+        $set: {
+          "testApiUrl": "/api/v4/projects/"
+        }
+      }
+    }
+  }
+], { ordered: false });
+
+
+// Change PR size maturity
+db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : false } })
+
+db.kpi_master.updateOne(
+{
+    "kpiId": "kpi162"
+},
+{ $set: {
+        "calculateMaturity": false,
+        "showTrend": false
+    }
+}
+)
+db.kpi_master.updateMany(
+{
+    "kpiId": { $in: [
+            "kpi160",
+            "kpi158"
+        ]
+    }
+},
+{ $set: {
+        "upperThresholdBG": "red",
+        "lowerThresholdBG": "white"
+    }
+}
+);
+
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for Issue closure",
+            "tooltip": {
+                "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Backlog Overview" }
+    }
+);
+
+
+//------------------------- 8.2.0 changes----------------------------------------------------------------------------------
+db.getCollection('field_mapping_structure').insertMany([
+{
+	"fieldName": "populateByDevDoneKPI150",
+	"fieldLabel": "Prediction logic",
+	"fieldType": "toggle",
+	"toggleLabelLeft" : "Overall completion",
+	"toggleLabelRight": "Dev Completion",
+	"section": "WorkFlow Status Mapping",
+	"processorCommon": false,
+	"tooltip": {
+		"definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+	}
+},
+{
+    "fieldName": "jiraDevDoneStatusKPI150",
+    "fieldLabel": "Status to identify Dev completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+        "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+    }
+}
+]);
+
+db.getCollection("kpi_master").updateOne(
+    { "kpiId": "kpi150" },
+    {
+        $set: {
+            "kpiInfo.definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
+        }
+    }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabel": "toggleLabelRight" } }
+);
+
 
 //------------------Release 8.2.0---------------------------
 db.kpi_master.updateOne(

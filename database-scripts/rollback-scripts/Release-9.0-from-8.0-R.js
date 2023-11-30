@@ -24,7 +24,8 @@ db.field_mapping_structure.deleteMany({
             "thresholdValueKPI158",
             "thresholdValueKPI159",
             "thresholdValueKPI160",
-            "thresholdValueKPI164"]
+            "thresholdValueKPI164",
+            "startDateCountKPI150"]
     }
 });
 // delete lead time for change
@@ -107,6 +108,109 @@ db.kpi_master.updateOne({ "kpiId": "kpi137" }, { $set: { "defaultOrder": 3 } })
 db.kpi_master.updateOne({ "kpiId": "kpi161" }, { $set: { "defaultOrder": 5 } })
 db.kpi_master.updateOne({ "kpiId": "kpi127" }, { $set: { "defaultOrder": 4 } })
 db.kpi_master.updateOne({ "kpiId": "kpi139" }, { $set: { "defaultOrder": 5 } })
+
+// DTS-29397 rollback repo tools
+db.getCollection("repo_tools_provider").bulkWrite([
+  {
+    updateOne: {
+      filter: { "toolName": "bitbucket" },
+      update: {
+        $set: {
+          "testServerApiUrl": "",
+          "testApiUrl": "https://api.bitbucket.org/2.0/repositories/"
+        }
+      }
+    }
+  },
+  // Update for gitlab tool
+  {
+    updateOne: {
+      filter: { "toolName": "gitlab" },
+      update: {
+        $set: {
+          "testApiUrl": "https://gitlab.com/api/v4/projects/"
+        }
+      }
+    }
+  }
+], { ordered: false });
+
+// Change PR size maturity
+db.kpi_master.updateOne({ "kpiId": "kpi162" }, { $set: { "calculateMaturity" : true } })
+
+db.kpi_master.updateOne(
+{
+    "kpiId": "kpi162"
+},
+{ $set: {
+        "calculateMaturity": true,
+        "showTrend": true
+    }
+}
+)
+db.kpi_master.updateMany(
+{
+    "kpiId": { $in: [
+            "kpi160",
+            "kpi158"
+        ]
+    }
+},
+{ $set: {
+        "upperThresholdBG": "",
+        "lowerThresholdBG": ""
+    }
+}
+);
+
+db.field_mapping_structure.updateOne(
+    { "fieldName": "jiraDodKPI14" },
+    {
+        $set: {
+            "fieldLabel": "Status considered for defect closure",
+            "tooltip": {
+                "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            }
+        }
+    }
+)
+
+db.kpi_master.updateMany(
+    {
+        "kpiId": { $in: ["kpi152", "kpi155", "kpi151"] }
+    },
+    {
+        $set: { "kpiSubCategory": "Summary" }
+    }
+);
+
+
+//------------------------- 8.2.0 changes----------------------------------------------------------------------------------
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["populateByDevDoneKPI150", "jiraDevDoneStatusKPI150"]
+    }
+});
+
+db.getCollection("kpi_master").updateOne(
+    { "kpiId": "kpi150" },
+    {
+        $set: {
+            "kpiInfo.definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+        }
+    }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);
+
 
 
 

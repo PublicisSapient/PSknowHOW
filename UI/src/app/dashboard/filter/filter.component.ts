@@ -259,10 +259,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.httpService.getTooltipData().subscribe((filterData) => {
+    this.httpService.getConfigDetails().subscribe((filterData) => {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+        this.service.setGlobalConfigData(filterData);
         if (this.selectedTab.toLowerCase() === 'developer') {
           this.selectedDayType = 'Days';
           // different date filter for developer tab
@@ -1430,7 +1431,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,response.data)
+      this.kpiListDataProjectLevel = response.data;
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.service.getDashConfigData())
       this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;

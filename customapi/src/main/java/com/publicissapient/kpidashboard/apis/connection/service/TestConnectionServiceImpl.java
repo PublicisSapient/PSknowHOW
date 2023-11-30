@@ -22,10 +22,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Base64;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
-import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
@@ -46,7 +45,10 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +64,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
+	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 	private static final String APPICATION_JSON = "application/json";
+	private static final String CLOUD_BITBUCKET = "bitbucket.org";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 	@Autowired
@@ -151,10 +155,25 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForRepoTool(Connection connection) {
+	private String getApiForRepoTool(Connection connection){
 		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 				.findByToolName(connection.getRepoToolProvider());
-		return repoToolsProvider.getTestApiUrl();
+		String apiUrl = "";
+			Matcher matcher = URL_PATTERN.matcher(connection.getHttpUrl());
+			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
+				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
+			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
+				if (connection.getHttpUrl().contains(CLOUD_BITBUCKET)) {
+					apiUrl = repoToolsProvider.getTestApiUrl();
+				} else if (matcher.find()) {
+					apiUrl = matcher.group(1).concat(matcher.group(2)).concat(repoToolsProvider.getTestServerApiUrl());
+				}
+			} else {
+				if (matcher.find()) {
+					apiUrl = createApiUrl(matcher.group(1).concat(matcher.group(2)), Constant.TOOL_GITLAB);
+				}
+			}
+		return apiUrl;
 	}
 
 	private boolean testConnection(Connection connection, String toolName, String apiUrl, String password,
@@ -335,7 +354,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create API URL using base URL and API path for bitbucket
-	 * 
+	 *
 	 * @param connection
 	 *            connection
 	 *
@@ -355,7 +374,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Create HTTP header with basic Authentication
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @return
@@ -387,7 +406,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 	/**
 	 * Make API call to validate Credentials
-	 * 
+	 *
 	 * @param username
 	 * @param password
 	 * @param apiUrl

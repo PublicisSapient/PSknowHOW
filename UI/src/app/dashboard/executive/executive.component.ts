@@ -161,6 +161,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     }
                 }
             }
+            this.kpiLoader = true;
             return this.service.passDataToDashboard;
         }), distinctUntilChanged()).subscribe((sharedobject: any) => {
             // used to get all filter data when user click on apply button in filter
@@ -218,10 +219,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         if (this.service.getFilterObject()) {
             this.serviceObject = JSON.parse(JSON.stringify(this.service.getFilterObject()));
         }
-        this.httpService.getTooltipData().subscribe(filterData => {
+        this.httpService.getConfigDetails().subscribe(filterData => {
             if (filterData[0] !== 'error') {
                 this.tooltip = filterData;
                 this.noOfDataPoints = filterData['noOfDataPoints'] || 5;
+                this.service.setGlobalConfigData(filterData);
             }
         });
         this.subscriptions.push(this.service.noProjectsObs.subscribe((res) => {

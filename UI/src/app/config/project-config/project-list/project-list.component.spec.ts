@@ -30,9 +30,11 @@ import { TableModule } from 'primeng/table';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToolbarModule } from 'primeng/toolbar';
 import { Confirmation, ConfirmationService, MessageService } from 'primeng/api';
+import { HelperService } from 'src/app/services/helper.service';
 
 import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 describe('ProjectListComponent', () => {
   let component: ProjectListComponent;
@@ -196,7 +198,9 @@ describe('ProjectListComponent', () => {
         MessageService,
         ConfirmationService,
         GetAuthorizationService,
-        { provide: APP_CONFIG, useValue: AppConfig }
+        { provide: APP_CONFIG, useValue: AppConfig },
+        HelperService,
+        DatePipe
       ]
     })
       .compileComponents();

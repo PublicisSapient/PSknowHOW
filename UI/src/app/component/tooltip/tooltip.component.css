@@ -19,7 +19,7 @@
 .tooltip-wrapper{
     text-align: left;
     height: fit-content;
-    overflow-y: hidden;
+    overflow-y: scroll;
     overflow-x: hidden;
 }
 

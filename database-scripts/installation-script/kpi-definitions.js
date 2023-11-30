@@ -3085,7 +3085,7 @@ db.getCollection('kpi_master').insertMany(
     "maxValue": "",
     "kpiUnit": "Count",
     "isDeleted": "False",
-    "defaultOrder": 6,
+    "defaultOrder": 1,
     "kpiCategory": "Release",
     "kpiSubCategory": "Speed",
     "kpiSource": "Jira",
@@ -3094,8 +3094,17 @@ db.getCollection('kpi_master').insertMany(
     "kanban": false,
     "chartType": "CumulativeMultilineChart",
     "kpiInfo": {
-      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release."
-    },
+      "definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+          }
+        }
+      ]
+    }
     "xAxisLabel": "",
     "yAxisLabel": "Count",
     "kpiWidth": 100,
@@ -3127,7 +3136,7 @@ db.getCollection('kpi_master').insertMany(
       "showTrend": false,
       "isAdditionalFilterSupport": false,
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3151,7 +3160,7 @@ db.getCollection('kpi_master').insertMany(
       "showTrend": false,
       "isAdditionalFilterSupport": false,
       "boxType": "chart",
-      "kpiSubCategory": "Summary",
+      "kpiSubCategory": "Backlog Overview",
       "calculateMaturity": false
   },
   {
@@ -3226,7 +3235,7 @@ db.getCollection('kpi_master').insertMany(
     "showTrend": false,
     "isAdditionalFilterSupport": false,
     "boxType": "chart",
-    "kpiSubCategory": "Summary",
+    "kpiSubCategory": "Backlog Overview",
     "calculateMaturity": false
   },
   {
@@ -7901,12 +7910,12 @@ db.getCollection('field_mapping_structure').insertMany(
     },
     {
         "fieldName": "jiraDodKPI14",
-        "fieldLabel": "Status considered for defect closure",
+        "fieldLabel": "Status considered for Issue closure",
         "fieldType": "chips",
         "fieldCategory": "workflow",
         "section": "WorkFlow Status Mapping",
         "tooltip": {
-            "definition": "Status considered for defect closure (Mention completed status of all types of defects)"
+            "definition": "Status considered for issue closure (Mention completed status of all types of issues)"
         }
     },
     {
@@ -9281,7 +9290,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI42",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9292,7 +9301,7 @@ db.getCollection('field_mapping_structure').insertMany(
     	"fieldName": "uploadDataKPI16",
     	"fieldLabel": "KPI calculation logic",
     	"fieldType": "toggle",
-    	"toggleLabel": "Upload Data",
+    	"toggleLabelRight": "Upload Data",
     	"section": "WorkFlow Status Mapping",
     	"processorCommon": false,
     	"tooltip": {
@@ -9788,6 +9797,27 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip": {
         "definition": "The statuses wherein no activity takes place and signifies that the issue is in the queue"
     }
+},
+{
+ "fieldName": "populateByDevDoneKPI150",
+ "fieldLabel": "Prediction logic",
+ "fieldType": "toggle",
+ "toggleLabelLeft" : "Overall completion",
+ "toggleLabelRight": "Dev Completion",
+ "section": "WorkFlow Status Mapping",
+ "processorCommon": false,
+ "tooltip": {
+   "definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+ }
+},
+{
+ "fieldName": "jiraDevDoneStatusKPI150",
+ "fieldLabel": "Status to identify Dev completed issues",
+ "fieldType": "chips",
+ "fieldCategory": "workflow",
+ "section": "WorkFlow Status Mapping",
+ "tooltip": {
+   "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
+ }
 }
-
 ]);

@@ -24,6 +24,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -73,13 +74,27 @@ public class ProcessorServiceImpl implements ProcessorService {
 	private ProcessorUrlConfig processorUrlConfig;
 	@Autowired
 	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	@Override
 	public ServiceResponse getAllProcessorDetails() {
 		List<Processor> listProcessor = new ArrayList<>();
+		Boolean repoToolFlag = customApiConfig.getIsRepoToolEnable();
 		processorRepository.findAll().iterator().forEachRemaining(p -> {
 			if (null != p) {
-				listProcessor.add(p);
+				String processorName = p.getProcessorName();
+				boolean isRepoTool = processorName.equalsIgnoreCase(ProcessorConstants.REPO_TOOLS);
+				boolean shouldAddToList = (repoToolFlag.equals(Boolean.FALSE) && !isRepoTool)
+						|| (repoToolFlag.equals(Boolean.TRUE)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITLAB)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.GITHUB)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.BITBUCKET)
+								&& !processorName.equalsIgnoreCase(ProcessorConstants.AZUREREPO));
+				if (shouldAddToList) {
+					listProcessor.add(p);
+				}
 			}
 		});
 		log.debug("Returning list of Processors having size: {}", listProcessor.size());

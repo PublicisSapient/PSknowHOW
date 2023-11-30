@@ -23,6 +23,7 @@ import { HttpService } from '../../../services/http.service';
 import { TestConnectionService } from '../../../services/test-connection.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
 
 interface JiraConnectionField {
   'type': string,
@@ -463,9 +464,12 @@ export class ConnectionListComponent implements OnInit {
     'jiraAuthType': ''
   }
   jiraConnectionDialog: boolean;
+  repoConnections = ['Bitbucket','GitLab','GitHub','Azure Repository'];
+  repoToolsEnabled : boolean;
 
   constructor(private httpService: HttpService, private formBuilder: UntypedFormBuilder, private confirmationService: ConfirmationService, private testConnectionService: TestConnectionService
-    , private authorization: GetAuthorizationService,private sharedService : SharedService) { }
+    , private authorization: GetAuthorizationService,private sharedService : SharedService,
+    private helper : HelperService) { }
 
   ngOnInit(): void {
     this.roleAccessAssign();
@@ -479,6 +483,18 @@ export class ConnectionListComponent implements OnInit {
     });
     this.getZephyrUrl();
     this.initializeForms(this.jiraConnectionFields);
+
+    if(this.sharedService.getGlobalConfigData()){
+      this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
+    }else{
+      this.helper.getGlobalConfig();
+      this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
+    }
+    
+    // filtering connections based on repoToolFlag
+    this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList,'label')
+    this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels,'connectionLabel')
+
   }
 
   initializeForms(connection, isEdit?) {
@@ -1502,5 +1518,17 @@ export class ConnectionListComponent implements OnInit {
     } else {
       return true;
     }
+  }
+
+  /** Filter connections based on list based on repo flag*/
+  filterConnections(list,label){
+    const filteredList  = list.filter(details=>{
+      if(this.repoToolsEnabled){
+         return !this.repoConnections.includes(details[label])
+      }else{
+        return details[label] !== 'RepoTool';
+      }
+    })
+    return filteredList;
   }
 }
