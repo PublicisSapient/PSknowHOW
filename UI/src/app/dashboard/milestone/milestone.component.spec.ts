@@ -980,7 +980,7 @@ describe('MilestoneComponent', () => {
         expect(spyObj).toHaveBeenCalled();
     })
 
-    fit('should get chartdata for kpi when trendValueList is an Array without filter ', () => {
+    it('should get chartdata for kpi when trendValueList is an Array without filter ', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: [
