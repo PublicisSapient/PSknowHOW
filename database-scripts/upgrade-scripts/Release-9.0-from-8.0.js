@@ -945,3 +945,15 @@ db.field_mapping_structure.find(
     { "fieldName" : "uploadDataKPI16" },
     { $rename: { "toggleLabel": "toggleLabelRight" } }
 );
+
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.insertOne({
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+});

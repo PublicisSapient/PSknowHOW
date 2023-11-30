@@ -1,3 +1,21 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
@@ -91,6 +109,13 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	@Autowired
 	private FilterHelperService flterHelperService;
 
+	/**
+	 *
+	 * @param fieldMapping fieldMapping of the project
+	 * @param allIssues all issues of sprint
+	 * @param totalStoryList totalStoryList
+	 * @return totalStoryList after filtering
+	 */
 	private static List<JiraIssue> getTotalStoryList(FieldMapping fieldMapping, List<JiraIssue> allIssues,
 			List<JiraIssue> totalStoryList) {
 		if (Optional.ofNullable(fieldMapping.getJiraKPI135StoryIdentification()).isPresent()) {
@@ -103,6 +128,10 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 				totalStoryList = totalStoryList.stream().filter(
 						jiraIssue -> !jiraIssue.getStatus().equals(fieldMapping.getJiraDefectRejectionStatusKPI135()))
 						.collect(Collectors.toList());
+			}
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI135())) {
+				totalStoryList = totalStoryList.stream().filter(jiraIssue -> fieldMapping.getJiraLabelsKPI135().stream()
+						.anyMatch(label -> jiraIssue.getLabels().contains(label))).collect(Collectors.toList());
 			}
 		}
 		return totalStoryList;

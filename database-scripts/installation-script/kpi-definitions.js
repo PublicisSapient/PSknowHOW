@@ -9711,5 +9711,14 @@ db.getCollection('field_mapping_structure').insertMany(
  "tooltip": {
    "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
  }
+},
+{
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
 }
 ]);
