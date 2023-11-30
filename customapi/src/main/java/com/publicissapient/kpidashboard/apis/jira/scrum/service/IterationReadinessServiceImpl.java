@@ -16,6 +16,7 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -163,7 +164,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						.ofNullable(fieldMapping.getJiraStatusForNotRefinedKPI161()).orElse(Collections.emptyList())
 						.stream().map(String::toLowerCase).collect(Collectors.toList());
 				sprintList.forEach(sprint -> {
-					Map<String, List<JiraIssue>> statusWiseJiraIssue = new HashMap<>();
+					Map<String, List<JiraIssue>> statusWiseJiraIssue = new LinkedHashMap<>();
 					statusWiseJiraIssue.put("In Progress", filterByStatus(sprint, jiraIssues, inProgressStatus));
 					statusWiseJiraIssue.put("Ready for Dev", filterByStatus(sprint, jiraIssues, backlogRefinedStatus));
 					statusWiseJiraIssue.put("Not Refined", filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
@@ -173,8 +174,8 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
 					storyPointDc.setSSprintName(sprint);
 					storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
-					HashMap<Object, Integer> mapOfIssueCount = new HashMap<>();
-					HashMap<Object, Double> mapOfStoryPoint = new HashMap<>();
+					HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
+					HashMap<Object, Double> mapOfStoryPoint = new LinkedHashMap<>();
 					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
 						statusWiseJiraIssue.forEach((status, jiraIssue) -> {
 							filteredJiraIssue.addAll(jiraIssue);
