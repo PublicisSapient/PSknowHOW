@@ -173,6 +173,7 @@ export class GroupstackchartComponent implements OnChanges {
           actualTypes.push(d.type);
         }
       });
+      actualTypes.reverse();
       z.domain(actualTypes);
       const keys = z.domain();
       let groupData = d3.rollup(data, function (d, i) {
@@ -342,7 +343,9 @@ export class GroupstackchartComponent implements OnChanges {
   
         let htmlString = '';
         this.sortAlphabetically(stackData);
-        actualTypes.forEach((key, i) => {
+        const legendKeys = actualTypes.reverse();
+        
+        legendKeys.forEach((key, i) => {
           if (z(key)) {
             htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${z(key)}"></div> ${key}</div>`;
           }
