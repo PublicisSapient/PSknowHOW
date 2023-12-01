@@ -397,6 +397,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
 			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = completedReleaseMap;
 			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = devCompletedIssueMap;
+			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = fullReleaseIssueMap;
 			completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 			devCompletedIssueMap = prepareIssueBeforeStartDate(devCompletedIssueMap, startLocalDate);
@@ -503,8 +504,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 					}
 				}
 			}
-			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fullReleaseIssueMap,
-					completedReleaseMap, devCompletedIssueMap, fieldMapping);
+			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, originalFullReleaseMap,
+					originalCompletedIssueMap, originalDevCompletedIssueMap, fieldMapping);
 			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
 					issueSizeCountDataGroup);
 
