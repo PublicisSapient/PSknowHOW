@@ -298,7 +298,10 @@ public enum KPIExcelColumn {
 
 	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")),
 	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
-			"Wait Time", "Total Time", "Flow Efficiency"));
+			"Wait Time", "Total Time", "Flow Efficiency")),
+
+	CYCLE_TIME("kpi171", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Intake to DOR",
+			"DOR to DOD", "DOD to Live"));
 
 	// @formatter:on
 

@@ -79,13 +79,13 @@ public class KPIExcelData {
 	@JsonProperty("Story Size(In story point)")
 	private String storyPoints;
 
-	@JsonProperty("Intake to DOR(In Days)")
+	@JsonProperty("Intake to DOR")
 	private String intakeToDOR;
 
-	@JsonProperty("DOR to DOD (In Days)")
+	@JsonProperty("DOR to DOD")
 	private String dorToDod;
 
-	@JsonProperty("DOD TO Live (In Days)")
+	@JsonProperty("DOD to Live")
 	private String dodToLive;
 
 	@JsonProperty("Open to Triage(In Days)")

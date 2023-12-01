@@ -28,8 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
@@ -46,6 +49,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class BacklogKpiHelper {
 	private static final String MONTH = "Month";
+	private static final String INTAKE_TO_DOR = "Intake to DOR";
+	private static final String DOR_TO_DOD = "DOR to DOD";
+	private static final String DOD_TO_LIVE = "DOD to Live";
+	private static final String LEAD_TIME = "LEAD TIME";
 
 	private BacklogKpiHelper() {
 	}
@@ -93,14 +100,16 @@ public final class BacklogKpiHelper {
 	public static void setRangeWiseJiraIssuesMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap,
 			JiraIssueCustomHistory issueCustomHistory, LocalDateTime closedDate, Map<Long, String> monthRangeMap) {
-		long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(closedDate.toString()), LocalDate.now());
-		monthRangeMap.forEach((noOfDay, range) -> {
-			if (noOfDay > daysBetween) {
-				rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
-						.computeIfAbsent(issueCustomHistory.getStoryType(), k -> new ArrayList<>())
-						.add(issueCustomHistory);
-			}
-		});
+		if(ObjectUtils.isNotEmpty(closedDate)) {
+			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(closedDate.toString()), LocalDate.now());
+			monthRangeMap.forEach((noOfDay, range) -> {
+				if (noOfDay > daysBetween) {
+					rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
+							.computeIfAbsent(issueCustomHistory.getStoryType(), k -> new ArrayList<>())
+							.add(issueCustomHistory);
+				}
+			});
+		}
 	}
 
 	public static void setLiveTime(CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
@@ -110,6 +119,65 @@ public final class BacklogKpiHelper {
 			cycleTime.setLiveLocalDateTime(statusUpdateLog.getUpdatedOn());
 			cycleTime.setLiveTime(updatedOn);
 			cycleTimeValidationData.setLiveDate(updatedOn);
+		}
+	}
+
+	public static void setReadyTime(CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dorStatus) {
+		if (cycleTime.getReadyTime() == null && CollectionUtils.isNotEmpty(dorStatus)
+				&& dorStatus.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
+			cycleTime.setReadyLocalDateTime(statusUpdateLog.getUpdatedOn());
+			cycleTime.setReadyTime(updatedOn);
+			cycleTimeValidationData.setDorDate(updatedOn);
+		}
+	}
+
+	public static void setDODTime(CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
+			JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dodStatus, String storyFirstStatus,
+			Map<String, DateTime> dodStatusDateMap) {
+		// reopen sceneario
+		if (CollectionUtils.isNotEmpty(dodStatus) && statusUpdateLog.getChangedFrom() != null
+				&& dodStatus.contains(statusUpdateLog.getChangedFrom().toLowerCase())
+				&& storyFirstStatus.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
+			dodStatusDateMap.clear();
+			// cycleTime.setDeliveryTime(null);
+			// cycleTimeValidationData.setDodDate(null);
+		} // taking the delivery date of first closed status date of last closed cycle
+		if (CollectionUtils.isNotEmpty(dodStatus) && dodStatus.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
+			if (dodStatusDateMap.containsKey(statusUpdateLog.getChangedTo().toLowerCase())) {
+				dodStatusDateMap.clear();
+			}
+			dodStatusDateMap.put(statusUpdateLog.getChangedTo(), updatedOn);
+		}
+	}
+
+	public static void setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
+			CycleTimeValidationData cycleTimeValidationData) {
+		String weekHours = KpiDataHelper.calWeekHours(startTime, endTime);
+		if (!weekHours.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			long timeInDays = KpiDataHelper.calculateTimeInDays(Long.parseLong(weekHours));
+			switch (level) {
+			case INTAKE_TO_DOR:
+				cycleTimeValidationData.setIntakeTime(timeInDays);
+				break;
+
+			case DOR_TO_DOD:
+				cycleTimeValidationData.setDorTime(timeInDays);
+				break;
+
+			case DOD_TO_LIVE:
+				cycleTimeValidationData.setDodTime(timeInDays);
+				break;
+
+			case LEAD_TIME:
+				cycleTimeValidationData.setLeadTime(timeInDays);
+				break;
+
+
+			default:
+				break;
+
+			}
 		}
 	}
 }

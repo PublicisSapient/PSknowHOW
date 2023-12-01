@@ -58,7 +58,6 @@ public class FieldMappingDTO extends BasicModel {
     private String[] jiraIssueTypeNamesAVR;
     private String storyFirstStatus;
     private String storyFirstStatusKPI148;
-    private String storyFirstStatusKPI3;
     private String[] linkDefectToStoryField;
     private String rootCause;
     private List<String> jiraStatusForDevelopment;
@@ -81,7 +80,6 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDodKPI151;
     private List<String> jiraDodKPI14;
     private List<String> jiraDodQAKPI111;
-    private List<String> jiraDodKPI3;
     private List<String> jiraDodKPI127;
     private List<String> jiraDodKPI37;
 
@@ -146,7 +144,6 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> readyForDevelopmentStatusKPI138;
 
     private String jiraDor;
-    private List<String> jiraDorKPI3;
 
     private List<String> jiraIntakeToDorIssueType;
     private List<String> jiraIssueTypeKPI3;
@@ -447,6 +444,12 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraSubTaskIdentification;
     private List<String> jiraStatusStartDevelopmentKPI154;
+
+    private List<String> jiraIssueTypeKPI171;
+    private List<String> jiraDodKPI171;
+    private List<String> jiraDorKPI171;
+    private List<String> jiraLiveStatusKPI171;
+    private String storyFirstStatusKPI171;
 
     /**
      * Get jira issue type names string [ ].

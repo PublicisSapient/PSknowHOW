@@ -658,6 +658,28 @@ public class KPIExcelUtility {
 	}
 
 	/**
+	 *
+	 * @param cycleTimeList
+	 * 			cycleTimeList
+	 * @param excelDataList
+	 * 			excelDataList
+	 */
+	public static void populateCycleTime(List<CycleTimeValidationData> cycleTimeList, List<KPIExcelData> excelDataList) {
+		for (CycleTimeValidationData leadTimeData : cycleTimeList) {
+			KPIExcelData excelData = new KPIExcelData();
+			Map<String, String> storyId = new HashMap<>();
+			storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
+			excelData.setIssueID(storyId);
+			excelData.setIssueDesc(leadTimeData.getIssueDesc());
+			excelData.setIssueType(leadTimeData.getIssueType());
+				excelData.setIntakeToDOR(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getIntakeTime())));
+			excelData.setDorToDod(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDorTime())));
+			excelData.setDodToLive(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDodTime())));
+			excelDataList.add(excelData);
+		}
+	}
+
+	/**
 	 * TO GET Constant.EXCEL_YES/"N" from complete list of defects if defect is
 	 * present in conditional list then Constant.EXCEL_YES else
 	 * Constant.EMPTY_STRING kpi specific

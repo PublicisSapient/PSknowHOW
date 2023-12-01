@@ -3786,6 +3786,30 @@ db.getCollection('kpi_master').insertMany(
       "aggregationCircleCriteria": "average",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false
+    },
+    {
+      "kpiId": "kpi171",
+      "kpiName": "Cycle Time",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "horizontalPercentBarChart",
+      "kpiInfo": {
+        "definition": ""
+      },
+      "xAxisLabel": "",
+      "yAxisLabel": "",
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiSubCategory": "Flow KPIs"
     }
 ]
 );

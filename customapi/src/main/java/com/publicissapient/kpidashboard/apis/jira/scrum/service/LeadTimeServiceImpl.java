@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
@@ -79,6 +78,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	public static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
+	private static final String LEAD_TIME = "LEAD TIME";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -258,10 +258,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
 						cycleTime.getLiveLocalDateTime(), monthRangeMap);
 
-				String leadTime = KpiDataHelper.calWeekHours(jiraIssueCustomHistory.getCreatedDate(),
-						cycleTime.getLiveTime());
-				if (!leadTime.equalsIgnoreCase(Constant.NOT_AVAILABLE))
-					cycleTimeValidationData.setLeadTime(KpiDataHelper.calculateTimeInDays(Long.parseLong(leadTime)));
+				BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
+						LEAD_TIME, cycleTimeValidationData);
 				leadTimeList.add(cycleTimeValidationData);
 			}
 			return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node);

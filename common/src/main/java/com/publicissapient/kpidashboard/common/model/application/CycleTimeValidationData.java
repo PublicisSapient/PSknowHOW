@@ -48,5 +48,8 @@ public class CycleTimeValidationData {
 	private DateTime dodDate;
 	private DateTime liveDate;
 	private Long leadTime;
+	private Long intakeTime;
+	private Long dorTime;
+	private Long dodTime;
 
 }
