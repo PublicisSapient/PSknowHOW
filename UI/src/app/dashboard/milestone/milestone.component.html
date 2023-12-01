@@ -104,7 +104,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
@@ -116,7 +116,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -141,7 +141,7 @@
                           </ng-template>
                           <ng-template #zeroData let-data>
                             <div class="min-ht">
-                              <div class="no-data">No Data for {{ data[0].filter1 }}</div>
+                              <div class="no-data">No Data {{ data.filter1 ? 'for ' + data.filter1[0] : '' }}</div>
                             </div>
                           </ng-template>
                           <ng-template #noData>
@@ -255,7 +255,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
@@ -267,7 +267,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -292,7 +292,7 @@
                           </ng-template>
                           <ng-template #zeroData let-data>
                             <div class="min-ht">
-                              <div class="no-data">No Data for {{ data[0].filter1 }}</div>
+                              <div class="no-data">No Data {{ data.filter1 ? 'for ' + data.filter1[0] : '' }}</div>
                             </div>
                           </ng-template>
                           <ng-template #noData>
@@ -406,7 +406,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
@@ -418,7 +418,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -443,7 +443,7 @@
                           </ng-template>
                           <ng-template #zeroData let-data>
                             <div class="min-ht">
-                              <div class="no-data">No Data for {{ data[0].filter1 }}</div>
+                              <div class="no-data">No Data {{ data.filter1 ? 'for ' + data.filter1[0] : '' }}</div>
                             </div>
                           </ng-template>
                           <ng-template #noData>
@@ -559,7 +559,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <ng-container *ngSwitchCase="'horizontalPercentBarChart'">
@@ -571,7 +571,7 @@
                                           </ng-container>
                                           <ng-container *ngIf="!checkIfDataPresent(kpiChartData[kpi?.kpiId]);">
                                             <ng-container
-                                              *ngTemplateOutlet="zeroData; context: { $implicit: kpiChartData[kpi?.kpiId] }"></ng-container>
+                                              *ngTemplateOutlet="zeroData; context:  { $implicit: kpiSelectedFilterObj[kpi?.kpiId] }"></ng-container>
                                           </ng-container>
                                         </ng-container>
                                         <app-multiline *ngSwitchDefault [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
@@ -601,7 +601,7 @@
                           </ng-template>
                           <ng-template #zeroData let-data>
                             <div class="min-ht">
-                              <div class="no-data">No Data for {{ data[0].filter1 }}</div>
+                              <div class="no-data">No Data {{ data.filter1 ? 'for ' + data.filter1[0] : '' }}</div>
                             </div>
                           </ng-template>
                           <ng-template #loader>
