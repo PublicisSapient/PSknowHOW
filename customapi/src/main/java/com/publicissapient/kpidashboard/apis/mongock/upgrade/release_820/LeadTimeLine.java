@@ -62,6 +62,7 @@ public class LeadTimeLine {
 				.append("boxType", null)
 				.append("kpiWidth", null)
 				.append("showTrend", true)
+				.append("aggregationCriteria","sum")
 				.append("maturityRange", Arrays.asList("-60", "60-45", "45-30", "30-10", "10-")));
 
 		// Perform the update
@@ -90,6 +91,7 @@ public class LeadTimeLine {
 				.append("xAxisLabel", "")
 				.append("kpiWidth", 100)
 				.append("showTrend", false)
+				.append("aggregationCriteria",null)
 				.append("boxType", "2_column").append("maturityRange", null));
 
 		// Perform the update

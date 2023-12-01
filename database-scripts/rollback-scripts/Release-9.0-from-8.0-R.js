@@ -226,7 +226,8 @@ db.kpi_master.updateOne(
       "kpiWidth": 100,
       "showTrend": false,
       "boxType": "2_column",
-      "maturityRange": null
+      "maturityRange": null,
+      "aggregationCriteria": null,
     }
   }
 )

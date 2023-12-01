@@ -70,6 +70,7 @@ public class LeadTimeLine {
 				.append("xAxisLabel", "")
 				.append("kpiWidth", 100)
 				.append("showTrend", false)
+				.append("aggregationCriteria",null)
 				.append("boxType", "2_column").append("maturityRange", null));
 
 		// Perform the update

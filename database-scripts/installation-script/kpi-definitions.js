@@ -2910,6 +2910,7 @@ db.getCollection('kpi_master').insertMany(
       "kpiSource": "Jira",
       "groupId": 11,
       "kanban": false,
+      "aggregationCriteria": "sum",
       "chartType": "line",
       "kpiInfo": {
         "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",

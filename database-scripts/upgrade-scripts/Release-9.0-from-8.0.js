@@ -926,6 +926,7 @@ db.kpi_master.updateOne(
           }
         }
       ],
+      "aggregationCriteria": "sum",
       "yAxisLabel": "Days",
       "xAxisLabel": "Range",
       "maturityRange": [
