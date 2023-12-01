@@ -98,3 +98,11 @@ ul.kpi-info-list {
     min-width: 450px;
     width: 450px  !important;
 }
+
+.maturity-indicator {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    border-radius: 50%;
+    margin: 5px 3px 0 0;
+}

@@ -403,6 +403,8 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
 	private Integer startDateCountKPI150;
+	private List<String> jiraDevDoneStatusKPI150;
+	private boolean populateByDevDoneKPI150;
 
 	//threshold field
 	private String thresholdValueKPI14;
@@ -446,6 +448,12 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIterationCompletionStatusKPI154;
 	private List<String> jiraSubTaskIdentification;
 	private List<String> jiraStatusStartDevelopmentKPI154;
+
+	private List<String> jiraLabelsKPI135;
+
+	private List<String> jiraStatusForInProgressKPI161;
+	private List<String> jiraStatusForRefinedKPI161;
+	private List<String> jiraStatusForNotRefinedKPI161;
 
 	private List<String> jiraIssueTypeKPI171;
 	private List<String> jiraDodKPI171;

@@ -2,7 +2,7 @@
 
     <div class="indicator-average-data" *ngIf="dataTrend && cols?.length == 0">
         <div class="p-pr-1 p-text-center">
-            <div class="indicator-heading">Latest Trend</div>
+            <div class="indicator-heading">{{(dataTrend?.value) ? "Latest" : ''}} Trend</div>
             <!-- <p class="average-data-primary" [ngStyle]="{'color': color}"
                 *ngIf="kpiData?.kpiDetail?.chartType === 'stackedColumn' else lineChartTemplate">
                 {{lastValue !== 'NA' ? (lastValue | number: '1.0-1') : lastValue}}

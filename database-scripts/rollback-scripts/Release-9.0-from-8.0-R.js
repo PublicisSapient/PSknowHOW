@@ -128,7 +128,7 @@ db.getCollection("repo_tools_provider").bulkWrite([
       filter: { "toolName": "gitlab" },
       update: {
         $set: {
-          "testApiUrl": "https://gitlab.com/api/v4/projects/""
+          "testApiUrl": "https://gitlab.com/api/v4/projects/"
         }
       }
     }
@@ -185,7 +185,37 @@ db.kpi_master.updateMany(
 );
 
 
-//--------------------------8.2.0--------------
+//------------------------- 8.2.0 changes----------------------------------------------------------------------------------
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["populateByDevDoneKPI150", "jiraDevDoneStatusKPI150"]
+    }
+});
+
+db.getCollection("kpi_master").updateOne(
+    { "kpiId": "kpi150" },
+    {
+        $set: {
+            "kpiInfo.definition": "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+        }
+    }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI42" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);
+
+db.field_mapping_structure.find(
+    { "fieldName" : "uploadDataKPI16" },
+    { $rename: { "toggleLabelRight": "toggleLabel" } }
+);
+
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.deleteOne({
+    "fieldName" : "jiraLabelsKPI135"
+})
 
 
 db.kpi_master.updateOne(
@@ -221,12 +251,16 @@ db.kpi_master.updateOne(
                 }
               }
       ],
+      "kpiFilter": "multiSelectDropDown",
       "yAxisLabel": null,
       "xAxisLabel": null,
       "kpiWidth": 100,
       "showTrend": false,
       "boxType": "2_column",
-      "maturityRange": null
+      "maturityRange": null,
+      "aggregationCriteria": null,
+      "lowerThresholdBG": null,
+      "upperThresholdBG": null,
     }
   }
 )
@@ -235,3 +269,62 @@ db.getCollection("field_mapping_structure").deleteMany({
         $in: ["thresholdValueKPI3"]
     }
 });
+
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi116" },
+  {
+    $set: {
+      "maturityRange": [
+        "-50",
+        "50-30",
+        "30-20",
+        "20-10",
+        "10-"
+      ],
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi118" },
+  {
+    $set: {
+      "maturityRange": [
+        "-1",
+        "1-2",
+        "2-5",
+        "5-10",
+        "10-"
+      ],
+      "aggregationCircleCriteria" : "average",
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi156" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi166" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+

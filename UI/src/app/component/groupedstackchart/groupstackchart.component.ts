@@ -173,14 +173,17 @@ export class GroupstackchartComponent implements OnChanges {
           actualTypes.push(d.type);
         }
       });
+      actualTypes.reverse();
       z.domain(actualTypes);
       const keys = z.domain();
       let groupData = d3.rollup(data, function (d, i) {
         const d2 = { xName: d[0].xName, group: d[0].group };
+        d2['hoverSum'] = 0
         d2['hoverText'] = {};
         d.forEach((dx) => {
           d2[dx.type] = dx.value;
           for (let key in dx?.hoverText) {
+            d2['hoverSum'] += dx?.hoverText[key];
             d2['hoverText'][key] = dx?.hoverText[key];
           }
         });
@@ -307,8 +310,7 @@ export class GroupstackchartComponent implements OnChanges {
               dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
             }
   
-  
-            div.html(`${d?.data?.group}` + ' : ' + '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
+            div.html(`${d?.data?.group}` + ' : ' + `${d?.data?.hoverSum}`+ '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
               .style('left', xPosition + 20 + 'px')
               // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
               .style('top', yPosition + 'px')
@@ -341,7 +343,9 @@ export class GroupstackchartComponent implements OnChanges {
   
         let htmlString = '';
         this.sortAlphabetically(stackData);
-        actualTypes.forEach((key, i) => {
+        const legendKeys = actualTypes.reverse();
+        
+        legendKeys.forEach((key, i) => {
           if (z(key)) {
             htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${z(key)}"></div> ${key}</div>`;
           }
@@ -372,15 +376,9 @@ export class GroupstackchartComponent implements OnChanges {
             const obj = {};
             obj['group'] = item?.sSprintName;
             obj['type'] = type;
-            obj['value'] = item?.value[type][Object.keys(item?.value[type])?.[0]];
+            obj['value'] = item?.value[type];
             obj['hoverText'] = {};
-            obj['hoverText'][type] = '(';
-            // obj['hoverText'] = type +': ' + '(';
-            let lastEle = Object.keys(item?.value[type])?.length - 1;
-            Object.keys(item?.value[type])?.forEach((x, i) => {
-              obj['hoverText'][type] += item?.value[type][x] + (i != lastEle ? ', ' : '');
-            })
-            obj['hoverText'][type] += ')';
+            obj['hoverText'][type] = item?.value[type];
             obj['xName'] = sprintValue;
             targetList.push(obj);
             max = Math.max(max, item?.data);
