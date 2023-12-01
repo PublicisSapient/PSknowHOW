@@ -270,6 +270,23 @@ db.getCollection("field_mapping_structure").deleteMany({
     }
 });
 
+db.kpi_master.deleteOne({ "kpiId": "kpi171" });
+// Update document with "fieldName" equal to "jiraDorKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "jiraDorKPI171" }, { $set: { "fieldName": "jiraDorKPI3" } });
+
+// Update document with "fieldName" equal to "jiraDodKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "jiraDodKPI171" }, { $set: { "fieldName": "jiraDodKPI3" } });
+
+// Update document with "fieldName" equal to "storyFirstStatusKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "storyFirstStatusKPI171" }, { $set: { "fieldName": "storyFirstStatusKPI3" } });
+
+// Delete documents where "fieldName" is in the specified list
+db.field_mapping_structure.deleteMany({
+  "fieldName": {
+    "$in": ["jiraLiveStatusKPI171", "jiraIssueTypeKPI171"]
+  }
+});
+
 
 db.kpi_master.updateOne(
   { "kpiId": "kpi116" },

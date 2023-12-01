@@ -441,7 +441,7 @@
     }
   } ,
   {
-    "fieldName" : "jiraDorKPI3" ,
+    "fieldName" : "jiraDorKPI171" ,
     "fieldLabel" : "DOR status" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "workflow" ,
@@ -721,7 +721,7 @@
     }
   } ,
   {
-    "fieldName" : "jiraDodKPI3" ,
+    "fieldName" : "jiraDodKPI171" ,
     "fieldLabel" : "DOD Status" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "workflow" ,
@@ -1566,7 +1566,7 @@
     }
   } ,
   {
-    "fieldName" : "storyFirstStatusKPI3" ,
+    "fieldName" : "storyFirstStatusKPI171" ,
     "fieldLabel" : "Status when 'Story' issue type is created" ,
     "fieldType" : "text" ,
     "fieldCategory" : "workflow" ,
@@ -2724,6 +2724,26 @@
     "fieldCategory": "workflow",
     "tooltip": {
       "definition": "All statuses that correspond to not refined status of Iteration Readiness."
+    }
+  },
+  {
+    "fieldName": "jiraLiveStatusKPI171",
+    "fieldLabel": "Live Status - Cycle Time",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status/es that identify that an issue is LIVE in Production"
+    }
+  },
+  {
+    "fieldName": "jiraIssueTypeKPI171",
+    "fieldLabel": "Issue type to be included",
+    "fieldCategory": "Issue_Type",
+    "fieldType": "chips",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "All issue types that should be included in Lead time calculation."
     }
   }
 ]

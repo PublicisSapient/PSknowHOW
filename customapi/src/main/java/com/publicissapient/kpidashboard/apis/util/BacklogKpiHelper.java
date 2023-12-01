@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -152,9 +152,10 @@ public final class BacklogKpiHelper {
 	}
 
 	public static void setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
-			CycleTimeValidationData cycleTimeValidationData) {
+										   CycleTimeValidationData cycleTimeValidationData, Set<String> issueTypes) {
 		String weekHours = KpiDataHelper.calWeekHours(startTime, endTime);
 		if (!weekHours.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
+			issueTypes.add(cycleTimeValidationData.getIssueType());
 			long timeInDays = KpiDataHelper.calculateTimeInDays(Long.parseLong(weekHours));
 			switch (level) {
 			case INTAKE_TO_DOR:

@@ -75,7 +75,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Cycle Time KPI on BackLog Tab
- * 
+ *
  * @author shi6
  */
 @Slf4j
@@ -235,7 +235,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				dodToLiveRangeMap);
 		Map<String, Map<String, List<JiraIssueCustomHistory>>> intakeToDORRangeMap = new LinkedHashMap<>(
 				dodToLiveRangeMap);
-
+		Set<String> issueTypes = new HashSet<>();
 		for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoriesList) {
 			CycleTimeValidationData cycleTimeValidationData = new CycleTimeValidationData();
 			cycleTimeValidationData.setIssueNumber(jiraIssueCustomHistory.getStoryID());
@@ -264,7 +264,9 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 						storyFirstStatus, dodStatusDateMap);
 			});
 
-			DateTime minUpdatedOn = Collections.min(dodStatusDateMap.values());
+			DateTime minUpdatedOn = CollectionUtils.isNotEmpty(dodStatusDateMap.values())
+					? Collections.min(dodStatusDateMap.values())
+					: null;
 			cycleTime.setDeliveryTime(minUpdatedOn);
 			cycleTime.setDeliveryLocalDateTime(DateUtil.convertDateTimeToLocalDateTime(minUpdatedOn));
 			cycleTimeValidationData.setDodDate(minUpdatedOn);
@@ -277,11 +279,11 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 					cycleTime.getLiveLocalDateTime(), monthRangeMap);
 
 			BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getReadyTime(), INTAKE_TO_DOR,
-					cycleTimeValidationData);
+					cycleTimeValidationData, issueTypes);
 			BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(), cycleTime.getDeliveryTime(), DOR_TO_DOD,
-					cycleTimeValidationData);
+					cycleTimeValidationData, issueTypes);
 			BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(), cycleTime.getLiveTime(), DOD_TO_LIVE,
-					cycleTimeValidationData);
+					cycleTimeValidationData, issueTypes);
 			cycleTimeValidationDataList.add(cycleTimeValidationData);
 		}
 
@@ -298,17 +300,17 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 			Set<String> allIssueTypes) {
 
 		Map<String, Long> issueWiseIntakeToDOR = cycleTimeValidationDataList.stream()
-				.filter(data->ObjectUtils.isNotEmpty(data.getIntakeTime()))
+				.filter(data -> ObjectUtils.isNotEmpty(data.getIntakeTime()))
 				.collect(Collectors.toMap(CycleTimeValidationData::getIssueNumber,
 						CycleTimeValidationData::getIntakeTime, (existing, replacement) -> existing));
 
 		Map<String, Long> issueWiseDORToDOD = cycleTimeValidationDataList.stream()
-				.filter(data->ObjectUtils.isNotEmpty(data.getDorTime()))
+				.filter(data -> ObjectUtils.isNotEmpty(data.getDorTime()))
 				.collect(Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getDorTime,
 						(existing, replacement) -> existing));
 
 		Map<String, Long> issueWiseDODToLive = cycleTimeValidationDataList.stream()
-				.filter(data->ObjectUtils.isNotEmpty(data.getDodTime()))
+				.filter(data -> ObjectUtils.isNotEmpty(data.getDodTime()))
 				.collect(Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getDodTime,
 						(existing, replacement) -> existing));
 
@@ -319,33 +321,37 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				kpiValueIssueCount.setFilter1(range);
 				kpiValueIssueCount.setFilter2(issueType);
 				List<DataCount> defectsDataCountList = new ArrayList<>();
-				extracted(intakeToDORRangeMap, issueWiseIntakeToDOR, range, issueType, defectsDataCountList,
+				populateDataCountList(intakeToDORRangeMap, issueWiseIntakeToDOR, range, issueType, defectsDataCountList,
 						INTAKE_TO_DOR);
-				extracted(dorToDODRangeMap, issueWiseDORToDOD, range, issueType, defectsDataCountList, DOR_TO_DOD);
-				extracted(dodToLiveRangeMap, issueWiseDODToLive, range, issueType, defectsDataCountList, DOD_TO_LIVE);
-				kpiValueIssueCount.setValue(defectsDataCountList);
-				iterationKpiValueList.add(kpiValueIssueCount);
+				populateDataCountList(dorToDODRangeMap, issueWiseDORToDOD, range, issueType, defectsDataCountList,
+						DOR_TO_DOD);
+				populateDataCountList(dodToLiveRangeMap, issueWiseDODToLive, range, issueType, defectsDataCountList,
+						DOD_TO_LIVE);
+				if (CollectionUtils.isNotEmpty(defectsDataCountList)) {
+					kpiValueIssueCount.setValue(defectsDataCountList);
+					iterationKpiValueList.add(kpiValueIssueCount);
+				}
 			}
 
 		}
 		return iterationKpiValueList;
 	}
 
-	private void extracted(Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseTypeWiseIssue,
+	private void populateDataCountList(Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseTypeWiseIssue,
 			Map<String, Long> issueWiseGroupValue, String range, String issueType, List<DataCount> defectsDataCountList,
 			String kpiGroup) {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = rangeWiseTypeWiseIssue.get(range).get(issueType);
-		if(CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
+		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 			List<Long> valueList = jiraIssueCustomHistories.stream().map(JiraIssueCustomHistory::getStoryID)
-					.filter(issueWiseGroupValue::containsKey).map(issueWiseGroupValue::get).collect(Collectors.toList());
-			defectsDataCountList.add(getStatusWiseCountList(AggregationUtils.averageLong(valueList), kpiGroup));
+					.filter(issueWiseGroupValue::containsKey).map(issueWiseGroupValue::get)
+					.collect(Collectors.toList());
+			defectsDataCountList.add(createDataCount(AggregationUtils.averageLong(valueList), kpiGroup));
 		}
 	}
 
-
-	private DataCount getStatusWiseCountList(Long averageValue, String kpiGroup) {
+	private DataCount createDataCount(Long averageValue, String kpiGroup) {
 		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(averageValue));
+		dataCount.setData(String.valueOf(Math.round(ObjectUtils.defaultIfNull(averageValue, 0L).doubleValue() / 480)));
 		dataCount.setKpiGroup(kpiGroup);
 		return dataCount;
 	}

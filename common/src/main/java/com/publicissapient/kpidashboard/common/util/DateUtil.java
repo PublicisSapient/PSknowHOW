@@ -287,8 +287,8 @@ public class DateUtil {
 	}
 
 	public static LocalDateTime convertDateTimeToLocalDateTime(DateTime dateTime) {
-		return LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(dateTime.getMillis()),
-				ZoneId.of(dateTime.getZone().getID()));
+		return (ObjectUtils.isNotEmpty(dateTime)) ? LocalDateTime.ofInstant(
+				java.time.Instant.ofEpochMilli(dateTime.getMillis()), ZoneId.of(dateTime.getZone().getID())) : null;
 	}
 
 	public static String getWeekRange(LocalDate currentDate) {

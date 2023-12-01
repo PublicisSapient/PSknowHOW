@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -672,9 +673,12 @@ public class KPIExcelUtility {
 			excelData.setIssueID(storyId);
 			excelData.setIssueDesc(leadTimeData.getIssueDesc());
 			excelData.setIssueType(leadTimeData.getIssueType());
+			if(ObjectUtils.isNotEmpty(leadTimeData.getIntakeTime()))
 				excelData.setIntakeToDOR(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getIntakeTime())));
-			excelData.setDorToDod(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDorTime())));
-			excelData.setDodToLive(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDodTime())));
+			if(ObjectUtils.isNotEmpty(leadTimeData.getDorTime()))
+				excelData.setDorToDod(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDorTime())));
+			if(ObjectUtils.isNotEmpty(leadTimeData.getDodTime()))
+				excelData.setDodToLive(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDodTime())));
 			excelDataList.add(excelData);
 		}
 	}

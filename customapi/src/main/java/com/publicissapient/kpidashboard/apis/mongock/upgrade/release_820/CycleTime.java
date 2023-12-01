@@ -58,9 +58,15 @@ public class CycleTime {
 				.append("maxValue", "").append("kpiUnit", "Count").append("isDeleted", "False")
 				.append("defaultOrder", 4).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
 				.append("groupId", 11).append("thresholdValue", "").append("kanban", false)
-				.append("chartType", "horizontalPercentBarChart").append("kpiInfo", new Document("definition", ""))
-				.append("xAxisLabel", "").append("yAxisLabel", "").append("isAdditionalFilterSupport", false)
+				.append("chartType", "horizontalPercentBarChart")
+				.append("xAxisLabel", "").append("yAxisLabel", "Days").append("isAdditionalFilterSupport", false)
 				.append("kpiFilter", "dropDown").append("boxType", "chart").append("calculateMaturity", false)
+				.append("kpiInfo.definition",
+						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
+				.append("kpiInfo.formula", null)
+				.append("kpiInfo.details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
+						new Document().append("text", "Detailed Information at").append("link",
+								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"))))
 				.append("kpiSubCategory", "Flow KPIs");
 		// Insert the document into the collection
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
