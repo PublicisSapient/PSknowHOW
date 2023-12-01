@@ -2908,7 +2908,7 @@
     "yAxisLabel": "Days",
     "isPositiveTrend": false,
     "showTrend": true,
-    "kpiFilter": "multiSelectDropDown",
+    "kpiFilter": "dropdown",
     "isAdditionalFilterSupport": false,
     "aggregationCriteria": "sum",
     "calculateMaturity": false,

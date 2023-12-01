@@ -2929,7 +2929,7 @@ db.getCollection('kpi_master').insertMany(
       "yAxisLabel": "Days",
       "isPositiveTrend": false,
       "showTrend": true,
-      "kpiFilter": "multiSelectDropDown",
+      "kpiFilter": "dropdown",
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false,
       "kpiSubCategory": "Flow KPIs",

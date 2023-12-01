@@ -53,6 +53,7 @@ public class LeadTimeLine {
 				.append("kpiInfo.definition",
 						"Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client")
 				.append("kpiInfo.formula", null)
+				.append( "kpiFilter", "dropdown")
 				.append("kpiInfo.details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
 						new Document().append("text", "Detailed Information at").append("link",
 								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"))))
@@ -77,6 +78,7 @@ public class LeadTimeLine {
 		Document filter = new Document("kpiId", "kpi3");
 		Document update = new Document("$set", new Document().append("thresholdValue", "20").append("kpiUnit", "Days")
 				.append("chartType", "")
+				.append( "kpiFilter", "multiSelectDropDown")
 				.append("kpiInfo.definition",
 						"Measures Total time between a request was made and  all work on this item is completed and the request was delivered .")
 				.append("kpiInfo.formula",
