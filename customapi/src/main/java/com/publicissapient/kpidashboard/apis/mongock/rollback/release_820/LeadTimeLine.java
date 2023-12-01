@@ -59,6 +59,7 @@ public class LeadTimeLine {
 		// Define the update using the Updates class
 		Document update = new Document("$set", new Document().append("thresholdValue", "20").append("kpiUnit", "Days")
 				.append("chartType", "")
+				.append( "kpiFilter", "multiSelectDropDown")
 				.append("kpiInfo.definition",
 						"Measures Total time between a request was made and  all work on this item is completed and the request was delivered .")
 				.append("kpiInfo.formula",
