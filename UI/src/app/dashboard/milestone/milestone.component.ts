@@ -482,14 +482,18 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
+          if(preAggregatedValues[0]?.hasOwnProperty('value')){
+            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+          }else{
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
         }
       } else {
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
     }
     else if (trendValueList?.length > 0) {
-      this.kpiChartData[kpiId] = [...trendValueList];
+      this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
     } else {
       this.kpiChartData[kpiId] = [];
     }
