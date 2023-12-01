@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -79,6 +80,16 @@ public class KpiElement implements Serializable { // NOPMD
 
 	private String maturityValue;
 	private List<String> maturityRange;
+
+	public List<MaturityLevel> getMaturityLevel() {
+		return maturityLevel;
+	}
+
+	public void setMaturityLevel(List<MaturityLevel> maturityLevel) {
+		this.maturityLevel = maturityLevel;
+	}
+
+	private List<MaturityLevel> maturityLevel;
 
 	private List<String> xAxisValues;
 

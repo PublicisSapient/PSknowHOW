@@ -8,4 +8,6 @@ import lombok.Data;
 public class MaturityLevel {
 	private String level;
 	private List<String> range;
+	private String bgColor;
+	private String label;
 }

@@ -728,12 +728,34 @@
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : true ,
     "hideOverallFilter" : true ,
-    "maturityRange" : [
-      "-50" ,
-      "50-30" ,
-      "30-20" ,
-      "20-10" ,
-      "10-"
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-15",
+      "15-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212"
+      }
     ]
   } ,
   {
@@ -1174,15 +1196,42 @@
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
     "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
+    "aggregationCircleCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : true ,
-    "maturityRange" : [
-      "-1" ,
-      "1-2" ,
-      "2-5" ,
-      "5-10" ,
-      "10-"
+    "maturityRange": [
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": ">= 2 per week"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "Once per week"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "Once in 2 weeks"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "Once in 4 weeks"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": "< Once in 8 weeks"
+      }
     ]
   } ,
   {
@@ -3157,45 +3206,71 @@
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi156" ,
-    "kpiName" : "Lead Time For Change" ,
-    "maxValue" : "100" ,
-    "kpiUnit" : "Days" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 3 ,
-    "kpiSource" : "Jira" ,
-    "kpiCategory" : "Dora" ,
-    "groupId" : 15 ,
-    "thresholdValue" : 0 ,
-    "kanban" : false ,
-    "chartType" : "line" ,
-    "kpiInfo" : {
-      "definition" : "LEAD TIME FOR CHANGE measures the velocity of software delivery." ,
-      "details" : [
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
         {
-          "type" : "paragraph" ,
-          "value" : "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
-        },
-        {
-          "type" : "link",
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes"
-          }
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ] ,
-      "maturityLevels" : []
-    } ,
-    "xaxisLabel" : "Weeks" ,
-    "yaxisLabel" : "Days" ,
-    "isPositiveTrend" : true ,
-    "showTrend" : true ,
-    "kpiFilter" : "" ,
-    "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
-    "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : false
-  } ,
+      ]
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ]
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": "< 1 Day"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "< 7 Days"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "< 30 Days"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "< 90 Days"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": ">= 90 Days"
+      }
+    ]
+  },
   {
     "kpiId" : "kpi157" ,
     "kpiName" : "Check-Ins & Merge Requests" ,
@@ -3747,7 +3822,36 @@
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "48-",
+      "24-48",
+      "12-24",
+      "1-12",
+      "-1"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212"
+      }
+    ]
   },
   {
     "kpiId": "kpi168",

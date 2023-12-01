@@ -267,7 +267,15 @@ db.kpi_master.insertOne({
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+     "maturityRange": [
+          "48-",
+          "24-48",
+          "12-24",
+          "1-12",
+          "-1"
+        ]
+
 })
 
 db.field_mapping_structure.insertMany([
@@ -1006,3 +1014,181 @@ db.getCollection('field_mapping_structure').insertMany([{
         }
     }
 }])
+
+//------------------Release 8.2.0---------------------------
+db.kpi_master.updateOne(
+  { "kpiId": "kpi161" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi116" },
+  {
+    $set: {
+      "maturityRange": [
+        "-60",
+        "60-45",
+        "45-30",
+        "30-15",
+        "15-"
+      ],
+      "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#c91212"
+        }
+      ]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi118" },
+  {
+    $set: {
+    "maturityRange": [
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": ">= 2 per week"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "Once per week"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "Once in 2 weeks"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "Once in 4 weeks"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": "< Once in 8 weeks"
+        }
+     ]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi156" },
+  {
+    $set: {
+      "calculateMaturity": true,
+      "maturityRange": [
+        "90-",
+        "30-90",
+        "7-30",
+        "1-7",
+        "-1"
+      ],
+      "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+          "label": "< 1 Day"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+          "label": "< 7 Days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "< 30 Days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "< 90 Days"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#c91212",
+          "label": ">= 90 Days"
+        }
+      ]
+    },
+    $unset: {
+      "kpiInfo.maturityLevels": ""
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi166" },
+  {
+    $set: {
+      "calculateMaturity": true,
+      "maturityRange": [
+            "48-",
+            "24-48",
+            "12-24",
+            "1-12",
+            "-1"
+      ],
+"maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
+      ]
+    },
+    $unset: {
+      "kpiInfo.maturityLevels": ""
+    }
+  }
+);
+

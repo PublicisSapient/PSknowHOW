@@ -607,17 +607,16 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
-
-					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
 							.map(val -> (R) val.getValue()).collect(Collectors.toList());
 
 					R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
+					String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+							String.valueOf(calculatedAggValue));
+
 					String aggregateValue = null;
-					String maturity = null;
-					if (maturityValue != null) {
-						aggregateValue = maturityValue.getValue();
-						maturity = maturityValue.getKey();
+					if (StringUtils.isNotEmpty(maturity)) {
+						aggregateValue = String.valueOf(calculatedAggValue);
 					}
 					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
 							getList(dataCounts, kpiName), calculatedAggValue));
@@ -733,15 +732,14 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
 						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
-						String maturity = null;
-						if (maturityValue != null) {
-							aggregateValue = maturityValue.getValue();
-							maturity = maturityValue.getKey();
+						String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+								String.valueOf(calculatedAggValue));
+						if (StringUtils.isNotEmpty(maturity)) {
+							aggregateValue = String.valueOf(calculatedAggValue);
 						}
 						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName),
 								calculatedAggValue));
@@ -760,6 +758,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * @param value
 	 *            value
 	 * @param kpiName
+	 *
 	 *            kpiName
 	 * @return list
 	 */
