@@ -25,7 +25,6 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Updates;
 
 import io.mongock.api.annotations.BeforeExecution;
 import io.mongock.api.annotations.ChangeUnit;
@@ -65,13 +64,10 @@ public class LeadTimeLine {
 				.append("kpiInfo.formula",
 						Arrays.asList(new Document("lhs",
 								"It is calculated as the sum Ideation time, Development time & Release time")))
-				.append("kpiInfo.details",Arrays.asList())
-				.append("yAxisLabel", "")
-				.append("xAxisLabel", "")
-				.append("kpiWidth", 100)
-				.append("showTrend", false)
-				.append("aggregationCriteria",null)
-				.append("boxType", "2_column").append("maturityRange", null));
+				.append("kpiInfo.details", Arrays.asList()).append("yAxisLabel", "").append("xAxisLabel", "")
+				.append("kpiWidth", 100).append("showTrend", false).append("aggregationCriteria", null)
+				.append("lowerThresholdBG", null).append("upperThresholdBG", null).append("boxType", "2_column")
+				.append("maturityRange", null));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
@@ -87,7 +83,8 @@ public class LeadTimeLine {
 				new Document().append("text", "Detailed Information at").append("link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time")));
 
-		Document pushObjects =new Document("$push", new Document("kpiInfo.details", new Document("$each", newDetailsObjects)));
+		Document pushObjects = new Document("$push",
+				new Document("kpiInfo.details", new Document("$each", newDetailsObjects)));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, pushObjects);

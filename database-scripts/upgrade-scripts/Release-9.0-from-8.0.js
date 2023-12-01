@@ -983,6 +983,8 @@ db.kpi_master.updateOne(
       "aggregationCriteria": "sum",
       "yAxisLabel": "Days",
       "xAxisLabel": "Range",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
       "maturityRange": [
         "-60",
         "60-45",

@@ -2933,6 +2933,8 @@ db.getCollection('kpi_master').insertMany(
       "isAdditionalFilterSupport": false,
       "calculateMaturity": false,
       "kpiSubCategory": "Flow KPIs",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
       "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
     },
   {

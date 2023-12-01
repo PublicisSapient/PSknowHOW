@@ -258,6 +258,8 @@ db.kpi_master.updateOne(
       "boxType": "2_column",
       "maturityRange": null,
       "aggregationCriteria": null,
+      "lowerThresholdBG": null,
+      "upperThresholdBG": null,
     }
   }
 )

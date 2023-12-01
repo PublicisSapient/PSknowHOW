@@ -25,7 +25,6 @@ import org.bson.Document;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Updates;
 
 import io.mongock.api.annotations.ChangeUnit;
 import io.mongock.api.annotations.Execution;
@@ -57,12 +56,9 @@ public class LeadTimeLine {
 				.append("kpiInfo.details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
 						new Document().append("text", "Detailed Information at").append("link",
 								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"))))
-				.append("yAxisLabel", "Days")
-				.append("xAxisLabel", "Range")
-				.append("boxType", null)
-				.append("kpiWidth", null)
-				.append("showTrend", true)
-				.append("aggregationCriteria","sum")
+				.append("yAxisLabel", "Days").append("xAxisLabel", "Range").append("boxType", null)
+				.append("kpiWidth", null).append("showTrend", true).append("aggregationCriteria", "sum")
+				.append("lowerThresholdBG", "white").append("upperThresholdBG", "red")
 				.append("maturityRange", Arrays.asList("-60", "60-45", "45-30", "30-10", "10-")));
 
 		// Perform the update
@@ -86,13 +82,10 @@ public class LeadTimeLine {
 				.append("kpiInfo.formula",
 						Arrays.asList(new Document("lhs",
 								"It is calculated as the sum Ideation time, Development time & Release time")))
-				.append("kpiInfo.details",Arrays.asList())
-				.append("yAxisLabel", "")
-				.append("xAxisLabel", "")
-				.append("kpiWidth", 100)
-				.append("showTrend", false)
-				.append("aggregationCriteria",null)
-				.append("boxType", "2_column").append("maturityRange", null));
+				.append("kpiInfo.details", Arrays.asList()).append("yAxisLabel", "").append("xAxisLabel", "")
+				.append("kpiWidth", 100).append("showTrend", false).append("aggregationCriteria", null)
+				.append("lowerThresholdBG", null).append("upperThresholdBG", null).append("boxType", "2_column")
+				.append("maturityRange", null));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, update);
@@ -108,11 +101,13 @@ public class LeadTimeLine {
 				new Document().append("text", "Detailed Information at").append("link",
 						"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time")));
 
-		Document pushObjects =new Document("$push", new Document("kpiInfo.details", new Document("$each", newDetailsObjects)));
+		Document pushObjects = new Document("$push",
+				new Document("kpiInfo.details", new Document("$each", newDetailsObjects)));
 
 		// Perform the update
 		kpiMaster.updateOne(filter, pushObjects);
-		mongoTemplate.getCollection("field_mapping_structure").deleteOne(new Document("fieldName", "thresholdValueKPI3"));
+		mongoTemplate.getCollection("field_mapping_structure")
+				.deleteOne(new Document("fieldName", "thresholdValueKPI3"));
 
 	}
 }
