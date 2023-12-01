@@ -262,7 +262,7 @@ public enum KPIExcelColumn {
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
-			"Priority", "Assignee", "Issue Status")),
+			"Priority", "Assignee", "Issue Status", "Release Tag Latest Date", "Dev Complete Date", "Completion Date")),
 
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),

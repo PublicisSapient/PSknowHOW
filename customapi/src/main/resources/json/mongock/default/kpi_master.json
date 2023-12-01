@@ -3010,7 +3010,7 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
       "details" : [
         {
           "type" : "link",
@@ -3682,14 +3682,23 @@
     "kanban": false,
     "chartType": "stackedColumn",
     "kpiInfo": {
-      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+          }
+        }
+      ]
     },
     "xaxisLabel": "Sprint",
     "yaxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory" : "Backlog Health"

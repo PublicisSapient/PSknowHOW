@@ -147,7 +147,7 @@
     "isUploadDataKPI16" : true,
     "getJiraDodKPI163" : ["Done", "Closed"],
     "jiraStoryIdentificationKPI164" : ["Story", "Enabler Story"],
-    "jiraIssueTypeNamesKPI161" : ["Task"],
+    "jiraIssueTypeNamesKPI161" : ["story"],
     "jiraIssueTypeNamesKPI146": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI148": [ "Story", "Enabler Story", "Change request", "Defect" ],
     "jiraIssueTypeNamesKPI151": [ "Story", "Enabler Story", "Change request", "Defect" ],

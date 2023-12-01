@@ -430,11 +430,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
         }
-        if (preAggregatedValues?.length > 1) {
-          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
-        } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
-        }
+        this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
     }
     else {
       if (trendValueList?.length > 0) {
@@ -455,7 +451,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
       }
     });
-
+    
   }
 
   getChartType(kpiId) {
