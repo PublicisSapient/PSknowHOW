@@ -3,8 +3,8 @@
       <div>
          <img src="assets/img/icon-dice.png" class="icon-dice p-mr-2" (click)="showSwitchDropdown = !showSwitchDropdown" alt="Switch" width="50"/>
          <ul class="switch-dropdown" *ngIf="showSwitchDropdown">
-            <li class="app-links"><a href="javascript:void(0)" (click)="checkResourceValidity('MAP')">Assessment</a></li>
-            <li class="app-links"><a href="javascript:void(0)" (click)="checkResourceValidity('RnR')">Retro</a></li>
+            <li class="app-links"><a href="http://172.26.20.204/">Assessment</a></li>
+            <li class="app-links"><a href="https://tengine.tremend.com/">Retro</a></li>
          </ul>
       </div>
       <div class="logo cursor-pointer">
@@ -51,7 +51,7 @@
                               </div>
                            </ng-template>
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}} 
+                              {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                            <ng-template ng-footer-tmp>
@@ -75,7 +75,7 @@
                            [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}} 
+                              {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                         </ng-select>

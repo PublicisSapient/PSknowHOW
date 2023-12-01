@@ -21,8 +21,10 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -49,6 +51,9 @@ public class UserTokenDeletionControllerApplication {
 	@Autowired
 	private CookieUtil cookieUtil;
 
+	@Autowired
+	private UserInfoService userInfoService;
+
 	/**
 	 * Instantiates a new User token deletion controller.
 	 *
@@ -69,8 +74,10 @@ public class UserTokenDeletionControllerApplication {
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity deleteUserToken(HttpServletRequest request) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
-		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
-		userTokenDeletionService.deleteUserDetails(token);
+		//String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
+		//userTokenDeletionService.deleteUserDetails(token);
+		Cookie authCookieToken = cookieUtil.getAuthCookie(request);
+		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken.getValue());
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
