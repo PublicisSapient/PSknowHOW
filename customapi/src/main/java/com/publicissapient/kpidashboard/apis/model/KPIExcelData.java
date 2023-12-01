@@ -274,6 +274,9 @@ public class KPIExcelData {
 	@JsonProperty("Created Date")
 	private String createdDate;
 
+	@JsonProperty("Closed Date")
+	private String closeDate;
+
 	@JsonProperty("Updated Date")
 	private String updatedDate;
 

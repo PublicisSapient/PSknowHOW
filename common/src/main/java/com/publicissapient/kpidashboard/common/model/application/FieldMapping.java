@@ -434,6 +434,7 @@ public class FieldMapping extends BasicModel {
 	private String thresholdValueKPI159;
 	private String thresholdValueKPI160;
 	private String thresholdValueKPI164;
+	private String thresholdValueKPI3;
 
 	// Production Incident Mapping
 	private String jiraProductionIncidentIdentification;
