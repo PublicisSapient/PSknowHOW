@@ -1,6 +1,54 @@
 <header>
-    <nav>
-        <img *ngIf="clientLogo" src={{clientLogo}} (click)="navigateToHomePage()" alt="Logo" />
-        <img *ngIf="!clientLogo" src="assets/img/sapientLogo.png" (click)="navigateToHomePage()" alt="Logo" />
+    <nav class="p-d-flex p-align-center p-jc-between">
+        <div class="logo">
+            <img *ngIf="clientLogo" src={{clientLogo}} (click)="navigateToHomePage()" alt="Logo" />
+            <img *ngIf="!clientLogo" src="assets/img/sapientLogo.png" (click)="navigateToHomePage()" alt="Logo" />
+        </div>
+    
+        <ul>
+            <li><a class="link" routerLink="/dashboard">Dashboard</a></li>
+        </ul>
+
+        <div class="p-d-flex p-align-center">
+            <!-- <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
+                <div class="p-d-flex p-align-center p-jc-end">
+                   <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
+                   <img *ngIf="!((lastSyncData | json) == '{}') && !lastSyncData?.fetchSuccessful && !lastSyncData?.errorInFetch" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                   <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
+                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
+                      Last Sync
+                   </h4>
+ 
+                </div>
+                <p class="last-sync-date p-m-0 p-text-right">
+                   {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
+                </p>
+            </div> -->
+            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
+               (click)="notification.toggle($event)" role="button">
+               <img src="../../../assets/img/icon-comment.png" class="p-mr-2" alt="Comment"/>
+               <span *ngIf="totalRequestCount > 0" class="count">{{commentCount}}</span>
+            </div>
+            
+            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
+               (click)="notification.toggle($event)" role="button">
+               <img src="../../../assets/img/icon-notification.png" class="p-mr-2" alt="Notification"/>
+               <span *ngIf="totalRequestCount > 0" class="count">{{totalRequestCount}}</span>
+            </div>
+
+            <div class="p-d-flex p-align-center p-jc-between" role="button">
+                <img src="assets/img/icon-avatar.png" alt="Avatar" />
+                <div>
+                    <div class="profile-budge cursor-pointer">
+                       <!-- {{username}} -->
+                    </div>
+                    <!-- <h5>{{role}}</h5> -->
+                </div>
+                
+             </div>
+        </div>
     </nav>
+
+
+
 </header>

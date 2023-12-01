@@ -1,0 +1,15 @@
+.logo img {
+    height: 58px;
+}
+.count {
+    position: absolute;
+    font-size: 1.1rem;
+    top: -1rem;
+    right: -1rem;
+    color: black;
+    background: #fe414d;
+    padding: 5px;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+}
