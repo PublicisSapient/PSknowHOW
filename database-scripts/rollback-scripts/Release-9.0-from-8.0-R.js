@@ -212,7 +212,62 @@ db.field_mapping_structure.find(
 );
 
 
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.deleteOne({
+    "fieldName" : "jiraLabelsKPI135"
+})
 
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi3" },
+  {
+    $set: {
+      "thresholdValue": "20",
+      "kpiUnit": null,
+      "chartType": null,
+      "kpiInfo.definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
+      "kpiInfo.formula":[{"lhs": "It is calculated as the sum Ideation time, Development time & Release time"}],
+      "boxType":null,
+      "kpiWidth":null,
+      "showTrend":true,
+      "kpiInfo.details": [
+              {
+                "type": "paragraph",
+                "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+              },
+              {
+                "type": "paragraph",
+                "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+              },
+              {
+                "type": "paragraph",
+                "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+              },
+              {
+                "type": "link",
+                "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+                }
+              }
+      ],
+      "yAxisLabel": null,
+      "xAxisLabel": null,
+      "kpiWidth": 100,
+      "showTrend": false,
+      "boxType": "2_column",
+      "maturityRange": null,
+      "aggregationCriteria": null,
+      "lowerThresholdBG": null,
+      "upperThresholdBG": null,
+    }
+  }
+)
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["thresholdValueKPI3"]
+    }
+});
 
 
 db.kpi_master.updateOne(

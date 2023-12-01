@@ -482,14 +482,18 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
+          if(preAggregatedValues[0]?.hasOwnProperty('value')){
+            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+          }else{
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
         }
       } else {
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
     }
     else if (trendValueList?.length > 0) {
-      this.kpiChartData[kpiId] = [...trendValueList];
+      this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
     } else {
       this.kpiChartData[kpiId] = [];
     }
@@ -690,6 +694,19 @@ export class MilestoneComponent implements OnInit {
 
   handleTabChange(event){
     this.activeIndex = event.index;
+  }
+
+  checkIfDataPresent(data) {
+    let dataCount = 0;
+    if(data[0]?.value && data[0]?.value[0]?.value[0]?.data) {
+      dataCount = data[0]?.value[0]?.value[0]?.data;
+    } else if(data[0]?.value && data[0]?.value[0]?.value[0]?.value){
+      dataCount = data[0]?.value[0]?.value[0]?.value;
+    }
+    if(parseInt(dataCount + '') > 0) {
+      return true;
+    }
+    return false;
   }
 
   /** unsubscribing all Kpi Request  */

@@ -927,6 +927,9 @@ public abstract class ToolsKPIService<R, S> {
 			aggValue = (R) value.get(value.size() - 1).getValue();
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
+		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
+			aggValue = (R) value.stream().filter(dataCount -> dataCount.getsSprintID().equalsIgnoreCase("< 3 Months"))
+					.findFirst().get().getValue();
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
 			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {

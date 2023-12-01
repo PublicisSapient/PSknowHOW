@@ -2927,57 +2927,44 @@
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi3" ,
-    "kpiName" : "Lead Time" ,
-    "isDeleted" : "False" ,
-    "kpiCategory" : "Backlog" ,
-    "boxType" : "2_column" ,
-    "kpiBaseLine" : "0" ,
-    "thresholdValue" : "" ,
-    "defaultOrder" : 1 ,
-    "kpiUnit" : "Count" ,
-    "kpiSource" : "Jira" ,
-    "groupId" : 11 ,
-    "kanban" : false ,
-    "chartType" : "" ,
-    "kpiInfo" : {
-      "definition" : "Measures Total time between a request was made and  all work on this item is completed and the request was delivered ." ,
-      "formula" : [
+    "kpiId": "kpi3",
+    "kpiName": "Lead Time",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "boxType": null,
+    "kpiBaseLine": "0",
+    "thresholdValue": "20",
+    "defaultOrder": "1",
+    "kpiUnit": "Days",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+      "formula": null,
+      "details": [
         {
-          "lhs" : "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ] ,
-      "details" : [
-        {
-          "type" : "paragraph" ,
-          "value" : "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Release time (DOD to Live): Time taken between story completion to it going live."
-        } ,
-        {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
           }
         }
       ]
-    } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "" ,
-    "kpiWidth" : 100 ,
-    "isPositiveTrend" : false ,
-    "showTrend" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
-    "isAdditionalFilterSupport" : false ,
-    "kpiSubCategory" : "Flow KPIs" ,
-    "calculateMaturity" : true
+    },
+    "xAxisLabel": "Range",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "multiSelectDropDown",
+    "isAdditionalFilterSupport": false,
+    "aggregationCriteria": "sum",
+    "calculateMaturity": false,
+    "lowerThresholdBG": "white",
+    "upperThresholdBG": "red",
+    "kpiSubCategory": "Flow KPIs",
+    "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
   } ,
   {
     "kpiId" : "kpi148" ,
@@ -3772,14 +3759,23 @@
     "kanban": false,
     "chartType": "stackedColumn",
     "kpiInfo": {
-      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+          }
+        }
+      ]
     },
     "xaxisLabel": "Sprint",
     "yaxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory" : "Backlog Health"

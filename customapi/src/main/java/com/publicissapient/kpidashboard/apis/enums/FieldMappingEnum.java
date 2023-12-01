@@ -68,10 +68,9 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraStatusForDevelopmentKPI135", "jiraKPI135StoryIdentification",
 					"jiraIterationCompletionStatusKPI135", "resolutionTypeForRejectionKPI135", "excludeRCAFromKPI135",
 					"jiraDefectRejectionStatusKPI135", "defectPriorityKPI135", "jiraDefectRejectionStatusKPI135",
-					"jiraStatusForQaKPI135", "jiraFtprRejectStatusKPI135")),
+					"jiraStatusForQaKPI135", "jiraFtprRejectStatusKPI135", "jiraLabelsKPI135")),
 
-	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraDorKPI3", "jiraDodKPI3",
-			"jiraLiveStatusKPI3", "storyFirstStatusKPI3")),
+	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraLiveStatusKPI3", "thresholdValueKPI3")),
 
 	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(),
 			Arrays.asList("jiraDefectRemovalStatusKPI34", "thresholdValueKPI34")),
@@ -189,7 +188,8 @@ public enum FieldMappingEnum {
 	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(),
 			Arrays.asList("uploadDataKPI16", "thresholdValueKPI16")),
 
-	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161")),
+	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161",
+			"jiraStatusForInProgressKPI161", "jiraStatusForRefinedKPI161", "jiraStatusForNotRefinedKPI161")),
 
 	KPI164("Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164","thresholdValueKPI164")),
 

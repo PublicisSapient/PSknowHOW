@@ -2947,58 +2947,45 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi3",
-    "kpiName": "Lead Time",
-    "isDeleted": "False",
-    "kpiCategory": "Backlog",
-    "boxType": "2_column",
-    "kpiBaseLine": "0",
-    "thresholdValue": "",
-    "defaultOrder": 1,
-    "kpiUnit": "Count",
-    "kpiSource": "Jira",
-    "groupId": 11,
-    "kanban": false,
-    "chartType": "",
-    "kpiInfo": {
-      "definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
-      "formula": [
-        {
-          "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        },
-        {
-          "type": "paragraph",
-          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        },
-        {
-          "type": "paragraph",
-          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
-        },
-        {
-          "type": "link",
-          "kpiLinkDetail": {
-            "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+      "kpiId": "kpi3",
+      "kpiName": "Lead Time",
+      "isDeleted": "False",
+      "kpiCategory": "Backlog",
+      "boxType": null,
+      "kpiBaseLine": "0",
+      "thresholdValue": "20",
+      "defaultOrder": "1",
+      "kpiUnit": "Days",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "kanban": false,
+      "aggregationCriteria": "sum",
+      "chartType": "line",
+      "kpiInfo": {
+        "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+        "formula": null,
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+            }
           }
-        }
-      ]
+        ]
+      },
+      "xAxisLabel": "Range",
+      "yAxisLabel": "Days",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "multiSelectDropDown",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false,
+      "kpiSubCategory": "Flow KPIs",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
+      "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
     },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "kpiWidth": 100,
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "kpiFilter": "multiSelectDropDown",
-    "isAdditionalFilterSupport": false,
-    "kpiSubCategory": "Flow KPIs",
-    "calculateMaturity": true,
-  },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
@@ -9714,9 +9701,16 @@ db.getCollection('field_mapping_structure').insertMany(
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
-    }
-
-},
+    },
+    {
+        "fieldName": "thresholdValueKPI3",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
 {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
@@ -9819,5 +9813,14 @@ db.getCollection('field_mapping_structure').insertMany(
  "tooltip": {
    "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
  }
+},
+{
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
 }
 ]);

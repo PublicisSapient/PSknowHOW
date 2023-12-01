@@ -430,6 +430,7 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI159;
     private String thresholdValueKPI160;
     private String thresholdValueKPI164;
+    private String thresholdValueKPI3;
 
     private String jiraProductionIncidentIdentification;
     private String jiraProdIncidentRaisedByCustomField;
@@ -450,6 +451,12 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraSubTaskIdentification;
     private List<String> jiraStatusStartDevelopmentKPI154;
+	private List<String> jiraLabelsKPI135;
+
+    private List<String> jiraStatusForInProgressKPI161;
+    private List<String> jiraStatusForRefinedKPI161;
+    private List<String> jiraStatusForNotRefinedKPI161;
+
 
     /**
      * Get jira issue type names string [ ].
