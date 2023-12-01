@@ -261,7 +261,7 @@ export class MultilineComponent implements OnChanges {
         .domain([0, maxYValue])
         .range([height - margin, 0]);
   
-      if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer' || board === 'backlog')) {
+      if (selectedProjectCount === 1 && (board === 'executive' || board === 'developer' || board === 'backlog' || board === 'dora')) {
         d3.select(this.elem).select('#horizontalSVG').select('div').remove();
         d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
         /** Adding tooltip container */
@@ -287,7 +287,7 @@ export class MultilineComponent implements OnChanges {
           })
           .style('left', (d,i) => {
             let left = d.date || d.sortSprint;
-            if(viewType === 'large'){
+            if(viewType === 'large' || (board === 'dora' && viewType === 'chart')){
               return xScale(left) + xScale.bandwidth() / 2 + 'px';
             }else{
               return xScale(i+1) + xScale.bandwidth() / 2 + 'px';
