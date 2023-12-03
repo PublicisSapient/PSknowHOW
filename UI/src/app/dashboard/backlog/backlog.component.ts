@@ -547,6 +547,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
           } else {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
           }
+          this.getDropdownArray(data[key]?.kpiId);
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
         }
 
@@ -739,10 +740,18 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const idx = this.ifKpiExist(kpiId);
     let trendValueList = [];
     const optionsArr = [];
+    let filters = {};
 
     if (idx != -1) {
       trendValueList = this.allKpiArray[idx]?.trendValueList;
-      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+      filters = this.allKpiArray[idx]?.filters;
+      if (filters && Object.keys(filters).length !== 0) {
+        Object.keys(filters)?.forEach(x => {
+          optionsArr.push(filters[x]);
+        });
+        this.kpiDropdowns[kpiId] = [...optionsArr];
+      }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
           if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) 
