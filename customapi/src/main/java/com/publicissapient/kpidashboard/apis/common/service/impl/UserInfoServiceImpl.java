@@ -54,6 +54,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -85,7 +86,6 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -546,7 +546,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public UserInfo getCentralAuthUserInfo(String username , String token) {
+	public UserInfo getCentralAuthUserInfo(String username, String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
@@ -570,12 +570,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
-
 	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
-		//String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
-			//	"/api/userlogout/" + token);
+		// String fetchUserUrl =
+		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
+		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
@@ -599,4 +599,90 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return null;
 		}
 	}
+
+	@Override
+	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<UserInfo> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, UserInfo.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return (List<UserInfoDTO>) response.getBody();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return (List<UserInfoDTO>) new UserInfo();
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
+	@Override
+	public String updateUserApprovalStatus(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getUpdateUserApprovalStatus(), user);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.PUT, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody().toString();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return " ";
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
+	@Override
+	public String deleteRejectedUser(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/api/deleteUser/");
+		uriBuilder.path(user);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody().toString();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return "";
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
+	public String getToken(HttpServletRequest request) {
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		if (StringUtils.isBlank(authCookie.getValue())) {
+			return null;
+		}
+		return authCookie.getValue();
+	}
+
 }

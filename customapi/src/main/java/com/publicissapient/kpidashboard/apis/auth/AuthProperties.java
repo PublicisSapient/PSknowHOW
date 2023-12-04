@@ -73,6 +73,8 @@ public class AuthProperties {// NOPMD
 	private String resourceAPIKey;
 	private String resourcePolicyEndPoint;
 	private String fetchUserDetailsEndPoint;
+	private String fetchPendingUsersApprovalEndPoint;
+	private String updateUserApprovalStatus;
 	private String resourceName;
 
 	/**
@@ -408,6 +410,7 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get resource Name
+	 * 
 	 * @return resourceName
 	 */
 	public String getResourceName() {
@@ -425,15 +428,52 @@ public class AuthProperties {// NOPMD
 
 	/**
 	 * get central auth userinfo url
+	 * 
 	 * @return
 	 */
 	public String getFetchUserDetailsEndPoint() {
 		return fetchUserDetailsEndPoint;
 	}
 
+	/**
+	 * Set central auth user approval url
+	 *
+	 * @param updateUserApprovalStatus
+	 */
+	public void setUpdateUserApprovalStatus(String updateUserApprovalStatus) {
+		this.updateUserApprovalStatus = updateUserApprovalStatus;
+	}
+
+	/**
+	 * get central auth update user approval url
+	 * 
+	 * @return
+	 */
+	public String getUpdateUserApprovalStatus() {
+		return updateUserApprovalStatus;
+	}
+
+	/**
+	 * Set central auth userinfo url
+	 *
+	 * @param fetchPendingUsersApprovalEndPoint
+	 */
+	public void setFetchPendingUsersApprovalEndPoint(String fetchPendingUsersApprovalEndPoint) {
+		this.fetchPendingUsersApprovalEndPoint = fetchPendingUsersApprovalEndPoint;
+	}
+
+	/**
+	 * get central auth userinfo url
+	 *
+	 * @return
+	 */
+	public String getFetchPendingUsersApprovalEndPoint() {
+		return fetchPendingUsersApprovalEndPoint;
+	}
 
 	/**
 	 * get resourceAPIKey
+	 * 
 	 * @return
 	 */
 	public String getResourceAPIKey() {
@@ -461,7 +501,6 @@ public class AuthProperties {// NOPMD
 	public void setResourceAPIKey(String resourceAPIKey) {
 		this.resourceAPIKey = resourceAPIKey;
 	}
-
 
 	/**
 	 * Apply defaults if needed.

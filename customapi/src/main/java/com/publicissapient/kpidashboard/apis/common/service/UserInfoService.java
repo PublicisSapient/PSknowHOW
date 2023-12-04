@@ -167,15 +167,22 @@ public interface UserInfoService {
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 
-	//----auth-N-auth----------
+	// ----auth-N-auth----------
 
 	/**
 	 * get User info from cental auth
+	 * 
 	 * @param username
 	 * @return
 	 */
-	UserInfo getCentralAuthUserInfo(String username , String token);
-	//----auth-N-auth----------
+	UserInfo getCentralAuthUserInfo(String username, String token);
 
 	String getCentralAuthUserDeleteUserToken(String token);
+
+	List<UserInfoDTO> findAllUnapprovedUsers(String token);
+
+	String updateUserApprovalStatus(String user, String token);
+	String deleteRejectedUser(String user, String token);
+	// ----auth-N-auth----------
+
 }
