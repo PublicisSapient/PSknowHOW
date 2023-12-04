@@ -2669,12 +2669,12 @@
     "fieldName": "populateByDevDoneKPI150",
     "fieldLabel": "Prediction logic",
     "fieldType": "toggle",
-    "toggleLabelLeft" : "Overall completion",
-    "toggleLabelRight": "Dev Completion",
+    "toggleLabelLeft" : "Overall Completion",
+    "toggleLabelRight": "Dev Completion*",
     "section": "WorkFlow Status Mapping",
     "processorCommon": false,
     "tooltip": {
-      "definition": "Enabled State (Kpi will populate w.r.t Dev complete date)"
+      "definition": "Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."
     }
   },
   {
