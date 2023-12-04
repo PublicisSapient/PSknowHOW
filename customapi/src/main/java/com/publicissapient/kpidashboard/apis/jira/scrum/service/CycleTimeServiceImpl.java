@@ -129,7 +129,10 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 		if (leafNode != null) {
 			Object basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			List<String> rangeList = customApiConfig.getLeadTimeRange();
+			List<String> xAxisRange = customApiConfig.getCycleTimeRange();
+			Collections.reverse(xAxisRange);
+			List<String> rangeList = new ArrayList<>(xAxisRange);
+
 			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, LocalDate.now().minusMonths(6).toString(),
 					LocalDate.now().toString(), kpiRequest);
 
@@ -327,10 +330,9 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 						DOR_TO_DOD);
 				populateDataCountList(dodToLiveRangeMap, issueWiseDODToLive, range, issueType, defectsDataCountList,
 						DOD_TO_LIVE);
-				if (CollectionUtils.isNotEmpty(defectsDataCountList)) {
+
 					kpiValueIssueCount.setValue(defectsDataCountList);
 					iterationKpiValueList.add(kpiValueIssueCount);
-				}
 			}
 
 		}
@@ -345,14 +347,20 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 			List<Long> valueList = jiraIssueCustomHistories.stream().map(JiraIssueCustomHistory::getStoryID)
 					.filter(issueWiseGroupValue::containsKey).map(issueWiseGroupValue::get)
 					.collect(Collectors.toList());
-			defectsDataCountList.add(createDataCount(AggregationUtils.averageLong(valueList), kpiGroup));
+			defectsDataCountList.add(createDataCount(AggregationUtils.averageLong(valueList), kpiGroup, valueList.size()));
 		}
+		else
+			defectsDataCountList.add(createDataCount(0L, kpiGroup, 0));
 	}
 
-	private DataCount createDataCount(Long averageValue, String kpiGroup) {
+	private DataCount createDataCount(Long averageValue, String kpiGroup, int size) {
 		DataCount dataCount = new DataCount();
 		dataCount.setData(String.valueOf(Math.round(ObjectUtils.defaultIfNull(averageValue, 0L).doubleValue() / 480)));
 		dataCount.setKpiGroup(kpiGroup);
+		dataCount.setSSprintName(kpiGroup);
+		HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
+		mapOfIssueCount.put("Issue Count", size);
+		dataCount.setValue(mapOfIssueCount);
 		return dataCount;
 	}
 

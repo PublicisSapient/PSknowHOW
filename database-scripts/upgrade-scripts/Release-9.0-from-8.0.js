@@ -983,8 +983,7 @@ db.kpi_master.updateOne(
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "
-            https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
           }
         }
       ],
@@ -1029,9 +1028,9 @@ db.kpi_master.insertOne(
       "groupId": 11,
       "thresholdValue": "",
       "kanban": false,
-      "chartType": "horizontalPercentBarChart",
-      "xAxisLabel": "",
+      "chartType": "stackedColumn",
       "yAxisLabel": "Days",
+      "xAxisLabel": "Range",
       "isAdditionalFilterSupport": false,
       "kpiFilter": "dropDown",
       "boxType": "chart",

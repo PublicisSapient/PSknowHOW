@@ -3898,7 +3898,7 @@ db.getCollection('kpi_master').insertMany(
         }
       ]
     },
-    {
+  {
       "kpiId": "kpi171",
       "kpiName": "Cycle Time",
       "maxValue": "",
@@ -3910,7 +3910,7 @@ db.getCollection('kpi_master').insertMany(
       "groupId": 11,
       "thresholdValue": "",
       "kanban": false,
-      "chartType": "horizontalPercentBarChart",
+      "chartType": "stackedColumn",
       "xAxisLabel": "",
       "yAxisLabel": "Days",
       "isAdditionalFilterSupport": false,
@@ -7674,7 +7674,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraDorKPI171",
+        "fieldName": "jiraDorKPI3",
         "fieldLabel": "DOR status",
         "fieldType": "chips",
         "fieldCategory": "workflow",

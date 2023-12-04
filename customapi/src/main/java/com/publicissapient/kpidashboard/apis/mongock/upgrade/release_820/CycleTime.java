@@ -58,8 +58,8 @@ public class CycleTime {
 				.append("maxValue", "").append("kpiUnit", "Count").append("isDeleted", "False")
 				.append("defaultOrder", 4).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
 				.append("groupId", 11).append("thresholdValue", "").append("kanban", false)
-				.append("chartType", "horizontalPercentBarChart")
-				.append("xAxisLabel", "").append("yAxisLabel", "Days").append("isAdditionalFilterSupport", false)
+				.append("chartType", "stackedColumn")
+				.append("yAxisLabel", "Days").append("xAxisLabel", "Range").append("isAdditionalFilterSupport", false)
 				.append("kpiFilter", "dropDown").append("boxType", "chart").append("calculateMaturity", false)
 				.append("kpiInfo.definition",
 						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
