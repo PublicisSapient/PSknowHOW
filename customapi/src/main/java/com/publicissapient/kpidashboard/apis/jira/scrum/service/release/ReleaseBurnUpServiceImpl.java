@@ -395,9 +395,9 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
 			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
-			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = new HashMap<>(completedReleaseMap);
-			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = new HashMap<>(devCompletedIssueMap);
-			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = new HashMap<>(fullReleaseIssueMap);
+			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = deepCopyMap(completedReleaseMap);
+			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = deepCopyMap(devCompletedIssueMap);
+			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = deepCopyMap(fullReleaseIssueMap);
 			completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 			devCompletedIssueMap = prepareIssueBeforeStartDate(devCompletedIssueMap, startLocalDate);
@@ -704,6 +704,18 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 		return rangedCompletedMap;
 	}
 
+	/**
+	 * DeepClone the map
+	 * @param originalMap
+	 * @return
+	 */
+	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
+		return originalMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						entry -> new ArrayList<>(entry.getValue())
+				));
+	}
 	/**
 	 * Method for calculation x-axis duration & range
 	 *
