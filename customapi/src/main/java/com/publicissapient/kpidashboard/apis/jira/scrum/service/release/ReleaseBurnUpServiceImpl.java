@@ -395,9 +395,9 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
 			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
-			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = completedReleaseMap;
-			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = devCompletedIssueMap;
-			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = fullReleaseIssueMap;
+			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = new HashMap<>(completedReleaseMap);
+			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = new HashMap<>(devCompletedIssueMap);
+			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = new HashMap<>(fullReleaseIssueMap);
 			completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 			devCompletedIssueMap = prepareIssueBeforeStartDate(devCompletedIssueMap, startLocalDate);
