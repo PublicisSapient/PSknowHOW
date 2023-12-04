@@ -1304,7 +1304,7 @@ describe('DoraComponent', () => {
     expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
   }));
 
-  fit('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
+  it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
     component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
     const res = fakeDoraKpis[0].trendValueList.filter(x => x['filter'] == 'Overall')[0];
@@ -1312,7 +1312,7 @@ describe('DoraComponent', () => {
     expect(component.kpiChartData['kpi118'][0]?.value.length).toEqual(res?.value[0]?.value?.length);
   });
 
-  fit('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
+  it('should getchartdata for kpi when trendValueList is an object and with multiple filter', () => {
     component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['81.200.188.111->KnowHOW', '81.200.188.112->KnowHOW'];
     const res = fakeDoraKpiFilters;
