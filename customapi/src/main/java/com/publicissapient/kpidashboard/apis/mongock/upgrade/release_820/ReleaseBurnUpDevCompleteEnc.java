@@ -53,9 +53,9 @@ public class ReleaseBurnUpDevCompleteEnc {
 		// Document 1
 		Document document1 = new Document("fieldName", "populateByDevDoneKPI150")
 				.append("fieldLabel", "Prediction logic").append("fieldType", "toggle")
-				.append("toggleLabelLeft", "Overall completion").append("toggleLabelRight", "Dev Completion")
+				.append("toggleLabelLeft", "Overall Completion").append("toggleLabelRight", "Dev Completion*")
 				.append("section", "WorkFlow Status Mapping").append("processorCommon", false).append("tooltip",
-						new Document("definition", "Enabled State (Kpi will populate w.r.t Dev complete date)"));
+						new Document("definition", "Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."));
 
 		// Document 2
 		Document document2 = new Document("fieldName", "jiraDevDoneStatusKPI150")

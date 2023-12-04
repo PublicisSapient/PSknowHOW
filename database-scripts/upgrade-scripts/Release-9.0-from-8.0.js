@@ -988,6 +988,7 @@ db.kpi_master.updateOne(
           }
         }
       ],
+       "kpiFilter": "dropdown",
       "aggregationCriteria": "sum",
       "yAxisLabel": "Days",
       "xAxisLabel": "Range",

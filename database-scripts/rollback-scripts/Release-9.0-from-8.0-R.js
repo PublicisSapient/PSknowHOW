@@ -251,6 +251,7 @@ db.kpi_master.updateOne(
                 }
               }
       ],
+      "kpiFilter": "multiSelectDropDown",
       "yAxisLabel": null,
       "xAxisLabel": null,
       "kpiWidth": 100,
