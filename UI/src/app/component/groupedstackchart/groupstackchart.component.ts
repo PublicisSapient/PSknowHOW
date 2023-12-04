@@ -94,7 +94,7 @@ export class GroupstackchartComponent implements OnChanges {
       // d3.select(elem).select('#legendIndicator').select('svg').remove();
       d3.select(elem).select('#xCaptionContainer').select('text').remove();
       const data = this.formatData(this.data);
-      const width = this.dataPoints <= 5 && document.getElementById('groupstackchart')?.offsetWidth? document.getElementById('groupstackchart')?.offsetWidth - 70 : this.dataPoints * 20 * 4;
+      const width = this.dataPoints <= 5 && d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth? d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth - 70 : this.dataPoints * 20 * 4;
       // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
       // const spacingVariable = 20;
       const height = 225;
