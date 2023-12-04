@@ -84,7 +84,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String FULL_RELEASE = "fullRelease";
 	private static final String REMOVED_FROM_RELEASE = "removedFromRelease";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String STORY_POINT = "Story Point";
+	private static final String STORY_POINT = "Story Points";
 	private static final String SCOPE_REMOVED = "Scope Removed";
 	private static final String SCOPE_ADDED = "Scope Added";
 	private static final String RELEASE_SCOPE = "Release Scope";
