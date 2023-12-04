@@ -63,7 +63,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 	private static final String PROJECT_WISE_JIRA_ISSUE = "Jira Issue";
 	public static final String SPRINT_LIST = "Sprint List";
 	public static final String ISSUE_COUNT = "Issue Count";
-	public static final String STORY_POINT = "Story points";
+	public static final String STORY_POINT = "Story Points";
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String READY_FOR_DEV = "Ready for Dev";
 	public static final String NOT_REFINED = "Not Refined";
