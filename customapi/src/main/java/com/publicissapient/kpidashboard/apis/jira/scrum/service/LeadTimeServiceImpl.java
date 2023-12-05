@@ -266,7 +266,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				leadTimeList.add(cycleTimeValidationData);
 			}
 		}
-		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node);
+		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node, issueTypes);
 	}
 
 	/**
