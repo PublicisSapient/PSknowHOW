@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -653,6 +654,31 @@ public class KPIExcelUtility {
 			excelData.setCloseDate(DateUtil.dateTimeConverter(leadTimeData.getLiveDate().toString().split("T")[0],
 					DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
 			excelData.setLeadTime(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getLeadTime())));
+			excelDataList.add(excelData);
+		}
+	}
+
+	/**
+	 *
+	 * @param cycleTimeList
+	 * 			cycleTimeList
+	 * @param excelDataList
+	 * 			excelDataList
+	 */
+	public static void populateCycleTime(List<CycleTimeValidationData> cycleTimeList, List<KPIExcelData> excelDataList) {
+		for (CycleTimeValidationData leadTimeData : cycleTimeList) {
+			KPIExcelData excelData = new KPIExcelData();
+			Map<String, String> storyId = new HashMap<>();
+			storyId.put(leadTimeData.getIssueNumber(), leadTimeData.getUrl());
+			excelData.setIssueID(storyId);
+			excelData.setIssueDesc(leadTimeData.getIssueDesc());
+			excelData.setIssueType(leadTimeData.getIssueType());
+			if(ObjectUtils.isNotEmpty(leadTimeData.getIntakeTime()))
+				excelData.setIntakeToDOR(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getIntakeTime())));
+			if(ObjectUtils.isNotEmpty(leadTimeData.getDorTime()))
+				excelData.setDorToDod(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDorTime())));
+			if(ObjectUtils.isNotEmpty(leadTimeData.getDodTime()))
+				excelData.setDodToLive(CommonUtils.convertIntoDays(Math.toIntExact(leadTimeData.getDodTime())));
 			excelDataList.add(excelData);
 		}
 	}

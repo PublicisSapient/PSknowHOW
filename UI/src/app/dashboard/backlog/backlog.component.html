@@ -94,7 +94,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -235,7 +235,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
@@ -375,7 +375,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
@@ -517,7 +517,7 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"

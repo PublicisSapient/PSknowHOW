@@ -426,9 +426,14 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
         const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+        const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'] ;
         let preAggregatedValues = [];
         for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          if(Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
+            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+          }else{
+            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
+          }
         }
         this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
     }
@@ -533,7 +538,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
           if (formType?.toLowerCase() == 'radiobutton') {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
           }
-          else if (formType?.toLowerCase() == 'dropdown') {
+          else if (formType?.toLowerCase() == 'dropdown' && (!filters)) {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
           }
@@ -543,10 +548,15 @@ export class BacklogComponent implements OnInit, OnDestroy {
             for (const key in filters) {
               tempObj[key] = ['Overall'];
             }
+            if(data[key]?.kpiId === 'kpi171'){
+              tempObj['filter1'] = [trendValueList[0]['filter1']];
+              tempObj['filter2'] = [trendValueList[0]['filter2']];
+            }
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
           } else {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
           }
+          this.getDropdownArray(data[key]?.kpiId);
           this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
         }
 
@@ -739,10 +749,18 @@ export class BacklogComponent implements OnInit, OnDestroy {
     const idx = this.ifKpiExist(kpiId);
     let trendValueList = [];
     const optionsArr = [];
+    let filters = {};
 
     if (idx != -1) {
       trendValueList = this.allKpiArray[idx]?.trendValueList;
-      if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
+      filters = this.allKpiArray[idx]?.filters;
+      if (filters && Object.keys(filters).length !== 0) {
+        Object.keys(filters)?.forEach(x => {
+          optionsArr.push(filters[x]);
+        });
+        this.kpiDropdowns[kpiId] = [...optionsArr];
+      }
+      else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
           if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) 
@@ -795,8 +813,10 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj['action'] = 'update'
+    const selectedFilterBackup =  this.kpiSelectedFilterObj[kpi?.kpiId];
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
-    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object') {
+    /** When we have single dropdown */
+    if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
       for (const key in event) {
         if (typeof event[key] === 'string') {
           // delete event[key];
@@ -807,7 +827,15 @@ export class BacklogComponent implements OnInit, OnDestroy {
           }
         }
       }
-    } else {
+      /** When we have multi dropdown */
+    } else if(event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')){
+      const selectedFilter = {};
+      for (const key in event) {
+         const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
+         selectedFilter[key] = updatedFilter;
+      }
+      this.kpiSelectedFilterObj[kpi?.kpiId] = {...selectedFilterBackup,...selectedFilter};
+    }else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);

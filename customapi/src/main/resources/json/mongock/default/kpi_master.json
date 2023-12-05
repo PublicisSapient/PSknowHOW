@@ -3242,7 +3242,7 @@
       "7-30",
       "1-7",
       "-1"
-    ]
+    ],
     "maturityLevel": [
       {
         "level": "M5",
@@ -3714,7 +3714,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   } ,
@@ -3740,7 +3740,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false ,
     "kpiSubCategory" : "Epic View"
@@ -3930,5 +3930,40 @@
     "isAdditionalFilterSupport" : false,
     "calculateMaturity" : false,
     "kpiSubCategory" : "Flow KPIs"
+  },
+  {
+    "kpiId": "kpi171",
+    "kpiName": "Cycle Time",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stackedColumn",
+    "isAggregationStacks" : false ,
+    "xAxisLabel": "Range",
+    "yAxisLabel": "Days",
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropDown",
+    "boxType": "chart",
+    "calculateMaturity": false,
+    "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+    },
+    "kpiSubCategory": "Flow KPIs"
   }
+
 ]

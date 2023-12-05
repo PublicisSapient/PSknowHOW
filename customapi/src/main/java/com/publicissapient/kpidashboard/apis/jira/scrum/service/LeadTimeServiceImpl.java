@@ -22,11 +22,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,7 +41,6 @@ import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
@@ -79,6 +80,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	public static final String ISSUES = "issues";
 	private static final String ISSUE_COUNT = "Issue Count";
+	private static final String LEAD_TIME = "LEAD TIME";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -236,6 +238,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 		Map<Long, String> monthRangeMap = new HashMap<>();
 		Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
 		BacklogKpiHelper.initializeRangeMapForProjects(rangeWiseJiraIssuesMap, rangeList, monthRangeMap);
+		Set<String> issueTypes= new HashSet<>();
 
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoriesList) {
@@ -258,14 +261,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
 						cycleTime.getLiveLocalDateTime(), monthRangeMap);
 
-				String leadTime = KpiDataHelper.calWeekHours(jiraIssueCustomHistory.getCreatedDate(),
-						cycleTime.getLiveTime());
-				if (!leadTime.equalsIgnoreCase(Constant.NOT_AVAILABLE))
-					cycleTimeValidationData.setLeadTime(KpiDataHelper.calculateTimeInDays(Long.parseLong(leadTime)));
+				BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
+						LEAD_TIME, cycleTimeValidationData, issueTypes);
 				leadTimeList.add(cycleTimeValidationData);
 			}
 		}
-		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node);
+		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node, issueTypes);
 	}
 
 	/**
@@ -277,18 +278,15 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 	 *            map of flow efficiency by issue
 	 * @param leafNode
 	 *            project node
+	 * @param totalIssueTypeString
 	 * @return data count map by filter
 	 */
 	private LinkedHashMap<String, List<DataCount>> setDataCountMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeAndStatusWiseJiraIssueMap,
-			List<CycleTimeValidationData> leadTimeFullList, Node leafNode) {
+			List<CycleTimeValidationData> leadTimeFullList, Node leafNode, Set<String> totalIssueTypeString) {
 		Map<String, Long> map = leadTimeFullList.stream().collect(
 				Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime,  (existing, replacement) -> existing));
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
-
-		List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
-				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream))
-				.map(JiraIssueCustomHistory::getStoryType).distinct().collect(Collectors.toList());
 
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {

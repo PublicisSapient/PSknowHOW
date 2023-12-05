@@ -43,6 +43,8 @@ public class CycleTime {
 	private DateTime deliveryTime;
 	private DateTime liveTime;
 	private LocalDateTime liveLocalDateTime;
+	private LocalDateTime readyLocalDateTime;
+	private LocalDateTime deliveryLocalDateTime;
 
 	private Long intakeDor;
 	private Long dorDod;

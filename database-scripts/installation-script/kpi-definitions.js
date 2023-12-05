@@ -3897,7 +3897,41 @@ db.getCollection('kpi_master').insertMany(
            "bgColor": "#c91212"
         }
       ]
-  }
+    },
+  {
+      "kpiId": "kpi171",
+      "kpiName": "Cycle Time",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "stackedColumn",
+      "isAggregationStacks" : false ,
+      "xAxisLabel": "",
+      "yAxisLabel": "Days",
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+      },
+      "kpiSubCategory": "Flow KPIs"
+    }
 ]
 );
 
@@ -7916,7 +7950,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraDodKPI3",
+        "fieldName": "jiraDodKPI171",
         "fieldLabel": "DOD Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
@@ -9822,5 +9856,26 @@ db.getCollection('field_mapping_structure').insertMany(
     "tooltip" : {
       "definition" : "Calculation should only those issues which have defined labels tagged."
     }
-}
+},
+{
+     "fieldName": "jiraLiveStatusKPI171",
+     "fieldLabel": "Live Status - Cycle Time",
+     "fieldCategory": "workflow",
+     "fieldType": "chips",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+       "definition": "Status/es that identify that an issue is LIVE in Production"
+     }
+   },
+   {
+     "fieldName": "jiraIssueTypeKPI171",
+     "fieldLabel": "Issue type to be included",
+     "fieldCategory": "Issue_Type",
+     "fieldType": "chips",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+       "definition": "All issue types that should be included in Lead time calculation."
+     }
+   }
+
 ]);
