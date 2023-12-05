@@ -25,7 +25,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
-
+const getDashConfData = require('../../../test/resource/boardConfigNew.json');
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -149,6 +149,8 @@ export class NavComponent implements OnInit {
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
+            // this.service.setDashConfigData(response.data);
+            this.service.setDashConfigData(getDashConfData.data);
             this.processKPIListData();
           }
         },

@@ -31,7 +31,7 @@ export class HelperService {
     grossMaturityObj = {};
     public passMaturityToFilter;
 
-    constructor(private httpService: HttpService, private excelService: ExcelService,private sharedService : SharedService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService, private sharedService: SharedService) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -393,7 +393,15 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data.localeCompare(b.data));
+            objArray?.sort((a, b) => {
+                if (a.data) {
+                    return a.data.localeCompare(b.data)
+                } else if(a.nodeName){
+                    return a.nodeName.localeCompare(b.nodeName);
+                } else {
+                    return a.localeCompare(b);
+                }
+            });
         }
         return objArray;
     }
@@ -540,28 +548,28 @@ export class HelperService {
     /** sync shown property of project level and user level */
     makeSyncShownProjectLevelAndUserLevelKpis(projectLevelKpi, userLevelKpi) {
         Object.keys(userLevelKpi).forEach(boards => {
-          if (Array.isArray(userLevelKpi[boards])) {
-            userLevelKpi[boards].forEach(boardA => {
-              const boardB = projectLevelKpi[boards].find(b => b.boardId === boardA.boardId);
-              if (boardB) {
-                boardA.kpis.forEach(kpiA => {
-                  const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
-                  if (kpiB) {
-                    kpiA.shown = kpiB.shown;
-                  }
+            if (Array.isArray(userLevelKpi[boards])) {
+                userLevelKpi[boards].forEach(boardA => {
+                    const boardB = projectLevelKpi[boards].find(b => b.boardId === boardA.boardId);
+                    if (boardB) {
+                        boardA.kpis.forEach(kpiA => {
+                            const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
+                            if (kpiB) {
+                                kpiA.shown = kpiB.shown;
+                            }
+                        });
+                    }
                 });
-              }
-            });
-          }
+            }
         });
         return userLevelKpi
-      }
+    }
 
-    getGlobalConfig(){
-        this.httpService.getConfigDetails().subscribe(res=>{
-          if(res && res['success']){
-            this.sharedService.setGlobalConfigData(res['data']);
-          }
+    getGlobalConfig() {
+        this.httpService.getConfigDetails().subscribe(res => {
+            if (res && res['success']) {
+                this.sharedService.setGlobalConfigData(res['data']);
+            }
         })
-      }
+    }
 }

@@ -1,0 +1,222 @@
+import { Component, OnInit, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { delay } from 'rxjs/operators';
+import { HttpService } from 'src/app/services/http.service';
+import { SharedService } from 'src/app/services/shared.service';
+
+@Component({
+  selector: 'app-filter-new',
+  templateUrl: './filter-new.component.html',
+  styleUrls: ['./filter-new.component.css']
+})
+export class FilterNewComponent implements OnInit {
+  filterData = {};
+  filterDataArr = {};
+  masterData = {};
+  filterApplyData = {};
+  selectedTab: string = '';
+  selectedType: string = '';
+  subscriptions: any[] = [];
+  selectedFilterData: {};
+  selectedLevel: any = '';
+  kanban: boolean = false;
+  boardData: any[] = [];
+  kanbanRequired: boolean = false;
+  parentFilterConfig: any = {};
+  primaryFilterConfig: any = {};
+  selectedTypeChanged: boolean = false;
+  selectedNodeIdArr: any = {
+    "basicProjectConfigIds": []
+  };
+  colorObj: any = {};
+
+  constructor(
+    private httpService: HttpService,
+    private service: SharedService,
+    private cdr: ChangeDetectorRef) { }
+
+  ngOnInit(): void {
+    this.selectedTab = this.service.getSelectedTab() || 'iteration';
+    this.subscriptions.push(
+      this.service.onTypeOrTabRefresh
+        // .pipe(delay(0))
+        .subscribe(data => {
+          this.selectedTab = data.selectedTab;
+          this.selectedType = data.selectedType;
+          this.getDashbaordConfig();
+        })
+    )
+  }
+
+  setSelectedType(type) {
+    this.selectedType = type?.toLowerCase();
+    this.selectedTypeChanged = true;
+    this.filterApplyData = {};
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    if (type.toLowerCase() === 'kanban') {
+      this.kanban = true;
+    } else {
+      this.kanban = false;
+    }
+  }
+
+  getDashbaordConfig() {
+    if (!Object.keys(this.boardData).length) {
+      this.subscriptions.push(
+        this.service.globalDashConfigData.subscribe((boardData) => {
+          if (boardData) {
+            this.processBoardData(boardData);
+          } else {
+            // error
+            console.log('Problemo')
+          }
+        })
+      );
+    } else {
+      this.processBoardData(this.boardData);
+    }
+  }
+
+  processBoardData(boardData) {
+    this.boardData = boardData;
+    let selectedBoard = boardData[this.selectedType].filter((board => board.boardName.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    if (selectedBoard) {
+      this.masterData['kpiList'] = selectedBoard.kpis;
+      let newMasterData = {
+        'kpiList': []
+      };
+      this.masterData['kpiList'].forEach(element => {
+        element = { ...element, ...element.kpiDetail };
+        delete element.kpiDetail;
+        newMasterData['kpiList'].push(element);
+      });
+      this.masterData['kpiList'] = newMasterData.kpiList;
+      this.kanbanRequired = selectedBoard.filters.kanbanRequired;
+      this.parentFilterConfig = selectedBoard.filters.parentFilter;
+      this.primaryFilterConfig = selectedBoard.filters.primaryFilter;
+      this.getFiltersData();
+    }
+  }
+
+  getFiltersData() {
+    if ((!Object.keys(this.filterDataArr).length || this.selectedTypeChanged) && !this.filterDataArr[this.selectedType]) {
+      this.kanban = this.selectedType === 'scrum' ? false : true;
+      this.selectedFilterData = {};
+      this.selectedFilterData['kanban'] = this.kanban;
+      this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+      this.cdr.detectChanges();
+      this.subscriptions.push(
+        this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
+          if (filterApiData['success']) {
+            this.filterDataArr[this.selectedType] = filterApiData['data'];
+            this.processFilterData(filterApiData['data']);
+          } else {
+            // error
+          }
+        })
+      );
+    } else {
+      this.processFilterData(this.filterDataArr[this.selectedType]);
+    }
+  }
+
+  processFilterData(data) {
+    data.sort((a, b) => a.level - b.level);
+    this.filterData = data.reduce((result, currentItem) => {
+      const category = currentItem.labelName;
+      if (!result[category]) {
+        result[category] = [];
+      }
+
+      result[category].push(currentItem);
+      return result;
+    }, {});
+    console.log(this.filterData);
+  }
+
+  handleParentFilterChange(event) {
+    if (typeof event === 'string') {
+      this.selectedLevel = event?.toLowerCase();
+    } else {
+      this.selectedLevel = event;
+    }
+  }
+
+  setColors(data) {
+    let colorsArr = ['#079FFF', '#cdba38', '#00E6C3', '#fc6471', '#bd608c', '#7d5ba6']
+    this.colorObj = {};
+    for (let i = 0; i < data?.length; i++) {
+      if (data[i] && data[i].nodeId) {
+        this.colorObj[data[i].nodeId] = { nodeName: data[i].nodeName, color: colorsArr[i], nodeId: data[i].nodeId }
+      }
+    }
+    if (Object.keys(this.colorObj).length) {
+      this.service.setColorObj(this.colorObj);
+    }
+  }
+
+  getObjectKeys(obj) {
+    if (obj && Object.keys(obj).length) {
+      return Object.keys(obj);
+    } else {
+      return [];
+    }
+  }
+
+  removeFilter(id) {
+    if (Object.keys(this.colorObj).length > 1) {
+      delete this.colorObj[id];
+      this.service.setColorObj(this.colorObj);
+    }
+  }
+
+  handlePrimaryFilterChange(event) {
+    if (event && event.length) {
+      this.selectedTypeChanged = false;
+      this.filterApplyData['level'] = event[0].level;
+      this.filterApplyData['label'] = event[0].labelName;
+      this.filterApplyData['selectedMap'] = {};
+      console.log(this.selectedLevel);
+      if (typeof this.selectedLevel === 'string') {
+        Object.keys(this.filterData).forEach((filterLevel) => {
+          if (filterLevel !== this.selectedLevel.toLowerCase()) {
+            this.filterApplyData['selectedMap'][filterLevel] = [];
+          } else {
+            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+          }
+        });
+      } else {
+        Object.keys(this.filterData).forEach((filterLevel) => {
+          if (filterLevel !== this.selectedLevel.emittedLevel.toLowerCase()) {
+            this.filterApplyData['selectedMap'][filterLevel] = [];
+          } else {
+            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+          }
+        });
+      }
+
+      if (!this.kanban) {
+        this.filterApplyData['ids'] = [...event.map((proj) => proj.nodeId)];
+        delete this.filterApplyData['startDate'];
+        delete this.filterApplyData['endDate'];
+        delete this.filterApplyData['selectedMap']['date'];
+        delete this.filterApplyData['selectedMap']['release'];
+        delete this.filterApplyData['selectedMap']['sqd'];
+      } else {
+        this.filterApplyData['ids'] = [5];
+        this.filterApplyData['startDate'] = '';
+        this.filterApplyData['endDate'] = '';
+        this.filterApplyData['selectedMap']['date'] = ['WEEKS'];
+        this.filterApplyData['selectedMap']['release'] = [];
+        this.filterApplyData['selectedMap']['sqd'] = [];
+      }
+
+      this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
+
+      // setTimeout(() => {
+      this.service.select(this.masterData, this.filterDataArr[this.selectedType], this.filterApplyData, this.selectedTab, false, true);
+      this.setColors(event);
+      // }, 0);
+    }
+  }
+
+}

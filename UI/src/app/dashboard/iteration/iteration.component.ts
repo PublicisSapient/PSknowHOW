@@ -222,7 +222,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if (this.service.getDashConfigData()) {
+    if (this.service.getDashConfigData() && $event?.filterApplyData?.level === 6) {
       this.activeIndex = 0;
       this.configGlobalData = this.service.getDashConfigData()['scrum']?.filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
       this.processKpiConfigData();
@@ -243,7 +243,7 @@ export class IterationComponent implements OnInit, OnDestroy {
               kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId).filter((kpiId) => kpiId === 'kpi154');
             }
             const selectedSprint = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['sprint'][0])[0];
-            this.selectedProjectId = selectedSprint.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
+            this.selectedProjectId = selectedSprint?.nodeId?.substring(selectedSprint.nodeId.lastIndexOf('_') + 1, selectedSprint.nodeId.length);
             this.checkForAssigneeDataAndSetupTabs();
 
             const today = new Date().toISOString().split('T')[0];
@@ -1029,6 +1029,9 @@ export class IterationComponent implements OnInit, OnDestroy {
       "nodeChildId": this.filterApplyData['selectedMap']?.sprint[0],
       'kpiIds': []
     };
+    if(!Array.isArray(requestObj.nodes)) {
+      requestObj.nodes = [requestObj.nodes]
+    }
     if (kpiId) {
       requestObj['kpiIds'] = [kpiId];
       this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {

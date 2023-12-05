@@ -9,6 +9,7 @@ import { first } from 'rxjs/operators';
 })
 export class HeaderComponent implements OnInit {
   clientLogo:string='';
+  totalRequestCount: number = 0;
 
   constructor(private httpService: HttpService,) { }
 

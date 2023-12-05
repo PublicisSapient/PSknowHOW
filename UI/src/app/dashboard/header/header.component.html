@@ -4,7 +4,7 @@
             <img *ngIf="clientLogo" src={{clientLogo}} (click)="navigateToHomePage()" alt="Logo" />
             <img *ngIf="!clientLogo" src="assets/img/sapientLogo.png" (click)="navigateToHomePage()" alt="Logo" />
         </div>
-    
+
         <ul>
             <li><a class="link" routerLink="/dashboard">Dashboard</a></li>
         </ul>
@@ -24,28 +24,26 @@
                    {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                 </p>
             </div> -->
-            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
-               (click)="notification.toggle($event)" role="button">
-               <img src="../../../assets/img/icon-comment.png" class="p-mr-2" alt="Comment"/>
-               <span *ngIf="totalRequestCount > 0" class="count">{{commentCount}}</span>
+            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper" role="button">
+                <img src="../../../assets/img/icon-comment.png" class="p-mr-2" alt="Comment" />
+                <span *ngIf="totalRequestCount > 0" class="count">{{commentCount}}</span>
             </div>
-            
-            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper"
-               (click)="notification.toggle($event)" role="button">
-               <img src="../../../assets/img/icon-notification.png" class="p-mr-2" alt="Notification"/>
-               <span *ngIf="totalRequestCount > 0" class="count">{{totalRequestCount}}</span>
+
+            <div class="p-p-2 rounded p-mr-3 filter-btn noti-btn-wraper" role="button">
+                <img src="../../../assets/img/icon-notification.png" class="p-mr-2" alt="Notification" />
+                <span *ngIf="totalRequestCount > 0" class="count">{{totalRequestCount}}</span>
             </div>
 
             <div class="p-d-flex p-align-center p-jc-between" role="button">
                 <img src="assets/img/icon-avatar.png" alt="Avatar" />
                 <div>
                     <div class="profile-budge cursor-pointer">
-                       <!-- {{username}} -->
+                        <!-- {{username}} -->
                     </div>
                     <!-- <h5>{{role}}</h5> -->
                 </div>
-                
-             </div>
+
+            </div>
         </div>
     </nav>
 
