@@ -351,7 +351,9 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
   handleKpiClick(){
     const obj = {
       'kpiName': this.kpiData?.kpiName,
-      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource,
+      'filter1':null,
+      'filter2':null
     }
     this.triggerGaEvent(obj)
   }

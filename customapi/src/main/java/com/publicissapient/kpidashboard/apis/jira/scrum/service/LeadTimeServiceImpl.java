@@ -265,9 +265,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 						LEAD_TIME, cycleTimeValidationData, issueTypes);
 				leadTimeList.add(cycleTimeValidationData);
 			}
-			return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node, issueTypes);
 		}
-		return new LinkedHashMap<>();
+		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node);
 	}
 
 	/**
@@ -289,10 +288,6 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 				Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime,  (existing, replacement) -> existing));
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 
-	/*	List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
-				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream))
-				.map(JiraIssueCustomHistory::getStoryType).distinct().collect(Collectors.toList());
-*/
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {
 				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType,

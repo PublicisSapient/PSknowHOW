@@ -483,8 +483,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "jiraLiveStatusPDA", "jiraLiveStatusKPI152",
 					"jiraLiveStatusKPI151",
 
-					"excludeRCAFromKPI82", "excludeRCAFromKPI135", "excludeRCAFromKPI14", "excludeRCAFromQAKPI111",
-					"excludeRCAFromKPI133",
+					"includeRCAForKPI82", "includeRCAForKPI135", "includeRCAForKPI14", "includeRCAForQAKPI111",
+					"includeRCAForKPI133",
 
 					"resolutionTypeForRejectionKPI28", "resolutionTypeForRejectionKPI34",
 					"resolutionTypeForRejectionKPI37", "resolutionTypeForRejectionKPI35",

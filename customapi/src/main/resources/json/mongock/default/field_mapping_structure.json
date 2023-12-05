@@ -636,48 +636,48 @@
     ]
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI82" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI82" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'FTPR' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'FTPR' calculation"
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI135" ,
-    "fieldLabel" : "Defect RCA exclusion from Quality KPIs" ,
+    "fieldName" : "includeRCAForKPI135" ,
+    "fieldLabel" : "Defect RCA inclusion for Quality KPIs" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition" : "The defects tagged to priority values selected in this field on Mappings screen will be included."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI14" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI14" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Defect Injection rate' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Defect Injection rate' calculation."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromQAKPI111" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForQAKPI111" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Defect Density' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Defect Density' calculation."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI133" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI133" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Quality Status' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Quality Status' calculation."
     }
   } ,
   {
