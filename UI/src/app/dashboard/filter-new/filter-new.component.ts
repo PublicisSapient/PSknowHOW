@@ -55,7 +55,6 @@ export class FilterNewComponent implements OnInit {
     }
     this.filterApplyData = {};
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-    this.getDashbaordConfig();
   }
 
   getDashbaordConfig() {

@@ -19,7 +19,8 @@ export class ParentFilterComponent implements OnChanges {
   constructor(private helperService: HelperService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.filterData && Object.keys(this.filterData).length) {
+    if ((changes['selectedTab'] && changes['selectedTab']?.currentValue !== changes['selectedTab']?.previousValue) ||
+    changes['selectedType'] && changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue) {
       if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
         this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
