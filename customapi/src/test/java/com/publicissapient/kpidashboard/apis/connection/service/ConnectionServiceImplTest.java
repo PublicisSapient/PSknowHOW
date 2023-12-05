@@ -228,7 +228,7 @@ public class ConnectionServiceImplTest {
 		dataConnection1.add(listDataConnection1);
 		String type = "GitLab";
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
-		when(connectionRepository.findByType(type)).thenReturn(dataConnection1);
+		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection1);
 		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
 		assertThat("status", response.getSuccess(), equalTo(true));
 
@@ -518,7 +518,7 @@ public class ConnectionServiceImplTest {
 		dataConnection1.add(listDataConnection);
 		dataConnection1.add(listDataConnection1);
 		String type = "GitLab";
-		when(connectionRepository.findByType(type)).thenReturn(dataConnection1);
+		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection1);
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(false);
 		when(authenticationService.getLoggedInUser()).thenReturn("user91");
 		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
