@@ -3714,7 +3714,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   } ,
@@ -3740,7 +3740,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false ,
     "kpiSubCategory" : "Epic View"
