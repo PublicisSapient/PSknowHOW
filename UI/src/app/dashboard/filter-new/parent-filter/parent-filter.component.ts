@@ -10,6 +10,8 @@ import { HelperService } from 'src/app/services/helper.service';
 export class ParentFilterComponent implements OnChanges {
   @Input() filterData = null;
   @Input() parentFilterConfig: {};
+  @Input() selectedType: string = '';
+  @Input() selectedTab: string = '';
   filterLevels: string[];
   selectedLevel: any;
   additionalFilterLevels = ['release', 'sprint', 'sqd'];
@@ -18,12 +20,12 @@ export class ParentFilterComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (this.filterData && Object.keys(this.filterData).length) {
-      if (changes['filterData'] && this['parentFilterConfig']['labelName'] === 'Organization Level') {
-        this.filterLevels = Object.keys(changes['filterData'].currentValue);
+      if (this['parentFilterConfig']['labelName'] === 'Organization Level') {
+        this.filterLevels = Object.keys(this.filterData);
         this.filterLevels = this.filterLevels.filter((level) => !this.additionalFilterLevels.includes(level));
 
         setTimeout(() => {
-          if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
+          if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
             this.selectedLevel = this.filterLevels[this.filterLevels.length - 1];
           }
           this.onSelectedLevelChange.emit(this.selectedLevel);
@@ -35,7 +37,7 @@ export class ParentFilterComponent implements OnChanges {
           this.filterLevels = this.helperService.sortAlphabetically(this.filterLevels);
 
           setTimeout(() => {
-            if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel) {
+            if ((changes['parentFilterConfig'] && changes['parentFilterConfig'].previousValue?.labelName !== changes['parentFilterConfig'].currentValue.labelName) || !this.selectedLevel || (changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
               this.selectedLevel = this.filterLevels[0];
             }
             let selectedNodeId = this.filterData[this['parentFilterConfig']['labelName'].toLowerCase()].filter((filter) => filter.nodeName === this.selectedLevel)[0].nodeId;

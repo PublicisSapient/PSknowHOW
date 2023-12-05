@@ -11,8 +11,8 @@ import { HelperService } from 'src/app/services/helper.service';
 export class PrimaryFilterComponent implements OnChanges, OnInit {
   @Input() filterData = null;
   @Input() selectedLevel: any = '';
-  @Input() typeChanged: boolean = false;
   @Input() primaryFilterConfig: {};
+  @Input() selectedType: string = '';
   filters: any[];
   selectedFilters: any[] = [];
   subscriptions: any[] = [];
@@ -27,16 +27,19 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
       if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
         this.filters = this.filterData[this.selectedLevel];
       } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
-        this.filters = this.filterData[this.primaryFilterConfig['defaultLevel'].labelName];
+        this.filters = this.filterData[this.selectedLevel.emittedLevel.toLowerCase()];
         // check for iterations and releases
         if (this.selectedLevel.nodeType.toLowerCase() === 'project') {
           this.filters = this.filters.filter((filter) => filter.parentId === this.selectedLevel.nodeId);
         } else {
           this.filters = this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
         }
+      } else if(!this.selectedLevel){
+        this.filters = [];
+        this.selectedFilters = [];
       }
 
-      if (this.filters && this.filters.length && changes['selectedLevel']) {
+      if (this.filters && this.filters.length && (changes['selectedLevel'] || changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
         setTimeout(() => {
           this.selectedFilters = [];
           this.filters = this.helperService.sortAlphabetically(this.filters);

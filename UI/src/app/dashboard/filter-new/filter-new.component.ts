@@ -9,7 +9,6 @@ import { SharedService } from 'src/app/services/shared.service';
   styleUrls: ['./filter-new.component.css']
 })
 export class FilterNewComponent implements OnInit {
-  filterData = {};
   filterDataArr = {};
   masterData = {};
   filterApplyData = {};
@@ -23,7 +22,6 @@ export class FilterNewComponent implements OnInit {
   kanbanRequired: boolean = false;
   parentFilterConfig: any = {};
   primaryFilterConfig: any = {};
-  selectedTypeChanged: boolean = false;
   selectedNodeIdArr: any = {
     "basicProjectConfigIds": []
   };
@@ -42,6 +40,7 @@ export class FilterNewComponent implements OnInit {
         .subscribe(data => {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
+          this.selectedLevel = null;
           this.getDashbaordConfig();
         })
     )
@@ -49,14 +48,14 @@ export class FilterNewComponent implements OnInit {
 
   setSelectedType(type) {
     this.selectedType = type?.toLowerCase();
-    this.selectedTypeChanged = true;
-    this.filterApplyData = {};
-    this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
     if (type.toLowerCase() === 'kanban') {
       this.kanban = true;
     } else {
       this.kanban = false;
     }
+    this.filterApplyData = {};
+    this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+    this.getDashbaordConfig();
   }
 
   getDashbaordConfig() {
@@ -98,7 +97,7 @@ export class FilterNewComponent implements OnInit {
   }
 
   getFiltersData() {
-    if ((!Object.keys(this.filterDataArr).length || this.selectedTypeChanged) && !this.filterDataArr[this.selectedType]) {
+    if (!Object.keys(this.filterDataArr).length || !this.filterDataArr[this.selectedType]) {
       this.kanban = this.selectedType === 'scrum' ? false : true;
       this.selectedFilterData = {};
       this.selectedFilterData['kanban'] = this.kanban;
@@ -107,30 +106,28 @@ export class FilterNewComponent implements OnInit {
       this.subscriptions.push(
         this.httpService.getFilterData(this.selectedFilterData).subscribe((filterApiData) => {
           if (filterApiData['success']) {
-            this.filterDataArr[this.selectedType] = filterApiData['data'];
             this.processFilterData(filterApiData['data']);
           } else {
             // error
           }
         })
       );
-    } else {
-      this.processFilterData(this.filterDataArr[this.selectedType]);
     }
   }
 
   processFilterData(data) {
-    data.sort((a, b) => a.level - b.level);
-    this.filterData = data.reduce((result, currentItem) => {
-      const category = currentItem.labelName;
-      if (!result[category]) {
-        result[category] = [];
-      }
+    if (Array.isArray(data)) {
+      data.sort((a, b) => a.level - b.level);
+      this.filterDataArr[this.selectedType] = data.reduce((result, currentItem) => {
+        const category = currentItem.labelName;
+        if (!result[category]) {
+          result[category] = [];
+        }
 
-      result[category].push(currentItem);
-      return result;
-    }, {});
-    console.log(this.filterData);
+        result[category].push(currentItem);
+        return result;
+      }, {});
+    }
   }
 
   handleParentFilterChange(event) {
@@ -171,13 +168,12 @@ export class FilterNewComponent implements OnInit {
 
   handlePrimaryFilterChange(event) {
     if (event && event.length) {
-      this.selectedTypeChanged = false;
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
       this.filterApplyData['selectedMap'] = {};
       console.log(this.selectedLevel);
       if (typeof this.selectedLevel === 'string') {
-        Object.keys(this.filterData).forEach((filterLevel) => {
+        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
           if (filterLevel !== this.selectedLevel.toLowerCase()) {
             this.filterApplyData['selectedMap'][filterLevel] = [];
           } else {
@@ -185,7 +181,7 @@ export class FilterNewComponent implements OnInit {
           }
         });
       } else {
-        Object.keys(this.filterData).forEach((filterLevel) => {
+        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
           if (filterLevel !== this.selectedLevel.emittedLevel.toLowerCase()) {
             this.filterApplyData['selectedMap'][filterLevel] = [];
           } else {
@@ -195,14 +191,18 @@ export class FilterNewComponent implements OnInit {
       }
 
       if (!this.kanban) {
-        this.filterApplyData['ids'] = [...event.map((proj) => proj.nodeId)];
+        this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
         delete this.filterApplyData['startDate'];
         delete this.filterApplyData['endDate'];
         delete this.filterApplyData['selectedMap']['date'];
         delete this.filterApplyData['selectedMap']['release'];
         delete this.filterApplyData['selectedMap']['sqd'];
       } else {
-        this.filterApplyData['ids'] = [5];
+        if (this.selectedTab === 'Iteration') {
+          this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
+        } else {
+          this.filterApplyData['ids'] = [5];
+        }
         this.filterApplyData['startDate'] = '';
         this.filterApplyData['endDate'] = '';
         this.filterApplyData['selectedMap']['date'] = ['WEEKS'];
@@ -213,7 +213,11 @@ export class FilterNewComponent implements OnInit {
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
 
       // setTimeout(() => {
-      this.service.select(this.masterData, this.filterDataArr[this.selectedType], this.filterApplyData, this.selectedTab, false, true);
+      if (typeof this.selectedLevel === 'string') {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true);
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true);
+      }
       this.setColors(event);
       // }, 0);
     }

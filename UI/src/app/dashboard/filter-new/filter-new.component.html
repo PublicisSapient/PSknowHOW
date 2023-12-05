@@ -8,12 +8,12 @@
                 Kanban</div>
         </div>
     </div>
-    <div class="p-d-flex" *ngIf="filterData">
-        <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" [filterData]="filterData"
-            (onSelectedLevelChange)="handleParentFilterChange($event)"
+    <div class="p-d-flex" *ngIf="filterDataArr[selectedType]">
+        <app-parent-filter *ngIf="getObjectKeys(parentFilterConfig).length" class="p-mr-2" [filterData]="filterDataArr[selectedType]"
+            (onSelectedLevelChange)="handleParentFilterChange($event)" [selectedType]="selectedType" [selectedTab]="selectedTab"
             [parentFilterConfig]="parentFilterConfig"></app-parent-filter>
-        <app-primary-filter [filterData]="filterData" [selectedLevel]="selectedLevel"
-            [typeChanged]="selectedTypeChanged" [primaryFilterConfig]="primaryFilterConfig"
+        <app-primary-filter [filterData]="filterDataArr[selectedType]" [selectedLevel]="selectedLevel" [selectedType]="selectedType"
+            [primaryFilterConfig]="primaryFilterConfig"
             (onPrimaryFilterChange)="handlePrimaryFilterChange($event)"></app-primary-filter>
     </div>
     <div>
