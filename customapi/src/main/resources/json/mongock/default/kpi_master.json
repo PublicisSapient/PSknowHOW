@@ -3944,6 +3944,7 @@
     "thresholdValue": "",
     "kanban": false,
     "chartType": "stackedColumn",
+    "isAggregationStacks" : false ,
     "xAxisLabel": "Range",
     "yAxisLabel": "Days",
     "isAdditionalFilterSupport": false,

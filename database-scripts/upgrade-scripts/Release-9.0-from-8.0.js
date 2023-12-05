@@ -1035,6 +1035,7 @@ db.kpi_master.insertOne(
       "kpiFilter": "dropDown",
       "boxType": "chart",
       "calculateMaturity": false,
+      "isAggregationStacks" : false ,
       "kpiInfo" : {
       "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
       "details": [

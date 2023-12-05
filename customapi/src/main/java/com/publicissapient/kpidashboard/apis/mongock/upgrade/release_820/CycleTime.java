@@ -61,6 +61,7 @@ public class CycleTime {
 				.append("chartType", "stackedColumn")
 				.append("yAxisLabel", "Days").append("xAxisLabel", "Range").append("isAdditionalFilterSupport", false)
 				.append("kpiFilter", "dropDown").append("boxType", "chart").append("calculateMaturity", false)
+				.append("isAggregationStacks", false)
 				.append("kpiInfo.definition",
 						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
 				.append("kpiInfo.formula", null)

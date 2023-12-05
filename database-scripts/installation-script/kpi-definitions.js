@@ -3911,6 +3911,7 @@ db.getCollection('kpi_master').insertMany(
       "thresholdValue": "",
       "kanban": false,
       "chartType": "stackedColumn",
+      "isAggregationStacks" : false ,
       "xAxisLabel": "",
       "yAxisLabel": "Days",
       "isAdditionalFilterSupport": false,
