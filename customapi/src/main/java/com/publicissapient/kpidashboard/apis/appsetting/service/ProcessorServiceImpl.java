@@ -149,7 +149,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		if (msg != null) {
 			String[] parts = msg.split(":");
-			return (parts.length > 1) ? parts[1].trim().replaceAll("\"", "") : "";
+			return (parts.length > 1) ? parts[1].trim().replace("\"", "") : "";
 		} else {
 			return "";
 		}
