@@ -40,6 +40,11 @@ export class FilterNewComponent implements OnInit {
         .subscribe(data => {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
+          if (this.selectedType.toLowerCase() === 'kanban') {
+            this.kanban = true;
+          } else {
+            this.kanban = false;
+          }
           this.getDashbaordConfig();
         })
     )
