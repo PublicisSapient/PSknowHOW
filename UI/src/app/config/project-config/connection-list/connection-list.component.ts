@@ -173,7 +173,7 @@ export class ConnectionListComponent implements OnInit {
         {
           field: 'sshUrl',
           isEnabled: false
-        }, 
+        },
       ],
       accessTokenEnabled:[],
       bearerToken: [
@@ -496,7 +496,7 @@ export class ConnectionListComponent implements OnInit {
       this.helper.getGlobalConfig();
       this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
     }
-    
+
     // filtering connections based on repoToolFlag
     this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList,'label')
     this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels,'connectionLabel')
@@ -931,6 +931,7 @@ export class ConnectionListComponent implements OnInit {
 
   editConnection(connection) {
     this.connection = { ...connection };
+    this.connection['username'] = '';
     this.isNewlyConfigAdded = false;
     this.selectedConnectionType = this.connection.type;
     if (connection.type?.toLowerCase() == 'jira') {
@@ -1045,7 +1046,7 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['sshUrl'].disable();
     } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
       this.basicConnectionForm.controls['sshUrl'].enable();
-    }  
+    }
 
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
       this.basicConnectionForm.controls['password'].disable();
@@ -1376,7 +1377,7 @@ export class ConnectionListComponent implements OnInit {
         this.testingConnection = false;
       });
         break;
-        
+
       case 'RepoTool':
         this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
