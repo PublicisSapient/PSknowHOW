@@ -113,11 +113,13 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 */
 	@Override
 	public ServiceResponse getAllConnection() {
-		final List<Connection> connectionData = connectionRepository.findAllWithoutSecret();
-		if (CollectionUtils.isEmpty(connectionData)) {
+		final List<Connection> data = connectionRepository.findAllWithoutSecret();
+		if (CollectionUtils.isEmpty(data)) {
 			log.info("Db has no connectionData");
-			return new ServiceResponse(false, "No connectionData in connection db", connectionData);
+			return new ServiceResponse(false, "No connectionData in connection db", data);
 		}
+		List<Connection> connectionData = new ArrayList<>(data);
+		connectionData.forEach(original -> original.setUsername(maskStrings(original.getUsername())));
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
 			log.info("Successfully fetched all connectionData");
@@ -138,6 +140,53 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return new ServiceResponse(true, "Found all connectionData", connectionData);
 	}
 
+	private String maskStrings(String username) {
+		if (StringUtils.isNotEmpty(username)) {
+			if (username.contains("@")) {
+				String[] parts = username.split("@");
+				if (parts.length == 2) {
+					String localPart = parts[0];
+					String domainPart = parts[1];
+					String maskedLocalPart = maskingLogic(localPart);
+					return maskedLocalPart + "@" + domainPart;
+				}
+			} else {
+				return maskingLogic(username);
+			}
+		}
+		return username;
+	}
+
+	/**
+	 * if length is more than 2 and less than 8, mask the last 3 characters if lenth
+	 * is more than 8 mask the last 3 character and the 4th character
+	 * 
+	 * @param userInput
+	 *            inputString
+	 * @return maskedString
+	 */
+	private String maskingLogic(String userInput) {
+		if (userInput.length() > 2) {
+			userInput = maskCharacters(userInput);
+			if (userInput.length() >= 8) {
+				StringBuilder stringBuilder = new StringBuilder(userInput);
+				stringBuilder.setCharAt(4, '*');
+				userInput = stringBuilder.toString();
+			}
+		}
+		return userInput;
+	}
+
+	private static String maskCharacters(String input) {
+		int length = input.length();
+		int startIndex = length - 3;
+		StringBuilder maskedString = new StringBuilder(input);
+		for (int i = startIndex; i < length; i++) {
+			maskedString.setCharAt(i, '*');
+		}
+		return maskedString.toString();
+	}
+
 	/**
 	 * Fetch a connection by type.
 	 *
@@ -153,6 +202,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		List<Connection> typeList = getConnectionList(type);
+		typeList.forEach(original -> original.setUsername(maskStrings(original.getUsername())));
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -179,12 +229,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	// To do - Handle scenario once github action screen is developed
 	private List<Connection> getConnectionList(String type) {
+		List<Connection> allWithoutSecret = connectionRepository.findAllWithoutSecret();
 		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
-			return connectionRepository.findByType(REPO_TOOLS).stream()
-					.filter(connection -> connection.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB))
+			return allWithoutSecret.stream()
+					.filter(connection -> connection.getType().equalsIgnoreCase(REPO_TOOLS)
+							&& connection.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB))
 					.collect(Collectors.toList());
 		}
-		return connectionRepository.findByType(type);
+		return allWithoutSecret.stream().filter(connection -> connection.getType().equalsIgnoreCase(type))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -227,7 +280,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
-				if(conn.getType().equals(REPO_TOOLS)) {
+				if (conn.getType().equals(REPO_TOOLS)) {
 					setBaseUrlForRepoTool(conn);
 				}
 				connectionUser.add(username);
@@ -252,10 +305,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 	}
 
 	private void setBaseUrlForRepoTool(Connection conn) {
-		if(conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
+		if (conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(TOOL_GITHUB.toLowerCase());
 			Matcher matcher = URL_PATTERN.matcher(repoToolsProvider.getTestApiUrl());
-			if(matcher.find())
+			if (matcher.find())
 				conn.setBaseUrl(matcher.group(1).concat(matcher.group(2)));
 		}
 	}
@@ -323,7 +376,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
 			break;
 		case REPO_TOOLS:
-			if(inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
+			if (inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
 				existingConnection = currConn;
 			break;
 		default:
@@ -489,7 +542,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection.setApiKey(connection.getApiKey());
 		}
 		existingConnection.setApiKeyFieldName(connection.getApiKeyFieldName());
-		if(connection.getType().equals(REPO_TOOLS))
+		if (connection.getType().equals(REPO_TOOLS))
 			setBaseUrlForRepoTool(existingConnection);
 		else
 			existingConnection.setBaseUrl(connection.getBaseUrl());
