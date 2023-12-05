@@ -86,6 +86,8 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 	private static final String INTAKE_TO_DOR = "Intake to DOR";
 	private static final String DOR_TO_DOD = "DOR to DOD";
 	private static final String DOD_TO_LIVE = "DOD to Live";
+	private static final String SEARCH_BY_RANGE = "Search By Range";
+	private static final String SEARCH_BY_ISSUTYPE = "Search By IssueType";
 
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
@@ -153,9 +155,9 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				kpiElement.setExcelColumns(KPIExcelColumn.CYCLE_TIME.getColumns());
 				kpiElement.setExcelData(excelData);
 			}
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions("Search By Range",
+			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_RANGE,
 					new LinkedHashSet<>(rangeList));
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions("Search By IssueType",
+			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUTYPE,
 					new HashSet<>(allIssueTypes));
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 			kpiElement.setFilters(iterationKpiFilters);
@@ -266,8 +268,8 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 					BacklogKpiHelper.setLiveTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime,
 							liveStatus);
 					BacklogKpiHelper.setReadyTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime, dor);
-					BacklogKpiHelper.setDODTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime,
-							dodStatus, storyFirstStatus, dodStatusDateMap);
+					BacklogKpiHelper.setDODTime(statusUpdateLog, updateTime, dodStatus, storyFirstStatus,
+							dodStatusDateMap);
 				});
 
 				DateTime minUpdatedOn = CollectionUtils.isNotEmpty(dodStatusDateMap.values())

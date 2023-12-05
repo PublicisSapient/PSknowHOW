@@ -132,16 +132,13 @@ public final class BacklogKpiHelper {
 		}
 	}
 
-	public static void setDODTime(CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,
-			JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dodStatus, String storyFirstStatus,
+	public static void setDODTime(JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dodStatus, String storyFirstStatus,
 			Map<String, DateTime> dodStatusDateMap) {
 		// reopen sceneario
 		if (CollectionUtils.isNotEmpty(dodStatus) && statusUpdateLog.getChangedFrom() != null
 				&& dodStatus.contains(statusUpdateLog.getChangedFrom().toLowerCase())
 				&& storyFirstStatus.equalsIgnoreCase(statusUpdateLog.getChangedTo())) {
 			dodStatusDateMap.clear();
-			// cycleTime.setDeliveryTime(null);
-			// cycleTimeValidationData.setDodDate(null);
 		} // taking the delivery date of first closed status date of last closed cycle
 		if (CollectionUtils.isNotEmpty(dodStatus) && dodStatus.contains(statusUpdateLog.getChangedTo().toLowerCase())) {
 			if (dodStatusDateMap.containsKey(statusUpdateLog.getChangedTo().toLowerCase())) {
