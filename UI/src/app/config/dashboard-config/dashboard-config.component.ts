@@ -61,7 +61,6 @@
           if (response[0] === 'error') {
             this.messageService.add({ severity: 'error', summary: 'Internal Server Error !!!' });
           } else {
-            this.selectedProject = this.userProjects[0];
             if (response.success === true) {
               this.kpiListData = response.data;
               this.setFormControlData();

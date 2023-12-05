@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.common.repository.application.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,10 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 			toolObj.setRepositoryName(item.getRepositoryName());
 			toolObj.setProcessorItemList(item.getProcessorItemList());
 			if (CollectionUtils.isNotEmpty(item.getConnection())) {
-				toolObj.setUrl(item.getConnection().get(0).getBaseUrl());
+				String url = item.getToolName().equals(ProcessorConstants.REPO_TOOLS)
+						? item.getConnection().get(0).getHttpUrl()
+						: item.getConnection().get(0).getBaseUrl();
+				toolObj.setUrl(url);
 			}
 			tools.add(toolObj);
 		}

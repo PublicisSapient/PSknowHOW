@@ -62,16 +62,15 @@ public enum FieldMappingEnum {
 	KPI82("First Time Pass Rate", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentKPI82", "jiraKPI82StoryIdentification",
 					"jiraIssueDeliverdStatusKPI82", "resolutionTypeForRejectionKPI82", "jiraDefectRejectionStatusKPI82",
-					"defectPriorityKPI82", "excludeRCAFromKPI82", "jiraStatusForQaKPI82", "jiraFtprRejectStatusKPI82", "thresholdValueKPI82", "jiraLabelsKPI82")),
+					"defectPriorityKPI82", "includeRCAForKPI82", "jiraStatusForQaKPI82", "jiraFtprRejectStatusKPI82", "thresholdValueKPI82", "jiraLabelsKPI82")),
 
 	KPI135("First Time Pass Rate (Iteration)", KPISource.JIRA.name(),
 			Arrays.asList("jiraStatusForDevelopmentKPI135", "jiraKPI135StoryIdentification",
-					"jiraIterationCompletionStatusKPI135", "resolutionTypeForRejectionKPI135", "excludeRCAFromKPI135",
+					"jiraIterationCompletionStatusKPI135", "resolutionTypeForRejectionKPI135", "includeRCAForKPI135",
 					"jiraDefectRejectionStatusKPI135", "defectPriorityKPI135", "jiraDefectRejectionStatusKPI135",
-					"jiraStatusForQaKPI135", "jiraFtprRejectStatusKPI135")),
+					"jiraStatusForQaKPI135", "jiraFtprRejectStatusKPI135", "jiraLabelsKPI135")),
 
-	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraDorKPI3", "jiraDodKPI3",
-			"jiraLiveStatusKPI3", "storyFirstStatusKPI3")),
+	KPI3("Lead Time (Scrum)", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI3", "jiraLiveStatusKPI3", "thresholdValueKPI3")),
 
 	KPI34("Defect Removal Efficiency", KPISource.JIRA.name(),
 			Arrays.asList("jiraDefectRemovalStatusKPI34", "thresholdValueKPI34")),
@@ -95,13 +94,13 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraIterationCompletionStatusKPI136")),
 
 	KPI14("Defect Injection Rate", KPISource.JIRA.name(),
-			Arrays.asList("excludeRCAFromKPI14", "resolutionTypeForRejectionKPI14", "jiraDefectRejectionStatusKPI14",
+			Arrays.asList("includeRCAForKPI14", "resolutionTypeForRejectionKPI14", "jiraDefectRejectionStatusKPI14",
 					"defectPriorityKPI14", "jiraDefectInjectionIssueTypeKPI14", "jiraDefectCreatedStatusKPI14",
 					"jiraDodKPI14", "thresholdValueKPI14", "jiraLabelsKPI14")),
 
 	KPI111("Defect Density", KPISource.JIRA.name(),
 			Arrays.asList("jiraDodQAKPI111", "jiraQAKPI111IssueType", "defectPriorityQAKPI111",
-					"excludeRCAFromQAKPI111", "resolutionTypeForRejectionQAKPI111", "jiraDefectRejectionStatusQAKPI111",
+					"includeRCAForQAKPI111", "resolutionTypeForRejectionQAKPI111", "jiraDefectRejectionStatusQAKPI111",
 					"thresholdValueKPI111")),
 
 	KPI127("Production Defects Ageing", KPISource.JIRA.name(),
@@ -112,7 +111,7 @@ public enum FieldMappingEnum {
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "defectPriorityKPI133",
-					"excludeRCAFromKPI133", "jiraIterationCompletionStatusKPI133", "jiraItrQSIssueTypeKPI133")),
+					"includeRCAForKPI133", "jiraIterationCompletionStatusKPI133", "jiraItrQSIssueTypeKPI133")),
 
 	KPI126("Created vs Resolved defects", KPISource.JIRA.name(), Arrays.asList("jiraIssueDeliverdStatusKPI126")),
 
@@ -189,7 +188,8 @@ public enum FieldMappingEnum {
 	KPI16("Insprint Automation Coverage", KPISource.ZEPHYR.name(),
 			Arrays.asList("uploadDataKPI16", "thresholdValueKPI16")),
 
-	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161")),
+	KPI161("Iteration Readiness", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeNamesKPI161",
+			"jiraStatusForInProgressKPI161", "jiraStatusForRefinedKPI161", "jiraStatusForNotRefinedKPI161")),
 
 	KPI164("Scope Churn", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI164","thresholdValueKPI164")),
 
@@ -198,7 +198,7 @@ public enum FieldMappingEnum {
 
 	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI163")),
 
-	KPI150("Release Burnup", KPISource.JIRA.name(), Collections.singletonList("startDateCountKPI150")),
+	KPI150("Release BurnUp", KPISource.JIRA.name(), Arrays.asList("startDateCountKPI150","populateByDevDoneKPI150","jiraDevDoneStatusKPI150")),
 
 	KPI17("Unit Test Coverage", KPISource.SONAR.name(), Arrays.asList("thresholdValueKPI17")),
 
@@ -228,7 +228,11 @@ public enum FieldMappingEnum {
 
 	KPI166("Mean Time to Recover", KPISource.JIRA.name(), Arrays.asList("jiraStoryIdentificationKPI166","jiraDodKPI166","jiraProductionIncidentIdentification",
 			"jiraProdIncidentRaisedByCustomField" , "jiraProdIncidentRaisedByValue")),
-	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170"));
+
+	KPI170("Flow Efficiency", KPISource.JIRA.name(), Arrays.asList("jiraIssueWaitStateKPI170", "jiraIssueClosedStateKPI170")),
+
+	KPI171("Cycle Time", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI171", "jiraDorKPI171", "jiraDodKPI171",
+			"jiraLiveStatusKPI171", "storyFirstStatusKPI171"));
 
 	private List<String> fields;
 	private String kpiName;

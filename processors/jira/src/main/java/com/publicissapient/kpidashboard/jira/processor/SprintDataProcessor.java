@@ -38,5 +38,6 @@ public interface SprintDataProcessor {
 	 *            boardId
 	 * @return Set of SprintDetails
 	 */
-	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) throws IOException;
+	Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+			throws IOException;
 }

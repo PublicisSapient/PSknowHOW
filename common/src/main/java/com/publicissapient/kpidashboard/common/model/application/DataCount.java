@@ -72,6 +72,7 @@ public class DataCount implements Serializable {
 	private String startDate;
 	private String endDate;
 	private String kpiGroup;
+	private String url;
 
 	private List<String> sprintIds;
 	private List<String> sprintNames;

@@ -31,6 +31,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumnInfo;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.KpiInfo;
+import com.publicissapient.kpidashboard.common.model.application.MaturityLevel;
 import com.publicissapient.kpidashboard.common.model.application.TotalDefectAgingResponse;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 
@@ -80,6 +81,16 @@ public class KpiElement implements Serializable { // NOPMD
 	private String maturityValue;
 	private List<String> maturityRange;
 
+	public List<MaturityLevel> getMaturityLevel() {
+		return maturityLevel;
+	}
+
+	public void setMaturityLevel(List<MaturityLevel> maturityLevel) {
+		this.maturityLevel = maturityLevel;
+	}
+
+	private List<MaturityLevel> maturityLevel;
+
 	private List<String> xAxisValues;
 
 	// Excel Data related field. This filed contain vale of a KPI for each node
@@ -110,12 +121,14 @@ public class KpiElement implements Serializable { // NOPMD
 	// For Excel column Info
 	private List<KPIExcelColumnInfo> excelColumnInfo;
 	private transient Object filterDuration;
-	//used by second screen of DSV for sending all data
-    private transient Set<IterationKpiModalValue> issueData;
-	//used by first scrren of DSV for filtering
+	// used by second screen of DSV for sending all data
+	private transient Set<IterationKpiModalValue> issueData;
+	// used by first scrren of DSV for filtering
 	private transient List<Filter> filterData;
-	//used by second screen of DSV for filtering on status
+	// used by second screen of DSV for filtering on status
 	private transient List<Filter> standUpStatusFilter;
+	// used by CycleTime
+	private Boolean isAggregationStacks;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -846,9 +859,13 @@ public class KpiElement implements Serializable { // NOPMD
 		this.issueData = issueData;
 	}
 
-	public List<Filter> getFilterData() { return filterData; }
+	public List<Filter> getFilterData() {
+		return filterData;
+	}
 
-	public void setFilterData(List<Filter> filterData) { this.filterData = filterData; }
+	public void setFilterData(List<Filter> filterData) {
+		this.filterData = filterData;
+	}
 
 	public List<Filter> getStandUpStatusFilter() {
 		return standUpStatusFilter;
@@ -858,6 +875,12 @@ public class KpiElement implements Serializable { // NOPMD
 		this.standUpStatusFilter = standUpStatusFilter;
 	}
 
+	public Boolean getAggregationStacks() {
+		return isAggregationStacks;
+	}
 
+	public void setAggregationStacks(Boolean aggregationStacks) {
+		isAggregationStacks = aggregationStacks;
+	}
 
 }

@@ -201,7 +201,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
-//			ADD Production Incident field to feature
+			// ADD Production Incident field to feature
 			setProdIncidentIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setIssueTechStoryType(fieldMapping, issue, jiraIssue, fields);
 			jiraIssue.setAffectedVersions(getAffectedVersions(issue));
@@ -975,7 +975,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private void setProdIncidentIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
-												Map<String, IssueField> fields) {
+			Map<String, IssueField> fields) {
 		try {
 			if (CollectionUtils.isNotEmpty(featureConfig.getJiradefecttype()) && featureConfig.getJiradefecttype()
 					.stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
@@ -987,13 +987,18 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					if (CollectionUtils.isNotEmpty(commonLabel)) {
 						feature.setProductionIncident(true);
 					}
-				} else feature.setProductionIncident(null != featureConfig.getJiraProductionIncidentIdentification()
-                        && featureConfig.getJiraProductionIncidentIdentification().trim()
-                        .equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-                        && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
-                        && fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue() != null
-                        && isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraProdIncidentRaisedByValue(),
-                        fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()).getValue(), null));
+				} else
+					feature.setProductionIncident(null != featureConfig.getJiraProductionIncidentIdentification()
+							&& featureConfig.getJiraProductionIncidentIdentification().trim()
+									.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
+							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
+							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
+									.getValue() != null
+							&& isBugRaisedByValueMatchesRaisedByCustomField(
+									featureConfig.getJiraProdIncidentRaisedByValue(),
+									fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
+											.getValue(),
+									null));
 			}
 
 		} catch (Exception e) {

@@ -17,9 +17,15 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -34,11 +40,19 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.*;
+import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
+import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.*;
+import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
+import com.publicissapient.kpidashboard.apis.model.KpiElement;
+import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -97,25 +111,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.FIRST_TIME_PASS_RATE,
-				Arrays.asList("closed"));
-		/* #deepak ends changes */
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
-
-				/* #deepak starts changes */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 
@@ -124,15 +124,9 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		log.debug("[FTPR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes */
-		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
-		updateCacheAfterDBHit(map, KPICode.FIRST_TIME_PASS_RATE, Arrays.asList("closed"));
-		/* #deepak ends changes */
-
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
-				KPICode.FIRST_TIME_PASS_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
 		kpiElement.setTrendValueList(trendValues);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
 		log.debug("[STORYCOUNT-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -149,13 +143,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
-		/* #deepak starts changes */
-		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
-				.collect(Collectors.toList());
-		Map<String, Object> resultMap = new HashMap<>();
-		if (isNotEmpty(sprintLeafNodeListUpdated))
-			resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		/* #deepak ends changes */
+		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
@@ -169,7 +157,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Map<String, Object> finalResultMap = resultMap;
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			List<Double> addFilterFtprList = new ArrayList<>();
 			List<String> totalStoryIdList = new ArrayList<>();
@@ -177,7 +164,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					.forEach(totalStoryIdList::addAll);
 			sprintWiseTotalStoryIdList.put(sprint, totalStoryIdList);
 
-			List<JiraIssue> ftpStoriesList = ((List<JiraIssue>) finalResultMap.get(FIRST_TIME_PASS_STORIES)).stream()
+			List<JiraIssue> ftpStoriesList = ((List<JiraIssue>) resultMap.get(FIRST_TIME_PASS_STORIES)).stream()
 					.filter(jiraIssue -> jiraIssue.getSprintID().equals(sprint.getValue()))
 					.collect(Collectors.toList());
 			sprintWiseFTPListMap.put(sprint, ftpStoriesList);
@@ -193,58 +180,45 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, ftpStoriesList);
 		});
 		sprintLeafNodeList.forEach(node -> {
-			/* #deepak starts changes */
-			if (!node.isFromCache()) {
-				/* #deepak ends changes */
-				String trendLineName = node.getProjectFilter().getName();
-				String currentSprintComponentId = node.getSprintFilter().getId();
-				Pair<String, String> currentNodeIdentifier = Pair
-						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-				double ftprForCurrentLeaf;
 
-				if (sprintWiseFTPRMap.containsKey(currentNodeIdentifier)) {
-					ftprForCurrentLeaf = sprintWiseFTPRMap.get(currentNodeIdentifier);
-					// if for populating excel data
-					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-						List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
-						List<JiraIssue> ftpStoriesList = sprintWiseFTPListMap.get(currentNodeIdentifier);
-						Set<JiraIssue> jiraIssues = projectWiseStories
-								.get(node.getProjectFilter().getBasicProjectConfigId().toString());
-						Map<String, JiraIssue> issueMapping = new HashMap<>();
-						jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
-						KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList,
-								ftpStoriesList, excelData, issueMapping);
-					}
-				} else {
-					ftprForCurrentLeaf = 0.0d;
+			String trendLineName = node.getProjectFilter().getName();
+			String currentSprintComponentId = node.getSprintFilter().getId();
+			Pair<String, String> currentNodeIdentifier = Pair
+					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+			double ftprForCurrentLeaf;
+
+			if (sprintWiseFTPRMap.containsKey(currentNodeIdentifier)) {
+				ftprForCurrentLeaf = sprintWiseFTPRMap.get(currentNodeIdentifier);
+				// if for populating excel data
+				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+					List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
+					List<JiraIssue> ftpStoriesList = sprintWiseFTPListMap.get(currentNodeIdentifier);
+					Set<JiraIssue> jiraIssues = projectWiseStories
+							.get(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Map<String, JiraIssue> issueMapping = new HashMap<>();
+					jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));
+					KPIExcelUtility.populateFTPRExcelData(node.getSprintFilter().getName(), totalStoryIdList,
+							ftpStoriesList, excelData, issueMapping);
 				}
-
-				log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId,
-						node.getSprintFilter().getName(), ftprForCurrentLeaf);
-
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setValue(ftprForCurrentLeaf);
-				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-				// #deepak add projectid to datacount
-				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
-				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-
-				trendValueList.add(dataCount);
-				/* #deepak starts changes */
 			} else {
-				List<DataCount> dataCountList = trendValueList.stream()
-						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
-						.collect(Collectors.toList());
-				if (isNotEmpty(dataCountList))
-					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
+				ftprForCurrentLeaf = 0.0d;
 			}
-			/* #deepak ends changes */
+
+			log.debug("[FTPR-SPRINT-WISE][{}]. FTPR for sprint {}  is {}", requestTrackerId,
+					node.getSprintFilter().getName(), ftprForCurrentLeaf);
+
+			DataCount dataCount = new DataCount();
+			dataCount.setData(String.valueOf(Math.round(ftprForCurrentLeaf)));
+			dataCount.setSProjectName(trendLineName);
+			dataCount.setSSprintID(node.getSprintFilter().getId());
+			dataCount.setSSprintName(node.getSprintFilter().getName());
+			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+			dataCount.setValue(ftprForCurrentLeaf);
+			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+
+			trendValueList.add(dataCount);
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FIRST_TIME_PASS_RATE.getColumns());
@@ -297,7 +271,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
 					fieldMapping.getDefectPriorityKPI82());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
@@ -333,8 +307,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				uniqueProjectMap);
 		// do not change the order of remove methods
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType,
-				defectListWoDrop);
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, issuesBySprintAndType, defectListWoDrop);
 
 		KpiHelperService.removeRejectedStoriesFromSprint(sprintWiseStories, defectListWoDrop);
 
@@ -398,9 +371,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		List<JiraIssue> notFTPRDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
 			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
 				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
 						notFTPRDefects.add(jiraIssue);
 					}
 				}

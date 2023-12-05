@@ -176,7 +176,7 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
     const swimLaneHeight = 75;
     const height = issueList.length * swimLaneHeight + swimLaneHeight;
 
-    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options :[];
+    const openIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'open')?.options : [];
     const closedIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'done')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'done')?.options : [];
     const inProgressIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'in progress')?.options : [];
     const onHoldIssueStatus = this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options.length ? this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === 'on hold')?.options : [];
@@ -755,12 +755,18 @@ export class DailyScrumGraphComponent implements OnChanges, OnDestroy {
         .attr('y1', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .attr('y2', (d, i) => issuesList.length <= 1 ? swimLaneHeight / 2 : (y(i + 1) - y(i)) / 2)
         .style('stroke', function (d) {
-          let onHoldOrNot = onHoldIssueStatus.includes(d['Issue Status']) ? '#EB4545' : '#437495';
-          if (!onHoldIssueStatus.includes(d['Issue Status'])) {
-            let OverallDueDateExceeded = self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'];
-            return OverallDueDateExceeded ? '#DE1F1F80' : '#D8D8D8';
-          } else {
+          let onHold = onHoldIssueStatus.includes(d['Issue Status']);
+          let dueDateExceeded = self.compareDates(new Date(), d['Due Date']) && !d['Actual-Completion-Date'];
+          let closed = d['Actual-Completion-Date'] ? true : false;
+
+          if (onHold) {
             return '#EB4545';
+          } else if (dueDateExceeded && !closed) {
+            return '#DE1F1F80';
+          } else if (closed) {
+            return '#D8D8D8';
+          } else {
+            return '#437495';
           }
         })
         .style('stroke-width', function (d) { return d['isSubtask'] ? 1 : 4; })

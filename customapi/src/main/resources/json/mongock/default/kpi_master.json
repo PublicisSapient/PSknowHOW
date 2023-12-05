@@ -728,12 +728,34 @@
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : true ,
     "hideOverallFilter" : true ,
-    "maturityRange" : [
-      "-50" ,
-      "50-30" ,
-      "30-20" ,
-      "20-10" ,
-      "10-"
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-15",
+      "15-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212"
+      }
     ]
   } ,
   {
@@ -1174,15 +1196,42 @@
     "showTrend" : true ,
     "kpiFilter" : "multiSelectDropDown" ,
     "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
+    "aggregationCircleCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : true ,
-    "maturityRange" : [
-      "-1" ,
-      "1-2" ,
-      "2-5" ,
-      "5-10" ,
-      "10-"
+    "maturityRange": [
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": ">= 2 per week"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "Once per week"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "Once in 2 weeks"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "Once in 4 weeks"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": "< Once in 8 weeks"
+      }
     ]
   } ,
   {
@@ -2878,57 +2927,44 @@
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi3" ,
-    "kpiName" : "Lead Time" ,
-    "isDeleted" : "False" ,
-    "kpiCategory" : "Backlog" ,
-    "boxType" : "2_column" ,
-    "kpiBaseLine" : "0" ,
-    "thresholdValue" : "" ,
-    "defaultOrder" : 1 ,
-    "kpiUnit" : "Count" ,
-    "kpiSource" : "Jira" ,
-    "groupId" : 11 ,
-    "kanban" : false ,
-    "chartType" : "" ,
-    "kpiInfo" : {
-      "definition" : "Measures Total time between a request was made and  all work on this item is completed and the request was delivered ." ,
-      "formula" : [
+    "kpiId": "kpi3",
+    "kpiName": "Lead Time",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "boxType": null,
+    "kpiBaseLine": "0",
+    "thresholdValue": "20",
+    "defaultOrder": "1",
+    "kpiUnit": "Days",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+      "formula": null,
+      "details": [
         {
-          "lhs" : "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ] ,
-      "details" : [
-        {
-          "type" : "paragraph" ,
-          "value" : "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Release time (DOD to Live): Time taken between story completion to it going live."
-        } ,
-        {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
           }
         }
       ]
-    } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "" ,
-    "kpiWidth" : 100 ,
-    "isPositiveTrend" : false ,
-    "showTrend" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
-    "isAdditionalFilterSupport" : false ,
-    "kpiSubCategory" : "Flow KPIs" ,
-    "calculateMaturity" : true
+    },
+    "xAxisLabel": "Range",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "dropdown",
+    "isAdditionalFilterSupport": false,
+    "aggregationCriteria": "sum",
+    "calculateMaturity": false,
+    "lowerThresholdBG": "white",
+    "upperThresholdBG": "red",
+    "kpiSubCategory": "Flow KPIs",
+    "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
   } ,
   {
     "kpiId" : "kpi148" ,
@@ -3025,7 +3061,7 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
       "details" : [
         {
           "type" : "link",
@@ -3067,7 +3103,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3091,7 +3127,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3166,49 +3202,75 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi156" ,
-    "kpiName" : "Lead Time For Change" ,
-    "maxValue" : "100" ,
-    "kpiUnit" : "Days" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 3 ,
-    "kpiSource" : "Jira" ,
-    "kpiCategory" : "Dora" ,
-    "groupId" : 15 ,
-    "thresholdValue" : 0 ,
-    "kanban" : false ,
-    "chartType" : "line" ,
-    "kpiInfo" : {
-      "definition" : "LEAD TIME FOR CHANGE measures the velocity of software delivery." ,
-      "details" : [
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
         {
-          "type" : "paragraph" ,
-          "value" : "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
-        },
-        {
-          "type" : "link",
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes"
-          }
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ] ,
-      "maturityLevels" : []
-    } ,
-    "xaxisLabel" : "Weeks" ,
-    "yaxisLabel" : "Days" ,
-    "isPositiveTrend" : true ,
-    "showTrend" : true ,
-    "kpiFilter" : "" ,
-    "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
-    "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : false
-  } ,
+      ]
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": "< 1 Day"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "< 7 Days"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "< 30 Days"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "< 90 Days"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": ">= 90 Days"
+      }
+    ]
+  },
   {
     "kpiId" : "kpi157" ,
     "kpiName" : "Check-Ins & Merge Requests" ,
@@ -3338,6 +3400,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count(Hours)" ,
     "isPositiveTrend" : false ,
@@ -3488,6 +3552,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (Hours)" ,
     "isPositiveTrend" : false ,
@@ -3524,11 +3590,11 @@
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (No. of Lines)" ,
     "isPositiveTrend" : false ,
-    "showTrend" : true ,
+    "showTrend" : false ,
     "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : true ,
+    "calculateMaturity" : false ,
     "hideOverallFilter" : true ,
     "maturityRange" : [
       "-16" ,
@@ -3648,7 +3714,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   } ,
@@ -3674,7 +3740,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false ,
     "kpiSubCategory" : "Epic View"
@@ -3693,14 +3759,23 @@
     "kanban": false,
     "chartType": "stackedColumn",
     "kpiInfo": {
-      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+          }
+        }
+      ]
     },
     "xaxisLabel": "Sprint",
     "yaxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory" : "Backlog Health"
@@ -3747,7 +3822,36 @@
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "48-",
+      "24-48",
+      "12-24",
+      "1-12",
+      "-1"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212"
+      }
+    ]
   },
   {
     "kpiId": "kpi168",
@@ -3826,5 +3930,40 @@
     "isAdditionalFilterSupport" : false,
     "calculateMaturity" : false,
     "kpiSubCategory" : "Flow KPIs"
+  },
+  {
+    "kpiId": "kpi171",
+    "kpiName": "Cycle Time",
+    "maxValue": "",
+    "kpiUnit": "Count",
+    "isDeleted": "False",
+    "defaultOrder": 4,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "stackedColumn",
+    "isAggregationStacks" : false ,
+    "xAxisLabel": "Range",
+    "yAxisLabel": "Days",
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "dropDown",
+    "boxType": "chart",
+    "calculateMaturity": false,
+    "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+    },
+    "kpiSubCategory": "Flow KPIs"
   }
+
 ]

@@ -36,7 +36,7 @@ import io.mongock.api.annotations.RollbackExecution;
 @ChangeUnit(id = "kpi_sonar_code_quality", order = "8104", author = "shi6", systemVersion = "8.1.0")
 public class KpiSonarCodeQuality {
 	private static final String KPI_ID= "kpiId";
-	private static final String KPI_168= "Kpi168";
+	private static final String KPI_168= "kpi168";
 	private static final String PARAGRAPH= "paragraph";
 	private static final String VALUE= "value";
 
