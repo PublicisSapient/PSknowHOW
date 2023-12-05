@@ -40,7 +40,6 @@ export class FilterNewComponent implements OnInit {
         .subscribe(data => {
           this.selectedTab = data.selectedTab;
           this.selectedType = data.selectedType;
-          this.selectedLevel = null;
           this.getDashbaordConfig();
         })
     )
@@ -97,7 +96,6 @@ export class FilterNewComponent implements OnInit {
 
   getFiltersData() {
     if (!Object.keys(this.filterDataArr).length || !this.filterDataArr[this.selectedType]) {
-      this.kanban = this.selectedType === 'scrum' ? false : true;
       this.selectedFilterData = {};
       this.selectedFilterData['kanban'] = this.kanban;
       this.selectedFilterData['sprintIncluded'] = !this.kanban ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
@@ -179,7 +177,7 @@ export class FilterNewComponent implements OnInit {
             this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
           }
         });
-      } else {
+      } else if (this.selectedLevel) {
         Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
           if (filterLevel !== this.selectedLevel.emittedLevel.toLowerCase()) {
             this.filterApplyData['selectedMap'][filterLevel] = [];
@@ -211,14 +209,14 @@ export class FilterNewComponent implements OnInit {
 
       this.filterApplyData['sprintIncluded'] = this.selectedTab?.toLowerCase() == 'iteration' ? ['CLOSED', 'ACTIVE'] : ['CLOSED'];
 
-      // setTimeout(() => {
-      if (typeof this.selectedLevel === 'string') {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true);
-      } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true);
+      if (this.selectedLevel) {
+        if (typeof this.selectedLevel === 'string') {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true);
+        } else {
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true);
+        }
+        this.setColors(event);
       }
-      this.setColors(event);
-      // }, 0);
     }
   }
 

@@ -34,9 +34,6 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         } else {
           this.filters = this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
         }
-      } else if(!this.selectedLevel){
-        this.filters = [];
-        this.selectedFilters = [];
       }
 
       if (this.filters && this.filters.length && (changes['selectedLevel'] || changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
