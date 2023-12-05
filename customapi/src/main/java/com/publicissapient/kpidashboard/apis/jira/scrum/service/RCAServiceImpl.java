@@ -18,16 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.IterableUtils.isEmpty;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,19 +36,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -115,20 +101,38 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
+		List<Map<String, List<DataCount>>> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
+		/* #deepak starts changes for checking data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.DEFECT_COUNT_BY_RCA,
+				Arrays.asList("closed"));
+		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
+
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
+				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 			}
 
 		});
 
 		log.debug("[RCA-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
+		/* #deepak starts changes */
+		updateCacheAfterDBHit(mapForCache, KPICode.DEFECT_COUNT_BY_RCA, Arrays.asList("closed"));
+		/* #deepak ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_COUNT_BY_RCA);
@@ -206,7 +210,9 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 				mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 						CommonUtils.convertToPatternList(fieldMapping.getJiraDefectCountlIssueTypeKPI36()));
 			}
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionRCAKPI36(), fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionRCAKPI36(),
+					fieldMapping.getJiraDefectRejectionStatusRCAKPI36());
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		});
@@ -257,7 +263,8 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+			List<Map<String, List<DataCount>>> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
+			Map<String, List<Map<String, List<DataCount>>>> mapForCache) {
 
 		String requestTrackerId = getRequestTrackerId();
 
@@ -270,91 +277,127 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
-
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
-				.get(SPRINT_WISE_STORY_DATA);
-
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
-
-		Map<Pair<String, String>, Map<String, Long>> sprintWiseRCAMap = new HashMap<>();
-		List<KPIExcelData> excelData = new ArrayList<>();
-		// Assumption: There will be no sprint without any story. If yes, then a
-		// sprint will contain all defects.It is assumed that those defects will
-		// be linked with story. Otherwise if there will be a case where a
-		// sprint
-		// is made of only defects and none of defects are linked to story, all
-		// linked to sprint will create a bug.sprintWiseStoryMap will be empty.
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> storyDefectDataListMap;
 		Map<Pair<String, String>, Long> sprintIssueRCACountMap = new HashMap<>();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseDefectDataListMap = new HashMap<>();
-		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
+		Map<Pair<String, String>, Map<String, Long>> sprintWiseRCAMap = new HashMap<>();
+		List<KPIExcelData> excelData = new ArrayList<>();
 
-			List<String> storyIdList = new ArrayList<>();
-			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
-					.forEach(storyIdList::addAll);
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate, kpiRequest);
 
-			// get story linked defects
-			List<JiraIssue> sprintWiseDefectDataList = ((List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECT_DATA))
-					.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
-					.collect(Collectors.toList());
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
+					.get(SPRINT_WISE_STORY_DATA);
 
-			Map<String, Long> rcaCountMap = sprintWiseDefectDataList.stream()
-					.flatMap(f -> f.getRootCauseList().stream())
-					.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+			Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream()
+					.collect(Collectors.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()),
+							Collectors.toList()));
 
-			setSprintWiseLogger(sprint, storyIdList, sprintWiseDefectDataList, rcaCountMap);
+			// Assumption: There will be no sprint without any story. If yes, then a
+			// sprint will contain all defects.It is assumed that those defects will
+			// be linked with story. Otherwise if there will be a case where a
+			// sprint
+			// is made of only defects and none of defects are linked to story, all
+			// linked to sprint will create a bug.sprintWiseStoryMap will be empty.
+			Map<String, Object> finalStoryDefectDataListMap = storyDefectDataListMap;
+			sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 
-			sprintWiseRCAMap.put(sprint, rcaCountMap);
-			sprintIssueRCACountMap.put(sprint, rcaCountMap.values().stream().reduce(0L, Long::sum));
-			projectWiseRCA.computeIfAbsent(sprint.getLeft(), k -> new HashSet<>()).addAll(rcaCountMap.keySet());
-			sprintWiseDefectDataListMap.put(sprint, sprintWiseDefectDataList);
-		});
+				List<String> storyIdList = new ArrayList<>();
+				sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
+						.forEach(storyIdList::addAll);
+
+				// get story linked defects
+				List<JiraIssue> sprintWiseDefectDataList = ((List<JiraIssue>) finalStoryDefectDataListMap
+						.get(TOTAL_DEFECT_DATA)).stream()
+						.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
+						.collect(Collectors.toList());
+
+				Map<String, Long> rcaCountMap = sprintWiseDefectDataList.stream()
+						.flatMap(f -> f.getRootCauseList().stream())
+						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+
+				setSprintWiseLogger(sprint, storyIdList, sprintWiseDefectDataList, rcaCountMap);
+
+				sprintWiseRCAMap.put(sprint, rcaCountMap);
+				sprintIssueRCACountMap.put(sprint, rcaCountMap.values().stream().reduce(0L, Long::sum));
+				projectWiseRCA.computeIfAbsent(sprint.getLeft(), k -> new HashSet<>()).addAll(rcaCountMap.keySet());
+				sprintWiseDefectDataListMap.put(sprint, sprintWiseDefectDataList);
+			});
+		}
 
 		sprintLeafNodeList.forEach(node -> {
-			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				String trendLineName = node.getProjectFilter().getName();
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			Set<String> allRCA = projectWiseRCA
-					.getOrDefault(node.getProjectFilter().getBasicProjectConfigId().toString(), new HashSet<>());
-			Map<String, Long> rcaMap = sprintWiseRCAMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
-			List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
-			Map<String, Long> finalMap = new HashMap<>();
-			Map<String, Object> overAllHoverValueMap = new HashMap<>();
-			if (allRCA.size() > 1) {
-				allRCA.forEach(rca -> {
-					finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
-					Long rcaCount = rcaMap.values().stream().mapToLong(val -> val).sum();
-					finalMap.put(CommonConstant.OVERALL, rcaCount);
-					Integer rcaCountHover = rcaMap.getOrDefault(rca, 0L).intValue();
-					overAllHoverValueMap.put(StringUtils.capitalize(rca), rcaCountHover);
-				});
-				populateExcelDataObject(requestTrackerId, excelData, jiraIssueList, node.getSprintFilter().getName());
-			}
-			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-
-			finalMap.forEach((key, value) -> {
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(value));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setValue(value);
-				dataCount.setKpiGroup(key);
-				Map<String, Object> hoverValueMap = new HashMap<>();
-				if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
-					dataCount.setHoverValue(overAllHoverValueMap);
-				} else {
-					hoverValueMap.put(key, value.intValue());
-					dataCount.setHoverValue(hoverValueMap);
+				Set<String> allRCA = projectWiseRCA
+						.getOrDefault(node.getProjectFilter().getBasicProjectConfigId().toString(), new HashSet<>());
+				Map<String, Long> rcaMap = sprintWiseRCAMap.getOrDefault(currentNodeIdentifier, new HashMap<>());
+				List<JiraIssue> jiraIssueList = sprintWiseDefectDataListMap.get(currentNodeIdentifier);
+				Map<String, Long> finalMap = new HashMap<>();
+				Map<String, Object> overAllHoverValueMap = new HashMap<>();
+				if (allRCA.size() > 1) {
+					allRCA.forEach(rca -> {
+						finalMap.put(StringUtils.capitalize(rca), rcaMap.getOrDefault(rca, 0L));
+						Long rcaCount = rcaMap.values().stream().mapToLong(val -> val).sum();
+						finalMap.put(CommonConstant.OVERALL, rcaCount);
+						Integer rcaCountHover = rcaMap.getOrDefault(rca, 0L).intValue();
+						overAllHoverValueMap.put(StringUtils.capitalize(rca), rcaCountHover);
+					});
+					populateExcelDataObject(requestTrackerId, excelData, jiraIssueList,
+							node.getSprintFilter().getName());
 				}
-				trendValueList.add(dataCount);
-				dataCountMap.put(key, new ArrayList<>(Arrays.asList(dataCount)));
-			});
-			mapTmp.get(node.getId()).setValue(dataCountMap);
+				Map<String, List<DataCount>> dataCountMap = new HashMap<>();
+
+				finalMap.forEach((key, value) -> {
+					DataCount dataCount = new DataCount();
+					dataCount.setData(String.valueOf(value));
+					dataCount.setSProjectName(trendLineName);
+					dataCount.setSSprintID(node.getSprintFilter().getId());
+					dataCount.setSSprintName(node.getSprintFilter().getName());
+					dataCount.setValue(value);
+					dataCount.setKpiGroup(key);
+					// #deepak add projectid to datacount.
+					dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+					Map<String, Object> hoverValueMap = new HashMap<>();
+					if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
+						dataCount.setHoverValue(overAllHoverValueMap);
+					} else {
+						hoverValueMap.put(key, value.intValue());
+						dataCount.setHoverValue(hoverValueMap);
+					}
+					dataCountMap.put(key, new ArrayList<>(Arrays.asList(dataCount)));
+					trendValueList.add(dataCountMap);
+				});
+				mapTmp.get(node.getId()).setValue(dataCountMap);
+				String key = node.getParentId();
+				if (isEmpty(mapForCache.get(key)))
+					mapForCache.put(key, new ArrayList<>(Arrays.asList(dataCountMap)));
+				else {
+					List<Map<String, List<DataCount>>> list = mapForCache.get(key);
+					list.add(dataCountMap);
+					mapForCache.put(key, list);
+				}
+				/* #deepak starts changes */
+			} else {
+				List<Map<String, List<DataCount>>> dataCountList = trendValueList.stream()
+						.filter(dataCountMap -> dataCountMap.values().stream()
+								.filter(dataCountsList -> (node.getId()).equals(dataCountsList.get(0).getsSprintID()))
+								.count() > 0)
+						.distinct().collect(Collectors.toList());
+
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(dataCountList.get(0));
+			}
+			/* #deepak ends changes */
+
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_COUNT_BY_RCA.getColumns());
@@ -439,7 +482,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI36(),KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI36(), KPICode.DEFECT_COUNT_BY_RCA.getKpiId());
 	}
 }

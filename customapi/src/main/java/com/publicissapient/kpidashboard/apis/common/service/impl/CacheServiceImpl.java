@@ -170,11 +170,21 @@ public class CacheServiceImpl implements CacheService {
 		}
 	}
 
+	/**
+	 *
+	 * @param keyList
+	 *            mandatory parameter
+	 * @param value
+	 *            KPI result
+	 * @param kpiSource
+	 *            taken into account if not empty
+	 * @param sprintIncluded
+	 *            sprintIncluded
+	 */
 	@Override
 	public void setIntoApplicationCache(String[] keyList, Object value, String kpiSource,
 										List<String> sprintIncluded) {
 		this.setIntoApplicationCache(keyList,value, kpiSource, null, sprintIncluded);
-		cacheManager.getCache("jiraKpiCache");
 	}
 
 	@Override
@@ -209,9 +219,16 @@ public class CacheServiceImpl implements CacheService {
 		return null;
 	}
 
+	/**
+	 *
+	 * @param keyList
+	 * @param kpiSource
+	 * @param sprintIncluded
+	 *
+	 * @return
+	 */
 	@Override
 	public Object getFromApplicationCache(String[] keyList, String kpiSource, List<String> sprintIncluded){
-		cacheManager.getCache("jiraKpiCache");
 		return this.getFromApplicationCache(keyList, kpiSource, null, sprintIncluded);
 	}
 

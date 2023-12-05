@@ -18,12 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -37,11 +34,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.jira.HappinessKpiData;
@@ -88,11 +81,24 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		/* #deepak starts changes for checking in data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.HAPPINESS_INDEX_RATE,
+				Arrays.asList("closed"));
+		/* #deepak ends changes */
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
+				/* #deepak starts changes */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 
@@ -101,9 +107,15 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		log.debug("[HAPPINESS-INDEX-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		/* #deepak starts changes */
+		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
+		updateCacheAfterDBHit(map, KPICode.HAPPINESS_INDEX_RATE, Arrays.asList("closed"));
+		/* #deepak ends changes */
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.HAPPINESS_INDEX_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.HAPPINESS_INDEX_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -133,7 +145,13 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
-		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
+
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> resultMap = new HashMap<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated))
+			resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
 		Map<Pair<String, String>, List<Integer>> sprintWiseHappinessIndexNumbers = new HashMap<>();
 
@@ -160,35 +178,47 @@ public class HappinessIndexServiceImpl extends JiraKPIService<Double, List<Objec
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		for (Node node : sprintLeafNodeList) {
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				// Leaf node wise data
+				String trendLineName = node.getProjectFilter().getName();
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				Double happinessIndexValue = 0.0;
 
-			// Leaf node wise data
-			String trendLineName = node.getProjectFilter().getName();
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			Double happinessIndexValue = 0.0;
+				if (CollectionUtils.isNotEmpty(sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier))) {
+					List<Double> totalRatingsValue = sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier).stream()
+							.map(Integer::doubleValue).collect(Collectors.toList());
+					happinessIndexValue = calculateKpiValue(totalRatingsValue, KPICode.HAPPINESS_INDEX_RATE.getKpiId());
+					populateExcelData(requestTrackerId, excelData, node, happinessKpiDataList);
+				}
 
-			if (CollectionUtils.isNotEmpty(sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier))) {
-				List<Double> totalRatingsValue = sprintWiseHappinessIndexNumbers.get(currentNodeIdentifier).stream()
-						.map(Integer::doubleValue).collect(Collectors.toList());
-				happinessIndexValue = calculateKpiValue(totalRatingsValue, KPICode.HAPPINESS_INDEX_RATE.getKpiId());
-				populateExcelData(requestTrackerId, excelData, node, happinessKpiDataList);
+				log.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), happinessIndexValue);
+
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(happinessIndexValue));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setValue(happinessIndexValue);
+				dataCount.setHoverValue(new HashMap<>());
+				// #deepak add projectid to datacount
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
+			} else {
+				List<DataCount> dataCountList = trendValueList.stream()
+						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+						.collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
+
 			}
-
-			log.debug("[HAPPINESS-INDEX-SPRINT-WISE][{}]. happiness index for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), happinessIndexValue);
-
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(happinessIndexValue));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(happinessIndexValue);
-			dataCount.setHoverValue(new HashMap<>());
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
 
 		}
 

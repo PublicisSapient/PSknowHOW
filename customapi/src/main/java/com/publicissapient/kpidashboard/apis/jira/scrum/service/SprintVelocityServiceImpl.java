@@ -18,14 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -48,16 +43,14 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
 import com.publicissapient.kpidashboard.apis.jira.service.SprintVelocityServiceHelper;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 
@@ -119,15 +112,33 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		/* #deepak starts changes for checking in data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.SPRINT_VELOCITY,
+				Arrays.asList("closed"));
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
 
 		log.debug("[SPRINT-VELOCITY-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
+
+		/* #deepak starts changes for updating cache */
+		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
+		updateCacheAfterDBHit(map, KPICode.SPRINT_VELOCITY, Arrays.asList("closed"));
+		/* #deepak ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_VELOCITY);
@@ -227,67 +238,92 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
-		Map<String, Object> sprintVelocityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("Sprint Velocity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
-
-		List<JiraIssue> allJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(SPRINTVELOCITYKEY);
-
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
-
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintVelocityStoryMap.get(SPRINT_WISE_SPRINTDETAILS);
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		FieldMapping fieldMapping = new FieldMapping();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
 		Map<Pair<String, String>, Set<JiraIssue>> currentSprintLeafVelocityMap = new HashMap<>();
-		velocityHelper.getSprintIssuesForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
+		Map<Pair<String, String>, Double> sprintVelocity = new HashMap<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			Map<String, Object> sprintVelocityStoryMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, null, null,
+					kpiRequest);
+			log.info("Sprint Velocity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		Map<Pair<String, String>, Double> sprintVelocity = getSprintVelocityMap(currentSprintLeafVelocityMap,
-				sprintDetails);
+			List<JiraIssue> allJiraIssue = (List<JiraIssue>) sprintVelocityStoryMap.get(SPRINTVELOCITYKEY);
+
+			fieldMapping = configHelperService.getFieldMappingMap()
+					.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+
+			sprintDetails = (List<SprintDetails>) sprintVelocityStoryMap.get(SPRINT_WISE_SPRINTDETAILS);
+			velocityHelper.getSprintIssuesForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
+
+			sprintVelocity = getSprintVelocityMap(currentSprintLeafVelocityMap, sprintDetails);
+		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 		Map<String, Integer> avgVelocityCount = new HashMap<>();
+		List<SprintDetails> finalSprintDetails = sprintDetails;
+		Map<Pair<String, String>, Double> finalSprintVelocity = sprintVelocity;
+		FieldMapping finalFieldMapping = fieldMapping;
 		sprintLeafNodeList.forEach(node -> {
-			// Leaf node wise data
-			String projId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			String trendLineName = node.getProjectFilter().getName();
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair.of(projId, currentSprintComponentId);
+			if (!node.isFromCache()) {
+				// Leaf node wise data
+				String projId = node.getProjectFilter().getBasicProjectConfigId().toString();
+				String trendLineName = node.getProjectFilter().getName();
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				Pair<String, String> currentNodeIdentifier = Pair.of(projId, currentSprintComponentId);
 
-			double sprintVelocityForCurrentLeaf = 0.0;
-			if (CollectionUtils.isNotEmpty(sprintDetails)) {
-				sprintVelocityForCurrentLeaf = sprintVelocity.getOrDefault(currentNodeIdentifier,
-						sprintVelocityForCurrentLeaf);
-			}
+				double sprintVelocityForCurrentLeaf = 0.0;
+				if (CollectionUtils.isNotEmpty(finalSprintDetails)) {
+					sprintVelocityForCurrentLeaf = finalSprintVelocity.getOrDefault(currentNodeIdentifier,
+							sprintVelocityForCurrentLeaf);
+				}
 
-			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafVelocityMap, node, fieldMapping);
-			setSprintWiseLogger(node.getSprintFilter().getName(),
-					currentSprintLeafVelocityMap.get(currentNodeIdentifier), sprintVelocityForCurrentLeaf);
+				populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafVelocityMap, node,
+						finalFieldMapping);
+				setSprintWiseLogger(node.getSprintFilter().getName(),
+						currentSprintLeafVelocityMap.get(currentNodeIdentifier), sprintVelocityForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
-			if (!avgVelocityCount.containsKey(projId)) {
-				avgVelocityCount.put(projId, 0);
-			}
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(roundingOff(sprintVelocityForCurrentLeaf)));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setLineValue(roundingOff(sprintVelocityForCurrentLeaf));
+				if (!avgVelocityCount.containsKey(projId)) {
+					avgVelocityCount.put(projId, 0);
+				}
 
-			double averageVelocity = getAverageVelocity(sprintVelocity, avgVelocityCount.get(projId), projId,
-					currentSprintComponentId);
-			if (averageVelocity >= 0) {
-				dataCount.setValue(averageVelocity);
-				Map<String, Object> hoverValue = new HashMap<>();
-				hoverValue.put(AVERAGE_VELOCITY, roundingOff(averageVelocity));
-				hoverValue.put(VELOCITY, roundingOff((Double) dataCount.getLineValue()));
-				dataCount.setHoverValue(hoverValue);
-				avgVelocityCount.put(projId, avgVelocityCount.get(projId) + 1);
+				double averageVelocity = getAverageVelocity(finalSprintVelocity, avgVelocityCount.get(projId), projId,
+						currentSprintComponentId);
+				if (averageVelocity >= 0) {
+					dataCount.setValue(averageVelocity);
+					Map<String, Object> hoverValue = new HashMap<>();
+					hoverValue.put(AVERAGE_VELOCITY, roundingOff(averageVelocity));
+					hoverValue.put(VELOCITY, roundingOff((Double) dataCount.getLineValue()));
+					dataCount.setHoverValue(hoverValue);
+					avgVelocityCount.put(projId, avgVelocityCount.get(projId) + 1);
+				} else {
+					dataCount.setValue(0.0);
+				}
+				// #deepak add projectid to datacount
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
+				/* #deepak starts changes */
 			} else {
-				dataCount.setValue(0.0);
+				List<DataCount> dataCountList = trendValueList.stream()
+						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+						.collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
+			/* #deepak ends changes */
 		});
+
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_VELOCITY.getColumns());
 	}

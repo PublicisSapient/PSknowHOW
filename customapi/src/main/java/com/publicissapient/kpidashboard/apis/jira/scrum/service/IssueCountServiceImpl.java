@@ -18,15 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.IterableUtils.isEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -38,19 +33,11 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -113,14 +100,35 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
+		/* #deepak starts changes for checking in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		List<Map<String, List<DataCount>>> trendValueList = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.ISSUE_COUNT,
+				Arrays.asList("closed"));
+		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
+
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
-				sprintWiseLeafNodeValue(mapTmp, v, kpiElement, kpiRequest);
+
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
+				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 			}
 
 		});
+
+		/* #deepak starts changes for updating cache */
+		updateCacheAfterDBHit(mapForCache, KPICode.ISSUE_COUNT, Arrays.asList("closed"));
+		/* #deepak ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.ISSUE_COUNT);
@@ -255,8 +263,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
+			List<Map<String, List<DataCount>>> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
+			Map<String, List<Map<String, List<DataCount>>>> mapForCache) {
 
 		String requestTrackerId = getRequestTrackerId();
 
@@ -269,89 +278,124 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		long time = System.currentTimeMillis();
-		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		log.info("IssueCount taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
-
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
-
-		List<String> storyCategories = (List<String>) resultMap.get(STORY_CATEGORIES);
-		Map<String, List<String>> projectWiseTotalCategories = (Map<String, List<String>>) resultMap
-				.get(PROJECT_WISE_TOTAL_CATEGORIES);
-
+		/* #deepak starts changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> resultMap;
+		List<JiraIssue> allJiraIssue = new ArrayList<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseStoryCatIssues = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseTotalCatIssues = new HashMap<>();
-
 		Map<Pair<String, String>, List<String>> sprintWiseIssueNumbers = new HashMap<>();
-		if (CollectionUtils.isNotEmpty(allJiraIssue)) {
-			sprintDetails.forEach(sd -> {
-				List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
-						CommonConstant.TOTAL_ISSUES);
-				totalIssues.retainAll(
-						allJiraIssue.stream().distinct().map(JiraIssue::getNumber).collect(Collectors.toList()));
-				sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						totalIssues);
-				Set<JiraIssue> totalJiraIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-						sd.getTotalIssues(), allJiraIssue);
-				List<String> totalIssueCatOfProj = projectWiseTotalCategories
-						.get(sd.getBasicProjectConfigId().toString());
-				// filtering out issues belong to storyCategories
-				List<JiraIssue> storyCatIssues = totalJiraIssues.stream()
-						.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
-						.collect(Collectors.toList());
-				// filtering out issues belong to totalCategories
-				List<JiraIssue> totalCatIssues = totalJiraIssues.stream()
-						.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
-						.collect(Collectors.toList());
-				sprintWiseStoryCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(storyCatIssues));
-				sprintWiseTotalCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new ArrayList<>(totalCatIssues));
-			});
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			/* #deepak ends changes */
+			resultMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate, kpiRequest);
+			log.info("IssueCount taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+			allJiraIssue = (List<JiraIssue>) resultMap.get(STORY_LIST);
+
+			List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINTSDETAILS);
+
+			List<String> storyCategories = (List<String>) resultMap.get(STORY_CATEGORIES);
+			Map<String, List<String>> projectWiseTotalCategories = (Map<String, List<String>>) resultMap
+					.get(PROJECT_WISE_TOTAL_CATEGORIES);
+
+			if (CollectionUtils.isNotEmpty(allJiraIssue)) {
+				List<JiraIssue> finalAllJiraIssue = allJiraIssue;
+				sprintDetails.forEach(sd -> {
+					List<String> totalIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sd,
+							CommonConstant.TOTAL_ISSUES);
+					totalIssues.retainAll(finalAllJiraIssue.stream().distinct().map(JiraIssue::getNumber)
+							.collect(Collectors.toList()));
+					sprintWiseIssueNumbers.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							totalIssues);
+					Set<JiraIssue> totalJiraIssues = KpiDataHelper
+							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, sd.getTotalIssues(),
+									finalAllJiraIssue);
+					List<String> totalIssueCatOfProj = projectWiseTotalCategories
+							.get(sd.getBasicProjectConfigId().toString());
+					// filtering out issues belong to storyCategories
+					List<JiraIssue> storyCatIssues = totalJiraIssues.stream()
+							.filter(issue -> storyCategories.contains(issue.getTypeName().toLowerCase()))
+							.collect(Collectors.toList());
+					// filtering out issues belong to totalCategories
+					List<JiraIssue> totalCatIssues = totalJiraIssues.stream()
+							.filter(issue -> totalIssueCatOfProj.contains(issue.getTypeName().toLowerCase()))
+							.collect(Collectors.toList());
+					sprintWiseStoryCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new ArrayList<>(storyCatIssues));
+					sprintWiseTotalCatIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new ArrayList<>(totalCatIssues));
+				});
+			}
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		for (Node node : sprintLeafNodeList) {
-			// Leaf node wise data
-			String trendLineName = node.getProjectFilter().getName();
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			Double storyCount = 0.0;
-			List<JiraIssue> totalPresentStoryIssue = new ArrayList<>();
-			List<JiraIssue> totalPresentTotalIssue = new ArrayList<>();
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				// Leaf node wise data
+				String trendLineName = node.getProjectFilter().getName();
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				Double storyCount = 0.0;
+				List<JiraIssue> totalPresentStoryIssue = new ArrayList<>();
+				List<JiraIssue> totalPresentTotalIssue = new ArrayList<>();
 
-			if (CollectionUtils.isNotEmpty(sprintWiseIssueNumbers.get(currentNodeIdentifier))) {
-				List<String> totalPresentJiraIssue = sprintWiseIssueNumbers.get(currentNodeIdentifier);
-				storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
-				totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
-				totalPresentTotalIssue = sprintWiseTotalCatIssues.get(currentNodeIdentifier);
-				populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue);
+				if (CollectionUtils.isNotEmpty(sprintWiseIssueNumbers.get(currentNodeIdentifier))) {
+					List<String> totalPresentJiraIssue = sprintWiseIssueNumbers.get(currentNodeIdentifier);
+					storyCount = ((Integer) totalPresentJiraIssue.size()).doubleValue();
+					totalPresentStoryIssue = sprintWiseStoryCatIssues.get(currentNodeIdentifier);
+					totalPresentTotalIssue = sprintWiseTotalCatIssues.get(currentNodeIdentifier);
+					populateExcelData(requestTrackerId, allJiraIssue, excelData, node, totalPresentJiraIssue);
 
+				}
+
+				Map<String, Double> issueCountMap = new LinkedHashMap<>();
+				issueCountMap.put(STORY_COUNT, (double) totalPresentStoryIssue.size());
+				issueCountMap.put(TOTAL_COUNT, (double) totalPresentTotalIssue.size());
+				log.debug("[ISSUECOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), storyCount);
+
+				Map<String, List<DataCount>> dataCountMap = new HashMap<>();
+
+				for (Map.Entry<String, Double> map : issueCountMap.entrySet()) {
+					DataCount dataCount = new DataCount();
+					dataCount.setData(String.valueOf(map.getValue()));
+					dataCount.setSProjectName(trendLineName);
+					dataCount.setSSprintID(node.getSprintFilter().getId());
+					dataCount.setSSprintName(node.getSprintFilter().getName());
+					dataCount.setValue(map.getValue());
+					dataCount.setKpiGroup(map.getKey());
+					dataCount.setHoverValue(
+							generateHoverMap(totalPresentStoryIssue, totalPresentTotalIssue, map.getKey()));
+					// #deepak add projectid to datacount.
+					dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+					dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
+				}
+				mapTmp.get(node.getId()).setValue(dataCountMap);
+				trendValueList.add(dataCountMap);
+				String key = node.getParentId();
+				if (isEmpty(mapForCache.get(key)))
+					mapForCache.put(key, new ArrayList<>(Arrays.asList(dataCountMap)));
+				else {
+					List<Map<String, List<DataCount>>> list = mapForCache.get(key);
+					list.add(dataCountMap);
+					mapForCache.put(key, list);
+				}
+				/* #deepak starts changes */
+			} else {
+				List<Map<String, List<DataCount>>> dataCountList = trendValueList.stream()
+						.filter(dataCountMap -> dataCountMap.values().stream()
+								.filter(dataCountsList -> (node.getId()).equals(dataCountsList.get(0).getsSprintID()))
+								.count() > 0)
+						.distinct().collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(dataCountList.get(0));
 			}
-
-			Map<String, Double> issueCountMap = new LinkedHashMap<>();
-			issueCountMap.put(STORY_COUNT, (double) totalPresentStoryIssue.size());
-			issueCountMap.put(TOTAL_COUNT, (double) totalPresentTotalIssue.size());
-			log.debug("[ISSUECOUNT-SPRINT-WISE][{}]. Total Stories Count for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), storyCount);
-
-			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-
-			for (Map.Entry<String, Double> map : issueCountMap.entrySet()) {
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(map.getValue()));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setValue(map.getValue());
-				dataCount.setKpiGroup(map.getKey());
-				dataCount.setHoverValue(generateHoverMap(totalPresentStoryIssue, totalPresentTotalIssue, map.getKey()));
-				dataCountMap.put(map.getKey(), new ArrayList<>(Arrays.asList(dataCount)));
-			}
-			mapTmp.get(node.getId()).setValue(dataCountMap);
+			/* #deepak ends changes */
 
 		}
 		kpiElement.setExcelData(excelData);

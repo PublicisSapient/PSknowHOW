@@ -1,12 +1,8 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,26 +12,20 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
@@ -78,39 +68,61 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		List<DataCount> trendValueList = Lists.newArrayList();
+		/* #deepak starts changes for checking in data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.PI_PREDICTABILITY,
+				Arrays.asList("closed"));
+		Map<String, List<DataCount>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.PROJECT) {
-				projectWiseLeafNodeValue(kpiElement, mapTmp, v);
+				/* #deepak starts changes */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
+				projectWiseLeafNodeValue(kpiElement, mapTmp, v, trendValueList, mapForCache);
 			}
 
 		});
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
 				root);
+		/* #deepak starts changes */
+		updateCacheAfterDBHit(mapForCache, KPICode.PI_PREDICTABILITY, Arrays.asList("closed"));
+		/* #deepak ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedMultipleValueGroup(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PI_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
 
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
-			List<Node> projectLeafNodeList) {
+			List<Node> projectLeafNodeList, List<DataCount> trendValueList, Map<String, List<DataCount>> mapForCache) {
+		/* #deepak start changes */
+		List<Node> projectLeafNodeListUpdated = projectLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, List<JiraIssue>> projectWiseEpicData = new HashMap<>();
+		if (isNotEmpty(projectLeafNodeListUpdated)) {
+			Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeListUpdated, null, null, null);
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, null);
+			List<JiraIssue> epicData = (List<JiraIssue>) resultMap.get(EPIC_DATA);
 
-		List<JiraIssue> epicData = (List<JiraIssue>) resultMap.get(EPIC_DATA);
-
-		Map<String, List<JiraIssue>> projectWiseEpicData = epicData.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
-
+			projectWiseEpicData = epicData.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+		}
 		List<KPIExcelData> excelData = new ArrayList<>();
 
+		Map<String, List<JiraIssue>> finalProjectWiseEpicData = projectWiseEpicData;
 		projectLeafNodeList.forEach(node -> {
 			String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> epicList = projectWiseEpicData.get(currentProjectId);
+			List<JiraIssue> epicList = finalProjectWiseEpicData.get(currentProjectId);
 			List<DataCount> dataCountList = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(epicList)) {
@@ -144,43 +156,56 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				String trendLineName = node.getProjectFilter().getName();
 				String requestTrackerId = getRequestTrackerId();
 
-				sortedPINameWiseEpicData.forEach((releaseDate, releaseWiseLatestEpicData) -> {
-					String piName = releaseWiseLatestEpicData.getPiName();
-					Double plannedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
-							.mapToDouble(JiraIssue::getEpicPlannedValue).sum();
-					Double achievedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
-							.mapToDouble(JiraIssue::getEpicAchievedValue).sum();
+				/* #deepak starts changes check indicator value for cache*/
+				if (!node.isFromCache()) {
+					/* #deepak ends changes */
+					sortedPINameWiseEpicData.forEach((releaseDate, releaseWiseLatestEpicData) -> {
+						String piName = releaseWiseLatestEpicData.getPiName();
+						Double plannedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
+								.mapToDouble(JiraIssue::getEpicPlannedValue).sum();
+						Double achievedValueSum = releaseWiseLatestEpicData.getEpicList().stream()
+								.mapToDouble(JiraIssue::getEpicAchievedValue).sum();
 
-					List<DataValue> dataValueList = new ArrayList<>();
-					DataCount dataCount = new DataCount();
-					dataCount.setSProjectName(trendLineName);
-					dataCount.setSSprintID(piName);
-					dataCount.setSSprintName(piName);
+						List<DataValue> dataValueList = new ArrayList<>();
+						DataCount dataCount = new DataCount();
+						dataCount.setSProjectName(trendLineName);
+						dataCount.setSSprintID(piName);
+						dataCount.setSSprintName(piName);
 
-					// for line 1
-					DataValue dataValue1 = new DataValue();
-					dataValue1.setData(plannedValueSum.toString());
-					Map<String, Object> hoverValueMap1 = new HashMap<>();
-					dataValue1.setHoverValue(hoverValueMap1);
-					dataValue1.setLineType(CommonConstant.SOLID_LINE_TYPE);
-					dataValue1.setName(ARCHIVED_VALUE);
-					dataValue1.setValue(achievedValueSum);
-					dataValueList.add(dataValue1);
+						// for line 1
+						DataValue dataValue1 = new DataValue();
+						dataValue1.setData(plannedValueSum.toString());
+						Map<String, Object> hoverValueMap1 = new HashMap<>();
+						dataValue1.setHoverValue(hoverValueMap1);
+						dataValue1.setLineType(CommonConstant.SOLID_LINE_TYPE);
+						dataValue1.setName(ARCHIVED_VALUE);
+						dataValue1.setValue(achievedValueSum);
+						dataValueList.add(dataValue1);
 
-					// for line 2
-					DataValue dataValue2 = new DataValue();
-					Map<String, Object> hoverValueMap2 = new HashMap<>();
-					dataValue2.setData(plannedValueSum.toString());
-					dataValue2.setHoverValue(hoverValueMap2);
-					dataValue2.setLineType(CommonConstant.DOTTED_LINE_TYPE);
-					dataValue2.setName(PLANNED_VALUE);
-					dataValue2.setValue(plannedValueSum);
-					dataValueList.add(dataValue2);
-					dataCount.setDataValue(dataValueList);
-					dataCountList.add(dataCount);
+						// for line 2
+						DataValue dataValue2 = new DataValue();
+						Map<String, Object> hoverValueMap2 = new HashMap<>();
+						dataValue2.setData(plannedValueSum.toString());
+						dataValue2.setHoverValue(hoverValueMap2);
+						dataValue2.setLineType(CommonConstant.DOTTED_LINE_TYPE);
+						dataValue2.setName(PLANNED_VALUE);
+						dataValue2.setValue(plannedValueSum);
+						dataValueList.add(dataValue2);
+						dataCount.setDataValue(dataValueList);
+						// #deepak add projectid to datacount
+						dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+						dataCountList.add(dataCount);
 
-				});
-				mapTmp.get(node.getId()).setValue(dataCountList);
+					});
+					mapTmp.get(node.getId()).setValue(dataCountList);
+					mapForCache.put(node.getId(),dataCountList);
+				} else {
+					List<DataCount> list = trendValueList.stream()
+							.filter(dataCount -> node.getName().equals(dataCount.getSProjectName())).distinct()
+							.collect(Collectors.toList());
+					if (isNotEmpty(list))
+						mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(list));
+				}
 				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 					FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 							.get(node.getProjectFilter().getBasicProjectConfigId());

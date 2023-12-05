@@ -18,16 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.IterableUtils.isEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,19 +33,11 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -109,19 +95,35 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		/* #deepak starts changes for checking in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		List<Map<String, List<DataCount>>> trendValueList = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.SCOPE_CHURN,
+				Arrays.asList("closed"));
+		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
+				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 			}
 		});
 
 		log.debug("[SCOPE-CHURN-LEAF-NODE-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		/* #deepak starts changes */
+		updateCacheAfterDBHit(mapForCache, KPICode.SCOPE_CHURN, Arrays.asList("closed"));
+		/* #deepak ends changes */
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.SCOPE_CHURN);
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
@@ -160,20 +162,13 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+			List<Map<String, List<DataCount>>> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
+			Map<String, List<Map<String, List<DataCount>>>> mapForCache) {
 		String requestTrackerId = getRequestTrackerId();
-
-		Map<String, Object> storyChurnFetchDetails = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) storyChurnFetchDetails.get(SPRINT_DETAILS);
-		List<JiraIssue> fetchedIssue = (List<JiraIssue>) storyChurnFetchDetails.get(TOTAL_ISSUE);
-		List<JiraIssueCustomHistory> fetchedIssueHistory = (List<JiraIssueCustomHistory>) storyChurnFetchDetails
-				.getOrDefault(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
-		Map<String, List<JiraHistoryChangeLog>> issueKeyWiseHistoryMap = fetchedIssueHistory.stream()
-				.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
-						JiraIssueCustomHistory::getSprintUpdationLog, (existingValue, newValue) -> newValue,
-						LinkedHashMap::new));
-
+		/* #deepak starts changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> storyChurnFetchDetails;
 		Map<Pair<String, String>, Double> sprintWiseStoryChurnDataMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseAddedListMap = new HashMap<>();
@@ -181,8 +176,26 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseInitialCommitListMap = new HashMap<>();
 		Map<Pair<String, String>, String> sprintNameMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		List<SprintDetails> sprintDetails = new ArrayList<>();
+		List<JiraIssue> fetchedIssue = new ArrayList<>();
+		Map<String, List<JiraHistoryChangeLog>> issueKeyWiseHistoryMap = new HashMap<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			/* #deepak ends changes */
+			storyChurnFetchDetails = fetchKPIDataFromDb(sprintLeafNodeListUpdated, null, null, kpiRequest);
+
+			sprintDetails = (List<SprintDetails>) storyChurnFetchDetails.get(SPRINT_DETAILS);
+			fetchedIssue = (List<JiraIssue>) storyChurnFetchDetails.get(TOTAL_ISSUE);
+			List<JiraIssueCustomHistory> fetchedIssueHistory = (List<JiraIssueCustomHistory>) storyChurnFetchDetails
+					.getOrDefault(SCOPE_CHANGE_ISSUE_HISTORY, new ArrayList<>());
+			issueKeyWiseHistoryMap = fetchedIssueHistory.stream()
+					.collect(Collectors.toMap(JiraIssueCustomHistory::getStoryID,
+							JiraIssueCustomHistory::getSprintUpdationLog, (existingValue, newValue) -> newValue,
+							LinkedHashMap::new));
+
+		}
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
+			List<JiraIssue> finalFetchedIssue = fetchedIssue;
 			sprintDetails.forEach(sd -> {
 				List<JiraIssue> sprintWiseAddedList;
 				List<JiraIssue> sprintWiseRemovedList;
@@ -205,12 +218,11 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				initialCommitIssue.addAll(removedIssues);
 				initialCommitIssue.removeAll(addedIssues);
 				Set<JiraIssue> totalJiraIssueFromSprintReport = KpiDataHelper
-						.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, new HashSet<>(),
-								fetchedIssue);
-				sprintWiseAddedList = totalJiraIssueFromSprintReport.stream().filter(f -> addedIssues.contains(f.getNumber()))
-						.collect(Collectors.toList());
-				sprintWiseRemovedList = totalJiraIssueFromSprintReport.stream().filter(f -> removedIssues.contains(f.getNumber()))
-						.collect(Collectors.toList());
+						.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd, new HashSet<>(), finalFetchedIssue);
+				sprintWiseAddedList = totalJiraIssueFromSprintReport.stream()
+						.filter(f -> addedIssues.contains(f.getNumber())).collect(Collectors.toList());
+				sprintWiseRemovedList = totalJiraIssueFromSprintReport.stream()
+						.filter(f -> removedIssues.contains(f.getNumber())).collect(Collectors.toList());
 				sprintWiseInitialComitList = totalJiraIssueFromSprintReport.stream()
 						.filter(f -> initialCommitIssue.contains(f.getNumber())).collect(Collectors.toList());
 				// For Scope Change : Added + Removed Issue (duplicate incl)
@@ -236,40 +248,64 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 			});
 		}
 
+		Map<String, List<JiraHistoryChangeLog>> finalIssueKeyWiseHistoryMap = issueKeyWiseHistoryMap;
 		sprintLeafNodeList.forEach(node -> {
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				String trendLineName = node.getProjectFilter().getName();
 
-			String trendLineName = node.getProjectFilter().getName();
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(node.getProjectFilter().getBasicProjectConfigId());
 
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(node.getProjectFilter().getBasicProjectConfigId());
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+				double dreForCurrentLeaf;
+				Map<String, List<DataCount>> dataCountMap = new HashMap<>();
+				if (sprintWiseStoryChurnDataMap.containsKey(currentNodeIdentifier)) {
+					dreForCurrentLeaf = sprintWiseStoryChurnDataMap.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseAddedList = sprintWiseAddedListMap.get(currentNodeIdentifier);
+					List<JiraIssue> spirntWiseRemovedList = sprintWiseRemovedListMap.get(currentNodeIdentifier);
+					String sprintName = sprintNameMap.get(currentNodeIdentifier);
+					populateExcelDataObject(node.getSprintFilter().getName(), excelData, sprintWiseAddedList,
+							spirntWiseRemovedList, finalIssueKeyWiseHistoryMap, fieldMapping, sprintName);
 
-			double dreForCurrentLeaf;
-			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-			if (sprintWiseStoryChurnDataMap.containsKey(currentNodeIdentifier)) {
-				dreForCurrentLeaf = sprintWiseStoryChurnDataMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseAddedList = sprintWiseAddedListMap.get(currentNodeIdentifier);
-				List<JiraIssue> spirntWiseRemovedList = sprintWiseRemovedListMap.get(currentNodeIdentifier);
-				String sprintName = sprintNameMap.get(currentNodeIdentifier);
-				populateExcelDataObject(node.getSprintFilter().getName(), excelData, sprintWiseAddedList,
-						spirntWiseRemovedList, issueKeyWiseHistoryMap, fieldMapping, sprintName);
+				} else {
+					dreForCurrentLeaf = 0.0d;
+				}
+				log.debug("[SCOPE-CHURN-SPRINT-WISE][{}]. STORY-CHURN for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), dreForCurrentLeaf);
+
+				Map<String, Map<String, List<JiraIssue>>> issueCountMap = getFiltersMap(sprintWiseAddedListMap,
+						sprintWiseRemovedListMap, sprintWiseInitialCommitListMap, currentNodeIdentifier);
+
+				for (Map.Entry<String, Map<String, List<JiraIssue>>> map : issueCountMap.entrySet()) {
+					DataCount dataCount = getDataCount(node, trendLineName, dataCountMap, map);
+				}
+
+				mapTmp.get(node.getId()).setValue(dataCountMap);
+				trendValueList.add(dataCountMap);
+				String key = node.getParentId();
+				if (isEmpty(mapForCache.get(key)))
+					mapForCache.put(key, new ArrayList<>(Arrays.asList(dataCountMap)));
+				else {
+					List<Map<String, List<DataCount>>> list = mapForCache.get(key);
+					list.add(dataCountMap);
+					mapForCache.put(key, list);
+				}
+				/* #deepak starts changes */
 
 			} else {
-				dreForCurrentLeaf = 0.0d;
+				List<Map<String, List<DataCount>>> dataCountList = trendValueList.stream()
+						.filter(dataCountMap -> dataCountMap.values().stream()
+								.filter(dataCountsList -> (node.getId()).equals(dataCountsList.get(0).getsSprintID()))
+								.count() > 0)
+						.distinct().collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(dataCountList.get(0));
 			}
-			log.debug("[SCOPE-CHURN-SPRINT-WISE][{}]. STORY-CHURN for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), dreForCurrentLeaf);
-
-			Map<String, Map<String, List<JiraIssue>>> issueCountMap = getFiltersMap(sprintWiseAddedListMap,
-					sprintWiseRemovedListMap, sprintWiseInitialCommitListMap, currentNodeIdentifier);
-
-			for (Map.Entry<String, Map<String, List<JiraIssue>>> map : issueCountMap.entrySet()) {
-				DataCount dataCount = getDataCount(node, trendLineName, dataCountMap, map);
-				trendValueList.add(dataCount);
-			}
-			mapTmp.get(node.getId()).setValue(dataCountMap);
+			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SCOPE_CHURN.getColumns());
@@ -564,8 +600,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	}
 
 	/*
-	 * This method generate hoverMap for the scope change and initial scope
-	 * based on the issue count and story points
+	 * This method generate hoverMap for the scope change and initial scope based on
+	 * the issue count and story points
 	 */
 	private Map<String, Object> generateHoverMap(Map<String, List<JiraIssue>> valueMap, String key) {
 		Map<String, Object> hoverMap = new LinkedHashMap<>();

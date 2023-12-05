@@ -1,16 +1,9 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,29 +20,17 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
@@ -123,15 +104,34 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
+		/* #deepak starts changes for checking in data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.SPRINT_PREDICTABILITY,
+				Arrays.asList("closed"));
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
 
+		/* #deepak starts changes for updating cache */
+		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
+		updateCacheAfterDBHit(map, KPICode.SPRINT_PREDICTABILITY, Arrays.asList("closed"));
+		/* #deepak ends changes */
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_PREDICTABILITY);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_PREDICTABILITY);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.SPRINT_PREDICTABILITY);
 		kpiElement.setTrendValueList(trendValues);
 		log.debug("[SPRINTPREDICTABILITY-LEAF-NODE-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
@@ -277,86 +277,106 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
-
-		Map<String, Object> sprintWisePredictabilityMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
-
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> sprintWisePredictabilityMap;
 		List<SprintWiseStory> sprintWisePredictabilityList = new ArrayList<>();
-
-		List<JiraIssue> sprintWiseJiraStoryList = (List<JiraIssue>) sprintWisePredictabilityMap
-				.get(SPRINT_WISE_PREDICTABILITY);
-
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintWisePredictabilityMap
-				.get(SPRINT_WISE_SPRINT_DETAILS);
-
 		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafPredictabilityMap = new HashMap<>();
+		FieldMapping fieldMapping = new FieldMapping();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			sprintWisePredictabilityMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate, kpiRequest);
 
-		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
+			List<JiraIssue> sprintWiseJiraStoryList = (List<JiraIssue>) sprintWisePredictabilityMap
+					.get(SPRINT_WISE_PREDICTABILITY);
 
-		if (CollectionUtils.isNotEmpty(sprintDetails)) {
+			List<SprintDetails> sprintDetails = (List<SprintDetails>) sprintWisePredictabilityMap
+					.get(SPRINT_WISE_SPRINT_DETAILS);
 
-			Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(
-					Collectors.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
+			fieldMapping = configHelperService.getFieldMappingMap()
+					.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 
-			sprintDetails.forEach(sd -> {
-				Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
-				List<String> storyList = new ArrayList<>();
-				AtomicDouble effectSumDouble = new AtomicDouble();
-				if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
-					sd.getCompletedIssues().stream().forEach(sprintIssue -> {
-						JiraIssue jiraIssue = jiraIssueMap.get(sprintIssue.getNumber());
-						if (jiraIssue != null) {
-							IssueDetails issueDetails = new IssueDetails();
-							issueDetails.setSprintIssue(sprintIssue);
-							issueDetails.setUrl(jiraIssue.getUrl());
-							issueDetails.setDesc(jiraIssue.getName());
-							storyList.add(sprintIssue.getNumber());
-							setEstimation(fieldMapping, effectSumDouble, sprintIssue, jiraIssue);
-							filterIssueDetailsSet.add(issueDetails);
-						}
-					});
+			if (CollectionUtils.isNotEmpty(sprintDetails)) {
 
-				}
-				SprintWiseStory sprintWiseStory = new SprintWiseStory();
-				sprintWiseStory.setSprint(sd.getSprintID());
-				sprintWiseStory.setSprintName(sd.getSprintName());
-				sprintWiseStory.setBasicProjectConfigId(sd.getBasicProjectConfigId().toString());
-				sprintWiseStory.setStoryList(storyList);
-				sprintWiseStory.setEffortSum(effectSumDouble.get());
-				sprintWisePredictabilityList.add(sprintWiseStory);
-				Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
-						sd.getSprintID());
-				currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
-			});
+				Map<String, JiraIssue> jiraIssueMap = sprintWiseJiraStoryList.stream().collect(Collectors
+						.toMap(JiraIssue::getNumber, Function.identity(), (existing, replacement) -> existing));
+
+				FieldMapping finalFieldMapping = fieldMapping;
+				sprintDetails.forEach(sd -> {
+					Set<IssueDetails> filterIssueDetailsSet = new HashSet<>();
+					List<String> storyList = new ArrayList<>();
+					AtomicDouble effectSumDouble = new AtomicDouble();
+					if (CollectionUtils.isNotEmpty(sd.getCompletedIssues())) {
+						sd.getCompletedIssues().stream().forEach(sprintIssue -> {
+							JiraIssue jiraIssue = jiraIssueMap.get(sprintIssue.getNumber());
+							if (jiraIssue != null) {
+								IssueDetails issueDetails = new IssueDetails();
+								issueDetails.setSprintIssue(sprintIssue);
+								issueDetails.setUrl(jiraIssue.getUrl());
+								issueDetails.setDesc(jiraIssue.getName());
+								storyList.add(sprintIssue.getNumber());
+								setEstimation(finalFieldMapping, effectSumDouble, sprintIssue, jiraIssue);
+								filterIssueDetailsSet.add(issueDetails);
+							}
+						});
+
+					}
+					SprintWiseStory sprintWiseStory = new SprintWiseStory();
+					sprintWiseStory.setSprint(sd.getSprintID());
+					sprintWiseStory.setSprintName(sd.getSprintName());
+					sprintWiseStory.setBasicProjectConfigId(sd.getBasicProjectConfigId().toString());
+					sprintWiseStory.setStoryList(storyList);
+					sprintWiseStory.setEffortSum(effectSumDouble.get());
+					sprintWisePredictabilityList.add(sprintWiseStory);
+					Pair<String, String> currentNodeIdentifier = Pair.of(sd.getBasicProjectConfigId().toString(),
+							sd.getSprintID());
+					currentSprintLeafPredictabilityMap.put(currentNodeIdentifier, filterIssueDetailsSet);
+				});
+			}
 		}
 
 		Map<Pair<String, String>, Double> predictability = prepareSprintPredictMap(sprintWisePredictabilityList);
 		List<KPIExcelData> excelData = new ArrayList<>();
+		FieldMapping finalFieldMapping1 = fieldMapping;
 		sprintLeafNodeList.forEach(node -> {
-			String trendLineName = node.getProjectFilter().getName();
-			String currentSprintComponentId = node.getSprintFilter().getId();
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				String trendLineName = node.getProjectFilter().getName();
+				String currentSprintComponentId = node.getSprintFilter().getId();
 
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafPredictabilityMap, node,
-					fieldMapping);
-			log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
-					requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
-			if (predictability.get(currentNodeIdentifier) != null) {
-				DataCount dataCount = new DataCount();
-				dataCount.setData(String.valueOf(Math.round(predictability.get(currentNodeIdentifier))));
-				dataCount.setSProjectName(trendLineName);
-				dataCount.setSSprintID(node.getSprintFilter().getId());
-				dataCount.setSSprintName(node.getSprintFilter().getName());
-				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-				dataCount.setValue(predictability.get(currentNodeIdentifier));
-				dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
-				dataCount.setHoverValue(new HashMap<>());
-				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
-				trendValueList.add(dataCount);
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				populateExcelDataObject(requestTrackerId, excelData, currentSprintLeafPredictabilityMap, node,
+						finalFieldMapping1);
+				log.debug("[SPRINTPREDICTABILITY-SPRINT-WISE][{}]. SPRINTPREDICTABILITY for sprint {}  is {}",
+						requestTrackerId, node.getSprintFilter().getName(), currentNodeIdentifier);
+				if (predictability.get(currentNodeIdentifier) != null) {
+					DataCount dataCount = new DataCount();
+					dataCount.setData(String.valueOf(Math.round(predictability.get(currentNodeIdentifier))));
+					dataCount.setSProjectName(trendLineName);
+					dataCount.setSSprintID(node.getSprintFilter().getId());
+					dataCount.setSSprintName(node.getSprintFilter().getName());
+					dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+					dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+					dataCount.setValue(predictability.get(currentNodeIdentifier));
+					dataCount.setValue(Math.round(predictability.get(currentNodeIdentifier)));
+					dataCount.setHoverValue(new HashMap<>());
+					// #deepak add projectid to datacount
+					dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+					mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+					trendValueList.add(dataCount);
+					/* #deepak starts changes */
+				} else {
+					List<DataCount> dataCountList = trendValueList.stream()
+							.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+							.collect(Collectors.toList());
+					if (isNotEmpty(dataCountList))
+						mapTmp.get(node.getId())
+								.setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
+				}
 			}
+			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_PREDICTABILITY.getColumns());

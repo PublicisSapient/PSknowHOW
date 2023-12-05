@@ -1,17 +1,10 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.IterableUtils.isEmpty;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,19 +21,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -115,14 +100,32 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
+		/* #deepak starts changes for checking in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		List<Map<String, List<DataCount>>> trendValueList = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList,
+				KPICode.COMMITMENT_RELIABILITY, Arrays.asList("closed"));
+		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(mapTmp, v, kpiElement, kpiRequest);
+
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
+				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 
 			}
 		});
 
+		/* #deepak starts changes for updating cache */
+		updateCacheAfterDBHit(mapForCache, KPICode.COMMITMENT_RELIABILITY, Arrays.asList("closed"));
+		/* #deepak ends changes */
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.COMMITMENT_RELIABILITY);
 
@@ -159,8 +162,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		return kpiElement;
 	}
 
-	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement,
-			KpiRequest kpiRequest) {
+	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
+			List<Map<String, List<DataCount>>> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
+			Map<String, List<Map<String, List<DataCount>>>> mapForCache) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
@@ -171,116 +175,150 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 				.get(sprintLeafNodeList.get(0).getProjectFilter().getBasicProjectConfigId());
 		long time = System.currentTimeMillis();
-		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		log.info("CommitmentReliability taking fetchKPIDataFromDb {}",String.valueOf(System.currentTimeMillis() - time));
-
-		List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
-		List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
-
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseCreatedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseClosedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWisePuntedIssues = new HashMap<>();
 		Map<Pair<String, String>, Set<JiraIssue>> sprintWiseInitialScopeCompletedIssues = new HashMap<>();
 
-		if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(sprintDetails)) {
-			sprintDetails.forEach(sd -> {
-				Set<JiraIssue> totalIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-						sd.getTotalIssues(), allJiraIssue);
-				Set<JiraIssue> completedIssues = new HashSet<>();
-				completedIssues = getCompletedIssues(allJiraIssue, sd, completedIssues);
+		Map<String, Object> resultMap;
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
 
-				Set<JiraIssue> totalInitialIssues = new HashSet<>(totalIssues);
-				// Add the punted issues
-				totalInitialIssues.addAll(KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
-						sd.getPuntedIssues(), allJiraIssue));
-				// removed added issues
-				if (CollectionUtils.isNotEmpty(sd.getAddedIssues())) {
-					totalInitialIssues.removeIf(issue -> sd.getAddedIssues().contains(issue.getNumber()));
-				}
-				Set<JiraIssue> totalCompltdInitialIssues = new HashSet<>(totalInitialIssues);
-				totalCompltdInitialIssues = new HashSet<>(
-						CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
-				sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new HashSet<>(totalIssues));
-				sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new HashSet<>(completedIssues));
-				sprintWiseInitialScopeIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new HashSet<>(totalInitialIssues));
-				sprintWiseInitialScopeCompletedIssues.put(
-						Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
-						new HashSet<>(totalCompltdInitialIssues));
-			});
+			log.info("CommitmentReliability taking fetchKPIDataFromDb {}",
+					String.valueOf(System.currentTimeMillis() - time));
+
+			List<JiraIssue> allJiraIssue = (List<JiraIssue>) resultMap.get(PROJECT_WISE_TOTAL_ISSUE);
+			List<SprintDetails> sprintDetails = (List<SprintDetails>) resultMap.get(SPRINT_DETAILS);
+
+			if (CollectionUtils.isNotEmpty(allJiraIssue) && CollectionUtils.isNotEmpty(sprintDetails)) {
+				sprintDetails.forEach(sd -> {
+					Set<JiraIssue> totalIssues = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
+							sd.getTotalIssues(), allJiraIssue);
+					Set<JiraIssue> completedIssues = new HashSet<>();
+					completedIssues = getCompletedIssues(allJiraIssue, sd, completedIssues);
+
+					Set<JiraIssue> totalInitialIssues = new HashSet<>(totalIssues);
+					// Add the punted issues
+					totalInitialIssues.addAll(KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sd,
+							sd.getPuntedIssues(), allJiraIssue));
+					// removed added issues
+					if (CollectionUtils.isNotEmpty(sd.getAddedIssues())) {
+						totalInitialIssues.removeIf(issue -> sd.getAddedIssues().contains(issue.getNumber()));
+					}
+					Set<JiraIssue> totalCompltdInitialIssues = new HashSet<>(totalInitialIssues);
+					totalCompltdInitialIssues = new HashSet<>(
+							CollectionUtils.intersection(totalCompltdInitialIssues, completedIssues));
+					sprintWiseCreatedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new HashSet<>(totalIssues));
+					sprintWiseClosedIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new HashSet<>(completedIssues));
+					sprintWiseInitialScopeIssues.put(Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new HashSet<>(totalInitialIssues));
+					sprintWiseInitialScopeCompletedIssues.put(
+							Pair.of(sd.getBasicProjectConfigId().toString(), sd.getSprintID()),
+							new HashSet<>(totalCompltdInitialIssues));
+				});
+			}
 		}
 
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		sprintLeafNodeList.forEach(node -> {
-			String trendLineName = node.getProjectFilter().getName();
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				String trendLineName = node.getProjectFilter().getName();
 
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
 
-			List<CommitmentReliabilityValidationData> validationDataList = new ArrayList<>();
+				List<CommitmentReliabilityValidationData> validationDataList = new ArrayList<>();
 
-			Set<JiraIssue> totalPresentJiraIssue = new HashSet<>();
-			Set<JiraIssue> totalPresentCompletedIssue = new HashSet<>();
-			Set<JiraIssue> totalPresentInitialIssue = new HashSet<>();
-			Set<JiraIssue> totalPresentCompltdInitialIssue = new HashSet<>();
+				Set<JiraIssue> totalPresentJiraIssue = new HashSet<>();
+				Set<JiraIssue> totalPresentCompletedIssue = new HashSet<>();
+				Set<JiraIssue> totalPresentInitialIssue = new HashSet<>();
+				Set<JiraIssue> totalPresentCompltdInitialIssue = new HashSet<>();
 
-			if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
-				totalPresentJiraIssue = sprintWiseCreatedIssues.get(currentNodeIdentifier);
-				totalPresentCompletedIssue = sprintWiseClosedIssues.get(currentNodeIdentifier);
-				totalPresentInitialIssue = sprintWiseInitialScopeIssues.get(currentNodeIdentifier);
-				if (CollectionUtils.isNotEmpty(sprintWisePuntedIssues.get(currentNodeIdentifier))) {
-					totalPresentInitialIssue.addAll(sprintWisePuntedIssues.get(currentNodeIdentifier));
+				if (CollectionUtils.isNotEmpty(sprintWiseCreatedIssues.get(currentNodeIdentifier))) {
+					totalPresentJiraIssue = sprintWiseCreatedIssues.get(currentNodeIdentifier);
+					totalPresentCompletedIssue = sprintWiseClosedIssues.get(currentNodeIdentifier);
+					totalPresentInitialIssue = sprintWiseInitialScopeIssues.get(currentNodeIdentifier);
+					if (CollectionUtils.isNotEmpty(sprintWisePuntedIssues.get(currentNodeIdentifier))) {
+						totalPresentInitialIssue.addAll(sprintWisePuntedIssues.get(currentNodeIdentifier));
+					}
+					totalPresentCompltdInitialIssue = sprintWiseInitialScopeCompletedIssues.get(currentNodeIdentifier);
+
 				}
-				totalPresentCompltdInitialIssue = sprintWiseInitialScopeCompletedIssues.get(currentNodeIdentifier);
 
+				Map<String, Double> commitmentHowerMap = new HashMap<>();
+				Set<JiraIssue> totalSumIssues = new HashSet<>();
+				totalSumIssues.addAll(totalPresentJiraIssue);
+				totalSumIssues.addAll(totalPresentCompletedIssue);
+				totalSumIssues.addAll(totalPresentInitialIssue);
+				totalSumIssues.addAll(totalPresentCompltdInitialIssue);
+
+				List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
+						.collect(Collectors.toList());
+				Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
+				Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
+						totalPresentCompletedIssue);
+				Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(
+						totalPresentInitialIssue);
+				Map<String, List<JiraIssue>> totalPresentCompltdInitialIssueGroup = getGroupByAllIssues(
+						totalPresentCompltdInitialIssue);
+				Map<String, Long> commitmentMap = null;
+				Map<String, List<DataCount>> dataCountMap = new HashMap<>();
+				for (String issueType : uniqueIssues) {
+					Map<String, Double> issueTypeWiseHowerMap = new HashMap<>();
+					commitmentMap = getCommitmentMap(
+							totalPresentJiraIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+							totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+							issueTypeWiseHowerMap, fieldMapping,
+							totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
+							totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
+					prepareDataCount(issueTypeWiseHowerMap, commitmentMap, trendLineName, node, fieldMapping,
+							dataCountMap);
+					commitmentHowerMap.putAll(issueTypeWiseHowerMap);
+				}
+				commitmentMap = getCommitmentMap(new ArrayList<>(totalPresentJiraIssue),
+						new ArrayList<>(totalPresentCompletedIssue), commitmentHowerMap, fieldMapping,
+						new ArrayList<>(totalPresentInitialIssue), new ArrayList<>(totalPresentCompltdInitialIssue),
+						CommonConstant.OVERALL);
+				CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
+				reliabilityValidationData.setTotalIssueNumbers(totalPresentJiraIssue);
+				reliabilityValidationData.setCompletedIssueNumber(totalPresentCompletedIssue);
+				reliabilityValidationData.setInitialIssueNumber(totalPresentInitialIssue);
+				reliabilityValidationData.setInitialCompletedIssueNumber(totalPresentCompltdInitialIssue);
+				validationDataList.add(reliabilityValidationData);
+				populateExcelData(requestTrackerId, excelData, validationDataList, node, fieldMapping);
+				prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
+
+				mapTmp.get(node.getId()).setValue(dataCountMap);
+				trendValueList.add(dataCountMap);
+				String key = node.getParentId();
+				if (isEmpty(mapForCache.get(key)))
+					mapForCache.put(key, new ArrayList<>(Arrays.asList(dataCountMap)));
+				else {
+					List<Map<String, List<DataCount>>> list = mapForCache.get(key);
+					list.add(dataCountMap);
+					mapForCache.put(key, list);
+				}
+				/* #deepak starts changes */
+			} else {
+				List<Map<String, List<DataCount>>> dataCountList = trendValueList.stream()
+						.filter(dataCountMap -> dataCountMap.values().stream()
+								.filter(dataCountsList -> (node.getId()).equals(dataCountsList.get(0).getsSprintID()))
+								.count() > 0)
+						.distinct().collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(dataCountList.get(0));
 			}
-
-			Map<String, Double> commitmentHowerMap = new HashMap<>();
-			Set<JiraIssue> totalSumIssues = new HashSet<>();
-			totalSumIssues.addAll(totalPresentJiraIssue);
-			totalSumIssues.addAll(totalPresentCompletedIssue);
-			totalSumIssues.addAll(totalPresentInitialIssue);
-			totalSumIssues.addAll(totalPresentCompltdInitialIssue);
-
-			List<String> uniqueIssues = totalSumIssues.stream().map(JiraIssue::getTypeName).distinct()
-					.collect(Collectors.toList());
-			Map<String, List<JiraIssue>> totalPresentJiraIssueGroup = getGroupByAllIssues(totalPresentJiraIssue);
-			Map<String, List<JiraIssue>> totalPresentCompletedIssueGroup = getGroupByAllIssues(
-					totalPresentCompletedIssue);
-			Map<String, List<JiraIssue>> totalPresentInitialIssueGroup = getGroupByAllIssues(totalPresentInitialIssue);
-			Map<String, List<JiraIssue>> totalPresentCompltdInitialIssueGroup = getGroupByAllIssues(
-					totalPresentCompltdInitialIssue);
-			Map<String, Long> commitmentMap = null;
-			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
-			for (String issueType : uniqueIssues) {
-				Map<String, Double> issueTypeWiseHowerMap = new HashMap<>();
-				commitmentMap = getCommitmentMap(totalPresentJiraIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						totalPresentCompletedIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						issueTypeWiseHowerMap, fieldMapping,
-						totalPresentInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()),
-						totalPresentCompltdInitialIssueGroup.getOrDefault(issueType, new ArrayList<>()), issueType);
-				prepareDataCount(issueTypeWiseHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
-				commitmentHowerMap.putAll(issueTypeWiseHowerMap);
-			}
-			commitmentMap = getCommitmentMap(new ArrayList<>(totalPresentJiraIssue),
-					new ArrayList<>(totalPresentCompletedIssue), commitmentHowerMap, fieldMapping,
-					new ArrayList<>(totalPresentInitialIssue), new ArrayList<>(totalPresentCompltdInitialIssue),
-					CommonConstant.OVERALL);
-			CommitmentReliabilityValidationData reliabilityValidationData = new CommitmentReliabilityValidationData();
-			reliabilityValidationData.setTotalIssueNumbers(totalPresentJiraIssue);
-			reliabilityValidationData.setCompletedIssueNumber(totalPresentCompletedIssue);
-			reliabilityValidationData.setInitialIssueNumber(totalPresentInitialIssue);
-			reliabilityValidationData.setInitialCompletedIssueNumber(totalPresentCompltdInitialIssue);
-			validationDataList.add(reliabilityValidationData);
-			populateExcelData(requestTrackerId, excelData, validationDataList, node, fieldMapping);
-			prepareDataCount(commitmentHowerMap, commitmentMap, trendLineName, node, fieldMapping, dataCountMap);
-
-			mapTmp.get(node.getId()).setValue(dataCountMap);
+			/* #deepak ends changes */
 
 		});
 		kpiElement.setExcelData(excelData);
@@ -311,6 +349,8 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 			dataCount.setSSprintName(node.getSprintFilter().getName());
 			dataCount.setValue(map.getValue());
 			dataCount.setKpiGroup(map.getKey());
+			// #deepak add projectid to datacount.
+			dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
 			// split for filter
 			String[] keyIssues = map.getKey().split(SPECIAL_SYMBOL);
 			dataCount.setHoverValue(generateHowerMap(commitmentHowerMap, keyIssues[0], fieldMapping));
@@ -548,8 +588,9 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),KPICode.COMMITMENT_RELIABILITY.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI72(),
+				KPICode.COMMITMENT_RELIABILITY.getKpiId());
 	}
 
 	@Getter

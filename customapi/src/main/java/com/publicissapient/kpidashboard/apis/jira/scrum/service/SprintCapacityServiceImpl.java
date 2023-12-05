@@ -18,12 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -39,11 +37,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.excel.CapacityKpiData;
@@ -98,8 +92,23 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+
+		/* #deepak starts changes for checking in data in db */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList,
+				KPICode.SPRINT_CAPACITY_UTILIZATION, Arrays.asList("closed"));
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
+				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
@@ -107,11 +116,17 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		log.debug("[SPRINT-CAPACITY-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		/* #deepak starts changes */
+		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
+		updateCacheAfterDBHit(map, KPICode.SPRINT_CAPACITY_UTILIZATION, Arrays.asList("closed"));
+		/* #deepak ends changes */
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.SPRINT_CAPACITY_UTILIZATION);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -179,56 +194,76 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
 				.compareTo(node2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
-		Map<String, Object> sprintCapacityStoryMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("Sprint Capacity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
-
+		/* #deepak start changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> sprintCapacityStoryMap;
 		Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap = new HashMap<>();
-
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseLoggedTimeMap = prepareMapForSprintAndFilters(
-				sprintWiseEstimateTimeMap, kpiRequest, sprintCapacityStoryMap);
-
+		Map<Pair<String, String>, List<JiraIssue>> sprintWiseLoggedTimeMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			sprintCapacityStoryMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, null, null, kpiRequest);
+			log.info("Sprint Capacity taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
+			sprintWiseLoggedTimeMap = prepareMapForSprintAndFilters(sprintWiseEstimateTimeMap, kpiRequest,
+					sprintCapacityStoryMap);
+		}
+
+		Map<Pair<String, String>, List<JiraIssue>> finalSprintWiseLoggedTimeMap = sprintWiseLoggedTimeMap;
 		sprintLeafNodeList.forEach(node -> {
-			// Leaf node wise data
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			String trendLineName = node.getProjectFilter().getName();
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				// Leaf node wise data
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				String trendLineName = node.getProjectFilter().getName();
 
-			Map<String, Object> hoverValue = new HashMap<>();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			Pair<String, String> currentNodeEstimateTime = Pair.of(
-					node.getProjectFilter().getBasicProjectConfigId().toString(),
-					currentSprintComponentId.toLowerCase());
+				Map<String, Object> hoverValue = new HashMap<>();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				Pair<String, String> currentNodeEstimateTime = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(),
+						currentSprintComponentId.toLowerCase());
 
-			double estimateTimeForCurrentLeaf = 0.0d;
-			if (null != sprintWiseEstimateTimeMap.get(currentNodeEstimateTime)) {
-				estimateTimeForCurrentLeaf = sprintWiseEstimateTimeMap.get(currentNodeEstimateTime);
+				double estimateTimeForCurrentLeaf = 0.0d;
+				if (null != sprintWiseEstimateTimeMap.get(currentNodeEstimateTime)) {
+					estimateTimeForCurrentLeaf = sprintWiseEstimateTimeMap.get(currentNodeEstimateTime);
+				}
+				double loggedTimeForCurrentLeaf = 0.0;
+				if (CollectionUtils.isNotEmpty(finalSprintWiseLoggedTimeMap.get(currentNodeIdentifier))) {
+					Map<String, Object> currentSprintLeafCapacityMap = new HashMap<>();
+					currentSprintLeafCapacityMap.put(SPRINTCAPACITYKEY,
+							finalSprintWiseLoggedTimeMap.get(currentNodeIdentifier));
+					loggedTimeForCurrentLeaf = Double
+							.valueOf(df2.format(calculateKPIMetrics(currentSprintLeafCapacityMap)));
+
+					List<JiraIssue> sprintJiraIssues = finalSprintWiseLoggedTimeMap.get(currentNodeIdentifier);
+					populateExcelDataObject(requestTrackerId, excelData, sprintJiraIssues, node);
+				}
+				hoverValue.put(ESTIMATED_HOURS, (int) estimateTimeForCurrentLeaf);
+				hoverValue.put(LOGGED_HOURS, (int) loggedTimeForCurrentLeaf);
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(estimateTimeForCurrentLeaf));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setValue(estimateTimeForCurrentLeaf);
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setLineValue(loggedTimeForCurrentLeaf);
+				dataCount.setHoverValue(hoverValue);
+				// #deepak add projectid to datacount.
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				trendValueList.add(dataCount);
+				mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+			} else {
+				List<DataCount> dataCountList = trendValueList.stream()
+						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+						.collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
-			double loggedTimeForCurrentLeaf = 0.0;
-			if (CollectionUtils.isNotEmpty(sprintWiseLoggedTimeMap.get(currentNodeIdentifier))) {
-				Map<String, Object> currentSprintLeafCapacityMap = new HashMap<>();
-				currentSprintLeafCapacityMap.put(SPRINTCAPACITYKEY, sprintWiseLoggedTimeMap.get(currentNodeIdentifier));
-				loggedTimeForCurrentLeaf = Double
-						.valueOf(df2.format(calculateKPIMetrics(currentSprintLeafCapacityMap)));
-
-				List<JiraIssue> sprintJiraIssues = sprintWiseLoggedTimeMap.get(currentNodeIdentifier);
-				populateExcelDataObject(requestTrackerId, excelData, sprintJiraIssues, node);
-			}
-			hoverValue.put(ESTIMATED_HOURS, (int) estimateTimeForCurrentLeaf);
-			hoverValue.put(LOGGED_HOURS, (int) loggedTimeForCurrentLeaf);
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(estimateTimeForCurrentLeaf));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setValue(estimateTimeForCurrentLeaf);
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setLineValue(loggedTimeForCurrentLeaf);
-			dataCount.setHoverValue(hoverValue);
-			trendValueList.add(dataCount);
-			mapTmp.get(node.getId()).setValue(new ArrayList<>(Arrays.asList(dataCount)));
+			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.SPRINT_CAPACITY_UTILIZATION.getColumns());

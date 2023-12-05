@@ -15,13 +15,7 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
@@ -46,21 +40,13 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -156,13 +142,6 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				/*Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					//return (List<KpiElement>) cachedData; // #deepak
-				}*/
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -191,8 +170,6 @@ public class JiraServiceR {
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
 						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
-
-				//setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}

@@ -18,10 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -38,11 +37,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
@@ -68,10 +63,26 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		List<DataCount> trendValueList = Lists.newArrayList();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		/* #deepak starts changes for checking in data in cache */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.PROJECT_RELEASES,
+				Arrays.asList("closed"));
+		Map<String, List<DataCount>> mapForCache = new HashMap<>();
+		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest);
+				/* #deepak starts changes for adding a check for data from cache */
+				v.forEach(node -> {
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
+							.count() > 0)
+						node.setFromCache(true);
+				}
+				/* #deepak ends changes */
+				);
+				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
+						mapForCache);
 			}
 
 		});
@@ -79,11 +90,16 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 		log.debug("[PROJECT-RELEASE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		/* #deepak starts changes for updating cache */
+		updateCacheAfterDBHit(mapForCache, KPICode.PROJECT_RELEASES, Arrays.asList("closed"));
+		/* #deepak ends changes */
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
 		// 3rd change : remove code to set trendValuelist and call
 		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.PROJECT_RELEASES);
 		kpiElement.setTrendValueList(trendValues);
 		return kpiElement;
 	}
@@ -124,20 +140,28 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
+			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest,
+			Map<String, List<DataCount>> mapForCache) {
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
-		Map<String, ProjectRelease> filterWiseDataMap = createProjectWiseRelease(
-				(List<ProjectRelease>) resultMap.get(PROJECT_RELEASE_DETAIL));
+		/* #deepak start changes */
+		List<Node> projectLeafNodeListUpdated = projectLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, ProjectRelease> filterWiseDataMap = new HashMap<>();
+		if (isNotEmpty(projectLeafNodeListUpdated)) {
+			Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeListUpdated, null, null, kpiRequest);
+			filterWiseDataMap = createProjectWiseRelease((List<ProjectRelease>) resultMap.get(PROJECT_RELEASE_DETAIL));
+		}
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Map<String, ProjectRelease> finalFilterWiseDataMap = filterWiseDataMap;
 		projectLeafNodeList.forEach(node -> {
+
 			String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
 			String projectName = node.getProjectFilter().getName();
 
-			ProjectRelease releaseDetail = filterWiseDataMap.get(currentProjectId);
+			ProjectRelease releaseDetail = finalFilterWiseDataMap.get(currentProjectId);
 			if (releaseDetail != null) {
 				setProjectNodeValue(mapTmp, node, releaseDetail, trendValueList, projectName, requestTrackerId,
-						excelData);
+						excelData, mapForCache);
 			}
 
 		});
@@ -155,24 +179,37 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @return
 	 */
 	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, ProjectRelease projectRelease,
-			List<DataCount> trendValueList, String projectName, String requestTrackerId, List<KPIExcelData> excelData) {
+			List<DataCount> trendValueList, String projectName, String requestTrackerId, List<KPIExcelData> excelData,
+			Map<String, List<DataCount>> mapForCache) {
 		Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
 		List<ProjectVersion> projectVersionList = Lists.newArrayList();
 		List<String> dateList = Lists.newArrayList();
-
-		for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
-			if (pv.getReleaseDate() != null) {
-				String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
-				if (dateCount.keySet().contains(yearMonth)) {
-					projectVersionList.add(pv);
-					dateList.add(yearMonth);
-					dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+		/* #deepak starts changes */
+		List<DataCount> dcList = new ArrayList<>();
+		if (!node.isFromCache()) {
+			/* #deepak ends changes */
+			for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+				if (pv.getReleaseDate() != null) {
+					String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH
+							+ pv.getReleaseDate().getMonthOfYear();
+					if (dateCount.keySet().contains(yearMonth)) {
+						projectVersionList.add(pv);
+						dateList.add(yearMonth);
+						dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+					}
 				}
 			}
+
+			dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, k, v));
+			mapTmp.get(node.getId()).setValue(dcList);
+			mapForCache.put(node.getId(), dcList);
+		} else {
+			List<DataCount> dataCountList = trendValueList.stream()
+					.filter(dataCount -> node.getName().equals(dataCount.getSProjectName())).distinct()
+					.collect(Collectors.toList());
+			if (isNotEmpty(dataCountList))
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(dataCountList));
 		}
-		List<DataCount> dcList = new ArrayList<>();
-		dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, k, v));
-		mapTmp.get(node.getId()).setValue(dcList);
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateReleaseFreqExcelData(projectVersionList, projectName, excelData);

@@ -18,16 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Feature;
@@ -44,19 +37,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -73,8 +58,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * This class calculates the DRR and trend analysis of the DRR.
@@ -154,30 +137,31 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
 
-		/* #deepak starts changes */
-		List<Node> projects=treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache=new ArrayList<>();
-		processCacheBeforeDBHit(projects,projectsFromCache,trendValueList,KPICode.DEFECT_REJECTION_RATE);
+		/* #deepak starts changes for checking in data in db */
+		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
+		List<Node> projectsFromCache = new ArrayList<>();
+		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.DEFECT_REJECTION_RATE,
+				Arrays.asList("closed"));
 		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 
-				/* #deepak starts changes */
+				/* #deepak starts changes for adding a check for data from cache */
 				v.forEach(node -> {
-				if(projectsFromCache.stream().filter(projectNode->projectNode.getId().equals(node.getParentId())).count()>0)
-				node.setFromCache(true);
-					}
-				);
+					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+							.count() > 0)
+						node.setFromCache(true);
+				});
 				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 
 		});
 
-		/* #deepak starts changes */
-		Map<String, List<DataCount>> map =mapForCache(projectsFromCache, trendValueList);
-		processCacheAfterDBHit(map,KPICode.DEFECT_REJECTION_RATE);
+		/* #deepak starts changes for updating cache */
+		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
+		updateCacheAfterDBHit(map, KPICode.DEFECT_REJECTION_RATE, Arrays.asList("closed"));
 		/* #deepak ends changes */
 
 		log.debug("[DRR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
@@ -185,7 +169,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_REJECTION_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEFECT_REJECTION_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		log.debug("[DRR-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
@@ -257,7 +242,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 			List<JiraIssue> totalSubTaskDefects = jiraIssueRepository
 					.findLinkedDefects(mapOfFilters, totalSprintReportStories, uniqueProjectMap).stream()
-					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber())).collect(Collectors.toList());
+					.filter(jiraIssue -> !totalIssueInSprint.contains(jiraIssue.getNumber()))
+					.collect(Collectors.toList());
 
 			List<JiraIssueCustomHistory> subTaskBugsCustomHistory = jiraIssueCustomHistoryRepository
 					.findByStoryIDInAndBasicProjectConfigIdIn(
@@ -314,15 +300,19 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 
-		/* #deepak start changes */
-		List<Node> sprintLeafNodeListUpdated=sprintLeafNodeList.stream().filter(node->!node.isFromCache()).collect(Collectors.toList());
-		Map<String, Object> resultListMap =new HashMap<>();
+		/*
+		 * #deepak start changes filer out sprintLeafNodeList which is available in
+		 * cache
+		 */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> resultListMap;
 		Map<Pair<String, String>, Double> sprintWiseDRRMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseRejectedDefectListMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseCompletedDefectListMap = new HashMap<>();
-		if(isNotEmpty(sprintLeafNodeListUpdated)) {
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
 			resultListMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate, kpiRequest);
 			List<JiraIssue> totalDefectList = (List<JiraIssue>) resultListMap.get(TOTAL_DEFECT_LIST);
 			List<JiraIssue> totalSubtaskList = (List<JiraIssue>) resultListMap.get(TOTAL_SPRINT_SUBTASK_DEFECTS);
@@ -361,8 +351,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 						.collect(Collectors.toList()), sd, totalSubtaskHistory, dodAndDefectRejStatus);
 
 				List<JiraIssue> sprintRejectedDefects = canceledDefectList.stream()
-						.filter(element -> totalSprintIssues.contains(element.getNumber())).collect(Collectors.toList());
-
+						.filter(element -> totalSprintIssues.contains(element.getNumber()))
+						.collect(Collectors.toList());
 
 				List<JiraIssue> sprintRejectedSubtaskDefect = sprintSubtask.stream()
 						.filter(jiraIssue -> finalCanceledDefectNumbers.contains(jiraIssue.getNumber()))
@@ -372,10 +362,11 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 				List<JiraIssue> sprintCompletedDefects = totalDefectList.stream()
 						.filter(element -> completedSprintIssues.contains(element.getNumber()))
-						.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase())).collect(Collectors.toList());
+						.filter(element -> dodAndDefectRejStatus.contains(element.getStatus().toLowerCase()))
+						.collect(Collectors.toList());
 
-				sprintCompletedDefects.addAll(
-						KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask, totalSubtaskHistory, sd, dodAndDefectRejStatus));
+				sprintCompletedDefects.addAll(KpiDataHelper.getCompletedSubTasksByHistory(sprintSubtask,
+						totalSubtaskHistory, sd, dodAndDefectRejStatus));
 
 				List<JiraIssue> sprintWiseRejectedDefectList = new ArrayList<>();
 				List<JiraIssue> sprintWiseCompletedDefectList = new ArrayList<>();
@@ -407,50 +398,52 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		sprintLeafNodeList.forEach(node -> {
 			/* #deepak starts changes */
 			if (!node.isFromCache()) {
-			/* #deepak ends changes */
-			// Leaf node wise data
-			String trendLineName = node.getProjectFilter().getName();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+				/* #deepak ends changes */
+				// Leaf node wise data
+				String trendLineName = node.getProjectFilter().getName();
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
 
-			double drrForCurrentLeaf;
+				double drrForCurrentLeaf;
 
-			if (sprintWiseDRRMap.containsKey(currentNodeIdentifier)) {
-				drrForCurrentLeaf = sprintWiseDRRMap.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseRejectedDefectList = sprintWiseRejectedDefectListMap
-						.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseCompletedDefectList = sprintWiseCompletedDefectListMap
-						.get(currentNodeIdentifier);
-				List<JiraIssue> sprintWiseCompAndRejectedList = new ArrayList<>(sprintWiseCompletedDefectList);
-				sprintWiseCompAndRejectedList.addAll(sprintWiseRejectedDefectList);
-				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
-						sprintWiseRejectedDefectList, sprintWiseCompAndRejectedList);
+				if (sprintWiseDRRMap.containsKey(currentNodeIdentifier)) {
+					drrForCurrentLeaf = sprintWiseDRRMap.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseRejectedDefectList = sprintWiseRejectedDefectListMap
+							.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseCompletedDefectList = sprintWiseCompletedDefectListMap
+							.get(currentNodeIdentifier);
+					List<JiraIssue> sprintWiseCompAndRejectedList = new ArrayList<>(sprintWiseCompletedDefectList);
+					sprintWiseCompAndRejectedList.addAll(sprintWiseRejectedDefectList);
+					populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
+							sprintWiseRejectedDefectList, sprintWiseCompAndRejectedList);
 
-			} else {
-				drrForCurrentLeaf = 0.0d;
-			}
+				} else {
+					drrForCurrentLeaf = 0.0d;
+				}
 
-			log.debug("[DRR-SPRINT-WISE][{}]. DRR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), drrForCurrentLeaf);
+				log.debug("[DRR-SPRINT-WISE][{}]. DRR for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), drrForCurrentLeaf);
 
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(drrForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			// #deepak add projectid to datacount
-			dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(Math.round(drrForCurrentLeaf)));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setValue(drrForCurrentLeaf);
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+				// #deepak add projectid to datacount
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
 				/* #deepak starts changes */
 			} else {
-			List<DataCount> dataCountList=trendValueList.stream().filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct().collect(Collectors.toList());
-			if(isNotEmpty(dataCountList))
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
+				List<DataCount> dataCountList = trendValueList.stream()
+						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+						.collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
 			/* #deepak ends changes */
 
@@ -554,8 +547,8 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI37(),KPICode.DEFECT_REJECTION_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI37(), KPICode.DEFECT_REJECTION_RATE.getKpiId());
 	}
 
 }
