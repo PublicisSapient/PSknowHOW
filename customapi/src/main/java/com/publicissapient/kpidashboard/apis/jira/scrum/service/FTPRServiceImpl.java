@@ -148,10 +148,11 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 	private static void getNotFtprDefects(Map<String, Set<String>> projectWiseRCA, Set<JiraIssue> defects,
 			List<JiraIssue> notFTPRDefects) {
 		for (JiraIssue jiraIssue : defects) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the project, or include if no RCA is configured.
 			if (org.apache.commons.collections4.CollectionUtils
 					.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
 				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
 						notFTPRDefects.add(jiraIssue);
 					}
 				}
@@ -315,7 +316,7 @@ public class FTPRServiceImpl extends JiraKPIService<Integer, List<Object>, Map<S
 
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI135());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI135());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI135());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
 					fieldMapping.getResolutionTypeForRejectionKPI135(),
 					fieldMapping.getJiraDefectRejectionStatusKPI135());
