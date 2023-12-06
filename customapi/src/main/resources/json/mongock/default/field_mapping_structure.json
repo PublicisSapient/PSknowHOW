@@ -650,7 +650,7 @@
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "The defects tagged to priority values selected in this field on Mappings screen will be included."
+      "definition" : "The defects tagged to as per RCA values selected in this field on Mappings screen will be included."
     }
   } ,
   {
@@ -2744,6 +2744,195 @@
     "section": "Issue Types Mapping",
     "tooltip": {
       "definition": "All issue types that should be included in Lead time calculation."
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI126",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI42",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI168",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI70",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI40",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI5",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI39",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI46",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI8",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI73",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI113",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI149",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI153",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI162",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI116",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI156",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI118",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI127",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI170",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI139",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI166",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
   }
 ]
