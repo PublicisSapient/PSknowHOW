@@ -738,23 +738,28 @@
     "maturityLevel": [
       {
         "level": "M5",
-        "bgColor": "#167a26"
+        "bgColor": "#167a26",
+        "displayRange": "0-15 %"
       },
       {
         "level": "M4",
-        "bgColor": "#4ebb1a"
+        "bgColor": "#4ebb1a",
+        "displayRange": "15-30 %"
       },
       {
         "level": "M3",
-        "bgColor": "#ef7643"
+        "bgColor": "#ef7643",
+        "displayRange": "30-45 %"
       },
       {
         "level": "M2",
-        "bgColor": "#f53535"
+        "bgColor": "#f53535",
+        "displayRange": "45-60 %"
       },
       {
         "level": "M1",
-        "bgColor": "#c91212"
+        "bgColor": "#c91212",
+        "displayRange": "60 % and Above"
       }
     ]
   } ,
@@ -1164,41 +1169,41 @@
     ]
   } ,
   {
-    "kpiId" : "kpi118" ,
-    "kpiName" : "Deployment Frequency" ,
-    "kpiCategory" : "Dora" ,
-    "maxValue" : "100" ,
-    "kpiUnit" : "Number" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 25 ,
-    "kpiSource" : "Jenkins" ,
-    "groupId" : 14 ,
-    "thresholdValue" : 0 ,
-    "kanban" : false ,
-    "chartType" : "line" ,
-    "kpiInfo" : {
-      "definition" : "Measures how often code is deployed to production in a period" ,
-      "details" : [
+    "kpiId": "kpi118",
+    "kpiName": "Deployment Frequency",
+    "kpiCategory": "Dora",
+    "maxValue": "100",
+    "kpiUnit": "Number",
+    "isDeleted": "False",
+    "defaultOrder": 25,
+    "kpiSource": "Jenkins",
+    "groupId": 14,
+    "thresholdValue": 0,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Measures how often code is deployed to production in a period",
+      "details": [
         {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
           }
         }
       ]
-    } ,
-    "upperThresholdBG" : "white" ,
-    "lowerThresholdBG" : "red" ,
-    "xaxisLabel" : "Weeks" ,
-    "yaxisLabel" : "Count" ,
-    "isPositiveTrend" : true ,
-    "showTrend" : true ,
-    "kpiFilter" : "multiSelectDropDown" ,
-    "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "sum" ,
-    "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : true ,
+    },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "multiSelectDropDown",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
     "maturityRange": [
       "0-2" ,
       "2-4" ,
@@ -1210,30 +1215,35 @@
       {
         "level": "M5",
         "bgColor": "#167a26",
-        "label": ">= 2 per week"
+        "label": ">= 2 per week",
+        "displayRange": "8 and Above"
       },
       {
         "level": "M4",
         "bgColor": "#4ebb1a",
-        "label": "Once per week"
+        "label": "Once per week",
+        "displayRange": "6,7"
       },
       {
         "level": "M3",
         "bgColor": "#ef7643",
-        "label": "Once in 2 weeks"
+        "label": "Once in 2 weeks",
+        "displayRange": "4,5"
       },
       {
         "level": "M2",
         "bgColor": "#f53535",
-        "label": "Once in 4 weeks"
+        "label": "Once in 4 weeks",
+        "displayRange": "2,3"
       },
       {
         "level": "M1",
         "bgColor": "#c91212",
-        "label": "< Once in 8 weeks"
+        "label": "< Once in 8 weeks",
+        "displayRange": "0,1"
       }
     ]
-  } ,
+  },
   {
     "kpiId" : "kpi73" ,
     "kpiName" : "Release Frequency" ,
@@ -3247,27 +3257,32 @@
       {
         "level": "M5",
         "bgColor": "#167a26",
-        "label": "< 1 Day"
+        "label": "< 1 Day",
+        "displayRange": "0-1 Day"
       },
       {
         "level": "M4",
         "bgColor": "#4ebb1a",
-        "label": "< 7 Days"
+        "label": "< 7 Days",
+        "displayRange": "1-7 Days"
       },
       {
         "level": "M3",
         "bgColor": "#ef7643",
-        "label": "< 30 Days"
+        "label": "< 30 Days",
+        "displayRange": "7-30 Days"
       },
       {
         "level": "M2",
         "bgColor": "#f53535",
-        "label": "< 90 Days"
+        "label": "< 90 Days",
+        "displayRange": "30-90 Days"
       },
       {
         "level": "M1",
         "bgColor": "#c91212",
-        "label": ">= 90 Days"
+        "label": ">= 90 Days",
+        "displayRange": "90 Days and Above"
       }
     ]
   },
@@ -3833,23 +3848,28 @@
     "maturityLevel": [
       {
         "level": "M5",
-        "bgColor": "#167a26"
+        "bgColor": "#167a26",
+        "displayRange": "0-1 Hour"
       },
       {
         "level": "M4",
-        "bgColor": "#4ebb1a"
+        "bgColor": "#4ebb1a",
+        "displayRange": "1-12 Hours"
       },
       {
         "level": "M3",
-        "bgColor": "#ef7643"
+        "bgColor": "#ef7643",
+        "displayRange": "12-24 Hours"
       },
       {
         "level": "M2",
-        "bgColor": "#f53535"
+        "bgColor": "#f53535",
+        "displayRange": "24-48 Hours"
       },
       {
         "level": "M1",
-        "bgColor": "#c91212"
+        "bgColor": "#c91212",
+        "displayRange": "48 Hours and Above"
       }
     ]
   },
