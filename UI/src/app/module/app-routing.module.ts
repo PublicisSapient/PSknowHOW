@@ -75,7 +75,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'kpi-maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "Maturity"
         }

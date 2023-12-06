@@ -8,6 +8,7 @@
             {
                 "boardId": 1,
                 "boardName": "My KnowHow",
+                "boardSlug": "mydashboard",
                 "kpis": [
                     {
                         "kpiId": "kpi14",
@@ -1527,6 +1528,7 @@
             {
                 "boardId": 2,
                 "boardName": "Speed",
+                "boardSlug": "speed",
                 "kpis": [
                     {
                         "kpiId": "kpi40",
@@ -1967,6 +1969,7 @@
             {
                 "boardId": 3,
                 "boardName": "Quality",
+                "boardSlug": "quality",
                 "kpis": [
                     {
                         "kpiId": "kpi14",
@@ -3015,6 +3018,7 @@
             {
                 "boardId": 4,
                 "boardName": "Value",
+                "boardSlug": "value",
                 "kpis": [
                     {
                         "kpiId": "kpi73",
@@ -3185,6 +3189,7 @@
             {
                 "boardId": 5,
                 "boardName": "Iteration",
+                "boardSlug": "iteration",
                 "kpis": [
                     {
                         "kpiId": "kpi121",
@@ -3921,6 +3926,7 @@
             {
                 "boardId": 6,
                 "boardName": "Developer",
+                "boardSlug": "developer",
                 "kpis": [
                     {
                         "kpiId": "kpi84",
@@ -4050,6 +4056,7 @@
             {
                 "boardId": 7,
                 "boardName": "My KnowHow",
+                "boardSlug": "mydashboard",
                 "kpis": [
                     {
                         "kpiId": "kpi55",
@@ -4975,6 +4982,7 @@
             {
                 "boardId": 8,
                 "boardName": "Speed",
+                "boardSlug": "speed",
                 "kpis": [
                     {
                         "kpiId": "kpi49",
@@ -5272,6 +5280,7 @@
             {
                 "boardId": 9,
                 "boardName": "Quality",
+                "boardSlug": "quality",
                 "kpis": [
                     {
                         "kpiId": "kpi55",
@@ -5924,6 +5933,7 @@
             {
                 "boardId": 10,
                 "boardName": "Value",
+                "boardSlug": "value",
                 "kpis": [
                     {
                         "kpiId": "kpi74",
@@ -6050,11 +6060,13 @@
             {
                 "boardId": 11,
                 "boardName": "Iteration",
+                "boardSlug": "iteration",
                 "kpis": []
             },
             {
                 "boardId": 12,
                 "boardName": "Developer",
+                "boardSlug": "developer",
                 "kpis": [
                     {
                         "kpiId": "kpi65",
@@ -6126,6 +6138,7 @@
             {
                 "boardId": 13,
                 "boardName": "Release",
+                "boardSlug": "release",
                 "kpis": [
                     {
                         "kpiId": "kpi141",
@@ -6447,6 +6460,7 @@
             {
                 "boardId": 14,
                 "boardName": "Dora",
+                "boardSlug": "dora",
                 "kpis": [
                     {
                         "kpiId": "kpi156",
@@ -6800,6 +6814,7 @@
             {
                 "boardId": 15,
                 "boardName": "Backlog",
+                "boardSlug": "backlog",
                 "kpis": [
                     {
                         "kpiId": "kpi138",
@@ -7360,6 +7375,7 @@
             {
                 "boardId": 16,
                 "boardName": "Kpi Maturity",
+                "boardSlug": "kpi-maturity",
                 "kpis": [
                     {
                         "kpiId": "kpi989",

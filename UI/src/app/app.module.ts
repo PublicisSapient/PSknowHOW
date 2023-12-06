@@ -129,6 +129,7 @@ import { FilterNewComponent } from './dashboard/filter-new/filter-new.component'
 import { ParentFilterComponent } from './dashboard/filter-new/parent-filter/parent-filter.component';
 import { PrimaryFilterComponent } from './dashboard/filter-new/primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './dashboard/filter-new/additional-filter/additional-filter.component';
+import { NavNewComponent } from './dashboard/nav-new/nav-new.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -212,7 +213,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         FilterNewComponent,
         ParentFilterComponent,
         PrimaryFilterComponent,
-        AdditionalFilterComponent
+        AdditionalFilterComponent,
+        NavNewComponent
     ],
     imports: [
         DropdownModule,
