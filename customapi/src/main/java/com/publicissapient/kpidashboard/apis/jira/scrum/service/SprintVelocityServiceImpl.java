@@ -419,4 +419,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI39(), KPICode.SPRINT_VELOCITY.getKpiId());
+	}
+
 }
