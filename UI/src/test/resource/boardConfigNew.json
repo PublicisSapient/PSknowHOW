@@ -6108,7 +6108,18 @@
                         },
                         "shown": true
                     }
-                ]
+                ],
+                "filters": {
+                    "kanbanRequired": true,
+                    "primaryFilter": {
+                        "type": "singleSelect",
+                        "defaultLevel": {
+                            "labelName": "project",
+                            "sortBy": null
+                        }
+                    },
+                    "parentFilter": null
+                }
             }
         ],
         "others": [

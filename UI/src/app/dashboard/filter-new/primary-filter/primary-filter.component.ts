@@ -34,6 +34,9 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
         } else {
           this.filters = this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
         }
+      } else {
+        this.selectedLevel = 'project';
+        this.filters = this.filterData[this.selectedLevel];
       }
 
       if (this.filters && this.filters.length && (changes['selectedLevel'] || changes['selectedType']?.currentValue !== changes['selectedType']?.previousValue)) {
@@ -51,7 +54,7 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
 
   ngOnInit() {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((val) => {
-      if (this.selectedFilters.length) {
+      if (this.selectedFilters.length && this.selectedFilters[0]) {
         this.selectedFilters = this.selectedFilters.filter((filter) => Object.keys(val).includes(filter.nodeId));
       }
     }));
