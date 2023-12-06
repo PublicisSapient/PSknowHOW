@@ -22,8 +22,10 @@
 
 export const environment = {
    production: false,
-   baseUrl: '//customapi:8080',
-   SSO_LOGIN: false
+   baseUrl: '//localhost:8081',
+   SSO_LOGIN: false,
+   CENTRAL_LOGIN_URL: 'http://auth.localhost:3000',
+   RESOURCE: 'PSKnowHOW'
 };
 
 /*

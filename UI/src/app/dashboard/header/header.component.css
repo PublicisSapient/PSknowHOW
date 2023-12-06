@@ -1,15 +1,54 @@
+header{
+    background: #fff;
+    border-bottom: 2px solid #EAEDF0;
+}
 .logo img {
     height: 58px;
 }
 .count {
     position: absolute;
-    font-size: 1.1rem;
-    top: -1rem;
-    right: -1rem;
-    color: black;
+    font-size: .75rem;
+    top: -9px;
+    right: -5px;
+    color: #fff;
     background: #fe414d;
-    padding: 5px;
-    height: 2rem;
-    width: 2rem;
+    height: 20px;
+    width: 20px;
     border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.noti-count{
+    top: -6px;
+}
+.list-style-none{
+    list-style: none;
+}
+.custom-navbar .link{
+    color: var(--color-black);
+}
+::ng-deep .custom-menu .p-menu .p-menuitem-link{
+    padding: 1rem .5rem;
+}
+::ng-deep .custom-menu .p-menu .p-menuitem-link .p-menuitem-text{
+    font-size: .875rem;
+}
+::ng-deep .p-tabmenu .p-tabmenu-nav li.p-highlight .p-menuitem-link:focus{
+    background-color: none;
+}
+.filter-btn{
+    cursor: pointer;
+}
+.custom-user{
+    height: 40px;
+    width: 40px;
+    background: var(--color-gray-c6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.profile-budge {
+    font-size: .725rem;
 }

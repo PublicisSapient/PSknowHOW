@@ -1009,17 +1009,9 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   height: 58px;
 }
 
-.profile-budge {
-  padding: 11px 18px;
-  text-align: center;
-  text-decoration: none;
-  background-color: #C2C2C2AF;
-  border-radius: 40px;
-  text-transform: uppercase;
-  display: flex;
-}
 
-.noti-count {
+
+/* .noti-count {
   position: absolute;
   font-size: 1.1rem;
   top: -1rem;
@@ -1030,12 +1022,12 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
   height: 2rem;
   width: 2rem;
   border-radius: 50%;
-}
+} */
 
-.noti-btn-wraper{
+/* .noti-btn-wraper{
   margin: 0rem 0.4rem;
   position: relative
-}
+} */
 
 .back-btn-wraper{
   display: flex;
