@@ -66,7 +66,7 @@ export class MilestoneComponent implements OnInit {
   globalConfig;
   sharedObject;
   kpiCommentsCountObj: object = {};
-  navigationTabs:Array<object>;
+  navigationTabs: Array<object>;
   activeIndex = 0;
   kpiThresholdObj = {};
   constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService) {
@@ -112,34 +112,34 @@ export class MilestoneComponent implements OnInit {
 
   processKpiConfigData() {
     this.navigationTabs = [
-      {'label':'Speed', 'count': 0,kpis : [],width : 'half', fullWidthKpis : []},
-      {'label':'Quality', 'count': 0,kpis : [],width :'half'},
-      {'label':'Value', 'count': 0,kpis : [],width :'full'},
+      { 'label': 'Speed', 'count': 0, kpis: [], width: 'half', fullWidthKpis: [] },
+      { 'label': 'Quality', 'count': 0, kpis: [], width: 'half' },
+      { 'label': 'Value', 'count': 0, kpis: [], width: 'full' },
     ];
     const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-     /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
+    /** user can enable kpis from show/hide filter, added below flag to show different message to the user **/
     this.enableByUser = disabledKpis?.length ? true : false;
     /** noKpis - if true, all kpis are not shown to the user (not showing kpis to the user) **/
     this.updatedConfigGlobalData = this.configGlobalData.filter(item => item.shown && item.isEnabled);
     this.upDatedConfigData = this.updatedConfigGlobalData.filter(kpi => kpi.kpiId !== 'kpi121');
 
-    for(let i = 0; i<this.upDatedConfigData?.length; i++){
+    for (let i = 0; i < this.upDatedConfigData?.length; i++) {
       let board = this.upDatedConfigData[i]?.kpiDetail.kpiSubCategory;
       let idx = this.navigationTabs?.findIndex(x => (x['label'] == board));
-      if(idx != -1) {
+      if (idx != -1) {
         this.navigationTabs[idx]['count']++;
         this.navigationTabs[idx]['kpis'].push(this.upDatedConfigData[i]);
       }
     }
 
     this.navigationTabs.map(tabDetails => {
-      if(tabDetails['width'] === 'half'){
+      if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
-        tabDetails['kpis'].forEach(kpiDetails=>{
-          if(kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100){
+        tabDetails['kpis'].forEach(kpiDetails => {
+          if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
             fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-          }else{
+          } else {
             halfWithKpis = halfWithKpis.concat(kpiDetails);
           }
         })
@@ -175,7 +175,7 @@ export class MilestoneComponent implements OnInit {
     click apply and call kpi
    **/
   receiveSharedData($event) {
-    if(this.service.getDashConfigData()){
+    if (this.service.getDashConfigData()) {
       this.configGlobalData = this.service.getDashConfigData()['others']?.filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
       this.processKpiConfigData();
       this.masterData = $event.masterData;
@@ -188,12 +188,14 @@ export class MilestoneComponent implements OnInit {
           if (this.selectedtype !== 'Kanban') {
             const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
             const selectedRelease = this.filterData?.filter(x => x.nodeId == this.filterApplyData?.selectedMap['release'][0] && x.labelName.toLowerCase() === 'release')[0];
-            const today = new Date().toISOString().split('T')[0];
-            const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
-            this.timeRemaining = this.calcBusinessDays(today, endDate);
-            this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
-            this.groupJiraKpi(kpiIdsForCurrentBoard);
-            this.getKpiCommentsCount();
+            if (selectedRelease) {
+              const today = new Date().toISOString().split('T')[0];
+              const endDate = new Date(selectedRelease?.releaseEndDate).toISOString().split('T')[0];
+              this.timeRemaining = this.calcBusinessDays(today, endDate);
+              this.service.iterationCongifData.next({ daysLeft: this.timeRemaining });
+              this.groupJiraKpi(kpiIdsForCurrentBoard);
+              this.getKpiCommentsCount();
+            }
           }
         }
       }
@@ -469,7 +471,7 @@ export class MilestoneComponent implements OnInit {
         let filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
         let preAggregatedValues = [];
         // for single select dropdown filters
-        if(!Array.isArray(filters)) {
+        if (!Array.isArray(filters)) {
           filters = [filters];
         }
         for (let i = 0; i < filters?.length; i++) {
@@ -638,16 +640,16 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
+  drop(event: CdkDragDrop<string[]>, tab) {
     if (event?.previousIndex !== event.currentIndex) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+      if (tab.width === 'half') {
+        const updatedTabsDetails = this.navigationTabs.find(tabs => tabs['label'].toLowerCase() === tab['label'].toLowerCase());
+        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
       }
       this.upDatedConfigData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
+      this.navigationTabs.forEach(tabs => {
+        this.upDatedConfigData = this.upDatedConfigData.concat(tabs['kpis']);
       })
       this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
       const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
@@ -660,7 +662,7 @@ export class MilestoneComponent implements OnInit {
 
   getKpiCommentsCount(kpiId?) {
     let requestObj = {
-      "nodes": this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId,
+      "nodes": [this.filterData.filter(x => x.nodeId == this.filterApplyData?.ids[0])[0]?.parentId],
       "level": this.filterApplyData?.level,
       "nodeChildId": this.filterApplyData['selectedMap']?.release[0],
       'kpiIds': []
@@ -679,27 +681,27 @@ export class MilestoneComponent implements OnInit {
 
   }
 
-   /** Reload KPI once field mappoing updated */
-   reloadKPI(event){
+  /** Reload KPI once field mappoing updated */
+  reloadKPI(event) {
     this.kpiChartData[event.kpiDetail?.kpiId] = [];
-    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId,'Release');
+    const currentKPIGroup = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Release');
     if (currentKPIGroup?.kpiList?.length > 0) {
-        this.postJiraKpi(this.kpiJira, 'jira');
+      this.postJiraKpi(this.kpiJira, 'jira');
     }
   }
 
-  handleTabChange(event){
+  handleTabChange(event) {
     this.activeIndex = event.index;
   }
 
   checkIfDataPresent(data) {
     let dataCount = 0;
-    if(data[0]?.value && data[0]?.value[0]?.value[0]?.data) {
+    if (data[0]?.value && data[0]?.value[0]?.value[0]?.data) {
       dataCount = data[0]?.value[0]?.value[0]?.data;
-    } else if(data[0]?.value && data[0]?.value[0]?.value[0]?.value){
+    } else if (data[0]?.value && data[0]?.value[0]?.value[0]?.value) {
       dataCount = data[0]?.value[0]?.value[0]?.value;
     }
-    if(parseInt(dataCount + '') > 0) {
+    if (parseInt(dataCount + '') > 0) {
       return true;
     }
     return false;

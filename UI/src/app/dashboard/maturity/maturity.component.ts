@@ -122,7 +122,7 @@ export class MaturityComponent implements OnInit, OnDestroy {
             this.filterApplyData = $event?.filterApplyData;
             this.loaderMaturity = true;
             this.isKanban = this.selectedtype?.toLowerCase() === 'kanban';
-            const kpiIdsForCurrentBoard = this.service.getMasterData()['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
+            const kpiIdsForCurrentBoard = this.masterData['kpiList']?.filter(kpi => kpi.calculateMaturity && kpi.kanban === this.isKanban).map(kpi => kpi.kpiId);
             if(this.filterData?.length > 0 && kpiIdsForCurrentBoard?.length > 0 && this.selectedtype){
                 // this.drawAreaChart(null, null);
                 // this.chart(null);

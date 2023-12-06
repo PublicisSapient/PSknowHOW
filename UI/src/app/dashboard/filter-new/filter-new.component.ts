@@ -81,6 +81,10 @@ export class FilterNewComponent implements OnInit {
   processBoardData(boardData) {
     this.boardData = boardData;
     let selectedBoard = boardData[this.selectedType].filter((board => board.boardName.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    if (!selectedBoard) {
+      selectedBoard = boardData['others'].filter((board => board.boardName.toLowerCase() === this.selectedTab.toLowerCase()))[0];
+    }
+
     if (selectedBoard) {
       this.getFiltersData();
       this.masterData['kpiList'] = selectedBoard.kpis;
@@ -208,7 +212,9 @@ export class FilterNewComponent implements OnInit {
       if (!this.kanban) {
         if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
           this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
-          delete this.filterApplyData['selectedMap']['release'];
+          if (this.selectedTab.toLocaleLowerCase() !== 'release') {
+            delete this.filterApplyData['selectedMap']['release'];
+          }
           delete this.filterApplyData['selectedMap']['sqd'];
           delete this.filterApplyData['selectedMap']['date'];
         } else {
