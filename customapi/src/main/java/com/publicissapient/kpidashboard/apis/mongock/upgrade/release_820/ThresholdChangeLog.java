@@ -53,27 +53,27 @@ public class ThresholdChangeLog {
 	@Execution
 	public boolean execution() {
 		insertFieldMapping();
-		addThresholdValue("kpi126","0",true);
-		addThresholdValue("kpi42","60",true);
-		addThresholdValue("kpi168","2",true);
-		addThresholdValue("kpi70","0",true);
-		addThresholdValue("kpi40","20",true);
-		addThresholdValue("kpi5","0",true);
-		addThresholdValue("kpi39","40",true);
-		addThresholdValue("kpi46","0",true);
-		addThresholdValue("kpi8","6",false);
-		addThresholdValue("kpi73","2",true);
-		addThresholdValue("kpi113","0",true);
-		addThresholdValue("kpi149","4",true);
-		addThresholdValue("kpi153","0",true);
-		addThresholdValue("kpi162","4",false);
-		addThresholdValue("kpi116","30",false);
-		addThresholdValue("kpi156","7",true);
-		addThresholdValue("kpi118","6",true);
-		addThresholdValue("kpi127","0",false);
-		addThresholdValue("kpi170","40",false);
-		addThresholdValue("kpi139","40",false);
-		addThresholdValue("kpi166","24",false);
+		addThresholdAndBg("kpi126","0",true);
+		addThresholdAndBg("kpi42","60",true);
+		addThresholdAndBg("kpi168","2",true);
+		addThresholdAndBg("kpi70","0",true);
+		addThresholdAndBg("kpi40","20",true);
+		addThresholdAndBg("kpi5","0",true);
+		addThresholdAndBg("kpi39","40",true);
+		addThresholdAndBg("kpi46","0",true);
+		addThresholdAndBg("kpi8","6",false);
+		addThresholdAndBg("kpi73","2",true);
+		addThresholdAndBg("kpi113","0",true);
+		addThresholdAndBg("kpi149","4",true);
+		addThresholdAndBg("kpi153","0",true);
+		addThresholdAndBg("kpi162","4",false);
+		addThresholdAndBg("kpi116","30",false);
+		addThresholdAndBg("kpi156","7",true);
+		addThresholdAndBg("kpi118","6",true);
+		addThresholdAndBg("kpi127","0",false);
+		addThresholdAndBg("kpi170","40",false);
+		addThresholdAndBg("kpi139","40",false);
+		addThresholdAndBg("kpi166","24",false);
 
 		return true;
 	}
@@ -94,7 +94,7 @@ public class ThresholdChangeLog {
 
 	}
 
-	private void addThresholdValue(String kpiId, String thresholdValue, boolean isPositiveTrend) {
+	private void addThresholdAndBg(String kpiId, String thresholdValue, boolean isPositiveTrend) {
 		String lowerThresholdBG = isPositiveTrend ? "red" : "white";
 		String upperThresholdBG = isPositiveTrend ? "white" : "red";
 
