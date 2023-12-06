@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate {
                 return false;
             }
         } 
-        /**To-do: To be handled when BE sends data in userData api */
+        /**Todo: To be handled when BE sends data in userData api */
         // else {
         //     return this.httpService.getCurrentUserDetails().pipe(map(details => {
         //         if (details['success']) {
