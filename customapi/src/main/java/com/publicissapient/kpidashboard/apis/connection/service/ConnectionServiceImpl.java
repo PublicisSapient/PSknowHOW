@@ -123,6 +123,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		connectionData.forEach(original -> {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
 			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
 				List<String> connectionUsers=new ArrayList<>();
 				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
@@ -214,6 +215,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 		typeList.forEach(original -> {
 			original.setCreatedBy(maskStrings(original.getCreatedBy()));
 			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
 			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
 				List<String> connectionUsers=new ArrayList<>();
 				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
