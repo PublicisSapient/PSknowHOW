@@ -43,6 +43,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -119,7 +120,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No connectionData in connection db", data);
 		}
 		List<Connection> connectionData = new ArrayList<>(data);
-		connectionData.forEach(original -> original.setUsername(maskStrings(original.getUsername())));
+		connectionData.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
 			log.info("Successfully fetched all connectionData");
@@ -202,7 +211,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 		}
 
 		List<Connection> typeList = getConnectionList(type);
-		typeList.forEach(original -> original.setUsername(maskStrings(original.getUsername())));
+		typeList.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -229,7 +246,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	// To do - Handle scenario once github action screen is developed
 	private List<Connection> getConnectionList(String type) {
-		List<Connection> allWithoutSecret = connectionRepository.findAllWithoutSecret();
+		List<Connection> allWithoutSecret = connectionRepository.findAllWithoutSecret().stream().filter(connection -> StringUtils.isNotEmpty(connection.getType())).collect(Collectors.toList());
 		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
 			return allWithoutSecret.stream()
 					.filter(connection -> connection.getType().equalsIgnoreCase(REPO_TOOLS)

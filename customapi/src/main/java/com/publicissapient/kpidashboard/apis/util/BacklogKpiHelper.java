@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -87,29 +88,31 @@ public final class BacklogKpiHelper {
 
 	/**
 	 * sets jira issue by closed date and issue type
-	 *
-	 * @param rangeWiseJiraIssuesMap
+	 *  @param rangeWiseJiraIssuesMap
 	 *            map of jira issues by data points
 	 * @param issueCustomHistory
 	 *            jira issue custom history
 	 * @param closedDate
-	 *            closed date of jira issue
+ *            closed date of jira issue
 	 * @param monthRangeMap
-	 *            month range map
+	 * @return
 	 */
-	public static void setRangeWiseJiraIssuesMap(
+	public static boolean setRangeWiseJiraIssuesMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap,
 			JiraIssueCustomHistory issueCustomHistory, LocalDateTime closedDate, Map<Long, String> monthRangeMap) {
+		AtomicBoolean addedToMap= new AtomicBoolean(false);
 		if(ObjectUtils.isNotEmpty(closedDate)) {
 			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(closedDate.toString()), LocalDate.now());
 			monthRangeMap.forEach((noOfDay, range) -> {
 				if (noOfDay > daysBetween) {
+					addedToMap.set(true);
 					rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
 							.computeIfAbsent(issueCustomHistory.getStoryType(), k -> new ArrayList<>())
 							.add(issueCustomHistory);
 				}
 			});
 		}
+		return addedToMap.get();
 	}
 
 	public static void setLiveTime(CycleTimeValidationData cycleTimeValidationData, CycleTime cycleTime,

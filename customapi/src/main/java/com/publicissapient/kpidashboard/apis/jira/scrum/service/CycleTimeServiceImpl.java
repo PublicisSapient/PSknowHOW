@@ -278,21 +278,22 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				cycleTime.setDeliveryTime(minUpdatedOn);
 				cycleTime.setDeliveryLocalDateTime(DateUtil.convertDateTimeToLocalDateTime(minUpdatedOn));
 				cycleTimeValidationData.setDodDate(minUpdatedOn);
-
-				BacklogKpiHelper.setRangeWiseJiraIssuesMap(intakeToDORRangeMap, jiraIssueCustomHistory,
-						cycleTime.getReadyLocalDateTime(), monthRangeMap);
-				BacklogKpiHelper.setRangeWiseJiraIssuesMap(dorToDODRangeMap, jiraIssueCustomHistory,
-						cycleTime.getDeliveryLocalDateTime(), monthRangeMap);
-				BacklogKpiHelper.setRangeWiseJiraIssuesMap(dodToLiveRangeMap, jiraIssueCustomHistory,
+				boolean	 addInValidation = BacklogKpiHelper.setRangeWiseJiraIssuesMap(intakeToDORRangeMap, jiraIssueCustomHistory,
+						cycleTime.getReadyLocalDateTime(), monthRangeMap)
+						|| BacklogKpiHelper.setRangeWiseJiraIssuesMap(dorToDODRangeMap, jiraIssueCustomHistory,
+						cycleTime.getDeliveryLocalDateTime(), monthRangeMap)
+						|| BacklogKpiHelper.setRangeWiseJiraIssuesMap(dodToLiveRangeMap, jiraIssueCustomHistory,
 						cycleTime.getLiveLocalDateTime(), monthRangeMap);
 
-				BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getReadyTime(), INTAKE_TO_DOR,
-						cycleTimeValidationData, issueTypes);
-				BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(), cycleTime.getDeliveryTime(), DOR_TO_DOD,
-						cycleTimeValidationData, issueTypes);
-				BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(), cycleTime.getLiveTime(), DOD_TO_LIVE,
-						cycleTimeValidationData, issueTypes);
-				cycleTimeValidationDataList.add(cycleTimeValidationData);
+				if(addInValidation) {
+					BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getReadyTime(), INTAKE_TO_DOR,
+							cycleTimeValidationData, issueTypes);
+					BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(), cycleTime.getDeliveryTime(), DOR_TO_DOD,
+							cycleTimeValidationData, issueTypes);
+					BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(), cycleTime.getLiveTime(), DOD_TO_LIVE,
+							cycleTimeValidationData, issueTypes);
+					cycleTimeValidationDataList.add(cycleTimeValidationData);
+				}
 			}
 		}
 
