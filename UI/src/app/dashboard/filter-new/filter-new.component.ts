@@ -93,7 +93,6 @@ export class FilterNewComponent implements OnInit {
       };
       this.masterData['kpiList'].forEach(element => {
         element = { ...element, ...element.kpiDetail };
-        // delete element.kpiDetail;
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList;
@@ -212,18 +211,10 @@ export class FilterNewComponent implements OnInit {
       if (!this.kanban) {
         if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
           this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
-          if (this.selectedTab.toLocaleLowerCase() !== 'release') {
-            delete this.filterApplyData['selectedMap']['release'];
-          }
-          delete this.filterApplyData['selectedMap']['sqd'];
-          delete this.filterApplyData['selectedMap']['date'];
         } else {
           this.filterApplyData['ids'] = [5];
           this.filterApplyData['selectedMap']['date'] = ['DAYS']
         }
-        delete this.filterApplyData['startDate'];
-        delete this.filterApplyData['endDate'];
-
       } else {
         if (this.selectedTab === 'Iteration') {
           this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
@@ -251,5 +242,4 @@ export class FilterNewComponent implements OnInit {
       this.setColors(event);
     }
   }
-
 }
