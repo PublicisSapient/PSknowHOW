@@ -258,12 +258,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 								statusUpdateLog, DateTime.parse(statusUpdateLog.getUpdatedOn().toString()),
 								liveStatus));
 
-				BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
-						cycleTime.getLiveLocalDateTime(), monthRangeMap);
+				if(BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
+						cycleTime.getLiveLocalDateTime(), monthRangeMap)){
+					BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
+							LEAD_TIME, cycleTimeValidationData, issueTypes);
+					leadTimeList.add(cycleTimeValidationData);
+				}
 
-				BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
-						LEAD_TIME, cycleTimeValidationData, issueTypes);
-				leadTimeList.add(cycleTimeValidationData);
+
 			}
 		}
 		return setDataCountMap(rangeWiseJiraIssuesMap, leadTimeList, node, issueTypes);
