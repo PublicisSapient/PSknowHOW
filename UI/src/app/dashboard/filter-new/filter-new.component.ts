@@ -16,7 +16,7 @@ export class FilterNewComponent implements OnInit {
   selectedType: string = '';
   subscriptions: any[] = [];
   selectedFilterData: {};
-  selectedLevel: any = '';
+  selectedLevel: any = 'project';
   kanban: boolean = false;
   boardData: any[] = [];
   kanbanRequired: boolean = false;
@@ -82,20 +82,23 @@ export class FilterNewComponent implements OnInit {
     this.boardData = boardData;
     let selectedBoard = boardData[this.selectedType].filter((board => board.boardName.toLowerCase() === this.selectedTab.toLowerCase()))[0];
     if (selectedBoard) {
+      this.getFiltersData();
       this.masterData['kpiList'] = selectedBoard.kpis;
       let newMasterData = {
         'kpiList': []
       };
       this.masterData['kpiList'].forEach(element => {
         element = { ...element, ...element.kpiDetail };
-        delete element.kpiDetail;
+        // delete element.kpiDetail;
         newMasterData['kpiList'].push(element);
       });
       this.masterData['kpiList'] = newMasterData.kpiList;
       this.kanbanRequired = selectedBoard.filters.kanbanRequired;
       this.parentFilterConfig = selectedBoard.filters.parentFilter;
+      if (!this.parentFilterConfig) {
+        this.selectedLevel = null;
+      }
       this.primaryFilterConfig = selectedBoard.filters.primaryFilter;
-      this.getFiltersData();
     }
   }
 
@@ -149,7 +152,9 @@ export class FilterNewComponent implements OnInit {
       }
     }
     if (Object.keys(this.colorObj).length) {
-      this.service.setColorObj(this.colorObj);
+      setTimeout(() => {
+        this.service.setColorObj(this.colorObj);
+      }, 0);
     }
   }
 
@@ -190,15 +195,29 @@ export class FilterNewComponent implements OnInit {
             this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
           }
         });
+      } else {
+        Object.keys(this.filterDataArr[this.selectedType]).forEach((filterLevel) => {
+          if (filterLevel !== 'project') {
+            this.filterApplyData['selectedMap'][filterLevel] = [];
+          } else {
+            this.filterApplyData['selectedMap'][filterLevel] = [...new Set(event.map((item) => item.nodeId))];
+          }
+        });
       }
 
       if (!this.kanban) {
-        this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
+        if (this.selectedTab.toLocaleLowerCase() !== 'developer') {
+          this.filterApplyData['ids'] = [...new Set(event.map((proj) => proj.nodeId))];
+          delete this.filterApplyData['selectedMap']['release'];
+          delete this.filterApplyData['selectedMap']['sqd'];
+          delete this.filterApplyData['selectedMap']['date'];
+        } else {
+          this.filterApplyData['ids'] = [5];
+          this.filterApplyData['selectedMap']['date'] = ['DAYS']
+        }
         delete this.filterApplyData['startDate'];
         delete this.filterApplyData['endDate'];
-        delete this.filterApplyData['selectedMap']['date'];
-        delete this.filterApplyData['selectedMap']['release'];
-        delete this.filterApplyData['selectedMap']['sqd'];
+
       } else {
         if (this.selectedTab === 'Iteration') {
           this.filterApplyData['ids'] = [...new Set(event.map((item) => item.nodeId))];
@@ -220,8 +239,10 @@ export class FilterNewComponent implements OnInit {
         } else {
           this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true);
         }
-        this.setColors(event);
+      } else {
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true);
       }
+      this.setColors(event);
     }
   }
 
