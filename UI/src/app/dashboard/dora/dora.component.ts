@@ -578,20 +578,22 @@ export class DoraComponent implements OnInit {
       };
 
       let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
+      
       let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
+      let displayRange = maturityLevel.map((item) => item.displayRange);
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
-      console.log(findIncrementalOrDecrementalRange, kpiId);
-      console.log(maturityRange);
+    
       if (findIncrementalOrDecrementalRange === 'decremental') {
         maturityRange = maturityRange.reverse();
       } else {
         maturityLevel = maturityLevel.reverse();
+        displayRange = displayRange.reverse();
       }
 
       maturityLevel.forEach((element, index) => {
         this.maturityObj[kpiId]['maturityLevels'].push({
           level: element.level,
-          range: maturityRange[index],
+          range: displayRange[index],
           color: element.bgColor
         });
       });
