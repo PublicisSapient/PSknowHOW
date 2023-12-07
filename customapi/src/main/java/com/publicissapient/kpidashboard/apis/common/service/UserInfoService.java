@@ -176,4 +176,6 @@ public interface UserInfoService {
 	 */
 	UserInfo getCentralAuthUserInfo(String username , String token);
 	//----auth-N-auth----------
+
+	String getCentralAuthUserDeleteUserToken(String token);
 }

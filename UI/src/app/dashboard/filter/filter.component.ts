@@ -1385,7 +1385,8 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        this.router.navigate(['./authentication/login']);
+        /**Todo:commenting for central login */
+        // this.router.navigate(['./authentication/login']);
       }
     });
   }
@@ -1425,7 +1426,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-      if(this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project'){
+      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
         projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
       }
     this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {

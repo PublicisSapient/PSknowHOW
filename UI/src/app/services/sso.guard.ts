@@ -17,6 +17,7 @@ export class SSOGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+    console.log(environment.SSO_LOGIN);
     if (!environment.SSO_LOGIN) {
       return true;
     } else {

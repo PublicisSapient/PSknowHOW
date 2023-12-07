@@ -41,7 +41,8 @@ export class VerifyComponent implements OnInit, AfterViewInit {
     this.http.getUserValidation(obj).subscribe((response) => {
       if(response && response['success']){
         this.sharedService.setCurrentUserDetails(response?.['data'])
-        localStorage.setItem("userName", response?.['data']?.userName)
+        localStorage.setItem("user_name", response?.['data']?.user_name);
+        localStorage.setItem("user_email", response?.['data']?.user_email);
         this.router.navigate(['/dashboard/iteration']);
       }
       else{

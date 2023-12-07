@@ -85,6 +85,7 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -569,4 +570,33 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
+
+	@Override
+	public String getCentralAuthUserDeleteUserToken(String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		//String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
+			//	"/api/userlogout/" + token);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/api/userlogout/");
+		uriBuilder.path(token);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody().toString();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return "";
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
 }
