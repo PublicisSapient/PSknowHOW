@@ -75,11 +75,11 @@ public class DoraMaturity {
 
 	private static void updateKPI116(MongoCollection<Document> collection) {
 		List<Document> documentList = new ArrayList<>();
-		documentList.add(new Document("level", "M5").append("bgColor", "#167a26"));
-		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a"));
-		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643"));
-		documentList.add(new Document("level", "M2").append("bgColor", "#f53535"));
-		documentList.add(new Document("level", "M1").append("bgColor", "#c91212"));
+		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("displayRange", "0-15 %"));
+		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("displayRange", "15-30 %"));
+		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("displayRange", "30-45 %"));
+		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("displayRange", "45-60 %"));
+		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("displayRange", "60 % and Above"));
 
 		collection.updateOne(new Document("kpiId", "kpi116"),
 				new Document("$set",
@@ -89,11 +89,11 @@ public class DoraMaturity {
 
 	private static void updateKPI118(MongoCollection<Document> collection) {
 		List<Document> documentList = new ArrayList<>();
-		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("label", ">= 2 per week"));
-		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("label", "Once per week"));
-		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("label", "Once in 2 weeks"));
-		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("label", "Once in 4 weeks"));
-		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("label", "< Once in 8 weeks"));
+		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("label", ">= 2 per week").append("displayRange", "8 and Above"));
+		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("label", "Once per week").append("displayRange", "6,7"));
+		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("label", "Once in 2 weeks").append("displayRange", "4,5"));
+		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("label", "Once in 4 weeks").append("displayRange", "2,3"));
+		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("label", "< Once in 8 weeks").append("displayRange", "0,1"));
 
 		collection.updateOne(new Document("kpiId", "kpi118"),
 				new Document("$set", new Document("maturityRange", Arrays.asList("0-2", "2-4", "4-6", "6-8", "8-"))
@@ -103,11 +103,11 @@ public class DoraMaturity {
 	private static void updateKPI156(MongoCollection<Document> collection) {
 
 		List<Document> documentList = new ArrayList<>();
-		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("label", "< 1 Day"));
-		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("label", "< 7 Days"));
-		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("label", "< 30 Days"));
-		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("label", "< 90 Days"));
-		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("label", ">= 90 Days"));
+		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("label", "< 1 Day").append("displayRange", "0-1 Day"));
+		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("label", "< 7 Days").append("displayRange", "1-7 Days"));
+		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("label", "< 30 Days").append("displayRange", "7-30 Days"));
+		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("label", "< 90 Days").append("displayRange", "30-90 Days"));
+		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("label", ">= 90 Days").append("displayRange", "90 Days and Above"));
 		collection.updateOne(new Document("kpiId", "kpi156"),
 				new Document("$set",
 						new Document("calculateMaturity", true)
@@ -118,11 +118,11 @@ public class DoraMaturity {
 	private static void updateKPI166(MongoCollection<Document> collection) {
 
 		List<Document> documentList = new ArrayList<>();
-		documentList.add(new Document("level", "M5").append("bgColor", "#167a26"));
-		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a"));
-		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643"));
-		documentList.add(new Document("level", "M2").append("bgColor", "#f53535"));
-		documentList.add(new Document("level", "M1").append("bgColor", "#c91212"));
+		documentList.add(new Document("level", "M5").append("bgColor", "#167a26").append("displayRange", "0-1 Hour"));
+		documentList.add(new Document("level", "M4").append("bgColor", "#4ebb1a").append("displayRange", "1-12 Hours"));
+		documentList.add(new Document("level", "M3").append("bgColor", "#ef7643").append("displayRange", "12-24 Hours"));
+		documentList.add(new Document("level", "M2").append("bgColor", "#f53535").append("displayRange", "24-48 Hours"));
+		documentList.add(new Document("level", "M1").append("bgColor", "#c91212").append("displayRange", "48 Hours and Above"));
 		collection.updateOne(new Document("kpiId", "kpi166"),
 				new Document("$set",
 						new Document("calculateMaturity", true)
