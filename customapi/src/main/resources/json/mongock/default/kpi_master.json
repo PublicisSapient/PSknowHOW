@@ -774,7 +774,7 @@
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
     "kanban" : false ,
-    "thresholdValue" : "0",
+    "thresholdValue" : "80",
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
       "definition" : "Measures the percentage of test cases that have been executed & and the test that have passed." ,
