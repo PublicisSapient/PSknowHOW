@@ -470,4 +470,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			}
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI5(), KPICode.SPRINT_PREDICTABILITY.getKpiId());
+	}
+
 }

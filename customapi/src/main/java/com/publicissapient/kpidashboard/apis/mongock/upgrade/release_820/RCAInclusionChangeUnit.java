@@ -63,7 +63,7 @@ public class RCAInclusionChangeUnit {
 	public void updateRCAKPI135ItrFTPR() {
 		updateFieldMapping("excludeRCAFromKPI135",
 				"Defect RCA inclusion for Quality KPIs",
-				"The defects tagged to priority values selected in this field on Mappings screen will be included.","includeRCAForKPI135");
+				"The defects tagged to as per RCA values selected in this field on Mappings screen will be included.","includeRCAForKPI135");
 	}
 	public void updateRCADIR() {
 		updateFieldMapping("excludeRCAFromKPI14",

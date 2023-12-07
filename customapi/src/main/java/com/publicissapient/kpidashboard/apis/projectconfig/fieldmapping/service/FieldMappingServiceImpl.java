@@ -205,6 +205,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
 	}
 
 	/**

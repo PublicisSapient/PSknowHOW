@@ -588,17 +588,20 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
+	 *            kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return trend values
 	 */
-	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,
+	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
@@ -709,17 +712,20 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
+	 *            kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return map of string and list of trendvalue
 	 */
-	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,
+	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));

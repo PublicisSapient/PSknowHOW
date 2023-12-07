@@ -184,7 +184,11 @@ export class GroupstackchartComponent implements OnChanges {
         d.forEach((dx) => {
           d2[dx.type] = dx.value;
           for (let key in dx?.hoverText) {
-            d2['hoverSum'] += (this.isAggregationStacks == false) ? (dx?.value) : (dx?.hoverText[key]);
+            if(!this.isAggregationStacks){
+              d2['hoverSum'] = dx?.value + ' ' + this.unit;
+            }else{
+              d2['hoverSum'] += (dx?.hoverText[key]);
+            }
             d2['hoverText'][key] = dx?.hoverText[key];
           }
         });
