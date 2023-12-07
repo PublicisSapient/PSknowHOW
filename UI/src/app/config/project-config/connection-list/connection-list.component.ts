@@ -125,8 +125,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
     },
     {
       connectionType: 'RepoTool',
@@ -1362,7 +1362,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
 
-      case 'Zephyr': this.testConnectionService.testZephyr(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['apiEndPoint'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'], reqData['bearerToken'], reqData['patOAuthToken']).subscribe(next => {
+      case 'Zephyr': this.testConnectionService.testZephyr(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['apiEndPoint'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault']).subscribe(next => {
         if (next.success && next.data === 200) {
           this.testConnectionMsg = 'Valid Connection';
           this.testConnectionValid = true;
@@ -1466,14 +1466,6 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['patOAuthToken'].setValue('');
         this.basicConnectionForm.controls['patOAuthToken'].disable();
         this.basicConnectionForm.controls['bearerToken'].disable();
-      }else if(this.connection['bearerToken'] == true){
-        this.basicConnectionForm.controls['patOAuthToken'].enable();
-        this.basicConnectionForm.controls['password'].setValue('');
-        this.basicConnectionForm.controls['password'].disable();
-        this.basicConnectionForm.controls['accessToken'].setValue('');
-        this.basicConnectionForm.controls['accessToken'].disable();
-        this.basicConnectionForm.controls['vault'].disable();
-        this.basicConnectionForm.controls['cloudEnv'].disable();
       }else {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
