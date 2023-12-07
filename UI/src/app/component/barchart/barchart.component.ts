@@ -35,7 +35,7 @@ export class BarchartComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         // only run when property "data" changed
         if (changes['data']) {
-            this.elem = this.viewContainerRef.element.nativeElement;
+            this.elem = this.viewContainerRef.element.nativeElement.querySelector('.tooltip-wrapper');
             if (!changes['data'].firstChange) {
                 this.draw('update');
             } else {

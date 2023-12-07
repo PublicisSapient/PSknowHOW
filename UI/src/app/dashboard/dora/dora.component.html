@@ -15,7 +15,7 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<ng-container *ngIf="!noProjects else noProjectsTemplate">
+<div id="dora-content-wrapper" *ngIf="!noProjects else noProjectsTemplate">
   <div *ngIf="!noKpis else noKpiTemplate">
     <div id="message"></div>
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
@@ -82,7 +82,7 @@
                       {{kpiChartData['kpi116']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}
 
-                      <app-tooltip [hidden]="!isTooltip.includes('kpi116')" [data]="maturityObj['kpi116']"
+                      <app-tooltip *ngIf="isTooltip.includes('kpi116')" [data]="maturityObj['kpi116']"
                         [toolTipTop]="toolTipTop" [showingMaturityRange]="true"
                         (mouseleave)="showTooltip(null, false, 'kpi116')" [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </div>
@@ -106,7 +106,7 @@
                       [ngStyle]="{'background-color': kpiChartData['kpi118']?.[0]?.maturityColor}">
                       {{kpiChartData['kpi118']?.[0]?.aggregationValue}}
                     
-                      <app-tooltip [hidden]="!isTooltip.includes('kpi118')" [data]="maturityObj['kpi118']"
+                      <app-tooltip *ngIf="isTooltip.includes('kpi118')" [data]="maturityObj['kpi118']"
                       [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi118')"
                       [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
@@ -238,7 +238,7 @@
                       {{kpiChartData['kpi156']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}
                       
-                      <app-tooltip [hidden]="!isTooltip.includes('kpi156')" [data]="maturityObj['kpi156']"
+                      <app-tooltip *ngIf="isTooltip.includes('kpi156')" [data]="maturityObj['kpi156']"
                       [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi156')"
                       [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
@@ -263,8 +263,8 @@
                       {{kpiChartData['kpi166']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi166']?.kpiDetail?.kpiUnit}}
 
-                      <app-tooltip [hidden]="!isTooltip.includes('kpi166')" [data]="maturityObj['kpi166']"
-                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi166')"
+                      <app-tooltip *ngIf="isTooltip.includes('kpi166')" [data]="maturityObj['kpi166']"
+                        [showingMaturityRange]="true"
                         [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
 
@@ -345,7 +345,7 @@
       <app-no-access [selectedTab]="''" [userEnable]='enableByUser'></app-no-access>
     </div>
   </ng-template>
-</ng-container>
+</div>
 <ng-template #noProjectsTemplate>
   <div class="p-d-flex p-align-center p-justify-center no-projects">
     <h2>You do not have access to any Scrum project</h2>
