@@ -6,13 +6,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.*;
@@ -25,7 +25,6 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectRelease;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.ReleaseWisePI;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectReleaseRepo;
@@ -68,23 +67,16 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		List<DataCount> trendValueList = Lists.newArrayList();
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.PI_PREDICTABILITY,
-				Arrays.asList("closed"));
 		Map<String, List<DataCount>> mapForCache = new HashMap<>();
-		/* #deepak ends changes */
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.PROJECT) {
-				/* #deepak starts changes */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				projectWiseLeafNodeValue(kpiElement, mapTmp, v, trendValueList, mapForCache);
 			}
 
@@ -92,9 +84,8 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
 				root);
-		/* #deepak starts changes */
-		updateCacheAfterDBHit(mapForCache, KPICode.PI_PREDICTABILITY, Arrays.asList("closed"));
-		/* #deepak ends changes */
+
+		kpiElement.setMapForCache(mapForCache);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedMultipleValueGroup(root, nodeWiseKPIValue, KPICode.PI_PREDICTABILITY);
@@ -115,7 +106,9 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 			List<JiraIssue> epicData = (List<JiraIssue>) resultMap.get(EPIC_DATA);
 
-			projectWiseEpicData = epicData.stream().collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
+			if (CollectionUtils.isNotEmpty(epicData))
+				projectWiseEpicData = epicData.stream()
+						.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId));
 		}
 		List<KPIExcelData> excelData = new ArrayList<>();
 
@@ -156,7 +149,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 				String trendLineName = node.getProjectFilter().getName();
 				String requestTrackerId = getRequestTrackerId();
 
-				/* #deepak starts changes check indicator value for cache*/
+				/* #deepak starts changes check indicator value for cache */
 				if (!node.isFromCache()) {
 					/* #deepak ends changes */
 					sortedPINameWiseEpicData.forEach((releaseDate, releaseWiseLatestEpicData) -> {
@@ -198,7 +191,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
 					});
 					mapTmp.get(node.getId()).setValue(dataCountList);
-					mapForCache.put(node.getId(),dataCountList);
+					mapForCache.put(node.getId(), dataCountList);
 				} else {
 					List<DataCount> list = trendValueList.stream()
 							.filter(dataCount -> node.getName().equals(dataCount.getSProjectName())).distinct()
@@ -307,8 +300,10 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 			uniqueProjectMap.put(basicProjectConfigId, mapOfProjectFilters);
 		});
 
-		List<JiraIssue> piWiseEpicList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
-		resultListMap.put(EPIC_DATA, piWiseEpicList);
+		if (MapUtils.isNotEmpty(uniqueProjectMap)) {
+			List<JiraIssue> piWiseEpicList = jiraIssueRepository.findByRelease(mapOfFilters, uniqueProjectMap);
+			resultListMap.put(EPIC_DATA, piWiseEpicList);
+		}
 		return resultListMap;
 	}
 

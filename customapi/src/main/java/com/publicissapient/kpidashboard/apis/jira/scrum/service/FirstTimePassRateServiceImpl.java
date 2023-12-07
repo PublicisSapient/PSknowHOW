@@ -17,15 +17,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -40,19 +34,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -66,8 +52,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * @author anisingh4
@@ -110,28 +94,20 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
+
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
 
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.FIRST_TIME_PASS_RATE,
-				Arrays.asList("closed"));
-		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
 
-				/* #deepak starts changes */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 
@@ -140,10 +116,10 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		log.debug("[FTPR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes */
-		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
-		updateCacheAfterDBHit(map, KPICode.FIRST_TIME_PASS_RATE, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		/* starts changes for updating cache */
+		Map<String, List<DataCount>> mapForCache = mapForCache(projectsFromCache, trendValueList);
+		kpiElement.setMapForCache(mapForCache);
+		/* ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.FIRST_TIME_PASS_RATE);
@@ -168,17 +144,22 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		/* #deepak starts changes for */
 		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
 				.collect(Collectors.toList());
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = new HashMap<>();
+		Map<String, Set<JiraIssue>> projectWiseStories = new HashMap<>();
 		Map<String, Object> resultMap = new HashMap<>();
-		if (isNotEmpty(sprintLeafNodeListUpdated))
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
 			resultMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate, kpiRequest);
-		/* #deepak starts changes for filter out sprint for db hit */
-		log.info("FirstTimePassRate taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap.get(SPRINT_WISE_CLOSED_STORIES);
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
-		List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
-		Map<String, Set<JiraIssue>> projectWiseStories = jiraIssueList.stream()
-				.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
+			/* #deepak starts changes for filter out sprint for db hit */
+			log.info("FirstTimePassRate taking fetchKPIDataFromDb {}",
+					String.valueOf(System.currentTimeMillis() - time));
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) resultMap
+					.get(SPRINT_WISE_CLOSED_STORIES);
+			sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+					.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+			List<JiraIssue> jiraIssueList = (List<JiraIssue>) resultMap.get(ISSUE_DATA);
+			projectWiseStories = jiraIssueList.stream()
+					.collect(Collectors.groupingBy(JiraIssue::getBasicProjectConfigId, Collectors.toSet()));
+		}
 		Map<Pair<String, String>, Double> sprintWiseFTPRMap = new HashMap<>();
 		Map<Pair<String, String>, List<String>> sprintWiseTotalStoryIdList = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseFTPListMap = new HashMap<>();
@@ -208,6 +189,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 			sprintWiseFTPRMap.put(sprint, sprintWiseFtpr);
 			setHowerMap(sprintWiseHowerMap, sprint, totalStoryIdList, ftpStoriesList);
 		});
+		Map<String, Set<JiraIssue>> finalProjectWiseStories = projectWiseStories;
 		sprintLeafNodeList.forEach(node -> {
 			/* #deepak starts changes */
 			if (!node.isFromCache()) {
@@ -224,7 +206,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 						List<String> totalStoryIdList = sprintWiseTotalStoryIdList.get(currentNodeIdentifier);
 						List<JiraIssue> ftpStoriesList = sprintWiseFTPListMap.get(currentNodeIdentifier);
-						Set<JiraIssue> jiraIssues = projectWiseStories
+						Set<JiraIssue> jiraIssues = finalProjectWiseStories
 								.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 						Map<String, JiraIssue> issueMapping = new HashMap<>();
 						jiraIssues.stream().forEach(issue -> issueMapping.putIfAbsent(issue.getNumber(), issue));

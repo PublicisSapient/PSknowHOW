@@ -66,28 +66,20 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.COST_OF_DELAY,
-				Arrays.asList("closed"));
 		Map<String, List<DataCount>> mapForCache = new HashMap<>();
-		/* #deepak ends changes */
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				/* #deepak starts changes */
-				v.forEach(node -> {
 
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
 						mapForCache);
 			}
@@ -97,9 +89,8 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
 				root);
 
-		/* #deepak starts changes */
-		updateCacheAfterDBHit(mapForCache, KPICode.COST_OF_DELAY, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		kpiElement.setMapForCache(mapForCache);
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.COST_OF_DELAY);
 		// 3rd change : remove code to set trendValuelist and call

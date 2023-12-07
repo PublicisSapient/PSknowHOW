@@ -89,26 +89,17 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
 
-		/* #deepak starts changes for checking in data in db */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList,
-				KPICode.SPRINT_CAPACITY_UTILIZATION, Arrays.asList("closed"));
-		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 			if (Filters.getFilter(k) == Filters.SPRINT) {
 
-				/* #deepak starts changes for adding a check for data from cache */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
@@ -116,10 +107,10 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 		log.debug("[SPRINT-CAPACITY-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes */
-		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
-		updateCacheAfterDBHit(map, KPICode.SPRINT_CAPACITY_UTILIZATION, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		/* starts changes for updating cache */
+		Map<String, List<DataCount>> mapForCache = mapForCache(projectsFromCache, trendValueList);
+		kpiElement.setMapForCache(mapForCache);
+		/* ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_CAPACITY_UTILIZATION);

@@ -47,10 +47,8 @@ import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.IssueDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepositoryCustom;
 
@@ -109,25 +107,17 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.SPRINT_VELOCITY,
-				Arrays.asList("closed"));
-		/* #deepak ends changes */
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				/* #deepak starts changes for adding a check for data from cache */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
@@ -135,10 +125,10 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		log.debug("[SPRINT-VELOCITY-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes for updating cache */
-		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
-		updateCacheAfterDBHit(map, KPICode.SPRINT_VELOCITY, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		/* starts changes for updating cache */
+		Map<String, List<DataCount>> mapForCache = mapForCache(projectsFromCache, trendValueList);
+		kpiElement.setMapForCache(mapForCache);
+		/* ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.SPRINT_VELOCITY);

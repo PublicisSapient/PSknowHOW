@@ -20,7 +20,10 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -60,39 +63,32 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = Lists.newArrayList();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.PROJECT_RELEASES,
-				Arrays.asList("closed"));
 		Map<String, List<DataCount>> mapForCache = new HashMap<>();
-		/* #deepak ends changes */
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
 				/* #deepak starts changes for adding a check for data from cache */
 				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
-							.count() > 0)
-						node.setFromCache(true);
-				}
-				/* #deepak ends changes */
+							if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
+									.count() > 0)
+								node.setFromCache(true);
+						}
+						/* #deepak ends changes */
 				);
 				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
 						mapForCache);
 			}
-
 		});
 
 		log.debug("[PROJECT-RELEASE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes for updating cache */
-		updateCacheAfterDBHit(mapForCache, KPICode.PROJECT_RELEASES, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		kpiElement.setMapForCache(mapForCache);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
@@ -170,7 +166,7 @@ public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Objec
 	}
 
 	/**
-	 *  Gets the KPI value for project node.
+	 * Gets the KPI value for project node.
 	 *
 	 * @param mapTmp
 	 * @param node

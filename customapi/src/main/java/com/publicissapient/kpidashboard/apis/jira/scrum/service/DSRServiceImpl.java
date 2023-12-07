@@ -89,26 +89,17 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
 
-		/* #deepak starts changes for checking in data in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.DEFECT_SEEPAGE_RATE,
-				Arrays.asList("closed"));
-		/* #deepak ends changes */
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				/* #deepak starts changes */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
@@ -116,10 +107,10 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		log.debug("[DSR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
-		/* #deepak starts changes */
-		Map<String, List<DataCount>> map = mapForCache(projectsFromCache, trendValueList);
-		updateCacheAfterDBHit(map, KPICode.DEFECT_SEEPAGE_RATE, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		/* starts changes for updating cache */
+		Map<String, List<DataCount>> mapForCache = mapForCache(projectsFromCache, trendValueList);
+		kpiElement.setMapForCache(mapForCache);
+		/* ends changes */
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
@@ -236,25 +227,31 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
 				.collect(Collectors.toList());
 		Map<String, Object> defectDataListMap = new HashMap<>();
-		if (isNotEmpty(sprintLeafNodeListUpdated))
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = new HashMap<>();
+		List<JiraIssue> totalDefects = new ArrayList<>();
+		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
 			defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("DSR taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+			log.info("DSR taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
-		Map<String, FieldMapping> projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
+			projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+			sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+					.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(
-				Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
-		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
+			Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(Collectors
+					.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
+			totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
+		}
 		Map<Pair<String, String>, Double> sprintWiseDsrMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
+		List<JiraIssue> finalTotalDefects = totalDefects;
+		Map<String, FieldMapping> finalProjFieldMapping = projFieldMapping;
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 
 			List<JiraIssue> sprintWiseUatDefectList = new ArrayList<>();
@@ -265,14 +262,14 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(totalStoryIdList::addAll);
 
-			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
+			List<JiraIssue> subCategoryWiseTotalBugList = finalTotalDefects.stream()
 					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
 					.collect(Collectors.toList());
 			List<JiraIssue> subCategoryWiseUatBugList = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
 				sprintWiseSubCategoryWiseTotalBugListMap.put(sprint, subCategoryWiseTotalBugList);
-				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, projFieldMapping);
+				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, finalProjFieldMapping);
 				sprintWiseSubCategoryWiseUATBugListMap.put(sprint, subCategoryWiseUatBugList);
 			}
 

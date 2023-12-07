@@ -99,36 +99,23 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-
-		/* #deepak starts changes for checking in cache */
-		List<Node> projects = treeAggregatorDetail.getMapOfListOfProjectNodes().get("project");
-		List<Node> projectsFromCache = new ArrayList<>();
-		List<Map<String, List<DataCount>>> trendValueList = new ArrayList<>();
-		checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList, KPICode.ISSUE_COUNT,
-				Arrays.asList("closed"));
+		List<Map<String, List<DataCount>>> trendValueList = (List<Map<String, List<DataCount>>>) kpiElement
+				.getTrendValueListFormCache();
 		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
-		/* #deepak ends changes */
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.SPRINT == filters) {
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
 
-				/* #deepak starts changes for adding a check for data from cache */
-				v.forEach(node -> {
-					if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
-							.count() > 0)
-						node.setFromCache(true);
-				});
-				/* #deepak ends changes */
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 			}
-
 		});
 
-		/* #deepak starts changes for updating cache */
-		updateCacheAfterDBHit(mapForCache, KPICode.ISSUE_COUNT, Arrays.asList("closed"));
-		/* #deepak ends changes */
+		kpiElement.setMapForCache(mapForCache);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.ISSUE_COUNT);

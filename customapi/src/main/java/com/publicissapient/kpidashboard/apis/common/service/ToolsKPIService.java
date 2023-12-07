@@ -2,17 +2,9 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.model.DataCountKpiData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -32,15 +24,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataValue;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
-
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import com.publicissapient.kpidashboard.common.model.application.*;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -1237,54 +1221,16 @@ public abstract class ToolsKPIService<R, S> {
 	}
 
 	/**
-	 * for checking available data In Cache Before DB Hit
+	 * Adding A Check For Data Found In Cache
 	 *
-	 * @param <S>
-	 * @param projects
+	 * @param v
 	 * @param projectsFromCache
-	 * @param trendValueList
-	 * @param kpiCode
-	 * @param sprintIncluded
-	 *
-	 * @auther deepak
 	 */
-
-	public <S> void checkAvailableDataInCacheBeforeDBHit(List<Node> projects, List<Node> projectsFromCache,
-														 List<S> trendValueList, KPICode kpiCode, List<String> sprintIncluded) {
-		projects.forEach(project -> {
-			List<DataCountKpiData<S>> dataCountKpisDataList = (List<DataCountKpiData<S>>) cacheService
-					.getFromApplicationCache(new String[] { project.getId() }, "JIRA", sprintIncluded);
-			if (isNotEmpty(dataCountKpisDataList)) {
-				List<DataCountKpiData<S>> dataCountKpiDataList = dataCountKpisDataList.stream()
-						.filter(dataCountKpiData -> kpiCode.equals(dataCountKpiData.getKpiName()))
-						.collect(Collectors.toList());
-				if (isNotEmpty(dataCountKpiDataList)) {
-					trendValueList.addAll(dataCountKpiDataList.get(0).getDataCountList());
-					projectsFromCache.add(project);
-				}
-			}
+	public void addingACheckForDataFromCache(List<Node> v, List<Node> projectsFromCache) {
+		v.forEach(node -> {
+			if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+					.count() > 0)
+				node.setFromCache(true);
 		});
 	}
-
-	/**
-	 * for updating data in cache after DB Hit
-	 *
-	 * @param <S>
-	 * @param map
-	 * @param kpiCode
-	 * @param sprintIncluded
-	 *
-	 * @auther deepak
-	 */
-	public <S> void updateCacheAfterDBHit(Map<String, List<S>> map, KPICode kpiCode, List<String> sprintIncluded) {
-		map.forEach((k, v) -> {
-			List<DataCountKpiData<S>> dataCountKpiDataList = (List<DataCountKpiData<S>>) cacheService
-					.getFromApplicationCache(new String[] { k }, "JIRA", sprintIncluded);
-			if (isEmpty(dataCountKpiDataList))
-				dataCountKpiDataList = new ArrayList<>();
-			dataCountKpiDataList.add(new DataCountKpiData(kpiCode, v));
-			cacheService.setIntoApplicationCache(new String[] { k }, dataCountKpiDataList, "JIRA", sprintIncluded);
-		});
-	}
-
 }
