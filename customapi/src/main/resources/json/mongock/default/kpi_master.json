@@ -3966,7 +3966,7 @@
     "kpiId": "kpi171",
     "kpiName": "Cycle Time",
     "maxValue": "",
-    "kpiUnit": "Count",
+    "kpiUnit": "Days",
     "isDeleted": "False",
     "defaultOrder": 4,
     "kpiCategory": "Backlog",
