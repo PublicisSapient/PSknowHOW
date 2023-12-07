@@ -176,12 +176,12 @@ export class ConnectionListComponent implements OnInit {
         },
       ],
       accessTokenEnabled:[],
-      bearerToken: [
-        {
-          field: 'patOAuthToken',
-          isEnabled: true
-        },
-      ]
+      // bearerToken: [
+      //   {
+      //     field: 'patOAuthToken',
+      //     isEnabled: true
+      //   },
+      // ]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -1439,9 +1439,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
-        this.basicConnectionForm.controls['patOAuthToken'].disable();
-        this.basicConnectionForm.controls['bearerToken'].disable();
+        // this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        // this.basicConnectionForm.controls['patOAuthToken'].disable();
+        // this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (this.connection['vault'] == true && this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
@@ -1450,9 +1450,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
-        this.basicConnectionForm.controls['patOAuthToken'].disable();
-        this.basicConnectionForm.controls['bearerToken'].disable();
+        // this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        // this.basicConnectionForm.controls['patOAuthToken'].disable();
+        // this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
@@ -1463,9 +1463,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken']?.enable();
-        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
-        this.basicConnectionForm.controls['patOAuthToken'].disable();
-        this.basicConnectionForm.controls['bearerToken'].disable();
+        // this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        // this.basicConnectionForm.controls['patOAuthToken'].disable();
+        // this.basicConnectionForm.controls['bearerToken'].disable();
       }else {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
@@ -1473,9 +1473,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].enable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
-        this.basicConnectionForm.controls['bearerToken'].setValue('false');
-        this.basicConnectionForm.controls['patOAuthToken'].disable();
-        this.basicConnectionForm.controls['bearerToken'].enable();
+        // this.basicConnectionForm.controls['bearerToken'].setValue('false');
+        // this.basicConnectionForm.controls['patOAuthToken'].disable();
+        // this.basicConnectionForm.controls['bearerToken'].enable();
         this.basicConnectionForm.controls['vault'].enable();
         this.basicConnectionForm.controls['cloudEnv'].enable();
       }
