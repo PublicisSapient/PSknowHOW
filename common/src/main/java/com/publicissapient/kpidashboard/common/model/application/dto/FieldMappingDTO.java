@@ -428,6 +428,27 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI160;
     private String thresholdValueKPI164;
     private String thresholdValueKPI3;
+    private String thresholdValueKPI126;
+    private String thresholdValueKPI42;
+    private String thresholdValueKPI168;
+    private String thresholdValueKPI70;
+    private String thresholdValueKPI40;
+    private String thresholdValueKPI5;
+    private String thresholdValueKPI39;
+    private String thresholdValueKPI46;
+    private String thresholdValueKPI8;
+    private String thresholdValueKPI73;
+    private String thresholdValueKPI113;
+    private String thresholdValueKPI149;
+    private String thresholdValueKPI153;
+    private String thresholdValueKPI162;
+    private String thresholdValueKPI116;
+    private String thresholdValueKPI156;
+    private String thresholdValueKPI118;
+    private String thresholdValueKPI127;
+    private String thresholdValueKPI170;
+    private String thresholdValueKPI139;
+    private String thresholdValueKPI166;
 
     private String jiraProductionIncidentIdentification;
     private String jiraProdIncidentRaisedByCustomField;
