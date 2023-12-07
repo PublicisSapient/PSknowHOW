@@ -265,12 +265,12 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setEpicWsjf(customField.get(CommonConstant.WSJF));
 		if (CollectionUtils.isNotEmpty(firstStatusList)) {
 			fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
-			fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
+			fieldMapping.setStoryFirstStatusKPI171(firstStatusList.get(0));
 			fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
 			fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 		} else {
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
 		}
@@ -282,13 +282,13 @@ public class MetaDataClientImpl implements MetadataClient {
 		fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 		fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
-		fieldMapping.setJiraDorKPI3(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
+		fieldMapping.setJiraDorKPI171(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
 		fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
+		fieldMapping.setJiraDodKPI171(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
