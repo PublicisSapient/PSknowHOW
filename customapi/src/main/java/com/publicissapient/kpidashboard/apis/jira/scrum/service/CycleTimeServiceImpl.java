@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -132,9 +133,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 		if (leafNode != null) {
 			Object basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
-			List<String> xAxisRange = customApiConfig.getCycleTimeRange();
-			Collections.reverse(xAxisRange);
-			List<String> rangeList = new ArrayList<>(xAxisRange);
+			List<String> rangeList = new LinkedList<>(customApiConfig.getCycleTimeRange());
 
 			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, LocalDate.now().minusMonths(6).toString(),
 					LocalDate.now().toString(), kpiRequest);

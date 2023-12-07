@@ -55,7 +55,7 @@ public class CycleTime {
 
 	public void addToKpiMaster() {
 		Document kpiDocument = new Document().append("kpiId", "kpi171").append("kpiName", "Cycle Time")
-				.append("maxValue", "").append("kpiUnit", "Count").append("isDeleted", "False")
+				.append("maxValue", "").append("kpiUnit", "Days").append("isDeleted", "False")
 				.append("defaultOrder", 4).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
 				.append("groupId", 11).append("thresholdValue", "").append("kanban", false)
 				.append("chartType", "stackedColumn")
