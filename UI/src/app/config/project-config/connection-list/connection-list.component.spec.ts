@@ -1232,7 +1232,7 @@ describe('ConnectionListComponent', () => {
       connectionName: 'TestConnectionRishabh4',
       cloudEnv: false,
       baseUrl: 'https://test.com/jira',
-      username: 'tst-1',
+      username: '',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
