@@ -12,10 +12,13 @@ import { Router } from '@angular/router';
 })
 export class NavNewComponent implements OnInit {
   items: MenuItem[] | undefined;
-
   activeItem: MenuItem | undefined;
+  selectedTab:string = '';
 
-  constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) { }
+  constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) {
+    const selectedTab = window.location.hash.substring(1);
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+  }
 
   ngOnInit(): void {
     this.getBoardConfig();
@@ -33,12 +36,16 @@ export class NavNewComponent implements OnInit {
 
             return {
               label: obj['boardName'],
-              icon: index == 0 ? '<i class="fa-solid fa-pencil" (click)="editMyDashboard()"></i>' : '',
+              icon: index == 0 ? 'fa-solid fa-pencil' : '',
+              slug: obj['boardSlug'],
               command: () => {
                 this.router.navigate(['/dashboard/'+obj['boardSlug']]);
               },
             };
           });
+          
+          this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
+          
           // this.service.setDashConfigData(response.data);
           this.sharedService.setDashConfigData(getDashConfData.data);
           // this.processKPIListData();
