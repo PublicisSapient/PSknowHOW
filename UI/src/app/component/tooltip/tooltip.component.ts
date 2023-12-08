@@ -43,7 +43,7 @@ export class TooltipComponent implements OnChanges {
     }
 
     hideTooltip(event) {
-        if (this.show) {
+        if (this.showingMaturityRange) {
             this.show = false;
         }
     }
