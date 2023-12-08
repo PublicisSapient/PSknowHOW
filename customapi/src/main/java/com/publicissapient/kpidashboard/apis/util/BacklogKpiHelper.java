@@ -151,8 +151,9 @@ public final class BacklogKpiHelper {
 		}
 	}
 
-	public static void setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
-										   CycleTimeValidationData cycleTimeValidationData, Set<String> issueTypes) {
+	public static boolean setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
+											  CycleTimeValidationData cycleTimeValidationData, Set<String> issueTypes) {
+		boolean inValidation= false;
 		String weekHours = KpiDataHelper.calWeekHours(startTime, endTime);
 		if (!weekHours.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
 			issueTypes.add(cycleTimeValidationData.getIssueType());
@@ -160,25 +161,24 @@ public final class BacklogKpiHelper {
 			switch (level) {
 			case INTAKE_TO_DOR:
 				cycleTimeValidationData.setIntakeTime(timeInDays);
+				inValidation= true;
 				break;
 
 			case DOR_TO_DOD:
 				cycleTimeValidationData.setDorTime(timeInDays);
+				inValidation= true;
 				break;
 
 			case DOD_TO_LIVE:
 				cycleTimeValidationData.setDodTime(timeInDays);
+				inValidation= true;
 				break;
 
 			case LEAD_TIME:
 				cycleTimeValidationData.setLeadTime(timeInDays);
-				break;
-
-
-			default:
-				break;
-
+				inValidation=true;
 			}
 		}
+		return inValidation;
 	}
 }

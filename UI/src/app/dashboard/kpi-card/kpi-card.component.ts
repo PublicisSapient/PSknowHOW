@@ -114,9 +114,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
               if (!this.filterOption) {
                 this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
               }
-              if (this.kpiData.kpiId === 'kpi171') {
-                this.filterOptions = { ...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key][0] };
-              }
             }
           }
         }
