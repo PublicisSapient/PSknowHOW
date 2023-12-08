@@ -201,7 +201,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   showProcessorLastState(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
-    if (traceLog == undefined || traceLog == null) {
+    if (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) {
       return 'NA';
     } else {
       return traceLog.executionSuccess ? 'Success' : 'Failure';
