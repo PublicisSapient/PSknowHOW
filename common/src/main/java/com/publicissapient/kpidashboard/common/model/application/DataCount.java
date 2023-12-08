@@ -51,6 +51,7 @@ public class DataCount implements Serializable {
 	private Integer count;
 	private String priority;
 	private String sProjectName;
+	private String basicProjectConfigId;
 	private String sSprintID;
 	private DateTime deploymentDate;
 	private String sStatus;

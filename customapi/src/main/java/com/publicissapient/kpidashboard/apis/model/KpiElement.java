@@ -19,10 +19,9 @@
 package com.publicissapient.kpidashboard.apis.model;//NOPMD
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -129,8 +128,22 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<Filter> standUpStatusFilter;
 	// used by CycleTime
 	private Boolean isAggregationStacks;
+	@JsonIgnore
+	private transient List<Node> projectsFromCache;
+	@JsonIgnore
+	private transient Object trendValueListFormCache;
+	@SuppressWarnings("rawtypes")
+	@JsonIgnore
+	private transient Map mapForCache;
 
-	/**
+	public Map getMapForCache() {
+		return mapForCache;
+	}
+
+	public void setMapForCache(Map mapForCache) {
+		this.mapForCache = mapForCache;
+	}
+		/**
 	 * Instantiates a new Kpi element.
 	 */
 	public KpiElement() {
@@ -191,6 +204,22 @@ public class KpiElement implements Serializable { // NOPMD
 
 	public Integer getGroupId() {
 		return groupId;
+	}
+
+	public List<Node> getProjectsFromCache() {
+		return CollectionUtils.isEmpty(projectsFromCache)?new ArrayList<>():projectsFromCache;
+	}
+
+	public void setProjectsFromCache(List<Node> projectsFromCache) {
+		this.projectsFromCache = projectsFromCache;
+	}
+
+	public Object getTrendValueListFormCache() {
+		return Objects.isNull(trendValueListFormCache)?new ArrayList<>():trendValueListFormCache;
+	}
+
+	public void setTrendValueListFormCache(Object trendValueListFormCache) {
+		this.trendValueListFormCache = trendValueListFormCache;
 	}
 
 	public void setGroupId(Integer groupId) {

@@ -192,7 +192,7 @@ public class DefectCountByPriorityServiceImpl extends JiraKPIService<Integer, Li
 				sprintWiseLeafNodeValue(v, kpiElement, kpiRequest);
 			}
 		});
-		log.info("DefectCountByPriorityServiceImpl -> getKpiData ->  : {}", kpiElement);
+		log.info("DefectCountByPriorityServiceImpl -> getKpiData sssssss->  : {}", kpiElement);
 		return kpiElement;
 	}
 

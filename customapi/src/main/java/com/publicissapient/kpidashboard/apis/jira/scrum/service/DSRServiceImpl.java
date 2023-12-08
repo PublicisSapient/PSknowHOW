@@ -17,17 +17,13 @@
  ******************************************************************************/
 
 /**
- * 
+ *
  */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -41,19 +37,11 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
-import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.enums.*;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
@@ -68,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class calculates the DSR and trend analysis of the DSR.
- * 
+ *
  * @author pkum34
  *
  */
@@ -101,12 +89,17 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
+				/* for adding a check for data from cache */
+				addingACheckForDataFromCache(v, projectsFromCache);
+
 				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
 			}
 		});
@@ -114,9 +107,15 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		log.debug("[DSR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		/* starts changes for updating cache */
+		Map<String, List<DataCount>> mapForCache = mapForCache(projectsFromCache, trendValueList);
+		kpiElement.setMapForCache(mapForCache);
+		/* ends changes */
+
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
+		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEFECT_SEEPAGE_RATE);
 		kpiElement.setTrendValueList(trendValues);
 
 		return kpiElement;
@@ -208,7 +207,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	/**
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
-	 * 
+	 *
 	 * @param mapTmp
 	 * @param kpiElement
 	 * @param sprintLeafNodeList
@@ -223,24 +222,36 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Collections.sort(sprintLeafNodeList, (Node o1, Node o2) -> o1.getSprintFilter().getStartDate()
 				.compareTo(o2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
-		Map<String, Object> defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("DSR taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
-		Map<String, FieldMapping> projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);
+		/* #deepak starts changes */
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, Object> defectDataListMap = new HashMap<>();
+		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = new HashMap<>();
+		List<JiraIssue> totalDefects = new ArrayList<>();
+		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
+			log.info("DSR taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
 
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
+			projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);
 
-		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(
-				Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
-		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
+			sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+					.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
+
+			Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(Collectors
+					.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
+			totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
+		}
 		Map<Pair<String, String>, Double> sprintWiseDsrMap = new HashMap<>();
 		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap = new HashMap<>();
 		List<KPIExcelData> excelData = new ArrayList<>();
 
+		List<JiraIssue> finalTotalDefects = totalDefects;
+		Map<String, FieldMapping> finalProjFieldMapping = projFieldMapping;
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 
 			List<JiraIssue> sprintWiseUatDefectList = new ArrayList<>();
@@ -251,14 +262,14 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
 					.forEach(totalStoryIdList::addAll);
 
-			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
+			List<JiraIssue> subCategoryWiseTotalBugList = finalTotalDefects.stream()
 					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
 					.collect(Collectors.toList());
 			List<JiraIssue> subCategoryWiseUatBugList = new ArrayList<>();
 
 			if (CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
 				sprintWiseSubCategoryWiseTotalBugListMap.put(sprint, subCategoryWiseTotalBugList);
-				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, projFieldMapping);
+				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, finalProjFieldMapping);
 				sprintWiseSubCategoryWiseUATBugListMap.put(sprint, subCategoryWiseUatBugList);
 			}
 
@@ -274,44 +285,57 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		});
 
 		sprintLeafNodeList.forEach(node -> {
-			// Leaf node wise data
-			String trendLineName = node.getProjectFilter().getName();
-			String currentSprintComponentId = node.getSprintFilter().getId();
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			double dSRForCurrentLeaf;
+			/* #deepak starts changes */
+			if (!node.isFromCache()) {
+				/* #deepak ends changes */
+				// Leaf node wise data
+				String trendLineName = node.getProjectFilter().getName();
+				String currentSprintComponentId = node.getSprintFilter().getId();
+				Pair<String, String> currentNodeIdentifier = Pair
+						.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
+				double dSRForCurrentLeaf;
 
-			if (sprintWiseDsrMap.containsKey(currentNodeIdentifier)) {
-				dSRForCurrentLeaf = sprintWiseDsrMap.get(currentNodeIdentifier);
-				// if for populating excel data
-				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					Map<String, JiraIssue> totalBugList = new HashMap<>();
-					sprintWiseSubCategoryWiseTotalBugListMap.getOrDefault(currentNodeIdentifier, new ArrayList<>())
-							.stream().forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
-					List<JiraIssue> subCategoryWiseUatBugList = sprintWiseSubCategoryWiseUATBugListMap
-							.getOrDefault(currentNodeIdentifier, new ArrayList<>());
-					KPIExcelUtility.populateDefectRelatedExcelData(node.getSprintFilter().getName(), totalBugList,
-							subCategoryWiseUatBugList, excelData, KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+				if (sprintWiseDsrMap.containsKey(currentNodeIdentifier)) {
+					dSRForCurrentLeaf = sprintWiseDsrMap.get(currentNodeIdentifier);
+					// if for populating excel data
+					if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+						Map<String, JiraIssue> totalBugList = new HashMap<>();
+						sprintWiseSubCategoryWiseTotalBugListMap.getOrDefault(currentNodeIdentifier, new ArrayList<>())
+								.stream().forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
+						List<JiraIssue> subCategoryWiseUatBugList = sprintWiseSubCategoryWiseUATBugListMap
+								.getOrDefault(currentNodeIdentifier, new ArrayList<>());
+						KPIExcelUtility.populateDefectRelatedExcelData(node.getSprintFilter().getName(), totalBugList,
+								subCategoryWiseUatBugList, excelData, KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+					}
+				} else {
+					dSRForCurrentLeaf = 0.0d;
 				}
+
+				log.debug("[DSR-SPRINT-WISE][{}]. DSR for sprint {}  is {}", requestTrackerId,
+						node.getSprintFilter().getName(), dSRForCurrentLeaf);
+
+				DataCount dataCount = new DataCount();
+				dataCount.setData(String.valueOf(Math.round(dSRForCurrentLeaf)));
+				dataCount.setSProjectName(trendLineName);
+				dataCount.setSSprintID(node.getSprintFilter().getId());
+				dataCount.setSSprintName(node.getSprintFilter().getName());
+				dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
+				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
+				dataCount.setValue(dSRForCurrentLeaf);
+				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
+				// #deepak add projectid to datacount
+				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
+				trendValueList.add(dataCount);
+				/* #deepak starts changes */
 			} else {
-				dSRForCurrentLeaf = 0.0d;
+				List<DataCount> dataCountList = trendValueList.stream()
+						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
+						.collect(Collectors.toList());
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
-
-			log.debug("[DSR-SPRINT-WISE][{}]. DSR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), dSRForCurrentLeaf);
-
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(dSRForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(dSRForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
-
+			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns());
@@ -342,7 +366,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	/**
 	 * Sets map to show on hover of sprint node.
-	 * 
+	 *
 	 * @param sprintWiseHowerMap
 	 * @param sprint
 	 * @param uat
@@ -370,8 +394,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI35(),KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI35(), KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 	}
 
 }

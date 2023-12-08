@@ -2,14 +2,7 @@ package com.publicissapient.kpidashboard.apis.common.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -31,12 +24,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
-import com.publicissapient.kpidashboard.common.model.application.DataValue;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.*;
 
 public abstract class ToolsKPIService<R, S> {
 
@@ -610,16 +598,17 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
+
+					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
 							.map(val -> (R) val.getValue()).collect(Collectors.toList());
 
 					R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
-					String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-							String.valueOf(calculatedAggValue));
-
 					String aggregateValue = null;
-					if (StringUtils.isNotEmpty(maturity)) {
-						aggregateValue = String.valueOf(calculatedAggValue);
+					String maturity = null;
+					if (maturityValue != null) {
+						aggregateValue = maturityValue.getValue();
+						maturity = maturityValue.getKey();
 					}
 					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
 							getList(dataCounts, kpiName), calculatedAggValue));
@@ -738,14 +727,15 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
+						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
 						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
-						String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
-								String.valueOf(calculatedAggValue));
-						if (StringUtils.isNotEmpty(maturity)) {
-							aggregateValue = String.valueOf(calculatedAggValue);
+						String maturity = null;
+						if (maturityValue != null) {
+							aggregateValue = maturityValue.getValue();
+							maturity = maturityValue.getKey();
 						}
 						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName),
 								calculatedAggValue));
@@ -933,9 +923,6 @@ public abstract class ToolsKPIService<R, S> {
 			aggValue = (R) value.get(value.size() - 1).getValue();
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
-		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
-			aggValue = (R) value.stream().filter(dataCount -> dataCount.getsSprintID().equalsIgnoreCase("< 3 Months"))
-					.findFirst().get().getValue();
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
 			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
@@ -1210,4 +1197,46 @@ public abstract class ToolsKPIService<R, S> {
 		return thresholdValue;
 	}
 
+	/**
+	 * for creating map for storing in cache
+	 *
+	 * @param projectsFromCache
+	 * @param trendValueList
+	 * @return
+	 *
+	 * @auther deepak
+	 */
+	public Map<String, List<DataCount>> mapForCache(List<Node> projectsFromCache, List<DataCount> trendValueList) {
+		Map<String, List<DataCount>> map = new HashMap<>();
+		trendValueList.stream()
+				.filter(dataCount -> projectsFromCache.stream()
+						.filter(projectFromCache -> projectFromCache.getId()
+								.equals(dataCount.getSProjectName() + "_" + dataCount.getBasicProjectConfigId()))
+						.count() == 0)
+				.forEach(dataCount -> {
+					String key = dataCount.getSProjectName() + "_" + dataCount.getBasicProjectConfigId();
+					if (map.get(key) == null) {
+						map.put(key, new ArrayList<>(Arrays.asList(dataCount)));
+					} else {
+						List<DataCount> list = map.get(key);
+						list.add(dataCount);
+						map.put(key, list);
+					}
+				});
+		return map;
+	}
+
+	/**
+	 * Adding A Check For Data Found In Cache
+	 *
+	 * @param v
+	 * @param projectsFromCache
+	 */
+	public void addingACheckForDataFromCache(List<Node> v, List<Node> projectsFromCache) {
+		v.forEach(node -> {
+			if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+					.count() > 0)
+				node.setFromCache(true);
+		});
+	}
 }

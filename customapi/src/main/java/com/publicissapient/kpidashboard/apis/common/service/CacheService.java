@@ -62,6 +62,21 @@ public interface CacheService {
 			List<String> sprintIncluded);
 
 	/**
+	 * Stores the KPI data result. Cache key = key+requestOrigin+kpiSource. Given
+	 * that none of them is empty.
+	 *
+	 * @param key
+	 *            mandatory parameter
+	 * @param value
+	 *            KPI result
+	 * @param kpiSource
+	 *            taken into account if not empty
+	 * @param sprintIncluded
+	 *            sprintIncluded
+	 */
+	void setIntoApplicationCache(String[] key, Object value, String kpiSource, List<String> sprintIncluded);
+
+	/**
 	 * Gets data from cache based on key
 	 * 
 	 * @param key
@@ -82,6 +97,17 @@ public interface CacheService {
 	 */
 	public Object getFromApplicationCache(String[] keyList, String kpiSource, Integer groupId,
 			List<String> sprintIncluded);
+	/**
+	 * Gets from the cache. Key formation strategy is same as detailed in the
+	 * setIntoApplicationCache method.
+	 *
+	 * @param keyList
+	 * @param kpiSource
+	 * @param sprintIncluded
+	 *
+	 * @return
+	 */
+	public Object getFromApplicationCache(String[] keyList, String kpiSource, List<String> sprintIncluded);
 
 	Object cacheProjectConfigMapData();
 

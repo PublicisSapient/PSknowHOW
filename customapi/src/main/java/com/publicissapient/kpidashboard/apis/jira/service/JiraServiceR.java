@@ -15,18 +15,17 @@
 
 package com.publicissapient.kpidashboard.apis.jira.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
+import java.util.*;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -46,21 +45,13 @@ import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.factory.JiraKPIServiceFactory;
-import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.KpiElement;
-import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.Node;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.*;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.model.jira.SprintIssue;
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -156,13 +147,6 @@ public class JiraServiceR {
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
-				Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
-						groupId, kpiRequest.getSprintIncluded());
-				if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-						&& null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
-					log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
-					return (List<KpiElement>) cachedData;
-				}
 
 				TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 						filteredAccountDataList, null, filterHelperService.getFirstHierarachyLevel(),
@@ -191,8 +175,6 @@ public class JiraServiceR {
 								.noneMatch(responseKpi -> reqKpi.getKpiId().equals(responseKpi.getKpiId())))
 						.collect(Collectors.toList());
 				responseList.addAll(missingKpis);
-
-				setIntoApplicationCache(kpiRequest, responseList, groupId, projectKeyCache);
 			} else {
 				responseList.addAll(origRequestedKpis);
 			}
@@ -243,7 +225,7 @@ public class JiraServiceR {
 
 	/**
 	 * creating release List on the basis of releaseId
-	 * 
+	 *
 	 * @param treeAggregatorDetail
 	 * @return release names
 	 */
@@ -316,7 +298,7 @@ public class JiraServiceR {
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-		return kpiList.size() != 1;
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {
@@ -463,6 +445,58 @@ public class JiraServiceR {
 	}
 
 	/**
+	 * for checking available data In Cache Before DB Hit
+	 *
+	 * @param <S>
+	 * @param projects
+	 * @param projectsFromCache
+	 * @param trendValueList
+	 * @param kpiCode
+	 * @param sprintIncluded
+	 *
+	 * @auther deepak
+	 */
+
+	public <S> void checkAvailableDataInCacheBeforeDBHit(List<Node> projects, List<Node> projectsFromCache,
+			List<S> trendValueList, KPICode kpiCode, List<String> sprintIncluded) {
+		projects.forEach(project -> {
+			List<DataCountKpiData> dataCountKpisDataList = (List<DataCountKpiData>) cacheService
+					.getFromApplicationCache(new String[] { project.getId() }, "JIRA", sprintIncluded);
+			if (isNotEmpty(dataCountKpisDataList)) {
+				List<S> dataCountList = dataCountKpisDataList.stream()
+						.filter(dataCountKpiData -> kpiCode.equals(dataCountKpiData.getKpiName()))
+						.findFirst().map(DataCountKpiData::getDataCountList).orElse(new ArrayList<S>());
+				if (isNotEmpty(dataCountList)) {
+					trendValueList.addAll(dataCountList);
+					projectsFromCache.add(project);
+				}
+			}
+		});
+	}
+
+	/**
+	 * for updating data in cache after DB Hit
+	 *
+	 * @param <S>
+	 * @param map
+	 * @param kpiCode
+	 * @param sprintIncluded
+	 *
+	 * @auther deepak
+	 */
+	public <S> void updateCacheAfterDBHit(Map<String, List<S>> map, KPICode kpiCode, List<String> sprintIncluded) {
+		if (MapUtils.isNotEmpty(map))
+			map.forEach((k, v) -> {
+				List<DataCountKpiData> dataCountKpiDataList = (List<DataCountKpiData>) cacheService
+						.getFromApplicationCache(new String[] { k }, "JIRA", sprintIncluded);
+				if (isEmpty(dataCountKpiDataList))
+					dataCountKpiDataList = new ArrayList<>();
+				dataCountKpiDataList.add(new DataCountKpiData(kpiCode, v));
+				cacheService.setIntoApplicationCache(new String[] { k }, dataCountKpiDataList, "JIRA", sprintIncluded);
+			});
+	}
+
+	/**
 	 * This class is used to call JIRA based KPIs service in parallel.
 	 *
 	 * @author pankumar8
@@ -526,7 +560,7 @@ public class JiraServiceR {
 		 * @throws ApplicationException
 		 *             ApplicationException
 		 */
-		private void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
+		private <S> void calculateAllKPIAggregatedMetrics(KpiRequest kpiRequest, List<KpiElement> responseList,
 				KpiElement kpiElement, TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
 			JiraKPIService<?, ?, ?> jiraKPIService = null;
@@ -542,7 +576,17 @@ public class JiraServiceR {
 			} else {
 				TreeAggregatorDetail treeAggregatorDetailClone = (TreeAggregatorDetail) SerializationUtils
 						.clone(treeAggregatorDetail);
-				responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone));
+				List<Node> projects = treeAggregatorDetailClone.getMapOfListOfProjectNodes().get("project");
+				List<Node> projectsFromCache = new ArrayList<>();
+				List<S> trendValueList = new ArrayList<>();
+				checkAvailableDataInCacheBeforeDBHit(projects, projectsFromCache, trendValueList,
+						KPICode.getKPI(kpiElement.getKpiId()), kpiRequest.getSprintIncluded());
+				kpiElement.setProjectsFromCache(projectsFromCache);
+				kpiElement.setTrendValueListFormCache(trendValueList);
+				KpiElement kpiElementRes = jiraKPIService.getKpiData(kpiRequest, kpiElement, treeAggregatorDetailClone);
+				updateCacheAfterDBHit(kpiElementRes.getMapForCache(), KPICode.getKPI(kpiElement.getKpiId()),
+						kpiRequest.getSprintIncluded());
+				responseList.add(kpiElementRes);
 
 				long processTime = System.currentTimeMillis() - startTime;
 				log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(),
