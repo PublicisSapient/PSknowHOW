@@ -16,19 +16,19 @@
  *
  ******************************************************************************/
 
-import { Component, ElementRef, Input, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 
 @Component({
     selector: 'app-tooltip',
     templateUrl: './tooltip.component.html',
     styleUrls: ['./tooltip.component.css']
 })
-export class TooltipComponent implements OnInit {
+export class TooltipComponent implements OnChanges {
     @Input() data: any = {};
     @Input() showChartView = 'chart';
     @Input() filterNo?: string = '';
     @Input() kpiName;
-    @Input() showingMaturityRange: boolean;
+    @Input() showingMaturityRange: boolean = false;
     @Input() toolTipTop = 0;
     relativeTooltipTop = 400;
     show: boolean = true;
@@ -38,22 +38,21 @@ export class TooltipComponent implements OnInit {
     constructor(private elementRef: ElementRef) {
     }
 
-    ngOnchanges(changes: SimpleChanges) {
+    ngOnChanges(changes: SimpleChanges) {
         this.show = true;
     }
 
-    ngOnInit() {
-    }
-
     hideTooltip(event) {
-        this.show = false;
+        if (this.showingMaturityRange) {
+            this.show = false;
+        }
     }
 
     ngAfterViewInit() {
         const element = this.elementRef.nativeElement.querySelector('.tooltip-wrapper');
         const rect = element.getBoundingClientRect();
-        const bottomVisible = rect.bottom <=  window.innerHeight;
-        if(!bottomVisible) {
+        const bottomVisible = rect.bottom <= window.innerHeight;
+        if (!bottomVisible) {
             setTimeout(() => {
                 this.relativeTooltipTop -= (400 + rect.height + 25);
                 this.show = true;

@@ -65,7 +65,7 @@ export class DoraComponent implements OnInit {
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
   kpiThresholdObj = {};
-  isTooltip = [];
+  isTooltip = '';
   maturityObj = {};
   toolTipTop: number = 0;
 
@@ -191,6 +191,7 @@ export class DoraComponent implements OnInit {
   }
 
   receiveSharedData($event) {
+    this.isTooltip = '';
     this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
@@ -562,9 +563,9 @@ export class DoraComponent implements OnInit {
       this.toolTipTop = 0;
     }
     if (val) {
-      this.isTooltip.push(kpiId);
+      this.isTooltip = kpiId;
     } else {
-      this.isTooltip.splice(this.isTooltip.indexOf(kpiId), 1);
+      this.isTooltip = '';
     }
   }
 

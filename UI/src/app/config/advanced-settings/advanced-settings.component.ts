@@ -196,7 +196,7 @@ export class AdvancedSettingsComponent implements OnInit {
 
   showExecutionDate(processorName) {
     const traceLog = this.findTraceLogForTool(processorName);
-    return (traceLog == undefined || traceLog == null) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
+    return (traceLog == undefined || traceLog == null || traceLog.executionEndedAt == 0) ? 'NA' : new DatePipe('en-US').transform(traceLog.executionEndedAt, 'dd-MMM-yyyy (EEE) - hh:mmaaa');
   }
 
   showProcessorLastState(processorName) {

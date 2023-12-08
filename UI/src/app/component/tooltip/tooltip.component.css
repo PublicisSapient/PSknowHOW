@@ -119,6 +119,11 @@ ul.kpi-info-list {
     width: 450px  !important;
 }
 
+.tooltip-wider {
+    min-width: 550px;
+    width: 550px  !important;
+}
+
 .maturity-indicator {
     width: 12px;
     height: 12px;
