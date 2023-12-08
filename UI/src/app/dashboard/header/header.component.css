@@ -31,14 +31,8 @@ header{
 ::ng-deep .custom-menu .p-menu .p-menuitem-link{
     padding: 1rem .5rem;
 }
-::ng-deep .custom-menu .p-menu .p-menuitem-link .p-menuitem-text{
-    font-size: .875rem;
-}
 ::ng-deep .custom-menu .p-tabmenu .p-tabmenu-nav li.p-highlight .p-menuitem-link:focus{
     background-color: none;
-}
-.filter-btn{
-    cursor: pointer;
 }
 .custom-user{
     height: 40px;

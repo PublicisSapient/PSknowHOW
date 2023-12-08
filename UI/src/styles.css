@@ -2013,15 +2013,11 @@ p-dialog .p-button-cancel.p-button-secondary {
 .icon-spinner {
   animation: spin 2s linear infinite;
 }
-
-@keyframes spin {
-  0% {
-      transform: rotate(0deg);
-  }
-
-  100% {
-      transform: rotate(360deg);
-  }
+.p-menu{
+  padding: 0;
+}
+.p-menu .p-menuitem-link .p-menuitem-text{
+  font-size: 0.875rem;
 }
 @media only screen and (max-width:768px){
   .wrapper-w-50{

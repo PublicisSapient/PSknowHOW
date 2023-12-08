@@ -50,14 +50,14 @@ export class FooterComponent implements OnInit {
     });
   }
 
-  styleObj():object{
-    let marginLeft = this.isSide ? '16rem' : '5rem'; 
-    const urlArray = this.router.url.split('/');
-    if(urlArray.includes('Help') || urlArray.includes('Config') || urlArray.includes('Error') || urlArray[urlArray.length-1].includes('login') || urlArray.includes('register')){
-      marginLeft = '0rem'
-    }
-    return {'margin-left': marginLeft}
+  // styleObj():object{
+  //   let marginLeft = this.isSide ? '16rem' : '5rem'; 
+  //   const urlArray = this.router.url.split('/');
+  //   if(urlArray.includes('Help') || urlArray.includes('Config') || urlArray.includes('Error') || urlArray[urlArray.length-1].includes('login') || urlArray.includes('register')){
+  //     marginLeft = '0rem'
+  //   }
+  //   return {'margin-left': marginLeft}
 
-  }
+  // }
 
 }

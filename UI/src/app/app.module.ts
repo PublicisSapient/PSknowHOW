@@ -130,6 +130,7 @@ import { ParentFilterComponent } from './dashboard/filter-new/parent-filter/pare
 import { PrimaryFilterComponent } from './dashboard/filter-new/primary-filter/primary-filter.component';
 import { AdditionalFilterComponent } from './dashboard/filter-new/additional-filter/additional-filter.component';
 import { NavNewComponent } from './dashboard/nav-new/nav-new.component';
+import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -214,7 +215,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         ParentFilterComponent,
         PrimaryFilterComponent,
         AdditionalFilterComponent,
-        NavNewComponent
+        NavNewComponent,
+        RecentCommentsComponent
     ],
     imports: [
         DropdownModule,

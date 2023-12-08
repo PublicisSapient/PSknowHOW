@@ -36,13 +36,14 @@ export class NavNewComponent implements OnInit {
 
             return {
               label: obj['boardName'],
-              icon: index == 0 ? 'fa-solid fa-pencil' : '',
+              icon: index == 0 ? 'fas fa-pencil-alt' : '',
               slug: obj['boardSlug'],
               command: () => {
                 this.router.navigate(['/dashboard/'+obj['boardSlug']]);
               },
             };
           });
+          console.log(this.items);
           
           this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
           

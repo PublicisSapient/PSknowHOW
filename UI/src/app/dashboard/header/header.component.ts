@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { first } from 'rxjs/operators';
-import { TabMenuModule } from 'primeng/tabmenu';
+// import { TabMenuModule } from 'primeng/tabmenu';
 import { MenuItem } from 'primeng/api';
 import { SharedService } from 'src/app/services/shared.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 import { Router } from '@angular/router';
+import { HelperService } from 'src/app/services/helper.service';
 
 @Component({
   selector: 'app-header',
@@ -13,20 +14,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  clientLogo:string='';
+  clientLogo: string = '';
   notificationCount: number = 0;
-  notificationList:Array<object> = [];
+  notificationList: Array<object> = [];
   commentCount: number = 0;
-  commentList:Array<object> = [];
+  commentList: Array<object> = [];
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
   userDetails: object = {};
+  userMenuItems: MenuItem[] | undefined;
 
   constructor(
-    private httpService: HttpService, 
-    private sharedService: SharedService, 
+    private httpService: HttpService,
+    private sharedService: SharedService,
     private getAuthorizationService: GetAuthorizationService,
-    private router: Router) { }
+    private router: Router,
+    private helperService: HelperService) { }
 
   ngOnInit(): void {
     this.getLogoImage();
@@ -36,11 +39,28 @@ export class HeaderComponent implements OnInit {
     ];
     this.activeItem = this.items[0];
 
-    this.sharedService.currentUserDetailsObs.subscribe(details=>{
-      if(details){
+    this.sharedService.currentUserDetailsObs.subscribe(details => {
+      if (details) {
         this.userDetails = details;
       }
     });
+
+    this.userMenuItems = [
+      {
+        label: 'Settings', 
+        icon: 'fas fa-cog', 
+        command: () => {
+          this.router.navigate(['/dashboard/Config/ProjectList']);
+        },
+      },
+      {
+        label: 'Logout', 
+        icon: 'fas fa-sign-out-alt', 
+        command: () => {
+          this.logout();
+        }
+      },
+    ]
   }
 
   /*Rendered the logo image */
@@ -52,39 +72,6 @@ export class HeaderComponent implements OnInit {
         this.clientLogo = undefined;
       }
     });
-  }
-
-  getRecentComments() {
-    // this.showSpinner = true;
-    // let reqObj = {
-    //   "level": this.filterApplyData?.['level'],
-    //   "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
-    //   "kpiIds": this.showKpisList?.map((item) => item.kpiId),
-    //   "nodes": []
-    // }
-
-    // this.showKpisList.forEach(x => {
-    //   this.kpiObj[x.kpiId] = x.kpiName;
-    // });
-
-    // if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
-    //   reqObj['nodes'] = this.filterData.filter(x => x.nodeId == this.filterApplyData?.['ids'][0])[0]?.parentId;
-    // } else {
-    //   reqObj['nodes'] = [...this.filterApplyData?.['selectedMap']['project']];
-    // }
-
-    // this.httpService.getCommentSummary(reqObj).subscribe((response) => {
-    //   if (response['success']) {
-    //     this.commentList = response['data'];
-    //   } else {
-    //     this.commentList = [];
-    //   }
-    //   this.showSpinner = false;
-    // }, error => {
-    //   console.log(error);
-    //   this.commentList = [];
-    //   this.showSpinner = false;
-    // })
   }
 
   // when user would want to give access on project from notification list
@@ -110,16 +97,17 @@ export class HeaderComponent implements OnInit {
 
   getNotification() {
     const response = {
-      data:[
-      {
+      data: [
+        {
           "type": "User Access Request",
           "count": 1
-      },
-      {
+        },
+        {
           "type": "Project Access Request",
           "count": 0
-      }
-    ]}
+        }
+      ]
+    }
     this.notificationList = [...response.data].map((obj) => {
       this.notificationCount = this.notificationCount + obj.count;
       return {
@@ -131,7 +119,7 @@ export class HeaderComponent implements OnInit {
       };
     });
     console.log(this.notificationList);
-    
+
     // this.notificationCount = 0;
     // this.httpService.getAccessRequestsNotifications().subscribe((response: NotificationResponseDTO) => {
     //   if (response && response.success) {
@@ -154,6 +142,19 @@ export class HeaderComponent implements OnInit {
     //     });
     //   }
     // });
+  }
+
+  // logout is clicked  and removing auth token , username
+  logout() {
+    this.httpService.logout().subscribe((getData) => {
+      if (!(getData !== null && getData[0] === 'error')) {
+        localStorage.clear();
+        this.helperService.isKanban = false;
+        this.sharedService.setSelectedProject(null);
+        this.sharedService.setCurrentUserDetails({});
+        this.router.navigate(['./authentication/login']);
+      }
+    });
   }
 
 }
