@@ -160,7 +160,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraStoryIdentificationKPI129", "excludeStatusKpi129")),
 
 	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139",
-			"jiraReadyForRefinementKPI139", "jiraRejectedInRefinementKPI139","thresholdValueKPI139")),
+			"jiraReadyForRefinementKPI139", "jiraRejectedInRefinementKPI139")),
 
 	KPI148("Flow Load", KPISource.JIRA.name(), Arrays.asList("storyFirstStatusKPI148", "jiraStatusForQaKPI148",
 			"jiraStatusForInProgressKPI148", "jiraIssueTypeNamesKPI148")),

@@ -56,12 +56,11 @@ public class CycleTime {
 	public void addToKpiMaster() {
 		Document kpiDocument = new Document().append("kpiId", "kpi171").append("kpiName", "Cycle Time")
 				.append("maxValue", "").append("kpiUnit", "Days").append("isDeleted", "False")
-				.append("defaultOrder", 4).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
+				.append("defaultOrder", 12).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
 				.append("groupId", 11).append("thresholdValue", "").append("kanban", false)
-				.append("chartType", "stackedColumn")
-				.append("yAxisLabel", "Days").append("xAxisLabel", "Range").append("isAdditionalFilterSupport", false)
-				.append("kpiFilter", "dropDown").append("boxType", "chart").append("calculateMaturity", false)
-				.append("isAggregationStacks", false)
+				.append("chartType", "")
+				.append("yAxisLabel", "").append("xAxisLabel", "").append("isAdditionalfFilterSupport", false)
+				.append("kpiFilter", "dropDown").append("boxType", "2_column").append("calculateMaturity", false)
 				.append("kpiInfo.definition",
 						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
 				.append("kpiInfo.formula", null)
@@ -72,6 +71,23 @@ public class CycleTime {
 		// Insert the document into the collection
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
 
+		MongoCollection<Document> kpiMaster = mongoTemplate.getCollection("kpi_master");
+
+		// Update documents
+		updateDocument(kpiMaster, "kpi146", 11);
+		updateDocument(kpiMaster, "kpi148", 13);
+
+	}
+
+	private void updateDocument(MongoCollection<Document> kpiMaster, String kpiId, int defaultOrder) {
+		// Create the filter
+		Document filter = new Document("kpiId", kpiId);
+
+		// Create the update
+		Document update = new Document("$set", new Document("defaultOrder", defaultOrder));
+
+		// Perform the update
+		kpiMaster.updateOne(filter, update);
 	}
 
 	public void updateFieldMappingStructure() {

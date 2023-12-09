@@ -1,21 +1,3 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
@@ -33,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -41,20 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.common.service.impl.CommonServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiData;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
-import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -62,45 +42,37 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
 import com.publicissapient.kpidashboard.apis.util.BacklogKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Cycle Time KPI on BackLog Tab
- *
- * @author shi6
- */
-@Slf4j
 @Component
+@Slf4j
 public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
 	private static final String INTAKE_TO_DOR = "Intake to DOR";
 	private static final String DOR_TO_DOD = "DOR to DOD";
 	private static final String DOD_TO_LIVE = "DOD to Live";
-	private static final String SEARCH_BY_RANGE = "Search By Range";
-	private static final String SEARCH_BY_ISSUTYPE = "Search By IssueType";
-
+	private static final String LEAD_TIME = "LEAD TIME";
+	private static final String PROJECT = "project";
+	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
+	private static final String SEARCH_BY_DURATION = "Duration";
+	public static final String DAYS = "days";
+	public static final String DAY = "d";
+	public static final String ISSUES = "issues";
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
 
 	@Autowired
-	private JiraIssueRepository jiraIssueRepository;
-
-	@Autowired
 	private ConfigHelperService configHelperService;
-
-	@Autowired
-	private CommonServiceImpl commonService;
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
@@ -108,60 +80,51 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			if (Filters.getFilter(k) == Filters.PROJECT) {
-				projectWiseLeafNodeValue(v, kpiElement, kpiRequest);
-			}
-		});
-		log.info("CycleTimeServiceImpl -> getKpiData ->  : {}", kpiElement);
+
+		log.info("CycleTimeServiceImpl-> requestTrackerId[{}]", kpiRequest.getRequestTrackerId());
+		Node root = treeAggregatorDetail.getRoot();
+		List<Node> projectList = treeAggregatorDetail.getMapOfListOfProjectNodes().get(PROJECT);
+		DataCount dataCount = new DataCount();
+		projectWiseLeafNodeValue(projectList, kpiElement, kpiRequest, dataCount);
+
+		log.debug("[CycleTimeServiceImpl-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
 	}
 
-	/**
-	 * project wise processing
-	 * 
-	 * @param leafNodeList
-	 *            leafNodeList
-	 * @param kpiElement
-	 *            kpiElement
-	 * @param kpiRequest
-	 *            kpiElement
-	 */
-	public void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
-		List<KPIExcelData> excelData = new ArrayList<>();
+	@SuppressWarnings("unchecked")
+	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
+			DataCount dataCount) {
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (leafNode != null) {
 			Object basicProjectConfigId = leafNode.getProjectFilter().getBasicProjectConfigId();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			List<String> rangeList = new LinkedList<>(customApiConfig.getCycleTimeRange());
-
 			Map<String, Object> resultMap = fetchKPIDataFromDb(leafNodeList, LocalDate.now().minusMonths(6).toString(),
 					LocalDate.now().toString(), kpiRequest);
 
 			List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList = (List<JiraIssueCustomHistory>) resultMap
 					.get(STORY_HISTORY_DATA);
-			List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
-			Set<String> allIssueTypes = new HashSet<>();
-
 			if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
 				List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
-				allIssueTypes = jiraIssueCustomHistoriesList.stream().map(JiraIssueCustomHistory::getStoryType)
-						.collect(Collectors.toSet());
-				iterationKpiValueList = getCycleTime(jiraIssueCustomHistoriesList, fieldMapping,
+				Set<String> allIssueTypes = jiraIssueCustomHistoriesList.stream()
+						.map(JiraIssueCustomHistory::getStoryType).collect(Collectors.toSet());
+				List<IterationKpiValue> cycleTime = getCycleTime(jiraIssueCustomHistoriesList, fieldMapping,
 						cycleTimeValidationDataList, rangeList, allIssueTypes);
-				populateExcelDataObject(getRequestTrackerId(), cycleTimeValidationDataList, excelData);
-				kpiElement.setModalHeads(KPIExcelColumn.CYCLE_TIME.getColumns());
-				kpiElement.setExcelColumns(KPIExcelColumn.CYCLE_TIME.getColumns());
-				kpiElement.setExcelData(excelData);
+				IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_DURATION,
+						new LinkedHashSet<>(rangeList));
+				IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE,
+						allIssueTypes);
+				IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+				// Modal Heads Options
+				kpiElement.setFilters(iterationKpiFilters);
+				dataCount.setValue(cycleTime);
+				kpiElement.setTrendValueList(dataCount);
 			}
-			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_RANGE,
-					new LinkedHashSet<>(rangeList));
-			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUTYPE,
-					new HashSet<>(allIssueTypes));
-			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
-			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setTrendValueList(iterationKpiValueList);
+
+			kpiElement.setModalHeads(KPIExcelColumn.CYCLE_TIME.getColumns());
 		}
+
 	}
 
 	/**
@@ -217,30 +180,16 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 		return resultListMap;
 	}
 
-	/**
-	 * prepareLeadtime list
-	 *
-	 * @param jiraIssueCustomHistoriesList
-	 *            historylist
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param cycleTimeValidationDataList
-	 *            cycleTimeValidationDataList
-	 * @param rangeList
-	 *            rangeList
-	 * @param allIssueTypes
-	 * @return dataCountMap
-	 */
 	protected List<IterationKpiValue> getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList,
 			FieldMapping fieldMapping, List<CycleTimeValidationData> cycleTimeValidationDataList,
 			List<String> rangeList, Set<String> allIssueTypes) {
 		Map<Long, String> monthRangeMap = new HashMap<>();
 		Map<String, Map<String, List<JiraIssueCustomHistory>>> dodToLiveRangeMap = new LinkedHashMap<>();
 		BacklogKpiHelper.initializeRangeMapForProjects(dodToLiveRangeMap, rangeList, monthRangeMap);
-		Map<String, Map<String, List<JiraIssueCustomHistory>>> dorToDODRangeMap = new LinkedHashMap<>(
-				dodToLiveRangeMap);
-		Map<String, Map<String, List<JiraIssueCustomHistory>>> intakeToDORRangeMap = new LinkedHashMap<>(
-				dodToLiveRangeMap);
+		Map<String, Map<String, List<JiraIssueCustomHistory>>> dorToDODRangeMap = new LinkedHashMap<>();
+		BacklogKpiHelper.initializeRangeMapForProjects(dorToDODRangeMap, rangeList, monthRangeMap);
+		Map<String, Map<String, List<JiraIssueCustomHistory>>> intakeToDORRangeMap = new LinkedHashMap<>();
+		BacklogKpiHelper.initializeRangeMapForProjects(intakeToDORRangeMap, rangeList, monthRangeMap);
 		Set<String> issueTypes = new HashSet<>();
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList) && fieldMapping != null) {
 			for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoriesList) {
@@ -277,25 +226,24 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				cycleTime.setDeliveryTime(minUpdatedOn);
 				cycleTime.setDeliveryLocalDateTime(DateUtil.convertDateTimeToLocalDateTime(minUpdatedOn));
 				cycleTimeValidationData.setDodDate(minUpdatedOn);
-				boolean	 addInValidation = BacklogKpiHelper.setRangeWiseJiraIssuesMap(intakeToDORRangeMap, jiraIssueCustomHistory,
-						cycleTime.getReadyLocalDateTime(), monthRangeMap)
-						|| BacklogKpiHelper.setRangeWiseJiraIssuesMap(dorToDODRangeMap, jiraIssueCustomHistory,
-						cycleTime.getDeliveryLocalDateTime(), monthRangeMap)
-						|| BacklogKpiHelper.setRangeWiseJiraIssuesMap(dodToLiveRangeMap, jiraIssueCustomHistory,
+				BacklogKpiHelper.setRangeWiseJiraIssuesMap(intakeToDORRangeMap, jiraIssueCustomHistory,
+						cycleTime.getReadyLocalDateTime(), monthRangeMap);
+				BacklogKpiHelper.setRangeWiseJiraIssuesMap(dorToDODRangeMap, jiraIssueCustomHistory,
+						cycleTime.getDeliveryLocalDateTime(), monthRangeMap);
+				BacklogKpiHelper.setRangeWiseJiraIssuesMap(dodToLiveRangeMap, jiraIssueCustomHistory,
 						cycleTime.getLiveLocalDateTime(), monthRangeMap);
 
-				if(addInValidation) {
-					BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getReadyTime(), INTAKE_TO_DOR,
-							cycleTimeValidationData, issueTypes);
-					BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(), cycleTime.getDeliveryTime(), DOR_TO_DOD,
-							cycleTimeValidationData, issueTypes);
-					BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(), cycleTime.getLiveTime(), DOD_TO_LIVE,
-							cycleTimeValidationData, issueTypes);
-					cycleTimeValidationDataList.add(cycleTimeValidationData);
-				}
+				BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(), cycleTime.getReadyTime(), INTAKE_TO_DOR,
+						cycleTimeValidationData, issueTypes);
+				BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(), cycleTime.getDeliveryTime(), DOR_TO_DOD,
+						cycleTimeValidationData, issueTypes);
+				BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(), cycleTime.getLiveTime(), DOD_TO_LIVE,
+						cycleTimeValidationData, issueTypes);
+				BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
+						LEAD_TIME, cycleTimeValidationData, issueTypes);
+				cycleTimeValidationDataList.add(cycleTimeValidationData);
 			}
 		}
-
 		return setDataCountMap(intakeToDORRangeMap, dorToDODRangeMap, dodToLiveRangeMap, cycleTimeValidationDataList,
 				rangeList, allIssueTypes);
 
@@ -307,7 +255,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> dodToLiveRangeMap,
 			List<CycleTimeValidationData> cycleTimeValidationDataList, List<String> rangeList,
 			Set<String> allIssueTypes) {
-
+		List<IterationKpiValue> dataList = new ArrayList<>();
 		Map<String, Long> issueWiseIntakeToDOR = cycleTimeValidationDataList.stream()
 				.filter(data -> ObjectUtils.isNotEmpty(data.getIntakeTime()))
 				.collect(Collectors.toMap(CycleTimeValidationData::getIssueNumber,
@@ -323,68 +271,83 @@ public class CycleTimeServiceImpl extends JiraKPIService<Integer, List<Object>, 
 				.collect(Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getDodTime,
 						(existing, replacement) -> existing));
 
-		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 		for (String range : rangeList) {
 			for (String issueType : allIssueTypes) {
-				IterationKpiValue kpiValueIssueCount = new IterationKpiValue();
-				kpiValueIssueCount.setFilter1(range);
-				kpiValueIssueCount.setFilter2(issueType);
-				List<DataCount> defectsDataCountList = new ArrayList<>();
-				populateDataCountList(intakeToDORRangeMap, issueWiseIntakeToDOR, range, issueType, defectsDataCountList,
-						INTAKE_TO_DOR);
-				populateDataCountList(dorToDODRangeMap, issueWiseDORToDOD, range, issueType, defectsDataCountList,
-						DOR_TO_DOD);
-				populateDataCountList(dodToLiveRangeMap, issueWiseDODToLive, range, issueType, defectsDataCountList,
-						DOD_TO_LIVE);
+				List<IterationKpiData> kpiDataList = new ArrayList<>();
 
-				kpiValueIssueCount.setValue(defectsDataCountList);
-				iterationKpiValueList.add(kpiValueIssueCount);
+				populateDataCountList(intakeToDORRangeMap, issueWiseIntakeToDOR, range, issueType, kpiDataList,
+						cycleTimeValidationDataList, INTAKE_TO_DOR);
+				populateDataCountList(dorToDODRangeMap, issueWiseDORToDOD, range, issueType, kpiDataList,
+						cycleTimeValidationDataList, DOR_TO_DOD);
+				populateDataCountList(dodToLiveRangeMap, issueWiseDODToLive, range, issueType, kpiDataList,
+						cycleTimeValidationDataList, DOD_TO_LIVE);
+				IterationKpiValue iterationKpiValue = new IterationKpiValue(range, issueType, kpiDataList);
+				dataList.add(iterationKpiValue);
 			}
-
 		}
-		return iterationKpiValueList;
+		List<IterationKpiData> data = new ArrayList<>();
+		List<Long> overAllIntakeDor = new ArrayList<>(issueWiseIntakeToDOR.values());
+		List<Long> overAllDorDod = new ArrayList<>(issueWiseDORToDOD.values());
+		List<Long> overAllDodLive = new ArrayList<>(issueWiseDODToLive.values());
+
+		List<JiraIssueCustomHistory> overAllIntakeDorModalValues = intakeToDORRangeMap.values().stream()
+				.flatMap(innerMap -> innerMap.values().stream()).flatMap(List::stream).collect(Collectors.toList());
+
+		List<JiraIssueCustomHistory> overAllDorDodModalValues = dorToDODRangeMap.values().stream()
+				.flatMap(innerMap -> innerMap.values().stream()).flatMap(List::stream).collect(Collectors.toList());
+
+		List<JiraIssueCustomHistory> overAllDodLiveModalValues = dodToLiveRangeMap.values().stream()
+				.flatMap(innerMap -> innerMap.values().stream()).flatMap(List::stream).collect(Collectors.toList());
+
+		data.add(new IterationKpiData(INTAKE_TO_DOR, (double) Math.round(
+				ObjectUtils.defaultIfNull(AggregationUtils.averageLong(overAllIntakeDor), 0L).doubleValue() / 480),
+				ObjectUtils.defaultIfNull(overAllIntakeDor.size(), 0L).doubleValue(), null, DAY, ISSUES,
+				getIterationKpiModalValue(overAllIntakeDorModalValues, cycleTimeValidationDataList)));
+		data.add(new IterationKpiData(DOR_TO_DOD,
+				(double) Math.round(
+						ObjectUtils.defaultIfNull(AggregationUtils.averageLong(overAllDorDod), 0L).doubleValue() / 480),
+				ObjectUtils.defaultIfNull(overAllDorDod.size(), 0L).doubleValue(), null, DAY, ISSUES,
+				getIterationKpiModalValue(overAllDorDodModalValues, cycleTimeValidationDataList)));
+		data.add(new IterationKpiData(DOD_TO_LIVE, (double) Math
+				.round(ObjectUtils.defaultIfNull(AggregationUtils.averageLong(overAllDodLive), 0L).doubleValue() / 480),
+				ObjectUtils.defaultIfNull(overAllDodLive.size(), 0L).doubleValue(), null, DAY, ISSUES,
+				getIterationKpiModalValue(overAllDodLiveModalValues, cycleTimeValidationDataList)));
+		IterationKpiValue iterationKpiValue = new IterationKpiValue(CommonConstant.OVERALL, CommonConstant.OVERALL,
+				data);
+		dataList.add(iterationKpiValue);
+		return dataList;
 	}
 
 	private void populateDataCountList(Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseTypeWiseIssue,
-			Map<String, Long> issueWiseGroupValue, String range, String issueType, List<DataCount> defectsDataCountList,
+			Map<String, Long> issueWiseGroupValue, String range, String issueType,
+			List<IterationKpiData> iterationKpiDataList, List<CycleTimeValidationData> cycleTimeValidationDataList,
 			String kpiGroup) {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = rangeWiseTypeWiseIssue.get(range).get(issueType);
 		if (CollectionUtils.isNotEmpty(jiraIssueCustomHistories)) {
 			List<Long> valueList = jiraIssueCustomHistories.stream().map(JiraIssueCustomHistory::getStoryID)
 					.filter(issueWiseGroupValue::containsKey).map(issueWiseGroupValue::get)
 					.collect(Collectors.toList());
-			defectsDataCountList
-					.add(createDataCount(AggregationUtils.averageLong(valueList), kpiGroup, valueList.size()));
-		} else
-			defectsDataCountList.add(createDataCount(0L, kpiGroup, 0));
-	}
 
-	private DataCount createDataCount(Long averageValue, String kpiGroup, int size) {
-		DataCount dataCount = new DataCount();
-		dataCount.setData(String.valueOf(Math.round(ObjectUtils.defaultIfNull(averageValue, 0L).doubleValue() / 480)));
-		dataCount.setKpiGroup(kpiGroup);
-		dataCount.setSSprintName(kpiGroup);
-		HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
-		mapOfIssueCount.put("Issue Count", size);
-		dataCount.setValue(mapOfIssueCount);
-		return dataCount;
-	}
+			iterationKpiDataList.add(new IterationKpiData(kpiGroup,
+					(double) Math.round(
+							ObjectUtils.defaultIfNull(AggregationUtils.averageLong(valueList), 0L).doubleValue() / 480),
+					ObjectUtils.defaultIfNull(valueList.size(), 0L).doubleValue(), null, DAY, ISSUES,
+					getIterationKpiModalValue(jiraIssueCustomHistories, cycleTimeValidationDataList)));
 
-	/**
-	 *
-	 * @param requestTrackerId
-	 *            requestTrackerId
-	 * @param cycleTimeValidationDataList
-	 *            leadTimeList
-	 * @param excelData
-	 *            excelData
-	 */
-	private void populateExcelDataObject(String requestTrackerId,
-			List<CycleTimeValidationData> cycleTimeValidationDataList, List<KPIExcelData> excelData) {
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateCycleTime(cycleTimeValidationDataList, excelData);
+		} else {
+			iterationKpiDataList.add(new IterationKpiData(kpiGroup, 0D, 0D, null, DAY, ISSUES, null));
 		}
+	}
 
+	private List<IterationKpiModalValue> getIterationKpiModalValue(List<JiraIssueCustomHistory> modalJiraIssues,
+			List<CycleTimeValidationData> cycleTimeList) {
+		List<IterationKpiModalValue> iterationKpiDataList = new ArrayList<>();
+		Map<String, IterationKpiModalValue> dataMap = KpiDataHelper
+				.createMapOfModalObjectFromJiraHistory(modalJiraIssues, cycleTimeList);
+		for (Map.Entry<String, IterationKpiModalValue> entry : dataMap.entrySet()) {
+			iterationKpiDataList.add(dataMap.get(entry.getKey()));
+		}
+		return iterationKpiDataList;
 	}
 
 	@Override

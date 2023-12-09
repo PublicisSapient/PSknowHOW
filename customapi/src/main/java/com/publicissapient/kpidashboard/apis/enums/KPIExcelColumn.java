@@ -300,8 +300,8 @@ public enum KPIExcelColumn {
 	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
 			"Wait Time", "Total Time", "Flow Efficiency")),
 
-	CYCLE_TIME("kpi171", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Intake to DOR",
-			"DOR to DOD", "DOD to Live"));
+	CYCLE_TIME("kpi171", Arrays.asList("Issue ID", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
+			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live"));
 
 	// @formatter:on
 

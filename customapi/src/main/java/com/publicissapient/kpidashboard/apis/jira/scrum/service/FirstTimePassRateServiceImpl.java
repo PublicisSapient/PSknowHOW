@@ -350,12 +350,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
 		Set<JiraIssue> defects = new HashSet<>();
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, allDefects, defectListWoDrop);
-		defectListWoDrop.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
+		allDefects.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
 			if (i.getProjectName().equalsIgnoreCase(d.getProjectName())) {
 				defects.add(d);
 			}
 		}));
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects), defectListWoDrop);
 
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
