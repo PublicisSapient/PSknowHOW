@@ -119,8 +119,8 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 						break;
 					}
 				}
-				sendNotification(stepFaliureException);
 				setExecutionInfoInTraceLog(false);
+				sendNotification(stepFaliureException);
 			} else {
 				setExecutionInfoInTraceLog(true);
 			}
