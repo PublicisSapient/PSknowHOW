@@ -456,7 +456,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
       }
     });
-    
+
   }
 
   getChartType(kpiId) {
@@ -525,7 +525,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       /** if: for graphs, else: for other than graphs */
-      if (this.getChartType(key)) {
+      if (this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === key)?.kpiDetail?.chartType) {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
@@ -548,10 +548,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
             for (const key in filters) {
               tempObj[key] = ['Overall'];
             }
-            if(data[key]?.kpiId === 'kpi171'){
-              tempObj['filter1'] = [trendValueList[0]['filter1']];
-              tempObj['filter2'] = [trendValueList[0]['filter2']];
-            }
+
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
           } else {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
@@ -763,7 +760,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
-          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) 
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1)
           {
             optionsArr?.push(trendValueList[i]?.filter);
           }
@@ -1019,9 +1016,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.kpiTrendObject[kpiId]?.push(trendObj);
       }
       }
-     
+
   }
-  
+
   checkMaturity(item) {
     let maturity = item.maturity;
     if (maturity == undefined) {

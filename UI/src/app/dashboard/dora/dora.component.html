@@ -82,9 +82,9 @@
                       {{kpiChartData['kpi116']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}
 
-                      <app-tooltip *ngIf="isTooltip.includes('kpi116')" [data]="maturityObj['kpi116']"
-                        [toolTipTop]="toolTipTop" [showingMaturityRange]="true"
-                        (mouseleave)="showTooltip(null, false, 'kpi116')" [kpiName]="kpiData?.kpiName"></app-tooltip>
+                      <app-tooltip *ngIf="isTooltip === 'kpi116'" [data]="maturityObj['kpi116']" [toolTipTop]="toolTipTop"
+                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi116')"
+                        [kpiName]="kpiData?.kpiName"></app-tooltip>
                     </div>
                   </div>
                   <ng-template #noData1>
@@ -105,10 +105,10 @@
                       (mouseleave)="showTooltip($event, false, 'kpi118')"
                       [ngStyle]="{'background-color': kpiChartData['kpi118']?.[0]?.maturityColor}">
                       {{kpiChartData['kpi118']?.[0]?.aggregationValue}}
-                    
-                      <app-tooltip *ngIf="isTooltip.includes('kpi118')" [data]="maturityObj['kpi118']"
-                      [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi118')"
-                      [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
+
+                      <app-tooltip *ngIf="isTooltip === 'kpi118'" [data]="maturityObj['kpi118']"
+                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi118')"
+                        [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
                   </div>
                   <ng-template #noData2>
@@ -237,10 +237,10 @@
                       [ngStyle]="{'background-color': kpiChartData['kpi156']?.[0]?.maturityColor}">
                       {{kpiChartData['kpi156']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}
-                      
-                      <app-tooltip *ngIf="isTooltip.includes('kpi156')" [data]="maturityObj['kpi156']"
-                      [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi156')"
-                      [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
+
+                      <app-tooltip *ngIf="isTooltip === 'kpi156'" [data]="maturityObj['kpi156']"
+                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi156')"
+                        [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
                   </div>
                   <ng-template #noData5>
@@ -263,9 +263,9 @@
                       {{kpiChartData['kpi166']?.[0]?.aggregationValue + " " +
                       updatedConfigDataObj['kpi166']?.kpiDetail?.kpiUnit}}
 
-                      <app-tooltip *ngIf="isTooltip.includes('kpi166')" [data]="maturityObj['kpi166']"
-                        [showingMaturityRange]="true"
-                        [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
+                      <app-tooltip *ngIf="isTooltip === 'kpi166'" [data]="maturityObj['kpi166']"
+                        [showingMaturityRange]="true" [kpiName]="kpiData?.kpiName"
+                        [toolTipTop]="toolTipTop"></app-tooltip>
                     </div>
 
                   </div>
