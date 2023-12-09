@@ -157,4 +157,5 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}
 	}
+
 }
