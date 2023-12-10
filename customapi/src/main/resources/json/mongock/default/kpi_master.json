@@ -3994,16 +3994,17 @@
     "groupId": 11,
     "thresholdValue": "",
     "kanban": false,
-    "chartType": "stackedColumn",
-    "isAggregationStacks" : false ,
-    "xAxisLabel": "Range",
-    "yAxisLabel": "Days",
+    "chartType": "",
+    "yAxisLabel": "",
+    "xAxisLabel": "",
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "dropDown",
-    "boxType": "chart",
-    "calculateMaturity": false,
-    "kpiInfo" : {
-      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": true,
+    "isAggregationStacks": false,
+    "kpiSubCategory": "Flow KPIs",
+    "kpiInfo": {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live",
       "details": [
         {
           "type": "link",
@@ -4012,9 +4013,12 @@
             "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
           }
         }
-      ]
+      ],
+      "formula": null
     },
-    "kpiSubCategory": "Flow KPIs"
+    "isPositiveTrend": false,
+    "kpiBaseLine": "0",
+    "showTrend": false
   }
 
 ]

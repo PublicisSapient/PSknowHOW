@@ -14,8 +14,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.util.BacklogKpiHelper;
-import com.publicissapient.kpidashboard.common.util.DateUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.bson.types.ObjectId;
@@ -42,6 +40,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.apis.util.BacklogKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -49,9 +48,9 @@ import com.publicissapient.kpidashboard.common.model.application.CycleTime;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,6 +61,10 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 	private static final String INTAKE_TO_DOR = "Intake - DOR";
 	private static final String DOR_TO_DOD = "DOR - DOD";
 	private static final String DOD_TO_LIVE = "DOD - Live";
+	private static final String INTAKE_TO_DOR_KPI = "Intake to DOR";
+	private static final String DOR_TO_DOD_KPI = "DOR to DOD";
+	private static final String DOD_TO_LIVE_KPI = "DOD to Live";
+	private static final String LEAD_TIME_KPI = "LEAD TIME";
 	private static final String PROJECT = "project";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String SEARCH_BY_DURATION = "Duration";
@@ -250,8 +253,8 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 						cycleTime.setIntakeTime(jiraIssueCustomHistory.getCreatedDate());
 						cycleTimeValidationData.setIntakeDate(jiraIssueCustomHistory.getCreatedDate());
 						Map<String, DateTime> dodStatusDateMap = new HashMap<>();
-						List<String> liveStatus = fieldMapping.getJiraLiveStatusKPI171().stream().filter(Objects::nonNull)
-								.map(String::toLowerCase).collect(Collectors.toList());
+						List<String> liveStatus = fieldMapping.getJiraLiveStatusKPI171().stream()
+								.filter(Objects::nonNull).map(String::toLowerCase).collect(Collectors.toList());
 						List<String> dodStatus = fieldMapping.getJiraDodKPI171().stream().filter(Objects::nonNull)
 								.map(String::toLowerCase).collect(Collectors.toList());
 						String storyFirstStatus = fieldMapping.getStoryFirstStatusKPI171();
@@ -260,9 +263,10 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 
 						jiraIssueCustomHistory.getStatusUpdationLog().forEach(statusUpdateLog -> {
 							DateTime updateTime = DateTime.parse(statusUpdateLog.getUpdatedOn().toString());
-							BacklogKpiHelper.setLiveTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime,
-									liveStatus);
-							BacklogKpiHelper.setReadyTime(cycleTimeValidationData, cycleTime, statusUpdateLog, updateTime, dor);
+							BacklogKpiHelper.setLiveTime(cycleTimeValidationData, cycleTime, statusUpdateLog,
+									updateTime, liveStatus);
+							BacklogKpiHelper.setReadyTime(cycleTimeValidationData, cycleTime, statusUpdateLog,
+									updateTime, dor);
 							BacklogKpiHelper.setDODTime(statusUpdateLog, updateTime, dodStatus, storyFirstStatus,
 									dodStatusDateMap);
 						});
@@ -273,15 +277,14 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 						cycleTime.setDeliveryLocalDateTime(DateUtil.convertDateTimeToLocalDateTime(minUpdatedOn));
 						cycleTimeValidationData.setDodDate(minUpdatedOn);
 
-						String intakeToReady = KpiDataHelper.calWeekHours(cycleTime.getIntakeTime(),
-								cycleTime.getReadyTime());
-						String readyToDeliver = KpiDataHelper.calWeekHours(cycleTime.getReadyTime(),
-								cycleTime.getDeliveryTime());
-						String deliverToLive = KpiDataHelper.calWeekHours(cycleTime.getDeliveryTime(),
-								cycleTime.getLiveTime());
-						String leadTime = KpiDataHelper.calWeekHours(cycleTime.getIntakeTime(),
-								cycleTime.getLiveTime());
-
+						String intakeToReady = BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(),
+								cycleTime.getReadyTime(), INTAKE_TO_DOR_KPI, cycleTimeValidationData, null);
+						String readyToDeliver = BacklogKpiHelper.setValueInCycleTime(cycleTime.getReadyTime(),
+								cycleTime.getDeliveryTime(), DOR_TO_DOD_KPI, cycleTimeValidationData, null);
+						String deliverToLive = BacklogKpiHelper.setValueInCycleTime(cycleTime.getDeliveryTime(),
+								cycleTime.getLiveTime(), DOD_TO_LIVE_KPI, cycleTimeValidationData, null);
+						String leadTime = BacklogKpiHelper.setValueInCycleTime(cycleTime.getIntakeTime(),
+								cycleTime.getLiveTime(), LEAD_TIME_KPI, cycleTimeValidationData, null);
 						transitionExist(overAllIntakeDorTime, overAllIntakeDorModalValues, intakeDorTime,
 								intakeDorModalValues, jiraIssueCustomHistory, intakeToReady);
 						transitionExist(overAllDorDodTime, overAllDorDodModalValues, dorDodTime, dorDodModalValues,
