@@ -13,25 +13,28 @@ import { Router } from '@angular/router';
 export class NavNewComponent implements OnInit {
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
-  selectedTab:string = '';
-  selectedType:string = '';
+  selectedTab: string = '';
+  selectedType: string = '';
 
   constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) {
-    
   }
 
   ngOnInit(): void {
+    const selectedTab = window.location.hash.substring(1);
+    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
+    this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
     this.getBoardConfig();
-   
   }
 
-  getBoardConfig(){
+  getBoardConfig() {
     // const data = {"basicProjectConfigIds":["ASO Mobile App_64a4fab01734471c30843fda"]}
     // console.log(this.sharedService.getSelectedProject());
-    
-    this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
+
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
       (response) => {
         if (response.success === true) {
+          // this.service.setDashConfigData(response.data);
+          this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
           // this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
 
@@ -40,23 +43,20 @@ export class NavNewComponent implements OnInit {
               icon: index == 0 ? 'fas fa-pencil-alt' : '',
               slug: obj['boardSlug'],
               command: () => {
-                this.router.navigate(['/dashboard/'+obj['boardSlug']]);
+                this.selectedTab = obj['boardName'];
+                if (this.selectedTab !== 'unauthorized access') {
+                  console.log(this.selectedTab);
+                  this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+                }
+                this.router.navigate(['/dashboard/' + obj['boardSlug']]);
               },
             };
           });
           console.log(this.items);
-          
+
           this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
-          
-          // this.service.setDashConfigData(response.data);
-          this.sharedService.setDashConfigData(getDashConfData.data);
-          const selectedTab = window.location.hash.substring(1);
-          this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
-          this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
-          if(this.selectedTab !== 'unauthorized access'){
-            this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
-          }
           // this.processKPIListData();
+          this.sharedService.setDashConfigData(getDashConfData.data);
         }
       },
       (error) => {

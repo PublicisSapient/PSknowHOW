@@ -57,7 +57,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'iteration', pathMatch: 'full' },
       {
-        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'mydashboard', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard],
         data: {
           feature: "My Dashboard"
         }

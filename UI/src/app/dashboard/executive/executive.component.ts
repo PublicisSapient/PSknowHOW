@@ -118,10 +118,9 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     maturityTableKpiList = [];
 
     constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
-        const selectedTab = window.location.hash.substring(1);
-        this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] : 'iteration';
-
         this.subscriptions.push(this.service.onTypeOrTabRefresh.subscribe((data) => {
+            const selectedTab = data.selectedTab;
+            this.selectedTab = data.selectedType ? data.selectedType : 'iteration';
             this.loaderSonar = false;
             this.loaderZypher = false;
             this.loaderBitBucket = false;

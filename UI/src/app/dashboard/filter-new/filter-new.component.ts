@@ -45,9 +45,22 @@ export class FilterNewComponent implements OnInit {
           } else {
             this.kanban = false;
           }
-          this.getDashbaordConfig();
+          if (Object.keys(this.boardData).length) {
+            this.processBoardData(this.boardData);
+          }
         })
-    )
+    );
+
+    this.subscriptions.push(
+      this.service.globalDashConfigData.subscribe((boardData) => {
+        if (boardData) {
+          this.processBoardData(boardData);
+        } else {
+          // error
+          console.log('Problemo')
+        }
+      })
+    );
   }
 
   setSelectedType(type) {
@@ -61,22 +74,13 @@ export class FilterNewComponent implements OnInit {
     this.service.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
   }
 
-  getDashbaordConfig() {
-    if (!Object.keys(this.boardData).length) {
-      this.subscriptions.push(
-        this.service.globalDashConfigData.subscribe((boardData) => {
-          if (boardData) {
-            this.processBoardData(boardData);
-          } else {
-            // error
-            console.log('Problemo')
-          }
-        })
-      );
-    } else {
-      this.processBoardData(this.boardData);
-    }
-  }
+  // getDashbaordConfig() {
+  //   if (!Object.keys(this.boardData).length) {
+
+  //   } else {
+  //     this.processBoardData(this.boardData);
+  //   }
+  // }
 
   processBoardData(boardData) {
     this.boardData = boardData;
@@ -177,7 +181,8 @@ export class FilterNewComponent implements OnInit {
   }
 
   handlePrimaryFilterChange(event) {
-    if (event && event.length) {
+    if (event && event.length && event[0]) {
+      this.setColors(event);
       this.filterApplyData['level'] = event[0].level;
       this.filterApplyData['label'] = event[0].labelName;
       this.filterApplyData['selectedMap'] = {};
@@ -239,7 +244,6 @@ export class FilterNewComponent implements OnInit {
       } else {
         this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true);
       }
-      this.setColors(event);
     }
   }
 }
