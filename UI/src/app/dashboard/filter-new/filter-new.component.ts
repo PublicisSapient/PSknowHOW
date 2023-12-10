@@ -18,7 +18,7 @@ export class FilterNewComponent implements OnInit {
   selectedFilterData: {};
   selectedLevel: any = 'project';
   kanban: boolean = false;
-  boardData: any[] = [];
+  boardData: object = {};
   kanbanRequired: boolean = false;
   parentFilterConfig: any = {};
   primaryFilterConfig: any = {};

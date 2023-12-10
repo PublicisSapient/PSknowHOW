@@ -14,14 +14,15 @@ export class NavNewComponent implements OnInit {
   items: MenuItem[] | undefined;
   activeItem: MenuItem | undefined;
   selectedTab:string = '';
+  selectedType:string = '';
 
   constructor(private httpService: HttpService, private sharedService: SharedService, private messageService: MessageService, private router: Router) {
-    const selectedTab = window.location.hash.substring(1);
-    this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+    
   }
 
   ngOnInit(): void {
     this.getBoardConfig();
+   
   }
 
   getBoardConfig(){
@@ -49,6 +50,12 @@ export class NavNewComponent implements OnInit {
           
           // this.service.setDashConfigData(response.data);
           this.sharedService.setDashConfigData(getDashConfData.data);
+          const selectedTab = window.location.hash.substring(1);
+          this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
+          this.selectedType = this.sharedService.getSelectedType() ? this.sharedService.getSelectedType() : 'scrum';
+          if(this.selectedTab !== 'unauthorized access'){
+            this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
+          }
           // this.processKPIListData();
         }
       },
