@@ -301,4 +301,9 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 		private List<JiraIssue> epicList = new ArrayList<>();
 	}
 
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI153(), KPICode.PI_PREDICTABILITY.getKpiId());
+	}
+
 }

@@ -401,4 +401,9 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 		return calculateKpiValueForDouble(valueList, kpiName);
 	}
 
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI40(), KPICode.ISSUE_COUNT.getKpiId());
+	}
+
 }

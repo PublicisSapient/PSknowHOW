@@ -1128,7 +1128,7 @@ export class HttpService {
   }
 
   getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
 
 }

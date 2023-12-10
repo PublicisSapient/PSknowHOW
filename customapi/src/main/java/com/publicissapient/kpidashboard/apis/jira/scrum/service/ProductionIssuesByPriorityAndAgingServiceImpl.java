@@ -409,4 +409,11 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI127(),
+				KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.getKpiId());
+	}
+
 }

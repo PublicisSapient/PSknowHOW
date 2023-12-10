@@ -205,6 +205,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.SONAR_KPI_CACHE);
 		cacheService.clearCache(CommonConstant.TESTING_KPI_CACHE);
+		cacheService.clearCache(CommonConstant.JENKINS_KPI_CACHE);
 	}
 
 	/**
@@ -483,8 +484,8 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 					"jiraLiveStatusNORK", "jiraLiveStatusOTA", "jiraLiveStatusPDA", "jiraLiveStatusKPI152",
 					"jiraLiveStatusKPI151",
 
-					"excludeRCAFromKPI82", "excludeRCAFromKPI135", "excludeRCAFromKPI14", "excludeRCAFromQAKPI111",
-					"excludeRCAFromKPI133",
+					"includeRCAForKPI82", "includeRCAForKPI135", "includeRCAForKPI14", "includeRCAForQAKPI111",
+					"includeRCAForKPI133",
 
 					"resolutionTypeForRejectionKPI28", "resolutionTypeForRejectionKPI34",
 					"resolutionTypeForRejectionKPI37", "resolutionTypeForRejectionKPI35",

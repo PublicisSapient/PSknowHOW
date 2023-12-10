@@ -42,9 +42,14 @@ public class CycleTimeValidationData {
 	private String issueNumber;
 	private String url;
 	private String issueDesc;
+	private String issueType;
 	private DateTime intakeDate;
 	private DateTime dorDate;
 	private DateTime dodDate;
 	private DateTime liveDate;
+	private Long leadTime;
+	private Long intakeTime;
+	private Long dorTime;
+	private Long dodTime;
 
 }

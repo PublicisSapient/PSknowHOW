@@ -31,9 +31,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (this.data[0]['value']) {
+      if (this.data) {
         if (!this.isDrilledDown) {
-          this.data = this.data[0]['value'];
+          this.data = this.data;
           this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
         }
         this.draw(this.data);

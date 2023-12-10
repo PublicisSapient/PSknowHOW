@@ -984,14 +984,36 @@ describe('MilestoneComponent', () => {
         component.allKpiArray = [{
             kpiId: 'kpi124',
             trendValueList: [
-                { label: "l1" }
+                {
+                    "value": [
+                        {
+                            "data": "2",
+                            "value": [
+                                {
+                                    "value": 1,
+                                    "drillDown": [
+                                        {
+                                            "value": 1,
+                                            "subFilter": "Open",
+                                            "size": 5
+                                        }
+                                    ],
+                                    "subFilter": "To Do",
+                                    "size": 5
+                                },
+                            ],
+                            "kpiGroup": "KnowHOW | Developer Dashboard to show KPIs from Repos",
+                            "size": "5.0"
+                        },
+                    ]
+                }
             ]
         }];
         component.kpiSelectedFilterObj['kpi124'] = {
             filter1: ['hold', 'in progress']
         }
 
-        const spyObj = spyOn(component, 'applyAggregationLogic');
+        // const spyObj = spyOn(component, 'applyAggregationLogic');
         spyOn(component, 'getKpiChartType');
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)

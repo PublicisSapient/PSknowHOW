@@ -210,3 +210,138 @@ db.field_mapping_structure.find(
     { "fieldName" : "uploadDataKPI16" },
     { $rename: { "toggleLabelRight": "toggleLabel" } }
 );
+
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.deleteOne({
+    "fieldName" : "jiraLabelsKPI135"
+})
+
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi3" },
+  {
+    $set: {
+      "thresholdValue": "20",
+      "kpiUnit": null,
+      "chartType": null,
+      "kpiInfo.definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
+      "kpiInfo.formula":[{"lhs": "It is calculated as the sum Ideation time, Development time & Release time"}],
+      "boxType":null,
+      "kpiWidth":null,
+      "showTrend":true,
+      "kpiInfo.details": [
+              {
+                "type": "paragraph",
+                "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
+              },
+              {
+                "type": "paragraph",
+                "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
+              },
+              {
+                "type": "paragraph",
+                "value": "Release time (DOD to Live): Time taken between story completion to it going live."
+              },
+              {
+                "type": "link",
+                "kpiLinkDetail": {
+                  "text": "Detailed Information at",
+                  "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+                }
+              }
+      ],
+      "kpiFilter": "multiSelectDropDown",
+      "yAxisLabel": null,
+      "xAxisLabel": null,
+      "kpiWidth": 100,
+      "showTrend": false,
+      "boxType": "2_column",
+      "maturityRange": null,
+      "aggregationCriteria": null,
+      "lowerThresholdBG": null,
+      "upperThresholdBG": null,
+    }
+  }
+)
+db.getCollection("field_mapping_structure").deleteMany({
+    "fieldName": {
+        $in: ["thresholdValueKPI3"]
+    }
+});
+
+db.kpi_master.deleteOne({ "kpiId": "kpi171" });
+// Update document with "fieldName" equal to "jiraDorKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "jiraDorKPI171" }, { $set: { "fieldName": "jiraDorKPI3" } });
+
+// Update document with "fieldName" equal to "jiraDodKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "jiraDodKPI171" }, { $set: { "fieldName": "jiraDodKPI3" } });
+
+// Update document with "fieldName" equal to "storyFirstStatusKPI3"
+db.field_mapping_structure.updateOne({ "fieldName": "storyFirstStatusKPI171" }, { $set: { "fieldName": "storyFirstStatusKPI3" } });
+
+// Delete documents where "fieldName" is in the specified list
+db.field_mapping_structure.deleteMany({
+  "fieldName": {
+    "$in": ["jiraLiveStatusKPI171", "jiraIssueTypeKPI171"]
+  }
+});
+
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi116" },
+  {
+    $set: {
+      "maturityRange": [
+        "-50",
+        "50-30",
+        "30-20",
+        "20-10",
+        "10-"
+      ],
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi118" },
+  {
+    $set: {
+      "maturityRange": [
+        "-1",
+        "1-2",
+        "2-5",
+        "5-10",
+        "10-"
+      ],
+      "aggregationCircleCriteria" : "average",
+      "maturityLevel": null
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi156" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi166" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": [],
+      "maturityLevel": [],
+      "kpiInfo.maturityLevels": []
+    }
+  }
+);
+

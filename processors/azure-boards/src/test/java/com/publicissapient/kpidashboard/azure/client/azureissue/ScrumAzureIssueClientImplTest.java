@@ -248,7 +248,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -278,7 +278,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
-		fieldMapping.setJiraDorKPI3(Arrays.asList("In Progress"));
+		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
@@ -289,7 +289,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 		fieldMapping.setStoryFirstStatus("In Analysis");
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
@@ -337,7 +337,7 @@ public class ScrumAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -379,7 +379,7 @@ public class ScrumAzureIssueClientImplTest {
 		fieldMapping.setEpicName("customfield_14502");
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");

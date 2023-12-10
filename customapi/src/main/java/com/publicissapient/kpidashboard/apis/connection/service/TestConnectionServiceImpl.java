@@ -561,6 +561,9 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		if (Constant.TOOL_JIRA.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
 			return connection.getPatOAuthToken();
 		}
+		if (Constant.TOOL_ZEPHYR.equalsIgnoreCase(toolName) && connection.isBearerToken()) {
+			return connection.getPatOAuthToken();
+		}
 		if (Constant.REPO_TOOLS.equalsIgnoreCase(toolName) &&
 				StringUtils.isNotEmpty(connection.getAccessToken())) {
 			return connection.getAccessToken();

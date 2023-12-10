@@ -619,9 +619,12 @@ export class IterationComponent implements OnInit, OnDestroy {
         for (let i = 0; i < filters?.length; i++) {
           preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
         }
-        this.kpiChartData[kpiId] = [...preAggregatedValues];
+        if(preAggregatedValues[0]?.hasOwnProperty('value')){
+          this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+        }else{
+          this.kpiChartData[kpiId] = [...preAggregatedValues];
+        }
       } else {
-
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
     }

@@ -95,6 +95,15 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  navigateToHomePage() {
+    const previousSelectedTab = this.router.url.split('/')[2];
+    if (previousSelectedTab === 'Config' || previousSelectedTab === 'Help') {
+      this.sharedService.setEmptyFilter();
+      this.sharedService.setSelectedType('scrum');
+      this.router.navigateByUrl(`/dashboard/iteration`);
+    }
+  }
+
   getNotification() {
     const response = {
       data: [

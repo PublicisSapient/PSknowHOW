@@ -56,4 +56,29 @@ public final class MongockUtil {
 			mongoTemplate.insert(documentList, collectionName);
 		}
 	}
+
+	/**
+	 * Method to create a fieldMappingStructure
+	 * 
+	 * @param fieldName
+	 *            fieldName
+	 * @param fieldLabel
+	 *            fieldLabel
+	 * @param section
+	 *            section
+	 * @param fieldCategory
+	 *            fieldCategory
+	 * @param fieldType
+	 *            fieldType
+	 * @param tooltipDefinition
+	 *            tooltipDefinition
+	 * @return Document
+	 */
+	public static Document createFieldMapping(String fieldName, String fieldLabel, String section, String fieldCategory,
+			String fieldType, String tooltipDefinition) {
+		return new Document().append("fieldName", fieldName).append("fieldLabel", fieldLabel).append("section", section)
+				.append("fieldType", fieldType).append("fieldCategory", fieldCategory)
+				.append("tooltip", new Document("definition", tooltipDefinition));
+	}
+
 }
