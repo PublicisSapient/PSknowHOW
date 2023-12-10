@@ -58,7 +58,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   sharedObject;
   kpiCommentsCountObj: object = {};
   kpiSpecificLoader = [];
-  durationFilter = 'Past 2 Weeks';
+  durationFilter = 'Past 6 Months';
   kpiPart1: any = []
   kpiPart2: any = []
   leadTime: object;
@@ -260,11 +260,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.loaderJiraArray.push(element.kpiId);
     });
 
-    const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
-    if (kpi3) (
-      kpi3['filterDuration'] = {
-        duration: 'WEEKS',
-        value: 2
+    const kpi171 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi171');
+    if (kpi171) (
+      kpi171['filterDuration'] = {
+        duration: 'MONTHS',
+        value: 6
       });
 
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
@@ -302,13 +302,13 @@ export class BacklogComponent implements OnInit, OnDestroy {
             }
           }
 
-          if (localVariable['kpi3']) {
-            if (localVariable['kpi3'].trendValueList && localVariable['kpi3'].xAxisValues) {
-              localVariable['kpi3'].trendValueList.forEach(trendElem => {
+          if (localVariable['kpi171']) {
+            if (localVariable['kpi171'].trendValueList && localVariable['kpi171'].xAxisValues) {
+              localVariable['kpi171'].trendValueList.forEach(trendElem => {
                 trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi3'].xAxisValues.length === 5) {
+                  if (valElem.value.length === 5 && localVariable['kpi171'].xAxisValues.length === 5) {
                     valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi3'].xAxisValues[index];
+                      element['xAxisTick'] = localVariable['kpi171'].xAxisValues[index];
                     });
                   }
                 });
@@ -566,8 +566,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
-            if (data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Duration') {
-              tempObj[prop] = "Past 2 Weeks";
+            if (data[key]?.kpiId === 'kpi171' && filters[prop]?.filterType === 'Duration') {
+              tempObj[prop] = "Past 6 Months";
             }
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
@@ -631,8 +631,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
       } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
         !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
       )) {
-        if (kpiId === 'kpi3') {
-          this.getkpi3Data(kpiId, trendValueList);
+        if (kpiId === 'kpi171') {
+          this.getkpi171Data(kpiId, trendValueList);
         } else {
           this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
         }
@@ -657,7 +657,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // }
   }
 
-  getkpi3Data(kpiId, trendValueList) {
+  getkpi171Data(kpiId, trendValueList) {
     let durationChanged = false;
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
@@ -672,20 +672,20 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.allKpiArray.splice(idx, 1);
       }
 
-      this.kpiSpecificLoader.push('kpi3');
-      const kpi3Payload = JSON.parse(JSON.stringify(this.kpiJira));
-      const kpi3 = kpi3Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi3')[0];
-      kpi3['filterDuration'] = {
+      this.kpiSpecificLoader.push('kpi171');
+      const kpi171Payload = JSON.parse(JSON.stringify(this.kpiJira));
+      const kpi171 = kpi171Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi171')[0];
+      kpi171['filterDuration'] = {
         duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
         value: !isNaN(+this.durationFilter.split(' ')[1]) ? +this.durationFilter.split(' ')[1] : 1
       };
 
-      kpi3Payload.kpiList = [kpi3];
+      kpi171Payload.kpiList = [kpi171];
 
-      this.httpService.postKpi(kpi3Payload, 'jira').subscribe(data => {
-        const kpi3Data = data.find(kpi => kpi.kpiId === kpiId);
-        this.allKpiArray.push(kpi3Data);
-        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi3Data.trendValueList)));
+      this.httpService.postKpi(kpi171Payload, 'jira').subscribe(data => {
+        const kpi171Data = data.find(kpi => kpi.kpiId === kpiId);
+        this.allKpiArray.push(kpi171Data);
+        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi171Data.trendValueList)));
         this.kpiSpecificLoader.pop();
       });
 
@@ -697,7 +697,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     let filters = this.kpiSelectedFilterObj[kpiId];
-    if (kpiId === 'kpi3') {
+    if (kpiId === 'kpi171') {
       const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter2') ? this.kpiSelectedFilterObj[kpiId]['filter2'] : ['Overall'];
       filters = {
         filter1: issueFilter
@@ -722,7 +722,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
     if (preAggregatedValues?.length > 1) {
 
-      if (kpiId === 'kpi3') {
+      if (kpiId === 'kpi171') {
         //calculate number of days for lead time
         let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
         kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
