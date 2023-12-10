@@ -81,7 +81,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return 0L;
+		return null;
 	}
 
 	@Override

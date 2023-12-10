@@ -131,11 +131,11 @@ public class CycleTimeServiceImplTest {
 	}
 
 	@Test
-	public void testFetchKPIDataFromDb_NullData() throws ApplicationException {
+	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		List<Node> leafNodeList = new ArrayList<>();
 		Map<String, Object> sprintDataListMap = cycleTimeService.fetchKPIDataFromDb(leafNodeList,
-				LocalDate.now().minusMonths(6).toString(), LocalDate.now().toString(), kpiRequest);
-		assertEquals(0, sprintDataListMap.size());
+				LocalDate.now().minusMonths(2).toString(), LocalDate.now().toString(), kpiRequest);
+		assertEquals(1, sprintDataListMap.size());
 	}
 
 	//@Test
