@@ -109,12 +109,12 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
         this.colorObj = x;
-       this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
+        this.trendBoxColorObj = { ...x };
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+        }
       }
     }));
 
@@ -397,7 +397,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   sortAlphabetically(objArray) {
     if (objArray && objArray?.length > 1) {
-      objArray?.sort((a, b) =>  a?.data?.localeCompare(b?.data) );
+      objArray?.sort((a, b) => a?.data?.localeCompare(b?.data));
     }
     return objArray;
   }
@@ -418,31 +418,31 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.kpiChartData[kpiId] = this.helperService.applyAggregationLogic(tempArr, aggregationType, this.tooltip.percentile);
         }
       } else {
-        if(Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1){
+        if (Object.values(this.kpiSelectedFilterObj[kpiId]).length === 1) {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == Object.values(this.kpiSelectedFilterObj[kpiId])[0])[0]?.value;
-      }else{
+        } else {
           this.kpiChartData[kpiId] = trendValueList?.filter(x => x['filter'] == 'Overall')[0]?.value;
-      }
+        }
       }
     } else if ((this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) || (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2'))) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
-        const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'] ;
-        let preAggregatedValues = [];
-        for (let i = 0; i < filters?.length; i++) {
-          if(Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
-            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
-          }else{
-            preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
-          }
+      const filters = this.kpiSelectedFilterObj[kpiId]['filter1'] || this.kpiSelectedFilterObj[kpiId]['filter2'];
+      const filter2 = this.kpiSelectedFilterObj[kpiId]['filter2'];
+      let preAggregatedValues = [];
+      for (let i = 0; i < filters?.length; i++) {
+        if (Object.keys(this.kpiSelectedFilterObj[kpiId]).length === 1) {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] || x['filter2'] == filters[i])];
+        } else {
+          preAggregatedValues = [...preAggregatedValues, ...(trendValueList['value'] ? trendValueList['value'] : trendValueList)?.filter(x => x['filter1'] == filters[i] && x['filter2'] == filter2[i])];
         }
-        this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+      }
+      this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
     }
     else {
       if (trendValueList?.length > 0) {
         this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
-      } else if(trendValueList?.hasOwnProperty('value')){
+      } else if (trendValueList?.hasOwnProperty('value')) {
         this.kpiChartData[kpiId] = [...trendValueList?.value];
-      }else{
+      } else {
         this.kpiChartData[kpiId] = [];
       }
 
@@ -760,8 +760,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
-          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1)
-          {
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) {
             optionsArr?.push(trendValueList[i]?.filter);
           }
         }
@@ -810,7 +809,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   handleSelectedOption(event, kpi) {
     this.kpiSelectedFilterObj['action'] = 'update'
-    const selectedFilterBackup =  this.kpiSelectedFilterObj[kpi?.kpiId];
+    const selectedFilterBackup = this.kpiSelectedFilterObj[kpi?.kpiId];
     this.kpiSelectedFilterObj[kpi?.kpiId] = {};
     /** When we have single dropdown */
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
@@ -825,14 +824,14 @@ export class BacklogComponent implements OnInit, OnDestroy {
         }
       }
       /** When we have multi dropdown */
-    } else if(event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')){
+    } else if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !Array.isArray(selectedFilterBackup) && selectedFilterBackup.hasOwnProperty('filter2')) {
       const selectedFilter = {};
       for (const key in event) {
-         const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
-         selectedFilter[key] = updatedFilter;
+        const updatedFilter = typeof event[key] === 'string' ? [event[key]] : [...event[key]];
+        selectedFilter[key] = updatedFilter;
       }
-      this.kpiSelectedFilterObj[kpi?.kpiId] = {...selectedFilterBackup,...selectedFilter};
-    }else {
+      this.kpiSelectedFilterObj[kpi?.kpiId] = { ...selectedFilterBackup, ...selectedFilter };
+    } else {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
@@ -916,7 +915,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
             aggregatedArr[0].data[idx]['value1'] += arr[i].data[j]['value1'];
           }
           if (aggregatedArr[0]?.data[idx]?.hasOwnProperty('modalValues') && aggregatedArr[0]?.data[idx]?.modalValues != null) {
-            aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ...arr[i]?.data[j]['modalValues']];
+            if (arr[i]?.data[j]['modalValues']) {
+              aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues'], ...arr[i]?.data[j]['modalValues']];
+            } else {
+              aggregatedArr[0].data[idx]['modalValues'] = [...aggregatedArr[0]?.data[idx]['modalValues']];
+            }
           }
         }
       }
@@ -998,24 +1001,24 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.activeIndex = event.index;
   }
 
-  createTrendData(kpiId){
-    const kpiDetail = this.configGlobalData.find(details=>details.kpiId == kpiId)
+  createTrendData(kpiId) {
+    const kpiDetail = this.configGlobalData.find(details => details.kpiId == kpiId)
     const trendingList = this.kpiChartData[kpiId];
-      if(trendingList?.length){
-        this.kpiTrendObject[kpiId] = [];
-        if(trendingList[0]?.value?.length > 0 && kpiDetail){
-          let trendObj = {};
-          const [latest, trend,unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
-          trendObj = {
-              "hierarchyName": trendingList[0]?.data,
-              "trend": trend,
-              "maturity":'M'+trendingList[0]?.maturity,
-              "maturityValue":trendingList[0]?.maturityValue,
-              "kpiUnit" : unit
-          };
-          this.kpiTrendObject[kpiId]?.push(trendObj);
+    if (trendingList?.length) {
+      this.kpiTrendObject[kpiId] = [];
+      if (trendingList[0]?.value?.length > 0 && kpiDetail) {
+        let trendObj = {};
+        const [latest, trend, unit] = this.checkLatestAndTrendValue(kpiDetail, trendingList[0]);
+        trendObj = {
+          "hierarchyName": trendingList[0]?.data,
+          "trend": trend,
+          "maturity": 'M' + trendingList[0]?.maturity,
+          "maturityValue": trendingList[0]?.maturityValue,
+          "kpiUnit": unit
+        };
+        this.kpiTrendObject[kpiId]?.push(trendObj);
       }
-      }
+    }
 
   }
 
@@ -1033,7 +1036,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     } else {
       maturity = '--';
     }
-    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M'+maturity : maturity;
+    maturity = maturity != 'NA' && maturity != '--' && maturity != '-' ? 'M' + maturity : maturity;
     return maturity;
   }
 
