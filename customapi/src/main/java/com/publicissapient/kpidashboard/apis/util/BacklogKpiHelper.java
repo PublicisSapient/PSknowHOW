@@ -88,20 +88,21 @@ public final class BacklogKpiHelper {
 
 	/**
 	 * sets jira issue by closed date and issue type
-	 *  @param rangeWiseJiraIssuesMap
+	 * 
+	 * @param rangeWiseJiraIssuesMap
 	 *            map of jira issues by data points
 	 * @param issueCustomHistory
 	 *            jira issue custom history
 	 * @param closedDate
- *            closed date of jira issue
+	 *            closed date of jira issue
 	 * @param monthRangeMap
 	 * @return
 	 */
 	public static boolean setRangeWiseJiraIssuesMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap,
 			JiraIssueCustomHistory issueCustomHistory, LocalDateTime closedDate, Map<Long, String> monthRangeMap) {
-		AtomicBoolean addedToMap= new AtomicBoolean(false);
-		if(ObjectUtils.isNotEmpty(closedDate)) {
+		AtomicBoolean addedToMap = new AtomicBoolean(false);
+		if (ObjectUtils.isNotEmpty(closedDate)) {
 			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(closedDate.toString()), LocalDate.now());
 			monthRangeMap.forEach((noOfDay, range) -> {
 				if (noOfDay > daysBetween) {
@@ -135,8 +136,8 @@ public final class BacklogKpiHelper {
 		}
 	}
 
-	public static void setDODTime(JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dodStatus, String storyFirstStatus,
-			Map<String, DateTime> dodStatusDateMap) {
+	public static void setDODTime(JiraHistoryChangeLog statusUpdateLog, DateTime updatedOn, List<String> dodStatus,
+			String storyFirstStatus, Map<String, DateTime> dodStatusDateMap) {
 		// reopen sceneario
 		if (CollectionUtils.isNotEmpty(dodStatus) && statusUpdateLog.getChangedFrom() != null
 				&& dodStatus.contains(statusUpdateLog.getChangedFrom().toLowerCase())
@@ -151,34 +152,30 @@ public final class BacklogKpiHelper {
 		}
 	}
 
-	public static boolean setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
-											  CycleTimeValidationData cycleTimeValidationData, Set<String> issueTypes) {
-		boolean inValidation= false;
+	public static String setValueInCycleTime(DateTime startTime, DateTime endTime, String level,
+			CycleTimeValidationData cycleTimeValidationData, Set<String> issueTypes) {
 		String weekHours = KpiDataHelper.calWeekHours(startTime, endTime);
 		if (!weekHours.equalsIgnoreCase(Constant.NOT_AVAILABLE)) {
-			issueTypes.add(cycleTimeValidationData.getIssueType());
+			if (issueTypes != null)
+				issueTypes.add(cycleTimeValidationData.getIssueType());
 			long timeInDays = KpiDataHelper.calculateTimeInDays(Long.parseLong(weekHours));
 			switch (level) {
 			case INTAKE_TO_DOR:
 				cycleTimeValidationData.setIntakeTime(timeInDays);
-				inValidation= true;
 				break;
 
 			case DOR_TO_DOD:
 				cycleTimeValidationData.setDorTime(timeInDays);
-				inValidation= true;
 				break;
 
 			case DOD_TO_LIVE:
 				cycleTimeValidationData.setDodTime(timeInDays);
-				inValidation= true;
 				break;
 
 			case LEAD_TIME:
 				cycleTimeValidationData.setLeadTime(timeInDays);
-				inValidation=true;
 			}
 		}
-		return inValidation;
+		return weekHours;
 	}
 }

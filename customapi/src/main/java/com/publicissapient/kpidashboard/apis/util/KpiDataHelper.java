@@ -76,7 +76,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static org.apache.commons.lang3.ObjectUtils.*;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 /**
  * The class contains methods for helping kpi to prepare data

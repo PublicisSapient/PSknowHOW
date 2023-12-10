@@ -60,7 +60,7 @@ public class CycleTime {
 				.append("groupId", 11).append("thresholdValue", "").append("kanban", false)
 				.append("chartType", "")
 				.append("yAxisLabel", "").append("xAxisLabel", "").append("isAdditionalfFilterSupport", false)
-				.append("kpiFilter", "dropDown").append("boxType", "2_column").append("calculateMaturity", false)
+				.append("kpiFilter", "multiSelectDropDown").append("boxType", "2_column").append("calculateMaturity", false)
 				.append("kpiInfo.definition",
 						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
 				.append("kpiInfo.formula", null)
