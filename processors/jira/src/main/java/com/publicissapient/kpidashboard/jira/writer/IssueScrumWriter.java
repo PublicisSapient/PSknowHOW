@@ -75,7 +75,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	 */
 	@Override
 	public void write(List<? extends CompositeResult> compositeResults) throws Exception {
-		List<JiraIssue> jiraIssues = new ArrayList<>();
+		Set<JiraIssue> jiraIssues = new HashSet<>();
 		List<JiraIssueCustomHistory> jiraHistoryItems = new ArrayList<>();
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
@@ -117,7 +117,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 	}
 
-	private void writeJiraItem(List<JiraIssue> jiraItems) {
+	private void writeJiraItem(Set<JiraIssue> jiraItems) {
 		log.info("Writing issues to Jira_Issue Collection");
 		jiraIssueRepository.saveAll(jiraItems);
 	}

@@ -151,7 +151,7 @@ public class JiraCommonService {
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();
-				BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+			 BufferedReader inReader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
 			int cp;
 			while ((cp = inReader.read()) != -1) {
 				sb.append((char) cp);
@@ -160,7 +160,6 @@ public class JiraCommonService {
 		} catch (IOException ie) {
 			log.error("Read exception when connecting to server {}", ie);
 			request.disconnect();
-			throw ie;
 		}
 		return sb.toString();
 	}
@@ -337,8 +336,7 @@ public class JiraCommonService {
 		} else {
 			try {
 				String query = "updatedDate>='" + deltaDate + "' order by updatedDate asc";
-				CustomAsynchronousIssueRestClient issueRestClient = client.getCustomIssueClient();
-				Promise<SearchResult> promisedRs = issueRestClient.searchBoardIssue(boardId, query,
+				Promise<SearchResult> promisedRs = client.getCustomIssueClient().searchBoardIssue(boardId, query,
 						jiraProcessorConfig.getPageSize(), pageStart, JiraConstants.ISSUE_FIELD_SET);
 				searchResult = promisedRs.claim();
 				if (searchResult != null) {
