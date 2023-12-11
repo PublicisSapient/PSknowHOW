@@ -1304,7 +1304,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   showExecutionDate() {
     this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
     if (this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null) {
-      if (this.selectedProjectLastSyncDetails.executionSuccess && this.selectedProjectLastSyncDetails.executionEndedAt) {
+      if (this.selectedProjectLastSyncDetails.executionSuccess && this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
         this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
         this.selectedProjectLastSyncStatus = "SUCCESS";
       } else {
@@ -1312,13 +1312,13 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
           this.selectedProjectLastSyncStatus = "FAILURE";
         } else {
-          this.selectedProjectLastSyncStatus = "";
           this.selectedProjectLastSyncStatus = "NA";
+          this.selectedProjectLastSyncDate = "";
         }
       }
     } else {
-      this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
+      this.selectedProjectLastSyncDate = "";
     }
     this.fetchActiveIterationStatus();
   }

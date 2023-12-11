@@ -302,13 +302,13 @@ export class BacklogComponent implements OnInit, OnDestroy {
             }
           }
 
-          if (localVariable['kpi171']) {
-            if (localVariable['kpi171'].trendValueList && localVariable['kpi171'].xAxisValues) {
-              localVariable['kpi171'].trendValueList.forEach(trendElem => {
+          if (localVariable['kpi3']) {
+            if (localVariable['kpi3'].trendValueList && localVariable['kpi3'].xAxisValues) {
+              localVariable['kpi3'].trendValueList.forEach(trendElem => {
                 trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi171'].xAxisValues.length === 5) {
+                  if (valElem.value.length === 5 && localVariable['kpi3'].xAxisValues.length === 5) {
                     valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi171'].xAxisValues[index];
+                      element['xAxisTick'] = localVariable['kpi3'].xAxisValues[index];
                     });
                   }
                 });
