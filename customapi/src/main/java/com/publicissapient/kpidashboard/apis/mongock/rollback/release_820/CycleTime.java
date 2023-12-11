@@ -36,6 +36,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * 
  * @author shi6
  */
+@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_cycle_time", order = "08206", author = "shi6", systemVersion = "8.2.0")
 public class CycleTime {
 	private final MongoTemplate mongoTemplate;

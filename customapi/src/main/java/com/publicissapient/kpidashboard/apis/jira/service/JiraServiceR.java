@@ -316,7 +316,7 @@ public class JiraServiceR {
 	}
 
 	private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-		return kpiList.size() != 1;
+		return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi171");
 	}
 
 	public void fetchSprintDetails(String[] sprintId) {
