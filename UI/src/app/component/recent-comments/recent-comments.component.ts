@@ -21,14 +21,16 @@ export class RecentCommentsComponent implements OnInit {
     this.showSpinner = true;
     this.displayCommentModal = true;
     console.log("123");
+    let filterApplyData:object = {};
+    let kpiList = [];
     this.sharedService.passDataToDashboard.subscribe((res) => {
-      console.log(res);
-      
+      filterApplyData = res.filterApplyData;
+      kpiList = [...res.masterData.kpiList];
     }, error => {
       console.log(error);
       
     })
-    console.log(this.sharedService.sharedObject);
+    // console.log(this.sharedService.sharedObject);
     
     // this.sharedService.passDataToDashboard.
     // let reqObj = {
@@ -37,12 +39,12 @@ export class RecentCommentsComponent implements OnInit {
     //   "kpiIds": '',
     //   "nodes": []
     // }
-    // let reqObj = {
-    //   "level": this.filterApplyData?.['level'],
-    //   "nodeChildId": this.filterApplyData?.['selectedMap']['sprint']?.[0] || this.filterApplyData?.['selectedMap']['release']?.[0] || "",
-    //   "kpiIds": this.showKpisList?.map((item) => item.kpiId),
-    //   "nodes": []
-    // }
+    let reqObj = {
+      "level": filterApplyData?.['level'],
+      "nodeChildId": filterApplyData?.['selectedMap']['sprint']?.[0] || filterApplyData?.['selectedMap']['release']?.[0] || "",
+      "kpiIds": kpiList?.map((item) => item.kpiId),
+      "nodes": []
+    }
 
     // this.showKpisList.forEach(x => {
     //   this.kpiObj[x.kpiId] = x.kpiName;
