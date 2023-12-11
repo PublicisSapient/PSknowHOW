@@ -1203,7 +1203,7 @@ public abstract class ToolsKPIService<R, S> {
 		if (StringUtils.isEmpty(fieldValue)) {
 			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
 			thresholdValue = masterList.stream().filter(kpi -> kpi.getKpiId().equalsIgnoreCase(kpiId))
-					.mapToDouble(KpiMaster::getThresholdValue).sum();
+					.mapToDouble(kpi -> kpi.getThresholdValue() != null ? kpi.getThresholdValue() : 0.0).sum();
 		} else {
 			thresholdValue = Double.valueOf(fieldValue);
 		}
