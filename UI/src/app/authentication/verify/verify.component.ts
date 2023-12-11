@@ -24,15 +24,11 @@ export class VerifyComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(){
     let authToken:string = '';
-    let redirect_uri:string = '';
-    this.route.queryParams.subscribe(params => {
-      authToken = params['authToken'];
-      redirect_uri = params['redirect_uri'];
-    });
-    this.validateUser(authToken, redirect_uri);
+    authToken = this.sharedService.getAuthToken()
+    this.validateUser(authToken);
   }
 
-  validateUser(authToken, redirect_uri){
+  validateUser(authToken){
     let obj = {
       'resource': environment.RESOURCE,
       'authToken': authToken

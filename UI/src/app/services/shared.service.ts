@@ -55,6 +55,7 @@ export class SharedService {
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
+  private authToken = '';
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -375,6 +376,14 @@ export class SharedService {
 
   setMaturiyTableLoader(value){
     this.maturityTableLoader.next(value)
+  }
+
+  setAuthToken(value){
+    this.authToken = value;
+  }
+
+  getAuthToken(){
+    return this.authToken;
   }
 }
 
