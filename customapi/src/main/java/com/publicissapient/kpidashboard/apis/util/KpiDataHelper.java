@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -75,8 +77,6 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 /**
  * The class contains methods for helping kpi to prepare data
@@ -777,20 +777,35 @@ public final class KpiDataHelper {
 				iterationKpiModalValue.setIssueType(customHistory.getStoryType());
 				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
 				iterationKpiModalValue.setDescription(customHistory.getDescription());
-				if(isNotEmpty(cycleTimeValidationData.getIntakeTime())) {
-					iterationKpiModalValue.setIntakeToDOR(CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getIntakeTime())));
-					iterationKpiModalValue.setDorDate(DateUtil.dateTimeConverter(cycleTimeValidationData.getDorDate().toString().split("T")[0],
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				if (isNotEmpty(cycleTimeValidationData.getIntakeTime())) {
+					iterationKpiModalValue.setIntakeToDOR(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getIntakeTime())));
+					iterationKpiModalValue.setDorDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDorDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				} else {
+					iterationKpiModalValue.setIntakeToDOR(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorDate(Constant.NOT_AVAILABLE);
 				}
-				if(isNotEmpty(cycleTimeValidationData.getDorTime())) {
-					iterationKpiModalValue.setDodDate(DateUtil.dateTimeConverter(cycleTimeValidationData.getDodDate().toString().split("T")[0],
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-					iterationKpiModalValue.setDorToDod(CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDorTime())));
+				if (isNotEmpty(cycleTimeValidationData.getDorTime())) {
+					iterationKpiModalValue.setDodDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDodDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDorToDod(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDorTime())));
+				} else {
+					iterationKpiModalValue.setDodDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorToDod(Constant.NOT_AVAILABLE);
 				}
-				if(isNotEmpty(cycleTimeValidationData.getDodTime())) {
-					iterationKpiModalValue.setLiveDate(DateUtil.dateTimeConverter(cycleTimeValidationData.getLiveDate().toString().split("T")[0],
-							DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
-					iterationKpiModalValue.setDodToLive(CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDodTime())));
+				if (isNotEmpty(cycleTimeValidationData.getDodTime())) {
+					iterationKpiModalValue.setLiveDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getLiveDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDodToLive(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDodTime())));
+				} else {
+					iterationKpiModalValue.setLiveDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDodToLive(Constant.NOT_AVAILABLE);
 				}
 				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
 			}
