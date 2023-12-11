@@ -174,6 +174,10 @@ public final class BacklogKpiHelper {
 
 			case LEAD_TIME:
 				cycleTimeValidationData.setLeadTime(timeInDays);
+				break;
+
+			default:
+
 			}
 		}
 		return weekHours;

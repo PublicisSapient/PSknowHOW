@@ -68,7 +68,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 	private static final String PROJECT = "project";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Issue Type";
 	private static final String SEARCH_BY_DURATION = "Duration";
-	public static final String DAYS = "days";
+	public static final String DAYS = "d";
 	public static final String ISSUES = "issues";
 	@Autowired
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;

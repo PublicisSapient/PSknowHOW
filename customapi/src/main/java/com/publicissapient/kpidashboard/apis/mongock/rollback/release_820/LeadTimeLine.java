@@ -37,6 +37,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * 
  * @author shi6
  */
+@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_lead_time_line", order = "08205", author = "shi6", systemVersion = "8.2.0")
 public class LeadTimeLine {
 	private final MongoTemplate mongoTemplate;
