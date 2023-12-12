@@ -104,7 +104,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		json.put(USER_NAME, username);
 		if (Objects.nonNull(userinfoKnowHow)) {
-			String email = authentication == null ? userinfoKnowHow.getEmailAddress() : authentication.getEmail();
+			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase() : authentication.getEmail().toLowerCase();
 			json.put(USER_EMAIL, email);
 			json.put(USER_ID, userinfoKnowHow.getId().toString());
 			json.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
@@ -159,7 +159,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		centralUserInfo.setAuthType(centralUserInfoDTO.getAuthType());
 		centralUserInfo.setAuthorities(Collections.singletonList(Constant.ROLE_VIEWER));
 		centralUserInfo.setProjectsAccess(Collections.emptyList());
-		centralUserInfo.setEmailAddress(centralUserInfoDTO.getEmail());
+		centralUserInfo.setEmailAddress(centralUserInfoDTO.getEmail().toLowerCase());
 		centralUserInfo.setFirstName(centralUserInfoDTO.getFirstName());
 		centralUserInfo.setLastName(centralUserInfoDTO.getLastName());
 		centralUserInfo.setDisplayName(centralUserInfoDTO.getDisplayName());

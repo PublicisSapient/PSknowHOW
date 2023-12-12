@@ -170,7 +170,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			Authentication auth = authMap.get(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 				if (!auth.isApproved()) {
 					nonApprovedUserList.add(userInfo);
 				}
@@ -363,7 +363,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType()
 				&& userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
-					userInfo.getEmailAddress());
+					userInfo.getEmailAddress().toLowerCase());
 			existingUserInfo = save(defaultUserInfo);
 		}
 		return existingUserInfo;
@@ -447,7 +447,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (AuthType.STANDARD == userInfo.getAuthType()) {
 			Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 			}
 		}
 	}
@@ -493,7 +493,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
 			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress())
+					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
 					.projectsAccess(userInfo.getProjectsAccess()).build();
 		}
 		return userInfoDTO;

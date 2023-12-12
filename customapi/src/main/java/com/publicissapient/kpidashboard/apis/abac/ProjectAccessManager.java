@@ -390,13 +390,13 @@ public class ProjectAccessManager {
 	 */
 	private String getEmailAddress(AccessRequest accessRequestsData) {
 		String email = "";
-		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress();
+		email = getUserInfo(accessRequestsData.getUsername()).getEmailAddress().toLowerCase();
 		if (StringUtils.isEmpty(email)) {
 			Authentication authentication = authenticationRepository.findByUsername(accessRequestsData.getUsername());
 			if (null == authentication) {
 				log.error("User {} Does not Exist in Authentication Collection", accessRequestsData.getUsername());
 			} else {
-				email = authentication.getEmail();
+				email = authentication.getEmail().toLowerCase();
 			}
 		}
 		return email;
