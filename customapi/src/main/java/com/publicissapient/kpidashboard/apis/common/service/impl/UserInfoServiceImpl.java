@@ -44,16 +44,21 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -74,6 +79,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
@@ -85,7 +91,6 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Implementation of {@link UserInfoService}.
@@ -128,6 +133,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private UserTokenReopository userTokenReopository;
+
+	final ModelMapper modelMapper = new ModelMapper();
 
 	@Override
 	public Collection<GrantedAuthority> getAuthorities(String username) {
@@ -546,7 +553,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public UserInfo getCentralAuthUserInfo(String username , String token) {
+	public UserInfo getCentralAuthUserInfo(String username, String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
@@ -570,12 +577,42 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
+	@Override
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchUserDetailsEndPoint(), username);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				CentralUserInfoDTO centralUserInfo = modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
+				return centralUserInfo;
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return new CentralUserInfoDTO();
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
 
 	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
-		//String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
-			//	"/api/userlogout/" + token);
+		// String fetchUserUrl =
+		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
+		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
