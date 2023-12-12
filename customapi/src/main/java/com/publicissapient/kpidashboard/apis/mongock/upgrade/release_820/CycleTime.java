@@ -55,6 +55,7 @@ public class CycleTime {
 	}
 
 	public void addToKpiMaster() {
+
 		Document kpiDocument = new Document().append("kpiId", "kpi171").append("kpiName", "Cycle Time")
 				.append("maxValue", "").append("kpiUnit", "Days").append("isDeleted", "False")
 				.append("defaultOrder", 12).append("kpiCategory", "Backlog").append("kpiSource", "Jira")
@@ -62,12 +63,11 @@ public class CycleTime {
 				.append("chartType", "")
 				.append("yAxisLabel", "").append("xAxisLabel", "").append("isAdditionalfFilterSupport", false)
 				.append("kpiFilter", "multiSelectDropDown").append("boxType", "2_column").append("calculateMaturity", false)
-				.append("kpiInfo.definition",
-						"Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
-				.append("kpiInfo.formula", null)
-				.append("kpiInfo.details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
-						new Document().append("text", "Detailed Information at").append("link",
-								"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"))))
+				.append("kpiInfo",new Document()
+						.append("definition", "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live")
+						.append("details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
+								new Document().append("text", "Detailed Information at").append("link",
+										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70s418714/Cycle+time")))))
 				.append("kpiSubCategory", "Flow KPIs");
 		// Insert the document into the collection
 		mongoTemplate.getCollection("kpi_master").insertOne(kpiDocument);
