@@ -30,18 +30,26 @@ export const LoginRoutes: Routes = [
     {
         path: '',
         children: [
-            { path: '', component: VerifyComponent, pathMatch: 'full', canActivate: [environment.AUTHENTICATION_SERVICE] },
-            // { path: '', redirectTo: 'login', pathMatch: 'full' },
-            // { path: 'login', component: LoginComponent, pathMatch: 'full' },
-            // { path: 'register', component: RegisterComponent, pathMatch: 'full' },
-            // { path: 'forgetPasswordEmail', component: ForgotPasswordComponent, pathMatch: 'full' },
-            // { path: 'resetPassword', component: ResetPasswordComponent, pathMatch: 'full' }
+            { path: '', redirectTo: 'login', pathMatch: 'full'  },
+            { path: 'login', component: LoginComponent, pathMatch: 'full'},
+            { path: 'register', component: RegisterComponent, pathMatch: 'full'},
+            { path: 'forgetPasswordEmail', component: ForgotPasswordComponent, pathMatch: 'full'},
+            { path: 'resetPassword', component: ResetPasswordComponent, pathMatch: 'full'}
+        ]
+    }
+];
+
+export const AuthRoutes: Routes = [
+    {
+        path: '',
+        children: [
+            { path: '', component: VerifyComponent, pathMatch: 'full'}
         ]
     }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(LoginRoutes)],
+    imports: [RouterModule.forChild(environment['AUTHENTICATION_SERVICE'] ? AuthRoutes : LoginRoutes)],
     exports: [RouterModule]
 })
 
