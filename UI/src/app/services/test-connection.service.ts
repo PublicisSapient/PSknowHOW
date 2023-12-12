@@ -51,7 +51,7 @@ export class TestConnectionService {
     );
   }
 
-  testZephyr(baseUrl, username, password, apiEndPoint, accessToken, cloudEnv, vault, bearerToken, patOAuthToken): Observable<any> {
+  testZephyr(baseUrl, username, password, apiEndPoint, accessToken, cloudEnv, vault): Observable<any> {
     const postData = {
       baseUrl,
       username,
@@ -60,8 +60,8 @@ export class TestConnectionService {
       accessToken,
       cloudEnv,
       vault,
-      bearerToken, 
-      patOAuthToken
+      // bearerToken, 
+      // patOAuthToken
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

@@ -10,4 +10,5 @@ public class MaturityLevel {
 	private List<String> range;
 	private String bgColor;
 	private String label;
+	private String displayRange;
 }

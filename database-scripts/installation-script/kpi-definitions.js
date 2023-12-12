@@ -1230,27 +1230,32 @@ db.getCollection('kpi_master').insertMany(
         {
           "level": "M5",
           "bgColor": "#167a26",
-		  "label": ">= 2 per week"
+		  "label": ">= 2 per week",
+		  "displayRange": "0,1"
         },
         {
           "level": "M4",
           "bgColor": "#4ebb1a",
-		  "label": "Once per week"
+		  "label": "Once per week",
+		  "displayRange": "2,3"
         },
         {
           "level": "M3",
           "bgColor": "#ef7643",
-          "label": "Once in 2 weeks"
+          "label": "Once in 2 weeks",
+          "displayRange": "4,5"
         },
         {
           "level": "M2",
           "bgColor": "#f53535",
-          "label": "Once in 4 weeks"
+          "label": "Once in 4 weeks",
+          "displayRange": "6,7"
         },
         {
           "level": "M1",
            "bgColor": "#c91212",
-          "label": "< Once in 8 weeks"
+          "label": "< Once in 8 weeks",
+          "displayRange": "8 and Above"
         }
      ]
   },

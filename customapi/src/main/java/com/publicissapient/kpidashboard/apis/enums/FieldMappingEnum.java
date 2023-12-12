@@ -160,7 +160,7 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraStoryIdentificationKPI129", "excludeStatusKpi129")),
 
 	KPI139("Refinement Rejection Rate", KPISource.JIRA.name(), Arrays.asList("jiraAcceptedInRefinementKPI139",
-			"jiraReadyForRefinementKPI139", "jiraRejectedInRefinementKPI139","thresholdValueKPI139")),
+			"jiraReadyForRefinementKPI139", "jiraRejectedInRefinementKPI139")),
 
 	KPI148("Flow Load", KPISource.JIRA.name(), Arrays.asList("storyFirstStatusKPI148", "jiraStatusForQaKPI148",
 			"jiraStatusForInProgressKPI148", "jiraIssueTypeNamesKPI148")),
@@ -241,8 +241,7 @@ public enum FieldMappingEnum {
 	KPI70("Test Execution and pass percentage", KPISource.ZEPHYR.name(), Collections.singletonList("thresholdValueKPI70")),
 	KPI8("Code Build Time", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI8")),
 	KPI116("Change Failure Rate", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI116")),
-	KPI118("Deployment Frequency", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI118")),
-	KPI168("Sonar Code Quality", KPISource.SONAR.name(), Collections.singletonList("thresholdValueKPI168"));
+	KPI118("Deployment Frequency", KPISource.JENKINS.name(), Collections.singletonList("thresholdValueKPI118"));
 
 	private List<String> fields;
 	private String kpiName;

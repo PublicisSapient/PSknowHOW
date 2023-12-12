@@ -58,7 +58,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
   sharedObject;
   kpiCommentsCountObj: object = {};
   kpiSpecificLoader = [];
-  durationFilter = 'Past 2 Weeks';
+  durationFilter = 'Past 6 Months';
   kpiPart1: any = []
   kpiPart2: any = []
   leadTime: object;
@@ -260,11 +260,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.loaderJiraArray.push(element.kpiId);
     });
 
-    const kpi3 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi3');
-    if (kpi3) (
-      kpi3['filterDuration'] = {
-        duration: 'WEEKS',
-        value: 2
+    const kpi171 = postData.kpiList.find(kpi => kpi.kpiId === 'kpi171');
+    if (kpi171) (
+      kpi171['filterDuration'] = {
+        duration: 'MONTHS',
+        value: 6
       });
 
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
@@ -456,7 +456,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.showKpiTrendIndicator[kpiId] = (kpiId === 'kpi3') ? true : false;
       }
     });
-    
+
   }
 
   getChartType(kpiId) {
@@ -525,7 +525,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       /** if: for graphs, else: for other than graphs */
-      if (this.getChartType(key)) {
+      if (this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === key)?.kpiDetail?.chartType) {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
           this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
           this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
@@ -548,10 +548,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
             for (const key in filters) {
               tempObj[key] = ['Overall'];
             }
-            if(data[key]?.kpiId === 'kpi171'){
-              tempObj['filter1'] = [trendValueList[0]['filter1']];
-              tempObj['filter2'] = [trendValueList[0]['filter2']];
-            }
+
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
           } else {
             this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
@@ -569,8 +566,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
           const tempObj = {};
           for (const prop in filters) {
             tempObj[prop] = ['Overall'];
-            if (data[key]?.kpiId === 'kpi3' && filters[prop]?.filterType === 'Duration') {
-              tempObj[prop] = "Past 2 Weeks";
+            if (data[key]?.kpiId === 'kpi171' && filters[prop]?.filterType === 'Duration') {
+              tempObj[prop] = "Past 6 Months";
             }
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
@@ -634,8 +631,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
       } else if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') || this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter2') && (
         !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter1']) || !Array.isArray(this.kpiSelectedFilterObj[kpiId]['filter2'])
       )) {
-        if (kpiId === 'kpi3') {
-          this.getkpi3Data(kpiId, trendValueList);
+        if (kpiId === 'kpi171') {
+          this.getkpi171Data(kpiId, trendValueList);
         } else {
           this.getChartDataForCardWithCombinationFilter(kpiId, trendValueList);
         }
@@ -660,7 +657,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // }
   }
 
-  getkpi3Data(kpiId, trendValueList) {
+  getkpi171Data(kpiId, trendValueList) {
     let durationChanged = false;
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
@@ -675,20 +672,20 @@ export class BacklogComponent implements OnInit, OnDestroy {
         this.allKpiArray.splice(idx, 1);
       }
 
-      this.kpiSpecificLoader.push('kpi3');
-      const kpi3Payload = JSON.parse(JSON.stringify(this.kpiJira));
-      const kpi3 = kpi3Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi3')[0];
-      kpi3['filterDuration'] = {
+      this.kpiSpecificLoader.push('kpi171');
+      const kpi171Payload = JSON.parse(JSON.stringify(this.kpiJira));
+      const kpi171 = kpi171Payload.kpiList.filter(kpi => kpi.kpiId === 'kpi171')[0];
+      kpi171['filterDuration'] = {
         duration: this.durationFilter.includes('Week') ? 'WEEKS' : 'MONTHS',
         value: !isNaN(+this.durationFilter.split(' ')[1]) ? +this.durationFilter.split(' ')[1] : 1
       };
 
-      kpi3Payload.kpiList = [kpi3];
+      kpi171Payload.kpiList = [kpi171];
 
-      this.httpService.postKpi(kpi3Payload, 'jira').subscribe(data => {
-        const kpi3Data = data.find(kpi => kpi.kpiId === kpiId);
-        this.allKpiArray.push(kpi3Data);
-        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi3Data.trendValueList)));
+      this.httpService.postKpi(kpi171Payload, 'jira').subscribe(data => {
+        const kpi171Data = data.find(kpi => kpi.kpiId === kpiId);
+        this.allKpiArray.push(kpi171Data);
+        this.getChartDataForCardWithCombinationFilter(kpiId, JSON.parse(JSON.stringify(kpi171Data.trendValueList)));
         this.kpiSpecificLoader.pop();
       });
 
@@ -700,7 +697,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
   getChartDataForCardWithCombinationFilter(kpiId, trendValueList) {
     let filters = this.kpiSelectedFilterObj[kpiId];
-    if (kpiId === 'kpi3') {
+    if (kpiId === 'kpi171') {
       const issueFilter = this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter2') ? this.kpiSelectedFilterObj[kpiId]['filter2'] : ['Overall'];
       filters = {
         filter1: issueFilter
@@ -725,7 +722,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
     if (preAggregatedValues?.length > 1) {
 
-      if (kpiId === 'kpi3') {
+      if (kpiId === 'kpi171') {
         //calculate number of days for lead time
         let kpi3preAggregatedValues = JSON.parse(JSON.stringify(preAggregatedValues));
         kpi3preAggregatedValues = kpi3preAggregatedValues.map(filterData => {
@@ -763,7 +760,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
         const obj = {};
         for (let i = 0; i < trendValueList?.length; i++) {
-          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1) 
+          if (trendValueList[i]?.filter?.toLowerCase() != 'overall' && trendValueList.length > 1)
           {
             optionsArr?.push(trendValueList[i]?.filter);
           }
@@ -1019,9 +1016,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
           this.kpiTrendObject[kpiId]?.push(trendObj);
       }
       }
-     
+
   }
-  
+
   checkMaturity(item) {
     let maturity = item.maturity;
     if (maturity == undefined) {

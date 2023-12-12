@@ -119,8 +119,8 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 						break;
 					}
 				}
-				sendNotification(stepFaliureException);
 				setExecutionInfoInTraceLog(false);
+				sendNotification(stepFaliureException);
 			} else {
 				setExecutionInfoInTraceLog(true);
 			}
@@ -157,4 +157,5 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}
 	}
+
 }

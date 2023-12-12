@@ -56,7 +56,7 @@ public class ThresholdChangeLog {
 		addThresholdAndBg("kpi126","0",true);
 		addThresholdAndBg("kpi42","60",true);
 		addThresholdAndBg("kpi168","2",true);
-		addThresholdAndBg("kpi70","0",true);
+		addThresholdAndBg("kpi70","80",true);
 		addThresholdAndBg("kpi40","20",true);
 		addThresholdAndBg("kpi5","0",true);
 		addThresholdAndBg("kpi39","40",true);

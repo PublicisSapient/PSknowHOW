@@ -65,7 +65,7 @@ export class DoraComponent implements OnInit {
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
   kpiThresholdObj = {};
-  isTooltip = [];
+  isTooltip = '';
   maturityObj = {};
   toolTipTop: number = 0;
 
@@ -191,6 +191,7 @@ export class DoraComponent implements OnInit {
   }
 
   receiveSharedData($event) {
+    this.isTooltip = '';
     this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
@@ -562,9 +563,9 @@ export class DoraComponent implements OnInit {
       this.toolTipTop = 0;
     }
     if (val) {
-      this.isTooltip.push(kpiId);
+      this.isTooltip = kpiId;
     } else {
-      this.isTooltip.splice(this.isTooltip.indexOf(kpiId), 1);
+      this.isTooltip = '';
     }
   }
 
@@ -578,20 +579,22 @@ export class DoraComponent implements OnInit {
       };
 
       let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
+      
       let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
+      let displayRange = maturityLevel.map((item) => item.displayRange);
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
-      console.log(findIncrementalOrDecrementalRange, kpiId);
-      console.log(maturityRange);
+    
       if (findIncrementalOrDecrementalRange === 'decremental') {
         maturityRange = maturityRange.reverse();
       } else {
         maturityLevel = maturityLevel.reverse();
+        displayRange = displayRange.reverse();
       }
 
       maturityLevel.forEach((element, index) => {
         this.maturityObj[kpiId]['maturityLevels'].push({
           level: element.level,
-          range: maturityRange[index],
+          range: displayRange[index],
           color: element.bgColor
         });
       });
