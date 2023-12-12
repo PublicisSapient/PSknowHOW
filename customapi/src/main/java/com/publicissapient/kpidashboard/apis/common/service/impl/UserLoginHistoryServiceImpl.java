@@ -49,7 +49,7 @@ public class UserLoginHistoryServiceImpl implements UserLoginHistoryService {
 		UsersLoginHistory usersLoginHistoryInfo = new UsersLoginHistory();
 		usersLoginHistoryInfo.setUserId(userInfo.getId());
 		usersLoginHistoryInfo.setUserName(userInfo.getUsername());
-		usersLoginHistoryInfo.setEmailId(userInfo.getEmailAddress());
+		usersLoginHistoryInfo.setEmailId(userInfo.getEmailAddress().toLowerCase());
 		usersLoginHistoryInfo.setLoginType(userInfo.getAuthType().toString());
 		usersLoginHistoryInfo.setStatus(status);
 		LocalDateTime localDateTime = LocalDateTime.now();

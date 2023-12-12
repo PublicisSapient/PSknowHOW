@@ -67,7 +67,7 @@ public class AuthenticationResultHandlerTest {
 	@Test
 	public void testOnSucess() throws IOException, ServletException {
 		JSONObject jsonObject = new JSONObject();
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
+		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName" , "token")).thenReturn(jsonObject);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
@@ -80,7 +80,7 @@ public class AuthenticationResultHandlerTest {
 		CustomUserDetails cud = new CustomUserDetails();
 		cud.setUsername("userName");
 		JSONObject jsonObject = new JSONObject();
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
+		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName", "token")).thenReturn(jsonObject);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");

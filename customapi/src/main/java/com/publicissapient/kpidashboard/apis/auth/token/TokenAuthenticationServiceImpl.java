@@ -36,8 +36,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -53,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
@@ -60,6 +59,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessReque
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import io.jsonwebtoken.Claims;
@@ -103,16 +103,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
 		data.setUserName(authentication.getName());
 		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
+		data.setAuthToken(jwt);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		response.addCookie(cookie);
-   	    cookieUtil.addSameSiteCookieAttribute(response);
+		cookieUtil.addSameSiteCookieAttribute(response);
 		return data;
 	}
 
 	public String createJwtToken(Authentication authentication) {
-		return Jwts.builder().setSubject(authentication.getName())
-				.claim(DETAILS_CLAIM, authentication.getDetails())
+		return Jwts.builder().setSubject(authentication.getName()).claim(DETAILS_CLAIM, authentication.getDetails())
 				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
 				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
@@ -121,7 +121,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-											HttpServletResponse response) {
+			HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
@@ -261,7 +261,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
 			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
-			return Boolean.toString(true);
+				return Boolean.toString(true);
 			}
 		}
 		return Boolean.toString(false);
