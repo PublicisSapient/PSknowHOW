@@ -129,10 +129,12 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService, sharedService: SharedService) {
-    let url = window.location.href;
-    let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
-    if(authToken){
-        sharedService.setAuthToken(authToken);
+    if(environment['AUTHENTICATION_SERVICE']){
+        let url = window.location.href;
+        let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
+        if(authToken){
+            sharedService.setAuthToken(authToken);
+        }
     }
     if (!environment.production) {
         return async () => {

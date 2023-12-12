@@ -128,6 +128,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -1385,8 +1386,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        /**Todo:commenting for central login */
-        // this.router.navigate(['./authentication/login']);
+        if(!environment['AUTHENTICATION_SERVICE']){
+          this.router.navigate(['./authentication/login']);
+        }
       }
     });
   }

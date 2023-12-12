@@ -23,13 +23,14 @@ import { RegisterComponent } from './register/register.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { VerifyComponent } from './verify/verify.component';
+import { environment } from 'src/environments/environment';
 
 /* Create nested routing for login and registration. */
 export const LoginRoutes: Routes = [
     {
         path: '',
         children: [
-            { path: '', component: VerifyComponent, pathMatch: 'full' },
+            { path: '', component: VerifyComponent, pathMatch: 'full', canActivate: [environment.AUTHENTICATION_SERVICE] },
             // { path: '', redirectTo: 'login', pathMatch: 'full' },
             // { path: 'login', component: LoginComponent, pathMatch: 'full' },
             // { path: 'register', component: RegisterComponent, pathMatch: 'full' },
