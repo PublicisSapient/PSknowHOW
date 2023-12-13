@@ -162,7 +162,7 @@ public class SonarViolationsServiceImplTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations() throws Exception {
 		setToolMap();
@@ -191,7 +191,7 @@ public class SonarViolationsServiceImplTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations2() throws Exception {
 		setToolMap();
@@ -222,7 +222,7 @@ public class SonarViolationsServiceImplTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations3() throws Exception {
 		setToolMap();
@@ -254,7 +254,7 @@ public class SonarViolationsServiceImplTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations4() throws Exception {
 		setToolMap();
@@ -287,7 +287,7 @@ public class SonarViolationsServiceImplTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations5() throws Exception {
 		setToolMap();
@@ -321,7 +321,7 @@ public class SonarViolationsServiceImplTest {
 	 * 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations6() throws Exception {
 		setToolMap();

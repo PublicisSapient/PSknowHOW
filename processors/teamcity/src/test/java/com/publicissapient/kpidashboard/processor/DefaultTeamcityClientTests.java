@@ -130,7 +130,7 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void verifyBasicAuth() throws Exception {
-		@SuppressWarnings("unused")
+		//@SuppressWarnings("unused")
 		URL u = new URL(new URL("http://test.com"), "/app/rest/projects");
 
 		HttpHeaders headers = ProcessorUtils.createHeaders("test:pwd");
@@ -143,7 +143,7 @@ public class DefaultTeamcityClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		//@SuppressWarnings({ "rawtypes", "unchecked" })
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("user:pass"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -158,7 +158,7 @@ public class DefaultTeamcityClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("test:password"));
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		//@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -169,7 +169,7 @@ public class DefaultTeamcityClientTests {
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		//@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity headers = new HttpEntity(ProcessorUtils.createHeaders("test:password"));
 		when(rest.exchange(Mockito.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));

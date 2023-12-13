@@ -126,7 +126,7 @@ public class OnlineAdapter implements AzureAdapter {
 	 * @return List of issues
 	 */
 	@Override
-	public AzureBoardsWIModel getWorkItemInfoForIssues(int pageStart, // NOSONAR
+	public AzureBoardsWIModel getWorkItemInfoForIssues(int pageStart, 
 			AzureServer azureServer, List<Integer> workItemIds) {
 		AzureBoardsWIModel azureBoardsWIModel = new AzureBoardsWIModel();
 		if (client == null) {

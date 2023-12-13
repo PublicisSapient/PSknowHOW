@@ -31,7 +31,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_dora_maturity", order = "08201", author = "shi6", systemVersion = "8.2.0")
 public class DoraMaturity {
 

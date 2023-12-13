@@ -36,7 +36,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_mean_time_to_recover", order = "08105", author = "shunaray", systemVersion = "8.1.0")
 public class MeanTimeToRecoverChangeUnit {
 	private final MongoTemplate mongoTemplate;

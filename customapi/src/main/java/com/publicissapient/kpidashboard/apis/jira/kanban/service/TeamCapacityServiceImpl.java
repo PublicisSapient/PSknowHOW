@@ -131,7 +131,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	 * @param kpiRequest
 	 * @return resultListMap
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
@@ -147,7 +147,7 @@ public class TeamCapacityServiceImpl extends JiraKPIService<Double, List<Object>
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 

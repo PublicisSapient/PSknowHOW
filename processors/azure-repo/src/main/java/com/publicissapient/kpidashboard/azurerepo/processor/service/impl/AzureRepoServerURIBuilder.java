@@ -185,7 +185,7 @@ public class AzureRepoServerURIBuilder {
 		String apiPath = "";
 		if (config.getApi() != null) {
 
-			apiPath = String.valueOf(config.getApi().toString()); // NOSONAR
+			apiPath = String.valueOf(config.getApi().toString()); 
 		}
 
 		StringBuilder sb = new StringBuilder(apiPath);
@@ -205,7 +205,7 @@ public class AzureRepoServerURIBuilder {
 		String apiPath = "";
 		if (config.getApi() != null) {
 
-			apiPath = String.valueOf(config.getApi().toString()); // NOSONAR
+			apiPath = String.valueOf(config.getApi().toString()); 
 		}
 
 		StringBuilder sb = new StringBuilder(apiPath);

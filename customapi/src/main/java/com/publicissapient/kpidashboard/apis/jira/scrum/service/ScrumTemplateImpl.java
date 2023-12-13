@@ -136,7 +136,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
@@ -176,7 +176,7 @@ public class ScrumTemplateImpl extends JiraKPIService<Double, List<Object>, Map<
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValueForSimpleLineChart(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 

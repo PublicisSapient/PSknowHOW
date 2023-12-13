@@ -283,7 +283,7 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	 * @param fields
 	 *            Map of Issue Fields
 	 */
-	public void setEstimate(JiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, // NOSONAR
+	public void setEstimate(JiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, 
 			AzureProcessorConfig jiraProcessorConfig, Fields fields) {
 
 		Double value = 0d;

@@ -325,7 +325,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 		return null;
 	}
 
-	@SuppressWarnings("serial")
+	//@SuppressWarnings("serial")
 	private Collection<IssueField> parseFields(final JSONObject issueJson) throws JSONException {
 		final JSONObject names = (providedNames != null) ? providedNames : issueJson.optJSONObject(NAMES_SECTION);
 		final Map<String, String> namesMap = parseNames(names);
@@ -334,7 +334,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 
 		final JSONObject json = issueJson.getJSONObject(FIELDS);
 		final ArrayList<IssueField> res = new ArrayList<>(json.length());
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
 		final Iterator<String> iterator = json.keys();
 		while (iterator.hasNext()) {
 			final String key = iterator.next();

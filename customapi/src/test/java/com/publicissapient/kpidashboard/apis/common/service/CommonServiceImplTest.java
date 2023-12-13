@@ -67,7 +67,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)
 public class CommonServiceImplTest {
 

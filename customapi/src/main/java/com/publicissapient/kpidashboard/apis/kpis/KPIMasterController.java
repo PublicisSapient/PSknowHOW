@@ -54,7 +54,7 @@ public class KPIMasterController {
 	 *
 	 * @return the master response
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public MasterResponse fetchMasterData() {
 		return kPIHelperService.fetchKpiMasterList();
 	}

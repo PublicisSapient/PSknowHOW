@@ -36,7 +36,7 @@ import lombok.Setter;
 /**
  * The type Field mapping. Represents Jira field mapping values
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
 @Document(collection = "field_mapping")

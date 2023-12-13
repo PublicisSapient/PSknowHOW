@@ -82,10 +82,10 @@ public class JenkinsController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/jenkins/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/jenkins/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJenkinsAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jenkins KPI request {}", kpiRequest);
 		long jenkinsRequestStartTime = System.currentTimeMillis();
@@ -119,9 +119,9 @@ public class JenkinsController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/jenkinskanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/jenkinskanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<List<KpiElement>> getJenkinsKanbanAggregatedMetrics(
-			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { 
 		MDC.put("JenkinsKanbanKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jenkins Kanban KPI request {}", kpiRequest);
 		long jenkinsKanbanRequestStartTime = System.currentTimeMillis();

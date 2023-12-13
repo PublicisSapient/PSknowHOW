@@ -54,7 +54,7 @@ public class ExposeAPIController {
 	 * @return
 	 */
 	@PreAuthorize("hasPermission(#exposeAPITokenRequestDTO.basicProjectConfigId, 'SAVE_PROJECT_TOOL')")
-	@RequestMapping(value = "/generateToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/generateToken", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> generateAndSaveToken(
 			@RequestBody @Valid ExposeAPITokenRequestDTO exposeAPITokenRequestDTO) {
 		return ResponseEntity.status(HttpStatus.OK)

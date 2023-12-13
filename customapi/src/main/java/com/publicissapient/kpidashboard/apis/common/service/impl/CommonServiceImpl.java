@@ -89,7 +89,7 @@ public class CommonServiceImpl implements CommonService {
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
 
 
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
 	public String getMaturityLevel(List<String> maturityRangeList, String kpiId, String actualMaturityVal) {
 

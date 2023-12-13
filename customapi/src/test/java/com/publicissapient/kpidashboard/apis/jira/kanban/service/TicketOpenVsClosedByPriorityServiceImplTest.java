@@ -140,7 +140,7 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 	public void cleanup() {
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetStoryOpenRateIssueType() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

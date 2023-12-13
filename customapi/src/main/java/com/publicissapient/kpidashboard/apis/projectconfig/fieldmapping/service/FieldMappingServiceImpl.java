@@ -288,7 +288,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		for (String fName : fieldNameList) {
 			try {
 				Field field = FieldMapping.class.getDeclaredField(fName);
-				field.setAccessible(true); // NOSONAR
+				field.setAccessible(true); 
 
 				isUpdated = isValueUpdated(field.get(unsaved), field.get(saved));
 
@@ -312,7 +312,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 	 *            existing value
 	 * @return is value updated
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	//@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean isValueUpdated(Object value, Object value1) {
 		if (value == null || value1 == null) {
 			return value1 != null;

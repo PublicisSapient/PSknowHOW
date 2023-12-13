@@ -470,7 +470,7 @@ public class ProjectBasicConfigServiceImpl implements ProjectBasicConfigService 
 	 * 
 	 * @return {@code List<ProjectBasicConfigDTO>} : empty list incase no data found
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<ProjectBasicConfigDTO> getAllProjectsBasicConfigsDTOWithoutPermission() {
 		List<ProjectBasicConfigDTO> projectBasicList = Lists.newArrayList();

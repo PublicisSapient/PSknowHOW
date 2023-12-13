@@ -254,7 +254,7 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 

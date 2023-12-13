@@ -129,7 +129,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 
 	@Override
-	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
+	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, 
 			// //NOPMD
 			AzureAdapter azureAdapter) {
 		int count = 0;
@@ -288,7 +288,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	@Override
 	public int saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> sprintDetailsSet) // NOSONAR
+			Set<SprintDetails> sprintDetailsSet) 
 			// //NOPMD
 			throws JSONException {
 
@@ -844,7 +844,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	 */
 	private void saveAccountHierarchy(List<JiraIssue> jiraIssueList, ProjectConfFieldMapping projectConfig, // NOPMD
 																											// //NOSONAR
-			List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
+			List<HierarchyLevel> hierarchyLevelList) { 
 
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));

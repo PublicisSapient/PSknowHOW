@@ -70,7 +70,7 @@ public class SonarServiceKanbanR {
 	 * @param kpiRequest
 	 * @return {@code List<KpiElement>}
 	 */
-	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
+	//@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) {
 
 		log.info("[SONAR KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),

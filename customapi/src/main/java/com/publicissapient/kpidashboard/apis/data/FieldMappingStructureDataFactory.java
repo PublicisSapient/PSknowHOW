@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author hargupta15
  */
 @Slf4j
-@SuppressWarnings("java:S1075")
+//@SuppressWarnings("java:S1075")
 public class FieldMappingStructureDataFactory {
 	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/field_mapping_structure.json";
 	private List<FieldMappingStructureForMongock> fieldMappingStructureList;

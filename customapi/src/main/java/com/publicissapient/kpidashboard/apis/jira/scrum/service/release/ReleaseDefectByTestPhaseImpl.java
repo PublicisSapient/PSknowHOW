@@ -91,7 +91,7 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 		return kpiElement;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();

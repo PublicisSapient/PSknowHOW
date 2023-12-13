@@ -76,7 +76,7 @@ public class ZephyrServiceKanbanTest {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@Mock
 	private RegressionPercentageKanbanServiceImpl regressionPercentageKanbanServiceImpl;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<ZephyrKPIService> services;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();

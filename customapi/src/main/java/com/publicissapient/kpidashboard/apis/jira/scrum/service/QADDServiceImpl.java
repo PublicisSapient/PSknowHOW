@@ -146,7 +146,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
@@ -276,10 +276,10 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 * @param sprintWiseDefectListMap
 	 */
 	private void processHowerMap(Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap, // NOPMD//NOSONAR
-			Map<String, Object> storyDefectDataListMap, Map<Pair<String, String>, Double> sprintWiseQADDMap, // NOSONAR
+			Map<String, Object> storyDefectDataListMap, Map<Pair<String, String>, Double> sprintWiseQADDMap, 
 			Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap, List<JiraIssue> storyFilteredList,
 			Map<Pair<String, String>, List<String>> sprintWiseStoryMAP,
-			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap, FieldMapping fieldMapping) {// NOSONAR
+			Map<Pair<String, String>, Set<JiraIssue>> sprintWiseDefectListMap, FieldMapping fieldMapping) {
 		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
 			Set<JiraIssue> sprintWiseDefectList = new HashSet<>();
 			List<Double> qaddList = new ArrayList<>();
@@ -323,21 +323,21 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 */
 	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOPMD
 																											 // //NOSONAR
-			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, // NOSONAR
+			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, 
 			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2,
-			FieldMapping fieldMapping) {// NOSONAR
+			FieldMapping fieldMapping) {
 		HashMap<String, JiraIssue> mapOfStories = new HashMap<>();
 		for (JiraIssue f : storyFilteredList) {
 			mapOfStories.put(f.getNumber(), f);
 		}
 
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
 		Set<JiraIssue> additionalFilterDefectList = ((List<JiraIssue>) storyDefectDataListMap.get(DEFECT_DATA)).stream()
 				.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(),
 						storyIdList == null ? Collections.emptyList() : storyIdList))
 				.collect(Collectors.toSet());
 		populateList(additionalFilterDefectList, mapOfStories);
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
 		List<JiraIssue> storyPointList = ((List<JiraIssue>) storyDefectDataListMap.get(STORY_POINTS)).stream()
 				.filter(f -> CollectionUtils.isNotEmpty(storyIdList) && storyIdList.contains(f.getNumber()))
 				.collect(Collectors.toList());
@@ -379,7 +379,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 					.get(new ObjectId(jiraIssue.getBasicProjectConfigId()));
 
 			if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByQAValue())) {
-				additionalFilterDefectList = additionalFilterDefectList.stream().filter(f -> f.isDefectRaisedByQA()) // NOSONAR
+				additionalFilterDefectList = additionalFilterDefectList.stream().filter(f -> f.isDefectRaisedByQA()) 
 						.collect(Collectors.toSet());
 			} else if (null != fieldMapping && CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
 				additionalFilterDefectList = additionalFilterDefectList.stream()
@@ -409,7 +409,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 *            the kpi request
 	 * @return the map
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {

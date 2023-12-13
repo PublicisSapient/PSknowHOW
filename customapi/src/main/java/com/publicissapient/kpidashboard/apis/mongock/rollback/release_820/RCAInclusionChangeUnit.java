@@ -27,7 +27,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_rca_inclusion_change", order = "08207", author = "shunaray", systemVersion = "8.2.0")
 public class RCAInclusionChangeUnit {
 

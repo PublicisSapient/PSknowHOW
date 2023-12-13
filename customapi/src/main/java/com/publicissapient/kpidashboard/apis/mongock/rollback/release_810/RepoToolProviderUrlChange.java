@@ -28,7 +28,7 @@ import java.util.Arrays;
 /**
  * @author kunkambl
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_repo_tool_provider_url_change", order = "08110", author = "kunkambl", systemVersion = "8.1.0")
 public class RepoToolProviderUrlChange {
 

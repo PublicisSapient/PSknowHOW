@@ -54,7 +54,7 @@ public class JiraKPIServiceFactory {
 	 * @return Jira Service object
 	 * @throws ApplicationException
 	 */
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static JiraKPIService getJiraKPIService(String type) throws ApplicationException {
 		JiraKPIService<?, ?, ?> service = JIRA_SERVICE_CACHE.get(type);
 		if (service == null) {

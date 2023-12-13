@@ -156,7 +156,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 	 * This method populates KPI value to sprint leaf nodes. It also gives the trend
 	 * analysis at sprint wise.
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		sprintLeafNodeList.sort(Comparator.comparing(node -> node.getSprintFilter().getStartDate()));
 		List<Node> latestSprintNode = new ArrayList<>();
@@ -389,7 +389,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		assigneeWiseNotCompleted.forEach((assigneeId, jiraIssueList) -> {
 			double totalEstimate = jiraIssueList.stream()
 					.mapToDouble(issue -> estimationCriteria.equalsIgnoreCase(CommonConstant.STORY_POINT)
-							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d) // NOSONAR
+							? Optional.ofNullable(issue.getStoryPoints()).orElse(0d) 
 							: Optional.ofNullable(issue.getOriginalEstimateMinutes()).orElse(0))
 					.sum();
 			remainingWork.put(assigneeId, new StandUpViewKpiData(String.valueOf(jiraIssueList.size()),

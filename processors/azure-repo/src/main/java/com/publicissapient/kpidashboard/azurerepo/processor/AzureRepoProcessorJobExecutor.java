@@ -108,7 +108,7 @@ public class AzureRepoProcessorJobExecutor extends ProcessorJobExecutor<AzureRep
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
 	@Autowired
-	protected AzureRepoProcessorJobExecutor(TaskScheduler taskScheduler, // NOSONAR
+	protected AzureRepoProcessorJobExecutor(TaskScheduler taskScheduler, 
 			AzureRepoProcessorRepository azureRepoProcessorRepo, AzureRepoConfig azureRepoConfig,
 			ProjectToolConfigRepository toolConfigRepository, AzureRepoRepository azureRepoRepository,
 			AzureRepoClient azureRepoClient, ProcessorItemRepository<ProcessorItem> processorItemRepository,

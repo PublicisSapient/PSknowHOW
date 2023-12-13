@@ -55,7 +55,7 @@ public class CaptchaValidationController {
 	 *            the captcha validation data
 	 * @return true if valid captcha
 	 */
-	@RequestMapping(value = "/login/captchavalidate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/login/captchavalidate", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) 
 	public boolean validateCaptcha(@RequestBody CaptchaValidationData captchaValidationData) {
 
 		return captchaValidationService.validateCaptcha(captchaValidationData.getEncryptedString(),

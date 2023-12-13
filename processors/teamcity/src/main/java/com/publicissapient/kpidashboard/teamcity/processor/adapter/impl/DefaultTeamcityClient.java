@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
  * TeamcityClient implementation that uses RestTemplate and JSONSimple to fetch
  * information from Teamcity instances.
  */
-@SuppressWarnings("PMD.GodClass")
+//@SuppressWarnings("PMD.GodClass")
 @Component
 @Slf4j
 public class DefaultTeamcityClient implements TeamcityClient {
@@ -366,7 +366,7 @@ public class DefaultTeamcityClient implements TeamcityClient {
 	 * @param proBasicConfig
 	 * @return the Build details
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
 	public Build getBuildDetails(String buildUrl, String instanceUrl, ProcessorToolConnection teamcityServer,
 			ProjectBasicConfig proBasicConfig) {

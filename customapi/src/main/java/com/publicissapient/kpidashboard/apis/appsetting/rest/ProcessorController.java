@@ -68,7 +68,7 @@ public class ProcessorController {
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@PreAuthorize("hasPermission(null, 'GET_PROCESSORS')")
 	public ResponseEntity<ServiceResponse> getAllProcessorDetails() {
-		// NOSONAR
+		
 		ServiceResponse response = processorService.getAllProcessorDetails();
 		HttpStatus responseStatus = HttpStatus.OK;
 		if (null == response || !response.getSuccess()) {
@@ -93,7 +93,7 @@ public class ProcessorController {
 		processorExecutionBasicConfig.setProjectBasicConfigIds(projectBasicConfigIds);
 		processorExecutionBasicConfig.setLogContext(ExecutionLogContext.getContext());
 
-		// NOSONAR
+		
 		ServiceResponse response = processorService.runProcessor(processorName, processorExecutionBasicConfig);
 
 		HttpStatus responseStatus = HttpStatus.OK;

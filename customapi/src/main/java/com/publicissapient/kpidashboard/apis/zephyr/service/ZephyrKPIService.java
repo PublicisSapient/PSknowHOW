@@ -166,7 +166,7 @@ public abstract class ZephyrKPIService<R, S, T> extends ToolsKPIService<R, S>
 	 *            kpi name to get aggregation logic
 	 * @return aggregated data
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public Map<String, Double> calculateAggValueForMapObject(Node node,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, String kpiName) {
 

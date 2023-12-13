@@ -25,7 +25,7 @@ public class AnalyticsController {
 	 *
 	 * @return Logo
 	 */
-	@GetMapping(value = "/analytics/switch", produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@GetMapping(value = "/analytics/switch", produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getAnalyticsSwitch() {
 		log.info("Analytics Swtich API called");
 		return ResponseEntity.status(HttpStatus.OK)

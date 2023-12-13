@@ -123,7 +123,7 @@ public class SprintCapacityServiceImplTest {
 		assertThat("Capacity value :", capacityValue, equalTo(180.0));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		List<Node> leafNodeList = new ArrayList<>();
@@ -145,7 +145,7 @@ public class SprintCapacityServiceImplTest {
 				equalTo(44));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetSprintCapacity() throws ApplicationException {
 		List<Node> leafNodeList = new ArrayList<>();

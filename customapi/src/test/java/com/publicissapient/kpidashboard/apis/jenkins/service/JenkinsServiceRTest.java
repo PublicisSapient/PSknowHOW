@@ -80,7 +80,7 @@ public class JenkinsServiceRTest {
 	private CodeBuildTimeServiceImpl codeBuildTimeServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -141,7 +141,7 @@ public class JenkinsServiceRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
@@ -181,7 +181,7 @@ public class JenkinsServiceRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
@@ -212,13 +212,13 @@ public class JenkinsServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test(expected = HttpMessageNotWritableException.class)
 	public void testProcessException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 

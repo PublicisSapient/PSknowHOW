@@ -44,7 +44,7 @@ public class SonarKPIServiceFactory {
 	 * @return SonarKPIService
 	 * @throws ApplicationException
 	 */
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static SonarKPIService getSonarKPIService(String type) throws ApplicationException {
 		SonarKPIService<?, ?, ?> service = SONAR_SERVICE_CACHE.get(type);
 		if (service == null) {

@@ -49,7 +49,7 @@ public class JenkinsKPIServiceFactory {
 	 * @throws ApplicationException
 	 *             the application exception
 	 */
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static JenkinsKPIService getJenkinsKPIService(String type) throws ApplicationException {
 		JenkinsKPIService<?, ?, ?> service = JENKINS_SERVICE_CACHE.get(type);
 		if (service == null) {

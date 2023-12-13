@@ -87,7 +87,7 @@ public class KPIExcelDataControllerTest {
 		mockMvc = null;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetKpiValidationData() throws Exception {
 		// TODO GIRISH here discuss with team

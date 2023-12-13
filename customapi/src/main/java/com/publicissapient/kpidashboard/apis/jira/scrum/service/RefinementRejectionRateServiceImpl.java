@@ -156,7 +156,7 @@ public class RefinementRejectionRateServiceImpl extends JiraKPIService<Double, L
 	 *            type of db object
 	 * @return
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
 		return 0.0;

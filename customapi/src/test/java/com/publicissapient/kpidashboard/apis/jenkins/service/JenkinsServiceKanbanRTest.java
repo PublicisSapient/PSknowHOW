@@ -77,7 +77,7 @@ public class JenkinsServiceKanbanRTest {
 	private CodeBuildTimeKanbanServiceImpl codeBuildTimeKanbanServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JenkinsKPIService> services;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
@@ -138,7 +138,7 @@ public class JenkinsServiceKanbanRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeKanbanServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
 
@@ -174,7 +174,7 @@ public class JenkinsServiceKanbanRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeKanbanServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
 

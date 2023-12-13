@@ -34,7 +34,7 @@ import lombok.Setter;
 /**
  * Represents non jira tool.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter
@@ -45,7 +45,7 @@ public class Tool {
 
 	private ObjectId projectIds;
 
-	private String tool; // NOSONAR
+	private String tool; 
 	private String url;
 	private String branch;
 	private String repoSlug;

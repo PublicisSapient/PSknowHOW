@@ -80,7 +80,7 @@ public class AutoApproveAccessServiceImplTest {
 
 	}
 
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Test
 	public void testGetAutoApproveConfig() throws Exception {
 		when(autoAccessRepository.findAll()).thenReturn(listAutoApproveAccessConfig);
@@ -88,7 +88,7 @@ public class AutoApproveAccessServiceImplTest {
 		assertThat("status: ", response.getEnableAutoApprove(), equalTo("true"));
 	}
 
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	@Test
 	public void testSaveAutoApproveRoles() throws Exception {
 

@@ -99,7 +99,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 		return kpiElement;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest,
 			DataCount dataCount) {
 		KpiElement leadTimeReq = kpiRequest.getKpiList().stream().filter(k -> k.getKpiId().equalsIgnoreCase("kpi171"))

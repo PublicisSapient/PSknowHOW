@@ -188,7 +188,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * @param completedReleaseMap
 	 *            Map<LocalDate, List<JiraIssue>>
 	 */
-	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName, // NOSONAR
+	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName, 
 			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
 			Map<LocalDate, List<JiraIssue>> completedReleaseMap, Map<LocalDate, List<JiraIssue>> devCompletedReleaseMap,
@@ -340,8 +340,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 * @param kpiRequest
 	 *            kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
-	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement, // NOSONAR
+	//@SuppressWarnings("unchecked")
+	private void releaseWiseLeafNodeValue(List<Node> releaseLeafNodeList, KpiElement kpiElement, 
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
@@ -901,7 +901,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	 *            List<JiraIssue>
 	 * @return Map<String, List<JiraIssue>>
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private Map<String, List<JiraIssue>> createFilterWiseGroupedMap(CustomDateRange dateRange,
 			Map<LocalDate, List<JiraIssue>> addedIssuesMap, Map<LocalDate, List<JiraIssue>> removeIssueMap,
 			Map<LocalDate, List<JiraIssue>> fullReleaseIssueMap, List<JiraIssue> overallIssues,

@@ -158,7 +158,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
@@ -381,7 +381,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> scopeChangeAndInitialScopeMap) {
 		int scopeChange = ((List<JiraIssue>) scopeChangeAndInitialScopeMap.get(SCOPE_CHANGE)).size();

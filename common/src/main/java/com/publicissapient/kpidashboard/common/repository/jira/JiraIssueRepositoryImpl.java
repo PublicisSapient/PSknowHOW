@@ -102,7 +102,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	@Autowired
 	private MongoTemplate operations;
 
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<SprintWiseStory> findIssuesGroupBySprint(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String filterToShowOnTrend, String individualDevOrQa) {
@@ -132,7 +132,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		return operations.aggregate(aggregation, JiraIssue.class, SprintWiseStory.class).getMappedResults();
 	}
 
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findIssueByStoryNumber(Map<String, List<String>> mapOfFilters, List<String> storyNumber,
 			Map<String, Map<String, Object>> uniqueProjectMapFolder) {
@@ -176,7 +176,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 	}
 
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
@@ -237,7 +237,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 *            for not in query
 	 * @return list of feature
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findIssuesBySprintAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
@@ -373,7 +373,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 * @param uniqueProjectMap
 	 * @return
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private List<Criteria> projectLevelStoryTypeFilters(Map<String, Map<String, Object>> uniqueProjectMap) {
 		List<Criteria> projectCriteriaList = new ArrayList<>();
 		uniqueProjectMap.forEach((project, filterMap) -> {
@@ -474,7 +474,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 *            for not in query
 	 * @return list of feature
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findDefectsWithoutStoryLink(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMapNotIn) {
@@ -573,7 +573,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 *            story number
 	 * @return list of Feature
 	 */
-	@SuppressWarnings("javadoc")
+	//@SuppressWarnings("javadoc")
 	@Override
 	public List<JiraIssue> findStoriesBySprints(Map<String, List<String>> mapOfFilters, List<String> storyNumber) {
 		Criteria criteria = new Criteria();
@@ -627,7 +627,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	}
 
 	@Override
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	public List<JiraIssue> findNonRegressionTestCases(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {
 		Criteria criteria = new Criteria();
@@ -807,7 +807,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 	 *            project map filters
 	 * @return list of jira issues
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public List<JiraIssue> findIssuesByFilterAndProjectMapFilter(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {

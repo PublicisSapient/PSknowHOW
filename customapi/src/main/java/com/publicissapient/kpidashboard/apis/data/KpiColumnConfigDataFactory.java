@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author hargupta15
  */
 @Slf4j
-@SuppressWarnings("java:S1075")
+//@SuppressWarnings("java:S1075")
 public class KpiColumnConfigDataFactory {
 	private static final String FILE_PATH_KPI_COL_CONFIG = "/json/mongock/default/project_kpi_column_config.json";
 	private List<KpiColumnConfig> kpiColumnConfigs;

@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * The type Aggregation utils.
  */
 @Slf4j
-@SuppressWarnings("PMD.GodClass")
+//@SuppressWarnings("PMD.GodClass")
 public final class AggregationUtils {
 
 	private AggregationUtils() {
@@ -374,7 +374,7 @@ public final class AggregationUtils {
 	 *            List of objects
 	 * @return returns object
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public static List<SonarMetric> aggregateForCodeMetrics(List<List<SonarMetric>> aggregatedValueList) {
 		log.info("[AGGREGATE-FOR-OBJECT].Aggregating objects with 90 percentile: {}", aggregatedValueList);
 		List<SonarMetric> list = aggregatedValueList.stream().flatMap(Collection::stream).filter(

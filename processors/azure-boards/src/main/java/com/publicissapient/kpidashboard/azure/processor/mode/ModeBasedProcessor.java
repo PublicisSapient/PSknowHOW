@@ -43,7 +43,7 @@ import com.publicissapient.kpidashboard.common.repository.connection.ConnectionR
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class ModeBasedProcessor { // NOSONAR
+public abstract class ModeBasedProcessor { 
 
 	@Autowired
 	private ProjectToolConfigRepository toolRepository;

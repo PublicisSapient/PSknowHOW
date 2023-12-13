@@ -162,7 +162,7 @@ public class BitBucketServerURIBuilder {
 	 *
 	 * @return the uri
 	 */
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	private URI getURI() {
 		String url = repo.getRepoUrl();
 		url = StringUtils.removeEnd(url, ".git");

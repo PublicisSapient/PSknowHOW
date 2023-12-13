@@ -58,7 +58,7 @@ public class ProjectToolConfigController {
 	/**
 	 * Fetch all projectToolConfig
 	 */
-	@RequestMapping(value = "/basicconfigs/{basicConfigId}/tools", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/basicconfigs/{basicConfigId}/tools", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getProjectTools(@PathVariable String basicConfigId,
 			@RequestParam(name = "toolType", required = false) String toolType) {
 		ServiceResponse response;
@@ -84,7 +84,7 @@ public class ProjectToolConfigController {
 	 */
 
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'SAVE_PROJECT_TOOL')")
-	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> saveToolDetails(@PathVariable String basicProjectConfigId,
 			@Valid @RequestBody ProjectToolConfigDTO projectToolDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
@@ -105,7 +105,7 @@ public class ProjectToolConfigController {
 	 * @return responseEntity with data,message and status
 	 */
 	@PreAuthorize("hasPermission(#basicProjectConfigId, 'UPDATE_PROJECT_TOOL')")
-	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/{projectToolId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/basicconfigs/{basicProjectConfigId}/tools/{projectToolId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> modifyConnectionById(@PathVariable String basicProjectConfigId,
 			@PathVariable String projectToolId, @Valid @RequestBody ProjectToolConfigDTO projectToolDTO) {
 		log.info("projectTool updated", projectToolDTO.getProjectId());

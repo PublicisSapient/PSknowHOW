@@ -255,7 +255,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

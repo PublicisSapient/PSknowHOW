@@ -54,7 +54,7 @@ public class ZephyrKPIServiceFactory {
 	 * @return Jira Service object
 	 * @throws ApplicationException
 	 */
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static ZephyrKPIService getZephyrKPIService(String type) throws ApplicationException {
 		ZephyrKPIService<?, ?, ?> service = ZEPHYR_SERVICE_CACHE.get(type);
 		if (service == null) {

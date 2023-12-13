@@ -49,7 +49,7 @@ public class CustomUserJsonParser extends UserJsonParser {
 		} else {
 			// JIRA 5.0+
 			final JSONObject avatarUrlsJson = json.getJSONObject("avatarUrls");
-			@SuppressWarnings("unchecked")
+			//@SuppressWarnings("unchecked")
 			final Iterator<String> iterator = avatarUrlsJson.keys();
 			while (iterator.hasNext()) {
 				final String key = iterator.next();

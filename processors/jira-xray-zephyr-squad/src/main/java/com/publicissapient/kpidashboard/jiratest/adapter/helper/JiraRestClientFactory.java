@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClient> {
 
 	private static final String STR_USERNAME = "username";
-	private static final String STR_PASSWORD = "password"; // NOSONAR
+	private static final String STR_PASSWORD = "password"; 
 
 	@Autowired
 	private JiraTestProcessorConfig jiraTestProcessorConfig;
@@ -228,7 +228,7 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost());
 			client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
 					password, jiraTestProcessorConfig);
 
@@ -270,7 +270,7 @@ public class JiraRestClientFactory implements RestOperationsFactory<JiraRestClie
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost());
 			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient,
 					jiraTestProcessorConfig);
 

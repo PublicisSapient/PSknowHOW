@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * KpiFieldMapping
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 public enum FieldMappingEnum {
 
 	KPI0("Processor", KPISource.JIRA.name(),

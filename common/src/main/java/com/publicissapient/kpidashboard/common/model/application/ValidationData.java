@@ -37,7 +37,7 @@ import lombok.ToString;
 /**
  * Reprsents data to show on excel for different KPIs.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @JsonInclude(Include.NON_NULL)
 @Data
 @Getter

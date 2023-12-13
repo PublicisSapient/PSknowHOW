@@ -112,7 +112,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 
@@ -154,7 +154,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

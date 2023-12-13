@@ -33,7 +33,7 @@ public class ApiTokenAuthenticationToken extends AbstractAuthenticationToken {
 	private final transient Object principal;
 	private transient Object credentials;
 
-	@SuppressWarnings("PMD")
+	//@SuppressWarnings("PMD")
 	public ApiTokenAuthenticationToken(Object principal, Object credentials) {
 		super(null);
 		this.principal = principal;
@@ -41,7 +41,7 @@ public class ApiTokenAuthenticationToken extends AbstractAuthenticationToken {
 		setAuthenticated(false);
 	}
 
-	@SuppressWarnings("PMD")
+	//@SuppressWarnings("PMD")
 	public ApiTokenAuthenticationToken(Object principal, Object credentials,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);

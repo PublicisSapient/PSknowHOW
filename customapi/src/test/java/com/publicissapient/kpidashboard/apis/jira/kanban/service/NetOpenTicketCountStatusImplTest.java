@@ -180,7 +180,7 @@ public class NetOpenTicketCountStatusImplTest {
 		return dataCount;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testNetOpenTicketByStatus() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

@@ -91,7 +91,7 @@ public class JiraServiceKanbanRTest {
 	private CacheService cacheService;
 	@Mock
 	private NetOpenTicketCountByRCAServiceImpl rcaServiceImpl;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraKPIService> services;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataList = new ArrayList<>();
@@ -245,7 +245,7 @@ public class JiraServiceKanbanRTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest("kpi14");
 		kpiRequest.setLabel("PROJECT");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 		jiraServiceCache.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TICKET_VELOCITY.name(), mcokAbstract);
@@ -369,7 +369,7 @@ public class JiraServiceKanbanRTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest("kpi14");
 		kpiRequest.setLabel("PROJECT");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 		jiraServiceCache.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TICKET_VELOCITY.name(), mcokAbstract);
@@ -447,7 +447,7 @@ public class JiraServiceKanbanRTest {
 		KpiRequest kpiRequest = kpiRequestFactory.findKpiRequest("kpi14");
 		kpiRequest.setLabel("PROJECT");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 		jiraServiceCache.put(KPICode.NET_OPEN_TICKET_COUNT_BY_STATUS.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.TICKET_VELOCITY.name(), mcokAbstract);

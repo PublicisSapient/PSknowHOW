@@ -141,7 +141,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void leafNodeValueByTower(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
@@ -254,7 +254,7 @@ public class RegressionPercentageServiceImpl extends ZephyrKPIService<Double, Li
 	 * @param excelData
 	 * @param trendLineName
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void populateForToolConfigured(Map<String, Node> mapTmp, List<DataCount> trendValueList, Node node,
 			Map<String, Object> testDataListMap, String requestTrackerId, List<KPIExcelData> excelData,
 			String trendLineName) {

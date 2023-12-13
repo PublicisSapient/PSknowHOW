@@ -24,7 +24,7 @@ public class TestExecutionRepositoryCustomImpl implements TestExecutionRepositor
 	@Autowired
 	private MongoOperations operations;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<TestExecution> findTestExecutionDetailByFilters(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {

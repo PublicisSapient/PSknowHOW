@@ -130,7 +130,7 @@ public class JiraServiceR {
 	 * @throws EntityNotFoundException
 	 *             EntityNotFoundException
 	 */
-	@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
+	//@SuppressWarnings({ "PMD.AvoidCatchingGenericException", "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("Processing KPI calculation for data {}", kpiRequest.getKpiList());
@@ -496,7 +496,7 @@ public class JiraServiceR {
 		/**
 		 * {@inheritDoc}
 		 */
-		@SuppressWarnings("PMD.AvoidCatchingGenericException")
+		//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 		@Override
 		public void compute() {
 			try {

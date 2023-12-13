@@ -135,7 +135,7 @@ public class AutomationPercentageServiceImplTest {
 		assertThat("Qualifier type :", qualifierType, equalTo(KPICode.INSPRINT_AUTOMATION_COVERAGE.name()));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		List<Node> leafNodeList = new ArrayList<>();

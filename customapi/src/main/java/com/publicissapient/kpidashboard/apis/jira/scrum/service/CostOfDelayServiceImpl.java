@@ -59,7 +59,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("javadoc")
+//@SuppressWarnings("javadoc")
 @Service
 @Slf4j
 public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
@@ -144,7 +144,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
 

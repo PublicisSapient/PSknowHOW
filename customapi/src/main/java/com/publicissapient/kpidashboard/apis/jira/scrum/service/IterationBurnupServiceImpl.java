@@ -377,7 +377,7 @@ public class IterationBurnupServiceImpl extends JiraKPIService<Map<String, Long>
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();

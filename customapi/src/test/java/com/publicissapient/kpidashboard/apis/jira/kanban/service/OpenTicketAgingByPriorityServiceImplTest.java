@@ -145,7 +145,7 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		trendValueMap.put("P4", trendValues);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTicketAgingByPriority() throws ApplicationException {
 
@@ -203,7 +203,7 @@ public class OpenTicketAgingByPriorityServiceImplTest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

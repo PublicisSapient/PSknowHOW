@@ -23,7 +23,7 @@ package com.publicissapient.kpidashboard.apis.errors;
  *
  * @author tauakram
  */
-public class ApiSubError { // NOSONAR
+public class ApiSubError { 
 	// This is required for the existing structure
 }
 

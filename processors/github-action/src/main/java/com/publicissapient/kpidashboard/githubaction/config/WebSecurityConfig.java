@@ -26,7 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  *
  * @author akshat
  */
-@SuppressWarnings("java:S1874")
+//@SuppressWarnings("java:S1874")
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 

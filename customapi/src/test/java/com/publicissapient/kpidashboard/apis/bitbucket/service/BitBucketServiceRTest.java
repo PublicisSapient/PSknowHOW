@@ -85,7 +85,7 @@ public class BitBucketServiceRTest {
 	private CodeCommitServiceImpl codeCommitServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -150,11 +150,11 @@ public class BitBucketServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcess() throws Exception {
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPICode.CODE_COMMIT.name(), mcokAbstract);
 
@@ -190,11 +190,11 @@ public class BitBucketServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcessExcel() throws Exception {
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), mcokAbstract);
 
@@ -228,10 +228,10 @@ public class BitBucketServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcessgetFromCache() throws Exception {
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), mcokAbstract);
 

@@ -74,10 +74,10 @@ public class SonarController {
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sonar/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/sonar/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getSonarAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 
 		log.info("[SONAR][{}]. Received Sonar KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 
@@ -104,9 +104,9 @@ public class SonarController {
 	 * @return {@code ResponseEntity<List<KpiElement>>}
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sonarkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/sonarkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<List<KpiElement>> getSonarKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 
 		log.info("[SONAR KANBAN][{}]. Received Sonar KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 

@@ -50,7 +50,7 @@ public class FilterServiceFactory {
 	 * @return AccountHierarchyService with mathching Qualifier Type
 	 * @throws ApplicationException
 	 */
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static AccountHierarchyService getFilterService(String type) throws ApplicationException {
 		AccountHierarchyService<?, ?> service = FILTER_SERVICE_CACHE.get(type);
 		if (service == null) {

@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * to order the headings of excel columns
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 public enum KPIExcelColumn {
 
 	CODE_BUILD_TIME("kpi8",

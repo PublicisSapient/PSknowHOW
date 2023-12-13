@@ -36,7 +36,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param principal
 	 * @param credentials
 	 */
-	@SuppressWarnings("PMD")
+	//@SuppressWarnings("PMD")
 	public StandardAuthenticationToken(Object principal, Object credentials) {
 		super(null);
 		this.principal = principal;
@@ -50,7 +50,7 @@ public class StandardAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param credentials
 	 * @param authorities
 	 */
-	@SuppressWarnings("PMD")
+	//@SuppressWarnings("PMD")
 	public StandardAuthenticationToken(Object principal, Object credentials,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);

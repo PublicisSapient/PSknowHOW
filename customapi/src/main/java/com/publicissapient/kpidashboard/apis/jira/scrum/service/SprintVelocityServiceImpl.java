@@ -147,7 +147,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param kpiRequest
 	 * @return {@code Map<String, Object>}
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
@@ -196,7 +196,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param techDebtStoryMap
 	 * @return Double
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> techDebtStoryMap) {
 
@@ -219,7 +219,7 @@ public class SprintVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param sprintLeafNodeList
 	 * @param kpiElement
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

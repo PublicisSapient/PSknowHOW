@@ -32,7 +32,7 @@ import lombok.Setter;
 /**
  * Represents test case.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter

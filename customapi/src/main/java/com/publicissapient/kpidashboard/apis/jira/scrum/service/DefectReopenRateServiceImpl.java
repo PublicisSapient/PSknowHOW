@@ -120,7 +120,7 @@ public class DefectReopenRateServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param kpiRequest
 	 */
 
-	@SuppressWarnings("java:S3776")
+	//@SuppressWarnings("java:S3776")
 	private void projectWiseLeafNodeValues(List<Node> projectList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		Node leafNode = projectList.stream().findFirst().orElse(null);

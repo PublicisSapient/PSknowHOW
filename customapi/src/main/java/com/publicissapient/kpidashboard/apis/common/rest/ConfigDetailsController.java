@@ -54,7 +54,7 @@ public class ConfigDetailsController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/configDetails", method = GET, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ConfigDetails> getConfigDetails(HttpServletRequest request) {
 		log.info("ConfigDetailsController::getConfigDetails start");
 		ConfigDetails configDetails = configDetailService.getConfigDetails();

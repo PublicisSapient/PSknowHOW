@@ -86,7 +86,7 @@ public class AccountHierarchyServiceImpl
 		return "Scrum";
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public Set<AccountFilteredData> getFilteredList(AccountFilterRequest request) {
 		List<AccountHierarchyData> hierarchyDataAll = (List<AccountHierarchyData>) cacheService
 				.cacheAccountHierarchyData();

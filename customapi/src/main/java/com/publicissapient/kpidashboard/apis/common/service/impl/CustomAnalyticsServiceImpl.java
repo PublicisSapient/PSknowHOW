@@ -78,7 +78,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
 		JSONObject json = new JSONObject();

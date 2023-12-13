@@ -36,7 +36,7 @@ import lombok.ToString;
 /**
  * Data count used for response of all the kpis.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter

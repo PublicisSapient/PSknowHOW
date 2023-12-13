@@ -229,7 +229,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) throws ParseException {
 		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()

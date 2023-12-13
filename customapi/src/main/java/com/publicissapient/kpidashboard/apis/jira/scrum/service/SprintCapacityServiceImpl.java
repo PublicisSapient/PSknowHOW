@@ -144,7 +144,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param sprintCapacityMap
 	 * @return timeLogged in seconds
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> sprintCapacityMap) {
 		String requestTrackerId = getRequestTrackerId();
@@ -243,7 +243,7 @@ public class SprintCapacityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param sprintCapacityStoryMap
 	 * @return Map<Pair < String, String>, List<Feature>>
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private Map<Pair<String, String>, List<JiraIssue>> prepareMapForSprintAndFilters(
 			Map<Pair<String, String>, Double> sprintWiseEstimateTimeMap, KpiRequest kpiRequest,
 			Map<String, Object> sprintCapacityStoryMap) {

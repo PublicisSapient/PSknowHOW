@@ -153,7 +153,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("java:S3776")
+	//@SuppressWarnings("java:S3776")
 	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
@@ -349,7 +349,7 @@ public class DevCompletionStatusServiceImpl extends JiraKPIService<Integer, List
 		}
 	}
 
-	@SuppressWarnings("java:S107")
+	//@SuppressWarnings("java:S107")
 	private int getDelay(FieldMapping fieldMapping, Map<String, IterationKpiModalValue> modalObjectMap,
 			List<Integer> overallDelay, List<IterationKpiModalValue> overAllmodalValues,
 			List<IterationKpiModalValue> modalValues, int delay, JiraIssue jiraIssue, Map<String, Object> jiraIssueData,

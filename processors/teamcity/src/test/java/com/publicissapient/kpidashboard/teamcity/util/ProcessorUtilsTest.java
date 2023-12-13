@@ -112,7 +112,7 @@ public class ProcessorUtilsTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void getGitRepoBranch() {
 		List<String> list = new ArrayList<String>();
@@ -156,7 +156,7 @@ public class ProcessorUtilsTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void startDate() {
 		JSONObject d = new JSONObject();
@@ -169,14 +169,14 @@ public class ProcessorUtilsTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void getCommitAuthor() {
 		JSONObject d = new JSONObject();
 		ProcessorUtils.getCommitAuthor(d);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void firstCulprit() {
 		JSONObject d = new JSONObject();

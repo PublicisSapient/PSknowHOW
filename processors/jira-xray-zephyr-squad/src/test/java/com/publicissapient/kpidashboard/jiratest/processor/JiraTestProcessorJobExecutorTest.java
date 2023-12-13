@@ -156,7 +156,7 @@ public class JiraTestProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void cacheRestClient() throws Exception { // NOSONAR
+	public void cacheRestClient() throws Exception { 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -168,7 +168,7 @@ public class JiraTestProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void cacheRestClientResponseNull() throws Exception { // NOSONAR
+	public void cacheRestClientResponseNull() throws Exception { 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		HttpEntity<?> entity = new HttpEntity<>(headers);

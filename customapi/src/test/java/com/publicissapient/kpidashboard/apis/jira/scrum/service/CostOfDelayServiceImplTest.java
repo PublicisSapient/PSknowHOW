@@ -66,7 +66,7 @@ import com.publicissapient.kpidashboard.common.repository.application.FieldMappi
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 
-@SuppressWarnings("javadoc")
+//@SuppressWarnings("javadoc")
 @RunWith(MockitoJUnitRunner.class)
 public class CostOfDelayServiceImplTest {
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();

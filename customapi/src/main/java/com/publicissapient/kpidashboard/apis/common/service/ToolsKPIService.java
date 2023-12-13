@@ -899,7 +899,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiName
 	 * @return aggregated value
 	 */
-	public R calculateKpiValue(List<R> values, String kpiName) { // NOSONAR
+	public R calculateKpiValue(List<R> values, String kpiName) { 
 		return null;
 	}
 
@@ -912,7 +912,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            kpiName
 	 * @return aggregated value
 	 */
-	public S calculateMapKpiMaturity(List<R> values, String kpiName) { // NOSONAR
+	public S calculateMapKpiMaturity(List<R> values, String kpiName) { 
 		return null;
 	}
 
@@ -1198,7 +1198,7 @@ public abstract class ToolsKPIService<R, S> {
 	 *            KPICODE kpiId
 	 * @return
 	 */
-	public Double calculateThresholdValue(String fieldValue, String kpiId) { // NOSONAR
+	public Double calculateThresholdValue(String fieldValue, String kpiId) { 
 		Double thresholdValue;
 		if (StringUtils.isEmpty(fieldValue)) {
 			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();

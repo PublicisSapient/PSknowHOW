@@ -186,7 +186,7 @@ public class KPIExcelDataService {
 	 * @param acceptedFilter
 	 * @return Excel data Object
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private Object processScrum(String kpiID, Map<String, KpiRequest> kpiRequestSourceWiseMap,
 			List<String> acceptedFilter) {
 
@@ -264,7 +264,7 @@ public class KPIExcelDataService {
 	 * @param acceptedFilter
 	 * @return Excel data Object
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private Object processKanban(String kpiID, Map<String, KpiRequest> kpiRequestSourceWiseMap,
 			List<String> acceptedFilter) {
 

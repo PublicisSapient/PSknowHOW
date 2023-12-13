@@ -147,7 +147,7 @@ public class FilterHelperService {
 		return hierarchyData;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public List<AccountHierarchyDataKanban> getFilteredBuildsKanban(KpiRequest kpiRequest, String groupName)// NOPMD
 			throws EntityNotFoundException {// NOPMD
 		// Do not remove NOPMD comment. This is required to ignore nthcomplexity

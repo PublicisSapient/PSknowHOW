@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 @Data
 @NoArgsConstructor
-@SuppressWarnings({ "squid:S00100", "squid:S00117", "squid:S00116" }) // to avoid sonar for _class
+//@SuppressWarnings({ "squid:S00100", "squid:S00117", "squid:S00116" }) // to avoid sonar for _class
 public class SonarViolations {
 	private Long info;
 	private Long minor;

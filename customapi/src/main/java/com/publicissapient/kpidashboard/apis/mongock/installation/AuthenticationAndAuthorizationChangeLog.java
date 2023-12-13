@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author hargupta15
  */
 @Slf4j
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "ddl1", order = "001", author = "PSKnowHOW")
 public class AuthenticationAndAuthorizationChangeLog {
 	public static final String ROLES_COLLECTION = "roles";

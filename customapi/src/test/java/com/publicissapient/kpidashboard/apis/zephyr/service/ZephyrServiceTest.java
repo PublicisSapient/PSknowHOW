@@ -81,7 +81,7 @@ public class ZephyrServiceTest {
 	private ZephyrKPIService<?, ?, ?> zephyrAutomationService;
 	@Mock
 	private ZephyrKPIService<?, ?, ?> zephyrRegressionService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<ZephyrKPIService> services;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();

@@ -134,7 +134,7 @@ public class FlowDistributionServiceImpl extends JiraKPIService<Double, List<Obj
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNode, List<DataCount> trendValueList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 

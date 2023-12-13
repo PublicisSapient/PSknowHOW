@@ -51,7 +51,7 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 	 * @return Authentication
 	 */
 	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException { 
 																									   // //NOPMD
 		try {
 			Authentication auth = authService.authenticate(authentication.getName(),

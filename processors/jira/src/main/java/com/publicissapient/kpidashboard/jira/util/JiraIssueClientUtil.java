@@ -73,7 +73,7 @@ public final class JiraIssueClientUtil {
 	 *            Atlassian IssueField
 	 * @return list return from JsonObject or Array
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	//@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Collection getListFromJson(IssueField issueField) {
 
 		Object value = issueField.getValue();

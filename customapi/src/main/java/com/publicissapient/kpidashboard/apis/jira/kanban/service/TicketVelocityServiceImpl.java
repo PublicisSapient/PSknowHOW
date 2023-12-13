@@ -110,14 +110,14 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 		return kpiElement;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		return kpiHelperService.fetchTicketVelocityDataFromDb(leafNodeList, startDate, endDate);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> techDebtStoryMap) {
 
@@ -139,7 +139,7 @@ public class TicketVelocityServiceImpl extends JiraKPIService<Double, List<Objec
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 

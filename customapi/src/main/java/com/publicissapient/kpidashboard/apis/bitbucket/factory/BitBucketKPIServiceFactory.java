@@ -42,7 +42,7 @@ public class BitBucketKPIServiceFactory {
 	@Autowired
 	private List<BitBucketKPIService<?, ?, ?>> services;
 
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	public static BitBucketKPIService getBitBucketKPIService(String type) throws ApplicationException {
 		BitBucketKPIService<?, ?, ?> service = BIT_BUCKET_SERVICE_CACHE.get(type);
 		if (service == null) {

@@ -121,7 +121,7 @@ public class NetOpenTicketCountByRCAServiceImplTest {
 		trendValueMap.put("Functionality Not Clear", trendValues);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTicketRCA() throws ApplicationException {
 

@@ -180,7 +180,7 @@ public class TicketOpenVsClosedByTypeServiceImplTest {
 		fieldMappingList.add(projectThree);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetStoryOpenRateIssueType() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

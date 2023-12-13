@@ -27,7 +27,7 @@ public class KanbanTestExecutionRepositoryCustomImpl implements KanbanTestExecut
 	@Autowired
 	private MongoOperations operations;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanTestExecution> findTestExecutionDetailByFilters(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo) {

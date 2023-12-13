@@ -73,7 +73,7 @@ public class KpiMaster extends BasicModel {
 	@JsonProperty("videoLink")
 	private KPIVideoLink videoLink;
 
-	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName") // because it will
+	//@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName") // because it will
 															  // result in
 															  // changing ui and
 															  // db

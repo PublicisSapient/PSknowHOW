@@ -71,7 +71,7 @@ public class PushDataController {
 	 * @return
 	 */
 
-	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/build", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> savePushDataBuilds(HttpServletRequest request,
 			@RequestBody @Valid PushBuildDeployDTO pushBuildDeployDTO) {
 		PushDataTraceLog instance = PushDataTraceLog.getInstance();
@@ -82,7 +82,7 @@ public class PushDataController {
 				pushBuildService.processPushDataInput(buildDeploy, exposeApiToken.getBasicProjectConfigId())));
 	}
 
-	@RequestMapping(value = "/tracelog/{basicConfigId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/tracelog/{basicConfigId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getTraceLog(@PathVariable String basicConfigId) {
 		List<PushDataTraceLogDTO> allLogs = pushDataTraceLogService.getByProjectConfigId(new ObjectId(basicConfigId));
 		ServiceResponse response;

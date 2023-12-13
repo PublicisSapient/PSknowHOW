@@ -99,7 +99,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 			tokenSecretVerifier.verifier = message.getParameter(OAUTH_VERIFIER);
 			return tokenSecretVerifier;
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to obtain request token", e);// NOSONAR
+			throw new RuntimeException("Failed to obtain request token", e);
 		}
 	}
 
@@ -124,7 +124,7 @@ public class JiraOAuthClient implements AuthenticationHandler {
 					ImmutableList.of(new OAuth.Parameter(OAuth.OAUTH_VERIFIER, oauthVerifier)));
 			return message.getToken();
 		} catch (IOException | OAuthException | URISyntaxException e) {
-			throw new RuntimeException("Failed to get Token from Access Token", e);// NOSONAR
+			throw new RuntimeException("Failed to get Token from Access Token", e);
 		}
 
 	}
@@ -280,11 +280,11 @@ public class JiraOAuthClient implements AuthenticationHandler {
 
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	final class TokenSecretVerifierHolder {
 		private String token;
-		private String verifier;// NOSONAR
-		private String secret;// NOSONAR
+		private String verifier;
+		private String secret;
 	}
 
 }

@@ -35,7 +35,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "release_burnUp_changes", order = "8102", author = "shunaray", systemVersion = "8.1.0")
 public class ReleaseBurnUpChangeUnit {
 

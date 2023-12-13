@@ -59,7 +59,7 @@ public class CustomCaptchaController {
 	 * 
 	 * @return CustomCaptcha
 	 */
-	@RequestMapping(value = "/login/captcha", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/login/captcha", method = GET, produces = APPLICATION_JSON_VALUE) 
 	public CustomCaptcha getCaptcha() {
 
 		log.info("CustomCaptchaController::getCaptcha start");

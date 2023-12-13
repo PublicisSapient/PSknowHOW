@@ -57,7 +57,7 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 	 *            Jira processor configuration
 	 * @return DisposableHttpClient
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public DisposableHttpClient createProcessorClient(final URI serverUri,
 			final AuthenticationHandler authenticationHandler, JiraProcessorConfig jiraProcessorConfig) {
 		final HttpClientOptions options = new HttpClientOptions();
@@ -118,7 +118,7 @@ public class ProcessorAsynchHttpClientFactory extends AsynchronousHttpClientFact
 	 * These properties are used to present JRJC as a User-Agent during http
 	 * requests.
 	 */
-	@SuppressWarnings("deprecation")
+	//@SuppressWarnings("deprecation")
 	private static class RestClientApplicationProperties implements ApplicationProperties {
 
 		private final String baseUrl;

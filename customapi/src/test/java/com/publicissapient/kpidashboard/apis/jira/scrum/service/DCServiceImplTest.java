@@ -165,7 +165,7 @@ public class DCServiceImplTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetDC() throws ApplicationException {
 
@@ -230,7 +230,7 @@ public class DCServiceImplTest {
 		assertThat(dcServiceImpl.getQualifierType(), equalTo(KPICode.DEFECT_COUNT_BY_PRIORITY.name()));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,

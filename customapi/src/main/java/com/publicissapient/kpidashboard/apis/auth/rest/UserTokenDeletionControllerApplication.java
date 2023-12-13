@@ -66,7 +66,7 @@ public class UserTokenDeletionControllerApplication {
 	 * @param request
 	 *            the request
 	 */
-	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity deleteUserToken(HttpServletRequest request) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
 		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");

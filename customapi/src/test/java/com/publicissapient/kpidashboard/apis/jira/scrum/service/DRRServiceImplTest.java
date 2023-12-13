@@ -181,7 +181,7 @@ public class DRRServiceImplTest {
 		assertThat("DRR value :", drrValue, equalTo(84.0));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 

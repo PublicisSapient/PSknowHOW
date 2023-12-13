@@ -258,7 +258,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	 * @param kpiRequest
 	 *            the KpiRequest
 	 */
-	@SuppressWarnings(UNCHECKED)
+	//@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

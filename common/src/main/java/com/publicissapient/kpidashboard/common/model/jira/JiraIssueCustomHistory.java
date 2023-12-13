@@ -38,7 +38,7 @@ import lombok.Setter;
  * Each component of an application has a different source repo, build job,
  * deploy job, etc.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Getter
 @Setter
 @Data

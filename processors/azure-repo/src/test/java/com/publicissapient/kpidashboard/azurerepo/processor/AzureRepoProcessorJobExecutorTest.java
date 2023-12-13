@@ -217,7 +217,7 @@ public class AzureRepoProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void testAddProcessorItems() throws Exception {// NOSONAR
+	public void testAddProcessorItems() throws Exception {
 
 		List<ProcessorItem> processorItems = new ArrayList<>();
 

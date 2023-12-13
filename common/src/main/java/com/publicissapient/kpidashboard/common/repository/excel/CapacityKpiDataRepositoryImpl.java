@@ -52,7 +52,7 @@ public class CapacityKpiDataRepositoryImpl implements CapacityKpiDataCustomRepos
 	 * com.publicissapient.kpidashboard.repository.CapacityKpiDataCustomRepository#
 	 * findByFilters(java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<CapacityKpiData> findByFilters(Map<String, Object> mapofFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap) {

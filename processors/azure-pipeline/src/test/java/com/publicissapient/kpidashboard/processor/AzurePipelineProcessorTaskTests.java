@@ -421,7 +421,7 @@ public class AzurePipelineProcessorTaskTests {
 		assertEquals(expectedStatus, actualStatus);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	@Test
 	public void collectClean() {
 		AzurePipelineProcessor processor = processorWithOneServer();

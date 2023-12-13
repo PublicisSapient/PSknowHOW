@@ -60,7 +60,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("javadoc")
+//@SuppressWarnings("javadoc")
 @Slf4j
 @Component
 public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
@@ -188,7 +188,7 @@ public class MissingWorkLogsServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(List<Node> sprintLeafNodeList, List<DataCount> trendValueList,
 			KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();

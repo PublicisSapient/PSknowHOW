@@ -37,7 +37,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@SuppressWarnings({ "javadoc" })
+//@SuppressWarnings({ "javadoc" })
 @Getter
 @Setter
 @Builder

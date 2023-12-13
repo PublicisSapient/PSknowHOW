@@ -78,11 +78,11 @@ public class AzureOnlineRunnable implements Runnable {// NOPMD
 	 *
 	 *
 	 */
-	public AzureOnlineRunnable(CountDownLatch latch, AzureAdapter azureAdapter, // NOSONAR
-			ProjectConfFieldMapping onlineprojectConfigMap, String projectKey, AzureIssueClientFactory factory, // NOSONAR
-			AzureProcessorConfig azureConfig, BoardMetadataRepository boardMetadataRepository, // NOSONAR
+	public AzureOnlineRunnable(CountDownLatch latch, AzureAdapter azureAdapter, 
+			ProjectConfFieldMapping onlineprojectConfigMap, String projectKey, AzureIssueClientFactory factory, 
+			AzureProcessorConfig azureConfig, BoardMetadataRepository boardMetadataRepository, 
 			MetadataIdentifierRepository metadataIdentifierRepository, FieldMappingRepository fieldMappingRepository,
-			AzureRestClientFactory azureRestClientFactory)// NOSONAR
+			AzureRestClientFactory azureRestClientFactory)
 	{
 		this.latch = latch;
 		this.azureAdapter = azureAdapter;

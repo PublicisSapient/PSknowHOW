@@ -95,7 +95,7 @@ public class SonarServiceRTest {
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@Mock
 	private TokenAuthenticationService tokenAuthenticationService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<SonarKPIService> services;
 	private KpiElement cqKpiElement;
@@ -187,7 +187,7 @@ public class SonarServiceRTest {
 
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		SonarKPIService mockAbstract = sonarViolationsService;
 		sonarServiceCache.put(KPICode.SONAR_TECH_DEBT.name(), mockAbstract);
 		sonarServiceCache.put(KPICode.UNIT_TEST_COVERAGE.name(), mockAbstract);
@@ -243,7 +243,7 @@ public class SonarServiceRTest {
 
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		SonarKPIService mockAbstract = sonarViolationsService;
 		sonarServiceCache.put(KPICode.SONAR_TECH_DEBT.name(), mockAbstract);
 		sonarServiceCache.put(KPICode.UNIT_TEST_COVERAGE.name(), mockAbstract);

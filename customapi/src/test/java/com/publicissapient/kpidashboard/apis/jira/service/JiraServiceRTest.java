@@ -92,7 +92,7 @@ public class JiraServiceRTest {
 	private CacheService cacheService;
 	@Mock
 	private RCAServiceImpl rcaServiceImpl;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<JiraKPIService> services;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
@@ -211,13 +211,13 @@ public class JiraServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcess() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_RCA.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.DEFECT_INJECTION_RATE.name(), mcokAbstract);
@@ -328,13 +328,13 @@ public class JiraServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testProcess1() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(5);
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_RCA.name(), mcokAbstract);
 		jiraServiceCache.put(KPICode.DEFECT_INJECTION_RATE.name(), mcokAbstract);
@@ -398,13 +398,13 @@ public class JiraServiceRTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void TestProcessExcel() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest1(6);
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		JiraKPIService mcokAbstract = rcaServiceImpl;
 
 		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_RCA.name(), mcokAbstract);

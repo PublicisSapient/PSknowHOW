@@ -263,7 +263,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

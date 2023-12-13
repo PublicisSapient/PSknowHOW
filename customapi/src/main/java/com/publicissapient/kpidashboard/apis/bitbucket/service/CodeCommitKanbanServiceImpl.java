@@ -103,7 +103,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	 * @return
 	 * @throws ApplicationException
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -309,7 +309,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
 	 * @param kpiRequest
 	 * @return
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	@Override
 	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
 			KpiRequest kpiRequest) {

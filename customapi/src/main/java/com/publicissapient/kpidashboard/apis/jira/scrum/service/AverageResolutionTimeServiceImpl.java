@@ -139,7 +139,7 @@ public class AverageResolutionTimeServiceImpl extends JiraKPIService<Double, Lis
 	 * @param kpiRequest
 	 */
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
 			Set<String> absentIssueTypesRoot) {

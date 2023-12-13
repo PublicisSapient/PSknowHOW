@@ -157,7 +157,7 @@ public class BitBucketServerClient extends BasicBitBucketClient implements BitBu
 		}
 	}
 
-	@SuppressWarnings("java:S107")
+	//@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String scmRevisionNumber, String message, String author,
 			long timestamp, List<String> parentList, ProcessorToolConnection bitbucketServerInfo,
 			ProjectBasicConfig proBasicConfig) {

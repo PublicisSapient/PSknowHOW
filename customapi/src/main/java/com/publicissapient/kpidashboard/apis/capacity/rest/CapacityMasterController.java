@@ -85,7 +85,7 @@ public class CapacityMasterController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@RequestMapping(value = "/assignee", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/assignee", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> saveOrUpdateAssignee(@Valid @RequestBody CapacityMaster capacityMaster) {
 		policy.checkPermission(capacityMaster, "SAVE_UPDATE_CAPACITY");
 		ServiceResponse response = new ServiceResponse(false, "Failed to add Capacity Data", null);

@@ -80,7 +80,7 @@ public class BitBucketServiceKanbanR {
 	 * @throws EntityNotFoundException
 	 *             the entity not found exception
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[BITBUCKET KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),

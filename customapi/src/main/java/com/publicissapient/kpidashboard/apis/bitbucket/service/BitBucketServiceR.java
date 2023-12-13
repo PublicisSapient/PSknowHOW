@@ -67,7 +67,7 @@ public class BitBucketServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[BITBUCKET][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),

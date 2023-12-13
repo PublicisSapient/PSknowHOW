@@ -243,7 +243,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
 		Double automatedPercentage = 0d;
@@ -264,7 +264,7 @@ public final class AutomationPercentageServiceImpl extends ZephyrKPIService<Doub
 	 * @param mapTmp
 	 * @param sprintLeafNodeList
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

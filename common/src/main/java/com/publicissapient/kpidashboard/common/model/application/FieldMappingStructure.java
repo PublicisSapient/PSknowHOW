@@ -32,7 +32,7 @@ import lombok.Setter;
 /**
  * The Structure of each FieldMapping is defined
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Getter
 @Setter

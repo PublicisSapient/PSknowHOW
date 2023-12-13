@@ -187,7 +187,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> filterComponentIdWiseDefectMap) {
 		String requestTrackerId = getRequestTrackerId();
@@ -214,7 +214,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

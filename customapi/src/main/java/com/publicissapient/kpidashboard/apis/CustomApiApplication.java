@@ -69,7 +69,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 *
 	 * @param args
 	 */
-	@SuppressWarnings("PMD.CloseResource")
+	//@SuppressWarnings("PMD.CloseResource")
 	public static void main(String[] args) {
 		SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
 		ConfigurableApplicationContext configurableApplicationContext = new CustomApiApplication()

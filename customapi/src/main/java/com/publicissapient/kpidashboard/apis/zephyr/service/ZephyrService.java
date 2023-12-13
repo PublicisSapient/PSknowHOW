@@ -81,7 +81,7 @@ public class ZephyrService {
 	 * @return
 	 * @throws EntityNotFoundException
 	 */
-	@SuppressWarnings({ "unchecked" })
+	//@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[ZEPHYR][{}]. Processing KPI calculation for data {}", kpiRequest.getIds(), kpiRequest.getKpiList());

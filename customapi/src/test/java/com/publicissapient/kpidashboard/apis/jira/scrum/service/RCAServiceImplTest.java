@@ -187,7 +187,7 @@ public class RCAServiceImplTest {
 		return dataCount;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetRCA() throws ApplicationException {
 

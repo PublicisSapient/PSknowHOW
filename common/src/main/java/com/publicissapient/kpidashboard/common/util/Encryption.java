@@ -115,7 +115,7 @@ public final class Encryption {
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
 		SecretKey secKey = getAesEncryptionKey(key);
 		// AES defaults to AES/ECB/PKCS5Padding in Java 7
-		Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
+		Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); 
 		aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
 		byte[] byteCipherText = aesCipher.doFinal(plainText.getBytes());
 		return bytesToHex(byteCipherText);
@@ -144,7 +144,7 @@ public final class Encryption {
 		SecretKey secKey = getAesEncryptionKey(key);
 		Cipher aesCipher;
 		try {
-			aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);// NOSONAR
+			aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);
 			aesCipher.init(Cipher.DECRYPT_MODE, secKey);
 			byte[] byteCipherString = toByteArray(byteCipherText);
 			byte[] bytePlainText = aesCipher.doFinal(byteCipherString);

@@ -135,7 +135,7 @@ public class RefinementRejectionRateServiceImplTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDbData() throws ApplicationException {
 		when(jiraIssueRepository.findUnassignedIssues(Mockito.anyString(), Mockito.anyString(), Mockito.anyMap()))
@@ -154,7 +154,7 @@ public class RefinementRejectionRateServiceImplTest {
 				((List<JiraIssue>) responseRefinementList.get(UNASSIGNED_JIRA_ISSUE)).get(0).getNumber());
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetKpiData() throws ApplicationException {
 		when(customApiConfig.getBacklogWeekCount()).thenReturn(5);

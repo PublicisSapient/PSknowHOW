@@ -86,7 +86,7 @@ public class TestExecutionKanbanServiceImpl extends ZephyrKPIService<Double, Lis
 		return KPICode.TEST_EXECUTION_KANBAN.name();
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {

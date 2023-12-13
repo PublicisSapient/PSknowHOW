@@ -76,7 +76,7 @@ public class BitBucketServiceKanbanRTest {
 	private CodeCommitKanbanServiceImpl codeCommitKanbanServiceImpl;
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")
 	@Mock
 	private List<BitBucketKPIService> services;
 	private List<AccountHierarchyDataKanban> accountHierarchyDataKanbanList = new ArrayList<>();
@@ -169,7 +169,7 @@ public class BitBucketServiceKanbanRTest {
 
 		KpiRequest kpiRequest = createKpiRequest(5, "Bitbucket");
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		BitBucketKPIService mcokAbstract = codeCommitKanbanServiceImpl;
 		bitbucketServiceCache.put(KPICode.NUMBER_OF_CHECK_INS.name(), mcokAbstract);
 

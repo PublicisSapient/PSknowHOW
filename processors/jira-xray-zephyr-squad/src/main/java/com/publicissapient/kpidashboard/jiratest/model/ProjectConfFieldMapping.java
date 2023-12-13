@@ -33,7 +33,7 @@ import lombok.Setter;
  * The type Project conf field mapping.
  */
 
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter

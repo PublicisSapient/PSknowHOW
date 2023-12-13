@@ -79,7 +79,7 @@ public class KanbanJiraIssueRepositoryImpl implements KanbanJiraIssueRepoCustom 
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanJiraIssue> findIssuesByDateAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo, String dateCriteria) {

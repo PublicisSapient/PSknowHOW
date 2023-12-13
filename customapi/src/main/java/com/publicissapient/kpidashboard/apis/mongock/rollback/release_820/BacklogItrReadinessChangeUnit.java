@@ -37,7 +37,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "r_backlog_itr_ready_Ehc", order = "08204", author = "shunaray", systemVersion = "8.2.0")
 public class BacklogItrReadinessChangeUnit {
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";

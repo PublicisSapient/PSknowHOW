@@ -52,7 +52,7 @@ public class VersionMetadataController {
 	 *
 	 * @return the version details
 	 */
-	@RequestMapping(value = "/getversionmetadata", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/getversionmetadata", method = GET, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<VersionDetails> getVersionDetails() {
 		log.debug("VersionMetadataController::getVersionDetails start");
 		VersionDetails versionDetails = versionMetadataService.getVersionMetadata();

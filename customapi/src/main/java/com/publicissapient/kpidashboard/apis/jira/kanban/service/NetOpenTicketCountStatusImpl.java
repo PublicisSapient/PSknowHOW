@@ -197,7 +197,7 @@ public class NetOpenTicketCountStatusImpl
 	 * @param kpiRequest
 	 *
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void dateWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> leafNodeList, KpiElement kpiElement,
 			KpiRequest kpiRequest) {
 

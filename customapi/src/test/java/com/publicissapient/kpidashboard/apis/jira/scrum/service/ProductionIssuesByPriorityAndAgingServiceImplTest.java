@@ -168,7 +168,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImplTest {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testFetchKPIDataFromDb() throws ApplicationException {
 		List<Node> leafNodeList = new ArrayList<>();

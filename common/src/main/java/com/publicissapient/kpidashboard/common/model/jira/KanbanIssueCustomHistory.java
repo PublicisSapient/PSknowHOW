@@ -41,7 +41,7 @@ import lombok.Setter;
 /**
  * The type Kanban feature custom history.
  */
-@SuppressWarnings("PMD.TooManyFields")
+//@SuppressWarnings("PMD.TooManyFields")
 @Data
 @Builder
 @Getter

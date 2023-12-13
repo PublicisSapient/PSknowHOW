@@ -64,7 +64,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 	@Autowired
 	private MongoOperations operations;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanIssueCustomHistory> findIssuesByStatusAndDate(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo,
@@ -136,7 +136,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanIssueCustomHistory> findIssuesByCreatedDateAndType(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, String dateFrom, String dateTo) {
@@ -169,7 +169,7 @@ public class KanbanJiraIssueHistoryRepositoryImpl implements KanbanJiraIssueHist
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<KanbanIssueCustomHistory> findIssuesInWipByDate(Map<String, List<String>> mapOfFilters,
 			Map<String, Map<String, Object>> uniqueProjectMap, Map<String, Map<String, Object>> uniqueWipProjectMap,

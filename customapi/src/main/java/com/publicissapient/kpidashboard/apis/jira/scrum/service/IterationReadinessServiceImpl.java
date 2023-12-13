@@ -142,7 +142,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 	 * @param kpiRequest
 	 *            kpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(List<Node> leafNodeList, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();

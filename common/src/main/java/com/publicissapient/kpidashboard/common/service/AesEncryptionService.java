@@ -75,7 +75,7 @@ public class AesEncryptionService implements EncryptionService {
 			KeySpec spec = new PBEKeySpec(key.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
 			SecretKey tempKey = factory.generateSecret(spec);
 			SecretKey secret = new SecretKeySpec(tempKey.getEncoded(), ALGO);
-			Cipher cipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);// NOSONAR
+			Cipher cipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);
 			IvParameterSpec iv = generateIv();
 			cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
 			byte[] encryptedText = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
@@ -127,7 +127,7 @@ public class AesEncryptionService implements EncryptionService {
 			KeySpec spec = new PBEKeySpec(key.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
 			SecretKey tempKey = factory.generateSecret(spec);
 			SecretKey secret = new SecretKeySpec(tempKey.getEncoded(), ALGO);
-			Cipher cipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);// NOSONAR
+			Cipher cipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);
 			IvParameterSpec ivSpec = new IvParameterSpec(iv);
 			cipher.init(Cipher.DECRYPT_MODE, secret, ivSpec);
 			byte[] original = cipher.doFinal(ct);

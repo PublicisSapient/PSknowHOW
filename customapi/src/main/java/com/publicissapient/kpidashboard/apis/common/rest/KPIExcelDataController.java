@@ -61,7 +61,7 @@ public class KPIExcelDataController {
 	 *            the kpi id
 	 * @return validation kpi data
 	 */
-	@RequestMapping(value = "/v1/kpi/{kpiID}", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/v1/kpi/{kpiID}", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<KPIExcelValidationDataResponse> getValidationKPIData(
 			@NotNull @RequestBody KpiRequest kpiRequest, @NotNull @PathVariable("kpiID") String kpiID) {
 

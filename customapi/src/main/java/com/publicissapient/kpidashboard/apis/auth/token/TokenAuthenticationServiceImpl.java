@@ -112,7 +112,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
@@ -169,7 +169,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Set<String> getUserProjects() {
 		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager

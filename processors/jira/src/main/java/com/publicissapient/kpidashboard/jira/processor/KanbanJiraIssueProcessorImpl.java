@@ -484,7 +484,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	}
 
-	private void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping// NOSONAR
+	private void setEstimate(KanbanJiraIssue jiraIssue, Map<String, IssueField> fields, FieldMapping fieldMapping
 	) {
 		Double value = 0d;
 		String valueString = "0";

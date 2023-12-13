@@ -29,7 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class ProcessorUtilsTest {
 
-	@SuppressWarnings("java:S2699")
+	//@SuppressWarnings("java:S2699")
 	@Test
 	void firstCulprit() {
 		JSONObject d = new JSONObject();

@@ -74,7 +74,7 @@ public class AccountHierarchyServiceKanbanImpl// NOPMD
 		return "Kanban";
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public Set<AccountFilteredData> getFilteredList(AccountFilterRequest request) {
 		List<AccountHierarchyDataKanban> hierarchyDataAll = (List<AccountHierarchyDataKanban>) cacheService
 				.cacheAccountHierarchyKanbanData();

@@ -72,7 +72,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	@Autowired
 	private TestExecutionRepository testExecutionRepository;
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
@@ -152,7 +152,7 @@ public class TestExecutionServiceImpl extends ZephyrKPIService<Double, List<Obje
 	 * @param kpiRequest
 	 *            KpiRequest
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

@@ -503,16 +503,16 @@ public class LoggingFilter implements Filter {
 			return original.encodeRedirectURL(url);
 		}
 
-		@SuppressWarnings("deprecation")
+		//@SuppressWarnings("deprecation")
 		@Override
 		public String encodeUrl(String url) {
-			return original.encodeUrl(url); // NOSONAR
+			return original.encodeUrl(url); 
 		}
 
-		@SuppressWarnings("deprecation")
+		//@SuppressWarnings("deprecation")
 		@Override
 		public String encodeRedirectUrl(String url) {
-			return original.encodeRedirectUrl(url); // NOSONAR
+			return original.encodeRedirectUrl(url); 
 		}
 
 		@Override
@@ -560,10 +560,10 @@ public class LoggingFilter implements Filter {
 			original.addIntHeader(name, value);
 		}
 
-		@SuppressWarnings("deprecation")
+		//@SuppressWarnings("deprecation")
 		@Override
 		public void setStatus(int sc, String sm) {
-			original.setStatus(sc, sm); // NOSONAR
+			original.setStatus(sc, sm); 
 		}
 
 		@Override

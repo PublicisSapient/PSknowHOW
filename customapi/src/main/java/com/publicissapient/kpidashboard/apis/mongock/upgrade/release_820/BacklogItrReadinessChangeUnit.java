@@ -37,7 +37,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shunaray
  */
-@SuppressWarnings("java:S1192")
+//@SuppressWarnings("java:S1192")
 @ChangeUnit(id = "backlog_itr_ready_Ehc", order = "8204", author = "shunaray", systemVersion = "8.2.0")
 public class BacklogItrReadinessChangeUnit {
 

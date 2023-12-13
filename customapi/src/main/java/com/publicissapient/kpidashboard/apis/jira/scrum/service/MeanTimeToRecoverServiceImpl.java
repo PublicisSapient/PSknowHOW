@@ -197,7 +197,7 @@ public class MeanTimeToRecoverServiceImpl extends JiraKPIService<Double, List<Ob
 	 * @param kpiElement
 	 *            kpiElement
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
 			KpiElement kpiElement) {
 		Map<String, Object> durationFilter = KpiDataHelper.getDurationFilter(kpiElement);

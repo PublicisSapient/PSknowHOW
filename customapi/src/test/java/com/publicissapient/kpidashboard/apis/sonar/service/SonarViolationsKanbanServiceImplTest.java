@@ -250,7 +250,7 @@ public class SonarViolationsKanbanServiceImplTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetViolations() throws Exception {
 		setToolMap();

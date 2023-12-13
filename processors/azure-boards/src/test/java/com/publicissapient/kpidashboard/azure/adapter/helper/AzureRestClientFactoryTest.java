@@ -66,7 +66,7 @@ public class AzureRestClientFactoryTest {
 	}
 
 	@Test
-	public void cacheRestClient() throws Exception { // NOSONAR
+	public void cacheRestClient() throws Exception { 
 		Mockito.when(azureProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://localhost:8080/");
 		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
 		HttpHeaders headers = new HttpHeaders();
@@ -79,7 +79,7 @@ public class AzureRestClientFactoryTest {
 	}
 
 	@Test
-	public void cacheRestClientResponseNull() throws Exception { // NOSONAR
+	public void cacheRestClientResponseNull() throws Exception { 
 		Mockito.when(azureProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://localhost:8080/");
 		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
 		HttpHeaders headers = new HttpHeaders();

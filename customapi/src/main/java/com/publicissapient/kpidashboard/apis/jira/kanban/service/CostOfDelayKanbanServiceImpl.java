@@ -59,7 +59,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRe
 
 import lombok.extern.slf4j.Slf4j;
 
-@SuppressWarnings("javadoc")
+//@SuppressWarnings("javadoc")
 @Service
 @Slf4j
 public class CostOfDelayKanbanServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {

@@ -266,7 +266,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		return resultListMap;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Override
 	public Double calculateKPIMetrics(Map<String, Object> rejectedAndTotalDefectDataMap) {
 		int cancelledDefectCount = ((List<Feature>) rejectedAndTotalDefectDataMap.get(REJECTED_DEFECT_DATA)).size();
@@ -283,7 +283,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * @param sprintLeafNodeList
 	 * @param trendValueList
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
 			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
 

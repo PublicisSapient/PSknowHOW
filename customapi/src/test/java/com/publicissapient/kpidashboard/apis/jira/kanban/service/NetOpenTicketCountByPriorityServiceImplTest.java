@@ -168,7 +168,7 @@ public class NetOpenTicketCountByPriorityServiceImplTest {
 		trendValueMap.put("P4", trendValues);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTicketCountByPriority() throws ApplicationException {
 

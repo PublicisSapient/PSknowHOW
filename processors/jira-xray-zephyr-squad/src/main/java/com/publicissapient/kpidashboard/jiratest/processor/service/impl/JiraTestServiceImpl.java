@@ -851,7 +851,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	private String getUserTimeZone(String timezoneObj) {
 		String userTimeZone = StringUtils.EMPTY;
 		if (StringUtils.isNotBlank(timezoneObj)) {
@@ -880,7 +880,7 @@ public class JiraTestServiceImpl implements JiraTestService {
 
 		String username = processorToolConnection.getUsername();
 		String password = decryptJiraPassword(processorToolConnection.getPassword());
-		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); // NOSONAR
+		request.setRequestProperty("Authorization", "Basic " + encodeCredentialsToBase64(username, password)); 
 		request.connect();
 		StringBuilder sb = new StringBuilder();
 		try (InputStream in = (InputStream) request.getContent();

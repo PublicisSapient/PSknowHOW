@@ -287,7 +287,7 @@ public class GitHubClientImpl implements GitHubClient {
 		return timestamp;
 	}
 
-	@SuppressWarnings("java:S107")
+	//@SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
 			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
 			ProjectBasicConfig proBasicConfig) {

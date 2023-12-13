@@ -66,7 +66,7 @@ public class JenkinsServiceKanbanR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
+	//@SuppressWarnings({ "unchecked", "PMD.AvoidCatchingGenericException" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
 		log.info("[JENKINS KANBAN][{}]. Processing KPI calculation for data {}", kpiRequest.getRequestTrackerId(),

@@ -258,7 +258,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @return <code>true</code> if user exists.
 	 * @throws NamingException
 	 */
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
+	//@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private boolean searchLdapUser(String searchId) throws NamingException {
 		boolean searchResult = false;
 
