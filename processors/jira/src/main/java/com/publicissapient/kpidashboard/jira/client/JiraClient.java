@@ -156,7 +156,7 @@ public class JiraClient {
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost());
 			if (jiraInfo.isBearerToken()) {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
 						password, jiraProcessorConfig);
@@ -194,7 +194,7 @@ public class JiraClient {
 				jiraUri = this.createJiraConnection(jiraConfigBaseUrl, proxyUri + ":" + proxyPort, username, password);
 			}
 
-			InetAddress.getByName(jiraUri.getHost());// NOSONAR
+			InetAddress.getByName(jiraUri.getHost());
 			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
 			
 		} catch (UnknownHostException | URISyntaxException e) {

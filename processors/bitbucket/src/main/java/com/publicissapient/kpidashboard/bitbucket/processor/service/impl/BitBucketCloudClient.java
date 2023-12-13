@@ -154,7 +154,7 @@ public class BitBucketCloudClient extends BasicBitBucketClient implements BitBuc
 		}
 	}
 
-	@SuppressWarnings("java:S107")
+	//@SuppressWarnings("java:S107")
 	private void commitDetails(List<CommitDetails> commits, String hash, String message, String author, long timestamp,
 			List<String> parentList, ProcessorToolConnection bitBucketServerInfo, ProjectBasicConfig proBasicConfig) {
 		CommitDetails bitbucketCommit = new CommitDetails();

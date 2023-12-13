@@ -82,7 +82,7 @@ public class AccessRequestsHelperServiceImpl implements AccessRequestsHelperServ
 	 *         is found,false if not data found
 	 */
 	@Override
-	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ServiceResponse getAllAccessRequests() {
 		List<AccessRequest> accessRequest = repository.findAll();
 

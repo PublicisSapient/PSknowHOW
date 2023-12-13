@@ -70,7 +70,7 @@ public class AdminController {
 	 * @return api access token
 	 */
 	@RequestMapping(value = "/createToken", method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-	// NOSONAR
+	
 	public ResponseEntity<String> createToken(@Valid @RequestBody ApiTokenRequest apiTokenRequest) {
 		try {
 			return ResponseEntity.status(HttpStatus.OK)
@@ -85,7 +85,7 @@ public class AdminController {
 	 *
 	 * @return list of tokens
 	 */
-	@RequestMapping(path = "/apitokens", method = RequestMethod.GET) // NOSONAR
+	@RequestMapping(path = "/apitokens", method = RequestMethod.GET) 
 	public ResponseEntity<Collection<ApiToken>> getApiTokens() {
 		return ResponseEntity.status(HttpStatus.OK).body(apiTokenService.getApiTokens());
 	}

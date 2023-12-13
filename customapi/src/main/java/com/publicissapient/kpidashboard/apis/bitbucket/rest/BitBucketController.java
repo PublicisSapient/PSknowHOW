@@ -72,9 +72,9 @@ public class BitBucketController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/bitbucket/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<List<KpiElement>> getBitBucketAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketRequestStartTime = System.currentTimeMillis();
@@ -107,9 +107,9 @@ public class BitBucketController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/bitbucketkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/bitbucketkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<List<KpiElement>> getBitBucketKanbanAggregatedMetrics(
-			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { // NOSONAR
+			@NotNull @RequestBody KpiRequest kpiRequest) throws Exception { 
 		MDC.put("BitbucketKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info(" Received BitBucket KPI request {}", kpiRequest);
 		long bitbucketKanbanRequestStartTime = System.currentTimeMillis();

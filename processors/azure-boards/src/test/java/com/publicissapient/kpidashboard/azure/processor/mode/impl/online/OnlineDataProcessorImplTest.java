@@ -182,7 +182,7 @@ public class OnlineDataProcessorImplTest {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void validateAndCollectIssuesScrum()
 			throws URISyntaxException, JsonParseException, JsonMappingException, IOException {

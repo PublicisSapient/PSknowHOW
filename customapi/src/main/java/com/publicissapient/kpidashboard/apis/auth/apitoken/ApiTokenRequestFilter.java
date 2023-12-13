@@ -84,7 +84,7 @@ public class ApiTokenRequestFilter extends AbstractAuthenticationProcessingFilte
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException { // NOSONAR //NOPMD
+			throws AuthenticationException {  //NOPMD
 
 		String apiUser = request.getHeader("apiUser");
 		String apikey = "";

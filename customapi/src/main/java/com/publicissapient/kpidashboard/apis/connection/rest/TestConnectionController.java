@@ -54,7 +54,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/jira", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/jira", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateJiraConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating JIRA connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
@@ -70,7 +70,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/sonar", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/sonar", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateSonarConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Sonar connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
@@ -86,7 +86,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/teamcity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/teamcity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateTeamcityConnection(
 			@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Teamcity connections credentials");
@@ -97,7 +97,7 @@ public class TestConnectionController {
 
 	}
 
-	@RequestMapping(path = "/zephyr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/zephyr", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateZephyrConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Zephyr connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
@@ -113,7 +113,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/bamboo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/bamboo", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateBambooConnection(@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Bamboo connections credentials");
 		final ModelMapper modelMapper = new ModelMapper();
@@ -129,7 +129,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/jenkins", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/jenkins", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateJenkinsConnection(
 			@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Jenkins connections credentials");
@@ -156,7 +156,7 @@ public class TestConnectionController {
 	 * @param connectionDTO
 	 * @return
 	 */
-	@RequestMapping(path = "/bitbucket", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(path = "/bitbucket", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> validateBitbucketConnection(
 			@NotNull @RequestBody ConnectionDTO connectionDTO) {
 		log.info("validating Bitbucket connections credentials");

@@ -118,13 +118,13 @@ public class GitLabClient {
 			log.debug("REST URL {}", restUri);
 			boolean hasMorePage = true;
 			int nextPage = 1;
-			while (hasMorePage) { // NOSONAR
+			while (hasMorePage) { 
 				ResponseEntity<String> respPayload = getResponse(gitLabInfo.getUsername(), decryptedApiToken, restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
 				if (responseJson.isEmpty()) {
-					hasMorePage = false; // NOSONAR
+					hasMorePage = false; 
 					break;
 				}
 				initializeCommitDetails(gitLabInfo, commits, responseJson, proBasicConfig);
@@ -182,13 +182,13 @@ public class GitLabClient {
 			log.debug("REST URL {}", restUri);
 			boolean hasMorePage = true;
 			int nextPage = 1;
-			while (hasMorePage) { // NOSONAR
+			while (hasMorePage) { 
 				ResponseEntity<String> respPayload = getResponse(gitLabInfo.getUsername(), decryptedApiToken, restUri);
 				if (respPayload == null)
 					break;
 				JSONArray responseJson = getJSONFromResponse(respPayload.getBody());
 				if (responseJson.isEmpty()) {
-					hasMorePage = false; // NOSONAR
+					hasMorePage = false; 
 					break;
 				}
 				initializeMergeRequestDetails(mergeRequests, responseJson, projectBasicConfig);
@@ -275,7 +275,7 @@ public class GitLabClient {
 		return timestamp;
 	}
 
-	@SuppressWarnings("java:S107")
+	//@SuppressWarnings("java:S107")
 	private void commitDetails(ProcessorToolConnection gitLabInfo, List<CommitDetails> commits,
 			String scmRevisionNumber, String message, String author, long timestamp, List<String> parentList,
 			ProjectBasicConfig proBasicConfig) {

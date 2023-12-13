@@ -71,7 +71,7 @@ public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFi
 	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {// NOSONAR //NOPMD
+			throws AuthenticationException { //NOPMD
 
 		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
 

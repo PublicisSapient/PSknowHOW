@@ -71,9 +71,9 @@ public class ZephyrController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/zypher/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/zypher/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<List<KpiElement>> getZephyrMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception {// NOSONAR
+			throws Exception {
 
 		log.info("[ZEPHYR][{}]. Received Zephyr KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 
@@ -102,10 +102,10 @@ public class ZephyrController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@RequestMapping(value = "/zypherkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/zypherkanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getZephyrKanbanMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 
 		log.info("[ZEPHYR KANBAN][{}]. Received Zephyr KPI request {}", kpiRequest.getRequestTrackerId(), kpiRequest);
 

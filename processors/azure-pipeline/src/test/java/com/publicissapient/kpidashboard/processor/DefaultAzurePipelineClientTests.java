@@ -110,7 +110,7 @@ public class DefaultAzurePipelineClientTests {
 
 	@Test
 	public void verifyBasicAuth() throws Exception {
-		@SuppressWarnings("unused")
+		//@SuppressWarnings("unused")
 		URL u = new URL(new URL("https://test.com/testUser/testProject"), "/_apis/build/builds" + "?api-version=5.1");
 
 		HttpHeaders headers = AzurePipelineUtils.createHeaders("wrggipp62ak7kvtfc4qqc56fsbt3uxphsv5yo4ezabynbote2ipw");
@@ -124,7 +124,7 @@ public class DefaultAzurePipelineClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("user:pass"));
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		//@SuppressWarnings({ "rawtypes", "unchecked" })
 		HttpEntity headers = new HttpEntity(AzurePipelineUtils.createHeaders("patKey"));
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -140,7 +140,7 @@ public class DefaultAzurePipelineClientTests {
 		// fails, need to investigate
 		// HttpEntity<HttpHeaders> headers = new
 		// HttpEntity<HttpHeaders>(defaultHudsonClient.createHeaders("does:matter"));
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		//@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity headers = new HttpEntity(AzurePipelineUtils.createHeaders("patKey"));
 		when(rest.exchange(Mockito.any(URI.class), Mockito.eq(HttpMethod.GET), Mockito.eq(headers),
 				Mockito.eq(String.class))).thenReturn(new ResponseEntity<>("", HttpStatus.OK));

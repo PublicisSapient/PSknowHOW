@@ -127,7 +127,7 @@ public class GitLabProcessorJobExecutor extends ProcessorJobExecutor<GitLabProce
 	 *            processorToolConnectionService
 	 */
 	@Autowired
-	public GitLabProcessorJobExecutor(TaskScheduler scheduler, GitLabProcessorRepository gitLabProcessorRepository, // NOSONAR
+	public GitLabProcessorJobExecutor(TaskScheduler scheduler, GitLabProcessorRepository gitLabProcessorRepository, 
 			GitLabConfig gitLabConfig, ProjectToolConfigRepository toolConfigRepository,
 			ConnectionRepository connectionsRepository, GitLabRepoRepository gitLabRepository,
 			GitLabClient gitLabClient, ProcessorItemRepository<ProcessorItem> processorItemRepository,

@@ -187,7 +187,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	}
 
 	@Bean
-	protected CorsFilter corsFilterKnowHOW() throws Exception {// NOSONAR
+	protected CorsFilter corsFilterKnowHOW() throws Exception {
 		return new CorsFilter();
 	}
 

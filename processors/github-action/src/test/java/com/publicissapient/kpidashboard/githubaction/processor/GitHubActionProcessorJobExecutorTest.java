@@ -57,7 +57,7 @@ import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor
 import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubActionClient;
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
 
-@SuppressWarnings("java:S5786")
+//@SuppressWarnings("java:S5786")
 @ExtendWith(SpringExtension.class)
 public class GitHubActionProcessorJobExecutorTest {
 
@@ -119,7 +119,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 	}
 
-	@SuppressWarnings("java:S2699")
+	//@SuppressWarnings("java:S2699")
 	@Test
 	public void buildJobsAdded() throws FetchingBuildException {
 

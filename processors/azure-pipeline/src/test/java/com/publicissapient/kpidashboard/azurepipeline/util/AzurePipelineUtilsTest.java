@@ -95,7 +95,7 @@ public class AzurePipelineUtilsTest {
 		assertEquals(resUrl, finalUrl);
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void getString() {
 		JSONObject obj = new JSONObject();
@@ -105,7 +105,7 @@ public class AzurePipelineUtilsTest {
 				AzurePipelineUtils.getString(obj, "url"));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void getJsonArray() {
 		JSONObject obj = new JSONObject();
@@ -118,7 +118,7 @@ public class AzurePipelineUtilsTest {
 		assertEquals(array, AzurePipelineUtils.getJsonArray(obj, "buildIds"));
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	@Test
 	public void getJsonObject() {
 		JSONObject obj = new JSONObject();

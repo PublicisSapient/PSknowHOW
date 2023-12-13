@@ -474,7 +474,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 * and adds it to either a list of linked or unlinked defects accordingly.
 	 */
 
-	private void createLinkDefectListAndUnlinkDefectModal(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
+	private void createLinkDefectListAndUnlinkDefectModal(List<IterationKpiModalValue> overAllUnlinkedmodalValues, 
 			List<JiraIssue> linkedDefect, List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue,
 			List<JiraIssue> totalJiraIssues, FieldMapping fieldMapping, List<JiraIssue> completedIssueList,
 			Map<String, JiraIssue> linkedIssueMap) {
@@ -515,7 +515,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 	 * @param fieldMapping
 	 * @param linkedJiraIssueStoryList
 	 */
-	private void filtersLinkedStories(List<IterationKpiModalValue> overAllUnlinkedmodalValues, // NOSONAR
+	private void filtersLinkedStories(List<IterationKpiModalValue> overAllUnlinkedmodalValues, 
 			List<JiraIssue> unlinkedDefect, JiraIssue jiraIssue, Map<String, JiraIssue> totalStoriesMap,
 			FieldMapping fieldMapping, List<JiraIssue> linkedJiraIssueStoryList,
 			Map<String, IterationKpiModalValue> modalObjectMap, Map<String, JiraIssue> linkedIssueMap) {
@@ -548,7 +548,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 		});
 	}
 
-	private void setKpiSpecificData(JiraIssue jiraIssue, FieldMapping fieldMapping, // NOSONAR
+	private void setKpiSpecificData(JiraIssue jiraIssue, FieldMapping fieldMapping, 
 			Map<String, IterationKpiModalValue> modalObjectMap, List<JiraIssue> linkedJiraIssueStoryList,
 			boolean estimationFlag, List<JiraIssue> completedIssueList) {
 		IterationKpiModalValue jiraIssueModalObject = modalObjectMap.get(jiraIssue.getNumber());

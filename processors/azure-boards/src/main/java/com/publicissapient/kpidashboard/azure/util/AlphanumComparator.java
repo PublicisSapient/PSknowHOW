@@ -82,7 +82,7 @@ public class AlphanumComparator implements Comparator<File> {
 	 *         if thisChunk is bigger
 	 */
 	@Override
-	public int compare(File file1, File file2) {// NOSONAR
+	public int compare(File file1, File file2) {
 		String s1 = FilenameUtils.getBaseName(file1.getName());
 		String s2 = FilenameUtils.getBaseName(file2.getName());
 		if ((s1 == null) || (s2 == null)) {

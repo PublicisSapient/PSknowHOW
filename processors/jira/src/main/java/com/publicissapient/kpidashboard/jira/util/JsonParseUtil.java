@@ -124,7 +124,7 @@ public class JsonParseUtil {
 		return selfUri != null ? parseURI(selfUri) : defaultUri;
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	public static JSONObject getNestedObject(JSONObject json, final String... path) throws JSONException {
 		for (String s : path) {
 			json = json.getJSONObject(s);
@@ -165,7 +165,7 @@ public class JsonParseUtil {
 		return json.getString(path[path.length - 1]);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	public static boolean getNestedBoolean(JSONObject json, final String... path) throws JSONException {
 		for (int i = 0; i < path.length - 1; i++) {
 			String s = path[i];
@@ -258,7 +258,7 @@ public class JsonParseUtil {
 		return JIRA_DATE_FORMATTER.print(dateTime);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	public static String formatDateTime(final DateTime dateTime) {
 		return JIRA_DATE_TIME_FORMATTER.print(dateTime);
 	}
@@ -292,7 +292,7 @@ public class JsonParseUtil {
 		return jsonParser.parse(res);
 	}
 
-	@SuppressWarnings("unused")
+	//@SuppressWarnings("unused")
 	@Nullable
 	public static JSONObject getOptionalJsonObject(final JSONObject jsonObject, final String attributeName) {
 		final JSONObject res = jsonObject.optJSONObject(attributeName);
@@ -328,7 +328,7 @@ public class JsonParseUtil {
 	public static Map<String, URI> getAvatarUris(final JSONObject jsonObject) throws JSONException {
 		Map<String, URI> uris = Maps.newHashMap();
 
-		@SuppressWarnings("rawtypes")
+		//@SuppressWarnings("rawtypes")
 		final Iterator iterator = jsonObject.keys();
 		while (iterator.hasNext()) {
 			final Object o = iterator.next();
@@ -342,7 +342,7 @@ public class JsonParseUtil {
 		return uris;
 	}
 
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public static Iterator<String> getStringKeys(final JSONObject json) {
 		return json.keys();
 	}

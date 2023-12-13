@@ -45,7 +45,7 @@ public class ApiTokenAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	@Override
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
+	public Authentication authenticate(Authentication authentication) throws AuthenticationException { 
 																									   // //NOPMD
 		return apiTokenService.authenticate(authentication.getName(), (String) authentication.getCredentials());
 	}

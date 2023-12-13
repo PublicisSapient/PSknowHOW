@@ -61,11 +61,11 @@ public class ForgotPasswordController {
 	/**
 	 * Relative path of reset password of UI
 	 */
-	private static final String UI_RESET_PATH = "/authentication/resetPassword?resetToken="; // NOSONAR
+	private static final String UI_RESET_PATH = "/authentication/resetPassword?resetToken="; 
 	/**
 	 * Relative path of accountType of UI
 	 */
-	private static final String UI_ACCOUNT_PATH = "/authentication/accountType?resetTokenStatus="; // NOSONAR
+	private static final String UI_ACCOUNT_PATH = "/authentication/accountType?resetTokenStatus="; 
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
 	@Autowired
@@ -125,7 +125,7 @@ public class ForgotPasswordController {
 	 *         <tt>UI_ACCOUNT_PATH</tt> incase of invalid token.
 	 * @throws UnknownHostException
 	 */
-	@RequestMapping(value = "/validateToken", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/validateToken", method = GET, produces = APPLICATION_JSON_VALUE) 
 	public RedirectView validateToken(HttpServletRequest httpServletRequest, @RequestParam("token") UUID token)
 			throws UnknownHostException {
 		log.info("ForgotPasswordController: requested token for validate {}", token);
@@ -152,7 +152,7 @@ public class ForgotPasswordController {
 	 *         incase of a invalid request appends the logError message with
 	 *         response code <tt>-14</tt>
 	 */
-	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
 		boolean isSuccess = false;
 		log.info("ForgotPasswordController: requested token for update {}", updatedPasswordRequest.getResetToken());

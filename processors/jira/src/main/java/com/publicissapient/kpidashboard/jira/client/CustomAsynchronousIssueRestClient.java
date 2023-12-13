@@ -55,7 +55,7 @@ public class CustomAsynchronousIssueRestClient extends AsynchronousIssueRestClie
 
 	private static final EnumSet<Expandos> DEFAULT_EXPANDS = EnumSet.of(Expandos.NAMES, Expandos.SCHEMA,
 			Expandos.TRANSITIONS);
-	private static final Function<Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); // NOSONAR
+	private static final Function<Expandos, String> EXPANDO_TO_PARAM = from -> from.name().toLowerCase(); 
 	private final CustomSearchResultJsonParser searchResultJsonParser = new CustomSearchResultJsonParser();
 	private final URI baseUri;
 	CustomIssueJsonParser issueJsonParser = new CustomIssueJsonParser();

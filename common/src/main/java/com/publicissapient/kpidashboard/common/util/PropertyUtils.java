@@ -167,7 +167,7 @@ public class PropertyUtils {
 			Collection<String> list = (Collection<String>) obj;
 			return list.stream().map(String::trim).collect(Collectors.toList());
 		}
-		return null; // NOSONAR
+		return null; 
 	}
 
 	/**

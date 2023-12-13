@@ -56,7 +56,7 @@ public class RolesController {
 	 *
 	 * @return the roles
 	 */
-	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getAllRoles() {
 		log.info("Fetching all roles");
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.getAllRoles());
@@ -69,7 +69,7 @@ public class RolesController {
 	 *            unique object id already present in the database
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getRoleById(@PathVariable("id") String id) {
 		log.info("Fetching role@{}", id);
 		return ResponseEntity.status(HttpStatus.OK).body(rolesHelperService.getRoleById(id));
@@ -86,7 +86,7 @@ public class RolesController {
 	 *
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> modifyRoleById(@PathVariable("id") String id,
 			@Valid @RequestBody RoleDataDTO roleDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
@@ -104,7 +104,7 @@ public class RolesController {
 	 *
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> createRole(@Valid @RequestBody RoleDataDTO roleDTO) {
 		final ModelMapper modelMapper = new ModelMapper();
 		final RoleData role = modelMapper.map(roleDTO, RoleData.class);

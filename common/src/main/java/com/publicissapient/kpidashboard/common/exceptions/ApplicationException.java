@@ -32,7 +32,7 @@ public class ApplicationException extends Exception {
 	public static final int INVALID_CONFIGURATION = -999;
 	private static final long serialVersionUID = 4596406816345733781L;
 	// sonar wants it final but compiler said not initialized
-	private int errorCode; // NOSONAR
+	private int errorCode; 
 
 	/**
 	 * Instantiates a new application exception.

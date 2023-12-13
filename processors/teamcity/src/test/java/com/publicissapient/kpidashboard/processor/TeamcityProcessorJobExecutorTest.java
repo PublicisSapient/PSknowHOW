@@ -43,7 +43,7 @@ import com.publicissapient.kpidashboard.teamcity.model.TeamcityProcessor;
 import com.publicissapient.kpidashboard.teamcity.processor.TeamcityProcessorJobExecutor;
 import com.publicissapient.kpidashboard.teamcity.processor.adapter.TeamcityClient;
 
-@SuppressWarnings("javadoc")
+//@SuppressWarnings("javadoc")
 @ExtendWith(SpringExtension.class)
 public class TeamcityProcessorJobExecutorTest {
 	private static final String CUSTOM_API_BASE_URL = "http://localhost:9090/";

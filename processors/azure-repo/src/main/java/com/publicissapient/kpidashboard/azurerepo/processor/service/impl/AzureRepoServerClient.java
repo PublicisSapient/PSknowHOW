@@ -89,7 +89,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 
 	public List<CommitDetails> fetchAllCommits(AzureRepoModel repo, boolean firstRun,
 			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig projectBasicConfig)
-			throws FetchingCommitException {// NOSONAR
+			throws FetchingCommitException {
 
 		String restUri = null;
 		List<CommitDetails> commits = new ArrayList<>();
@@ -139,7 +139,7 @@ public class AzureRepoServerClient extends BasicAzureRepoClient implements Azure
 	public List<MergeRequests> fetchAllMergeRequest(AzureRepoModel repo, boolean firstRun,
 			ProcessorToolConnection azureRepoProcessorInfo, ProjectBasicConfig proBasicConfig)
 			throws FetchingCommitException {
-		// NOSONAR
+		
 
 		String restUri = null;
 		List<MergeRequests> mergeRequests = new ArrayList<>();

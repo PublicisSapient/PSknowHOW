@@ -288,7 +288,7 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 		for (String fName : fieldNameList) {
 			try {
 				Field field = FieldMapping.class.getDeclaredField(fName);
-				field.setAccessible(true); // NOSONAR
+				field.setAccessible(true); 
 
 				isUpdated = isValueUpdated(field.get(unsaved), field.get(saved));
 

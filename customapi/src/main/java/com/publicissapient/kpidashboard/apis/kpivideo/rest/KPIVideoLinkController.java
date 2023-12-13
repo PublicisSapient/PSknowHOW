@@ -59,7 +59,7 @@ public class KPIVideoLinkController {
 	 *
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(value = "/{kpiId}/video", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/{kpiId}/video", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> modifyKpiVideoLinkById(@PathVariable String kpiId,
 			@Valid @RequestBody KPIVideoLinkDTO kpiVideoLinkDTO) {
 		log.info("link@{} updated", kpiId);

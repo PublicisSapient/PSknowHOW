@@ -194,7 +194,7 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void verifyAuthCredentials() throws Exception {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		//@SuppressWarnings({ "rawtypes", "unchecked" })
 		HttpEntity headers = new HttpEntity(bambooClientBuild.createHeaders(DOES_MATTER));
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));
@@ -217,7 +217,7 @@ public class BambooClientBuildImplTest {
 
 	@Test
 	public void verifyGetLogUrl() throws Exception {
-		@SuppressWarnings({ "unchecked", "rawtypes" })
+		//@SuppressWarnings({ "unchecked", "rawtypes" })
 		HttpEntity headers = new HttpEntity(bambooClientBuild.createHeaders(DOES_MATTER));
 		when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers), eq(String.class)))
 				.thenReturn(new ResponseEntity<>("", HttpStatus.OK));

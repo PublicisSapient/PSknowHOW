@@ -74,7 +74,7 @@ public class AuthenticationController {
 
     private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
     private static final String STATUS = "Success";
-    private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; // NOSONAR
+    private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})"; 
     private final AuthenticationService authenticationService;
     private final AuthenticationResponseService authenticationResponseService;
     private final AuthProperties authProperties;
@@ -184,7 +184,7 @@ public class AuthenticationController {
      * @return the response entity
      */
     @RequestMapping(value = "/updateUser", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    // NOSONAR
+    
     public ResponseEntity<String> updateUser(@Valid @RequestBody AuthenticationRequest request) {
 
         return ResponseEntity.status(HttpStatus.OK)
@@ -196,7 +196,7 @@ public class AuthenticationController {
      *
      * @return the authentication providers
      */
-    @RequestMapping(value = "/authenticationProviders", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+    @RequestMapping(value = "/authenticationProviders", method = GET, produces = APPLICATION_JSON_VALUE) 
     public List<AuthType> getAuthenticationProviders() {
         return authProperties.getAuthenticationProviders();
     }
@@ -212,10 +212,10 @@ public class AuthenticationController {
      * @throws ServletException the servlet exception
      */
     @RequestMapping(value = "/changePassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    // NOSONAR
+    
     public ResponseEntity<ServiceResponse> changePassword(HttpServletRequest httpServletRequest,
                                                           HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request)
-            throws IOException, ServletException { // NOSONAR
+            throws IOException, ServletException { 
         try {
             Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
             Matcher matcher = pattern.matcher(request.getPassword());
@@ -268,7 +268,7 @@ public class AuthenticationController {
         }
     }
 
-    @RequestMapping(value = "/users/{username}", method = GET) // NOSONAR
+    @RequestMapping(value = "/users/{username}", method = GET) 
     public ResponseEntity<ServiceResponse> getUser(@PathVariable String username, Principal principal) {
 
         username = CommonUtils.handleCrossScriptingTaintedValue(username);
@@ -305,7 +305,7 @@ public class AuthenticationController {
         return loggedInUser.equals(username) || loggedInUserInfo.getAuthorities().contains("ROLE_SUPERADMIN");
     }
 
-    @RequestMapping(value = "/users/{username}/updateEmail", method = PUT) // NOSONAR
+    @RequestMapping(value = "/users/{username}/updateEmail", method = PUT) 
     public ResponseEntity<ServiceResponse> updateUserInfo(@PathVariable String username,
                                                           @RequestBody Map<String, String> emailObject, Principal principal) {
 

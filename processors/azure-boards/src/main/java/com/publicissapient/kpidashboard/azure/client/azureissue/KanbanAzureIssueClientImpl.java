@@ -153,7 +153,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @return count of Jira issue processed
 	 */
 	@Override
-	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, // NOSONAR
+	public int processesAzureIssues(ProjectConfFieldMapping projectConfig, String projectKey, 
 			// //NOPMD
 			AzureAdapter azureAdapter) {
 		int count = 0;
@@ -285,7 +285,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 */
 	@Override
 	public int saveAzureIssueDetails(List<Value> currentPagedAzureRs, ProjectConfFieldMapping projectConfig,
-			Set<SprintDetails> sprintDetailsSet) // NOSONAR
+			Set<SprintDetails> sprintDetailsSet) 
 			// //NOPMD
 			throws JSONException {
 		List<HierarchyLevel> hierarchyLevelList = hierarchyLevelService
@@ -639,7 +639,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 */
 	private void saveKanbanAccountHierarchy(List<KanbanJiraIssue> jiraIssueList, // NOPMD
 																				 // //NOSONAR
-			List<HierarchyLevel> hierarchyLevelList) { // NOSONAR
+			List<HierarchyLevel> hierarchyLevelList) { 
 
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
@@ -896,7 +896,7 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fields
 	 *            Map of Issue Fields
 	 */
-	public void setEstimate(KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, // NOSONAR
+	public void setEstimate(KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap, FieldMapping fieldMapping, 
 			AzureProcessorConfig jiraProcessorConfig, Fields fields) {
 
 		Double value = 0d;

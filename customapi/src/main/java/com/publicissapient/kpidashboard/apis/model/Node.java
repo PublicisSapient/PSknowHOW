@@ -33,14 +33,14 @@ public class Node implements Serializable {
 	private String name;
 	private String parentId;
 
-	private Object value; // NOSONAR
+	private Object value; 
 	private Node parent;
 
 	private List<Node> children;
 	private int level;
 	private String groupName;
 
-	private AccountHierarchy accountHierarchy; // NOSONAR
+	private AccountHierarchy accountHierarchy; 
 	private KanbanAccountHierarchy accountHierarchyKanban;
 
 	private ProjectFilter projectFilter;

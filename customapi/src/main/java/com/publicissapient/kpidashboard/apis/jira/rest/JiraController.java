@@ -84,10 +84,10 @@ public class JiraController {
 	 * @return List of KPIs with trend and aggregated data.
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/jira/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception {// NOSONAR
+			throws Exception {
 
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request {}", kpiRequest);
@@ -120,10 +120,10 @@ public class JiraController {
 	 * @return List of KPIs with trend and aggregated data.
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/jirakanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/jirakanban/kpi", method = RequestMethod.POST, produces = APPLICATION_JSON_VALUE) 
 	// @PreAuthorize("hasPermission(null,'KPI_FILTER')")
 	public ResponseEntity<List<KpiElement>> getJiraKanbanAggregatedMetrics(@NotNull @RequestBody KpiRequest kpiRequest)
-			throws Exception { // NOSONAR
+			throws Exception { 
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jira Kanban KPI request {}", kpiRequest);
 		long jiraKanbanRequestStartTime = System.currentTimeMillis();

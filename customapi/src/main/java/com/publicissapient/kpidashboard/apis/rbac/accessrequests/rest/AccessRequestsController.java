@@ -244,7 +244,7 @@ public class AccessRequestsController {
 	 *
 	 * @return responseEntity with data,message and status
 	 */
-	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
+	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) 
 	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status) {
 		log.info("Getting requests count with current status {}", status);
 		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getNotificationByStatus(status));
