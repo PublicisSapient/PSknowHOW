@@ -594,17 +594,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				CentralUserInfoDTO centralUserInfo = modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
-				return centralUserInfo;
+				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API
 						+ response.getStatusCodeValue());
 				return new CentralUserInfoDTO();
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
@@ -612,9 +611,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
-		// String fetchUserUrl =
-		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
-		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
