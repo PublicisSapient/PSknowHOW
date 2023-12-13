@@ -167,6 +167,12 @@ public interface UserInfoService {
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
 
+	List<UserInfoDTO> findAllUnapprovedUsers(String token);
+
+	boolean updateUserApprovalStatus(String user, String token);
+
+	String deleteRejectedUser(String user, String token);
+
 	// ----auth-N-auth----------
 
 	/**
@@ -178,11 +184,5 @@ public interface UserInfoService {
 	UserInfo getCentralAuthUserInfo(String username, String token);
 
 	String getCentralAuthUserDeleteUserToken(String token);
-
-	List<UserInfoDTO> findAllUnapprovedUsers(String token);
-
-	boolean updateUserApprovalStatus(String user, String token);
-	String deleteRejectedUser(String user, String token);
-	// ----auth-N-auth----------
 
 }

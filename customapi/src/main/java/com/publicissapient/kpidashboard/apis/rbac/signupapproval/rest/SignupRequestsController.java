@@ -71,7 +71,8 @@ public class SignupRequestsController {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	UserInfoServiceImpl userInfoService;
-	@Autowired CookieUtil cookieUtil;
+	@Autowired
+	CookieUtil cookieUtil;
 
 	/**
 	 * Gets all unapproved requests data.
@@ -126,7 +127,7 @@ public class SignupRequestsController {
 			log.info("Approve access {}", username);
 			if (customApiConfig.isCentralAuthSwitch()) {
 
-				boolean approvedCentral =userInfoService.updateUserApprovalStatus(username, token);
+				boolean approvedCentral = userInfoService.updateUserApprovalStatus(username, token);
 				serviceResponse[0] = new ServiceResponse(true, "Granted", approvedCentral);
 
 			} else {

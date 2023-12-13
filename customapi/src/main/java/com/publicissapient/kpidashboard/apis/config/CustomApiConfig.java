@@ -315,7 +315,6 @@ public class CustomApiConfig {// NOPMD
 		return repoToolDeleteRepoUrl;
 	}
 
-
 	public Boolean getIsRepoToolEnable() {
 		return isRepoToolEnable;
 	}
@@ -331,6 +330,7 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+
 	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
@@ -934,6 +934,7 @@ public class CustomApiConfig {// NOPMD
 	public void setNotificationSwitch(boolean notificationSwitch) {
 		this.notificationSwitch = notificationSwitch;
 	}
+
 	public boolean isCentralAuthSwitch() {
 		return centralAuthSwitch;
 	}

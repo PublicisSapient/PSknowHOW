@@ -53,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
@@ -101,6 +100,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserInfoServiceImpl implements UserInfoService {
 
+	public static final String ERROR_MESSAGE_CONSUMING_REST_API = "Error while consuming rest service in userInfoServiceImpl. Status code: ";
+	public static final String ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while consuming rest service in userInfoServiceImpl";
 	HttpServletRequest contextreq;
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
@@ -568,12 +569,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return new UserInfo();
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
@@ -581,9 +581,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
-		// String fetchUserUrl =
-		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
-		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
@@ -596,14 +593,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody().toString();
+				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return "";
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
@@ -623,18 +619,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				List<UserInfoDTO> centralUserInfo = modelMapper.map(jsonObject.get("data"), new TypeToken<List<UserInfoDTO>>(){}.getType());
-				return centralUserInfo;
+				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<UserInfoDTO>>() {
+				}.getType());
+
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return (List<UserInfoDTO>) new UserInfo();
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
-			return null;
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return new ArrayList<>();
 		}
 	}
 
@@ -653,17 +649,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				boolean approved = (boolean) jsonObject.get("data");
-				return approved;
+				return (boolean) jsonObject.get("data");
+
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return false;
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return false;
 		}
 	}
@@ -683,14 +678,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody().toString();
+				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return "";
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
