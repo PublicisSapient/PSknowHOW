@@ -749,11 +749,33 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": true,
     "hideOverallFilter": true,
     "maturityRange": [
-      "-50",
-      "50-30",
-      "30-20",
-      "20-10",
-      "10-"
+          "-60",
+          "60-45",
+          "45-30",
+          "30-15",
+          "15-"
+     ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
     ]
   },
   {
@@ -1198,12 +1220,44 @@ db.getCollection('kpi_master').insertMany(
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "maturityRange": [
-      "-1",
-      "1-2",
-      "2-5",
-      "5-10",
-      "10-"
-    ]
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": ">= 2 per week",
+		  "displayRange": "0,1"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "Once per week",
+		  "displayRange": "2,3"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "Once in 2 weeks",
+          "displayRange": "4,5"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "Once in 4 weeks",
+          "displayRange": "6,7"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": "< Once in 8 weeks",
+          "displayRange": "8 and Above"
+        }
+     ]
   },
   {
     "kpiId": "kpi73",
@@ -2898,58 +2952,45 @@ db.getCollection('kpi_master').insertMany(
     "calculateMaturity": false
   },
   {
-    "kpiId": "kpi3",
-    "kpiName": "Lead Time",
-    "isDeleted": "False",
-    "kpiCategory": "Backlog",
-    "boxType": "2_column",
-    "kpiBaseLine": "0",
-    "thresholdValue": "",
-    "defaultOrder": 1,
-    "kpiUnit": "Count",
-    "kpiSource": "Jira",
-    "groupId": 11,
-    "kanban": false,
-    "chartType": "",
-    "kpiInfo": {
-      "definition": "Measures Total time between a request was made and  all work on this item is completed and the request was delivered .",
-      "formula": [
-        {
-          "lhs": "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ],
-      "details": [
-        {
-          "type": "paragraph",
-          "value": "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        },
-        {
-          "type": "paragraph",
-          "value": "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        },
-        {
-          "type": "paragraph",
-          "value": "Release time (DOD to Live): Time taken between story completion to it going live."
-        },
-        {
-          "type": "link",
-          "kpiLinkDetail": {
-            "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+      "kpiId": "kpi3",
+      "kpiName": "Lead Time",
+      "isDeleted": "False",
+      "kpiCategory": "Backlog",
+      "boxType": null,
+      "kpiBaseLine": "0",
+      "thresholdValue": "20",
+      "defaultOrder": "1",
+      "kpiUnit": "Days",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "kanban": false,
+      "aggregationCriteria": "sum",
+      "chartType": "line",
+      "kpiInfo": {
+        "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+        "formula": null,
+        "details": [
+          {
+            "type": "link",
+            "kpiLinkDetail": {
+              "text": "Detailed Information at",
+              "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+            }
           }
-        }
-      ]
+        ]
+      },
+      "xAxisLabel": "Range",
+      "yAxisLabel": "Days",
+      "isPositiveTrend": false,
+      "showTrend": true,
+      "kpiFilter": "dropdown",
+      "isAdditionalFilterSupport": false,
+      "calculateMaturity": false,
+      "kpiSubCategory": "Flow KPIs",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
+      "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
     },
-    "xAxisLabel": "",
-    "yAxisLabel": "",
-    "kpiWidth": 100,
-    "isPositiveTrend": false,
-    "showTrend": false,
-    "kpiFilter": "multiSelectDropDown",
-    "isAdditionalFilterSupport": false,
-    "kpiSubCategory": "Flow KPIs",
-    "calculateMaturity": true,
-  },
   {
     "kpiId": "kpi148",
     "kpiName": "Flow Load",
@@ -3209,8 +3250,7 @@ db.getCollection('kpi_master').insertMany(
           "type": "paragraph",
           "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ],
-      "maturityLevels": []
+      ]
     },
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Days",
@@ -3220,7 +3260,41 @@ db.getCollection('kpi_master').insertMany(
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria" : "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ]
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": "< 1 Day"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "< 7 Days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "< 30 Days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "< 90 Days"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": ">= 90 Days"
+        }
+      ]
   },
   {
     "kpiId": "kpi157",
@@ -3676,10 +3750,8 @@ db.getCollection('kpi_master').insertMany(
         "isAdditionalFilterSupport": false,
         "kpiFilter": "",
         "boxType": "chart",
-        "calculateMaturity": false
-    }
-     "calculateMaturity":false,
-  	"maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+        "calculateMaturity": false,
+        "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
  },
  {
     "kpiId": "kpi168",
@@ -3773,25 +3845,24 @@ db.getCollection('kpi_master').insertMany(
       "kanban": false,
       "chartType": "line",
       "kpiInfo": {
-        "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
-        "details": [
-          {
-            "type": "paragraph",
-            "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
-          },
-          {
-            "type": "paragraph",
-            "value": "The average of all such tickets will be shown."
-          }
-          {
-            "type" : "link",
-            "kpiLinkDetail" : {
-                "text" : "Detailed Information at",
-                "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
-            }
-		  }
-        ],
-        "maturityLevels": []
+          "definition": "Mean time to recover will be based on the Production incident tickets raised during a certain period of time.",
+          "details": [
+              {
+                  "type": "paragraph",
+                  "value": "For all the production incident tickets raised during a time period, the time between created date and closed date of the incident ticket will be calculated."
+              },
+              {
+                  "type": "paragraph",
+                  "value": "The average of all such tickets will be shown."
+              },
+              {
+                   "type" : "link",
+                    "kpiLinkDetail" : {
+                    "text" : "Detailed Information at",
+                    "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+                    }
+               }
+          ]
       },
       "xAxisLabel": "Weeks",
       "yAxisLabel": "Hours",
@@ -3801,7 +3872,70 @@ db.getCollection('kpi_master').insertMany(
       "aggregationCriteria": "sum",
       "aggregationCircleCriteria": "average",
       "isAdditionalFilterSupport": false,
-      "calculateMaturity": false
+      "calculateMaturity": true,
+       "maturityRange": [
+            "48-",
+            "24-48",
+            "12-24",
+            "1-12",
+            "-1"
+          ],
+ "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
+      ]
+    },
+  {
+      "kpiId": "kpi171",
+      "kpiName": "Cycle Time",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "stackedColumn",
+      "isAggregationStacks" : false ,
+      "xAxisLabel": "",
+      "yAxisLabel": "Days",
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+      },
+      "kpiSubCategory": "Flow KPIs"
     }
 ]
 );
@@ -7821,7 +7955,7 @@ db.getCollection('field_mapping_structure').insertMany(
         }
     },
     {
-        "fieldName": "jiraDodKPI3",
+        "fieldName": "jiraDodKPI171",
         "fieldLabel": "DOD Status",
         "fieldType": "chips",
         "fieldCategory": "workflow",
@@ -9606,9 +9740,16 @@ db.getCollection('field_mapping_structure').insertMany(
         "tooltip": {
             "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
         }
-    }
-
-},
+    },
+    {
+        "fieldName": "thresholdValueKPI3",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    },
 {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
@@ -9711,5 +9852,35 @@ db.getCollection('field_mapping_structure').insertMany(
  "tooltip": {
    "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing",
  }
-}
+},
+{
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+},
+{
+     "fieldName": "jiraLiveStatusKPI171",
+     "fieldLabel": "Live Status - Cycle Time",
+     "fieldCategory": "workflow",
+     "fieldType": "chips",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+       "definition": "Status/es that identify that an issue is LIVE in Production"
+     }
+   },
+   {
+     "fieldName": "jiraIssueTypeKPI171",
+     "fieldLabel": "Issue type to be included",
+     "fieldCategory": "Issue_Type",
+     "fieldType": "chips",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+       "definition": "All issue types that should be included in Lead time calculation."
+     }
+   }
+
 ]);

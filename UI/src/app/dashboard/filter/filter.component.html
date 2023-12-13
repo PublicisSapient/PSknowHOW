@@ -178,7 +178,7 @@
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
                <div class="p-d-flex p-align-center p-jc-end">
                   <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
-                  <img *ngIf="!((lastSyncData | json) == '{}') && !lastSyncData?.fetchSuccessful && !lastSyncData?.errorInFetch" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
                   <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
@@ -186,7 +186,7 @@
 
                </div>
                <p class="last-sync-date p-m-0 p-text-right">
-                  {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
+                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
             </div>
 

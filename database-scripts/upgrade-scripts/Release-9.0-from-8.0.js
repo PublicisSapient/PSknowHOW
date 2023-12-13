@@ -267,7 +267,15 @@ db.kpi_master.insertOne({
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+     "maturityRange": [
+          "48-",
+          "24-48",
+          "12-24",
+          "1-12",
+          "-1"
+        ]
+
 })
 
 db.field_mapping_structure.insertMany([
@@ -945,3 +953,312 @@ db.field_mapping_structure.find(
     { "fieldName" : "uploadDataKPI16" },
     { $rename: { "toggleLabel": "toggleLabelRight" } }
 );
+
+
+//DTS-29689 FTPR Iteration kpi labels
+db.field_mapping_structure.insertOne({
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+});
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi3" },
+  {
+    $set: {
+      "thresholdValue": "20",
+      "kpiUnit": "Days",
+      "chartType": "line",
+      "kpiInfo.definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+      "kpiInfo.formula":null,
+      "boxType":null,
+      "kpiWidth":null,
+      "showTrend":true,
+      "kpiInfo.details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
+          }
+        }
+      ],
+       "kpiFilter": "dropdown",
+      "aggregationCriteria": "sum",
+      "yAxisLabel": "Days",
+      "xAxisLabel": "Range",
+      "lowerThresholdBG": "white",
+      "upperThresholdBG": "red",
+      "maturityRange": [
+        "-60",
+        "60-45",
+        "45-30",
+        "30-10",
+        "10-"
+      ]
+    }
+  }
+)
+
+db.getCollection('field_mapping_structure').insertMany([{
+        "fieldName": "thresholdValueKPI3",
+        "fieldLabel": "Target KPI Value",
+        "fieldType": "number",
+        "section": "Custom Fields Mapping",
+        "tooltip": {
+            "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+        }
+    }
+}])
+
+db.kpi_master.insertOne(
+{
+      "kpiId": "kpi171",
+      "kpiName": "Cycle Time",
+      "maxValue": "",
+      "kpiUnit": "Count",
+      "isDeleted": "False",
+      "defaultOrder": 4,
+      "kpiCategory": "Backlog",
+      "kpiSource": "Jira",
+      "groupId": 11,
+      "thresholdValue": "",
+      "kanban": false,
+      "chartType": "stackedColumn",
+      "yAxisLabel": "Days",
+      "xAxisLabel": "Range",
+      "isAdditionalFilterSupport": false,
+      "kpiFilter": "dropDown",
+      "boxType": "chart",
+      "calculateMaturity": false,
+      "isAggregationStacks" : false ,
+      "kpiInfo" : {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live.",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ]
+      },
+      "kpiSubCategory": "Flow KPIs"
+    }
+ )
+
+ // Update documents with "fieldName" equal to "jiraDorKPI3"
+ db.field_mapping_structure.updateOne({ "fieldName": "jiraDorKPI3" }, { $set: { "fieldName": "jiraDorKPI171" } });
+
+ // Update documents with "fieldName" equal to "jiraDodKPI3"
+ db.field_mapping_structure.updateOne({ "fieldName": "jiraDodKPI3" }, { $set: { "fieldName": "jiraDodKPI171" } });
+
+ // Update documents with "fieldName" equal to "storyFirstStatusKPI3"
+ db.field_mapping_structure.updateOne({ "fieldName": "storyFirstStatusKPI3" }, { $set: { "fieldName": "storyFirstStatusKPI171" } });
+
+ // Insert documents into the collection
+ db.field_mapping_structure.insertMany([
+   {
+     "fieldName": "jiraLiveStatusKPI171",
+     "fieldLabel": "Live Status - Cycle Time",
+     "fieldCategory": "workflow",
+     "fieldType": "chips",
+     "section": "WorkFlow Status Mapping",
+     "tooltip": {
+       "definition": "Status/es that identify that an issue is LIVE in Production"
+     }
+   },
+   {
+     "fieldName": "jiraIssueTypeKPI171",
+     "fieldLabel": "Issue type to be included",
+     "fieldCategory": "Issue_Type",
+     "fieldType": "chips",
+     "section": "Issue Types Mapping",
+     "tooltip": {
+       "definition": "All issue types that should be included in Lead time calculation."
+     }
+   }
+ ]);
+
+//------------------Release 8.2.0---------------------------
+db.kpi_master.updateOne(
+  { "kpiId": "kpi161" },
+  {
+    $set: {
+      "calculateMaturity": false,
+      "maturityRange": ["-40", "40-60", "60-75", "75-90", "90-"]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi116" },
+  {
+    $set: {
+      "maturityRange": [
+        "-60",
+        "60-45",
+        "45-30",
+        "30-15",
+        "15-"
+      ],
+      "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#c91212"
+        }
+      ]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi118" },
+  {
+    $set: {
+    "maturityRange": [
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+		  "label": ">= 2 per week"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+		  "label": "Once per week"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "Once in 2 weeks"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "Once in 4 weeks"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212",
+          "label": "< Once in 8 weeks"
+        }
+     ]
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi156" },
+  {
+    $set: {
+      "calculateMaturity": true,
+      "maturityRange": [
+        "90-",
+        "30-90",
+        "7-30",
+        "1-7",
+        "-1"
+      ],
+      "maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26",
+          "label": "< 1 Day"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a",
+          "label": "< 7 Days"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643",
+          "label": "< 30 Days"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535",
+          "label": "< 90 Days"
+        },
+        {
+          "level": "M1",
+          "bgColor": "#c91212",
+          "label": ">= 90 Days"
+        }
+      ]
+    },
+    $unset: {
+      "kpiInfo.maturityLevels": ""
+    }
+  }
+);
+
+db.kpi_master.updateOne(
+  { "kpiId": "kpi166" },
+  {
+    $set: {
+      "calculateMaturity": true,
+      "maturityRange": [
+            "48-",
+            "24-48",
+            "12-24",
+            "1-12",
+            "-1"
+      ],
+"maturityLevel": [
+        {
+          "level": "M5",
+          "bgColor": "#167a26"
+        },
+        {
+          "level": "M4",
+          "bgColor": "#4ebb1a"
+        },
+        {
+          "level": "M3",
+          "bgColor": "#ef7643"
+        },
+        {
+          "level": "M2",
+          "bgColor": "#f53535"
+        },
+        {
+          "level": "M1",
+           "bgColor": "#c91212"
+        }
+      ]
+    },
+    $unset: {
+      "kpiInfo.maturityLevels": ""
+    }
+  }
+);
+

@@ -84,7 +84,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 	private static final String FULL_RELEASE = "fullRelease";
 	private static final String REMOVED_FROM_RELEASE = "removedFromRelease";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String STORY_POINT = "Story Point";
+	private static final String STORY_POINT = "Story Points";
 	private static final String SCOPE_REMOVED = "Scope Removed";
 	private static final String SCOPE_ADDED = "Scope Added";
 	private static final String RELEASE_SCOPE = "Release Scope";
@@ -395,8 +395,9 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
 			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
-			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = completedReleaseMap;
-			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = devCompletedIssueMap;
+			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = deepCopyMap(completedReleaseMap);
+			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = deepCopyMap(devCompletedIssueMap);
+			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = deepCopyMap(fullReleaseIssueMap);
 			completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
 			devCompletedIssueMap = prepareIssueBeforeStartDate(devCompletedIssueMap, startLocalDate);
@@ -503,8 +504,8 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 					}
 				}
 			}
-			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fullReleaseIssueMap,
-					completedReleaseMap, devCompletedIssueMap, fieldMapping);
+			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, originalFullReleaseMap,
+					originalCompletedIssueMap, originalDevCompletedIssueMap, fieldMapping);
 			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
 					issueSizeCountDataGroup);
 
@@ -703,6 +704,18 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 		return rangedCompletedMap;
 	}
 
+	/**
+	 * DeepClone the map
+	 * @param originalMap
+	 * @return
+	 */
+	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
+		return originalMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						entry -> new ArrayList<>(entry.getValue())
+				));
+	}
 	/**
 	 * Method for calculation x-axis duration & range
 	 *

@@ -20,6 +20,8 @@ public class AuthTypesConfigController {
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
 
+	private static final String ERROR_MSG="Something went wrong";
+
 	@PostMapping("/auth-types")
 	@PreAuthorize("hasPermission(null,'CONFIGURE_LOGIN_TYPE')")
 	public ResponseEntity<ServiceResponse> addAuthTypesConfig(@RequestBody AuthTypeConfig authTypeConfig) {
@@ -28,7 +30,7 @@ public class AuthTypesConfigController {
 		ServiceResponse serviceResponse = null;
 
 		if (savedAuthTypeConfig == null) {
-			serviceResponse = new ServiceResponse(false, "Something went wrong", null);
+			serviceResponse = new ServiceResponse(false, ERROR_MSG, null);
 		} else {
 			if (savedAuthTypeConfig.getAdServerDetail() != null) {
 				savedAuthTypeConfig.getAdServerDetail().setPassword("");
@@ -46,7 +48,7 @@ public class AuthTypesConfigController {
 		AuthTypeConfig authTypeConfig = authTypesConfigService.getAuthTypeConfig();
 
 		if (authTypeConfig == null) {
-			serviceResponse = new ServiceResponse(false, "Something went wrong", null);
+			serviceResponse = new ServiceResponse(false, ERROR_MSG, null);
 		} else {
 			if (authTypeConfig.getAdServerDetail() != null) {
 				authTypeConfig.getAdServerDetail().setPassword("");
@@ -63,7 +65,7 @@ public class AuthTypesConfigController {
 		ServiceResponse serviceResponse = null;
 		AuthTypeStatus authTypeStatus = authTypesConfigService.getAuthTypesStatus();
 		if (authTypeStatus == null) {
-			serviceResponse = new ServiceResponse(false, "Something went wrong", null);
+			serviceResponse = new ServiceResponse(false, ERROR_MSG, null);
 		} else {
 			serviceResponse = new ServiceResponse(true, "auth types active status", authTypeStatus);
 		}

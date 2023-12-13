@@ -47,6 +47,7 @@ export class GroupstackchartComponent implements OnChanges {
   dataPoints = 2;
   dataLength = 0;
   @Input() activeTab?: number = 0;
+  @Input() isAggregationStacks // to determine wheather need to aggrigate stacks 
   elemObserver = new ResizeObserver(() => {this.draw()});
   constructor(private viewContainerRef: ViewContainerRef, private service: SharedService) { }
 
@@ -94,7 +95,7 @@ export class GroupstackchartComponent implements OnChanges {
       // d3.select(elem).select('#legendIndicator').select('svg').remove();
       d3.select(elem).select('#xCaptionContainer').select('text').remove();
       const data = this.formatData(this.data);
-      const width = this.dataPoints <= 5 && document.getElementById('groupstackchart')?.offsetWidth? document.getElementById('groupstackchart')?.offsetWidth - 70 : this.dataPoints * 20 * 4;
+      const width = this.dataPoints <= 5 && d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth? d3.select(this.elem).select('#groupstackchart').node()?.offsetWidth - 70 : this.dataPoints * 20 * 4;
       // let spacingVariable = width > 1500 ? 145 : width > 1000 ? 120 : width > 600 ? 70 : 50;
       // const spacingVariable = 20;
       const height = 225;
@@ -173,14 +174,21 @@ export class GroupstackchartComponent implements OnChanges {
           actualTypes.push(d.type);
         }
       });
+      actualTypes.reverse();
       z.domain(actualTypes);
       const keys = z.domain();
-      let groupData = d3.rollup(data, function (d, i) {
+      let groupData = d3.rollup(data, (d, i) => {
         const d2 = { xName: d[0].xName, group: d[0].group };
+        d2['hoverSum'] = 0
         d2['hoverText'] = {};
         d.forEach((dx) => {
           d2[dx.type] = dx.value;
           for (let key in dx?.hoverText) {
+            if(!this.isAggregationStacks){
+              d2['hoverSum'] = dx?.value + ' ' + this.unit;
+            }else{
+              d2['hoverSum'] += (dx?.hoverText[key]);
+            }
             d2['hoverText'][key] = dx?.hoverText[key];
           }
         });
@@ -307,8 +315,7 @@ export class GroupstackchartComponent implements OnChanges {
               dataString += `<div class=\'toolTipValue p-d-flex p-align-center\'><div class="stack-key p-mr-1">${key}</div><div>${d.data?.hoverText[key]}</div></div>`;
             }
   
-  
-            div.html(`${d?.data?.group}` + ' : ' + '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
+            div.html(`${d?.data?.group}` + ' : ' + `${d?.data?.hoverSum}`+ '<div class=\'toolTip\'> ' + `${dataString}` + '</div>')
               .style('left', xPosition + 20 + 'px')
               // .style('top', y(d[0]) - y(d[1]) - topValue + 'px');
               .style('top', yPosition + 'px')
@@ -341,7 +348,9 @@ export class GroupstackchartComponent implements OnChanges {
   
         let htmlString = '';
         this.sortAlphabetically(stackData);
-        actualTypes.forEach((key, i) => {
+        const legendKeys = actualTypes.reverse();
+        
+        legendKeys.forEach((key, i) => {
           if (z(key)) {
             htmlString += `<div class="legend_item p-d-flex p-align-center"><div class="legend_color_indicator" style="background-color: ${z(key)}"></div> ${key}</div>`;
           }
@@ -368,19 +377,13 @@ export class GroupstackchartComponent implements OnChanges {
         if (typeof (item?.value) === 'object' && Object.keys(item?.value)?.length > 0) {
           const types = Object.keys(item.value);
           // if (types.length >= 1) {
-          types?.forEach(function (type) {
+          types?.forEach(type => {
             const obj = {};
             obj['group'] = item?.sSprintName;
             obj['type'] = type;
-            obj['value'] = item?.value[type][Object.keys(item?.value[type])?.[0]];
+            obj['value'] = (this.isAggregationStacks == false) ? (item?.data) : (item?.value[type]);
             obj['hoverText'] = {};
-            obj['hoverText'][type] = '(';
-            // obj['hoverText'] = type +': ' + '(';
-            let lastEle = Object.keys(item?.value[type])?.length - 1;
-            Object.keys(item?.value[type])?.forEach((x, i) => {
-              obj['hoverText'][type] += item?.value[type][x] + (i != lastEle ? ', ' : '');
-            })
-            obj['hoverText'][type] += ')';
+            obj['hoverText'][type] = item?.value[type];
             obj['xName'] = sprintValue;
             targetList.push(obj);
             max = Math.max(max, item?.data);
