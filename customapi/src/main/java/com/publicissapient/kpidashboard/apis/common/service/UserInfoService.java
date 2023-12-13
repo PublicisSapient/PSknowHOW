@@ -181,7 +181,7 @@ public interface UserInfoService {
 
 	List<UserInfoDTO> findAllUnapprovedUsers(String token);
 
-	String updateUserApprovalStatus(String user, String token);
+	boolean updateUserApprovalStatus(String user, String token);
 	String deleteRejectedUser(String user, String token);
 	// ----auth-N-auth----------
 

@@ -24,7 +24,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -71,6 +71,7 @@ public class SignupRequestsController {
 	private CustomApiConfig customApiConfig;
 	@Autowired
 	UserInfoServiceImpl userInfoService;
+	@Autowired CookieUtil cookieUtil;
 
 	/**
 	 * Gets all unapproved requests data.
@@ -82,9 +83,10 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests(HttpServletRequest request) {
 		log.info("Getting all unapproved requests");
 		if (customApiConfig.isCentralAuthSwitch()) {
-		String token = userInfoService.getToken(request);
-			return ResponseEntity.status(HttpStatus.OK).body(
-					new ServiceResponse(true, "success_pending_approval", userInfoService.findAllUnapprovedUsers(token)));
+			Cookie authCookie = cookieUtil.getAuthCookie(request);
+			String token = authCookie.getValue();
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
+					userInfoService.findAllUnapprovedUsers(token)));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details",
@@ -118,19 +120,20 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision, HttpServletRequest request) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		String token = userInfoService.getToken(request);
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		String token = authCookie.getValue();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
 			if (customApiConfig.isCentralAuthSwitch()) {
 
-				userInfoService.updateUserApprovalStatus(username, token);
-				serviceResponse[0] = new ServiceResponse(true, "Granted", null);
+				boolean approvedCentral =userInfoService.updateUserApprovalStatus(username, token);
+				serviceResponse[0] = new ServiceResponse(true, "Granted", approvedCentral);
 
 			} else {
 				signupManager.grantAccess(username, new GrantApprovalListener() {
 					@Override
 					public void onSuccess(Authentication authentication) {
-						serviceResponse[0] = new ServiceResponse(true, "Granted", null);
+						serviceResponse[0] = new ServiceResponse(true, "Granted", true);
 					}
 
 					@Override

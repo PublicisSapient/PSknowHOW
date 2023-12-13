@@ -44,12 +44,18 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
@@ -128,6 +134,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	private CookieUtil cookieUtil;
 	@Autowired
 	private UserTokenReopository userTokenReopository;
+
+	final ModelMapper modelMapper = new ModelMapper();
 
 	@Override
 	public Collection<GrantedAuthority> getAuthorities(String username) {
@@ -608,17 +616,22 @@ public class UserInfoServiceImpl implements UserInfoService {
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<UserInfo> response = null;
+		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, UserInfo.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return (List<UserInfoDTO>) response.getBody();
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				List<UserInfoDTO> centralUserInfo = modelMapper.map(jsonObject.get("data"), new TypeToken<List<UserInfoDTO>>(){}.getType());
+				return centralUserInfo;
 			} else {
 				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
 						+ response.getStatusCodeValue());
 				return (List<UserInfoDTO>) new UserInfo();
 			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (RuntimeException e) {
 			log.error("Error while consuming rest service in userInfoServiceImpl", e);
 			return null;
@@ -626,7 +639,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public String updateUserApprovalStatus(String user, String token) {
+	public boolean updateUserApprovalStatus(String user, String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), user);
@@ -638,15 +651,20 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.PUT, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody().toString();
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				boolean approved = (boolean) jsonObject.get("data");
+				return approved;
 			} else {
 				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
 						+ response.getStatusCodeValue());
-				return " ";
+				return false;
 			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
 		} catch (RuntimeException e) {
 			log.error("Error while consuming rest service in userInfoServiceImpl", e);
-			return null;
+			return false;
 		}
 	}
 
@@ -675,14 +693,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 			log.error("Error while consuming rest service in userInfoServiceImpl", e);
 			return null;
 		}
-	}
-
-	public String getToken(HttpServletRequest request) {
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		if (StringUtils.isBlank(authCookie.getValue())) {
-			return null;
-		}
-		return authCookie.getValue();
 	}
 
 }
