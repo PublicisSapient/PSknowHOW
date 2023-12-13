@@ -39,7 +39,7 @@ public interface CustomAnalyticsService {
 	 *            user name
 	 * @return JSON of analytics data
 	 */
-	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username);
+	JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username, String authToken);
 
-	public JSONObject getAnalyticsCheck();
+	JSONObject getAnalyticsCheck();
 }

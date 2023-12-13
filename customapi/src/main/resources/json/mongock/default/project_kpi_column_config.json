@@ -3023,7 +3023,6 @@
       "isDefault": false
     }]
   } ,
-  [
     {
       "basicProjectConfigId": null,
       "kpiId": "kpi166",
@@ -3078,5 +3077,4 @@
         }
       ]
     }
-  ]
 ]

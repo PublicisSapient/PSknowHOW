@@ -80,6 +80,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
@@ -172,7 +173,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			Authentication auth = authMap.get(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 				if (!auth.isApproved()) {
 					nonApprovedUserList.add(userInfo);
 				}
@@ -365,7 +366,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType()
 				&& userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
-					userInfo.getEmailAddress());
+					userInfo.getEmailAddress().toLowerCase());
 			existingUserInfo = save(defaultUserInfo);
 		}
 		return existingUserInfo;
@@ -449,7 +450,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (AuthType.STANDARD == userInfo.getAuthType()) {
 			Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 			}
 		}
 	}
@@ -495,7 +496,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
 			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress())
+					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
 					.projectsAccess(userInfo.getProjectsAccess()).build();
 		}
 		return userInfoDTO;
@@ -579,8 +580,41 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchUserDetailsEndPoint(), username);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				CentralUserInfoDTO centralUserInfo = modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
+				return centralUserInfo;
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return new CentralUserInfoDTO();
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
+	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		// String fetchUserUrl =
+		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
+		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);

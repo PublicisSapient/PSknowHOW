@@ -24,15 +24,11 @@ export class VerifyComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(){
     let authToken:string = '';
-    let redirect_uri:string = '';
-    this.route.queryParams.subscribe(params => {
-      authToken = params['authToken'];
-      redirect_uri = params['redirect_uri'];
-    });
-    this.validateUser(authToken, redirect_uri);
+    authToken = this.sharedService.getAuthToken()
+    this.validateUser(authToken);
   }
 
-  validateUser(authToken, redirect_uri){
+  validateUser(authToken){
     let obj = {
       'resource': environment.RESOURCE,
       'authToken': authToken
@@ -41,7 +37,8 @@ export class VerifyComponent implements OnInit, AfterViewInit {
     this.http.getUserValidation(obj).subscribe((response) => {
       if(response && response['success']){
         this.sharedService.setCurrentUserDetails(response?.['data'])
-        localStorage.setItem("userName", response?.['data']?.userName)
+        localStorage.setItem("user_name", response?.['data']?.user_name);
+        localStorage.setItem("user_email", response?.['data']?.user_email);
         this.router.navigate(['/dashboard/iteration']);
       }
       else{

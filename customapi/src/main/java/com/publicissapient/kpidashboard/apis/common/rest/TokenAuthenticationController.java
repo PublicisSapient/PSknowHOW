@@ -71,7 +71,8 @@ public class TokenAuthenticationController {
 			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
 			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
 			if (value) {
-				JSONObject json = customAnalyticsService.addAnalyticsData(response, userData.getUserName());
+				JSONObject json = customAnalyticsService.addAnalyticsData(response, userData.getUserName(),
+						userData.getAuthToken());
 				json.put("resourceTokenValid", true);
 				serviceResponse = new ServiceResponse(true, "success_valid_token", json);
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
