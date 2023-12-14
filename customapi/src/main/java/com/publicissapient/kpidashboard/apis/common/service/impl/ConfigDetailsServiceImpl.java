@@ -51,6 +51,7 @@ public class ConfigDetailsServiceImpl implements ConfigDetailService {
 		configDetails.setHierarchySelectionCount(customApiConfig.getHierarchySelectionCount());
 		configDetails.setDateRangeFilter(dateRangeFilter);
 		configDetails.setNoOfDataPoints(customApiConfig.getSprintCountForFilters());
+		configDetails.setRepoToolFlag(customApiConfig.getIsRepoToolEnable());
 		return configDetails;
 	}
 

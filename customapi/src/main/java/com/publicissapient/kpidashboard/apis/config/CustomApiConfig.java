@@ -234,6 +234,26 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
 	private List<String> flowEfficiencyXAxisRange;
+	private List<String> leadTimeRange;
+	private List<String> cycleTimeRange;
+
+	public List<String> getCycleTimeRange() {
+		return cycleTimeRange;
+	}
+
+	public void setCycleTimeRange(List<String> cycleTimeRange) {
+		this.cycleTimeRange = cycleTimeRange;
+	}
+
+
+
+	public List<String> getLeadTimeRange() {
+		return leadTimeRange;
+	}
+
+	public void setLeadTimeRange(List<String> leadTimeRange) {
+		this.leadTimeRange = leadTimeRange;
+	}
 
 	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
 		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;

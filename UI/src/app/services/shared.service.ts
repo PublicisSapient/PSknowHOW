@@ -90,6 +90,7 @@ export class SharedService {
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
+  globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
 
@@ -376,6 +377,14 @@ export class SharedService {
 
   setMaturiyTableLoader(value){
     this.maturityTableLoader.next(value)
+  }
+
+  setGlobalConfigData(data){
+    this.globalConfigData = data;
+  }
+
+  getGlobalConfigData(){
+    return this.globalConfigData;
   }
 
   setAuthToken(value){

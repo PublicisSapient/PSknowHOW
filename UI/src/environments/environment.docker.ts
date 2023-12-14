@@ -21,5 +21,6 @@ export const environment = {
     baseUrl: '',
     SSO_LOGIN: false,
    CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
-   RESOURCE: 'PSKnowHOW'
+   RESOURCE: 'PSKnowHOW',
+   AUTHENTICATION_SERVICE: true
 };

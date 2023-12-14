@@ -59,7 +59,9 @@ export class TestConnectionService {
       apiEndPoint,
       accessToken,
       cloudEnv,
-      vault
+      vault,
+      // bearerToken, 
+      // patOAuthToken
     };
     let headers: HttpHeaders = new HttpHeaders();
     headers = headers.append('requestArea', 'thirdParty');

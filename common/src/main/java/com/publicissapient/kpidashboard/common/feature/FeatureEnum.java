@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.common.feature;
 
 import org.togglz.core.Feature;
+import org.togglz.core.annotation.EnabledByDefault;
 import org.togglz.core.annotation.Label;
 import org.togglz.core.context.FeatureContext;
 
@@ -26,6 +27,7 @@ import org.togglz.core.context.FeatureContext;
  */
 public enum FeatureEnum implements Feature {
 
+    @EnabledByDefault
     @Label("Custom-api Daily Standup")
     DAILY_STANDUP;
 

@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.util;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import java.text.DecimalFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -772,20 +774,39 @@ public final class KpiDataHelper {
 				CycleTimeValidationData cycleTimeValidationData = cycleTimeValidationDataOptional.get();
 				IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
 				iterationKpiModalValue.setIssueId(customHistory.getStoryID());
+				iterationKpiModalValue.setIssueType(customHistory.getStoryType());
 				iterationKpiModalValue.setIssueURL(customHistory.getUrl());
 				iterationKpiModalValue.setDescription(customHistory.getDescription());
-				String intakeToDor = calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getDorDate());
-				String dorToDod = calWeekHours(cycleTimeValidationData.getDorDate(),
-						cycleTimeValidationData.getDodDate());
-				String dodToLive = calWeekHours(cycleTimeValidationData.getDodDate(),
-						cycleTimeValidationData.getLiveDate());
-				String leadTime = calWeekHours(cycleTimeValidationData.getIntakeDate(),
-						cycleTimeValidationData.getLiveDate());
-				iterationKpiModalValue.setIntakeToDor(getTimeValue(intakeToDor));
-				iterationKpiModalValue.setDorToDod(getTimeValue(dorToDod));
-				iterationKpiModalValue.setDodToLive(getTimeValue(dodToLive));
-				iterationKpiModalValue.setLeadTime(getTimeValue(leadTime));
+				if (isNotEmpty(cycleTimeValidationData.getIntakeTime())) {
+					iterationKpiModalValue.setIntakeToDOR(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getIntakeTime())));
+					iterationKpiModalValue.setDorDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDorDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+				} else {
+					iterationKpiModalValue.setIntakeToDOR(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorDate(Constant.NOT_AVAILABLE);
+				}
+				if (isNotEmpty(cycleTimeValidationData.getDorTime())) {
+					iterationKpiModalValue.setDodDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getDodDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDorToDod(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDorTime())));
+				} else {
+					iterationKpiModalValue.setDodDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDorToDod(Constant.NOT_AVAILABLE);
+				}
+				if (isNotEmpty(cycleTimeValidationData.getDodTime())) {
+					iterationKpiModalValue.setLiveDate(
+							DateUtil.dateTimeConverter(cycleTimeValidationData.getLiveDate().toString().split("T")[0],
+									DateUtil.DATE_FORMAT, DateUtil.DISPLAY_DATE_FORMAT));
+					iterationKpiModalValue.setDodToLive(
+							CommonUtils.convertIntoDays(Math.toIntExact(cycleTimeValidationData.getDodTime())));
+				} else {
+					iterationKpiModalValue.setLiveDate(Constant.NOT_AVAILABLE);
+					iterationKpiModalValue.setDodToLive(Constant.NOT_AVAILABLE);
+				}
 				dataMap.put(customHistory.getStoryID(), iterationKpiModalValue);
 			}
 		}

@@ -394,7 +394,7 @@
     "defaultOrder" : 9 ,
     "kpiSource" : "Jira" ,
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
@@ -453,6 +453,7 @@
     "groupId" : 1 ,
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
+    "thresholdValue" : "60",
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -691,7 +692,7 @@
     "defaultOrder" : 15 ,
     "kpiSource" : "Jenkins" ,
     "groupId" : 14 ,
-    "thresholdValue" : 0 ,
+    "thresholdValue" : "30" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -728,12 +729,39 @@
     "isAdditionalFilterSupport" : false ,
     "calculateMaturity" : true ,
     "hideOverallFilter" : true ,
-    "maturityRange" : [
-      "-50" ,
-      "50-30" ,
-      "30-20" ,
-      "20-10" ,
-      "10-"
+    "maturityRange": [
+      "-60",
+      "60-45",
+      "45-30",
+      "30-15",
+      "15-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "displayRange": "0-15 %"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "displayRange": "15-30 %"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "displayRange": "30-45 %"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "displayRange": "45-60 %"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "displayRange": "60 % and Above"
+      }
     ]
   } ,
   {
@@ -746,6 +774,7 @@
     "maxValue" : "100" ,
     "kpiUnit" : "%" ,
     "kanban" : false ,
+    "thresholdValue" : "80",
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
       "definition" : "Measures the percentage of test cases that have been executed & and the test that have passed." ,
@@ -787,7 +816,7 @@
     "defaultOrder" : 17 ,
     "kpiSource" : "Jira" ,
     "groupId" : 5 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "20" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -805,6 +834,8 @@
     "xaxisLabel" : "Sprints" ,
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white" ,
+    "lowerThresholdBG" : "red" ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
     "kpiFilter" : "radioButton" ,
@@ -876,7 +907,7 @@
     "groupId" : 2 ,
     "maxValue" : "10" ,
     "kpiUnit" : "%" ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -904,6 +935,8 @@
     "xaxisLabel" : "Sprints" ,
     "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "showTrend" : false ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : true ,
@@ -918,7 +951,7 @@
     "defaultOrder" : 20 ,
     "kpiSource" : "Jira" ,
     "groupId" : 2 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "40" ,
     "kanban" : false ,
     "kpiInfo" : {
       "definition" : "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints" ,
@@ -935,6 +968,8 @@
     "xaxisLabel" : "Sprints" ,
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white" ,
+    "lowerThresholdBG" : "red" ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : true ,
@@ -973,7 +1008,7 @@
     "defaultOrder" : 21 ,
     "kpiSource" : "Jira" ,
     "groupId" : 5 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "grouped_column_plus_line" ,
     "kpiInfo" : {
@@ -1001,6 +1036,8 @@
     "lineLegend" : "Logged" ,
     "barLegend" : "Estimated" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white" ,
+    "lowerThresholdBG" : "red" ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
@@ -1107,7 +1144,7 @@
     "defaultOrder" : 24 ,
     "kpiSource" : "Jenkins" ,
     "groupId" : 1 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "6" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1151,40 +1188,72 @@
     "defaultOrder" : 25 ,
     "kpiSource" : "Jenkins" ,
     "groupId" : 14 ,
-    "thresholdValue" : 0 ,
+    "thresholdValue" : "6" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
       "definition" : "Measures how often code is deployed to production in a period" ,
       "details" : [
         {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
           }
         }
       ]
-    } ,
-    "upperThresholdBG" : "white" ,
-    "lowerThresholdBG" : "red" ,
-    "xaxisLabel" : "Weeks" ,
-    "yaxisLabel" : "Count" ,
-    "isPositiveTrend" : true ,
-    "showTrend" : true ,
-    "kpiFilter" : "multiSelectDropDown" ,
-    "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
-    "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : true ,
-    "maturityRange" : [
-      "-1" ,
-      "1-2" ,
-      "2-5" ,
-      "5-10" ,
-      "10-"
+    },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Count",
+    "isPositiveTrend": true,
+    "showTrend": true,
+    "kpiFilter": "multiSelectDropDown",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "0-2" ,
+      "2-4" ,
+      "4-6" ,
+      "6-8" ,
+      "8-"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": ">= 2 per week",
+        "displayRange": "8 and Above"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "Once per week",
+        "displayRange": "6,7"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "Once in 2 weeks",
+        "displayRange": "4,5"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "Once in 4 weeks",
+        "displayRange": "2,3"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": "< Once in 8 weeks",
+        "displayRange": "0,1"
+      }
     ]
-  } ,
+  },
   {
     "kpiId" : "kpi73" ,
     "kpiName" : "Release Frequency" ,
@@ -1194,7 +1263,7 @@
     "defaultOrder" : 26 ,
     "kpiSource" : "Jira" ,
     "groupId" : 4 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "2" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -1233,7 +1302,7 @@
     "defaultOrder" : 27 ,
     "kpiSource" : "Jira" ,
     "groupId" : 4 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -2555,7 +2624,7 @@
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -2564,6 +2633,8 @@
     "xaxisLabel" : "Months" ,
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
+    "upperThresholdBG" : "red" ,
+    "lowerThresholdBG" : "white" ,
     "kpiFilter" : "multiSelectDropDown" ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -2580,7 +2651,7 @@
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "40" ,
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -2589,6 +2660,8 @@
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count" ,
     "isPositiveTrend" : false ,
+    "upperThresholdBG" : "red" ,
+    "lowerThresholdBG" : "white" ,
     "kpiFilter" : "" ,
     "showTrend" : false ,
     "aggregationCriteria" : "sum" ,
@@ -2878,64 +2951,51 @@
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi3" ,
-    "kpiName" : "Lead Time" ,
-    "isDeleted" : "False" ,
-    "kpiCategory" : "Backlog" ,
-    "boxType" : "2_column" ,
-    "kpiBaseLine" : "0" ,
-    "thresholdValue" : "" ,
-    "defaultOrder" : 1 ,
-    "kpiUnit" : "Count" ,
-    "kpiSource" : "Jira" ,
-    "groupId" : 11 ,
-    "kanban" : false ,
-    "chartType" : "" ,
-    "kpiInfo" : {
-      "definition" : "Measures Total time between a request was made and  all work on this item is completed and the request was delivered ." ,
-      "formula" : [
+    "kpiId": "kpi3",
+    "kpiName": "Lead Time",
+    "isDeleted": "False",
+    "kpiCategory": "Backlog",
+    "boxType": null,
+    "kpiBaseLine": "0",
+    "thresholdValue": "20",
+    "defaultOrder": "1",
+    "kpiUnit": "Days",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "Lead Time is the time from the moment when the request was made by a client and placed on a board to when all work on this item is completed and the request was delivered to the client",
+      "formula": null,
+      "details": [
         {
-          "lhs" : "It is calculated as the sum Ideation time, Development time & Release time"
-        }
-      ] ,
-      "details" : [
-        {
-          "type" : "paragraph" ,
-          "value" : "Ideation time (Intake to DOR): Time taken from issue creation to it being ready for Sprint."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Development time (DOR to DOD): Time taken from start of work on an issue to it being completed in the Sprint as per DOD."
-        } ,
-        {
-          "type" : "paragraph" ,
-          "value" : "Release time (DOD to Live): Time taken between story completion to it going live."
-        } ,
-        {
-          "type" : "link" ,
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Lead-time"
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70811702/Lead+time"
           }
         }
       ]
-    } ,
-    "xaxisLabel" : "" ,
-    "yaxisLabel" : "" ,
-    "kpiWidth" : 100 ,
-    "isPositiveTrend" : false ,
-    "showTrend" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
-    "isAdditionalFilterSupport" : false ,
-    "kpiSubCategory" : "Flow KPIs" ,
-    "calculateMaturity" : true
+    },
+    "xAxisLabel": "Range",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": false,
+    "showTrend": true,
+    "kpiFilter": "dropdown",
+    "isAdditionalFilterSupport": false,
+    "aggregationCriteria": "sum",
+    "calculateMaturity": false,
+    "lowerThresholdBG": "white",
+    "upperThresholdBG": "red",
+    "kpiSubCategory": "Flow KPIs",
+    "maturityRange": ["-60", "60-45", "45-30", "30-10", "10-"]
   } ,
   {
     "kpiId" : "kpi148" ,
     "kpiName" : "Flow Load" ,
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 7 ,
+    "defaultOrder" : 13 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 11 ,
@@ -2960,7 +3020,7 @@
     "kpiName" : "Flow Distribution" ,
     "kpiUnit" : "" ,
     "isDeleted" : "False" ,
-    "defaultOrder" : 6 ,
+    "defaultOrder" : 11 ,
     "kpiCategory" : "Backlog" ,
     "kpiSource" : "Jira" ,
     "groupId" : 10 ,
@@ -2987,12 +3047,15 @@
     "aggregationCriteria" : "average" ,
     "boxType" : "3_column" ,
     "calculateMaturity" : false ,
+    "thresholdValue" : "4",
     "chartType" : "line" ,
     "defaultOrder" : 28 ,
     "groupId" : 16 ,
     "isAdditionalFilterSupport" : false ,
     "isDeleted" : "False" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "kanban" : false ,
     "kpiFilter" : "multiSelectDropDown" ,
     "kpiInfo" : {
@@ -3025,7 +3088,7 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release.",
+      "definition" : "It shows the cumulative daily actual progress of the release against the overall scope. It also shows additionally the scope added or removed during the release w.r.t Dev/Qa completion date and Dev/Qa completion status for the Release tagged issues.",
       "details" : [
         {
           "type" : "link",
@@ -3067,7 +3130,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3091,7 +3154,7 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
@@ -3103,7 +3166,7 @@
     "defaultOrder" : 29 ,
     "kpiSource" : "Jira" ,
     "groupId" : 4 ,
-    "thresholdValue" : "" ,
+    "thresholdValue" : "0" ,
     "kanban" : false ,
     "chartType" : "multipleline" ,
     "kpiInfo" : {
@@ -3121,6 +3184,8 @@
     "xaxisLabel" : "PIs" ,
     "yaxisLabel" : "Business Value" ,
     "isPositiveTrend" : true ,
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "showTrend" : true ,
     "aggregationCriteria" : "sum" ,
     "isAdditionalFilterSupport" : false ,
@@ -3166,49 +3231,82 @@
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
     "boxType" : "chart" ,
-    "kpiSubCategory" : "Summary" ,
+    "kpiSubCategory" : "Backlog Overview" ,
     "calculateMaturity" : false
   } ,
   {
-    "kpiId" : "kpi156" ,
-    "kpiName" : "Lead Time For Change" ,
-    "maxValue" : "100" ,
-    "kpiUnit" : "Days" ,
-    "isDeleted" : "False" ,
-    "defaultOrder" : 3 ,
-    "kpiSource" : "Jira" ,
-    "kpiCategory" : "Dora" ,
-    "groupId" : 15 ,
-    "thresholdValue" : 0 ,
-    "kanban" : false ,
-    "chartType" : "line" ,
-    "kpiInfo" : {
-      "definition" : "LEAD TIME FOR CHANGE measures the velocity of software delivery." ,
-      "details" : [
+    "kpiId": "kpi156",
+    "kpiName": "Lead Time For Change",
+    "maxValue": "100",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 3,
+    "kpiSource": "Jira",
+    "kpiCategory": "Dora",
+    "groupId": 15,
+    "thresholdValue": "7",
+    "kanban": false,
+    "chartType": "line",
+    "kpiInfo": {
+      "definition": "LEAD TIME FOR CHANGE measures the velocity of software delivery.",
+      "details": [
         {
-          "type" : "paragraph" ,
-          "value" : "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
-        },
-        {
-          "type" : "link",
-          "kpiLinkDetail" : {
-            "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Lead-time-for-changes"
-          }
+          "type": "paragraph",
+          "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
         }
-      ] ,
-      "maturityLevels" : []
-    } ,
-    "xaxisLabel" : "Weeks" ,
-    "yaxisLabel" : "Days" ,
-    "isPositiveTrend" : true ,
-    "showTrend" : true ,
-    "kpiFilter" : "" ,
-    "aggregationCriteria" : "sum" ,
-    "aggregationCircleCriteria" : "average" ,
-    "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : false
-  } ,
+      ]
+    },
+    "xAxisLabel": "Weeks",
+    "yAxisLabel": "Days",
+    "isPositiveTrend": true,
+    "upperThresholdBG": "white",
+    "lowerThresholdBG": "red",
+    "showTrend": true,
+    "kpiFilter": "",
+    "aggregationCriteria": "sum",
+    "aggregationCircleCriteria" : "average",
+    "isAdditionalFilterSupport": false,
+    "calculateMaturity": true,
+    "maturityRange": [
+      "90-",
+      "30-90",
+      "7-30",
+      "1-7",
+      "-1"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "label": "< 1 Day",
+        "displayRange": "0-1 Day"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "label": "< 7 Days",
+        "displayRange": "1-7 Days"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "label": "< 30 Days",
+        "displayRange": "7-30 Days"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "label": "< 90 Days",
+        "displayRange": "30-90 Days"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "label": ">= 90 Days",
+        "displayRange": "90 Days and Above"
+      }
+    ]
+  },
   {
     "kpiId" : "kpi157" ,
     "kpiName" : "Check-Ins & Merge Requests" ,
@@ -3338,6 +3436,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count(Hours)" ,
     "isPositiveTrend" : false ,
@@ -3488,6 +3588,8 @@
         }
       ]
     } ,
+    "upperThresholdBG": "red",
+    "lowerThresholdBG": "white",
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (Hours)" ,
     "isPositiveTrend" : false ,
@@ -3516,6 +3618,7 @@
     "defaultOrder" : 4 ,
     "groupId" : 1 ,
     "kpiSource" : "BitBucket" ,
+    "thresholdValue" : "4",
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
@@ -3524,11 +3627,13 @@
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (No. of Lines)" ,
     "isPositiveTrend" : false ,
-    "showTrend" : true ,
+    "upperThresholdBG" : "red" ,
+    "lowerThresholdBG" : "white" ,
+    "showTrend" : false ,
     "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : false ,
-    "calculateMaturity" : true ,
+    "calculateMaturity" : false ,
     "hideOverallFilter" : true ,
     "maturityRange" : [
       "-16" ,
@@ -3648,7 +3753,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false
   } ,
@@ -3674,7 +3779,7 @@
     "isPositiveTrend" : true ,
     "showTrend" : false ,
     "isAdditionalFilterSupport" : false ,
-    "kpiFilter" : "multiSelectDropDown" ,
+    "kpiFilter" : "radioButton" ,
     "boxType" : "chart" ,
     "calculateMaturity" : false ,
     "kpiSubCategory" : "Epic View"
@@ -3693,14 +3798,23 @@
     "kanban": false,
     "chartType": "stackedColumn",
     "kpiInfo": {
-      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog"
+      "definition": "Iteration readiness depicts the state of future iterations w.r.t the quality of refined Backlog",
+      "details" : [
+        {
+          "type" : "link",
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at",
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+          }
+        }
+      ]
     },
     "xaxisLabel": "Sprint",
     "yaxisLabel": "Count",
     "isPositiveTrend": true,
     "showTrend": false,
     "isAdditionalFilterSupport": false,
-    "kpiFilter": "",
+    "kpiFilter": "radioButton",
     "boxType": "chart",
     "calculateMaturity": false,
     "kpiSubCategory" : "Backlog Health"
@@ -3715,7 +3829,7 @@
     "kpiSource": "Jira",
     "kpiCategory": "Dora",
     "groupId": 15,
-    "thresholdValue": 0,
+    "thresholdValue": "24",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -3742,12 +3856,48 @@
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Hours",
     "isPositiveTrend": false,
+    "upperThresholdBG" : "red" ,
+    "lowerThresholdBG" : "white" ,
     "showTrend": true,
     "kpiFilter": "",
     "aggregationCriteria": "sum",
     "aggregationCircleCriteria": "average",
     "isAdditionalFilterSupport": false,
-    "calculateMaturity": false
+    "calculateMaturity": true,
+    "maturityRange": [
+      "48-",
+      "24-48",
+      "12-24",
+      "1-12",
+      "-1"
+    ],
+    "maturityLevel": [
+      {
+        "level": "M5",
+        "bgColor": "#167a26",
+        "displayRange": "0-1 Hour"
+      },
+      {
+        "level": "M4",
+        "bgColor": "#4ebb1a",
+        "displayRange": "1-12 Hours"
+      },
+      {
+        "level": "M3",
+        "bgColor": "#ef7643",
+        "displayRange": "12-24 Hours"
+      },
+      {
+        "level": "M2",
+        "bgColor": "#f53535",
+        "displayRange": "24-48 Hours"
+      },
+      {
+        "level": "M1",
+        "bgColor": "#c91212",
+        "displayRange": "48 Hours and Above"
+      }
+    ]
   },
   {
     "kpiId": "kpi168",
@@ -3759,6 +3909,7 @@
     "kpiSource": "Sonar",
     "groupId": 1,
     "kanban": false,
+    "thresholdValue" : "2",
     "chartType": "bar-with-y-axis-group",
     "kpiInfo": {
       "definition": "Sonar Code Quality is graded based on the static and dynamic code analysis procedure built in Sonarqube that analyses code from multiple perspectives.",
@@ -3784,6 +3935,8 @@
         }
       ]
     },
+    "upperThresholdBG" : "white" ,
+    "lowerThresholdBG" : "red" ,
     "xAxisLabel": "Months",
     "yAxisLabel": "Code Quality",
     "isPositiveTrend": true,
@@ -3811,7 +3964,7 @@
     "kpiCategory" : "Backlog",
     "kpiSource" : "Jira",
     "groupId" : 11,
-    "thresholdValue" : "",
+    "thresholdValue" : "40",
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
@@ -3820,11 +3973,52 @@
     "xAxisLabel" : "Duration",
     "yAxisLabel" : "Percentage",
     "isPositiveTrend" : false,
+    "upperThresholdBG" : "red" ,
+    "lowerThresholdBG" : "white" ,
     "kpiFilter" : "dropDown",
     "showTrend" : false,
     "aggregationCriteria" : "average",
     "isAdditionalFilterSupport" : false,
     "calculateMaturity" : false,
     "kpiSubCategory" : "Flow KPIs"
+  },
+  {
+    "kpiId": "kpi171",
+    "kpiName": "Cycle Time",
+    "maxValue": "",
+    "kpiUnit": "Days",
+    "isDeleted": "False",
+    "defaultOrder": 12,
+    "kpiCategory": "Backlog",
+    "kpiSource": "Jira",
+    "groupId": 11,
+    "thresholdValue": "",
+    "kanban": false,
+    "chartType": "",
+    "yAxisLabel": "",
+    "xAxisLabel": "",
+    "isAdditionalFilterSupport": false,
+    "kpiFilter": "multiSelectDropDown",
+    "boxType": "2_column",
+    "calculateMaturity": true,
+    "isAggregationStacks": false,
+    "kpiSubCategory": "Flow KPIs",
+    "kpiInfo": {
+      "definition": "Cycle time helps ascertain time spent on each step of the complete issue lifecycle. It is being depicted in the visualization as 3 core cycles - Intake to DOR, DOR to DOD, DOD to Live",
+      "details": [
+        {
+          "type": "link",
+          "kpiLinkDetail": {
+            "text": "Detailed Information at",
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time"
+          }
+        }
+      ],
+      "formula": null
+    },
+    "isPositiveTrend": false,
+    "kpiBaseLine": "0",
+    "showTrend": false
   }
+
 ]

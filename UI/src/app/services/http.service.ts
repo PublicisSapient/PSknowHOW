@@ -53,7 +53,7 @@ export class HttpService {
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
-  private tooltipDataUrl = this.baseUrl + '/api/configDetails';
+  private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
   private configUrl = this.baseUrl + '/api/project';
@@ -258,8 +258,8 @@ export class HttpService {
   }
 
   /** GET getTooltipData from the server */
-  getTooltipData(): Observable<any> {
-    return this.http.get(this.tooltipDataUrl);
+  getConfigDetails(): Observable<any> {
+    return this.http.get(this.configDetailsUrl);
   }
 
   /** GET getTooltipData from the server */
@@ -1137,6 +1137,6 @@ export class HttpService {
     return this.http.post<object>(this.validateResourceUrl, data);
   }
   getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
 }

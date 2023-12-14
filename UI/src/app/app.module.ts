@@ -138,7 +138,7 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
     }
     if (!environment.production) {
         return async () => {
-            return featureToggleService.loadConfig();
+            featureToggleService.config = await featureToggleService.loadConfig();
         }
     } else {
         return async () => {
@@ -149,7 +149,7 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
                 }));
 
             await env$.toPromise().then(res => {
-                featureToggleService.loadConfig();
+                featureToggleService.config = featureToggleService.loadConfig();
             });
         };
     }

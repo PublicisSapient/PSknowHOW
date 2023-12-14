@@ -68,7 +68,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['assigneeList']?.firstChange) {
+    if (changes['assigneeList']) {
       this.allAssignee = changes['assigneeList']?.currentValue;
     }
     if (Object.keys(this.filters).length > 0) {
@@ -112,13 +112,15 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   handleSingleSelectChange(e, filterKey) {
-    this.onFilterChange.emit(this.filters);
-    if (e && e.value) {
-      this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e.value);
-    } else {
-      this.assigneeList = this.allAssignee;
+    if (this.allAssignee && this.allAssignee.length) {
+      if (e && e.value) {
+        this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e.value);
+      } else {
+        this.assigneeList = this.allAssignee;
+      }
+      this.calculateTotal();
+      this.onFilterChange.emit(this.filters);
     }
-    this.calculateTotal();
   }
 
   calculateTotal() {
