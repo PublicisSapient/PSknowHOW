@@ -178,7 +178,7 @@ public interface UserInfoService {
 	// ----auth-N-auth----------
 
 	/**
-	 * get User info from cental auth
+	 * getUser info from cental auth
 	 * 
 	 * @param username
 	 * @return

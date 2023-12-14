@@ -113,7 +113,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
 		}
 
-		List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+		//List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 
 		/*
 		 * if (projectAccessesWithRole != null) { JsonElement element =
