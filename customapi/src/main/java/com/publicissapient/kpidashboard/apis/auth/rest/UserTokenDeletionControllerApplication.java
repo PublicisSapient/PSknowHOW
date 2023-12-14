@@ -47,7 +47,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class UserTokenDeletionControllerApplication {
 
-	private final UserTokenDeletionService userTokenDeletionService;
 	@Autowired
 	private CookieUtil cookieUtil;
 
@@ -62,7 +61,6 @@ public class UserTokenDeletionControllerApplication {
 	 */
 	@Autowired
 	public UserTokenDeletionControllerApplication(UserTokenDeletionService userTokenDeletionService) {
-		this.userTokenDeletionService = userTokenDeletionService;
 	}
 
 	/**
@@ -74,8 +72,6 @@ public class UserTokenDeletionControllerApplication {
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity deleteUserToken(HttpServletRequest request) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
-		//String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
-		//userTokenDeletionService.deleteUserDetails(token);
 		Cookie authCookieToken = cookieUtil.getAuthCookie(request);
 		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken.getValue());
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();

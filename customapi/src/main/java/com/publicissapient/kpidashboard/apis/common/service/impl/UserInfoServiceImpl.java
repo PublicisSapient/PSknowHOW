@@ -48,6 +48,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -100,6 +101,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserInfoServiceImpl implements UserInfoService {
 
+	public static final String ERROR_MESSAGE_CONSUMING_REST_API = "Error while consuming rest service in userInfoServiceImpl. Status code: ";
+	public static final String ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while consuming rest service in userInfoServiceImpl";
 	HttpServletRequest contextreq;
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
@@ -567,12 +570,11 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return new UserInfo();
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
@@ -592,17 +594,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				CentralUserInfoDTO centralUserInfo = modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
-				return centralUserInfo;
+				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API
 						+ response.getStatusCodeValue());
 				return new CentralUserInfoDTO();
 			}
 		} catch (ParseException e) {
 			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
@@ -610,9 +611,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Override
 	public String getCentralAuthUserDeleteUserToken(String token) {
 		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
-		// String fetchUserUrl =
-		// CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL() +
-		// "/api/userlogout/" + token);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
@@ -625,15 +623,100 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody().toString();
+				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return "";
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
+
+	@Override
+	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<UserInfoDTO>>() {
+				}.getType());
+
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return (List<UserInfoDTO>) new UserInfo();
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return new ArrayList<>();
+		}
+	}
+
+	@Override
+	public boolean updateUserApprovalStatus(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getUpdateUserApprovalStatus(), user);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.PUT, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return (boolean) jsonObject.get("data");
+
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return false;
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return false;
+		}
+	}
+
+	@Override
+	public String deleteRejectedUser(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/api/deleteUser/");
+		uriBuilder.path(user);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody();
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return "";
+			}
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return null;
+		}
+	}
+
 }

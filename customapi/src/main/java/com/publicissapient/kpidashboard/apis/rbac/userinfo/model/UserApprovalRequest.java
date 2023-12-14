@@ -16,23 +16,45 @@
  *
  ******************************************************************************/
 
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build ---prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+package com.publicissapient.kpidashboard.apis.rbac.userinfo.model;
 
-export const environment = {
-   production: false,
-   baseUrl: '//customapi:8080',
-   SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'https://dev-authnauth.tools.publicis.sapient.com',
-   RESOURCE: 'PSKnowHOW',
-   AUTHENTICATION_SERVICE: true
-};
+import javax.validation.constraints.NotNull;
 
-/*
- * In development mode, to ignore zone related error stack frames such as
- * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
- * import the following file, but please comment it out in production mode
- * because it will have performance impact when throw error
+/**
+ * User Approval Request object
+ *
+ * @author aksshriv1
  */
-// import 'zone.js/dist/zone-error';  // Included with Angular CLI.
+public class UserApprovalRequest {
+	@NotNull
+	private String status;
+	@NotNull
+	private String approvedBy;
+	@NotNull
+	private String message;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getApprovedBy() {
+		return approvedBy;
+	}
+
+	public void setApprovedBy(String approvedBy) {
+		this.approvedBy = approvedBy;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+}

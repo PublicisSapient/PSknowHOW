@@ -144,6 +144,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
+	@Value("${centralAuth.switch}")
+	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -951,6 +953,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNotificationSwitch(boolean notificationSwitch) {
 		this.notificationSwitch = notificationSwitch;
+	}
+
+	public boolean isCentralAuthSwitch() {
+		return centralAuthSwitch;
+	}
+
+	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
+		this.centralAuthSwitch = centralAuthSwitch;
 	}
 
 	public boolean isAnalyticsSwitch() {
