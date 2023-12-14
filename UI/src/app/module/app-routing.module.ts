@@ -17,7 +17,7 @@
  ******************************************************************************/
 
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { ROUTES, RouterModule, Routes } from '@angular/router';
 import { ExecutiveComponent } from '../dashboard/executive/executive.component';
 import { MaturityComponent } from '../dashboard/maturity/maturity.component';
 import { ErrorComponent } from '../dashboard/error/error.component';
@@ -35,6 +35,9 @@ import { UnauthorisedAccessComponent } from '../dashboard/unauthorised-access/un
 import { MilestoneComponent } from '../dashboard/milestone/milestone.component';
 import { DoraComponent } from '../dashboard/dora/dora.component';
 import { FeatureGuard } from '../services/feature.guard';
+
+import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
+import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -43,7 +46,7 @@ import { FeatureGuard } from '../services/feature.guard';
  */
 
 
-const routes: Routes = [
+const standardRoutes: Routes = [
   { path: '', redirectTo: 'authentication', pathMatch: 'full' },
   {
     path: 'authentication',
@@ -51,80 +54,156 @@ const routes: Routes = [
     resolve: [Logged],
     canActivate: [SSOGuard]
   },
-  {
-    path: 'dashboard', component: DashboardComponent,
-    canActivateChild : [FeatureGuard],
-    children: [
-      { path: '', redirectTo: 'iteration', pathMatch: 'full' },
-      {
-        path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "My Dashboard"
-        }
-      },
-      {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
-        data: {
-          feature: "Iteration"
-        }
-      },
-      {
-        path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "Developer"
-        }
-      },
-      {
-        path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "Maturity"
-        }
-      },
-      {
-        path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "Backlog"
-        }
-      },
-      {
-        path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "Release"
-        }
-      },
-      {
-        path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
-        data: {
-          feature: "Dora"
-        }
-      },
-      { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
-      { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
-      {
-        path: 'Config',
-        loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
-        data: {
-          feature: "Config"
-        }
-      },
-      { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
-
-    ], canActivate: [AuthGuard]
-  },
   { path: 'authentication-fail', component: SsoAuthFailureComponent },
   { path: '**', redirectTo: 'authentication' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true, relativeLinkResolution: 'legacy' })],
-
+  imports: [RouterModule.forRoot([])],
   exports: [RouterModule],
   providers: [
+    {
+      provide: ROUTES,
+      useFactory: () => {
+        let routes: Routes = [];
+
+        if (!localStorage.getItem('newUI')) {
+          routes.push({
+            path: 'dashboard', component: DashboardComponent,
+            canActivateChild : [FeatureGuard],
+            children: [
+              { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+              {
+                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "My Dashboard"
+                }
+              },
+              {
+                path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
+                data: {
+                  feature: "Iteration"
+                }
+              },
+              {
+                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Developer"
+                }
+              },
+              {
+                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Maturity"
+                }
+              },
+              {
+                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Backlog"
+                }
+              },
+              {
+                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Release"
+                }
+              },
+              {
+                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Dora"
+                }
+              },
+              { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+              { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+              {
+                path: 'Config',
+                loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
+                data: {
+                  feature: "Config"
+                }
+              },
+              { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+        
+            ], canActivate: [AuthGuard]
+          });
+        }
+        else {
+          routes.push({
+            path: 'dashboard', component: DashboardV2Component,
+            canActivateChild : [FeatureGuard],
+            children: [
+              { path: '', redirectTo: 'iteration', pathMatch: 'full' },
+              {
+                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "My Dashboard"
+                }
+              },
+              {
+                path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
+                data: {
+                  feature: "Iteration"
+                }
+              },
+              {
+                path: 'developer', component: DeveloperComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Developer"
+                }
+              },
+              {
+                path: 'Maturity', component: MaturityComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Maturity"
+                }
+              },
+              {
+                path: 'backlog', component: BacklogComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Backlog"
+                }
+              },
+              {
+                path: 'release', component: MilestoneComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Release"
+                }
+              },
+              {
+                path: 'dora', component: DoraComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                data: {
+                  feature: "Dora"
+                }
+              },
+              { path: 'Error', component: ErrorComponent, pathMatch: 'full' },
+              { path: 'unauthorized-access', component: UnauthorisedAccessComponent, pathMatch: 'full' },
+              {
+                path: 'Config',
+                loadChildren: () => import('../config/config.module').then(m => m.ConfigModule), canLoad: [FeatureGuard],
+                data: {
+                  feature: "Config"
+                }
+              },
+              { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+        
+            ], canActivate: [AuthGuard]
+          });
+        }
+
+        return [
+          ...routes,
+          ...standardRoutes
+        ];
+      },
+      multi: true
+    },
     AuthGuard,
     Logged,
     AccessGuard,
     GuestGuard,
-    FeatureGuard
+    FeatureGuard,
   ]
 })
 export class AppRoutingModule { }

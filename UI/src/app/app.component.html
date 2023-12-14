@@ -15,7 +15,10 @@
   limitations under the License.
 
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-
+<div class="ui-switch-container" *ngIf="router.url.indexOf('authentication') === -1">
+  <span class="p-mr-6">Switch to new UI, you can always switch back</span>
+  <p-inputSwitch [(ngModel)]="newUI" (onChange)="uiSwitch($event)"></p-inputSwitch>
+</div> 
 <router-outlet></router-outlet>
 <ng-container *ngIf="loadingRouteConfig">
 <app-page-loader></app-page-loader>

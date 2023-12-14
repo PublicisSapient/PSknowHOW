@@ -72,3 +72,9 @@
   left: 50%;
   top: 50%;
 }
+
+.ui-switch-container {
+  text-align: center;
+  background-color: aqua;
+  padding: 5px;
+}

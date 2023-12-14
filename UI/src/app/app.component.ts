@@ -36,15 +36,16 @@ import { PrimeNGConfig } from 'primeng/api';
 export class AppComponent implements OnInit {
 
   loadingRouteConfig: boolean;
-
   authorized = <boolean>true;
+  newUI: boolean = false;
 
-  constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
+  constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
     private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
+    this.newUI = localStorage.getItem('newUI') ? true : false;
     // load google Analytics script on all instances except local and if customAPI property is true
     this.httpService.getAnalyticsFlag()
       .subscribe(flag => {
@@ -78,5 +79,15 @@ export class AppComponent implements OnInit {
       }
 
     });
+  }
+
+  uiSwitch(event) {
+    let isChecked = event.checked;
+    if(isChecked) {
+      localStorage.setItem('newUI', 'true');
+    } else {
+      localStorage.removeItem('newUI');
+    }
+    window.location.reload();
   }
 }

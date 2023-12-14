@@ -124,6 +124,15 @@ import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { HeaderComponent } from './dashboardv2/header/header.component';
+import { FilterNewComponent } from './dashboardv2/filter-new/filter-new.component';
+import { ParentFilterComponent } from './dashboardv2/filter-new/parent-filter/parent-filter.component';
+import { PrimaryFilterComponent } from './dashboardv2/filter-new/primary-filter/primary-filter.component';
+import { AdditionalFilterComponent } from './dashboardv2/filter-new/additional-filter/additional-filter.component';
+import { NavNewComponent } from './dashboardv2/nav-new/nav-new.component';
+import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
+import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
+import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -202,7 +211,16 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent
+        BarWithYAxisGroupComponent,
+        HeaderComponent,
+        FilterNewComponent,
+        ParentFilterComponent,
+        PrimaryFilterComponent,
+        AdditionalFilterComponent,
+        NavNewComponent,
+        RecentCommentsComponent,
+        ExecutiveV2Component,
+        DashboardV2Component
     ],
     imports: [
         DropdownModule,
