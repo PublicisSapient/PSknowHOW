@@ -75,7 +75,7 @@
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y" *ngIf="!noTabAccess; else noDataAccess">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                              [trendData]="kpiChartData[kpi?.kpiId]"
+                              [trendData]="kpiTrendObject[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
@@ -94,13 +94,14 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex">
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                                         [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"
@@ -215,7 +216,7 @@
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                              [trendData]="kpiChartData[kpi?.kpiId]"
+                              [trendData]="kpiTrendObject[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
@@ -234,13 +235,14 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex">
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                                         [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"
@@ -295,7 +297,7 @@
                       [cdkDropListData]="board.kpiPart2">
                       <ng-container *ngFor="let kpi of board.kpiPart2">
                         <div class="card-type-1 p-pb-3" *ngIf="!kpi?.kpiDetail?.chartType ; else showGraph" cdkDrag cdkDragLockAxis="y">
-                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi" *ngIf="kpiChartData[kpi.kpiId]?.length"
+                          <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
                             (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban)"
                             [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                             (optionSelected)="handleSelectedOptionForCard($event, kpi)" [showExport]="false"
@@ -354,7 +356,7 @@
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                              [trendData]="kpiChartData[kpi?.kpiId]"
+                              [trendData]="kpiTrendObject[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
@@ -373,12 +375,13 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'" [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex">
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                                         [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"
@@ -495,7 +498,7 @@
                           <div class="backlog-chart p-pb-3"
                             [ngClass]="{'backlog-dashboard' : kpi?.kpiDetail?.chartType ==='progress-bar'}" cdkDrag cdkDragLockAxis="y">
                             <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="kpi"
-                              [trendData]="kpiChartData[kpi?.kpiId]"
+                              [trendData]="kpiTrendObject[kpi?.kpiId]"
                               (downloadExcel)="downloadExcel(kpi.kpiId, kpi.kpiName, kpi.kpiDetail.kanban,kpi?.kpiDetail?.additionalFilterSupport, kpi?.kpiDetail?.chartType)"
                               [dropdownArr]="kpiDropdowns[kpi?.kpiId]"
                               (optionSelected)="handleSelectedOption($event, kpi)" [showExport]="true" [isShow]="true"
@@ -514,13 +517,14 @@
                                         [unit]="kpi?.kpiDetail?.kpiUnit"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [data]="kpiChartData[kpi?.kpiId]" [color]="chartColorList" [kpiId]="kpi?.kpiId"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex"></app-groupstackchart>
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [isAggregationStacks] = "(kpi?.kpiDetail?.isAggregationStacks === false) ? false : true"></app-groupstackchart>
                                       <app-multiline *ngSwitchCase="'line'"
                                         [thresholdValue]="kpiThresholdObj[kpi?.kpiId]"
                                         [unit]="kpi?.kpiDetail?.kpiUnit" [data]="kpiChartData[kpi?.kpiId]"
                                         [xCaption]="kpi?.kpiDetail?.xaxisLabel" [yCaption]="kpi?.kpiDetail?.yaxisLabel"
                                         [name]="kpi?.kpiName" [kpiId]="kpi?.kpiId" [color]="chartColorList"
-                                        [selectedtype]="selectedtype" [activeTab]="activeIndex">
+                                        [selectedtype]="selectedtype" [activeTab]="activeIndex" [board]="'backlog'" 
+                                        [lowerThresholdBG]="kpi?.kpiDetail?.lowerThresholdBG" [upperThresholdBG]="kpi?.kpiDetail?.upperThresholdBG">
                                       </app-multiline>
                                       <app-grouped-column-plus-line-chart *ngSwitchCase="'grouped_column_plus_line'"
                                         [data]="kpiChartData[kpi?.kpiId]" [lineChart]="true"

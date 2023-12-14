@@ -39,12 +39,23 @@ public class DREDefinitionChangeLog {
 	@Execution
 	public void execution() {
 		updateKpiDefinition();
+		updateDREFieldMappingStructure();
 	}
 
 	public void updateKpiDefinition() {
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi34"),
 				new Document("$set", new Document("kpiInfo.definition",
 						"Measure of percentage of defects closed against the total count tagged to the iteration")));
+	}
+
+	public void updateDREFieldMappingStructure() {
+		Document filter = new Document("fieldName", "jiraDodKPI14");
+		Document update = new Document("$set", new Document()
+				.append("fieldLabel", "Status considered for Issue closure")
+				.append("tooltip", new Document("definition",
+						"Status considered for issue closure (Mention completed status of all types of issues)")));
+
+		mongoTemplate.getCollection("field_mapping_structure").updateOne(filter, update);
 	}
 
 	@RollbackExecution

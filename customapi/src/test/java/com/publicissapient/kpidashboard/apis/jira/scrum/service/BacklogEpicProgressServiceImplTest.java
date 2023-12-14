@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 /**
  * test file of release progress of backlog dashboard
+ * 
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -186,8 +188,9 @@ public class BacklogEpicProgressServiceImplTest {
 
 	@Test
 	public void testGetStatusWiseCountListPositive() {
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("44");
 		assertThat(dataCount.getSize()).isEqualTo("60.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
@@ -211,8 +214,9 @@ public class BacklogEpicProgressServiceImplTest {
 	@Test
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 

@@ -98,4 +98,5 @@ public class KpiMaster extends BasicModel {
 	private List<MaturityLevel> maturityLevel;
 	private Boolean isRepoToolKpi;
 	private Map<Integer,String> yaxisOrder;
+	private Boolean isAggregationStacks;
 }

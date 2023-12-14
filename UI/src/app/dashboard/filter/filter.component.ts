@@ -261,10 +261,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.httpService.getTooltipData().subscribe((filterData) => {
+    this.httpService.getConfigDetails().subscribe((filterData) => {
       if (filterData[0] !== 'error') {
         this.heirarchyCount = filterData?.hierarchySelectionCount;
         this.dateRangeFilter = filterData?.dateRangeFilter;
+        this.service.setGlobalConfigData(filterData);
         if (this.selectedTab.toLowerCase() === 'developer') {
           this.selectedDayType = 'Days';
           // different date filter for developer tab
@@ -558,7 +559,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       delete this.kpiListData['id'];
     }
     this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
-      }
+  }
 
   closeAllDropdowns() {
     for (const key in this.toggleDropdownObj) {
@@ -599,7 +600,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // this method would be called on click of apply button of filter
   applyChanges(applySource?, filterApplied = true): void {
-        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+    let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
     let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId === selectedLevelId)[0];
     if (selectedTrendIds !== '' || selectedTrendIds?.length > 0) {
@@ -762,7 +763,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   getKpiOrderedList() {
     if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
+      this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
@@ -776,35 +777,35 @@ export class FilterComponent implements OnInit, OnDestroy {
           });
         },
       );
-    }else{
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData);
+    } else {
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData);
       this.service.setDashConfigData(this.kpiListData);
     }
   }
 
-  getKpiOrderListProjectLevel(){
+  getKpiOrderListProjectLevel() {
     let projectList = [];
-      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
-        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
-      }
-      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(
-        (response) => {
-          if (response.success === true) {
-            this.kpiListDataProjectLevel = response.data;
-            this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData)
-            this.service.setDashConfigData(this.kpiListData);
-            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
-            this.processKpiList();
-            this.navigateToSelectedTab();
-          }
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error in fetching roles. Please try after some time.',
-          });
-        },
-      );
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(
+      (response) => {
+        if (response.success === true) {
+          this.kpiListDataProjectLevel = response.data;
+          this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData)
+          this.service.setDashConfigData(this.kpiListData);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+          this.processKpiList();
+          this.navigateToSelectedTab();
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in fetching roles. Please try after some time.',
+        });
+      },
+    );
   }
 
   processKpiList() {
@@ -832,7 +833,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const kpiObj = {};
       let count = 0;
       this.showKpisList = [];
-            for (let i = 0; i < this.kpiList?.length; i++) {
+      for (let i = 0; i < this.kpiList?.length; i++) {
         let showKpi = false;
         if (this.kpiList[i]['shown']) {
           if (this.kpiList[i]['isEnabled']) {
@@ -845,7 +846,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
-        }else{
+        } else {
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
@@ -866,7 +867,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
     }
     for (let i = 0; i < this.kpiList?.length; i++) {
-      if(!this.kpiList[i]['shown']){
+      if (!this.kpiList[i]['shown']) {
         kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
       }
     }
@@ -1217,7 +1218,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.createFilterApplyData();
         this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
         this.getKpiOrderListProjectLevel()
-       }
+      }
     }
   }
 
@@ -1305,16 +1306,21 @@ export class FilterComponent implements OnInit, OnDestroy {
   showExecutionDate() {
     this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
     if (this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null) {
-      if (this.selectedProjectLastSyncDetails.executionSuccess) {
+      if (this.selectedProjectLastSyncDetails.executionSuccess && this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
         this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
         this.selectedProjectLastSyncStatus = "SUCCESS";
       } else {
-        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
-        this.selectedProjectLastSyncStatus = "FAILURE";
+        if (this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
+          this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+          this.selectedProjectLastSyncStatus = "FAILURE";
+        } else {
+          this.selectedProjectLastSyncStatus = "NA";
+          this.selectedProjectLastSyncDate = "";
+        }
       }
     } else {
-      this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
+      this.selectedProjectLastSyncDate = "";
     }
     this.fetchActiveIterationStatus();
   }
@@ -1428,13 +1434,14 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
-        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
-      }
-    this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
+    if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
+            projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+          }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,response.data)
+      this.kpiListDataProjectLevel = response.data;
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.service.getDashConfigData())
       this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;
@@ -1513,10 +1520,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (unreleasedReleases?.length > 0) {
         /** If there are unreleased releases, find the nearest one in the future */
         unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
-        const todayEOD = new Date(new Date().setHours(0,0,0,0));
+        const todayEOD = new Date(new Date().setHours(0, 0, 0, 0));
         const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > todayEOD);
         this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
-       } else {
+      } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
       }

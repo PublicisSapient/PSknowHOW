@@ -55,7 +55,8 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	private FetchSprintReport fetchSprintReport;
 
 	@Override
-	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) throws IOException {
+	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+			throws IOException {
 		log.info("creating sprint report for the project : {}", projectConfig.getProjectName());
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();

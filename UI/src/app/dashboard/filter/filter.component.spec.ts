@@ -1334,7 +1334,7 @@ const completeHierarchyData = {
         kpiWiseAggregationType: { kpi114: 'sum', kpi997: 'sum', kpi116: 'average', kpi118: 'sum', kpi82: 'average' },
         percentile: 90
       };
-      spyOn(httpService,"getTooltipData").and.returnValue(of(fakeResponce));
+      spyOn(httpService,"getConfigDetails").and.returnValue(of(fakeResponce));
       component.ngOnInit();
       expect(component.dateRangeFilter).not.toBeNull();
      });

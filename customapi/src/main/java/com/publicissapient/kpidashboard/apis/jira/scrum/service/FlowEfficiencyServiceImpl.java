@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 import java.time.LocalDate;
@@ -33,18 +32,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.JiraFeature;
-import com.publicissapient.kpidashboard.apis.enums.JiraFeatureHistory;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
@@ -55,9 +52,9 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.BacklogKpiHelper;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
-import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
@@ -77,7 +74,6 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String HISTORY = "history";
 	private static final String OVERALL = "Overall";
-	private static final String MONTH = "Month";
 
 	@Autowired
 	ConfigHelperService configHelperService;
@@ -250,49 +246,16 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, List<String> waitTimeList,
 			List<String> totalTimeList, FieldMapping fieldMapping) {
 		Map<Long, String> monthRangeMap = new HashMap<>();
-		initializeRangeMapForProjects(rangeWiseJiraIssuesMap, xAxisRange, monthRangeMap);
+		BacklogKpiHelper.initializeRangeMapForProjects(rangeWiseJiraIssuesMap, xAxisRange, monthRangeMap);
 
 		projectWiseJiraIssueList.forEach(issue -> {
-			long daysBetween = DAYS.between(KpiDataHelper.convertStringToDate(issue.getCreatedDate().toString()),
-					LocalDate.now());
-			monthRangeMap.forEach((noOfDay, range) -> {
-				if (noOfDay > daysBetween) {
-					rangeWiseJiraIssuesMap.computeIfAbsent(range, k -> new HashMap<>())
-							.computeIfAbsent(issue.getStoryType(), k -> new ArrayList<>()).add(issue);
-					if (!flowEfficiencyMap.containsKey(issue))
-						calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap);
-				}
-			});
+			if (!flowEfficiencyMap.containsKey(issue))
+				calculateFlowEfficiency(issue, fieldMapping, waitTimeList, totalTimeList, flowEfficiencyMap,
+						monthRangeMap, rangeWiseJiraIssuesMap);
 		});
 	}
 
-	/**
-	 * create x-axis range map with duration
-	 * 
-	 * @param rangeWiseJiraIssuesMap
-	 * 			map of jira issues by data points
-	 * @param xAxisRange
-	 * 			x axis data points
-	 * @param monthRangeMap
-	 * 		days and range map
-	 *
-	 */
-	private void initializeRangeMapForProjects(
-			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap, List<String> xAxisRange,
-			Map<Long, String> monthRangeMap) {
-		LocalDateTime currentDate = LocalDateTime.now();
-		xAxisRange.forEach(range -> {
-			String[] rangeSplit = range.trim().split(" ");
-			if (rangeSplit[2].contains(MONTH)) {
-				monthRangeMap.put(
-						DAYS.between(currentDate.minusMonths(Integer.parseInt(rangeSplit[1])), currentDate), range);
-			} else {
-				monthRangeMap.put(DAYS.between(currentDate.minusWeeks(Integer.parseInt(rangeSplit[1])), currentDate),
-						range);
-			}
-			rangeWiseJiraIssuesMap.put(range, new HashMap<>());
-		});
-	}
+
 
 	/**
 	 * calculate flow efficiency for each jira issue
@@ -310,7 +273,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 */
 	private void calculateFlowEfficiency(JiraIssueCustomHistory issueCustomHistory, FieldMapping fieldMapping,
 			List<String> waitTimeList, List<String> totalTimeList,
-			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap) {
+			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Map<Long, String> monthRangeMap,
+			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap) {
 		List<JiraHistoryChangeLog> statusUpdateLog = issueCustomHistory.getStatusUpdationLog();
 		long waitedTime = 0;
 		long totalTime = 0;
@@ -333,6 +297,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			}
 
 			if (closedDate != null && totalTime != 0) {
+				BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, issueCustomHistory, closedDate, monthRangeMap);
 				double flowEfficiency = calculatePercentage(waitedTime, totalTime);
 				waitTimeList.add(kpiHelperService.convertHoursToDaysString(waitedTime));
 				totalTimeList.add(kpiHelperService.convertHoursToDaysString(totalTime));
@@ -353,6 +318,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	private long calculateWaitedTime(LocalDateTime start, LocalDateTime end) {
 		return HOURS.between(start, end) - kpiHelperService.minusHoursOfWeekEndDays(start, end);
 	}
+
 
 
 	/**
@@ -474,6 +440,11 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	@Override
 	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
 		return null;
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI170(), KPICode.FLOW_EFFICIENCY.getKpiId());
 	}
 
 }

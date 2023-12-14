@@ -53,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
@@ -259,7 +260,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		List<String> labelsList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			sprintList.add(leaf.getSprintFilter().getId());
@@ -271,12 +271,16 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
 					fieldMapping.getDefectPriorityKPI82());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI82());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI82());
 
 			if (Optional.ofNullable(fieldMapping.getJiraKPI82StoryIdentification()).isPresent()) {
 				KpiDataHelper.prepareFieldMappingDefectTypeTransformation(mapOfProjectFilters,
 						fieldMapping.getJiradefecttype(), fieldMapping.getJiraKPI82StoryIdentification(),
 						JiraFeature.ISSUE_TYPE.getFieldValueInFeature());
+			}
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI82())) {
+				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI82()));
 			}
 
 			mapOfProjectFilters.put(JiraFeature.JIRA_ISSUE_STATUS.getFieldValueInFeature(),
@@ -286,7 +290,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 					fieldMapping.getJiraDefectRejectionStatusKPI82());
 
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI82()).orElse(new ArrayList<>()));
 		});
 
 		/** additional filter **/
@@ -296,7 +299,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put("labels", labelsList.stream().distinct().collect(Collectors.toList()));
 
 		// Fetch Story ID grouped by Sprint
 		List<SprintWiseStory> sprintWiseStories = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
@@ -348,12 +350,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 				NormalizedJira.DEFECT_TYPE.getValue(), getIssueIds(issuesBySprintAndType));
 		Set<JiraIssue> defects = new HashSet<>();
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
-		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, allDefects, defectListWoDrop);
-		defectListWoDrop.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
+		allDefects.stream().forEach(d -> issuesBySprintAndType.stream().forEach(i -> {
 			if (i.getProjectName().equalsIgnoreCase(d.getProjectName())) {
 				defects.add(d);
 			}
 		}));
+		KpiHelperService.getDefectsWithoutDrop(statusConfigsOfRejectedStoriesByProject, new ArrayList<>(defects), defectListWoDrop);
 
 		List<JiraIssue> remainingDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
@@ -369,9 +371,11 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		List<JiraIssue> notFTPRDefects = new ArrayList<>();
 		for (JiraIssue jiraIssue : defects) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
 			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
 				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
 						notFTPRDefects.add(jiraIssue);
 					}
 				}
@@ -395,7 +399,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI82(),KPICode.FIRST_TIME_PASS_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI82(), KPICode.FIRST_TIME_PASS_RATE.getKpiId());
 	}
 }

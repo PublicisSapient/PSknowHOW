@@ -38,6 +38,8 @@ import { environment } from 'src/environments/environment';
 import { of } from 'rxjs';
 import { TestConnectionService } from 'src/app/services/test-connection.service';
 import { SharedService } from 'src/app/services/shared.service';
+import { HelperService } from 'src/app/services/helper.service';
+import { DatePipe } from '@angular/common';
 
 describe('ConnectionListComponent', () => {
   let component: ConnectionListComponent;
@@ -548,6 +550,8 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Is Cloud Environment',
+        // 'Use Bearer Token',
+        // 'PatOAuthToken',
         'Base Url',
         'Username',
         'Use vault password',
@@ -560,6 +564,8 @@ describe('ConnectionListComponent', () => {
         'type',
         'connectionName',
         'cloudEnv',
+        // 'bearerToken',
+        // 'patOAuthToken',
         'baseUrl',
         'username',
         'vault',
@@ -855,6 +861,8 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Is Cloud Environment',
+        // 'Use Bearer Token',
+        // 'PatOAuthToken',
         'Base Url',
         'Username',
         'Use vault password',
@@ -867,6 +875,8 @@ describe('ConnectionListComponent', () => {
         'type',
         'connectionName',
         'cloudEnv',
+        // 'bearerToken',
+        // 'patOAuthToken',
         'baseUrl',
         'username',
         'vault',
@@ -906,12 +916,12 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      bearerToken: [
-        {
-          field: 'patOAuthToken',
-          isEnabled: false
-        }
-        ],
+      // bearerToken: [
+      //   {
+      //     field: 'patOAuthToken',
+      //     isEnabled: false
+      //   }
+      //   ],
       vault: [
         {
           field: 'password',
@@ -1026,6 +1036,8 @@ describe('ConnectionListComponent', () => {
         ConfirmationService,
         SharedService,
         { provide: APP_CONFIG, useValue: AppConfig },
+        HelperService,
+        DatePipe
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
@@ -1045,8 +1057,16 @@ describe('ConnectionListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Should test 10 connections are loaded', () => {
-    expect(component.addEditConnectionFieldsNlabels.length).toEqual(13);
+  it('Should test 10 connections are loaded', () => { 
+    sharedService.setGlobalConfigData({repoToolFlag: true});
+    let connTobeShown;
+    const totalConnectionList = 13;
+    if(component.repoToolsEnabled){
+      connTobeShown = totalConnectionList - 4;
+    }else{
+      connTobeShown = totalConnectionList - 1;
+    }
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(connTobeShown);
   });
 
   it('Should test all connections are present', () => {
@@ -1212,7 +1232,7 @@ describe('ConnectionListComponent', () => {
       connectionName: 'TestConnectionRishabh4',
       cloudEnv: false,
       baseUrl: 'https://test.com/jira',
-      username: 'tst-1',
+      username: '',
       apiEndPoint: 'rest/api/2',
       isOAuth: false,
       bearerToken:false,
@@ -1252,6 +1272,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = true;
     component.connection['cloudEnv'] = true;
+    // component.connection['patOAuthToken'] = '';
+    // component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1271,6 +1293,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = true;
     component.connection['cloudEnv'] = false;
+    // component.connection['patOAuthToken'] = '';
+    // component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1288,6 +1312,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = false;
     component.connection['cloudEnv'] = true;
+    // component.connection['patOAuthToken'] = '';
+    // component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1305,6 +1331,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = false;
     component.connection['cloudEnv'] = false;
+    // component.connection['patOAuthToken'] = '';
+    // component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -2049,6 +2077,13 @@ describe('ConnectionListComponent', () => {
     expect(testConnectionService.testZephyr).toHaveBeenCalled();
     expect(component.testConnectionMsg).toBe("Connection Invalid");
     expect(component.testConnectionValid).toBeFalsy();
+  })
+
+  it('should filter list based on flag',()=>{
+    sharedService.setGlobalConfigData({repoToolFlag: true});
+    component.ngOnInit();
+    component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
+    expect(component.addEditConnectionFieldsNlabels.length).toEqual(8);
   })
 
 });

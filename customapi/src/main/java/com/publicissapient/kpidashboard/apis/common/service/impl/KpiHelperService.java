@@ -192,14 +192,14 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * exclude defects with priority and RCA
+	 * exclude defects with priority and Filter RCA based on fieldMapping
 	 *
 	 * @param allDefects
 	 * @param projectWisePriority
 	 * @param projectWiseRCA
 	 * @return
 	 */
-	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+	public static List<JiraIssue> excludePriorityAndIncludeRCA(List<JiraIssue> allDefects,
 			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> priorityRemaining = new ArrayList<>();
@@ -216,9 +216,11 @@ public class KpiHelperService { // NOPMD
 
 		List<JiraIssue> rcaRemaining = new ArrayList<>();
 		for (JiraIssue jiraIssue : priorityRemaining) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
 			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
 				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
 						rcaRemaining.add(jiraIssue);
 					}
 				}
@@ -230,8 +232,7 @@ public class KpiHelperService { // NOPMD
 
 	}
 
-	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf,
-			List<String> excludeRCA) {
+	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, List<String> excludeRCA) {
 		if (CollectionUtils.isNotEmpty(excludeRCA)) {
 			Set<String> uniqueRCA = new HashSet<>();
 			for (String rca : excludeRCA) {
@@ -254,8 +255,7 @@ public class KpiHelperService { // NOPMD
 	public static void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
 			Map<String, List<String>> configPriority, Node leaf, List<String> defectPriority) {
 		if (CollectionUtils.isNotEmpty(defectPriority)) {
-			List<String> priorValue = defectPriority.stream().map(String::toUpperCase)
-					.collect(Collectors.toList());
+			List<String> priorValue = defectPriority.stream().map(String::toUpperCase).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
 				priorValue.forEach(priority -> priorityValues.addAll(
@@ -372,7 +372,6 @@ public class KpiHelperService { // NOPMD
 		Map<String, List<String>> projectWisePriority = new HashMap<>();
 		Map<String, List<String>> configPriority = customApiConfig.getPriority();
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
-		List<String> labelsList = new ArrayList<>();
 		leafNodeList.forEach(leaf -> {
 			Map<String, Object> mapOfProjectFiltersFH = new LinkedHashMap<>();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -382,7 +381,7 @@ public class KpiHelperService { // NOPMD
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI14());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI14());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI14());
 
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					leaf.getProjectFilter().getBasicProjectConfigId());
@@ -394,11 +393,14 @@ public class KpiHelperService { // NOPMD
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueTypeKPI14()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI14())) {
+				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI14()));
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
 					fieldMapping.getResolutionTypeForRejectionKPI14(),
 					fieldMapping.getJiraDefectRejectionStatusKPI14());
-			labelsList.addAll(Optional.ofNullable(fieldMapping.getJiraLabelsKPI14()).orElse(new ArrayList<>()));
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -407,7 +409,6 @@ public class KpiHelperService { // NOPMD
 				sprintList.stream().distinct().collect(Collectors.toList()));
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-		mapOfFilters.put("labels", labelsList.stream().distinct().collect(Collectors.toList()));
 
 		List<SprintWiseStory> sprintWiseStoryList = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters,
 				uniqueProjectMap, kpiRequest.getFilterToShowOnTrend(), DEV);
@@ -443,7 +444,7 @@ public class KpiHelperService { // NOPMD
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
+		resultListMap.put(DEFECT_DATA, excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
 		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
@@ -477,7 +478,7 @@ public class KpiHelperService { // NOPMD
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
 
 			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQAKPI111());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromQAKPI111());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForQAKPI111());
 
 			List<String> dodList = fieldMapping.getJiraDodQAKPI111();
 			if (CollectionUtils.isNotEmpty(dodList)) {
@@ -539,7 +540,7 @@ public class KpiHelperService { // NOPMD
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_POINTS_DATA, storyList);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
+		resultListMap.put(DEFECT_DATA, excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
 
 		return resultListMap;
 	}
