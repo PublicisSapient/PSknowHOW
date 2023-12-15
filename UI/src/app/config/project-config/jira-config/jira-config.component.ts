@@ -550,27 +550,9 @@ fetchTeams(self) {
         let connectionId = self.selectedConnection.id;
         self.http.getAzureTeams(connectionId).subscribe((response) => {
           if (response && response['data']) {
-            self.teamData = response['data'];//.map((item)=>item.name);
+            self.teamData = response['data'];
             self.filteredTeam = response['data'];
-            // self.teamData.forEach((team) => {
-            //   team['team'] = self.toolForm.controls['team'].name;
-            // });
-            // if Team already has value
-           if (self.toolForm.controls['team'].value.length) {
-            self.toolForm.controls['team'].value.forEach((val) => {
-              self.teamData = self.teamData.filter((data) => (data.id + '') !== (val.id + ''));
-            });
             }
-          } else {
-            self.messenger.add({
-              severity: 'error',
-              summary:
-                'No Teams found for the selected Project Key.',
-            });
-            self.boardsData = [];
-            self.toolForm.controls['team'].setValue([]);
-          }
-          // self.hideLoadingOnFormElement('boards');
           self.isLoading = false;
         });
       
@@ -2285,21 +2267,28 @@ fetchTeams(self) {
     if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
-          if (obj !== 'queryEnabled') {
+          if (obj !== 'queryEnabled' && obj!== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
               this.toolForm.controls[obj].setValue(
                 this.selectedToolConfig[0][obj],
               );
               this.toolForm.controls[obj].markAsDirty();
             }
-          } else {
+          } else if(obj === 'queryEnabled'){
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
               const fakeEvent = {
                 checked: this.queryEnabled
               };
               this.jiraMethodChange(fakeEvent, self);
-
+            }
+          }else if(obj === 'team'){
+            if (this.toolForm && this.toolForm.controls[obj]) {
+              this.toolForm.controls[obj].setValue(
+                {name:this.selectedToolConfig[0][obj],
+                  id:'dummy'}
+              );
+              this.toolForm.controls[obj].markAsDirty();
             }
           }
         }
