@@ -32,7 +32,7 @@ import { HttpService } from '../../services/http.service';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-dashboard-v2',
   templateUrl: './dashboard-v2.component.html',
   styleUrls: ['./dashboard-v2.component.css'],
 })

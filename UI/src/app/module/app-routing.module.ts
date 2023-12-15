@@ -38,6 +38,7 @@ import { FeatureGuard } from '../services/feature.guard';
 
 import { ExecutiveV2Component } from '../dashboardv2/executive-v2/executive-v2.component';
 import { DashboardV2Component } from '../dashboardv2/dashboard-v2/dashboard-v2.component';
+import { IterationV2Component } from '../dashboardv2/iteration-v2/iteration-v2.component';
 /**
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
@@ -59,7 +60,7 @@ const standardRoutes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot([])],
+  imports: [RouterModule.forRoot([], { useHash: true, relativeLinkResolution: 'legacy' })],
   exports: [RouterModule],
   providers: [
     {
@@ -74,7 +75,7 @@ const standardRoutes: Routes = [
             children: [
               { path: '', redirectTo: 'iteration', pathMatch: 'full' },
               {
-                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: ExecutiveComponent, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                   feature: "My Dashboard"
                 }
@@ -136,13 +137,13 @@ const standardRoutes: Routes = [
             children: [
               { path: '', redirectTo: 'iteration', pathMatch: 'full' },
               {
-                path: 'mydashboard', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+                path: 'mydashboard', component: ExecutiveV2Component, pathMatch: 'full', canActivate: [AccessGuard],
                 data: {
                   feature: "My Dashboard"
                 }
               },
               {
-                path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard], 
+                path: 'iteration', component: IterationV2Component, pathMatch: 'full', canActivate: [AccessGuard], 
                 data: {
                   feature: "Iteration"
                 }
@@ -186,7 +187,7 @@ const standardRoutes: Routes = [
                   feature: "Config"
                 }
               },
-              { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
+              { path: ':boardName', component: ExecutiveV2Component, pathMatch: 'full' },
         
             ], canActivate: [AuthGuard]
           });

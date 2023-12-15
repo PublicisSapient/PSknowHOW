@@ -1,11 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="19.5" height="19.986" viewBox="0 0 19.5 19.986">
-  <g id="list-message-svgrepo-com" transform="translate(-0.75 -0.73)">
-    <line id="Line_383" data-name="Line 383" x1="7.64" transform="translate(8.136 5.764)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <line id="Line_384" data-name="Line 384" x1="7.64" transform="translate(8.136 9.196)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <line id="Line_385" data-name="Line 385" x1="7.64" transform="translate(8.136 12.627)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <line id="Line_386" data-name="Line 386" x2="1.91" transform="translate(5.51 5.764)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <line id="Line_387" data-name="Line 387" x2="1.91" transform="translate(5.51 9.196)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <line id="Line_388" data-name="Line 388" x2="1.91" transform="translate(5.51 12.627)" fill="none" stroke="#383838" stroke-width="1.5"/>
-    <path id="Path_732" data-name="Path 732" d="M1.5,4.911V13.48a3.352,3.352,0,0,0,3.267,3.431H6.4V19.48l4.934-2.569h4.9A3.352,3.352,0,0,0,19.5,13.48V4.911A3.352,3.352,0,0,0,16.233,1.48H4.767A3.352,3.352,0,0,0,1.5,4.911Z" fill="none" stroke="#383838" stroke-width="1.5"/>
-  </g>
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_3616_1260" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+<rect width="20" height="20" fill="#202429"/>
+</mask>
+<g mask="url(#mask0_3616_1260)">
+<path d="M2.5 16.7308V3.84615C2.5 3.4626 2.62847 3.14236 2.88542 2.88542C3.14236 2.62847 3.4626 2.5 3.84615 2.5H16.1539C16.5374 2.5 16.8576 2.62847 17.1146 2.88542C17.3715 3.14236 17.5 3.4626 17.5 3.84615V12.8205C17.5 13.2041 17.3715 13.5243 17.1146 13.7812C16.8576 14.0382 16.5374 14.1667 16.1539 14.1667H5.0641L2.5 16.7308ZM4.70833 13.3333H16.1539C16.282 13.3333 16.3996 13.2799 16.5064 13.1731C16.6132 13.0662 16.6667 12.9487 16.6667 12.8205V3.84615C16.6667 3.71795 16.6132 3.60043 16.5064 3.49358C16.3996 3.38675 16.282 3.33333 16.1539 3.33333H3.84615C3.71795 3.33333 3.60043 3.38675 3.49358 3.49358C3.38675 3.60043 3.33333 3.71795 3.33333 3.84615V14.7035L4.70833 13.3333Z" fill="#49535E"/>
+</g>
 </svg>

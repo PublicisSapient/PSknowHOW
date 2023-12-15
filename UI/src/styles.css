@@ -52,13 +52,13 @@
 }
 
 :root {
-  --color-blue: #2196f3;
+  --color-blue: #0B4BC8;
   --color-green: #1b9a59;
   --color-red: #dc3545;
   --color-yellow: #f7c223;
   --color-pink: pink;
   --color-white: #ffffff;
-  --color-black: #707070;
+  --color-black: #49535E;
   --color-gray-c6: #c6c6c6;
   --color-gray-cc: #cccccc;
   --color-gray-34: #343a40;
@@ -68,19 +68,19 @@
   --color-secondary-blue: #079FFF;
   --color-secondary-yellow: #cdba38;
   --color-secondary-green: #00E6C3;
-  --font-regular: 'FuturaNext_Book', sans-serif;
-  --font-medium: 'FuturaNext_Medium', sans-serif;
+  --font-regular: 'Poppins_Regular', sans-serif;
+  --font-medium: 'Poppins_Medium', sans-serif;
 }
 
 
 @font-face {
-  font-family: 'FuturaNext_Book';
-  src:url('assets/fonts/futura-next/FuturaNext_Book.otf');
+  font-family: 'Poppins_Medium';
+  src:url('assets/fonts/Poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
-  font-family: 'FuturaNext_Medium';
-  src:url('assets/fonts/futura-next/FuturaNext-Medium.otf');
+  font-family: 'Poppins_Regular';
+  src:url('assets/fonts/Poppins/Poppins-Regular.ttf');
 }
 /* width */
 ::-webkit-scrollbar {

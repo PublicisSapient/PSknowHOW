@@ -28,16 +28,13 @@ export class NavNewComponent implements OnInit {
   }
 
   getBoardConfig() {
-    // const data = {"basicProjectConfigIds":["ASO Mobile App_64a4fab01734471c30843fda"]}
-    // console.log(this.sharedService.getSelectedProject());
-
     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
       (response) => {
         if (response.success === true) {
           this.sharedService.setDashConfigData(getDashConfData.data);
           // this.service.setDashConfigData(response.data);
-          // this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
-          // this.items = response.data;
+          this.sharedService.setSelectedTypeOrTabRefresh(this.selectedTab, this.selectedType);
+          this.items = response.data;
           this.items = [...getDashConfData.data['scrum'], ...getDashConfData.data['others']].map((obj, index) => {
 
             return {

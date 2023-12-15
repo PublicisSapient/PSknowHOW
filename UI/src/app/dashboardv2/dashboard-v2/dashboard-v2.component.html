@@ -19,11 +19,11 @@
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 <app-header></app-header>
-<app-nav-new
-    *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
 <div class="main-container">
 
-    <div>
+    <div class="nav-filter-container">
+        <app-nav-new
+            *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-nav-new>
         <app-filter-new
             *ngIf="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help')"></app-filter-new>
     </div>

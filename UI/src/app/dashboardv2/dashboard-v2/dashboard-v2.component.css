@@ -1,0 +1,9 @@
+:host .main-container {
+    background-color: #F5F9FF;
+}
+
+.nav-filter-container {
+    position: sticky;
+    top: 0;
+    z-index: 1001;
+}

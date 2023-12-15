@@ -1,6 +1,5 @@
 .board-menu{
     background: #F5F9FF;
-    border-bottom: 2px solid #EAEDF0;
 }
 ::ng-deep .board-menu .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link{
     border: 1px solid #D5DBE1;

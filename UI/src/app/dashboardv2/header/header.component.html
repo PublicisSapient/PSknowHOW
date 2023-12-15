@@ -5,10 +5,7 @@
             <img *ngIf="!clientLogo" src="assets/img/sapientLogo.png" (click)="navigateToHomePage()" alt="Logo" />
         </div>
 
-        <!-- <ul class="p-p-0 list-style-none custom-navbar">
-            <li><a class="link" routerLink="/dashboard">Dashboard</a></li>
-        </ul> -->
-        <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
+        <!-- <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu> -->
 
         <div class="p-d-flex p-align-center p-p-1">
             <!-- <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">

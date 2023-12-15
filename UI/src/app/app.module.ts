@@ -133,6 +133,7 @@ import { NavNewComponent } from './dashboardv2/nav-new/nav-new.component';
 import { ExecutiveV2Component } from './dashboardv2/executive-v2/executive-v2.component';
 import { RecentCommentsComponent } from './component/recent-comments/recent-comments.component';
 import { DashboardV2Component } from './dashboardv2/dashboard-v2/dashboard-v2.component';
+import { IterationV2Component } from './dashboardv2/iteration-v2/iteration-v2.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -220,7 +221,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         NavNewComponent,
         RecentCommentsComponent,
         ExecutiveV2Component,
-        DashboardV2Component
+        DashboardV2Component,
+        IterationV2Component
     ],
     imports: [
         DropdownModule,

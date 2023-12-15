@@ -37,23 +37,22 @@ export class FilterNewComponent implements OnInit {
     this.subscriptions.push(
       this.service.globalDashConfigData.subscribe((boardData) => {
         this.processBoardData(boardData);
+
+        this.subscriptions.push(
+          this.service.onTypeOrTabRefresh
+            .subscribe(data => {
+              this.selectedTab = data.selectedTab;
+              this.selectedType = data.selectedType;
+              if (this.selectedType.toLowerCase() === 'kanban') {
+                this.kanban = true;
+              } else {
+                this.kanban = false;
+              }
+              this.processBoardData(this.boardData);
+            })
+        );
       })
     );
-
-    this.subscriptions.push(
-      this.service.onTypeOrTabRefresh
-        .subscribe(data => {
-          this.selectedTab = data.selectedTab;
-          this.selectedType = data.selectedType;
-          if (this.selectedType.toLowerCase() === 'kanban') {
-            this.kanban = true;
-          } else {
-            this.kanban = false;
-          }
-        })
-    );
-
-
   }
 
   setSelectedType(type) {
@@ -136,7 +135,7 @@ export class FilterNewComponent implements OnInit {
   }
 
   setColors(data) {
-    let colorsArr = ['#079FFF', '#cdba38', '#00E6C3', '#fc6471', '#bd608c', '#7d5ba6']
+    let colorsArr = ['#6079C5', '#A4F6A5', '#FBCF5F', '#9FECFF', '#FFB587', '#D48DEF']
     this.colorObj = {};
     for (let i = 0; i < data?.length; i++) {
       if (data[i] && data[i].nodeId) {

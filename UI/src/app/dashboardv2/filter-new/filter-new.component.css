@@ -32,6 +32,7 @@
 /* Selected Filters start */
 .selected-filter-container ul {
     list-style: none;
+    background-color: #F5F9FF;
 }
 
 ul li.selectedfilter {

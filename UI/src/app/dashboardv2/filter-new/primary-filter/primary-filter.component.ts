@@ -25,14 +25,14 @@ export class PrimaryFilterComponent implements OnChanges, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.filterData && Object.keys(this.filterData).length) {
       if (this.selectedLevel && typeof this.selectedLevel === 'string' && this.selectedLevel.length) {
-        this.filters = this.filterData[this.selectedLevel];
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel]);
       } else if (this.selectedLevel && Object.keys(this.selectedLevel).length) {
-        this.filters = this.filterData[this.selectedLevel.emittedLevel.toLowerCase()];
+        this.filters = this.helperService.sortAlphabetically(this.filterData[this.selectedLevel.emittedLevel.toLowerCase()]);
         // check for iterations and releases
         if (this.selectedLevel.nodeType.toLowerCase() === 'project') {
-          this.filters = this.filters.filter((filter) => filter.parentId === this.selectedLevel.nodeId);
+          this.filters = this.helperService.sortAlphabetically(this.filters.filter((filter) => filter.parentId === this.selectedLevel.nodeId));
         } else {
-          this.filters = this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId);
+          this.filters = this.helperService.sortAlphabetically(this.filters.filter((filter) => filter.nodeId === this.selectedLevel.nodeId));
         }
       } else {
         this.selectedLevel = 'project';
