@@ -1131,4 +1131,7 @@ export class HttpService {
     return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
 
+  getAzureTeams(connectionId) {
+      return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
+    }
 }

@@ -166,7 +166,7 @@
                                         [suggestions]="this[form_elem.suggestions]"
                                         (completeMethod)="form_elem.filterEventHandler($event)"
                                         [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                        field="boardName" [multiple]="true" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
+                                        field="{{form_elem.field}}" [multiple]="this[form_elem.multiple]" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
                                         {{form_elem.tooltip}}
                                       </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                         (onUnselect)="form_elem.unselectEventHandler($event)"

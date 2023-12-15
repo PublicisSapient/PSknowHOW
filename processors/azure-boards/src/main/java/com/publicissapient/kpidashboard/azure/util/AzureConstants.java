@@ -64,6 +64,7 @@ public final class AzureConstants {
 	public static final String WORKLOG = "Microsoft.VSTS.Scheduling.CompletedWork";
     public static final String USER = "user";
 	public static final String SPACE = " ";
+	public static final String FORWARD_SLASH = "/";
 
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");

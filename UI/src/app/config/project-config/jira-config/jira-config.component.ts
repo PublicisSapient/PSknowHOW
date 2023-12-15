@@ -44,6 +44,8 @@ export class JiraConfigComponent implements OnInit {
   selectedConnection: any;
   queryEnabled = false;
   boardsData: any[];
+  teamData: any[];
+  filteredTeam: any[];
   filteredBoards: any[];
   submitted = false;
   selectedProject: any;
@@ -138,6 +140,7 @@ export class JiraConfigComponent implements OnInit {
         this.getConnectionList(this.urlParam);
         this.initializeFields(this.urlParam);
         this.getJiraTemplate();
+
       } else {
         this.router.navigate(['./dashboard/Config/ProjectList']);
       }
@@ -338,6 +341,12 @@ export class JiraConfigComponent implements OnInit {
       this.toolForm.get('repositoryName').reset();
       this.toolForm.get('workflowID').reset();
     }
+
+    if (this.urlParam === 'Azure') {
+          this.fetchTeams(this);
+          this.isLoading = false;
+        }
+
   }
 
   enableDisableOrganizationKey(cloudEnv) {
@@ -452,6 +461,11 @@ export class JiraConfigComponent implements OnInit {
               this.fetchBoards(this);
             }
           }
+
+          if (this.urlParam === 'Azure') {
+            this.fetchTeams(this);
+          }
+
         }
       } else {
         this.connections = [];
@@ -477,6 +491,14 @@ export class JiraConfigComponent implements OnInit {
     }
     return false;
   };
+
+  checkTeams = () => {
+    // if ( (!this.toolForm.controls['team'].value)) {
+    //   return true;
+    // }
+    return false;
+  };
+
 
   fetchBoards(self) {
     if (self.selectedConnection && self.selectedConnection.id) {
@@ -522,6 +544,46 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
+fetchTeams(self) {
+    if (self.selectedConnection && self.selectedConnection.id) {
+        self.isLoading = true;
+        let connectionId = self.selectedConnection.id;
+        self.http.getAzureTeams(connectionId).subscribe((response) => {
+          if (response && response['data']) {
+            self.teamData = response['data'];//.map((item)=>item.name);
+            self.filteredTeam = response['data'];
+            // self.teamData.forEach((team) => {
+            //   team['team'] = self.toolForm.controls['team'].name;
+            // });
+            // if Team already has value
+           if (self.toolForm.controls['team'].value.length) {
+            self.toolForm.controls['team'].value.forEach((val) => {
+              self.teamData = self.teamData.filter((data) => (data.id + '') !== (val.id + ''));
+            });
+            }
+          } else {
+            self.messenger.add({
+              severity: 'error',
+              summary:
+                'No Teams found for the selected Project Key.',
+            });
+            self.boardsData = [];
+            self.toolForm.controls['team'].setValue([]);
+          }
+          // self.hideLoadingOnFormElement('boards');
+          self.isLoading = false;
+        });
+      
+    } else {
+      self.toolForm.controls['team'].setValue('');
+      self.messenger.add({
+        severity: 'error',
+        summary:
+          'Select Connection first.',
+      });
+    }
+  };
+
   selectJIRAType = (event) => {
   };
 
@@ -529,8 +591,17 @@ export class JiraConfigComponent implements OnInit {
     this.boardsData.push(value);
   };
 
+  onTeamUnselect = (value) => {
+    this.teamData.push(value);
+  };
+
   onBoardSelect = (value) => {
     this.boardsData = this.boardsData.filter((data) => (data.boardId + '') !== (value.boardId + ''));
+  };
+
+  
+  onTeamSelect = (value) => {
+    this.teamData = this.teamData.filter((data) => (data.id + '') !== (value.name + ''));
   };
 
   filterBoards = (event) => {
@@ -544,6 +615,19 @@ export class JiraConfigComponent implements OnInit {
       }
     }
     this.filteredBoards = filtered;
+  };
+
+  filterTeams = (event) => {
+    const filtered: any[] = [];
+    const query = event.query;
+    if (this.teamData.length) {
+      for (const team of this.teamData) {
+        if (team.name.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+          filtered.push(team);
+        }
+      }
+    }
+    this.filteredTeam = filtered;
   };
 
   getAzureBuildPipelines = (connection: any) => {
@@ -956,7 +1040,9 @@ export class JiraConfigComponent implements OnInit {
                 unselectEventHandler: this.onBoardUnselect,
                 show: true,
                 isLoading: this.isLoading,
-                disabled: this.checkBoards
+                disabled: this.checkBoards,
+                field:'boardName',
+                multiple:true
               },
               {
                 type: 'textarea',
@@ -1005,7 +1091,7 @@ export class JiraConfigComponent implements OnInit {
                 label: 'Azure Project Key',
                 id: 'projectKey',
                 validators: ['required'],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-4',
                 show: true,
                 tooltip: `User can get this value from AZURE Boards.<br />
             Generally all issues name are started with Project key<br /> <i>
@@ -1013,11 +1099,28 @@ export class JiraConfigComponent implements OnInit {
 
               },
               {
+                type: 'autoComplete',
+                label: 'Team',
+                id: 'team',
+                suggestions: 'filteredTeam',
+                validators: [],
+                containerClass: 'p-sm-4',
+                tooltip: `Select team`,
+                filterEventHandler: this.filterTeams,
+                selectEventHandler: this.onTeamSelect,
+                unselectEventHandler: this.onTeamUnselect,
+                show: true,
+                isLoading: this.isLoading,
+                disabled: this.checkTeams,
+                field:'name',
+                multiple:false
+              },
+              {
                 type: 'text',
                 label: 'API Version',
                 id: 'apiVersion',
                 validators: ['required'],
-                containerClass: 'p-sm-6',
+                containerClass: 'p-sm-4',
                 show: true,
                 tooltip: `API version to be used for Azure pipeline API's.<br />
               <i>
@@ -1259,7 +1362,7 @@ export class JiraConfigComponent implements OnInit {
             { field: 'branch', header: 'Branch', class: 'long-text' },
             { field: 'gitLabSdmID', header: 'SDM ID', class: 'long-text' },
           ];
-          
+
           this.formTemplate = {
             group: 'Sonar',
             elements: [
@@ -2170,7 +2273,7 @@ export class JiraConfigComponent implements OnInit {
           }else{
             validatorArr.push(Validators.pattern(element.value));
           }
-          
+
         });
 
         group[inputTemplate.id] = new UntypedFormControl('', validatorArr);
@@ -2335,7 +2438,7 @@ export class JiraConfigComponent implements OnInit {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
     }
-
+   
     submitData['toolName'] = this.urlParam;
     submitData['basicProjectConfigId'] = this.selectedProject.id;
     submitData['connectionId'] = this.selectedConnection.id;
@@ -2357,6 +2460,13 @@ export class JiraConfigComponent implements OnInit {
         if (submitData[obj]?.hasOwnProperty('name') && submitData[obj]?.hasOwnProperty('code')) {
           submitData[obj] = submitData[obj].name;
         }
+      }
+
+      if (this.urlParam === 'Azure') {
+        if(submitData["team"]){
+          submitData['team'] = submitData["team"].name;
+        }
+        delete submitData["boards"];
       }
       this.http
         .addTool(this.selectedProject.id, submitData)
@@ -2404,6 +2514,12 @@ export class JiraConfigComponent implements OnInit {
         }
       }
 
+      if (this.urlParam === 'Azure') {
+            if(submitData["team"]){
+              submitData['team'] = submitData["team"].name;
+            }
+            delete submitData["boards"];
+          }
       this.http
         .editTool(
           this.selectedProject.id,
@@ -2624,5 +2740,5 @@ export class JiraConfigComponent implements OnInit {
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
      }
-  }  
+  }
 }

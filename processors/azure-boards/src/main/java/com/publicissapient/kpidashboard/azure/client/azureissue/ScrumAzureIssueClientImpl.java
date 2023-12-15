@@ -893,6 +893,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureServer.setUrl(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getAzure().getConnection().getBaseUrl()));
 		azureServer.setApiVersion(projectConfig.getAzure().getApiVersion());
 		azureServer.setUsername(projectConfig.getAzure().getConnection().getUsername());
+		azureServer.setTeam(projectConfig.getProjectToolConfig().getTeam());
 		return azureServer;
 	}
 
