@@ -90,7 +90,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
   enableByUser = false;
   updatedConfigGlobalData;
   kpiConfigData = {};
-  kpiLoader = true;
+  kpiLoader = [];
   noTabAccess = false;
   trendBoxColorObj: any;
   iSAdditionalFilterSelected = false;
@@ -155,7 +155,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           }
         }
       }
-      this.kpiLoader = true;
       return this.service.passDataToDashboard;
     }), distinctUntilChanged()).subscribe((sharedobject: any) => {
       // used to get all filter data when user click on apply button in filter
@@ -168,6 +167,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         this.handleMaturityTableLoader();
       } else {
         this.noTabAccess = true;
+        this.kpiLoader.length = 0;
       }
     }));
   }
@@ -241,7 +241,6 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.kpiSelectedFilterObj = {};
           this.kpiDropdowns = {};
           this.kpiTrendsObj = {};
-          this.kpiLoader = true;
           this.kpiTableDataObj = {};
           for (const key in this.colorObj) {
             const idx = key.lastIndexOf('_');
@@ -354,6 +353,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
         if (this.kpiJira?.kpiList?.length > 0) {
+          this.kpiLoader.push(...this.kpiJira.kpiList.map((kpi) => kpi.kpiId));
           this.postJiraKpi(this.kpiJira, 'jira');
         }
       }
@@ -373,11 +373,11 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     });
 
     // sending requests after grouping the the KPIs according to group Id
-    this.loaderJiraKanbanArray = [];
     groupIdSet.forEach((groupId) => {
       if (groupId) {
         this.kpiJira = this.helperService.groupKpiFromMaster('Jira', true, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, '');
         if (this.kpiJira?.kpiList?.length > 0) {
+          this.kpiLoader.push(...this.kpiJira.kpiList.map((kpi) => kpi.kpiId));
           this.postJiraKanbanKpi(this.kpiJira, 'jira');
         }
       }
@@ -430,6 +430,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
       this.sonarKpiData = this.helperService.createKpiWiseId(getData);
+      for (const kpi in this.sonarKpiData) {
+        this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
+      }
       // creating Sonar filter and finding unique keys from all the sonar kpis
       this.sonarFilterData = this.helperService.createSonarFilter(this.sonarKpiData, this.selectedtype);
       /** writing hack for unit test coverage kpi */
@@ -454,7 +457,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.sonarKpiData = getData;
     }
-    this.kpiLoader = false;
+    this.kpiLoader.length = 0;
   }
 
   // calls after receiving response from zypher
@@ -465,6 +468,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     if (getData !== null && getData[0] !== 'error' && !getData['error']) {
       // creating array into object where key is kpi id
       this.zypherKpiData = this.helperService.createKpiWiseId(getData);
+      for (const kpi in this.zypherKpiData) {
+        this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
+      }
       let calculatedObj;
       if (this.selectedtype !== 'Kanban') {
         calculatedObj = this.helperService.calculateTestExecutionData('kpi70', false, this.zypherKpiData);
@@ -480,7 +486,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
     } else {
       this.zypherKpiData = getData;
     }
-    this.kpiLoader = false;
+    this.kpiLoader.length = 0;
   }
 
   // calling post request of sonar of scrum and storing in sonarKpiData id wise
@@ -519,7 +525,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.jenkinsKpiData = getData;
           this.createAllKpiArray(this.jenkinsKpiData);
         }
-        this.kpiLoader = false;
+        this.kpiLoader.length = 0;
       });
   }
 
@@ -565,18 +571,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-
-    postData.kpiList.forEach(element => {
-      this.loaderJiraArray.push(element.kpiId);
-    });
-
     this.jiraKpiRequest = this.httpService.postKpi(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
           for (const kpi in localVariable) {
-            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
+            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
           }
           if (localVariable && localVariable['kpi3'] && localVariable['kpi3'].maturityValue) {
             this.colorAccToMaturity(localVariable['kpi3'].maturityValue);
@@ -587,11 +588,7 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
           this.createAllKpiArray(localVariable);
         } else {
           this.jiraKpiData = getData;
-          postData.kpiList.forEach(element => {
-            this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(element.kpiId), 1);
-          });
         }
-        this.kpiLoader = false;
       });
   }
   // post request of BitBucket(scrum)
@@ -607,12 +604,17 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
+          for (const kpi in this.bitBucketKpiData) {
+            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
+          }
           this.createAllKpiArray(this.bitBucketKpiData);
+          getData.kpiList.forEach(element => {
+            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
+          });
 
         } else {
           this.bitBucketKpiData = getData;
         }
-        this.kpiLoader = false;
       });
   }
 
@@ -629,6 +631,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           this.bitBucketKpiData = this.helperService.createKpiWiseId(getData);
+          for (const kpi in this.bitBucketKpiData) {
+            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
+          }
           this.createAllKpiArray(this.bitBucketKpiData);
         } else {
           this.bitBucketKpiData = getData;
@@ -639,17 +644,13 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
 
   // post request of Jira(Kanban)
   postJiraKanbanKpi(postData, source): void {
-    postData.kpiList.forEach(element => {
-      this.loaderJiraKanbanArray.push(element.kpiId);
-    });
-
     this.jiraKpiRequest = this.httpService.postKpiKanban(postData, source)
       .subscribe(getData => {
         if (getData !== null && getData[0] !== 'error' && !getData['error']) {
           // creating array into object where key is kpi id
           const localVariable = this.helperService.createKpiWiseId(getData);
           for (const kpi in localVariable) {
-            this.loaderJiraKanbanArray.splice(this.loaderJiraKanbanArray.indexOf(kpi), 1);
+            this.kpiLoader.splice(this.kpiLoader.indexOf(kpi), 1);
           }
 
           if (localVariable['kpi997']) {
@@ -671,10 +672,9 @@ export class ExecutiveV2Component implements OnInit, OnDestroy {
         } else {
           this.jiraKpiData = getData;
           postData.kpiList.forEach(element => {
-            this.loaderJiraKanbanArray.splice(this.loaderJiraKanbanArray.indexOf(element.kpiId), 1);
+            this.kpiLoader.splice(this.kpiLoader.indexOf(element.kpiId), 1);
           });
         }
-        this.kpiLoader = false;
       });
   }
 

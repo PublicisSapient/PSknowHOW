@@ -3,6 +3,11 @@
     font-size: 0.75rem;
 }
 
+:host ::ng-deep .p-float-label .p-inputwrapper-filled ~ label {
+    font-size: 0.75rem;
+    
+}
+
 /* Scrum/Kanban tabs start*/
 .tabs {
     display: flex;
