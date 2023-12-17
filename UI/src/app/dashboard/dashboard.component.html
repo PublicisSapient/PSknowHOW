@@ -17,32 +17,32 @@
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
 
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
-<div class="main-container">
-
-  <div class="header" #header>
-    <div>
-      <app-filter></app-filter>
-    </div>
-  </div>
- 
-  <div id="wrapper" [ngClass]="sideNavStyle">
-   <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help') && !router.url.split('/').includes('Error')"
-      [ngStyle]="headerStyle"
->
-      <app-nav id="top"></app-nav>
-    </div>
-    <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') || router.url.split('/').includes('Error') || router.url.split('/').includes('Help') ? '0rem' : ''}">
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
+  <div class="main-container">
+  
+    <div class="header" #header>
       <div>
-        <router-outlet></router-outlet>
+        <app-filter></app-filter>
+      </div>
+    </div>
+   
+    <div id="wrapper" [ngClass]="sideNavStyle">
+     <div id="sidebar-wrapper" *ngIf="!router.url.split('/').includes('Config') && !router.url.split('/').includes('Help') && !router.url.split('/').includes('Error')"
+        [ngStyle]="headerStyle"
+  >
+        <app-nav id="top"></app-nav>
+      </div>
+      <div id="page-content-wrapper" [ngStyle]="{'padding-left':router.url.split('/').includes('Config') || router.url.split('/').includes('Error') || router.url.split('/').includes('Help') ? '0rem' : ''}">
+        <div>
+          <router-outlet></router-outlet>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<app-footer></app-footer>
-<p-dialog [header]="modalDetails['header']"  [(visible)]="displayModal" [style]="{width: '50vw'}" [responsive]="true" showEffect="fade" [modal]="true">
-  <div class="p-d-flex p-flex-column p-mb-2">
-    <p>{{modalDetails['content']}}</p>
-    <button type="button" pButton autofocus (click)="reloadApp()" class="p-align-self-end">Continue</button>
-  </div>
-</p-dialog>
+  <app-footer></app-footer>
+  <p-dialog [header]="modalDetails['header']"  [(visible)]="displayModal" [style]="{width: '50vw'}" [responsive]="true" showEffect="fade" [modal]="true">
+    <div class="p-d-flex p-flex-column p-mb-2">
+      <p>{{modalDetails['content']}}</p>
+      <button type="button" pButton autofocus (click)="reloadApp()" class="p-align-self-end">Continue</button>
+    </div>
+  </p-dialog>

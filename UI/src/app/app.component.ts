@@ -22,6 +22,7 @@ import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
+import { FeatureFlagsService } from './services/feature-toggle.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 
@@ -31,8 +32,6 @@ import { PrimeNGConfig } from 'primeng/api';
   styleUrls: ['./app.component.css']
 })
 
-
-
 export class AppComponent implements OnInit {
 
   loadingRouteConfig: boolean;
@@ -40,11 +39,15 @@ export class AppComponent implements OnInit {
   newUI: boolean = false;
 
   constructor(public router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService) {
+    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private feature : FeatureFlagsService) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
+    if(!this.feature.isFeatureEnabled('UI_SWITCH').__zone_symbol__value) {
+      localStorage.removeItem('newUI');
+    }
+
     this.newUI = localStorage.getItem('newUI') ? true : false;
     // load google Analytics script on all instances except local and if customAPI property is true
     this.httpService.getAnalyticsFlag()

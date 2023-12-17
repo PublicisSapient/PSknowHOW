@@ -95,7 +95,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
 
   setPageContentWrapperHeight(){
     setTimeout(()=>{
-      this.headerStyle={height: 'calc(100vh - '+(this.header.nativeElement.offsetHeight + 21) +'px)',top:'calc('+(this.header.nativeElement.offsetHeight + 21) +'px'+' - '+'0px)'};
+      this.headerStyle={height: 'calc(100vh - '+this.header.nativeElement.offsetHeight+'px)',top:'calc('+this.header.nativeElement.offsetHeight+'px'+' - '+'0px)'};
     },0);
   }
 

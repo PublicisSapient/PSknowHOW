@@ -29,7 +29,11 @@ public enum FeatureEnum implements Feature {
 
     @EnabledByDefault
     @Label("Custom-api Daily Standup")
-    DAILY_STANDUP;
+    DAILY_STANDUP,
+
+    @EnabledByDefault
+    @Label("Custom-api UI Switch")
+    UI_SWITCH;
 
     public boolean isActive() {
         return FeatureContext.getFeatureManager().isActive(this);

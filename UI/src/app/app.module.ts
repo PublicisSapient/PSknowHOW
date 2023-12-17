@@ -145,6 +145,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
     if (!environment.production) {
         return async () => {
             featureToggleService.config = await featureToggleService.loadConfig();
+            if(!featureToggleService.isFeatureEnabled('UI_SWITCH')) {
+                localStorage.removeItem('newUI');
+            }
         }
     } else {
         return async () => {
@@ -156,6 +159,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
 
             await env$.toPromise().then(res => {
                 featureToggleService.config = featureToggleService.loadConfig();
+                if(!featureToggleService.isFeatureEnabled('UI_SWITCH')) {
+                    localStorage.removeItem('newUI');
+                }
             });
         };
     }

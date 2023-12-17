@@ -19,7 +19,7 @@ export class FeatureFlagDirective {
 
   @Input() set featureFlag(featureName: string) {
     const isEnabled = this.featureFlagService.isFeatureEnabled(featureName);
-    if (isEnabled) {
+    if (isEnabled.__zone_symbol__value) {
       this.vcr.createEmbeddedView(this.tpl);
     } else {
       this.vcr.clear();
