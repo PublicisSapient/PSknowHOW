@@ -157,6 +157,7 @@ export class KpiCardV2Component implements OnInit {
         delete this.filterOptions[key];
       }
     }
+    this.optionSelected.emit(['Overall']);
   }
 
   showFilterTooltip(showHide, filterNo?) {

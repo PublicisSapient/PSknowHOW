@@ -6455,7 +6455,6 @@
                         "emittedLevel": "release"
                     }
                 }
-                
             },
             {
                 "boardId": 14,
@@ -7413,6 +7412,83 @@
                     }
                 }
             }
-        ]
+        ],
+        "configDetails": {
+            "kpiWiseAggregationType": {
+                "kpi159": "sum",
+                "kpi158": "average",
+                "kpi114": "sum",
+                "kpi997": "sum",
+                "kpi116": "average",
+                "kpi118": "sum",
+                "kpi82": "average",
+                "kpi37": "average",
+                "kpi38": "sum",
+                "kpi39": "sum",
+                "kpi73": "sum",
+                "kpi74": "sum",
+                "kpi153": "sum",
+                "kpi111": "average",
+                "kpi34": "average",
+                "kpi157": "average",
+                "kpi113": "sum",
+                "kpi35": "average",
+                "kpi36": "sum",
+                "kpi148": "sum",
+                "kpi149": "average",
+                "kpi5": "average",
+                "kpi8": "average",
+                "kpi50": "sum",
+                "kpi48": "sum",
+                "kpi49": "sum",
+                "kpi84": "average",
+                "kpi40": "sum",
+                "kpi42": "average",
+                "kpi146": "sum",
+                "kpi46": "sum",
+                "kpi137": "average",
+                "kpi139": "sum",
+                "kpi16": "average",
+                "kpi17": "average",
+                "kpi51": "sum",
+                "kpi53": "average",
+                "kpi54": "sum",
+                "kpi55": "sum",
+                "kpi11": "average",
+                "kpi58": "sum",
+                "kpi14": "average",
+                "kpi126": "sum",
+                "kpi127": "sum",
+                "kpi70": "average",
+                "kpi71": "average",
+                "kpi72": "average",
+                "kpi27": "sum",
+                "kpi28": "sum",
+                "kpi160": "average",
+                "kpi162": "average",
+                "kpi62": "average",
+                "kpi63": "average",
+                "kpi64": "sum",
+                "kpi65": "sum",
+                "kpi166": "sum",
+                "kpi66": "average",
+                "kpi67": "sum"
+            },
+            "percentile": 90.0,
+            "hierarchySelectionCount": 3,
+            "dateRangeFilter": {
+                "types": [
+                    "Days",
+                    "Weeks",
+                    "Months"
+                ],
+                "counts": [
+                    5,
+                    10,
+                    15
+                ]
+            },
+            "repoToolFlag": false
+        }
     }
 }

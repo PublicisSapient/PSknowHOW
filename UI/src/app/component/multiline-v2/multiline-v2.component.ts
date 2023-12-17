@@ -141,7 +141,7 @@ export class MultilineV2Component implements OnChanges {
       const circleRadiusHover = 4;
       const marginLeft = 40;
       const marginRight = 0;
-      const marginTop = 0;
+      const marginTop = 5;
       const color = this.color;
       const name = this.name;
       const kpiId = this.kpiId;
@@ -406,7 +406,7 @@ export class MultilineV2Component implements OnChanges {
         svgX
           .append('svg:line')
           .attr('x1', 0)
-          .attr('x2', width - margin - 10)
+          .attr('x2', width - 30)
           .attr('y1', yScale(thresholdValue))
           .attr('y2', yScale(thresholdValue))
           .style('stroke', '#333333')
@@ -414,11 +414,12 @@ export class MultilineV2Component implements OnChanges {
           .attr('class', 'thresholdline');
         svgX
           .append('text')
-          .attr('x', width - 40)
+          .attr('x', width - 20)
           .attr('y', yScale(thresholdValue))
           .attr('dy', '.5em')
           .attr('text-anchor', 'end')
           .text(this.thresholdValue)
+          .style('font-weight', 'normal')
           .attr('class', 'thresholdlinetext');
       }
 
@@ -451,9 +452,6 @@ export class MultilineV2Component implements OnChanges {
         .selectAll('line')
         .style('stroke', '#EAEDF0')
         .style('fill', 'none');
-
-      // d3.select(this.elem).select('#verticalSVG')
-      //   .style('margin-left', '110px');
 
       d3.select(this.elem).select('#horizontalSVG')
         .select('.x-axis')

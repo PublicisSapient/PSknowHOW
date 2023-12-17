@@ -31,7 +31,6 @@ export class TrendIndicatorV2Component implements OnInit {
       this.headerObj.push(...Object.keys(this.dataObj[0]));
 
       this.dataObj = this.generateFlatArray(this.dataObj);
-      console.log(this.dataObj);
     }
   }
 

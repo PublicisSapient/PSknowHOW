@@ -137,6 +137,8 @@ import { IterationV2Component } from './dashboardv2/iteration-v2/iteration-v2.co
 import { KpiCardV2Component } from './dashboardv2/kpi-card-v2/kpi-card-v2.component';
 import { MultilineV2Component } from './component/multiline-v2/multiline-v2.component';
 import { TrendIndicatorV2Component } from './dashboardv2/trend-indicator-v2/trend-indicator-v2.component';
+import { GroupedColumnPlusLineChartV2Component } from './component/grouped-column-plus-line-chart-v2/grouped-column-plus-line-chart-v2.component';
+import { MultilineStyleV2Component } from './component/multiline-style-v2/multiline-style-v2.component';
 /******************************************************/
 
 export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
@@ -228,7 +230,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         IterationV2Component,
         KpiCardV2Component,
         MultilineV2Component,
-        TrendIndicatorV2Component
+        TrendIndicatorV2Component,
+        GroupedColumnPlusLineChartV2Component,
+        MultilineStyleV2Component
     ],
     imports: [
         DropdownModule,

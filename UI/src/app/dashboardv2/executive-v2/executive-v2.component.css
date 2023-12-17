@@ -45,5 +45,5 @@
 }
 
 .kpi-card-container {
-    scroll-snap-type: y mandatory;
+    scroll-snap-type: both mandatory;
 }

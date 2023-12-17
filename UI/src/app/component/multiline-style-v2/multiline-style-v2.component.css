@@ -20,14 +20,10 @@
     text-align: center;
     position: relative;
   }
-
+  
   #graphContainer {
     display: flex;
     justify-content: left;
-  }
-
-  #verticalSVG, #horizontalSVG{
-    width: fit-content;
   }
   
   ::ng-deep .y.axis line {
@@ -38,11 +34,15 @@
   ::ng-deep .y.axis .domain {
     display: none;
   }
+
+  :host ::ng-deep .y-axis-grid .domain {
+    stroke: #EAEDF0;
+  }
   
-  :host ::ng-deep .thresholdlinetext {
+  ::ng-deep .thresholdlinetext {
     stroke: #333333;
     font-size: 12px;
-    font-family: Poppins_Regular, sans-serif;
+    font-weight: 400;
   }
   
   ::ng-deep .thresholdline {
@@ -172,35 +172,53 @@
   
   #xCaptionContainer {
     text-align: center;
-    color: #49535E;
-    font-size: 12px;
-    margin-top: -40px;
+    color: #437495;
   }
 
-  :host ::ng-deep .y-axis-grid .domain {
-    stroke: #EAEDF0;
+  :host::ng-deep .legend-container {
+    display: flex;
   }
-  
+
+
+  :host::ng-deep.legend-tooltip{
+    position: absolute;
+    text-align: center;
+    max-width: 220px;
+    padding: 5px;
+    font-size: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-gray-34);
+    border-radius: 5px;
+    box-shadow: 0px 0px 6px #b9b9bb;
+    z-index: 1;
+    display: none;
+    justify-content: space-evenly;
+    pointer-events: none;
+  }
+
+  :host::ng-deep.legend-item{
+    display: flex;
+    align-items: center;
+    width: auto;
+  }
+
+  :host::ng-deep .legend_color_indicator_dashed{
+    width: 2rem;
+    border-top: 3px dashed #D8725F;
+  }
+
   :host ::ng-deep.tooltip2{
     display: none;
     font-size: 0.7rem;
     padding: 2px;
     position: absolute;
+    color: var(--color-gray-34);
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 2px;
     box-shadow: 0px 0px 6px #b9b9bb;
     opacity: 0.5;
     pointer-events: none;
     width: max-content;
-  }
-  
-  :host ::ng-deep.red-bg{
-    color: white;
-    background: rgb(210, 22, 22)
-  }
-  
-  :host ::ng-deep.white-bg{
-    color: var(--color-gray-34);
-    background: rgba(255, 255, 255, 0.95);
   }
   
   :host ::ng-deep.tooltip-container{

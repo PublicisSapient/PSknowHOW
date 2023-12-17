@@ -270,4 +270,18 @@
     border: 2px solid #EAEDF0;
 }
 
+:host ::ng-deep .p-dropdown.p-component,
+:host ::ng-deep .p-multiselect.p-component {
+    display: flex;
+    align-items: center;
+    border: 1px solid #D5DBE1;
+    border-radius: 6px;
+}
+
+:host ::ng-deep .p-dropdown .p-inputtext,
+:host ::ng-deep .p-multiselect .p-multiselect-label.p-placeholder {
+    font-size: 12px;
+    color: #49535E;
+}
+
 

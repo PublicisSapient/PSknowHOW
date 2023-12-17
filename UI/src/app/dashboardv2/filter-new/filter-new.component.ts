@@ -221,12 +221,12 @@ export class FilterNewComponent implements OnInit {
 
       if (this.selectedLevel) {
         if (typeof this.selectedLevel === 'string') {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails']);
         } else {
-          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true);
+          this.service.select(this.masterData, this.filterDataArr[this.selectedType][this.selectedLevel.emittedLevel.toLowerCase()], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails']);
         }
       } else {
-        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true);
+        this.service.select(this.masterData, this.filterDataArr[this.selectedType]['project'], this.filterApplyData, this.selectedTab, false, true, this.boardData['configDetails']);
       }
     }
   }

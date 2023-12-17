@@ -2,6 +2,10 @@
     color: green;
 }
 
+:host ::ng-deep .p-multiselect {
+    border: 1px solid #D5DBE1;
+}
+
 :host ::ng-deep .p-inputtext, :host ::ng-deep .p-multiselect .p-multiselect-label {
     font-size: 0.75rem;
 } 

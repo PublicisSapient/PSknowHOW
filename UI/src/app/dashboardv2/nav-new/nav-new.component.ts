@@ -51,8 +51,6 @@ export class NavNewComponent implements OnInit {
               },
             };
           });
-          console.log(this.items);
-
           this.activeItem = this.items?.filter((x) => x['slug'] == this.selectedTab?.toLowerCase())[0];
         }
       },
