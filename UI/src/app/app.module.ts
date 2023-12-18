@@ -125,16 +125,31 @@ import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { HttpService } from './services/http.service';
+import { Router } from '@angular/router';
 
 /******************************************************/
 
-export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService, sharedService: SharedService) {
+export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService, sharedService: SharedService, httpService: HttpService, router: Router) {
     if(environment['AUTHENTICATION_SERVICE']){
         let url = window.location.href;
         let authToken = url.split("authToken=")?.[1]?.split("&")?.[0];
         if(authToken){
             sharedService.setAuthToken(authToken);
         }
+        let obj = {
+            'resource': environment.RESOURCE,
+            'authToken': authToken
+        };
+
+        httpService.getUserValidation(obj).subscribe((response) => {
+            console.log("inside app initializer");
+            if(response && response['success']){
+              sharedService.setCurrentUserDetails(response?.['data'])
+              localStorage.setItem("user_name", response?.['data']?.user_name);
+              localStorage.setItem("user_email", response?.['data']?.user_email);
+            }
+        })
     }
     if (!environment.production) {
         return async () => {
@@ -261,7 +276,7 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         {
             provide: APP_INITIALIZER,
             useFactory: initializeAppFactory,
-            deps: [HttpClient, FeatureFlagsService, SharedService],
+            deps: [HttpClient, FeatureFlagsService, SharedService, HttpService],
             multi: true
         }
     ],
