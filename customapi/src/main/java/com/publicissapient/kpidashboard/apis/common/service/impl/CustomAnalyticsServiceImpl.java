@@ -26,6 +26,7 @@ import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.JsonElement;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
@@ -113,7 +114,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			json.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
 			Gson gson = new Gson();
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
-			if (projectAccessesWithRole != null) {
+			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
 				}.getType());
 				json.put(PROJECTS_ACCESS, element.getAsJsonArray());
