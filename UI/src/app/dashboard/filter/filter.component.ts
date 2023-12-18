@@ -1474,13 +1474,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCurrentUserDetails() {
-    this.httpService.getCurrentUserDetails().subscribe(details => {
-      if (details['success']) {
-        this.service.setCurrentUserDetails(details['data']);
-      }
-    });
-  }
   handleMilestoneFilter(level) {
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []

@@ -39,17 +39,9 @@ export const LoginRoutes: Routes = [
     }
 ];
 
-export const AuthRoutes: Routes = [
-    {
-        path: '',
-        children: [
-            { path: '', component: VerifyComponent, pathMatch: 'full'}
-        ]
-    }
-];
 
 @NgModule({
-    imports: [RouterModule.forChild(environment['AUTHENTICATION_SERVICE'] ? AuthRoutes : LoginRoutes)],
+    imports: [RouterModule.forChild(LoginRoutes)],
     exports: [RouterModule]
 })
 
