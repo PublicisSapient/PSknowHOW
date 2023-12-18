@@ -25,12 +25,15 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonElement;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -108,20 +111,17 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			json.put(USER_EMAIL, email);
 			json.put(USER_ID, userinfoKnowHow.getId().toString());
 			json.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
-			// Gson gson = new Gson();
-			json.put(PROJECTS_ACCESS, new JSONArray());
+			Gson gson = new Gson();
+			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
+			if (projectAccessesWithRole != null) {
+				JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
+				}.getType());
+				json.put(PROJECTS_ACCESS, element.getAsJsonArray());
+			} else {
+				json.put(PROJECTS_ACCESS, new JSONArray());
+			}
 			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
 		}
-
-		//List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
-
-		/*
-		 * if (projectAccessesWithRole != null) { JsonElement element =
-		 * gson.toJsonTree(projectAccessesWithRole, new
-		 * TypeToken<List<RoleWiseProjects>>() { }.getType()); json.put(PROJECTS_ACCESS,
-		 * element.getAsJsonArray()); } else { json.put(PROJECTS_ACCESS, new
-		 * JSONArray()); }
-		 */
 		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
