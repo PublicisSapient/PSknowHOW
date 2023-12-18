@@ -649,7 +649,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				JSONParser jsonParser = new JSONParser();
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<UserInfoDTO>>() {
+				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<CentralUserInfoDTO>>() {
 				}.getType());
 
 			} else {

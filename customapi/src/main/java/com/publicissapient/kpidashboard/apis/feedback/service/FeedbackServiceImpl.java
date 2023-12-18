@@ -95,7 +95,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 		if (null == authentication) {
 			log.error("User {} Does not Exist in Authentication Collection", feedback.getUsername());
 		} else {
-			email = authentication.getEmail().toLowerCase();
+			email = authentication.getEmail();
 		}
 		customData.put(NotificationCustomDataEnum.USER_NAME.getValue(), feedback.getUsername());
 		customData.put(NotificationCustomDataEnum.USER_EMAIL.getValue(), email);
