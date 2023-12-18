@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.JsonElement;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -47,7 +48,9 @@ import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,6 +86,9 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	@Autowired
 	private UserLoginHistoryService userLoginHistoryService;
 
+	@Autowired
+	private UserTokenReopository userTokenReopository;
+
 	final ModelMapper modelMapper = new ModelMapper();
 
 	/**
@@ -103,12 +109,15 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 				userinfoKnowHow = centralUserInfo;
 				Authentication authenticationCentral = new Authentication();
 				setAuthenticationFromCentralAuth(username, centralUserInfoDTO, authenticationCentral);
+				UserTokenData userTokenData = new UserTokenData(username, authToken, LocalDateTime.now().toString());
+				userTokenReopository.save(userTokenData);
 			}
 		}
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		json.put(USER_NAME, username);
 		if (Objects.nonNull(userinfoKnowHow)) {
-			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase() : authentication.getEmail().toLowerCase();
+			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase()
+					: authentication.getEmail().toLowerCase();
 			json.put(USER_EMAIL, email);
 			json.put(USER_ID, userinfoKnowHow.getId().toString());
 			json.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());

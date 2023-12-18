@@ -276,10 +276,11 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			List<UserTokenData> userTokenDataList = userTokenReopository.findAllByUserName(userName);
 			UserTokenData userTokenData = getLatestUser(userTokenDataList);
 			if (userTokenData != null) {
-				updateExpiryDate(userTokenData.getUserName(), null);
+				updateExpiryDate(userTokenData.getUserName(), LocalDateTime.now().toString());
 			} else {
 				userTokenReopository.deleteAllByUserName(userName);
-				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(), null);
+				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(),
+						LocalDateTime.now().toString());
 				userTokenReopository.save(userTokenData);
 			}
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
