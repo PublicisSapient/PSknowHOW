@@ -63,8 +63,6 @@
 
  .open-btn {
   color: white;
-  position: absolute;
-  bottom: 1.3rem;
   cursor: pointer;
 }
 
@@ -162,10 +160,11 @@
 
 
 .close-btn{
+  width: 100%;
   position: absolute;
-  bottom: 12px;
-  right: 23px;
   color: rgba(67, 116, 149, 1);
+  display: flex;
+  justify-content: space-between;
 }
 
 .pad-0 {
@@ -307,12 +306,9 @@
   .selected-value{
     font-size: 0.9rem;
   }
-  .open-btn{
-    bottom: 0.7rem;
-  }
 
   .close-btn{
-    bottom: 8px;
+    bottom: 40px;
   }
 
 }

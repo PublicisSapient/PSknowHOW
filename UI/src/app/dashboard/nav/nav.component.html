@@ -26,17 +26,17 @@
       <div class="selected-nav">
         <div class="selected-value">{{selectedTab}}</div>
       </div>
-      <div class="open-btn">
-        <img src="../../../assets/img/menu-unfold.svg" alt="Edit"
-          (click)="visibleSidebar = true;service.setSideNav(true)" class="close-icon" />
+      <div class="open-btn p-mt-3">
         <app-feedback [visibleSidebar]="visibleSidebar"></app-feedback>
+        <img src="../../../assets/img/menu-unfold.svg" alt="Edit"
+          (click)="visibleSidebar = true;service.setSideNav(true)" class="close-icon p-mt-3" />
       </div>
     </div>
   </div>
 
   <div class="nav-wraper" *ngIf="visibleSidebar">
     <!--Scrum/Kanban Switch starts-->
-    <div id="Filters" #filterDiv class="tabs p-mb-3 p-mt-3">
+    <div id="Filters" #filterDiv class="tabs p-mb-2 p-mt-2">
       <div>
         <input id="tab1" class="tab1 test" type="radio" name="tabs" [checked]='!kanban'>
         <label class="label1 rounded filter-btn p-mr-2" for="tab1" (click)="setSelectedType('Scrum')" id="Layout-Scrum">
@@ -56,7 +56,7 @@
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
           <ng-container *ngFor="let board of boardNameArr">
             <ng-container>
-              <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100"
+              <li class="nav-item p-d-flex p-pt-1 w-100"
                 *ngIf="(board.boardName?.toLowerCase() !== 'kpi maturity') || (board.boardName?.toLowerCase() === 'kpi maturity' && kpiConfigData['kpi989'])">
                 <a class="nav-link w-100"
                   [routerLink]="board.boardName?.toLowerCase() === 'kpi maturity' ? 'Maturity' : board.link"
@@ -78,25 +78,25 @@
       </ng-container>
       <ng-container *ngIf="boardNameArr?.length === 0">
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li class="nav-item p-d-flex p-pt-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
 
@@ -105,10 +105,11 @@
 
       <!-- </ul> -->
     </div>
-    <div class="close-btn cursor-pointer" (click)="visibleSidebar = false;service.setSideNav(false)">
+    <div class="close-btn cursor-pointer p-pl-3 p-pr-3" (click)="visibleSidebar = false;service.setSideNav(false)">
+      <app-feedback [visibleSidebar]="visibleSidebar"></app-feedback>
       <img src="../../../assets/img/menu-fold.svg" alt="Edit" class="icon-hamburger" />
     </div>
-    <app-feedback [visibleSidebar]="visibleSidebar"></app-feedback>
+    
   </div>
 
 </div>

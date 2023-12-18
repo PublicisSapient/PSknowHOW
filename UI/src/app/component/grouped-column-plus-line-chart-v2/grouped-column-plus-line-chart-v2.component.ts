@@ -328,7 +328,8 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .select('#horizontalSVG')
         .append('svg')
         .attr('width', width)
-        .attr('height', height);
+        .attr('height', height + 5)
+        .attr('transform', `translate(${0}, ${5})`);
 
       const svgY = d3
         .select(this.elem)
@@ -336,7 +337,7 @@ export class GroupedColumnPlusLineChartV2Component implements OnInit, OnChanges 
         .append('svg')
         .attr('height', height)
         .attr('width', 50)
-        .attr('transform', `translate(${0}, ${-22})`);
+        .attr('transform', `translate(${0}, ${-20})`);
 
       const svgLegend = d3
         .select(this.elem)
