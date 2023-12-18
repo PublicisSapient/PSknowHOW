@@ -25,7 +25,7 @@ export class VerifyComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(){
     let authToken:string = '';
     authToken = this.sharedService.getAuthToken()
-    this.validateUser(authToken);
+    // this.validateUser(authToken);
   }
 
   validateUser(authToken){
