@@ -75,6 +75,12 @@ export class ConnectionListComponent implements OnInit {
       inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
     },
     {
+      connectionType: 'GitHub Action',
+      connectionLabel: 'GitHub Action',
+      labels: ['Connection Type', 'Connection Name', 'Base Url', 'Repo Ownername', 'Use vault password', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'baseUrl', 'username', 'vault', 'accessToken', 'connPrivate']
+    },
+    {
       connectionType: 'GitLab',
       connectionLabel: 'GitLab',
       labels: ['Connection Type', 'Connection Name', 'Base Url', 'Username', 'Use vault password', 'Access Token', 'Is Connection Private'],
@@ -274,6 +280,15 @@ export class ConnectionListComponent implements OnInit {
     {
       label: 'GitHub',
       value: 'GitHub',
+      connectionTableCols: [
+        { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+        { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+        { field: 'username', header: 'Repo Ownername', class: 'normal' },
+      ]
+    },
+    {
+      label: 'GitHub Action',
+      value: 'GitHub Action',
       connectionTableCols: [
         { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
         { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
