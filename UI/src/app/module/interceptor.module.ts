@@ -83,10 +83,11 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        if(!event?.url?.includes('api/authdetails') &&
-                        ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
-                            this.httpService.getAuthDetails();
-                        }
+                        /**Todo: check this when handling both central and local login */
+                        // if(!event?.url?.includes('api/authdetails') &&
+                        // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
+                        //     this.httpService.getAuthDetails();
+                        // }
                     }
                 }),
                 catchError((err) => {
@@ -98,6 +99,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 if(environment.AUTHENTICATION_SERVICE){
                                     /** redirect to central login url*/
                                     let redirect_uri = window.location.href;
+                                    localStorage.setItem('redirect_uri', window.location.hash);
                                     window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                                 }
                                 // this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
