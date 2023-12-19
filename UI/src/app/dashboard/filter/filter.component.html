@@ -32,7 +32,7 @@
                         </ng-select>
                      </div>
                      <!-- Trend line value -->
-                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="max-width: 250px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [multiple]="true"
                            [items]="trendLineValueList"
