@@ -588,17 +588,17 @@ public class KPIExcelUtility {
 				storyDetails.put(issue.getNumber(), checkEmptyURL(issue));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issue));
-				Double daysLogged = 0.0d;
-				Double daysEstimated = 0.0d;
-				if (issue.getTimeSpentInMinutes() != null) {
-					daysLogged = Double.valueOf(issue.getTimeSpentInMinutes()) / 60;
+				String daysLogged = "0.0";
+				String daysEstimated = "0.0";
+				if (issue.getTimeSpentInMinutes() != null && issue.getTimeSpentInMinutes() > 0) {
+					daysLogged = df2.format(Double.valueOf(issue.getTimeSpentInMinutes()) / 60);
 				}
-				excelData.setTotalTimeSpent(df2.format(daysLogged));
+				excelData.setTotalTimeSpent(daysLogged);
 
-				if (issue.getAggregateTimeOriginalEstimateMinutes() != null) {
-					daysEstimated = Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60;
+				if (issue.getAggregateTimeOriginalEstimateMinutes() != null && issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
+					daysEstimated = df2.format(Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60);
 				}
-				excelData.setOriginalTimeEstimate(df2.format(daysEstimated));
+				excelData.setOriginalTimeEstimate(daysEstimated);
 				kpiExcelData.add(excelData);
 
 			});
