@@ -587,17 +587,17 @@ public class KPIExcelUtility {
 				storyDetails.put(issue.getNumber(), checkEmptyURL(issue));
 				excelData.setStoryId(storyDetails);
 				excelData.setIssueDesc(checkEmptyName(issue));
-				Double daysLogged = 0.0d;
-				Double daysEstimated = 0.0d;
-				if (issue.getTimeSpentInMinutes() != null) {
-					daysLogged = Double.valueOf(issue.getTimeSpentInMinutes()) / 60;
+				String daysLogged = "0.0";
+				String daysEstimated = "0.0";
+				if (issue.getTimeSpentInMinutes() != null && issue.getTimeSpentInMinutes() > 0) {
+					daysLogged = df2.format(Double.valueOf(issue.getTimeSpentInMinutes()) / 60);
 				}
-				excelData.setTotalTimeSpent(String.valueOf(daysLogged));
+				excelData.setTotalTimeSpent(daysLogged);
 
-				if (issue.getAggregateTimeOriginalEstimateMinutes() != null) {
-					daysEstimated = Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60;
+				if (issue.getAggregateTimeOriginalEstimateMinutes() != null && issue.getAggregateTimeOriginalEstimateMinutes() > 0) {
+					daysEstimated = df2.format(Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60);
 				}
-				excelData.setOriginalTimeEstimate(String.valueOf(daysEstimated));
+				excelData.setOriginalTimeEstimate(daysEstimated);
 				kpiExcelData.add(excelData);
 
 			});
@@ -1296,13 +1296,13 @@ public class KPIExcelUtility {
 		KPIExcelUtility.populateAssignee(jiraIssue, jiraIssueModalObject);
 		if (null != jiraIssue.getStoryPoints() && StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-			jiraIssueModalObject.setIssueSize(jiraIssue.getStoryPoints().toString());
+			jiraIssueModalObject.setIssueSize(df2.format(jiraIssue.getStoryPoints()));
 		}
 		if (null != jiraIssue.getOriginalEstimateMinutes()
 				&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 			Double originalEstimateInHours = Double.valueOf(jiraIssue.getOriginalEstimateMinutes()) / 60;
-			jiraIssueModalObject.setIssueSize(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping() + "/"
+			jiraIssueModalObject.setIssueSize(df2.format(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()) + "/"
 					+ originalEstimateInHours + " hrs");
 		}
 		jiraIssueModalObject.setDueDate((StringUtils.isNotEmpty(jiraIssue.getDueDate())) ? DateUtil.dateTimeConverter(
