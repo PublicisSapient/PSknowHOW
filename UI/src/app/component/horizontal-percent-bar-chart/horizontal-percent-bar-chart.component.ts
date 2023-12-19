@@ -144,11 +144,14 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
 
         // Creating y-axis text as hyperlink
         yAxis.selectAll("text")
-        .data(data)
-        .classed("link", (d)=>d.url ? true : false )
-        .on("click", function(event){
-          if(event.target.__data__.url){
-            window.open(event.target.__data__.url, "_blank");
+        .classed("link", (d)=>{
+          const url = data.find(de=>de.kpiGroup === d)?.url;
+          return (url ? true : false) 
+        })
+        .on("click", function(event,d){
+          const url = data.find(de=>de.kpiGroup === d)?.url;
+          if(url){
+            window.open(url, "_blank");
           }
         });
 

@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +57,6 @@ public class ZephyrServerImpl implements ZephyrClient {
 	public List<ZephyrTestCaseDTO> getTestCase(final int startAt, final ProjectConfFieldMapping projectConfig) {
 		List<ZephyrTestCaseDTO> testCaseList = new ArrayList<>();
 		ProcessorToolConnection toolInfo = projectConfig.getProcessorToolConnection();
-
 		if (StringUtils.isNotEmpty(toolInfo.getUrl()) && StringUtils.isNotEmpty(toolInfo.getApiEndPoint())) {
 			String apiEndPoint = toolInfo.getApiEndPoint();
 			String zephyrUrl = zephyrUtil.getZephyrUrl(toolInfo.getUrl());
@@ -77,21 +78,22 @@ public class ZephyrServerImpl implements ZephyrClient {
 
 			log.info("ZEPHYR query executed {} ....", queryBuilder);
 			if (StringUtils.isNotBlank(queryBuilder)) {
-
+				ResponseEntity<ZephyrTestCaseDTO[]> response=null;
 				try {
-					ResponseEntity<ZephyrTestCaseDTO[]> response = makeRestCall(queryBuilder.toString(),
-							ZephyrTestCaseDTO[].class, HttpMethod.GET,
-							zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()));
-
+					if (!toolInfo.isBearerToken()) {
+						response = makeRestCall(queryBuilder.toString(),
+								ZephyrTestCaseDTO[].class, HttpMethod.GET,
+								zephyrUtil.getCredentialsAsBase64String(toolInfo.getUsername(), toolInfo.getPassword()));
+					} else {
+						response = restTemplate.exchange(queryBuilder.toString(), HttpMethod.GET, zephyrUtil.buildBearerHeader(toolInfo.getPatOAuthToken()), ZephyrTestCaseDTO[].class);
+					}
 					if (response.getStatusCode() == HttpStatus.OK && Objects.nonNull(response.getBody())) {
 						testCaseList = Arrays.asList(response.getBody());
 					} else {
 						String statusCode = response.getStatusCode().toString();
 						log.error("Error while fetching projects from {}. with status {}", queryBuilder, statusCode);
-						throw new RestClientException(
-								"Got different status code: " + statusCode + " : " + response.getBody());
+						throw new RestClientException("Got different status code: " + statusCode + " : " + response.getBody());
 					}
-
 				} catch (Exception exception) {
 					log.error("Error while fetching projects from {}", exception.getMessage());
 					throw new RestClientException("Error while fetching projects from {}", exception);

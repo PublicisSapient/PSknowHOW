@@ -742,6 +742,7 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 		firstScreenFilter.add(filter);
 
 		if (ObjectUtils.isNotEmpty(statusCategory)) {
+			List<String> inProgressStatus = new ArrayList<>();
 
 			// On Hold Status configured
 			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraOnHoldStatusKPI154())) {
@@ -750,8 +751,8 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			}
 			// In progress Filters
 			if (CollectionUtils.isNotEmpty(statusCategory.getInProgressList().values())) {
-				secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2,
-						new ArrayList<>(statusCategory.getInProgressList().values()), FILTER_BUTTON, true, 1));
+				inProgressStatus = new ArrayList<>(statusCategory.getInProgressList().values());
+				secondScreenFilters.add(new Filter(FILTER_INPROGRESS_SCR2, inProgressStatus, FILTER_BUTTON, true, 1));
 			}
 
 			// Open Filters
@@ -766,9 +767,17 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 			secondScreenFilters.add(openFilter);
 
 			// closed filters
-			if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
-				secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2,
-						new ArrayList<>(statusCategory.getClosedList().values()), FILTER_BUTTON, true, 2));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraIterationCompletionStatusKPI154())) {
+				List<String> jiraIterationCompletionStatusKPI154 = fieldMapping
+						.getJiraIterationCompletionStatusKPI154();
+				inProgressStatus.removeAll(jiraIterationCompletionStatusKPI154);
+				secondScreenFilters.add(
+						new Filter(FILTER_CLOSED_SCR2, jiraIterationCompletionStatusKPI154, FILTER_BUTTON, true, 2));
+
+			} else if (CollectionUtils.isNotEmpty(statusCategory.getClosedList().values())) {
+				List<String> closedList = new ArrayList<>(statusCategory.getClosedList().values());
+				inProgressStatus.removeAll(closedList);
+				secondScreenFilters.add(new Filter(FILTER_CLOSED_SCR2, closedList, FILTER_BUTTON, true, 2));
 			}
 		}
 		kpiElement.setFilterData(firstScreenFilter);

@@ -550,8 +550,8 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Is Cloud Environment',
-        // 'Use Bearer Token',
-        // 'PatOAuthToken',
+        'Use Bearer Token',
+        'PatOAuthToken',
         'Base Url',
         'Username',
         'Use vault password',
@@ -564,8 +564,8 @@ describe('ConnectionListComponent', () => {
         'type',
         'connectionName',
         'cloudEnv',
-        // 'bearerToken',
-        // 'patOAuthToken',
+        'bearerToken',
+        'patOAuthToken',
         'baseUrl',
         'username',
         'vault',
@@ -861,8 +861,8 @@ describe('ConnectionListComponent', () => {
         'Connection Type',
         'Connection Name',
         'Is Cloud Environment',
-        // 'Use Bearer Token',
-        // 'PatOAuthToken',
+        'Use Bearer Token',
+        'PatOAuthToken',
         'Base Url',
         'Username',
         'Use vault password',
@@ -875,8 +875,8 @@ describe('ConnectionListComponent', () => {
         'type',
         'connectionName',
         'cloudEnv',
-        // 'bearerToken',
-        // 'patOAuthToken',
+        'bearerToken',
+        'patOAuthToken',
         'baseUrl',
         'username',
         'vault',
@@ -916,12 +916,12 @@ describe('ConnectionListComponent', () => {
           isEnabled: false,
         },
       ],
-      // bearerToken: [
-      //   {
-      //     field: 'patOAuthToken',
-      //     isEnabled: false
-      //   }
-      //   ],
+      bearerToken: [
+        {
+          field: 'patOAuthToken',
+          isEnabled: false
+        }
+        ],
       vault: [
         {
           field: 'password',
@@ -944,7 +944,7 @@ describe('ConnectionListComponent', () => {
         {
           field: 'sshUrl',
           isEnabled: false
-        }, 
+        },
       ],
       accessTokenEnabled: [],
     },
@@ -1057,7 +1057,7 @@ describe('ConnectionListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('Should test 10 connections are loaded', () => { 
+  it('Should test 10 connections are loaded', () => {
     sharedService.setGlobalConfigData({repoToolFlag: true});
     let connTobeShown;
     const totalConnectionList = 13;
@@ -1272,8 +1272,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = true;
     component.connection['cloudEnv'] = true;
-    // component.connection['patOAuthToken'] = '';
-    // component.connection['bearerToken'] = false;
+    component.connection['patOAuthToken'] = '';
+    component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1293,8 +1293,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = true;
     component.connection['cloudEnv'] = false;
-    // component.connection['patOAuthToken'] = '';
-    // component.connection['bearerToken'] = false;
+    component.connection['patOAuthToken'] = '';
+    component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1312,8 +1312,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = false;
     component.connection['cloudEnv'] = true;
-    // component.connection['patOAuthToken'] = '';
-    // component.connection['bearerToken'] = false;
+    component.connection['patOAuthToken'] = '';
+    component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();
@@ -1331,8 +1331,8 @@ describe('ConnectionListComponent', () => {
     component.connection['type'] = 'zephyr';
     component.connection['vault'] = false;
     component.connection['cloudEnv'] = false;
-    // component.connection['patOAuthToken'] = '';
-    // component.connection['bearerToken'] = false;
+    component.connection['patOAuthToken'] = '';
+    component.connection['bearerToken'] = false;
     component.selectedConnectionType = 'zephyr';
 
     component.connectionTypeFieldsAssignment();

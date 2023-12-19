@@ -847,7 +847,7 @@ public class ReleaseBurnUpServiceImpl extends JiraKPIService<Integer, List<Objec
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
 				double totalOriginalEstimate = jiraIssueList.stream()
-						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0))
+						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
 						.sum();
 				double inHours = totalOriginalEstimate / 60;
 				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();

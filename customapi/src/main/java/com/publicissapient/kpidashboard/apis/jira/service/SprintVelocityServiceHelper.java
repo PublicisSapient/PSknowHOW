@@ -75,8 +75,8 @@ public class SprintVelocityServiceHelper {
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
 				double totalOriginalEstimate = issueDetailsSet.stream()
-						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 				double inHours = totalOriginalEstimate / 60;
 				sprintVelocityForCurrentLeaf = inHours / fieldMapping.getStoryPointToHourMapping();
 

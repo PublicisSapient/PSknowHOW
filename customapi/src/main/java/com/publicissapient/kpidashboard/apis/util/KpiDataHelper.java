@@ -1021,7 +1021,7 @@ public final class KpiDataHelper {
 			if (isStoryPoint) {
 				return Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0d);
 			} else {
-				Integer timeInMin = Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0);
+				Integer timeInMin = Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0);
 				int inHours = timeInMin / 60;
 				return inHours / fieldMapping.getStoryPointToHourMapping();
 			}
