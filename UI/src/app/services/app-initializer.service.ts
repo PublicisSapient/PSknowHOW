@@ -12,7 +12,7 @@ import { tap } from 'rxjs/operators';
 })
 export class AppInitializerService {
 
-  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient ) { this.validateToken(); this.checkFeatureFlag()}
+  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient ) { this.checkFeatureFlag(); this.validateToken();}
 
   validateToken(): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -55,24 +55,23 @@ export class AppInitializerService {
 
   }
 
-  checkFeatureFlag(){
-    if (!environment.production) {
-      return async () => {
-        this.featureToggleService.config = await this.featureToggleService.loadConfig();
+  checkFeatureFlag(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!environment.production) {
+        this.featureToggleService.config = this.featureToggleService.loadConfig();
+      } else {
+          const env$ = this.http.get('assets/env.json').pipe(
+            tap(env => {
+              environment['baseUrl'] = env['baseUrl'] || '';
+              environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
+            }));
+  
+          env$.toPromise().then(res => {
+            this.featureToggleService.config = this.featureToggleService.loadConfig();
+          });
       }
-    } else {
-      return async () => {
-        const env$ = this.http.get('assets/env.json').pipe(
-          tap(env => {
-            environment['baseUrl'] = env['baseUrl'] || '';
-            environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-          }));
-
-        await env$.toPromise().then(res => {
-          this.featureToggleService.config = this.featureToggleService.loadConfig();
-        });
-      };
-    }
+      resolve(true);
+    })
   }
 }
 
