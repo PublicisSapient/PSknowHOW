@@ -126,7 +126,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
 				}.getType());
-				json.put(PROJECTS_ACCESS, element.getAsJsonArray());
+				json.put(PROJECTS_ACCESS, element.getAsJsonArray().toString());
 			} else {
 				json.put(PROJECTS_ACCESS, new JSONArray());
 			}

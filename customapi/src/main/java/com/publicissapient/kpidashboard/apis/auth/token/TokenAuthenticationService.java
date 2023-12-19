@@ -54,7 +54,8 @@ public interface TokenAuthenticationService {
 	 *            the request
 	 * @return the authentication
 	 */
-	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletResponse response);
+	Authentication getAuthentication(UserTokenAuthenticationDTO request, HttpServletRequest httpServletRequest,
+			HttpServletResponse response);
 
 	/**
 	 *  validate token
