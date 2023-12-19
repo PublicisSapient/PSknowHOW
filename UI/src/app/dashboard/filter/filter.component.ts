@@ -1394,6 +1394,9 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setVisibleSideBar(false);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
+        }else{
+          let redirect_uri = window.location.href;
+          window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
         }
       }
     });
