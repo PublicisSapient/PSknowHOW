@@ -51,8 +51,10 @@ class IssueScrumProcessorTest {
     @Test
     void testProcessWhenSprintFetchIsFalse() throws Exception {
         // Arrange
+
         ReadData readData = new ReadData();
         readData.setSprintFetch(false);
+        readData.setBoardId("11826");
         JiraIssue jiraIssue = new JiraIssue();
         when(jiraIssueProcessor.convertToJiraIssue(any(), any(), any())).thenReturn(jiraIssue);
         Set<SprintDetails> sprintDetailsSet = new HashSet<>();
