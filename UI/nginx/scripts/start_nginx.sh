@@ -17,9 +17,16 @@
 # limitations under the License.
 #
 ################################################################################
-if [ -e /etc/ssl/certs/knowhow.key ]
-then
-    echo "SSL certificate copyied from Host or already present "
+
+# Determine the environment (dev or prod) based on an environment variable
+if [ "$ENVIRONMENT" = "prod" ]; then
+   cp /etc/nginx/conf.d/nginx_prod.conf /etc/nginx/conf.d/default.conf
+else
+   cp /etc/nginx/conf.d/nginx_dev.conf /etc/nginx/conf.d/default.conf
+fi
+
+if [ -e /etc/ssl/certs/knowhow.key ] || [ "$ENVIRONMENT" = "prod" ]; then
+    echo "SSL certificate already exist in host or managed externally. "
 else
     openssl req -newkey rsa:4096 \
             -x509 \
@@ -29,13 +36,13 @@ else
             -out /etc/ssl/certs/knowhow.cer \
             -keyout /etc/ssl/certs/knowhow.key \
             -subj "/C=IN/ST=HR/L=ggn/O=Security/OU=IT Department/CN=${DNS_SSL}"
-    echo "Self sign certificate created "
+    echo "Self-signed certificate created"
 fi
-API_HOST=${API_HOST:-api}
+
+API_HOST=${API_HOST:-customapi}
 API_PORT=${API_PORT:-8080}
 
-sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/ui2.conf
-sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/ui2.conf
+sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/default.conf
+sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/default.conf
 envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
 nginx -g "daemon off;"
-/bin/sh
