@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-			HttpServletResponse response) {
+			HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
@@ -129,7 +130,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
 				String token = userTokenAuthenticationDTO.getAuthToken();
 				if (StringUtils.isBlank(token)) {
-					return null;
+					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+					if (Objects.nonNull(authCookieToken)) {
+						token = authCookieToken.getValue();
+					} else {
+						return null;
+					}
 				}
 				return createAuthentication(token, response);
 			} else {

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -61,8 +62,8 @@ public class TokenAuthenticationController {
 
 	@PostMapping(value = "/validateToken")
 	public ResponseEntity<ServiceResponse> validateToken(@Valid @RequestBody UserTokenAuthenticationDTO userData,
-			HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.getAuthentication(userData, response);
+			HttpServletRequest httpServletRequest, HttpServletResponse response) {
+		Authentication authentication = tokenAuthenticationService.getAuthentication(userData, httpServletRequest , response);
 		ServiceResponse serviceResponse;
 		if (null != authentication) {
 
@@ -71,10 +72,10 @@ public class TokenAuthenticationController {
 			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
 			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
 			if (value) {
-				JSONObject json = customAnalyticsService.addAnalyticsData(response, userData.getUserName(),
+				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, userData.getUserName(),
 						userData.getAuthToken());
-				json.put("resourceTokenValid", true);
-				serviceResponse = new ServiceResponse(true, "success_valid_token", json);
+				userMap.put("resourceTokenValid", true);
+				serviceResponse = new ServiceResponse(true, "success_valid_token", userMap);
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
 			} else {
 				JSONObject json = new JSONObject();

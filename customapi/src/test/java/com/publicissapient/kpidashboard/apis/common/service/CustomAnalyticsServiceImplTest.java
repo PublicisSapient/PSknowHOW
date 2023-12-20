@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import org.bson.types.ObjectId;
@@ -85,7 +86,7 @@ public class CustomAnalyticsServiceImplTest {
 		when(userInfoRepository.findByUsername(Mockito.anyString())).thenReturn(user);
 		when(authenticationRepository.findByUsername(Mockito.anyString())).thenReturn(authentication);
 		when(projectAccessManager.getProjectAccessesWithRole(Mockito.anyString())).thenReturn(listRoleWiseProjects);
-		JSONObject json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test" ,"token");
+		Map<String, Object> json = customAnalyticsServiceImpl.addAnalyticsData(resp, "test" ,"token");
 		assertEquals("test", json.get("user_name"));
 		assertEquals(json.get("authorities"), user.getAuthorities());
 

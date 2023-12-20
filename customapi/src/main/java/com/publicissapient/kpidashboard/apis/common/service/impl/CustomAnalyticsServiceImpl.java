@@ -21,7 +21,9 @@ package com.publicissapient.kpidashboard.apis.common.service.impl;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +32,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -68,7 +67,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String USER_ID = "user_id";
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-	private static final Object USER_AUTHORITIES = "authorities";
+	private static final String USER_AUTHORITIES = "authorities";
 	public static final String SUCCESS = "SUCCESS";
 
 	@Autowired
@@ -96,8 +95,9 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username, String authToken) {
-		JSONObject json = new JSONObject();
+	public Map<String, Object> addAnalyticsData(HttpServletResponse httpServletResponse, String username,
+			String authToken) {
+		Map<String, Object> userMap = new HashMap<>();
 		httpServletResponse.setContentType("application/json");
 		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
@@ -114,28 +114,25 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			}
 		}
 		Authentication authentication = authenticationRepository.findByUsername(username);
-		json.put(USER_NAME, username);
+		userMap.put(USER_NAME, username);
 		if (Objects.nonNull(userinfoKnowHow)) {
 			String email = authentication == null ? userinfoKnowHow.getEmailAddress().toLowerCase()
 					: authentication.getEmail().toLowerCase();
-			json.put(USER_EMAIL, email);
-			json.put(USER_ID, userinfoKnowHow.getId().toString());
-			json.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
-			Gson gson = new Gson();
+			userMap.put(USER_EMAIL, email);
+			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
+			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
-				JsonElement element = gson.toJsonTree(projectAccessesWithRole, new TypeToken<List<RoleWiseProjects>>() {
-				}.getType());
-				json.put(PROJECTS_ACCESS, element.getAsJsonArray());
+				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			} else {
-				json.put(PROJECTS_ACCESS, new JSONArray());
+				userMap.put(PROJECTS_ACCESS, new JSONArray());
 			}
 			userLoginHistoryService.createUserLoginHistoryInfo(userinfoKnowHow, SUCCESS);
 		}
-		json.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
+		userMap.put(AUTH_RESPONSE_HEADER, httpServletResponse.getHeader(AUTH_RESPONSE_HEADER));
 
 		log.info("Successfully added Google Analytics data to Response.");
-		return json;
+		return userMap;
 
 	}
 
