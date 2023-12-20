@@ -54,7 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MaturityServiceImpl {
 
-	private static final List<String> filterList = Arrays.asList("Final Scope (Story Points)", "Average Coverage",
+	private static final List<String> FILTER_LIST = Arrays.asList("Final Scope (Story Points)", "Average Coverage",
 			"Story Points", "Overall");
 	private static final String KPI_SOURCE_JIRA = "Jira";
 	private static final String KPI_SOURCE_SONAR = "Sonar";
@@ -126,9 +126,10 @@ public class MaturityServiceImpl {
 				if (trendValueList.get(0) instanceof DataCountGroup) {
 					List<DataCountGroup> dataCountGroups = (List<DataCountGroup>) trendValueList;
 
-					Optional<DataCount> firstMatchingDataCount = dataCountGroups.stream()
-							.filter(trend -> filterList.contains(trend.getFilter())).map(DataCountGroup::getValue)
-							.flatMap(List::stream).findFirst();
+					Optional<DataCount> firstMatchingDataCount = dataCountGroups.stream().filter(trend -> FILTER_LIST
+							.contains(trend.getFilter())
+							|| (FILTER_LIST.contains(trend.getFilter1()) && FILTER_LIST.contains(trend.getFilter2())))
+							.map(DataCountGroup::getValue).flatMap(List::stream).findFirst();
 
 					firstMatchingDataCount.ifPresent(dataCount -> {
 						kpiElement.setMaturityValue((String) dataCount.getMaturityValue());
