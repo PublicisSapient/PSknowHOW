@@ -208,7 +208,7 @@ public class SonarServiceR {
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -224,7 +224,7 @@ public class SonarServiceR {
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 

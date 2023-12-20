@@ -116,6 +116,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<Filter> filterData;
 	//used by second screen of DSV for filtering on status
 	private transient List<Filter> standUpStatusFilter;
+	private String maturity;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -858,6 +859,24 @@ public class KpiElement implements Serializable { // NOPMD
 		this.standUpStatusFilter = standUpStatusFilter;
 	}
 
+	/**
+	 * Gets maturity.
+	 *
+	 * @return the maturity
+	 */
+	public String getMaturity() {
+		return maturity;
+	}
+
+	/**
+	 * Sets maturity.
+	 *
+	 * @param maturity
+	 *            the maturity value
+	 */
+	public void setMaturity(String maturity) {
+		this.maturity = maturity;
+	}
 
 
 }

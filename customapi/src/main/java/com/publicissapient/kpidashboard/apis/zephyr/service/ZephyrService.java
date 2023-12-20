@@ -157,7 +157,7 @@ public class ZephyrService {
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 		return filteredAccountDataList;
@@ -166,7 +166,7 @@ public class ZephyrService {
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
 
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();

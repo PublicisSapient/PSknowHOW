@@ -40,6 +40,7 @@ public class KpiRequest implements Serializable {
 	private String[] ids;
 	private String[] platformIds;
 	private List<KpiElement> kpiList;
+	private List<String> kpiIdList;
 	private Map<String, List<String>> selectedMap;
 	private String startDate;
 	private String endDate;
@@ -67,6 +68,26 @@ public class KpiRequest implements Serializable {
 	 */
 	public void setKpiList(List<KpiElement> kpiList) {
 		this.kpiList = kpiList;
+		setRequestTrackerId();
+	}
+
+	/**
+	 * Gets kpi list.
+	 *
+	 * @return the kpi list
+	 */
+	public List<String> getKpiIdList() {
+		return kpiIdList;
+	}
+
+	/**
+	 * Sets kpi list.
+	 *
+	 * @param kpiIdList
+	 *            the kpi list
+	 */
+	public void setKpiIdList(List<String> kpiIdList) {
+		this.kpiIdList = kpiIdList;
 		setRequestTrackerId();
 	}
 
