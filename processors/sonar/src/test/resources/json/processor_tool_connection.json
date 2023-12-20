@@ -39,5 +39,26 @@
     "apiVersion": "6",
     "type" : "Sonar"
 
+  },
+  {
+    "id": "624fce6e202f2154bf89ea27",
+    "projectId": "DTS",
+    "projectName": "Test Project 1",
+    "username": "testUser",
+    "password": "testPassword",
+    "offline": false,
+    "apiVersion": "6",
+    "type" : "Sonar",
+    "cloudEnv" : true
+  },
+  {
+    "id": "624fce6e202f2154bf99ea27",
+    "projectId": "DTS",
+    "projectName": "Test Project 1",
+    "offline": false,
+    "apiVersion": "6",
+    "type" : "Sonar",
+    "cloudEnv" : true,
+    "vault": true
   }
 ]
