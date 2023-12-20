@@ -18,13 +18,19 @@
 #
 ################################################################################
 
+API_HOST=${API_HOST:-customapi}
+API_PORT=${API_PORT:-8080}
 # Determine the environment (dev or prod) based on an environment variable
 ENVIRONMENT=${ENVIRONMENT:-dev} # default to dev you can pass external var to change to prod
 
 if [ "$ENVIRONMENT" = "prod" ]; then
-   cp /tmp/nginx_prod.conf /etc/nginx/conf.d/nginx_prod.conf
+   cp /tmp/nginx_prod.conf ${CONF_LOG}/nginx_prod.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/nginx_prod.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/nginx_prod.conf
 else
-   cp /tmp/nginx_dev.conf /etc/nginx/conf.d/nginx_dev.conf
+   cp /tmp/nginx_dev.conf ${CONF_LOG}/nginx_dev.conf
+   sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/nginx_dev.conf
+   sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/nginx_dev.conf
 fi
 
 if [ -e /etc/ssl/certs/knowhow.key ] || [ "$ENVIRONMENT" = "prod" ]; then
@@ -41,10 +47,5 @@ else
     echo "Self-signed certificate created"
 fi
 
-API_HOST=${API_HOST:-customapi}
-API_PORT=${API_PORT:-8080}
-
-sed -i "s/API_HOST/${API_HOST}/g" ${CONF_LOG}/default.conf
-sed -i "s/API_PORT/${API_PORT}/g" ${CONF_LOG}/default.conf
 envsubst < /var/lib/nginx/ui2/assets/env.template.json > /var/lib/nginx/ui2/assets/env.json 
 nginx -g "daemon off;"
