@@ -19,10 +19,12 @@
 ################################################################################
 
 # Determine the environment (dev or prod) based on an environment variable
+ENVIRONMENT=${ENVIRONMENT:-dev} # default to dev you can pass external var to change to prod
+
 if [ "$ENVIRONMENT" = "prod" ]; then
-   cp /etc/nginx/conf.d/nginx_prod.conf /etc/nginx/conf.d/default.conf
+   cp /tmp/nginx_prod.conf /etc/nginx/conf.d/nginx_prod.conf
 else
-   cp /etc/nginx/conf.d/nginx_dev.conf /etc/nginx/conf.d/default.conf
+   cp /tmp/nginx_dev.conf /etc/nginx/conf.d/nginx_dev.conf
 fi
 
 if [ -e /etc/ssl/certs/knowhow.key ] || [ "$ENVIRONMENT" = "prod" ]; then
