@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -31,8 +32,9 @@ import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SonarClientFactoryTest {
 
 	@InjectMocks
