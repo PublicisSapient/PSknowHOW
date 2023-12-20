@@ -132,8 +132,8 @@ public class CreateMetadataImplTest {
 	@Test
 	public void collectMetadata() throws Exception {
 
-		when(fieldMappingRepository.save(any())).thenReturn(null);
-		when(boardMetadataRepository.save(any())).thenReturn(null);
+//		when(fieldMappingRepository.save(any())).thenReturn(null);
+//		when(boardMetadataRepository.save(any())).thenReturn(null);
 		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
 
 		MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
@@ -152,14 +152,14 @@ public class CreateMetadataImplTest {
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
 
-		Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
-		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
+//		Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
+//		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 		ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
-		Mockito.when(restTemplate.exchange(new URI("http://10.123.45.678:9090/api/cache/clearCache/GenericCache"),
-				HttpMethod.GET, entity, String.class)).thenReturn(response);
+//		Mockito.when(restTemplate.exchange(new URI("http://10.123.45.678:9090/api/cache/clearCache/GenericCache"),
+//				HttpMethod.GET, entity, String.class)).thenReturn(response);
 
 		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(), client));
 	}

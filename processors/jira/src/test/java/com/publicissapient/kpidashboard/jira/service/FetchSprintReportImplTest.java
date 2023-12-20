@@ -106,8 +106,8 @@ public class FetchSprintReportImplTest {
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
 		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
 				"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
-				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
+//				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
 		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
 		Assert.assertEquals(1,
 				fetchSprintReport.fetchSprints(projectConfig, sprintDetailsSet, krb5Client, false).size());
@@ -145,8 +145,8 @@ public class FetchSprintReportImplTest {
 		when(jiraProcessorConfig.getSubsequentApiCallDelayInMilli()).thenReturn(1000l);
 		when(jiraProcessorConfig.getJiraServerSprintReportApi()).thenReturn(
 				"rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
-		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
-				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
+//		when(jiraProcessorConfig.getJiraCloudGetUserApi()).thenReturn(
+//				"jira.jiraServerSprintDetailsApi=rest/greenhopper/latest/rapid/charts/SprintDetails?rapidViewId={rapidViewId}&sprintId={sprintId}");
 		when(jiraCommonService.getDataFromClient(any(), any(),any())).thenReturn(sprintResponse);
 		Assert.assertEquals(15,
 				fetchSprintReport.createSprintDetailBasedOnBoard(projectConfig, krb5Client, jiraBoard).size());
