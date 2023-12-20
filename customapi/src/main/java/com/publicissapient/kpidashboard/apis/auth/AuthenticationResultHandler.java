@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -59,10 +60,10 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		String username = authenticationService.getUsername(authentication);
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String token = authCookie.getValue();
-		JSONObject json = customAnalyticsService.addAnalyticsData(response, username, token);
+		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username, token);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print(json.toJSONString());
+		out.print(userMap);
 		// sgu106: Google Analytics data population ends
 
 	}
