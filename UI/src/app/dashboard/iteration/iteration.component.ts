@@ -128,7 +128,7 @@ export class IterationComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      if(globalConfig && this.sharedObject){
+      if (globalConfig && this.sharedObject) {
         // if(this.sharedObject || this.service.getFilterObject()){
         //   this.receiveSharedData(this.service.getFilterObject());
         // }
@@ -406,7 +406,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       if (filterData[0] !== 'error') {
         this.service.setGlobalConfigData(filterData);
       }
-  });
+    });
 
 
     this.service.getEmptyData().subscribe((val) => {
@@ -612,21 +612,51 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
     }
     /**if trendValueList is an array */
-    else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1')) {
-        const filters = this.kpiSelectedFilterObj[kpiId]['filter1'];
-        let preAggregatedValues = [];
-        for (let i = 0; i < filters?.length; i++) {
-          preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
+    else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1') && trendValueList[0]?.hasOwnProperty('filter2')) {
+      if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter2']) {
+        let tempArr = [];
+        const preAggregatedValues = [];
+        /** tempArr: array with combination of all items of filter1 and filter2 */
+        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+        for (let i = 0; i < tempArr?.length; i++) {
+          preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
         }
-        this.kpiChartData[kpiId] = [...preAggregatedValues];
-      } else {
+        if (preAggregatedValues?.length > 1) {
+          this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+        } else {
+          this.kpiChartData[kpiId] = [...preAggregatedValues];
+        }
+      } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
+        if (this.kpiSelectedFilterObj[kpiId]?.hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId].filter1[0] !== 'Overall') {
+          const filters = this.kpiSelectedFilterObj[kpiId]['filter1'];
+          let preAggregatedValues = [];
+          for (let i = 0; i < filters?.length; i++) {
+            preAggregatedValues = [...preAggregatedValues, ...trendValueList?.filter(x => x['filter1'].toLowerCase() === filters[i].toLowerCase())];
+          }
+          if (preAggregatedValues?.length > 1) {
+            this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
+          } else {
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
+        } else {
 
-        this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+          this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
+        }
+      }
+      else {
+        /** when there are no kpi level filters */
+        this.kpiChartData[kpiId] = [];
+        if (trendValueList?.length > 0) {
+          this.kpiChartData[kpiId] = this.applyAggregationLogic(trendValueList);
+        } else {
+          const obj = JSON.parse(JSON.stringify(trendValueList));
+          this.kpiChartData[kpiId]?.push(obj);
+        }
       }
     }
+
     else if (trendValueList?.length > 0) {
-      this.kpiChartData[kpiId] = [...trendValueList];
+      this.kpiChartData[kpiId] = this.applyAggregationLogic(trendValueList);
     } else {
       this.kpiChartData[kpiId] = [];
     }
