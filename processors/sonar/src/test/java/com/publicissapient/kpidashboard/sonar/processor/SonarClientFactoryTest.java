@@ -32,7 +32,7 @@ import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarClientFactoryTest {
 
 	@InjectMocks

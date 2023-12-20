@@ -25,7 +25,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestOperations;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarRestOperationsFactoryTest {
 
 	@InjectMocks

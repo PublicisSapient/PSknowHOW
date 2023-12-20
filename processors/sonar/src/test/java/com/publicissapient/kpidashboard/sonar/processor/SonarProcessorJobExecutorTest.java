@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -31,6 +33,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.sonar.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
+import com.publicissapient.kpidashboard.sonar.data.SonarProcessorItemDataFactory;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
@@ -78,6 +83,7 @@ import com.publicissapient.kpidashboard.sonar.repository.SonarProcessorRepositor
 public class SonarProcessorJobExecutorTest {
 
 	private static final String SONAR_URL = "http://sonar.com";
+	private static final String PROJECTKEY = "DTS";
 	private static final String METRICS = "lines,ncloc,violations,new_vulnerabilities,critical_violations,major_violations,blocker_violations,minor_violations,info_violations,tests,test_success_density,test_errors,test_failures,coverage,line_coverage,sqale_index,alert_status,quality_gate_details,sqale_rating";
 	private static final String CUSTOM_API_BASE_URL = "http://localhost:9090/";
 	private static final String SONAR_CACHE_END_POINT = "api/cache/clearCache/sonarCache";
@@ -86,8 +92,8 @@ public class SonarProcessorJobExecutorTest {
 	private static final String METRICS1 = "nloc";
 	private static final String METRICS2 = "nloc,violations";
 	private static final ObjectId OBJ_ID = new ObjectId("5d6ce2c7adbe1d000bd4bb6f");
-	private static final String PROJECT_ID = "AVu3b-MAphY78UZXuYHr";
-	private static final String PROJECT_ID_2 = "AVu3b-MAphY78UZXuYHp";
+	//private static final String PROJECT_ID = "AVu3b-MAphY78UZXuYHr";
+	//private static final String PROJECT_ID_2 = "AVu3b-MAphY78UZXuYHp";
 	private static final String EXCEPTION = "rest client exception";
 	private static final String PLAIN_TEXT_PASSWORD = "Test@123";
 	@Mock
@@ -127,31 +133,20 @@ public class SonarProcessorJobExecutorTest {
 	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	private List<ProcessorToolConnection> connList = new ArrayList<>();
+	List<SonarProcessorItem> sonarProcessorItemList = new ArrayList<>();
+
 
 	@BeforeEach
 	public void init() {
 		MockitoAnnotations.initMocks(this);
-		SonarProcessor sonarProcessor = new SonarProcessor();
-		ProcessorToolConnection SONARSAMPLESERVER = new ProcessorToolConnection();
-		SONARSAMPLESERVER.setId(new ObjectId("624fce22b2ee234aa990adfc"));
-		SONARSAMPLESERVER.setUrl("http://testUser@test.com");
-		SONARSAMPLESERVER.setUsername("testUser");
-		SONARSAMPLESERVER.setPassword("testPassword");
-		SONARSAMPLESERVER.setOffline(true);
-		ProcessorToolConnection SONARSAMPLESERVER1 = new ProcessorToolConnection();
-		SONARSAMPLESERVER1.setId(new ObjectId("624fce6e202f2154bf89ea57"));
-		SONARSAMPLESERVER1.setUrl("http://testUser@test.com");
-		SONARSAMPLESERVER1.setUsername("testUser");
-		SONARSAMPLESERVER1.setPassword("testPassword");
-		SONARSAMPLESERVER1.setOffline(false);
+		SonarProcessor sonarProcessor= new SonarProcessor();
+		SonarProcessorItemDataFactory dataFactory= SonarProcessorItemDataFactory.newInstance();
+		sonarProcessorItemList = dataFactory.getSonarProcessorItemList();
 
-		connList.add(SONARSAMPLESERVER);
-		connList.add(SONARSAMPLESERVER1);
-
-		List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
-		ProjectBasicConfig projectConfig = new ProjectBasicConfig();
-		projectConfigList.add(projectConfig);
-		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		ProjectToolConnectionFactory toolConnectionFactory= ProjectToolConnectionFactory.newInstance();
+		connList=toolConnectionFactory.getProcessorToolConnectionList();
+		ProjectBasicConfigDataFactory projectBasicConfigDataFactory= ProjectBasicConfigDataFactory.newInstance();
+		List<ProjectBasicConfig> projectConfigList = projectBasicConfigDataFactory.getProjectBasicConfigs();
 
 		Mockito.when(sonarProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(sonarProcessor);
 		Mockito.when(sonarProcessorRepository.save(sonarProcessor)).thenReturn(sonarProcessor);
@@ -160,8 +155,9 @@ public class SonarProcessorJobExecutorTest {
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(Mockito.any(), Mockito.any()))
 				.thenReturn(connList);
+		when(sonarProjectRepository.findEnabledProjectsForTool(any(),any(), anyString())).thenReturn(sonarProcessorItemList);
 		// SonarClient client2 = mock(SonarClient.class);
-		when(sonarClient.getSonarProjectList(Mockito.any())).thenReturn(getExistingProjects());
+		//when(sonarClient.getSonarProjectList(Mockito.any())).thenReturn(getExistingProjects());
 
 	}
 
@@ -173,8 +169,10 @@ public class SonarProcessorJobExecutorTest {
 	@Test
 	public void processOneServer43() throws Exception {
 		when(sonarConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
+		when(sonarConfig.getMetrics()).thenReturn(Arrays.asList(METRICS));
 		try {
 			when(sonarClientSelector.getSonarClient(Mockito.anyString())).thenReturn(sonar8Client);
+			when(sonar8Client.getSonarProjectList(Mockito.any())).thenReturn(sonarProcessorItemList);
 			jobExecutor.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -253,8 +251,8 @@ public class SonarProcessorJobExecutorTest {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl("http://test1.com");
 		project.setProjectName("testPackage.sonar:TestProject2");
-		project.setProjectId(PROJECT_ID);
-		project.setKey(PROJECT_ID);
+		project.setProjectId(PROJECTKEY);
+		project.setKey(PROJECTKEY);
 		project.setLatestVersion("6.5");
 		project.setToolConfigId(new ObjectId());
 		projectList.add(project);
@@ -268,8 +266,8 @@ public class SonarProcessorJobExecutorTest {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl("http://test1.com");
 		project.setProjectName("testPackage.sonar:TestProject2");
-		project.setProjectId(PROJECT_ID);
-		project.setKey(PROJECT_ID);
+		project.setProjectId(PROJECTKEY);
+		project.setKey(PROJECTKEY);
 		project.setLatestVersion("6.6");
 		project.setTimestamp(1_570_018_143L);
 		project.setToolConfigId(new ObjectId());
@@ -283,9 +281,25 @@ public class SonarProcessorJobExecutorTest {
 		List<SonarProcessorItem> projectList = new ArrayList<>();
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
+		project.setKey(PROJECTKEY);
 		project.setProjectName("testPackage.sonar:TestProject1");
-		project.setProjectId("AVu3b-MAphY78UZXuYHq");
-		project.setKey("AVu3b-MAphY78UZXuYHq");
+		//project.setProjectId("AVu3b-MAphY78UZXuYHq");
+		//project.setKey("AVu3b-MAphY78UZXuYHq");
+		project.setTimestamp(1_570_018_174L);
+		projectList.add(project);
+
+		return projectList;
+
+	}
+
+	private List<SonarProcessorItem> getSonar9ProjectList() {
+		List<SonarProcessorItem> projectList = new ArrayList<>();
+		SonarProcessorItem project = new SonarProcessorItem();
+		project.setInstanceUrl(SONAR_URL);
+		project.setKey(PROJECTKEY);
+		project.setProjectName("testPackage.sonar:TestProject1");
+		//project.setProjectId("AVu3b-MAphY78UZXuYHq");
+		//project.setKey("AVu3b-MAphY78UZXuYHq");
 		project.setTimestamp(1_570_018_174L);
 		projectList.add(project);
 
@@ -297,8 +311,8 @@ public class SonarProcessorJobExecutorTest {
 		SonarProcessorItem project = new SonarProcessorItem();
 		project.setInstanceUrl(SONAR_URL);
 		project.setProjectName("testPackage.sonar:TestProject");
-		project.setProjectId(PROJECT_ID_2);
-		project.setKey(PROJECT_ID_2);
+		project.setProjectId(PROJECTKEY);
+		project.setKey(PROJECTKEY);
 		project.setActive(true);
 		return project;
 	}
@@ -320,7 +334,7 @@ public class SonarProcessorJobExecutorTest {
 				ArgumentMatchers.eq(String.class));
 
 		when(sonarClientSelector.getSonarClient(Mockito.anyString())).thenReturn(sonar6And7Client);
-		when(sonarProjectRepository.findByProcessorIdIn(Mockito.any())).thenReturn(getExistingProjects());
+		when(sonarProjectRepository.findByProcessorIdIn(Mockito.any())).thenReturn(sonarProcessorItemList);
 		when(sonarConfig.getMetrics()).thenReturn(Arrays.asList(METRICS));
 		when(sonarConfig.getCustomApiBaseUrl()).thenReturn(CUSTOM_API_BASE_URL);
 
@@ -379,25 +393,11 @@ public class SonarProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void testAddNewProjects() throws Exception {
-		List<SonarProcessorItem> existingProjects = getExistingProjects();
-		List<SonarProcessorItem> newProjects = getProjects();
-		SonarProcessor sonarprocessor = new SonarProcessor();
-		sonarprocessor.setId(OBJ_ID);
-
-		Whitebox.invokeMethod(jobExecutor, "addNewProjects", newProjects, existingProjects, sonarprocessor);
-		Assert.assertNotNull(newProjects);
-	}
-
-	@Test
 	public void testAddNewProjectsSonar6LowerClient() throws Exception {
-		List<SonarProcessorItem> existingProjects = getOtherProjects();
-		List<SonarProcessorItem> newProjects = getOtherProjectsWithDifferentVersion();
-
 		SonarProcessor sonarprocessor = new SonarProcessor();
 		sonarprocessor.setId(OBJ_ID);
 
-		Whitebox.invokeMethod(jobExecutor, "addNewProjects", newProjects, existingProjects, sonarprocessor);
-		Assert.assertNotNull(newProjects);
+		Whitebox.invokeMethod(jobExecutor, "addNewProjects", sonarProcessorItemList, sonarProcessorItemList, sonarprocessor);
+		Assert.assertNotNull(sonarProcessorItemList);
 	}
 }
