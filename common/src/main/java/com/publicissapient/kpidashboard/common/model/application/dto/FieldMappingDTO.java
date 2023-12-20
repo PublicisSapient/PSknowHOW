@@ -18,15 +18,17 @@
 
 package com.publicissapient.kpidashboard.common.model.application.dto;//NOPMD
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterConfig;
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-
-import java.util.List;
 
 /**
  * The type Field mapping. Represents Jira field mapping values
@@ -58,7 +60,6 @@ public class FieldMappingDTO extends BasicModel {
     private String[] jiraIssueTypeNamesAVR;
     private String storyFirstStatus;
     private String storyFirstStatusKPI148;
-    private String storyFirstStatusKPI3;
     private String[] linkDefectToStoryField;
     private String rootCause;
     private List<String> jiraStatusForDevelopment;
@@ -81,7 +82,6 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDodKPI151;
     private List<String> jiraDodKPI14;
     private List<String> jiraDodQAKPI111;
-    private List<String> jiraDodKPI3;
     private List<String> jiraDodKPI127;
     private List<String> jiraDodKPI37;
 
@@ -146,7 +146,6 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> readyForDevelopmentStatusKPI138;
 
     private String jiraDor;
-    private List<String> jiraDorKPI3;
 
     private List<String> jiraIntakeToDorIssueType;
     private List<String> jiraIssueTypeKPI3;
@@ -191,11 +190,11 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> rootCauseValue;
     private List<String> excludeRCAFromFTPR; // test done
-    private List<String> excludeRCAFromKPI82;
-    private List<String> excludeRCAFromKPI135;
-    private List<String> excludeRCAFromKPI14;
-    private List<String> excludeRCAFromQAKPI111;
-    private List<String> excludeRCAFromKPI133;
+    private List<String> includeRCAForKPI82;
+    private List<String> includeRCAForKPI135;
+    private List<String> includeRCAForKPI14;
+    private List<String> includeRCAForQAKPI111;
+    private List<String> includeRCAForKPI133;
 
     private Boolean pickNewATMJIRADetails;
 
@@ -400,6 +399,8 @@ public class FieldMappingDTO extends BasicModel {
     @Builder.Default
     private String toBranchForMRKPI156 = "master";
     private Integer startDateCountKPI150;
+    private List<String> jiraDevDoneStatusKPI150;
+    private boolean populateByDevDoneKPI150;
 
     //threshold field
     private String thresholdValueKPI14;
@@ -426,6 +427,28 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI159;
     private String thresholdValueKPI160;
     private String thresholdValueKPI164;
+    private String thresholdValueKPI3;
+    private String thresholdValueKPI126;
+    private String thresholdValueKPI42;
+    private String thresholdValueKPI168;
+    private String thresholdValueKPI70;
+    private String thresholdValueKPI40;
+    private String thresholdValueKPI5;
+    private String thresholdValueKPI39;
+    private String thresholdValueKPI46;
+    private String thresholdValueKPI8;
+    private String thresholdValueKPI73;
+    private String thresholdValueKPI113;
+    private String thresholdValueKPI149;
+    private String thresholdValueKPI153;
+    private String thresholdValueKPI162;
+    private String thresholdValueKPI116;
+    private String thresholdValueKPI156;
+    private String thresholdValueKPI118;
+    private String thresholdValueKPI127;
+    private String thresholdValueKPI170;
+    private String thresholdValueKPI139;
+    private String thresholdValueKPI166;
 
     private String jiraProductionIncidentIdentification;
     private String jiraProdIncidentRaisedByCustomField;
@@ -446,6 +469,18 @@ public class FieldMappingDTO extends BasicModel {
 
     private List<String> jiraSubTaskIdentification;
     private List<String> jiraStatusStartDevelopmentKPI154;
+	private List<String> jiraLabelsKPI135;
+
+    private List<String> jiraStatusForInProgressKPI161;
+    private List<String> jiraStatusForRefinedKPI161;
+    private List<String> jiraStatusForNotRefinedKPI161;
+
+
+    private List<String> jiraIssueTypeKPI171;
+    private List<String> jiraDodKPI171;
+    private List<String> jiraDorKPI171;
+    private List<String> jiraLiveStatusKPI171;
+    private String storyFirstStatusKPI171;
 
     /**
      * Get jira issue type names string [ ].

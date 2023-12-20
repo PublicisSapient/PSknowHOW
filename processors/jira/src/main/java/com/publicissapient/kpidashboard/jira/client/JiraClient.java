@@ -105,7 +105,6 @@ public class JiraClient {
 
 		} else if (conn.isBearerToken()) {
 			password = jiraCommonService.decryptJiraPassword(conn.getPatOAuthToken());
-			log.info("bearer token authentication");
 		} else {
 			username = conn.getUsername();
 			password = jiraCommonService.decryptJiraPassword(conn.getPassword());
@@ -161,7 +160,6 @@ public class JiraClient {
 			if (jiraInfo.isBearerToken()) {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBearerTokenAuthentication(jiraUri,
 						password, jiraProcessorConfig);
-				log.info("bearer token authentication");
 			} else {
 				client = new ProcessorAsynchJiraRestClientFactory().createWithBasicHttpAuthentication(jiraUri, username,
 						password, jiraProcessorConfig);

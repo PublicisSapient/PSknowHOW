@@ -58,6 +58,7 @@ import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemR
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Slf4j
 @Service
@@ -118,7 +119,7 @@ public class RepoToolsConfigServiceImpl {
 			List<String> branchNames) {
 		int httpStatus;
 		if (!connection.getHttpUrl().contains(projectToolConfig.getRepositoryName() + VALID_REPO)) {
-			return HttpStatus.NO_CONTENT.value();
+			return HttpStatus.INTERNAL_SERVER_ERROR.value();
 		}
 		try {
 			// create scanning account
@@ -143,7 +144,7 @@ public class RepoToolsConfigServiceImpl {
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 
-		} catch (HttpClientErrorException ex) {
+		} catch (HttpClientErrorException | HttpServerErrorException ex) {
 			log.error("Exception occcured while enrolling project {}",
 					projectToolConfig.getBasicProjectConfigId().toString(), ex);
 			httpStatus = ex.getRawStatusCode();
