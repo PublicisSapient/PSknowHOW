@@ -152,8 +152,8 @@ public class KPIExcelUtility {
 						} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 							Double originalEstimateInHours = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes())
 									/ 60;
-							excelData.setStoryPoint(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
-									+ "/" + originalEstimateInHours + " hrs");
+							excelData.setStoryPoint(roundingOff(originalEstimateInHours / fieldMapping.getStoryPointToHourMapping())
+									+ "/" + roundingOff(originalEstimateInHours) + " hrs");
 						}
 					}
 				}
@@ -565,10 +565,10 @@ public class KPIExcelUtility {
 					excelData.setStoryPoint(
 							Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0).toString());
 				} else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
-					Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+					double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate();
 					Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-					excelData.setStoryPoint(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping()
-							+ "/" + totalOriginalEstimate / 60 + " hrs");
+					excelData.setStoryPoint(roundingOff(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping())
+							+ "/" + roundingOff(totalOriginalEstimate / 60) + " hrs");
 				}
 				kpiExcelData.add(excelData);
 			}
@@ -592,12 +592,12 @@ public class KPIExcelUtility {
 				if (issue.getTimeSpentInMinutes() != null) {
 					daysLogged = Double.valueOf(issue.getTimeSpentInMinutes()) / 60;
 				}
-				excelData.setTotalTimeSpent(String.valueOf(daysLogged));
+				excelData.setTotalTimeSpent(String.valueOf(roundingOff(daysLogged)));
 
 				if (issue.getAggregateTimeOriginalEstimateMinutes() != null) {
 					daysEstimated = Double.valueOf(issue.getAggregateTimeOriginalEstimateMinutes()) / 60;
 				}
-				excelData.setOriginalTimeEstimate(String.valueOf(daysEstimated));
+				excelData.setOriginalTimeEstimate(String.valueOf(roundingOff(daysEstimated)));
 				kpiExcelData.add(excelData);
 
 			});

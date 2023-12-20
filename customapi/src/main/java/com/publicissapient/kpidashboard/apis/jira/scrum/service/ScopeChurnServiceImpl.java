@@ -26,7 +26,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -478,7 +477,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
 		getDataCountValues(map, dataCount, fieldMapping);
-		dataCount.setHoverValue(generateHoverMap(map.getValue(), map.getKey()));
+		dataCount.setHoverValue(generateHoverMap(map.getValue(), map.getKey(), fieldMapping));
 		dataCountMap.put(map.getKey(), new ArrayList<>(Collections.singletonList(dataCount)));
 		return dataCount;
 	}
@@ -566,12 +565,11 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	 * This method generate hoverMap for the scope change and initial scope
 	 * based on the issue count and story points
 	 */
-	private Map<String, Object> generateHoverMap(Map<String, List<JiraIssue>> valueMap, String key) {
+	private Map<String, Object> generateHoverMap(Map<String, List<JiraIssue>> valueMap, String key, FieldMapping fieldMapping) {
 		Map<String, Object> hoverMap = new LinkedHashMap<>();
 		if (STORY_POINTS.equalsIgnoreCase(key)) {
 			valueMap.forEach((s, jiraIssues) -> {
-				double storyPoints = jiraIssues.stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
+				double storyPoints = KpiDataHelper.calculateStoryPoints(jiraIssues, fieldMapping);
 				hoverMap.put(s, storyPoints);
 			});
 		}
