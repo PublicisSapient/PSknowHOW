@@ -20,7 +20,7 @@ export const environment = {
   production: true,
     baseUrl: '',
     SSO_LOGIN: false,
-   CENTRAL_LOGIN_URL: 'https://uat-authnauth.tools.publicis.sapient.com',
+   CENTRAL_LOGIN_URL: '',
    RESOURCE: 'PSKnowHOW',
    AUTHENTICATION_SERVICE: true
 };
