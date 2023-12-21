@@ -43,7 +43,8 @@ public class SonarRestOperationsFactory implements RestOperationsFactory<RestOpe
 	public RestOperations getTypeInstance() {
 		HttpComponentsClientHttpRequestFactory request = new HttpComponentsClientHttpRequestFactory();
 		request.setConnectTimeout(TIME_OUT);
-		request.setReadTimeout(TIME_OUT);
+		//TODO:Removed this method from the class
+		//request.setReadTimeout(TIME_OUT);
 		return new RestTemplate(request);
 	}
 }

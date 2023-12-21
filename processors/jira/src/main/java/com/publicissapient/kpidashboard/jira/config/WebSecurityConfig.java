@@ -31,6 +31,6 @@ public class WebSecurityConfig {
 	//TODO:Fix websecurity using new spring boot.
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web.ignoring().requestMatchers("/api/job/*", "/togglz-console/*");
+		return web -> web.ignoring().requestMatchers("/api/job/*", "/togglz-console/*");
 	}
 }
