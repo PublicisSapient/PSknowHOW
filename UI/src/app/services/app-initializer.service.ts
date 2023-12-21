@@ -65,7 +65,7 @@ export class AppInitializerService {
               environment['baseUrl'] = env['baseUrl'] || '';
               environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
               environment['CENTRAL_LOGIN_URL'] = env['CENTRAL_LOGIN_URL'] || '';
-              environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || true;
+              environment['AUTHENTICATION_SERVICE'] = env['AUTHENTICATION_SERVICE'] || false;
             }));
   
           env$.toPromise().then(res => {
