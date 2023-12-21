@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
