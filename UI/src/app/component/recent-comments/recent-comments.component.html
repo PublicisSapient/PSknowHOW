@@ -2,42 +2,7 @@
     <img src="../../../assets/img/ico-comments.svg" alt="Comment" />
     <!-- <span *ngIf="commentCount > 0" class="count">{{commentCount}}</span> -->
 </div>
-<!-- <div class="position-relative">
-    <div id="comment-summary"  class="btn-custom rounded p-p-0 filter-btn"  *ngIf="selectedTab?.toLowerCase() != 'maturity'"
-       [ngClass]="{'disabled':filterForm.get('selectedLevel')?.value != 'project'
-    || (filterForm.get('selectedLevel')?.value == 'project' && selectedFilterArray?.length > 1)}">
-       <img #commentSummary class="p-p-2 " (click)="handleBtnClick();"
-       src="../../../assets/img/ico-comments.svg" alt="Comments"/>
-    </div> 
-    <div #commentSummaryDdn id="comment-popup" class="commentSummaryDdn" *ngIf="toggleDropdown['commentSummary']">
-        <div class="comment-inner-section">
-            <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
-            <ng-container *ngIf="commentList?.length > 0 && !showSpinner; else noComments">
-                <h5 class="p-m-0 font-grey font-bold">Latest 10 comments</h5>
-                <h5 class="p-mb-2 p-mt-2 font-grey">
-                    {{getNodeName(filterForm.get('selectedTrendValue')?.value)}}
-                    <span *ngIf="selectedTab?.toLowerCase() == 'iteration' && (selectedSprint | json) != '{}'">
-                        {{' >> ' + selectedSprint['nodeName']}}
-                    </span>
-                    <span *ngIf="selectedTab?.toLowerCase() == 'release' && (selectedRelease | json) != '{}'">
-                        {{' >> ' + selectedRelease['nodeName']}}
-                    </span>
-                </h5>
-                <div *ngFor="let comment of commentList">
-                    <h5 class="comment-heading font-small p-mb-1">{{kpiObj[comment.kpiId]}}</h5>
-                    <div class="comment-author font-small">
-                        <b>{{comment?.commentBy}}</b>
-                        {{comment?.commentOn}}
-                    </div>
-                    <p class="comment-msg p-mt-1">{{comment?.comment}}</p>
-                </div>
-            </ng-container>
-        </div>
-        <ng-template #noComments>
-            <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No comments</h5>
-        </ng-template>
-    </div>
-</div> -->
+
 <p-dialog header="Comments" [(visible)]="displayCommentModal" [modal]="true" 
   [style]="{width: '350px'}">
 
@@ -45,23 +10,19 @@
     <div class="comment-inner-section">
         <i *ngIf="showSpinner" class="fas fa-circle-notch icon-spinner"></i>
         <ng-container *ngIf="commentList?.length > 0 && !showSpinner; else noComments">
-            <!-- <h5 class="p-m-0 font-grey font-bold">Latest 10 comments</h5> -->
-            <h5 class="p-mb-2 p-mt-2 font-grey">
-                <!-- {{getNodeName(filterForm.get('selectedTrendValue')?.value)}} -->
-                <!-- <span *ngIf="selectedTab?.toLowerCase() == 'iteration' && (selectedSprint | json) != '{}'">
-                    {{' >> ' + selectedSprint['nodeName']}}
-                </span> -->
-                <!-- <span *ngIf="selectedTab?.toLowerCase() == 'release' && (selectedRelease | json) != '{}'">
-                    {{' >> ' + selectedRelease['nodeName']}}
-                </span> -->
-            </h5>
-            <div *ngFor="let comment of commentList">
-                <!-- <h5 class="comment-heading font-small p-mb-1">{{kpiObj[comment.kpiId]}}</h5> -->
-                <div class="comment-author font-small">
-                    <b>{{comment?.commentBy}}</b>
-                    {{comment?.commentOn}}
+            <div *ngFor="let comment of commentList; let i = index" [ngClass]="{'border-bottom': i != commentList.length - 1}">
+                <h4 class="comment-msg p-mt-3 p-mb-2">{{comment?.comment}}</h4>
+                <div class="p-d-flex p-align-center">
+                    <b class="comment-author p-mr-2">{{comment?.commentBy}}</b>
+                    <span class="comment-separator p-mr-2"></span>
+                    <span class="comment-date">{{comment?.commentOn}}</span>
                 </div>
-                <p class="comment-msg p-mt-1">{{comment?.comment}}</p>
+                <div class="comment-meta p-mb-2 font-grey p-d-flex p-align-center">
+                    <div class="p-mr-1">{{comment.nodeChildId ? getNodeName(comment.nodeChildId) : getNodeName(comment.node)}}</div>
+                    <div *ngIf="comment.kpiId">
+                        {{' > ' + kpiObj[comment.kpiId]}}
+                    </div>
+                </div>
             </div>
         </ng-container>
     </div>
@@ -69,12 +30,4 @@
         <h5 class="p-m-0 font-grey" *ngIf="!showSpinner">No comments</h5>
     </ng-template>
   </div>
-
-  <!-- <ng-template pTemplate="footer">
-    <button pButton pRipple type="button" class="p-button p-button-secondary" icon="pi pi-times"
-      (click)="closeEditModal()" label="Cancel">
-    </button>
-    <button pButton pRipple type="button" class="p-button p-button-success" icon="pi pi-save"
-      (click)="editDashboardName()" label="Save" [disabled]="!changedBoardName"></button>
-  </ng-template> -->
 </p-dialog>

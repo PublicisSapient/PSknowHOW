@@ -26,19 +26,31 @@
 
 .comment-inner-section {
     max-height: 400px;
-    overflow-y: scroll;
-    padding: 15px;
-}
-
-.comment-heading {
-    color: var(--color-blue);
+    overflow-y: auto;
+    padding: 0 1rem 1rem;
 }
 
 .comment-author {
-    color: #666666;
+    color: var(--color-blue);
+    text-transform: capitalize;
+    font-size: .75rem;
+}
+.comment-date{
+    color: var(--color-black);
+    font-size: .625rem;
 }
 
 .comment-msg {
-    color: #666666;
-    font-size: .8rem;
+    color: var(--color-jet-black);
+    font-weight: 500;
+}
+.comment-meta{
+    color: var(--color-black);
+    font-size: .625rem;
+}
+.comment-separator{
+    height: 3px;
+    width: 3px;
+    border-radius: 50%;
+    background: var(--color-black);
 }
