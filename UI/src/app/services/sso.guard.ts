@@ -11,21 +11,21 @@ import { SharedService } from './shared.service';
 })
 export class SSOGuard implements CanActivate {
 
-  constructor(private router: Router,private httpService: HttpService, private sharedService: SharedService){}
+  constructor(private router: Router, private httpService: HttpService, private sharedService: SharedService) { }
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
-      if(!environment.AUTHENTICATION_SERVICE){
-        if (!environment.SSO_LOGIN) {
-          return true;
-        } else {
-          return this.getSSOUserInfo();
-        }
-      }else{
+    if (!environment.SSO_LOGIN) {
+      if (!environment.AUTHENTICATION_SERVICE) {
+        return true;
+      } else {
         return false;
       }
+    } else {
+      return this.getSSOUserInfo();
+    }
   }
 
   getSSOUserInfo() {
@@ -34,7 +34,7 @@ export class SSOGuard implements CanActivate {
       if (response['success']) {
         this.sharedService.setCurrentUserDetails({ user_name: response['data']?.username });
         this.sharedService.setCurrentUserDetails({ projectsAccess: response['data']['projectsAccess'] });
-        this.sharedService.setCurrentUserDetails({ authorities:response['data']['authorities'] });
+        this.sharedService.setCurrentUserDetails({ authorities: response['data']['authorities'] });
         this.httpService.getAuthDetails();
         //navigate to profile or dashboard screen
         if (this.redirectToProfile()) {
@@ -60,11 +60,11 @@ export class SSOGuard implements CanActivate {
     // }
     const authorities = this.sharedService.getCurrentUserDetails('authorities') ? this.sharedService.getCurrentUserDetails('authorities') : [];
     if (authorities && authorities.includes('ROLE_SUPERADMIN')) {
-        return false;
+      return false;
     } else if (this.sharedService.getCurrentUserDetails('projectsAccess') === 'undefined' || !this.sharedService.getCurrentUserDetails('projectsAccess').length) {
-        return true;
+      return true;
     }
 
 
-}
+  }
 }

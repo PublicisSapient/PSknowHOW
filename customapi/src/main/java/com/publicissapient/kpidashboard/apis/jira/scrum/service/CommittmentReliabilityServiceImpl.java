@@ -476,11 +476,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		double totalSum = getTotalSum(totalJiraIssue);
 		double completedSum = getTotalSum(completed);
 		double totalOriginalEstimate = totalJiraIssue.stream()
-				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 		double completedOriginalEstimate = completed.stream()
-				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 
 		double initialIssueSize = totalPresentInitialIssue.size();
 		double initialCompltdIssueSize = totalPresentCompltdInitialIssue.size();
@@ -489,11 +489,11 @@ public class CommittmentReliabilityServiceImpl extends JiraKPIService<Long, List
 		double initialIssueSum = getTotalSum(totalPresentInitialIssue);
 		double initialCompltdIssueSum = getTotalSum(totalPresentCompltdInitialIssue);
 		double initialIssueOriginalEstimate = totalPresentInitialIssue.stream()
-				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 		double initialCompltdIssueOriginalEstimate = totalPresentCompltdInitialIssue.stream()
-				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-				.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+				.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+				.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 
 		long storyCount = (long) ((completedSum / totalSum) * 100);
 		long initialStoryCount = (long) ((initialCompltdIssueSum / initialIssueSum) * 100);
