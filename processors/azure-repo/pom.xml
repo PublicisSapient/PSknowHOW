@@ -27,7 +27,7 @@
 
 	<properties>
 		<sonar.skip>true</sonar.skip>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<joda-convert.version>1.8.1</joda-convert.version>
 		<final.name>azurerepo-processor</final.name>
 
@@ -137,7 +137,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-			<version>2.7.3</version>
+			<version>3.2.0</version>
 		</dependency>
 
 		<dependency>

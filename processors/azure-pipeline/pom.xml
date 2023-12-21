@@ -33,7 +33,7 @@
     </parent>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <guava.version>31.1-jre</guava.version>
         <final.name>azurepipeline-processor</final.name>
         <commons-io.version>2.11.0</commons-io.version>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
-            <version>2.7.3</version>
+            <version>3.2.0</version>
         </dependency>
 
 

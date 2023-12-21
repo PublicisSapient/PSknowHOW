@@ -13,7 +13,7 @@
 	<name>notification-consumer</name>
 	<description>Notification consumer for Apache Kafka</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<final.name>notification-consumer</final.name>
 	</properties>
 
