@@ -288,9 +288,11 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 
-		if(StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())){
-			url.append(AzureConstants.FORWARD_SLASH);
-			url.append(projectConfig.getProjectToolConfig().getTeam());
+		if(projectConfig.getProjectToolConfig() != null){
+			if(StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())){
+				url.append(AzureConstants.FORWARD_SLASH);
+				url.append(projectConfig.getProjectToolConfig().getTeam());
+			}
 		}
 		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointWiql()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
