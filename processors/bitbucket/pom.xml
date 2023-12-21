@@ -28,12 +28,13 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.3</version>
+    <version>3.2.0</version>
+    <relativePath/>
   </parent>
 
   <properties>
     <sonar.skip>true</sonar.skip>
-    <java.version>1.8</java.version>
+    <java.version>11</java.version>
     <joda-convert.version>1.8.1</joda-convert.version>
     <final.name>bitbucket-processor</final.name>
 
@@ -45,6 +46,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${project.parent.version}</version>
         <executions>
           <execution>
             <id>repackage</id>
@@ -57,6 +59,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.8</version>
         <executions>
           <execution>
             <goals>
@@ -137,6 +140,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
+      <version>4.5.13</version>
     </dependency>
 
     <dependency>
