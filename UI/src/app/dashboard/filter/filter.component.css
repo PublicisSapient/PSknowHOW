@@ -1183,3 +1183,7 @@ ul li.selectedfilter .selected-node-label .align-list-marker {
 .switch-dropdown .app-links:last-child{
   border-bottom: none;
 }
+::ng-deep .die-container .p-menu{
+  width: auto;
+  top: 100% !important;
+}
