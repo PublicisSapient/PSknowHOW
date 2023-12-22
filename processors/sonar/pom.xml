@@ -223,6 +223,11 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.12.11</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>1.3.2</version>
+		</dependency>
 		
     </dependencies>
 

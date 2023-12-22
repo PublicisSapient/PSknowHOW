@@ -21,9 +21,8 @@ package com.publicissapient.kpidashboard.common.executor;
 import java.util.List;
 import java.util.Objects;
 
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;

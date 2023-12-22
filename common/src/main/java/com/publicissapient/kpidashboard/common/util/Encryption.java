@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-import jakarta.xml.bind.DatatypeConverter;
+import javax.xml.bind.DatatypeConverter;
 
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
