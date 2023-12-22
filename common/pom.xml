@@ -33,7 +33,7 @@
 		<junit.version>4.13</junit.version>
 		<hamcrest.version>2.2</hamcrest.version>
 		<java.version>17</java.version>
-		<guava.version>31.1-jre</guava.version>
+		<guava.version>33.0.0-jre</guava.version>
 		<lombok.version>1.18.30</lombok.version>
 	</properties>
 
@@ -85,6 +85,7 @@
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-mongodb</artifactId>
+			<version>5.0.0</version>
 
 		</dependency>
 
