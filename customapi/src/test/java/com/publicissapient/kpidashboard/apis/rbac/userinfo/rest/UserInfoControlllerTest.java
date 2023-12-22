@@ -159,7 +159,7 @@ public class UserInfoControlllerTest {
 	@Test
 	public void testdeleteUser() throws Exception {
 		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
-		when(userInfoRepository.findByUsername("testuser")).thenReturn(userInfo);
+		when(userInfoRepository.findFirstByUsername("testuser")).thenReturn(userInfo);
 		when(userInfo.getAuthorities()).thenReturn(authorities);
 		when(userInfoService.deleteUser("testuser"))
 				.thenReturn(new ServiceResponse(true, "Deleted Successfully", "Ok"));
