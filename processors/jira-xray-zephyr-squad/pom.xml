@@ -37,6 +37,8 @@
 		<java.version>17</java.version>
 		<lombok.version>1.18.30</lombok.version>
 		<final.name>jiratest-processor</final.name>
+		<guava.version>33.0.0-jre</guava.version>
+
 	</properties>
 
 	<repositories>
@@ -90,7 +92,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.1-jre</version>
+			<version>${guava.version}</version>
 		</dependency>
 
 		<dependency>
@@ -148,9 +150,9 @@
 			<artifactId>htmlunit</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.14</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

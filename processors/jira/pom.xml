@@ -30,6 +30,7 @@
 		<lombok.version>1.18.30</lombok.version>
 		<httpasyncclient.version>4.0-beta3-atlassian-1</httpasyncclient.version>
 		<httpclient.version>4.2.1-atlassian-2</httpclient.version>
+		<guava.version>33.0.0-jre</guava.version>
 	</properties>
 
 	<repositories>
@@ -93,7 +94,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>31.1-jre</version>
+			<version>${guava.version}</version>
 		</dependency>
 
 		<dependency>
@@ -151,9 +152,9 @@
 			<artifactId>htmlunit</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.14</version>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
