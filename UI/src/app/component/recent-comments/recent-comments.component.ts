@@ -27,44 +27,6 @@ export class RecentCommentsComponent {
         this.commentList = response['data'];
       } else {
         this.commentList = [];
-        const obj = [{
-          "node": "PSKnowHOW_65643593e157cb3b681d2d62",
-          "level": "5",
-          "nodeChildId": "",
-          "kpiId": "kpi121",
-          "commentId": "dd0fd79f-7332-4f3a-ade5-fca6b9f7ca6a",
-          "commentBy": "SUPERADMIN",
-          "commentOn": "08-Dec-2023 12:49",
-          "comment": "djhjj"
-        }, {
-          "node": "PSKnowHOW_65643593e157cb3b681d2d62",
-          "level": "5",
-          "nodeChildId": "292_PSKnowHOW_65643593e157cb3b681d2d62",
-          "kpiId": "kpi121",
-          "commentId": "dd0fd79f-7332-4f3a-ade5-fca6b9f7ca6a",
-          "commentBy": "SUPERADMIN",
-          "commentOn": "08-Dec-2023 12:49",
-          "comment": "djhjj"
-        }, {
-          "node": "PSKnowHOW_65643593e157cb3b681d2d62",
-          "level": "5",
-          "nodeChildId": "",
-          "kpiId": "kpi121",
-          "commentId": "dd0fd79f-7332-4f3a-ade5-fca6b9f7ca6a",
-          "commentBy": "SUPERADMIN",
-          "commentOn": "08-Dec-2023 12:49",
-          "comment": "djhjj"
-        }, {
-          "node": "PSKnowHOW_65643593e157cb3b681d2d62",
-          "level": "5",
-          "nodeChildId": "",
-          "kpiId": "kpi121",
-          "commentId": "dd0fd79f-7332-4f3a-ade5-fca6b9f7ca6a",
-          "commentBy": "SUPERADMIN",
-          "commentOn": "08-Dec-2023 12:49",
-          "comment": "djhjj"
-        }]
-        this.commentList = [...obj]
         console.log(this.commentList);
       }
       this.showSpinner = false;

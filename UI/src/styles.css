@@ -1774,7 +1774,7 @@ a:hover {
   border: 1px solid #707070;
   border-radius: 7px;
   box-shadow: none !important;
-  width: 544px !important;
+  width: 544px;
 }
 .p-dialog-mask.p-component-overlay {
   background: rgba(0,0,0,0.29);
