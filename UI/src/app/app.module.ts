@@ -24,7 +24,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
@@ -34,7 +34,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DatePipe } from '@angular/common';
 import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
@@ -99,7 +98,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
 
 import { environment } from 'src/environments/environment';
-import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
