@@ -36,6 +36,7 @@
     <sonar.skip>true</sonar.skip>
     <java.version>17</java.version>
     <final.name>github-processor</final.name>
+    <lombok.version>1.18.30</lombok.version>
 
   </properties>
 
@@ -131,9 +132,9 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-      <version>4.5.13</version>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>5.2</version>
     </dependency>
 
     <dependency>
@@ -156,6 +157,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
