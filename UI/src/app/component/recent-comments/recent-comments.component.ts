@@ -17,42 +17,10 @@ export class RecentCommentsComponent {
 
   constructor(private httpService: HttpService, private sharedService: SharedService) { }
 
-
   getRecentComments() {
     this.showSpinner = true;
     this.displayCommentModal = true;
-    let filterApplyData: object = this.sharedService.sharedObject['filterApplyData'];
-    let kpiList: Array<object> = this.sharedService.sharedObject['masterData']?.kpiList;
-    this.selectedTab = this.sharedService.sharedObject['selectedTab'];
-    let filterData: Array<any> = this.sharedService.sharedObject['filterData'];
-    // this.sharedService.passDataToDashboard.subscribe((res) => {
-    //   console.log(res);
-    //   filterApplyData = res['filterApplyData'];
-    // }, error => {
-    //   console.log(error);
-
-    // })
-    console.log(this.sharedService.sharedObject);
-
-    let reqObj = {
-      "level": filterApplyData?.['level'],
-      "nodeChildId": filterApplyData?.['selectedMap']['sprint']?.[0] || filterApplyData?.['selectedMap']['release']?.[0] || "",
-      "kpiIds": kpiList?.map((item) => item['kpiId']),
-      "nodes": []
-    }
-
-    kpiList.forEach(x => {
-      this.kpiObj[x['kpiId']] = x['kpiName'];
-    });
-    
-    if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
-      reqObj['nodes'] = [filterData.filter(x => x.nodeId == filterApplyData?.['ids'][0])[0]?.parentId];
-      this.nodeChildName = filterData.filter(x => x.nodeId == reqObj.nodeChildId)[0]?.nodeName;
-    } else {
-      reqObj['nodes'] = [...filterApplyData?.['selectedMap']['project']];
-    }
-    console.log(reqObj);
-
+    let reqObj = this.createReqObj();
     this.httpService.getCommentSummary(reqObj).subscribe((response) => {
 
       if (response['success']) {
@@ -110,5 +78,31 @@ export class RecentCommentsComponent {
   getNodeName(nodeId) {
     let filterData: Array<any> = this.sharedService.sharedObject['filterData'];
     return filterData.filter((x) => x.nodeId == nodeId)[0]?.nodeName;
+  }
+
+  createReqObj(){
+    let filterApplyData: object = this.sharedService.sharedObject['filterApplyData'];
+    let kpiList: Array<object> = this.sharedService.sharedObject['masterData']?.kpiList;
+    this.selectedTab = this.sharedService.sharedObject['selectedTab'];
+    let filterData: Array<any> = this.sharedService.sharedObject['filterData'];
+
+    let reqObj = {
+      "level": filterApplyData?.['level'],
+      "nodeChildId": filterApplyData?.['selectedMap']['sprint']?.[0] || filterApplyData?.['selectedMap']['release']?.[0] || "",
+      "kpiIds": kpiList?.map((item) => item['kpiId']),
+      "nodes": []
+    }
+
+    kpiList.forEach(x => {
+      this.kpiObj[x['kpiId']] = x['kpiName'];
+    });
+    
+    if (this.selectedTab?.toLowerCase() == 'iteration' || this.selectedTab?.toLowerCase() == 'release') {
+      reqObj['nodes'] = [filterData.filter(x => x.nodeId == filterApplyData?.['ids'][0])[0]?.parentId];
+      this.nodeChildName = filterData.filter(x => x.nodeId == reqObj.nodeChildId)[0]?.nodeName;
+    } else {
+      reqObj['nodes'] = [...filterApplyData?.['selectedMap']['project']];
+    }
+    return reqObj;
   }
 }
