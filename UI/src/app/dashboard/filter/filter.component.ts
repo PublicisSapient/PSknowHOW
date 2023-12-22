@@ -188,8 +188,6 @@ export class FilterComponent implements OnInit, OnDestroy {
             }
           }
       ];
-      console.log(this.appList);
-      
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
