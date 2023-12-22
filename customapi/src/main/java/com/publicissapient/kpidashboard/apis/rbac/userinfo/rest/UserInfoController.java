@@ -102,37 +102,12 @@ public class UserInfoController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
-
-	/**
-	 * Delete Users based on the userName.
-	 *
-	 * @return the Service Response
-	 */
-	/*
-	 * @PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	 * 
-	 * @DeleteMapping(value = "/{userName}") public ServiceResponse
-	 * deleteUser(@PathVariable String userName) {
-	 * log.info("Inside deleteUser() method of UserInfoController "); String
-	 * loggedUserName = authenticationService.getLoggedInUser(); UserInfo userInfo =
-	 * userInfoRepository.findByUsername(userName); if
-	 * ((!loggedUserName.equals(userName) &&
-	 * !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)) ) {
-	 * ServiceResponse response = userInfoService.deleteUser(userName); return new
-	 * ServiceResponse(true, userName + " deleted Successfully", response); } else {
-	 * log.info("Unauthorized to perform deletion of user " + userName); return new
-	 * ServiceResponse(false, "Unauthorized to perform deletion of user",
-	 * "Unauthorized"); }
-	 * 
-	 * }
-	 */
-
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
 	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
 		log.info("Inside deleteUser() method of UserInfoController ");
 		String loggedUserName = authenticationService.getLoggedInUser();
-		UserInfo userInfo = userInfoRepository.findByUsername(userName);
+		UserInfo userInfo = userInfoRepository.findFirstByUsername(userName);
 		if ((!loggedUserName.equals(userName) && !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN))) {
 			ServiceResponse response = userInfoService.deleteUser(userName);
 			return ResponseEntity.status(HttpStatus.OK).body(response);

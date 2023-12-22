@@ -60,6 +60,8 @@ public interface UserInfoService {
 
 	UserInfo getUserInfo(String username);
 
+	UserInfo getFistUserInfo(String username);
+
 	/**
 	 * Gets users.
 	 *

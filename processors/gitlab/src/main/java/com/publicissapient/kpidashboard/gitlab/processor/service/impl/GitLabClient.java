@@ -241,7 +241,7 @@ public class GitLabClient {
 			}
 			MergeRequests mergeReq = new MergeRequests();
 			mergeReq.setTitle(title);
-			mergeReq.setState(state);
+			mergeReq.setState((state != null) ? state.toUpperCase() : null);
 			mergeReq.setOpen(isOpen);
 			mergeReq.setClosed(isClosed);
 			mergeReq.setCreatedDate(createdDate);
