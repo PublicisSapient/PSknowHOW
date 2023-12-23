@@ -21161,4 +21161,61 @@ describe('DoraComponent', () => {
       expect(component.kpiLoader).toBeFalse();
     });
   });
+
+  describe('ngOnInit', () => {
+    // it('should subscribe to mapColorToProjectObs and set colorObj and trendBoxColorObj if x is not empty', () => {
+    //   const resp = {
+    //     "PSknowHOW _6527af981704342160f43748": {
+    //       "nodeName": "PSknowHOW ",
+    //       "color": "#079FFF"
+    //     }
+    //   };
+    //   spyOn(service.mapColorToProjectObs, 'subscribe').and.returnValue(of(resp));
+    //   component.ngOnInit();
+    //   expect(component.colorObj).toEqual({ 1: 'red' });
+    //   expect(component.trendBoxColorObj).toEqual({ 1: 'red' });
+    // });
+
+    // it('should not set trendBoxColorObj if kpiChartData is empty', () => {
+    //   const resp = {
+    //     "PSknowHOW _6527af981704342160f43748": {
+    //       "nodeName": "PSknowHOW ",
+    //       "color": "#079FFF"
+    //     }
+    //   };
+    //   spyOn(service.mapColorToProjectObs, 'subscribe').and.returnValue(of(resp));
+    //   component.kpiChartData = {};
+    //   component.ngOnInit();
+    //   expect(component.trendBoxColorObj).toEqual({});
+    // });
+
+    it('should set tooltip and call setGlobalConfigData if getConfigDetails returns a valid response', () => {
+      spyOn(httpService, 'getConfigDetails').and.returnValue(of(['test']));
+      spyOn(service, 'setGlobalConfigData');
+      component.ngOnInit();
+      expect(component.tooltip).toEqual(['test']);
+      expect(service.setGlobalConfigData).toHaveBeenCalledWith(['test']);
+    });
+
+    // it('should subscribe to noProjectsObs and set noProjects and kanbanActivated', () => {
+    //   spyOn(service.noProjectsObs, 'subscribe').and.returnValue(of(true));
+    //   spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+    //   component.ngOnInit();
+    //   expect(component.noProjects).toBeTrue();
+    //   expect(component.kanbanActivated).toBeTrue();
+    // });
+
+    it('should subscribe to getEmptyData and set noTabAccess', () => {
+      spyOn(service, 'getEmptyData').and.returnValue(of(true));
+      component.ngOnInit();
+      expect(component.noTabAccess).toBeTrue();
+    });
+
+    it('should subscribe to getEmptyData and set noTabAccess', () => {
+      spyOn(service, 'getEmptyData').and.returnValue(of(false));
+      component.ngOnInit();
+      expect(component.noTabAccess).toBeFalse();
+    });
+  });
+
 });
