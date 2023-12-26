@@ -32,7 +32,6 @@
   </parent>
 
   <properties>
-    <sonar.skip>true</sonar.skip>
     <java.version>1.8</java.version>
     <final.name>github-processor</final.name>
 
