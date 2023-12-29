@@ -45,5 +45,29 @@ describe('DailyScrumTabComponent', () => {
   });
 
   // Add more test cases as needed
+  xit('should expand view', () => {
+    const event = {};
+    component.assigneeList = [],
+    component.displayModal = false;
+    component.setExpandView(event);
+  })
 
+  it('should show less or more', ()=>{
+    component.showLess = false;
+    component.onShowLessOrMore();
+    expect(component.showLess).toBeTrue();
+  })
+
+  xit('should handle filter change', () => {
+    const filters = {};
+    component.onFilterChange(filters);
+    expect(component.filters).toEqual(filters);
+  })
+
+  it('should handle user change', () => {
+    const selectedUser = 'testuser';
+    component.selectedUser = 'XXXXXXX';
+    component.onSelectedUserChange(selectedUser);
+    expect(component.selectedUser).toEqual(selectedUser);
+  })
 });
