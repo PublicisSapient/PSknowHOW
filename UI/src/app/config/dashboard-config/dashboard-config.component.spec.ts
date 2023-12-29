@@ -20,7 +20,7 @@ import { DashboardconfigComponent } from './dashboard-config.component';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -206,6 +206,544 @@ describe('DashboardconfigComponent', () => {
     component.save();
     expect(component.kpiListData).toEqual(obj);
   });
+
+  it('should handle kpi change when event is not checked', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": false
+    }
+    const kpi = {
+      "kpiId": "kpi39",
+      "kpiName": "Sprint Velocity",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+          "id": "64b4ed7acba3c12de16472ff",
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isDeleted": "False",
+          "defaultOrder": 20,
+          "kpiUnit": "SP",
+          "chartType": "grouped_column_plus_line",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "lineLegend": "Sprint Velocity",
+          "barLegend": "Last 5 Sprints Average",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "maxValue": "300",
+          "kanban": false,
+          "groupId": 2,
+          "kpiInfo": {
+              "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
+              "details": [
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+                      }
+                  }
+              ]
+          },
+          "aggregationCriteria": "sum",
+          "trendCalculation": [
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+              },
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+              },
+              {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": ">"
+              }
+          ],
+          "trendCalculative": true,
+          "xaxisLabel": "Sprints",
+          "yaxisLabel": "Count",
+          "videoLink": {
+              "id": "6309b8767bee141bb505e73f",
+              "kpiId": "kpi39",
+              "videoUrl": "",
+              "disabled": false,
+              "source": "You Tube"
+          },
+          "isAdditionalFilterSupport": true
+      },
+      "shown": true
+    }
+
+    const boardName = 'Speed';
+
+    const kpis = [
+      {
+          "kpiId": "kpi40",
+          "kpiName": "Issue Count",
+          "isEnabled": true,
+          "order": 1,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isEnabled": true,
+          "order": 2,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi72",
+          "kpiName": "Commitment Reliability",
+          "isEnabled": true,
+          "order": 3,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi5",
+          "kpiName": "Sprint Predictability",
+          "isEnabled": true,
+          "order": 4,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi46",
+          "kpiName": "Sprint Capacity Utilization",
+          "isEnabled": true,
+          "order": 5,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi8",
+          "kpiName": "Code Build Time",
+          "isEnabled": true,
+          "order": 8,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi164",
+          "kpiName": "Scope Churn",
+          "isEnabled": true,
+          "order": 9,
+          "shown": true
+      }
+    ]
+    const kpiObj = {
+      "kpiId": "kpi39",
+      "kpiName": "Sprint Velocity",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+          "id": "64b4ed7acba3c12de16472ff",
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isDeleted": "False",
+          "defaultOrder": 20,
+          "kpiUnit": "SP",
+          "chartType": "grouped_column_plus_line",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "lineLegend": "Sprint Velocity",
+          "barLegend": "Last 5 Sprints Average",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "maxValue": "300",
+          "kanban": false,
+          "groupId": 2,
+          "kpiInfo": {
+              "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
+              "details": [
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+                      }
+                  }
+              ]
+          },
+          "aggregationCriteria": "sum",
+          "trendCalculation": [
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+              },
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+              },
+              {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": ">"
+              }
+          ],
+          "trendCalculative": true,
+          "xaxisLabel": "Sprints",
+          "yaxisLabel": "Count",
+          "videoLink": {
+              "id": "6309b8767bee141bb505e73f",
+              "kpiId": "kpi39",
+              "videoUrl": "",
+              "disabled": false,
+              "source": "You Tube"
+          },
+          "isAdditionalFilterSupport": true
+      },
+      "shown": false
+    }
+    const boardNames = {
+      'Speed': new FormControl(true)
+    }
+
+    const kpiFormObj = {
+      "kpi39": new FormControl(true)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      kpiCategories: new UntypedFormGroup(boardNames),
+      kpis: new UntypedFormGroup(kpiFormObj)
+    });
+    spyOn(component, 'setMainDashboardKpiShowHideStatus')
+    component.kpiChangesObj[boardName] = [];
+    component.handleKpiChange(event, kpi, boardName, kpis);
+    expect(component.kpiChangesObj[boardName]).toEqual([kpiObj]);
+  })
+
+  it('should handle kpi change when event is not checked', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpi = {
+      "kpiId": "kpi39",
+      "kpiName": "Sprint Velocity",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+          "id": "64b4ed7acba3c12de16472ff",
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isDeleted": "False",
+          "defaultOrder": 20,
+          "kpiUnit": "SP",
+          "chartType": "grouped_column_plus_line",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "lineLegend": "Sprint Velocity",
+          "barLegend": "Last 5 Sprints Average",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "maxValue": "300",
+          "kanban": false,
+          "groupId": 2,
+          "kpiInfo": {
+              "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
+              "details": [
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+                      }
+                  }
+              ]
+          },
+          "aggregationCriteria": "sum",
+          "trendCalculation": [
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+              },
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+              },
+              {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": ">"
+              }
+          ],
+          "trendCalculative": true,
+          "xaxisLabel": "Sprints",
+          "yaxisLabel": "Count",
+          "videoLink": {
+              "id": "6309b8767bee141bb505e73f",
+              "kpiId": "kpi39",
+              "videoUrl": "",
+              "disabled": false,
+              "source": "You Tube"
+          },
+          "isAdditionalFilterSupport": true
+      },
+      "shown": true
+    }
+
+    const boardName = 'Speed';
+
+    const kpis = [
+      {
+          "kpiId": "kpi40",
+          "kpiName": "Issue Count",
+          "isEnabled": true,
+          "order": 1,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isEnabled": true,
+          "order": 2,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi72",
+          "kpiName": "Commitment Reliability",
+          "isEnabled": true,
+          "order": 3,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi5",
+          "kpiName": "Sprint Predictability",
+          "isEnabled": true,
+          "order": 4,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi46",
+          "kpiName": "Sprint Capacity Utilization",
+          "isEnabled": true,
+          "order": 5,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi8",
+          "kpiName": "Code Build Time",
+          "isEnabled": true,
+          "order": 8,
+          "shown": true
+      },
+      {
+          "kpiId": "kpi164",
+          "kpiName": "Scope Churn",
+          "isEnabled": true,
+          "order": 9,
+          "shown": true
+      }
+    ]
+    const kpiObj = {
+      "kpiId": "kpi39",
+      "kpiName": "Sprint Velocity",
+      "isEnabled": true,
+      "order": 2,
+      "kpiDetail": {
+          "id": "64b4ed7acba3c12de16472ff",
+          "kpiId": "kpi39",
+          "kpiName": "Sprint Velocity",
+          "isDeleted": "False",
+          "defaultOrder": 20,
+          "kpiUnit": "SP",
+          "chartType": "grouped_column_plus_line",
+          "showTrend": false,
+          "isPositiveTrend": true,
+          "lineLegend": "Sprint Velocity",
+          "barLegend": "Last 5 Sprints Average",
+          "calculateMaturity": false,
+          "hideOverallFilter": false,
+          "kpiSource": "Jira",
+          "maxValue": "300",
+          "kanban": false,
+          "groupId": 2,
+          "kpiInfo": {
+              "definition": "Measures the rate of delivery across Sprints. Average velocity is calculated for the latest 5 sprints",
+              "details": [
+                  {
+                      "type": "link",
+                      "kpiLinkDetail": {
+                          "text": "Detailed Information at",
+                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+                      }
+                  }
+              ]
+          },
+          "aggregationCriteria": "sum",
+          "trendCalculation": [
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "<"
+              },
+              {
+                  "type": "Upwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": "="
+              },
+              {
+                  "type": "Downwards",
+                  "lhs": "value",
+                  "rhs": "lineValue",
+                  "operator": ">"
+              }
+          ],
+          "trendCalculative": true,
+          "xaxisLabel": "Sprints",
+          "yaxisLabel": "Count",
+          "videoLink": {
+              "id": "6309b8767bee141bb505e73f",
+              "kpiId": "kpi39",
+              "videoUrl": "",
+              "disabled": false,
+              "source": "You Tube"
+          },
+          "isAdditionalFilterSupport": true
+      },
+      "shown": true
+    }
+    const boardNames = {
+      'Speed': new FormControl(true)
+    }
+
+    const kpiFormObj = {
+      "kpi39": new FormControl(true)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      kpiCategories: new UntypedFormGroup(boardNames),
+      kpis: new UntypedFormGroup(kpiFormObj)
+    });
+    spyOn(component, 'setMainDashboardKpiShowHideStatus')
+    // component.kpiChangesObj[boardName] = [];
+    component.handleKpiChange(event, kpi, boardName, kpis);
+    expect(component.kpiChangesObj[boardName]).toEqual([kpiObj]);
+  })
+
+  it('should handle kpi category change when event checked is false', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": false
+    }
+
+    const boardData = {
+      "boardId": 8,
+      "boardName": "Speed",
+      "kpis": [
+          {
+              "kpiId": "kpi39",
+              "kpiName": "Ticket Velocity",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                  "id": "64b4ed7acba3c12de1647312",
+                  "kpiId": "kpi49",
+                  "kpiName": "Ticket Velocity",
+                  "isDeleted": "False",
+                  "defaultOrder": 12,
+                  "kpiUnit": "SP",
+                  "chartType": "line",
+                  "showTrend": false,
+                  "isPositiveTrend": true,
+                  "calculateMaturity": false,
+                  "hideOverallFilter": false,
+                  "kpiSource": "Jira",
+                  "maxValue": "300",
+                  "kanban": true,
+                  "groupId": 1,
+                  "isAdditionalFilterSupport": true
+              },
+              "shown": false
+          },
+      ]
+    }
+
+    const kpiFormObj = {
+      "kpi39": new FormControl(true)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      kpis: new UntypedFormGroup(kpiFormObj)
+    });
+    const spy = spyOn(component, 'setMainDashboardKpiShowHideStatus')
+    component.handleKpiCategoryChange(event, boardData);
+    expect(spy).toHaveBeenCalledWith('kpi39', false);
+  })
+
+  it('should handle kpi category change when event checked is false', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+
+    const boardData = {
+      "boardId": 8,
+      "boardName": "Speed",
+      "kpis": [
+          {
+              "kpiId": "kpi39",
+              "kpiName": "Ticket Velocity",
+              "isEnabled": true,
+              "order": 1,
+              "kpiDetail": {
+                  "id": "64b4ed7acba3c12de1647312",
+                  "kpiId": "kpi49",
+                  "kpiName": "Ticket Velocity",
+                  "isDeleted": "False",
+                  "defaultOrder": 12,
+                  "kpiUnit": "SP",
+                  "chartType": "line",
+                  "showTrend": false,
+                  "isPositiveTrend": true,
+                  "calculateMaturity": false,
+                  "hideOverallFilter": false,
+                  "kpiSource": "Jira",
+                  "maxValue": "300",
+                  "kanban": true,
+                  "groupId": 1,
+                  "isAdditionalFilterSupport": true
+              },
+              "shown": false
+          },
+      ]
+    }
+
+    const kpiFormObj = {
+      "kpi39": new FormControl(true)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      kpis: new UntypedFormGroup(kpiFormObj)
+    });
+    const spy = spyOn(component, 'setMainDashboardKpiShowHideStatus')
+    component.handleKpiCategoryChange(event, boardData);
+    expect(spy).toHaveBeenCalledWith('kpi39', true);
+  })
 });
 
 
