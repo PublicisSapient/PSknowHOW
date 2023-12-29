@@ -20,8 +20,7 @@ import { DashboardconfigComponent } from './dashboard-config.component';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedService } from '../../services/shared.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -46,9 +45,7 @@ describe('DashboardconfigComponent', () => {
 
   const fakeGetDashData = require('../../../test/resource/fakeShowHideApi.json');
   let fakeGetDashDataOthers = fakeGetDashData.data['scrum'][0].kpis.concat(fakeGetDashData.data['kanban'][0].kpis).concat(fakeGetDashData.data['others'][0].kpis);
-  // let filteredFakeGetDashDataScrum = fakeGetDashDataOthers.filter((obj, index) => {
-  //   return index === fakeGetDashDataOthers.findIndex(o => obj.kpiId === o.kpiId);
-  // });
+
   fakeGetDashDataOthers = fakeGetDashDataOthers.filter((kpi) => kpi.shown);
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -157,6 +154,58 @@ describe('DashboardconfigComponent', () => {
     });
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should update kpiData and kpiListData', () => {
+    // create sample data
+    const obj = {
+        "scrum": [
+            {
+                "boardId": 2,
+                "boardName": "Speed",
+                "kpis": [{
+                  "kpiId": "kpi5",
+                  "kpiName": "Sprint Predictability",
+                  "isEnabled": true,
+                  "order": 4,
+                  "shown": false
+              }]
+            },
+        ],
+    }
+    component.kpiChangesObj = {
+        "Speed": [
+            {
+                "kpiId": "kpi5",
+                "kpiName": "Sprint Predictability",
+                "isEnabled": true,
+                "order": 4,
+                "shown": false
+            }
+        ]
+    }
+    component.kpiData = [
+        {
+            "boardId": 2,
+            "boardName": "Speed",
+            "kpis": [
+                
+                {
+                    "kpiId": "kpi5",
+                    "kpiName": "Sprint Predictability",
+                    "isEnabled": true,
+                    "order": 4,
+                    "shown": false
+                },
+                
+            ]
+        },
+    ]
+    component.selectedTab = 'scrum';
+    component.kpiListData[component.selectedTab] = [...component.kpiData];
+    spyOn(component, 'updateData')
+    component.save();
+    expect(component.kpiListData).toEqual(obj);
+  });
 });
 
 
