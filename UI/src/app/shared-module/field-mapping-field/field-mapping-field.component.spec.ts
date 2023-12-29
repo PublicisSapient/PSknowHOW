@@ -49,4 +49,36 @@ describe('FieldMappingFieldComponent', () => {
     component.showDialogToAddValue(true,'Name','field')
     expect(component.value).toBe('fakeName')
   })
+
+  it('should prevent entering non-numeric keys', () => {
+    const event = {
+      isTrusted: true,
+      key: "Alt",
+      preventDefault: jasmine.createSpy('preventDefault')
+    }
+    component.enterNumericValue(event);
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
+
+  it('should allow entering numeric keys', () => {
+    const event = {
+      isTrusted: true,
+      key: "1",
+      preventDefault: jasmine.createSpy('preventDefault')
+    }
+
+    component.enterNumericValue(event);
+
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
+
+  it('should set value on numeric input box up and down key event', () => {
+    const event = {
+      isTrusted: true,
+    }
+    const spy = spyOn(component, 'setValue');
+    component.numericInputUpDown(event);
+    expect(spy).toHaveBeenCalled();
+  })
 });
