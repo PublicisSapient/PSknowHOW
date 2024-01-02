@@ -109,7 +109,7 @@ public class GitHubActionProcessorJobExecutorTest {
 		connList.add(githubSampleServer);
 
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
-		projectConfig.setSaveAssigneeDetails(false);
+		projectConfig.setSaveAssigneeDetails(true);
 		projectConfigList.add(projectConfig);
 
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.GITHUBACTION);
@@ -159,36 +159,36 @@ public class GitHubActionProcessorJobExecutorTest {
 
 	}
 
-//	@Test
-//	public void buildJobsAddedThrowsException() throws FetchingBuildException {
-//
-//		GitHubActionClient client2 = mock(GitHubActionClient.class);
-//		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
-//		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-//				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
-//				.thenReturn(optionalProcessorExecutionTraceLog);
-//		when(client2.getBuildJobsFromServer(any(), any())).thenThrow(FetchingBuildException.class);
-//
-//		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
-//		Build build = new Build();
-//		build.setNumber("1");
-//		build.setBuildUrl("JOB1_1_URL");
-//		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
-//		build.setStartedBy("TestUser");
-//		List<Build> builds = new ArrayList<>();
-//		builds.add(build);
-//		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build));
-//		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
-//
-//		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
-//		projectConfig.setSaveAssigneeDetails(false);
-//		projectConfigList.add(projectConfig);
-//		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
-//
-//		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
-//		assertFalse(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
-//
-//	}
+	@Test
+	public void buildJobsAddedThrowsException() throws FetchingBuildException {
+
+		GitHubActionClient client2 = mock(GitHubActionClient.class);
+		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
+
+		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
+		Build build = new Build();
+		build.setNumber("2");
+		build.setBuildUrl("JOB1_1_URL");
+		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		List<Build> builds = new ArrayList<>();
+		builds.add(build);
+		Build build2 = new Build();
+		build2.setNumber("2");
+		build2.setBuildUrl("JOB1_1_URL");
+		build2.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		build2.setStartedBy("TestUser");
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build2));
+		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
+
+		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
+		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
+
+	}
 
 	@Test
 	public void deployJobsAdded() throws FetchingBuildException {

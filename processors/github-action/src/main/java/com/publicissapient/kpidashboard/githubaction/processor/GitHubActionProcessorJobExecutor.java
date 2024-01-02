@@ -158,7 +158,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 
 					GitHubActionClient gitHubActionClient = gitHubActionClientFactory.getGitHubActionClient(jobType);
 					if (BUILD.equalsIgnoreCase(jobType)) {
-						processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog, count,
+						count = processBuildJob(gitHubActionClient, gitHubActions, processor, processorExecutionTraceLog,
 								proBasicConfig);
 						MDC.put("totalUpdatedCount", String.valueOf(count));
 					} else {
@@ -236,16 +236,16 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		}
 	}
 
-	private void processBuildJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
-			GitHubActionProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog, int count,
+	private int processBuildJob(GitHubActionClient gitHubActionClient, ProcessorToolConnection gitHubActions,
+			GitHubActionProcessor processor, ProcessorExecutionTraceLog processorExecutionTraceLog,
 			ProjectBasicConfig proBasicConfig) throws FetchingBuildException {
 
 		Set<Build> buildsByJob = gitHubActionClient.getBuildJobsFromServer(gitHubActions, proBasicConfig);
+		int updatedJobs = 0;
 		if (CollectionUtils.isNotEmpty(buildsByJob)) {
 
-			int updatedJobs = addNewBuildDetails(buildsByJob, gitHubActions, processor.getId(), proBasicConfig);
-			count += updatedJobs;
-			log.info("Job updated for :{}", count);
+			updatedJobs = addNewBuildDetails(buildsByJob, gitHubActions, processor.getId(), proBasicConfig);
+			log.info("Job updated for :{}", updatedJobs);
 
 		} else {
 			log.error("Job Details not fetched for : {}, job : {}", gitHubActions.getUrl(), gitHubActions.getJobName());
@@ -255,7 +255,7 @@ public class GitHubActionProcessorJobExecutor extends ProcessorJobExecutor<GitHu
 		processorExecutionTraceLog.setExecutionSuccess(true);
 		processorExecutionTraceLog.setLastEnableAssigneeToggleState(proBasicConfig.isSaveAssigneeDetails());
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-
+		return updatedJobs;
 	}
 
 	private int addNewBuildDetails(Set<Build> buildsByJob, ProcessorToolConnection gitHubActions, ObjectId processorId,
