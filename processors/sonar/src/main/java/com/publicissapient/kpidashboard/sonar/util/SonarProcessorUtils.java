@@ -46,8 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 public final class SonarProcessorUtils {
 
 	private static final String FORMATTED_DATE = "yyyy-MM-dd'T'HH:mm:ssZ";
-	private static final String CODE_QUALITY_STATUS_WARN = "WARN";
-	private static final String CODE_QUALITY_STATUS_ALERT = "ALERT";
 	private static final int HOURS_IN_DAY = 8;
 	private static final String AUTHORIZATION = "Authorization";
 
