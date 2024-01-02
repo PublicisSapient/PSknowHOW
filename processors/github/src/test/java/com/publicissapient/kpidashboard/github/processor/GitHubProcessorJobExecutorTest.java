@@ -194,18 +194,6 @@ public class GitHubProcessorJobExecutorTest {
 		pl.add(processorExecutionTraceLog);
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 		doReturn(getProjectConfigList()).when(projectConfigRepository).findAll();
-//		doReturn(getProcessorItemList().get(0)).when(gitHubProcessorItemRepository).save(ArgumentMatchers.any());
-//
-//		doReturn(getProcessorToolConnectionList()).when(processorToolConnectionService)
-//				.findByToolAndBasicProjectConfigId(ArgumentMatchers.anyString(), ArgumentMatchers.any(ObjectId.class));
-//		doReturn(getCommitDetailsList()).when(gitHubClient).fetchAllCommits(ArgumentMatchers.any(),
-//				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
-//
-//		doReturn(getMergeDetailsList()).when(gitHubClient).fetchMergeRequests(ArgumentMatchers.any(),
-//				ArgumentMatchers.anyBoolean(), ArgumentMatchers.any(), ArgumentMatchers.any());
-//		doReturn("http://customapi:8080/").when(gitHubConfig).getCustomApiBaseUrl();
-//		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.GITHUB,
-//				"624d5c9ed837fc14d40b3039")).thenReturn(optionalProcessorExecutionTraceLog);
 		boolean executed = gitHubProcessorJobExecutor.execute(gitHubProcessor);
 		assertTrue(executed);
 	}

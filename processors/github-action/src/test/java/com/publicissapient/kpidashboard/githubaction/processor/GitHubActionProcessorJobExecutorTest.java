@@ -24,11 +24,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +65,7 @@ import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorR
 @ExtendWith(SpringExtension.class)
 public class GitHubActionProcessorJobExecutorTest {
 
-	private static final ProcessorToolConnection GITHUBSAMPLESERVER = new ProcessorToolConnection();
+	private ProcessorToolConnection githubSampleServer = new ProcessorToolConnection();
 	@InjectMocks
 	private GitHubActionProcessorJobExecutor gitHubActionProcessorJobExecutor;
 	@Mock
@@ -95,14 +99,14 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		gitHubActionProcessor.setId(new ObjectId("62171d0f26dd266803fa87da"));
-		GITHUBSAMPLESERVER.setUrl("https://api.github.com");
-		GITHUBSAMPLESERVER.setUsername("does");
-		GITHUBSAMPLESERVER.setApiKey("matter");
-		GITHUBSAMPLESERVER.setJobName("JOB1");
-		GITHUBSAMPLESERVER.setJobType("build");
-		GITHUBSAMPLESERVER.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
-		GITHUBSAMPLESERVER.setId(new ObjectId("62171d0f26dd266803fa87da"));
-		connList.add(GITHUBSAMPLESERVER);
+		githubSampleServer.setUrl("https://api.github.com");
+		githubSampleServer.setUsername("does");
+		githubSampleServer.setApiKey("matter");
+		githubSampleServer.setJobName("JOB1");
+		githubSampleServer.setJobType("build");
+		githubSampleServer.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		githubSampleServer.setId(new ObjectId("62171d0f26dd266803fa87da"));
+		connList.add(githubSampleServer);
 
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
@@ -116,7 +120,6 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		Mockito.when(gitHubActionConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 	}
 
 	@SuppressWarnings("java:S2699")
@@ -129,6 +132,7 @@ public class GitHubActionProcessorJobExecutorTest {
 				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
 						.thenReturn(optionalProcessorExecutionTraceLog);
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		Build build = new Build();
@@ -136,11 +140,87 @@ public class GitHubActionProcessorJobExecutorTest {
 		build.setBuildUrl("JOB1_1_URL");
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		build.setStartedBy("TestUser");
+		Build build2 = new Build();
+		build2.setBuildUrl("JOB1_1_URL");
+		build2.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		build2.setStartedBy("TestUser");
 		List<Build> builds = new ArrayList<>();
 		builds.add(build);
-		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build));
 		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build2));
 
+		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		projectConfig.setSaveAssigneeDetails(false);
+		projectConfigList.add(projectConfig);
+		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+
+		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
+		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
+
+	}
+
+//	@Test
+//	public void buildJobsAddedThrowsException() throws FetchingBuildException {
+//
+//		GitHubActionClient client2 = mock(GitHubActionClient.class);
+//		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
+//		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+//				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+//				.thenReturn(optionalProcessorExecutionTraceLog);
+//		when(client2.getBuildJobsFromServer(any(), any())).thenThrow(FetchingBuildException.class);
+//
+//		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
+//		Build build = new Build();
+//		build.setNumber("1");
+//		build.setBuildUrl("JOB1_1_URL");
+//		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+//		build.setStartedBy("TestUser");
+//		List<Build> builds = new ArrayList<>();
+//		builds.add(build);
+//		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build));
+//		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
+//
+//		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
+//		projectConfig.setSaveAssigneeDetails(false);
+//		projectConfigList.add(projectConfig);
+//		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+//
+//		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
+//		assertFalse(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
+//
+//	}
+
+	@Test
+	public void deployJobsAdded() throws FetchingBuildException {
+
+		GitHubActionClient client2 = mock(GitHubActionClient.class);
+		when(gitHubActionClientFactory.getGitHubActionClient("deploy")).thenReturn(client2);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(client2.getDeployJobsFromServer(any(), any())).thenReturn(new HashMap<>());
+
+		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
+		Deployment build = new Deployment();
+//		build.setNumber("1");
+		build.setEnvUrl("JOB1_Env_URL");
+		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		build.setDeployedBy("TestUser");
+		build.setProjectToolConfigId(new ObjectId("62171d0f26dd266803fa87da"));
+		Deployment build2 = new Deployment();
+		build2.setNumber("1");
+		build2.setEnvUrl("JOB1_Env_URL");
+		build2.setProjectToolConfigId(new ObjectId("62171d0f26dd266803fa87da"));
+		build2.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		build2.setDeployedBy("TestUser");
+		Set<Deployment> builds = new HashSet<>();
+		builds.add(build);
+		Map<Deployment, Set<Deployment>> deploymentsByJob = new HashMap<>();
+		deploymentsByJob.put(build2, builds);
+		when(client2.getDeployJobsFromServer(any(), any())).thenReturn(deploymentsByJob);
+		when(deploymentRepository.findByProcessorIdIn(any())).thenReturn(new ArrayList<>(builds));
+		connList.forEach(conn -> conn.setJobType("deploy"));
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
@@ -153,6 +233,7 @@ public class GitHubActionProcessorJobExecutorTest {
 
 	private Set<Build> oneJobWithBuilds(Build builds) {
 		Set<Build> jobs = new LinkedHashSet<>();
+		builds.setNumber("2");
 		jobs.add(builds);
 		return jobs;
 	}
