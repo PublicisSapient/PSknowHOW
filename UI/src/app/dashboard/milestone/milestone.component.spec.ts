@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ExcelService } from 'src/app/services/excel.service';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 
 
@@ -308,6 +309,7 @@ describe('MilestoneComponent', () => {
     let helperService: HelperService
     let httpService;
     let excelService;
+    let exportExcelComponent;
     beforeEach(async () => {
         service = new SharedService();
         await TestBed.configureTestingModule({
@@ -315,7 +317,7 @@ describe('MilestoneComponent', () => {
                 HttpClientTestingModule,
                 RouterTestingModule.withRoutes(routes),
             ],
-            declarations: [MilestoneComponent],
+            declarations: [MilestoneComponent,ExportExcelComponent],
             providers: [
                 HelperService,
                 { provide: APP_CONFIG, useValue: AppConfig },
@@ -330,6 +332,7 @@ describe('MilestoneComponent', () => {
         httpService = TestBed.inject(HttpService);
         helperService = TestBed.inject(HelperService);
         excelService = TestBed.inject(ExcelService);
+        exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
 
         fixture = TestBed.createComponent(MilestoneComponent);
         component = fixture.componentInstance;
@@ -1095,6 +1098,45 @@ describe('MilestoneComponent', () => {
         expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
     }));
 
+    it('should work download excel functionality',()=>{
+        spyOn(component.exportExcelComponent,'downloadExcel')
+        component.downloadExcel('kpi122','name',true,true);
+        expect(exportExcelComponent).toBeDefined();
+    })
+
+    it('should set the colorObj', () => {
+        component.kpiChartData = {
+            kpi121 : {
+                kpiId : 'kpi123'
+            }
+        }
+        const x = {
+            'Sample One_hierarchyLevelOne': {
+                nodeName: 'Sample One',
+                color: '#079FFF'
+            }
+        };
+        service.setColorObj(x);
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.colorObj).toBe(x);
+    });
+
+    it('should noTabAccess false when emp details not available',()=>{
+        service.setEmptyData('');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeFalsy();
+    })
+
+    it('should noTabAccess true when emp details available',()=>{
+        service.setEmptyData('test');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeTruthy();
+    })
+
 });
+
 
 

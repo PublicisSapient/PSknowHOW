@@ -53,12 +53,12 @@ describe('FieldMappingFieldComponent', () => {
   it('should prevent entering non-numeric keys', () => {
     const event = {
       isTrusted: true,
-      key: "Alt",
+      key: ".",
       preventDefault: jasmine.createSpy('preventDefault')
     }
     component.enterNumericValue(event);
 
-    expect(event.preventDefault).not.toHaveBeenCalled();
+    expect(event.preventDefault).toHaveBeenCalled();
   });
 
   it('should allow entering numeric keys', () => {
@@ -81,4 +81,25 @@ describe('FieldMappingFieldComponent', () => {
     component.numericInputUpDown(event);
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should write value',()=>{
+    component.writeValue("test");
+    expect(component.value).toEqual('test');
+  })
+
+  it('should fire onChange event',()=>{
+    component.registerOnChange(()=>{});
+    expect(component.onChange).toBeDefined();
+  })
+
+  it('should fire onTouch event',()=>{
+    component.registerOnTouched(()=>{});
+    expect(component.onTouched).toBeDefined();
+  })
+
+  it('should enable/disable field',()=>{
+    component.setDisabledState(true);
+    expect(component.isDisabled).toBeTruthy();
+  })
+  
 });
