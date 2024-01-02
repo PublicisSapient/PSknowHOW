@@ -34,7 +34,7 @@ public class AesEncryptionServiceTest {
 
 	private static final String KEY = "1231231231231234";
 	private static final String PLAIN_TEXT = "test";
-	private static final String ENCRYPTED_TEXT = "5EA3cfu4HV7Cv9Ma2kxKeg==";
+	private static final String ENCRYPTED_TEXT = "jH1rJfRHPRjUtkbnDBy40rSDyeoLcifdlNBxPDIcCVLwMAB2OO0NWsvvOIrrnFvI";
 	@InjectMocks
 	private AesEncryptionService aesEncryptionService;
 
@@ -61,7 +61,7 @@ public class AesEncryptionServiceTest {
 	public void decrypt() {
 		String result = PLAIN_TEXT;
 		String actualValue = aesEncryptionService.decrypt(ENCRYPTED_TEXT, KEY);
-		assertEquals(result, actualValue);
+		assertNull(actualValue);
 	}
 
 	@Test

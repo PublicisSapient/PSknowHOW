@@ -35,12 +35,15 @@ import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class JiraIssueRepositoryTest {
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
 	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";

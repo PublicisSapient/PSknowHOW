@@ -31,13 +31,16 @@ import java.util.regex.Pattern;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 
+@RunWith(MockitoJUnitRunner.class)
 public class JiraIssueCustomHistoryRepositoryTest {
 	@Mock
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory1;
