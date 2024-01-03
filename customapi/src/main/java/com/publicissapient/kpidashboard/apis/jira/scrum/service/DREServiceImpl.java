@@ -257,16 +257,13 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		String startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		String endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		/*
-		 * #deepak start changes filer out sprintLeafNodeList which is available in
-		 * cache
-		 */
+
+		//filer out sprintLeafNodeList which is available in cache
 		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
 				.collect(Collectors.toList());
 		Map<String, Object> storyDefectDataListMap = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(sprintLeafNodeListUpdated))
 			storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeListUpdated, startDate, endDate, kpiRequest);
-		/* #deepak ends changes */
 		List<JiraIssue> totalDefects = (List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECTS);
 		List<JiraIssue> subTaskBugs = (List<JiraIssue>) storyDefectDataListMap.get(SUB_TASK_BUGS);
 		List<JiraIssue> sprintReportedBugs = (List<JiraIssue>) storyDefectDataListMap.get(SPRINT_REPORTED_BUGS);
@@ -336,9 +333,8 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		}
 
 		sprintLeafNodeList.forEach(node -> {
-			/* #deepak starts changes for checking if data in not in cache */
+			//changes for checking if data in not in cache
 			if (!node.isFromCache()) {
-				/* #deepak ends changes */
 				String trendLineName = node.getProjectFilter().getName();
 
 				Pair<String, String> currentNodeIdentifier = Pair.of(
@@ -370,19 +366,17 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
 				dataCount.setValue(dreForCurrentLeaf);
 				dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-				// #deepak add projectid to datacount
 				dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
 				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
 				trendValueList.add(dataCount);
-				/* #deepak starts changes for creating collection to be saved in cache */
 			} else {
+				//for adding data in mapTmp fetched from cache
 				List<DataCount> dataCountList = trendValueList.stream()
 						.filter(dataCountInList -> node.getId().equals(dataCountInList.getsSprintID())).distinct()
 						.collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(dataCountList))
 					mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCountList.get(0))));
 			}
-			/* #deepak ends changes */
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_REMOVAL_EFFICIENCY.getColumns());

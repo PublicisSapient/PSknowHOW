@@ -24,6 +24,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bson.types.ObjectId;
@@ -462,8 +463,8 @@ public class JiraServiceR {
 					.getFromApplicationCache(new String[] { project.getId() }, "JIRA", sprintIncluded);
 			if (isNotEmpty(dataCountKpisDataList)) {
 				List<S> dataCountList = dataCountKpisDataList.stream()
-						.filter(dataCountKpiData -> kpiCode.equals(dataCountKpiData.getKpiName()))
-						.findFirst().map(DataCountKpiData::getDataCountList).orElse(new ArrayList<S>());
+						.filter(dataCountKpiData -> kpiCode.equals(dataCountKpiData.getKpiName())).findFirst()
+						.map(DataCountKpiData::getDataCountList).orElse(new ArrayList<S>());
 				if (isNotEmpty(dataCountList)) {
 					trendValueList.addAll(dataCountList);
 					projectsFromCache.add(project);
@@ -484,13 +485,13 @@ public class JiraServiceR {
 	 */
 	public <S> void updateCacheAfterDBHit(Map<String, List<S>> map, KPICode kpiCode, List<String> sprintIncluded) {
 		if (MapUtils.isNotEmpty(map))
-			map.forEach((k, v) -> {
+			map.forEach((projectCacheKey, dataCountCacheValue) -> {
 				List<DataCountKpiData> dataCountKpiDataList = (List<DataCountKpiData>) cacheService
-						.getFromApplicationCache(new String[] { k }, "JIRA", sprintIncluded);
+						.getFromApplicationCache(new String[] { projectCacheKey }, "JIRA", sprintIncluded);
 				if (isEmpty(dataCountKpiDataList))
 					dataCountKpiDataList = new ArrayList<>();
-				dataCountKpiDataList.add(new DataCountKpiData(kpiCode, v));
-				cacheService.setIntoApplicationCache(new String[] { k }, dataCountKpiDataList, "JIRA", sprintIncluded);
+				dataCountKpiDataList.add(new DataCountKpiData(kpiCode, dataCountCacheValue));
+				cacheService.setIntoApplicationCache(new String[] { projectCacheKey }, dataCountKpiDataList, "JIRA", sprintIncluded);
 			});
 	}
 
