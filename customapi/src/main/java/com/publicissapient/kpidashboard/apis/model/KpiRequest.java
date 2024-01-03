@@ -50,6 +50,8 @@ public class KpiRequest implements Serializable {
 	private int kanbanXaxisDataPoints = 7;
 	private int xAxisDataPoints = 5;
 	private String duration = CommonConstant.MONTH;
+	private String hierarchyName;
+	private String hierarchyId;
 
 	/**
 	 * Gets kpi list.
@@ -72,6 +74,44 @@ public class KpiRequest implements Serializable {
 	}
 
 	/**
+	 * Gets hierarchy name.
+	 *
+	 * @return hierarchy name
+	 */
+	public String getHierarchyName() {
+		return hierarchyName;
+	}
+
+	/**
+	 * Sets hierarchy name.
+	 *
+	 * @param hierarchyName
+	 * 				hierarchy name
+	 */
+	public void setHierarchyName(String hierarchyName) {
+		this.hierarchyName = hierarchyName;
+	}
+
+	/**
+	 * Gets hierarchy name.
+	 *
+	 * @return hierarchy name
+	 */
+	public String getHierarchyId() {
+		return hierarchyId;
+	}
+
+	/**
+	 * Sets hierarchy id.
+	 *
+	 * @param hierarchyId
+	 * 				hierarchy id
+	 */
+	public void setHierarchyId(String hierarchyId) {
+		this.hierarchyId = hierarchyId;
+	}
+
+	/**
 	 * Gets kpi list.
 	 *
 	 * @return the kpi list
@@ -88,7 +128,6 @@ public class KpiRequest implements Serializable {
 	 */
 	public void setKpiIdList(List<String> kpiIdList) {
 		this.kpiIdList = kpiIdList;
-		setRequestTrackerId();
 	}
 
 	/**

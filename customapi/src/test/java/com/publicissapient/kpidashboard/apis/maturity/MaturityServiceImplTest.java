@@ -31,8 +31,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
@@ -65,12 +63,6 @@ public class MaturityServiceImplTest {
 	@Mock
 	private ZephyrService zephyrService;
 
-	@Mock
-	private CacheService cacheService;
-
-	@Mock
-	private AuthenticationService authenticationService;
-
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement1;
 	private KpiElement kpiElement2;
@@ -81,8 +73,8 @@ public class MaturityServiceImplTest {
 	public void setup() {
 		kpiRequest = new KpiRequest();
 		kpiRequest.setKpiIdList(kpiIdList);
-		String[] ids = { "DTS" };
-		kpiRequest.setIds(ids);
+		kpiRequest.setHierarchyName("DTS");
+		kpiRequest.setHierarchyId("535");
 		DataCount dataCount = new DataCount();
 		dataCount.setMaturity("1");
 		dataCount.setMaturityValue("35");

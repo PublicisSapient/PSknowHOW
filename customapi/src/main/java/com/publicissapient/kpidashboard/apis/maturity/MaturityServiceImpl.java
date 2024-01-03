@@ -31,9 +31,7 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraServiceR;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
@@ -59,7 +57,9 @@ public class MaturityServiceImpl {
 	private static final String KPI_SOURCE_JIRA = "Jira";
 	private static final String KPI_SOURCE_SONAR = "Sonar";
 	private static final String KPI_SOURCE_ZEPHYR = "Zypher";
-	private static final String HIERARCHY_LEVEL_PORT = "port";
+	private static final String HIERARCHY_LABEL_PORT = "port";
+	private static final int HIERARCHY_LEVEL_PORT = 4;
+	private static final String SPRINT_CLOSED = "CLOSED";
 
 
 	@Autowired
@@ -74,11 +74,10 @@ public class MaturityServiceImpl {
 	@Autowired
 	private ZephyrService zephyrService;
 
-	@Autowired
-	private CacheService cacheService;
 
 	/**
 	 * get kpi element list with maturity
+	 * assuming req for hierarchy level 4
 	 * @param kpiRequest
  * 				kpiRequest to fetch kpi data
 	 * @return list of KpiElement
@@ -89,16 +88,16 @@ public class MaturityServiceImpl {
 				.collect(Collectors.groupingBy(KpiMaster::getKpiSource));
 
 		List<KpiElement> kpiElements = new ArrayList<>();
-		String[] hierarchyIdList = Arrays.stream(kpiRequest.getIds())
-				.map(hierarchy -> hierarchy.concat(Constant.UNDERSCORE).concat(HIERARCHY_LEVEL_PORT))
-				.toArray(String[]::new);
+		// it is assumed that request is for heirarchy level 4 i.e. port
+		String[] hierarchyIdList = {
+				kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(HIERARCHY_LABEL_PORT) };
 		Map<String, List<String>> selectedMap = new HashMap<>();
-		selectedMap.put(HIERARCHY_LEVEL_PORT, Arrays.stream(hierarchyIdList).collect(Collectors.toList()));
+		selectedMap.put(HIERARCHY_LABEL_PORT, Arrays.stream(hierarchyIdList).collect(Collectors.toList()));
 		kpiRequest.setIds(hierarchyIdList);
-		kpiRequest.setLevel(4);
-		kpiRequest.setLabel(HIERARCHY_LEVEL_PORT);
+		kpiRequest.setLevel(HIERARCHY_LEVEL_PORT);
+		kpiRequest.setLabel(HIERARCHY_LABEL_PORT);
 		kpiRequest.setSelectedMap(selectedMap);
-		kpiRequest.setSprintIncluded(Arrays.asList("CLOSED"));
+		kpiRequest.setSprintIncluded(Arrays.asList(SPRINT_CLOSED));
 		sourceWiseKpiList.forEach((source, kpiList) -> {
 			try {
 				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
@@ -162,8 +161,6 @@ public class MaturityServiceImpl {
 		log.info("Received Jira KPI request {}", kpiRequest);
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
-		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
-				kpiRequest.getRequestTrackerId());
 		List<KpiElement> responseList = jiraService.process(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		MDC.clear();
@@ -181,8 +178,6 @@ public class MaturityServiceImpl {
 		log.info("Received Sonar KPI request {}", kpiRequest);
 		long sonarRequestStartTime = System.currentTimeMillis();
 		MDC.put("SonarRequestStartTime", String.valueOf(sonarRequestStartTime));
-		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name(),
-				kpiRequest.getRequestTrackerId());
 		List<KpiElement> responseList = sonarService.process(kpiRequest);
 		MDC.put("TotalSonarRequestTime", String.valueOf(System.currentTimeMillis() - sonarRequestStartTime));
 		MDC.clear();
@@ -203,8 +198,6 @@ public class MaturityServiceImpl {
 		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long zypherRequestStartTime = System.currentTimeMillis();
 		MDC.put("ZephyrRequestStartTime", String.valueOf(zypherRequestStartTime));
-		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name(),
-				kpiRequest.getRequestTrackerId());
 		List<KpiElement> responseList = zephyrService.process(kpiRequest);
 		MDC.put("TotalZephyrRequestTime", String.valueOf(System.currentTimeMillis() - zypherRequestStartTime));
 		MDC.clear();
