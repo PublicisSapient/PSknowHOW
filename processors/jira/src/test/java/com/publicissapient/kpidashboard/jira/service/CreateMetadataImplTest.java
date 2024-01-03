@@ -19,15 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -50,6 +42,7 @@ import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.MetadataIdentifierDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ToolConfigDataFactory;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
@@ -127,13 +120,7 @@ public class CreateMetadataImplTest {
 		List<Status> statuses = Arrays.asList(status1, status2, status3, status4);
 
 		statusItr = statuses;
-	}
 
-	@Test
-	public void collectMetadata() throws Exception {
-
-//		when(fieldMappingRepository.save(any())).thenReturn(null);
-//		when(boardMetadataRepository.save(any())).thenReturn(null);
 		when(boardMetadataRepository.findByProjectBasicConfigId(any())).thenReturn(null);
 
 		MetadataRestClient metadataRestClient = mock(MetadataRestClient.class);
@@ -147,26 +134,42 @@ public class CreateMetadataImplTest {
 
 		when(metadataRestClient.getStatuses()).thenReturn(metaDataStatusPromise);
 		when(metaDataStatusPromise.claim()).thenReturn(statusItr);
+	}
 
-		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier();
+	@Test
+	public void collectMetadata() throws Exception {
+
+		// when(fieldMappingRepository.save(any())).thenReturn(null);
+		// when(boardMetadataRepository.save(any())).thenReturn(null);
+
+		MetadataIdentifier metadataIdentifier = getMetadataIdentifier().get(0);
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
 
-//		Mockito.when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://10.123.45.678:9090/");
-//		PowerMockito.whenNew(RestTemplate.class).withNoArguments().thenReturn(restTemplate);
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-		HttpEntity<?> entity = new HttpEntity<>(headers);
-		ResponseEntity<String> response = new ResponseEntity<>("Success", HttpStatus.OK);
-//		Mockito.when(restTemplate.exchange(new URI("http://10.123.45.678:9090/api/cache/clearCache/GenericCache"),
-//				HttpMethod.GET, entity, String.class)).thenReturn(response);
-
-		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(), client));
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(false), client));
 	}
 
-	private MetadataIdentifier createMetaDataIdentifier() {
+	@Test
+	public void collectMetadata2() throws Exception {
+
+		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(true);
+		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
+				.thenReturn(metadataIdentifier);
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
+	}
+
+	@Test
+	public void collectMetadata3() throws Exception {
+
+		MetadataIdentifier metadataIdentifier = createMetaDataIdentifier(false);
+		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
+				.thenReturn(metadataIdentifier);
+		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
+	}
+
+	private MetadataIdentifier createMetaDataIdentifier(boolean flag) {
 		String tool = "Jira";
-		Boolean isKanban = Boolean.FALSE;
+		Boolean isKanban = Boolean.TRUE;
 
 		Identifier issue1 = createIdentifier("story",
 				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request"));
@@ -175,7 +178,14 @@ public class CreateMetadataImplTest {
 		Identifier issue4 = createIdentifier("issuetype",
 				Arrays.asList("Story", "Enabler Story", "Tech Story", "Change request", "Defect", "Bug", "Epic"));
 		Identifier issue5 = createIdentifier("uatdefect", Arrays.asList("UAT Defect"));
-		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5);
+		Identifier issue6 = createIdentifier("ticketVelocityStatusIssue", Arrays.asList("Change Request"));
+		Identifier issue7 = createIdentifier("ticketWipClosedIssue", Arrays.asList("Change Request"));
+		Identifier issue8 = createIdentifier("ticketThroughputIssue", Arrays.asList("Change Request"));
+		Identifier issue9 = createIdentifier("kanbanCycleTimeIssue", Arrays.asList("Change Request"));
+		Identifier issue10 = createIdentifier("ticketReopenIssue", Arrays.asList("Change Request"));
+		Identifier issue11 = createIdentifier("kanbanTechDebtIssueType", Arrays.asList("Change Request"));
+		Identifier issue12 = createIdentifier("ticketCountIssueType", Arrays.asList("Change Request"));
+		List<Identifier> issuesIdentifier = Arrays.asList(issue1, issue2, issue3, issue4, issue5,issue6,issue7,issue8,issue9,issue10,issue11,issue12);
 
 		Identifier customField1 = createIdentifier("storypoint", Arrays.asList("storypoint"));
 		Identifier customField2 = createIdentifier("sprint", Arrays.asList("Sprint"));
@@ -199,9 +209,20 @@ public class CreateMetadataImplTest {
 		Identifier workflow5 = createIdentifier("rejection", Arrays.asList("Closed", "Rejected"));
 		Identifier workflow6 = createIdentifier("delivered",
 				Arrays.asList("Closed", "Resolved", "Ready for Delivery", "Ready for Release"));
-		Identifier workflow7 = createIdentifier("firststatus", Arrays.asList("Open"));
+		Identifier workflow7 = createIdentifier("ticketClosedStatus", Arrays.asList("Open"));
+		Identifier workflow8 = createIdentifier("ticketResolvedStatus", Arrays.asList("Open"));
+		Identifier workflow9 = createIdentifier("ticketReopenStatus", Arrays.asList("Open"));
+		Identifier workflow10 = createIdentifier("ticketTriagedStatus", Arrays.asList("Open"));
+		Identifier workflow11 = createIdentifier("ticketWIPStatus", Arrays.asList("Open"));
+		Identifier workflow12 = createIdentifier("ticketRejectedStatus", Arrays.asList("Open"));
+		Identifier workflow13 = createIdentifier("ticketWIPStatus", Arrays.asList("Open"));
+		Identifier workflow14 = createIdentifier("jiraBlockedStatus", Arrays.asList("Open"));
+		Identifier workflow15 = createIdentifier("rejectionResolution", Arrays.asList("Open"));
+		Identifier workflow16 = createIdentifier("jiraWaitStatus", Arrays.asList("Open"));
+		Identifier workflow17 = createIdentifier("jiraStatusForInProgress", Arrays.asList("Open"));
+		Identifier workflow18 = createIdentifier("development", Arrays.asList("Open"));
 		List<Identifier> workflowIdentifer = Arrays.asList(workflow1, workflow2, workflow3, workflow4, workflow5,
-				workflow6, workflow7);
+				workflow6, workflow7,workflow8,workflow9,workflow10,workflow11,workflow12,workflow13,workflow14,workflow15,workflow16,workflow17,workflow18);
 
 		Identifier valuestoidentify1 = createIdentifier("rootCauseValue", Arrays.asList("Coding"));
 		Identifier valuestoidentify2 = createIdentifier("rejectionResolution",
@@ -212,12 +233,14 @@ public class CreateMetadataImplTest {
 				valuestoidentify3);
 
 		List<Identifier> issuelinkIdentifer = new ArrayList<>();
-		return new MetadataIdentifier(tool, "Standard Template", "7", isKanban, false, issuesIdentifier,
-				customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
-		// return new MetadataIdentifier(tool,"Dojo template", isKanban,
-		// issuesIdentifier, customfieldIdentifer, workflowIdentifer,
-		// issuelinkIdentifer, valuestoidentifyIdentifer);
-
+		MetadataIdentifier metadataIdentifier;
+		if (flag) {
+			return new MetadataIdentifier(tool, "Standard Template", "7", isKanban, false, issuesIdentifier,
+					customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
+		} else {
+			return new MetadataIdentifier(tool, "DOJO Agile Template", "4", isKanban, false, issuesIdentifier,
+					customfieldIdentifer, workflowIdentifer, issuelinkIdentifer, valuestoidentifyIdentifer);
+		}
 	}
 
 	private Identifier createIdentifier(String type, List<String> value) {
@@ -227,7 +250,7 @@ public class CreateMetadataImplTest {
 		return identifier;
 	}
 
-	private ProjectConfFieldMapping createProjectConfig() {
+	private ProjectConfFieldMapping createProjectConfig(boolean isKanban) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		ProjectBasicConfig projectConfig = projectConfigsList.get(2);
 		try {
@@ -236,7 +259,11 @@ public class CreateMetadataImplTest {
 
 		}
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+		if (isKanban) {
+			projectConfFieldMapping.setKanban(true);
+		} else {
+			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+		}
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
 		projectConfFieldMapping.setJira(getJiraToolConfig());
 		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
@@ -279,6 +306,12 @@ public class CreateMetadataImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/field_mapping.json");
 		return fieldMappingDataFactory.getFieldMappings();
+	}
+
+	private List<MetadataIdentifier> getMetadataIdentifier() {
+		MetadataIdentifierDataFactory fieldMappingDataFactory = MetadataIdentifierDataFactory
+				.newInstance("/json/default/metadata_identifier.json");
+		return fieldMappingDataFactory.getMetadataIdentifiers();
 	}
 
 }
