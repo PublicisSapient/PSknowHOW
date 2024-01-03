@@ -34,6 +34,6 @@ public interface FetchScrumReleaseData {
 	 *            krb5Client
 	 * @return ProjectRelease
 	 */
-	ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+	void processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
 			throws IOException, ParseException;
 }
