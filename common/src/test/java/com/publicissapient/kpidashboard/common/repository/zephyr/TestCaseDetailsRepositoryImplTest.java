@@ -17,13 +17,57 @@
 
 package com.publicissapient.kpidashboard.common.repository.zephyr;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+
+import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 
 /*
 author @shi6
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TestCaseDetailsRepositoryImplTest {
+
+	@Mock
+	private MongoTemplate operations;
+
+	@InjectMocks
+	TestCaseDetailsRepositoryImpl testCaseDetailsRepository;
+
+	@Test
+	public void testFindNonRegressionTestDetails() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
+				Arrays.asList("PROJ1", "PROJ2"));
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("storyType", Arrays.asList(Pattern.compile("Story")));
+		map.put("testCaseStatus", Arrays.asList(Pattern.compile("Passed")));
+		map.put("labels", Arrays.asList(Pattern.compile("java")));
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1", map);
+		when(operations.find(any(Query.class), eq(TestCaseDetails.class))).thenReturn(Collections.emptyList());
+		List<TestCaseDetails> result = testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters,
+				uniqueProjectMap, "criteria");
+		testCaseDetailsRepository.findNonRegressionTestDetails(mapOfFilters, uniqueProjectMap, "nin");
+		testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap, "criteria");
+		testCaseDetailsRepository.findTestDetails(mapOfFilters, uniqueProjectMap, "nin");
+		assertEquals(Collections.emptyList(), result);
+	}
 
 }

@@ -78,18 +78,6 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Mock
 	private JiraIssueCustomHistoryRepository featureCustomHistoryRepo;
 
-	public static List<Pattern> convertToPatternList(List<String> stringList) {
-		List<Pattern> regexList = new ArrayList<>();
-		for (String value : stringList) {
-			regexList.add(Pattern.compile(value, Pattern.CASE_INSENSITIVE));
-		}
-		return regexList;
-	}
-
-	public static Pattern convertToPatternText(String text) {
-		return Pattern.compile(text, Pattern.CASE_INSENSITIVE);
-	}
-
 	@Before
 	public void setUp() {
 
