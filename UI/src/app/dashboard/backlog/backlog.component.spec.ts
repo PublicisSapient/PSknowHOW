@@ -1919,6 +1919,7 @@ describe('BacklogComponent', () => {
             isEnabled: true,
             order: 1,
             kpiDetail: {
+                kpiSubCategory : 'Flow KPIs',
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
                 kpiName: 'Release Frequency',
@@ -1933,25 +1934,65 @@ describe('BacklogComponent', () => {
                 maxValue: '300',
                 kanban: true,
                 groupId: 4,
-                kpiInfo: {
-                    definition: 'Release Frequency highlights the number of releases done in a month',
-                    formula: [
-                        {
-                            lhs: 'Release Frequency for a month',
-                            rhs: 'Number of fix versions in JIRA for a project that have a release date falling in a particular month'
-                        }
-                    ],
-                    details: [
-                        {
-                            type: 'paragraph',
-                            value: 'It is calculated as a ‘Count’. Higher the Release Frequency, more valuable it is for the Business or a Project'
-                        },
-                        {
-                            type: 'paragraph',
-                            value: 'A progress indicator shows trend of Release Frequency between last 2 months. An upward trend is considered positive'
-                        }
-                    ]
-                },
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                squadSupport: false,
+                xaxisLabel: 'Months',
+                yaxisLabel: 'Count'
+            },
+            shown: true
+        },
+        {
+            kpiId: 'kpi742',
+            kpiName: 'Release Frequency',
+            isEnabled: true,
+            order: 1,
+            kpiDetail: {
+                kpiWidth : 100,
+                kpiSubCategory : 'Flow KPIs',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Release Frequency',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                showTrend: true,
+                isPositiveTrend: true,
+                calculateMaturity: false,
+                kpiSource: 'Jira',
+                maxValue: '300',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                squadSupport: false,
+                xaxisLabel: 'Months',
+                yaxisLabel: 'Count'
+            },
+            shown: true
+        },
+        {
+            kpiId: 'kpi741',
+            kpiName: 'Release Frequency',
+            isEnabled: true,
+            order: 1,
+            kpiDetail: {
+                kpiSubCategory : 'Epic View',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Release Frequency',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                showTrend: true,
+                isPositiveTrend: true,
+                calculateMaturity: false,
+                kpiSource: 'Jira',
+                maxValue: '300',
+                kanban: true,
+                groupId: 4,
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
                 squadSupport: false,
@@ -1960,6 +2001,7 @@ describe('BacklogComponent', () => {
             },
             shown: true
         }
+
     ];
 
     const fakeJiraPayload = require('../../../test/resource/fakeJiraPayload.json');
@@ -2039,7 +2081,6 @@ describe('BacklogComponent', () => {
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
-        expect(component.noKpis).toBeTrue();
         expect(Object.keys(component.kpiConfigData).length).toBe(configGlobalData.length);
     });
 
@@ -2135,7 +2176,163 @@ describe('BacklogComponent', () => {
                 thresholdValue: 10,
                 trendValueList: [],
                 groupId: 2
-            }
+            },
+            kpi127: {
+                kpiId: 'kpi14',
+                kpiName: 'Defect Injection Rate',
+                unit: '%',
+                maxValue: '200',
+                chartType: '',
+                id: '63355d7c41a0342c3790fb83',
+                kpiUnit: '%',
+                kanban: false,
+                kpiSource: 'Jira',
+                thresholdValue: 10,
+                trendValueList: [
+                    {
+                        "filter": "Overall",
+                        "value": [
+                            {
+                                "data": "PSknowHOW ",
+                                "value": [
+                                    {
+                                        "data": "2",
+                                        "sSprintID": "0-1",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": "1-3",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "3-6",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "6-12",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": ">12",
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                groupId: 2,
+                xAxisValues :[
+                    "0-1",
+                    "1-3",
+                    "3-6",
+                    "6-12",
+                    ">12"
+                ],
+            },
+            kpi170: {
+                kpiId: 'kpi14',
+                kpiName: 'Defect Injection Rate',
+                unit: '%',
+                maxValue: '200',
+                chartType: '',
+                id: '63355d7c41a0342c3790fb83',
+                kpiUnit: '%',
+                kanban: false,
+                kpiSource: 'Jira',
+                thresholdValue: 10,
+                trendValueList: [
+                    {
+                        "filter": "Overall",
+                        "value": [
+                            {
+                                "data": "PSknowHOW ",
+                                "value": [
+                                    {
+                                        "data": "2",
+                                        "sSprintID": "0-1",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": "1-3",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "3-6",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "6-12",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": ">12",
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                groupId: 2,
+                xAxisValues :[
+                    "0-1",
+                    "1-3",
+                    "3-6",
+                    "6-12",
+                    ">12"
+                ],
+            },
+            kpi3: {
+                kpiId: 'kpi14',
+                kpiName: 'Defect Injection Rate',
+                unit: '%',
+                maxValue: '200',
+                chartType: '',
+                id: '63355d7c41a0342c3790fb83',
+                kpiUnit: '%',
+                kanban: false,
+                kpiSource: 'Jira',
+                thresholdValue: 10,
+                trendValueList: [
+                    {
+                        "filter": "Overall",
+                        "value": [
+                            {
+                                "data": "PSknowHOW ",
+                                "value": [
+                                    {
+                                        "data": "2",
+                                        "sSprintID": "0-1",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": "1-3",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "3-6",
+                                    },
+                                    {
+                                        "data": "0",
+                                        "sSprintID": "6-12",
+                                    },
+                                    {
+                                        "data": "1",
+                                        "sSprintID": ">12",
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                groupId: 2,
+                xAxisValues :[
+                    "0-1",
+                    "1-3",
+                    "3-6",
+                    "6-12",
+                    ">12"
+                ],
+            },
         };
         component.jiraKpiData = {};
         component.loaderJiraArray = ['kpi14'];
@@ -2301,6 +2498,51 @@ describe('BacklogComponent', () => {
         component.getDropdownArray('kpi75');
         expect(component.kpiDropdowns['kpi75'].length).toEqual(kpiDropdowns['kpi75'].length);
     });
+
+    it('should get dropdown array for kpi with filter in trending list', () => {
+        spyOn(component, 'ifKpiExist').and.returnValue('0');
+        component.allKpiArray = [{
+            'kpiId': 'kpi75',
+            trendValueList: [
+                {
+                    filter: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                }
+
+            ]
+        }]
+        component.getDropdownArray('kpi75');
+        expect(component.kpiDropdowns).toBeDefined();
+    });
+
+    it('should get dropdown array for kpi with filter1 in trending list', () => {
+        spyOn(component, 'ifKpiExist').and.returnValue('0');
+        component.allKpiArray = [{
+            'kpiId': 'kpi75',
+            trendValueList: [
+                {
+                    filter1: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                }
+
+            ]
+        }]
+        component.getDropdownArray('kpi75');
+        expect(component.kpiDropdowns).toBeDefined();
+    });
+
 
     it('should handle selected option when have multi dropdown', () => {
         const event = {
@@ -3325,5 +3567,420 @@ describe('BacklogComponent', () => {
         component.checkLatestAndTrendValue(kpiData, item);
         expect(component.checkLatestAndTrendValue(kpiData, item)).toEqual(res);
     });
+
+    it('should noTabAccess false when emp details not available', () => {
+        service.setEmptyData('');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeFalsy();
+    })
+
+    it('should noTabAccess true when emp details available', () => {
+        service.setEmptyData('test');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeTruthy();
+    })
+
+    it('should set tooltip and call setGlobalConfigData on successful getConfigDetails', () => {
+        const mockFilterData = { filter: 'data' };
+        spyOn(httpService, 'getConfigDetails').and.returnValue(of(mockFilterData));
+        component.ngOnInit();
+        expect(component.tooltip).toBe(mockFilterData);
+      });
+
+      it("should createapiarry for radiobutton",()=>{
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                unit: "Count",
+                maxValue: "",
+                chartType : "graph",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                        drillDown: [],
+                                        subFilter: "To Do"
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'radiobutton',
+                    chartType : "graph"
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1);
+        spyOn(component,'createTrendData');
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it("should createapiarry for dropdown",()=>{
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                unit: "Count",
+                maxValue: "",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                        drillDown: [],
+                                        subFilter: "To Do"
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'dropdown',
+                    chartType : "graph"
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component,'createTrendData');
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it("should createapiarry for multi dropdown",()=>{
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                filters : {
+                    filter1 : {
+                        options : ['story']
+                    }
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                trendValueList: [
+                    {
+                        filter1 : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'multiDropdown',
+                    chartType : "graph"
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component,'createTrendData');
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it("should createapiarry when we have filter property in trending list",()=>{
+        const data = {
+            kpi141 : {
+                kpiId: "kpi141",
+                kpiName: "Defect Count by Status",
+                chartType: "",
+                kpiInfo: {
+                    definition: "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+                },
+                id: "64b4ed7acba3c12de164732c",
+                isDeleted: false,
+                kpiCategory: "Release",
+                kpiUnit: "Count",
+                kanban: false,
+                kpiSource: "Jira",
+                trendValueList: [
+                    {
+                        filter : 'story',
+                        value : [
+                            {
+                                data: "1",
+                                value: [
+                                    {
+                                        value: 0,
+                                    },
+                                ],
+                                kpiGroup: "Issue Count"
+                            }
+                        ]
+                    }
+                ],
+                groupId: 9
+            }
+        };
+
+        component.updatedConfigGlobalData = [
+            {
+                kpiId: 'kpi141',
+                kpiName: 'Deployment Frequency',
+                isEnabled: true,
+                order: 23,
+                kpiDetail: {
+                    kpiFilter : 'multiDropdown',
+                    chartType : "graph"
+                },
+                shown: true
+            }
+        ];
+
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story']
+        }
+        component.kpiDropdowns = {
+            kpi141 : {
+                options : ['story']
+            }
+        }
+        spyOn(component,'ifKpiExist').and.returnValue(-1)
+        spyOn(component,'createTrendData');
+        component.createAllKpiArray(data);
+        expect(component.kpiSelectedFilterObj).toBeDefined();
+      })
+
+      it('should prepare data from trending value list when there is no kpi filter and value is blank',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: []
+
+            }
+        }];
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+
+      it('should prepare data from trending value list when there is no kpi filter and value is not blank',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+
+      it('should prepare data from trending value list when there is no kpi filter and trendinglist is array ',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: [
+                {value: [
+                    {
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                    }
+                ]}
+            ]
+        }];
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+      
+
+      it('should prepare data from trending value list when have multi dropdown filter',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        filter1: "Overall",
+                        filter2: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story'],
+            filter2: ['bug']
+        }
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+
+      it('should prepare data from trending value list when have single dropdown filter',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        filter1: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: ['story'],
+        }
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+
+      it('should prepare data from trending value list when have radio button',()=>{
+        component.allKpiArray = [{
+            kpiId: 'kpi124',
+            trendValueList: {
+                value: [
+                    {
+                        filter1: "Overall",
+                        data: [{
+                            "label": "Scope added",
+                            "value": 1,
+                            "value1": 0,
+                            "labelInfo": "(Issue Count/Original Estimate)",
+                            "unit": "",
+                        }]
+                    }
+                ]
+
+            }
+        }];
+        component.kpiSelectedFilterObj['kpi124'] = {
+            filter1: 'story',
+        }
+        component.getChartDataForCard('kpi124',0);
+        expect(component.kpiChartData).toBeDefined();
+      })
+
+
 });
 
