@@ -27,7 +27,7 @@
 
 
 
-    <!--<properties>
+    <properties>
         <jacoco.destfile>${project.basedir}/../../target/jacoco.exec</jacoco.destfile>
 
         <sonar.coverage.exclusions>
@@ -52,7 +52,6 @@
             **/src/test/java/**
         </sonar.exclusions>
     </properties>
-    -->
 
     <profiles>
         <profile>
