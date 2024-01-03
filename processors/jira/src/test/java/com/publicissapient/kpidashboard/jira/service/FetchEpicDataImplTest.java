@@ -22,6 +22,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -65,6 +66,7 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import io.atlassian.util.concurrent.Promise;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FetchEpicDataImplTest {
