@@ -769,7 +769,7 @@ describe('DashboardconfigComponent', () => {
     expect(component.getKpisData).toHaveBeenCalledWith(component.selectedProject['id']);
   })
 
-  fit('should get projects when not superadmin', () => {
+  it('should get projects when not superadmin', () => {
     const response = fakeProjects;
     spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
     spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true)
