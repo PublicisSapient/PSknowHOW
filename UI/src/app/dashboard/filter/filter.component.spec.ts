@@ -89,6 +89,12 @@ describe('FilterComponent', () => {
       id: '63b3f4ea6770d3a031b92492',
       level: 3,
     },
+    {
+      hierarchyLevelId: 'project',
+      hierarchyLevelName: 'Project',
+      id: '63b3f4ea6770d3a031b92493',
+      level: 3,
+    },
   ];
   const fakeCommentList = require('../../../test/resource/fakeCommentList.json');
 
@@ -1872,6 +1878,26 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
+  it('should get kpi order list on project level', () => {
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(throwError('Something went wrong'));
+    const spy = spyOn(messageService, 'add');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalled()
+  })
+
   it('should handle kpi change if all kpis are enabled', () => {
     const event = {
       "originalEvent": {
@@ -1926,6 +1952,86 @@ const completeHierarchyData = {
     ] 
     component.setTrendValueFilter();
     expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
+  })
+
+  it('should set trend value filter when allowMultipleSelection is false', () => {
+    component.allowMultipleSelection = false;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(nodeId)
+  })
+
+  it('should find project which has data when selectedTab is release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.selectedTab = 'release';
+    component.hierarchyLevels = hierarchyLevels;
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasRelease');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
+
+  it('should find project which has data when selectedTab is not release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.hierarchyLevels = hierarchyLevels;
+    component.selectedTab = 'backlog';
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasData');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
+
+  it('should get logo image', () => {
+    const logoImage = {
+      image: 'logo.png'
+    }
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of(logoImage));
+    component.getLogoImage();
+    expect(component.logoImage).toBe("data:image/png;base64," + logoImage.image);
+  })
+
+  it('should not get logo image', () => {
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of({}));
+    component.getLogoImage();
+    expect(component.logoImage).toBe(undefined);
   })
 
 });
