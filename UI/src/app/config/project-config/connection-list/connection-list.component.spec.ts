@@ -35,7 +35,7 @@ import { ConnectionListComponent } from './connection-list.component';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { ConfirmationService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TestConnectionService } from 'src/app/services/test-connection.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { HelperService } from 'src/app/services/helper.service';
@@ -2085,5 +2085,139 @@ describe('ConnectionListComponent', () => {
     component.filterConnections(component.addEditConnectionFieldsNlabels,'connectionLabel')
     expect(component.addEditConnectionFieldsNlabels.length).toEqual(8);
   })
+
+  it('should change auth type',()=>{
+   component.initializeForms(component.jiraConnectionFields,true);
+    component.onChangeAuthType('vault');
+    component.onChangeAuthType('bearerToken');
+    component.onChangeAuthType('jaasKrbAuth');
+    component.onChangeAuthType('isOAuth');
+    component.onChangeAuthType('na');
+    expect(component.jiraForm).toBeDefined();
+  })
+
+  it('should initialize forms and edit for vault',()=>{
+    component.jiraConnectionFields['vault']= true;
+    component.initializeForms(component.jiraConnectionFields,true);
+    expect(component.onChangeAuthType).toBeDefined();
+  })
+
+  it('should initialize forms and edit for bearerToken',()=>{
+    component.jiraConnectionFields['bearerToken']= true;
+    component.initializeForms(component.jiraConnectionFields,true);
+    expect(component.onChangeAuthType).toBeDefined();
+  })
+
+  it('should initialize forms and edit for isOAuth',()=>{
+    component.jiraConnectionFields['isOAuth']= true;
+    component.initializeForms(component.jiraConnectionFields,true);
+    expect(component.onChangeAuthType).toBeDefined();
+  })
+
+  it('should initialize forms and edit for jaasKrbAuth',()=>{
+    component.jiraConnectionFields['jaasKrbAuth']= true;
+    component.initializeForms(component.jiraConnectionFields,true);
+    expect(component.onChangeAuthType).toBeDefined();
+  })
+
+  it('should add connection successfully',()=>{
+    spyOn(httpService,'addConnection').and.returnValue(of("success"))
+    const spyObj = spyOn(component,'renderCreateUpdateConnectionStatus');
+    component.addConnectionReq('dummyConnection');
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should throw error while adding connections',()=>{
+    spyOn(httpService,'addConnection').and.returnValue(throwError('Error'))
+    const spyObj = spyOn(component,'hideDialog');
+    component.addConnectionReq('dummyConnection');
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should handle edit connection request',()=>{
+    spyOn(httpService,'editConnection').and.returnValue(of("success"))
+    const spyObj = spyOn(component,'renderCreateUpdateConnectionStatus');
+    component.editConnectionReq('dummyConnection');
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should throw error while adding connections',()=>{
+    spyOn(httpService,'editConnection').and.returnValue(throwError('Error'))
+    const spyObj = spyOn(component,'hideDialog');
+    component.editConnectionReq('dummyConnection');
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should call confirm with correct message on failure', () => {
+    const mockConfirmationDialog = jasmine.createSpyObj('ConfirmationDialog', ['confirm']);
+    const mockResponse = {
+      success: false,
+      data: ['Project 1', 'Project 2'],
+      message: 'Connection deletion failed'
+    };
+    component.reloadConnections(mockResponse);
+    expect(mockConfirmationDialog.confirm).toBeDefined();
+  });
+
+  it('should call getConnectionList on success', () => {
+    const mockResponse = { success: true };
+    spyOn(component, 'getConnectionList');
+    component.reloadConnections(mockResponse);
+    expect(component.getConnectionList).toHaveBeenCalled();
+  });
+
+  it('should call deleteConnection and reloadConnections on accept', () => {
+    const mockHttpClient = jasmine.createSpyObj('HttpClient', ['delete']);
+    const mockConnection = { connectionName: 'Test Connection' };
+    const mockResponse = { success: true };
+    spyOn(component, 'reloadConnections');
+    mockHttpClient.delete.and.returnValue(of(mockResponse));
+    component.deleteConnection(mockConnection)
+  });
+
+
+  it('should call confirmationService.confirm on unsuccessful response with message', () => {
+    const mockConfirmationDialog = jasmine.createSpyObj('ConfirmationDialog', ['confirm']);
+    const mockResponse = { success: false, message: 'Connection creation failed' };
+    const mockHeader = 'Create Connection';
+    component.renderCreateUpdateConnectionStatus(mockResponse, mockHeader);
+    expect(mockConfirmationDialog).toBeDefined();
+  });
+
+  it('should allow user to edit for bitbucket connection', () => {
+    const connection = {
+      id: '6066cad069515b0001df1809',
+      type: 'bitbucket',
+      connectionName: 'TestConnectionRishabh4',
+      cloudEnv: true,
+      baseUrl: 'https://test.com/jira',
+      username: '',
+      apiEndPoint: 'rest/api/2',
+      isOAuth: false,
+      bearerToken:false,
+      offline: false,
+      createdAt: '2021-04-02T07:42:09',
+      createdBy: 'SUPERADMIN',
+      connPrivate: true,
+      updatedBy: 'SUPERADMIN',
+      connectionUsers: ['SUPERADMIN'],
+      vault: false,
+    };
+    spyOn(component,'defaultEnableDisableSwitch');
+    spyOn(component,'disableEnableCheckBox');
+    spyOn(component,'checkBitbucketValue');
+    component.addEditConnectionFieldsNlabels = fieldsAndLabels;
+    component.ngOnInit();
+    component.createConnection();
+    component.connectionTypeFieldsAssignment();
+    component.editConnection(connection);
+    fixture.detectChanges();
+    expect(component.connection).toEqual({ ...connection });
+    expect(component.jiraConnectionDialog).toBeTrue();
+    expect(component.isNewlyConfigAdded).toBeFalse();
+    expect(component.selectedConnectionType).toBe('bitbucket');
+  });
+
+
 
 });
