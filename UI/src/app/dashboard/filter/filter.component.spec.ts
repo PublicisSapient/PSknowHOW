@@ -1835,9 +1835,9 @@ const completeHierarchyData = {
     component.projectIndex = 1;
     spyOn(sharedService, 'setEmptyFilter');
     spyOn(sharedService, 'setSelectedType');
-    const spy = spyOn(router, 'navigate');
+    const spy = spyOn(router, 'navigateByUrl');
     component.navigateToHomePage();
-    expect(spy).toHaveBeenCalledWith([`/dashboard/iteration`]);
+    expect(spy).toHaveBeenCalledWith(`/dashboard/iteration`);
   });
 
   it('should get kpi order list on project level', () => {
