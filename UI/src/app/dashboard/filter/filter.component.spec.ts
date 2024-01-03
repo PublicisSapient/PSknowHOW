@@ -16,10 +16,10 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { FilterComponent } from './filter.component';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -35,9 +35,7 @@ import { MessageService } from 'primeng/api';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
-import { ConfigComponent } from 'src/app/config/config.component';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 class MockRouter {
 
@@ -1823,6 +1821,11 @@ const completeHierarchyData = {
       'showHide': false,
       'commentSummary':  false
     };
+    component.toggleDropdownObj = {
+      "sprint": false,
+      "release": false,
+      "sqd": false
+    }
     const spy = spyOn(sharedService, 'getClickedItem').and.returnValue(of(mockTargetElement));
     component.toggleFilter();
     expect(spy).toHaveBeenCalled();
@@ -1867,6 +1870,62 @@ const completeHierarchyData = {
     spyOn(component, 'navigateToSelectedTab');
     component.getKpiOrderListProjectLevel();
     expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
+  })
+
+  it('should handle kpi change if all kpis are enabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true) 
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeTruthy;
+  });
+
+  it('should handle kpi change- if atleast one kpi is disabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true),
+      kpi39: new UntypedFormControl(false)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeFalsy;
+  });
+
+  it('should set trend value filter when allowMultipleSelection is true', () => {
+    component.allowMultipleSelection = true;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
   })
 
 });
