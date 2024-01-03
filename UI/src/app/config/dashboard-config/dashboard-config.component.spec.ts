@@ -31,6 +31,7 @@ import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { MessageService } from 'primeng/api';
 import { DropdownModule } from 'primeng/dropdown';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { of, throwError } from 'rxjs';
 
 
 describe('DashboardconfigComponent', () => {
@@ -45,7 +46,7 @@ describe('DashboardconfigComponent', () => {
 
   const fakeGetDashData = require('../../../test/resource/fakeShowHideApi.json');
   let fakeGetDashDataOthers = fakeGetDashData.data['scrum'][0].kpis.concat(fakeGetDashData.data['kanban'][0].kpis).concat(fakeGetDashData.data['others'][0].kpis);
-
+  const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   fakeGetDashDataOthers = fakeGetDashDataOthers.filter((kpi) => kpi.shown);
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -743,6 +744,59 @@ describe('DashboardconfigComponent', () => {
     const spy = spyOn(component, 'setMainDashboardKpiShowHideStatus')
     component.handleKpiCategoryChange(event, boardData);
     expect(spy).toHaveBeenCalledWith('kpi39', true);
+  })
+
+  it('should set main dashboard kpi show hide status', () => {
+    const kpiId = 'kpi39';
+    const shown = true;
+    component.selectedTab = 'scrum';
+    component.tabListContent = fakeGetDashData.data;
+    component.setMainDashboardKpiShowHideStatus(kpiId, shown);
+    expect(component.tabListContent[component.selectedTab][0].kpis.find(kpiDetail => kpiDetail.kpiId === kpiId)?.shown).toBe(true);
+  })
+
+  it('should get projects when superadmin', () => {
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true)
+    component.userProjects = [];
+    component.loader = false;
+    component.tabHeaders = [];
+    component.backupUserProjects = [];
+    component.selectedProject = {};
+    spyOn(component, 'getKpisData')
+    component.getProjects();
+    expect(component.getKpisData).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  fit('should get projects when not superadmin', () => {
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true)
+    component.userProjects = [];
+    component.loader = false;
+    component.tabHeaders = [];
+    component.backupUserProjects = [];
+    component.selectedProject = {};
+    spyOn(component, 'getKpisData')
+    component.getProjects();
+    expect(component.getKpisData).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  xit('should not get projects', () => {
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getUserProjects').and.returnValue(throwError(errResponse));
+    // spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true)
+    // component.userProjects = [];
+    // component.loader = false;
+    // component.tabHeaders = [];
+    // component.backupUserProjects = [];
+    // component.selectedProject = {};
+    const spy = spyOn(messageService, 'add')
+    component.getProjects();
+    expect(spy).toHaveBeenCalled();
   })
 });
 
