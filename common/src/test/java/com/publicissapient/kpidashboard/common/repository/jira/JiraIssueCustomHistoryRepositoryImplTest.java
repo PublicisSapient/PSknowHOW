@@ -16,15 +16,25 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository;
+package com.publicissapient.kpidashboard.common.repository.jira;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -32,16 +42,24 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Query;
 
+import com.publicissapient.kpidashboard.common.model.jira.IssueGroupFields;
+import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
 
 @RunWith(MockitoJUnitRunner.class)
-public class JiraIssueCustomHistoryRepositoryTest {
+public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Mock
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory1;
 	@Mock
@@ -52,6 +70,11 @@ public class JiraIssueCustomHistoryRepositoryTest {
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory4;
 	@Mock
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory5;
+	@Mock
+	private MongoOperations operations;
+
+	@InjectMocks
+	private JiraIssueCustomHistoryRepositoryImpl repository;
 	@Mock
 	private JiraIssueCustomHistoryRepository featureCustomHistoryRepo;
 
@@ -237,7 +260,6 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		List<JiraIssueCustomHistory> customHiostoryList = new ArrayList<>();
 		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
 		customHiostoryList.add(jiraIssueCustomHistory);
-		when(featureCustomHistoryRepo.findAll()).thenReturn(customHiostoryList);
 		assertTrue("Happy-path MongoDB connectivity validation for the FeatureCustomHistoryRepository has passed",
 				customHiostoryList.iterator().hasNext());
 	}
@@ -254,8 +276,6 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		jiraIssueCustomHistory.setStoryID(testStoryId);
 		jiraIssueCustomHistory.setBasicProjectConfigId("676987987897");
 		jiraIssueCustomHistoryList.add(jiraIssueCustomHistory);
-		when(featureCustomHistoryRepo.findByStoryIDAndBasicProjectConfigId(testStoryId, "676987987897"))
-				.thenReturn(jiraIssueCustomHistoryList.get(0));
 		assertEquals("Expected feature ID matches actual feature ID", testStoryId,
 				jiraIssueCustomHistoryList.get(0).getStoryID());
 	}
@@ -278,5 +298,115 @@ public class JiraIssueCustomHistoryRepositoryTest {
 		jiraHistoryChangeLog.setChangedFrom(status);
 		return jiraHistoryChangeLog;
 
+	}
+
+	@Test
+	public void testFindFeatureCustomHistoryStoryProjectWise() {
+		// Mock data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
+				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+
+		AggregationResults<IssueHistoryMappedData> anc = mock(AggregationResults.class);
+
+		doReturn(anc).when(operations).aggregate(any(), eq(JiraIssueCustomHistory.class), any());
+		doReturn(createIssueHistory()).when(anc).getMappedResults();
+
+		// Execute the method
+		List<JiraIssueCustomHistory> result = repository.findFeatureCustomHistoryStoryProjectWise(mapOfFilters,
+				uniqueProjectMap, Sort.Direction.ASC);
+		verify(operations, times(1)).aggregate(any(), eq(JiraIssueCustomHistory.class), any());
+
+	}
+
+	@Test
+	public void testFindIssuesByCreatedDateAndType() {
+		// Mock data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
+				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+		String dateFrom = "2022-01-01";
+		String dateTo = "2022-01-10";
+
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
+				.thenReturn(Collections.emptyList());
+
+		// Execute the method
+		repository.findIssuesByCreatedDateAndType(mapOfFilters, uniqueProjectMap, dateFrom, dateTo);
+
+		verify(operations, times(1)).find(any(Query.class), eq(JiraIssueCustomHistory.class));
+	}
+
+	@Test
+	public void testFindByFilterAndFromStatusMap() {
+		// Mock data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
+				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
+				.thenReturn(Collections.emptyList());
+
+		// Execute the method
+		repository.findByFilterAndFromStatusMap(mapOfFilters, uniqueProjectMap);
+
+		verify(operations, times(1)).find(any(Query.class), eq(JiraIssueCustomHistory.class));
+	}
+
+	@Test
+	public void testFindByFilterAndFromReleaseMap() {
+		// Mock data
+		List<String> basicProjectConfigId = Arrays.asList("PROJ1", "PROJ2");
+		List<Pattern> releaseList = Arrays.asList(Pattern.compile("Release1"), Pattern.compile("Release2"));
+
+		// Mock the query result
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
+				.thenReturn(Collections.emptyList());
+
+		// Execute the method
+		repository.findByFilterAndFromReleaseMap(basicProjectConfigId, releaseList);
+
+		// Assertions or verifications can be added based on the expected behavior.
+		verify(operations, times(1)).find(any(Query.class), eq(JiraIssueCustomHistory.class));
+	}
+
+	@Test
+	public void testFindByFilterAndFromStatusMapWithDateFilter() {
+		// Mock data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("projectKey",
+				Arrays.asList("PROJ1", "PROJ2"));
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+		String dateFrom = "2022-01-01";
+		String dateTo = "2022-01-10";
+
+		// Mock the query result
+		when(operations.find(any(Query.class), eq(JiraIssueCustomHistory.class)))
+				.thenReturn(Collections.emptyList());
+
+		// Execute the method
+		repository.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters,
+				uniqueProjectMap, dateFrom, dateTo);
+
+		// Assertions or verifications can be added based on the expected behavior.
+		verify(operations, times(1)).find(any(Query.class), eq(JiraIssueCustomHistory.class));
+	}
+
+	List<IssueHistoryMappedData> createIssueHistory() {
+		IssueHistoryMappedData issueHistoryMappedData = new IssueHistoryMappedData();
+
+		IssueGroupFields groupFields = new IssueGroupFields();
+		groupFields.setStoryID("DTS-123");
+		groupFields.setProjectComponentId("DTS");
+		groupFields.setBasicProjectConfigId("60ed70a572dafe33d3e37111");
+		groupFields.setUrl("www.abc.com");
+		issueHistoryMappedData.setId(groupFields);
+		issueHistoryMappedData.setHistoryDetails(Arrays.asList(KanbanIssueHistory.builder().buildNumber("123")
+				.status("SUCESS").type("DEPLOY").activityDate(LocalDateTime.now().toString()).build()));
+		issueHistoryMappedData.setStatusUpdationLog(Arrays.asList(JiraHistoryChangeLog.builder().changedTo("end")
+				.changedFrom("start").updatedOn(LocalDateTime.now()).build()));
+		return Arrays.asList(issueHistoryMappedData);
 	}
 }

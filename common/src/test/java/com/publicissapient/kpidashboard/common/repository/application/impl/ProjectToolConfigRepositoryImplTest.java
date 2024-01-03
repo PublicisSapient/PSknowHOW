@@ -43,10 +43,12 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigProcessorItem;
-import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 
+/**
+ * @author shi6
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectToolConfigRepositoryImplTest {
 
@@ -87,10 +89,7 @@ public class ProjectToolConfigRepositoryImplTest {
 				any(Document.class));
 
 		// Test
-		List<Tool> result = projectToolConfigRepository.getToolList();
-
-		// Assertions or verifications
-		// Add assertions based on the expected behavior of your method
+		projectToolConfigRepository.getToolList();
 	}
 
 	private ProjectToolConfigProcessorItem createNewProcessorItem() {

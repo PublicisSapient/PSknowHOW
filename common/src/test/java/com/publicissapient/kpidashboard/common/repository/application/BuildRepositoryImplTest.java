@@ -43,6 +43,9 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.publicissapient.kpidashboard.common.model.application.Build;
 
+/**
+ * @author shi6
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class BuildRepositoryImplTest {
 	@Mock

@@ -71,31 +71,26 @@ public class CapacityKpiDataRepositoryImplTest {
 		// method
 	}
 
-    @Test
-    public void testFindByWithFilters() {
-        // Mock data
-        Map<String, Object> mapOfFilters = new HashMap<>();
-        List<String> sprintList = Arrays.asList("sprint1", "sprint2");
-        List<String> basicProjectConfigIds = Arrays.asList("config1");
-        mapOfFilters.put("sprint_id",
-                sprintList.stream().distinct().collect(Collectors.toList()));
-        mapOfFilters.put("basicConfigId",
-                basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+	@Test
+	public void testFindByWithFilters() {
+		// Mock data
+		Map<String, Object> mapOfFilters = new HashMap<>();
+		List<String> sprintList = Arrays.asList("sprint1", "sprint2");
+		List<String> basicProjectConfigIds = Arrays.asList("config1");
+		mapOfFilters.put("sprint_id", sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put("basicConfigId", basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-        Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-        uniqueProjectMap.put("config1",mapOfFilters);
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		uniqueProjectMap.put("config1", mapOfFilters);
 
-        // Mock behavior
-        when(mongoOperations.find(any(Query.class), eq(CapacityKpiData.class))).thenReturn(Collections.emptyList());
+		// Mock behavior
+		when(mongoOperations.find(any(Query.class), eq(CapacityKpiData.class))).thenReturn(Collections.emptyList());
 
-        // Test
-        List<CapacityKpiData> result = capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
+		// Test
+		capacityKpiDataRepository.findByFilters(mapOfFilters, uniqueProjectMap);
 
-        // Verify that the find method is called with the correct parameters
-        verify(mongoOperations, times(1)).find(any(Query.class), eq(CapacityKpiData.class));
-
-        // You can add additional assertions based on the expected behavior of your
-        // method
-    }
+		// Verify that the find method is called with the correct parameters
+		verify(mongoOperations, times(1)).find(any(Query.class), eq(CapacityKpiData.class));
+	}
 
 }

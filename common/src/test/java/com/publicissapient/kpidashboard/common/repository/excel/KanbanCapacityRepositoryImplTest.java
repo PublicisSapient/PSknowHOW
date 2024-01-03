@@ -69,7 +69,7 @@ public class KanbanCapacityRepositoryImplTest {
 		when(mongoOperations.find(any(Query.class), eq(KanbanCapacity.class))).thenReturn(Collections.emptyList());
 
 		// Test
-		List<KanbanCapacity> result = kanbanCapacityRepository.findIssuesByType(mapOfFilters, dateFrom, dateTo);
+		kanbanCapacityRepository.findIssuesByType(mapOfFilters, dateFrom, dateTo);
 
 		// Verify that the find method is called with the correct parameters
 		verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanCapacity.class));
@@ -86,7 +86,7 @@ public class KanbanCapacityRepositoryImplTest {
 		when(mongoOperations.find(any(Query.class), eq(KanbanCapacity.class))).thenReturn(Collections.emptyList());
 
 		// Test
-		List<KanbanCapacity> result = kanbanCapacityRepository.findByFilterMapAndDate(mapOfFilters, dateFrom);
+		kanbanCapacityRepository.findByFilterMapAndDate(mapOfFilters, dateFrom);
 
 		// Verify that the find method is called with the correct parameters
 		verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanCapacity.class));

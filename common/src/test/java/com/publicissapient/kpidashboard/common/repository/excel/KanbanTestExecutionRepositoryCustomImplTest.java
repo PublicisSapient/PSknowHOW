@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
-import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -42,53 +39,48 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.publicissapient.kpidashboard.common.model.testexecution.KanbanTestExecution;
+
 /**
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
 public class KanbanTestExecutionRepositoryCustomImplTest {
 
-    @Mock
-    private MongoOperations mongoOperations;
+	@Mock
+	private MongoOperations mongoOperations;
 
-    @InjectMocks
-    private KanbanTestExecutionRepositoryCustomImpl kanbanTestExecutionRepository;
+	@InjectMocks
+	private KanbanTestExecutionRepositoryCustomImpl kanbanTestExecutionRepository;
 
-    @Test
-    public void testFindTestExecutionDetailByFilters() {
-        // Mock data
-        Map<String, List<String>> mapOfFilters = new HashMap<>();
-        List<String> sprintList = Arrays.asList("sprint1", "sprint2");
-        List<String> basicProjectConfigIds = Arrays.asList("config1");
-        mapOfFilters.put("sprint_id",
-                sprintList.stream().distinct().collect(Collectors.toList()));
-        mapOfFilters.put("basicConfigId",
-                basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+	@Test
+	public void testFindTestExecutionDetailByFilters() {
+		// Mock data
+		Map<String, List<String>> mapOfFilters = new HashMap<>();
+		List<String> sprintList = Arrays.asList("sprint1", "sprint2");
+		List<String> basicProjectConfigIds = Arrays.asList("config1");
+		mapOfFilters.put("sprint_id", sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilters.put("basicConfigId", basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
 
-        Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
-        Map<String, Object> mapOfFilter = new HashMap<>();
-        mapOfFilter.put("sprint_id",
-                sprintList.stream().distinct().collect(Collectors.toList()));
-        mapOfFilter.put("basicConfigId",
-                basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
-        uniqueProjectMap.put("config1",mapOfFilter);
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		Map<String, Object> mapOfFilter = new HashMap<>();
+		mapOfFilter.put("sprint_id", sprintList.stream().distinct().collect(Collectors.toList()));
+		mapOfFilter.put("basicConfigId", basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+		uniqueProjectMap.put("config1", mapOfFilter);
 
-        String dateFrom = "2022-01-01";
-        String dateTo = "2022-01-10";
+		String dateFrom = "2022-01-01";
+		String dateTo = "2022-01-10";
 
-        // Mock behavior
-        when(mongoOperations.find(any(Query.class), eq(KanbanTestExecution.class)))
-                .thenReturn(Collections.emptyList());
+		// Mock behavior
+		when(mongoOperations.find(any(Query.class), eq(KanbanTestExecution.class))).thenReturn(Collections.emptyList());
 
-        // Test
-     kanbanTestExecutionRepository
-                .findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap, dateFrom, dateTo);
+		// Test
+		kanbanTestExecutionRepository.findTestExecutionDetailByFilters(mapOfFilters, uniqueProjectMap, dateFrom,
+				dateTo);
 
-        // Verify that the find method is called with the correct parameters
-        verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanTestExecution.class));
+		// Verify that the find method is called with the correct parameters
+		verify(mongoOperations, times(1)).find(any(Query.class), eq(KanbanTestExecution.class));
 
-    }
-
-
+	}
 
 }

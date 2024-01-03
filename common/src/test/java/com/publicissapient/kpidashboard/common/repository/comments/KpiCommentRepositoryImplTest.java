@@ -15,7 +15,6 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package com.publicissapient.kpidashboard.common.repository.comments;
 
 import static org.mockito.ArgumentMatchers.any;
