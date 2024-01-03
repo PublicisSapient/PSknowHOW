@@ -34,7 +34,7 @@ public class AesEncryptionServiceTest {
 
 	private static final String KEY = "1231231231231234";
 	private static final String PLAIN_TEXT = "test";
-	private static final String ENCRYPTED_TEXT = "jH1rJfRHPRjUtkbnDBy40rSDyeoLcifdlNBxPDIcCVLwMAB2OO0NWsvvOIrrnFvI";
+	private static final String ENCRYPTED_TEXT = "7UDobmZ4iDpJekQtcUGxGsXUFuGYz8HQwHp7xLtV7ZCkOmjKt5zU/AwemhLJEMxr";
 	@InjectMocks
 	private AesEncryptionService aesEncryptionService;
 
