@@ -18,33 +18,28 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
-import com.publicissapient.kpidashboard.common.model.ToolCredential;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
-import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
-import com.publicissapient.kpidashboard.sonar.service.SonarToolCredentialProvider;
+import static org.mockito.ArgumentMatchers.any;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
+import com.publicissapient.kpidashboard.common.model.ToolCredential;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
+import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
 
 /**
  * @author shi6
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SonarProcessorUtilsTest {
-    @Mock
-    public ToolCredentialProvider toolCredentialProvider;
+	@Mock
+	public ToolCredentialProvider toolCredentialProvider;
 
 	@Test
 	public void getHeaders_BasicAuthTrue() {
@@ -60,21 +55,21 @@ public class SonarProcessorUtilsTest {
 		Assert.assertEquals(httpHeaders, SonarProcessorUtils.getHeaders("abc", false));
 	}
 
-    @Test
-    public void testVault() {
-        ProjectToolConnectionFactory toolConnectionFactory = ProjectToolConnectionFactory.newInstance();
-        ProcessorToolConnection processorToolConnection = toolConnectionFactory.getProcessorToolConnectionList().get(3);
-        ToolCredential credential= new ToolCredential();
-        credential.setUsername("dummy");
-        credential.setPassword("dummy");
-        Mockito.when(toolCredentialProvider.findCredential(any())).thenReturn(credential);
-        SonarUtils.getToolCredentials(toolCredentialProvider,processorToolConnection);
-    }
+	@Test
+	public void testVault() {
+		ProjectToolConnectionFactory toolConnectionFactory = ProjectToolConnectionFactory.newInstance();
+		ProcessorToolConnection processorToolConnection = toolConnectionFactory.getProcessorToolConnectionList().get(3);
+		ToolCredential credential = new ToolCredential();
+		credential.setUsername("dummy");
+		credential.setPassword("dummy");
+		Mockito.when(toolCredentialProvider.findCredential(any())).thenReturn(credential);
+		SonarUtils.getToolCredentials(toolCredentialProvider, processorToolConnection);
+	}
 
-    @Test
-    public void testCloud() {
-        ProjectToolConnectionFactory toolConnectionFactory = ProjectToolConnectionFactory.newInstance();
-        ProcessorToolConnection processorToolConnection = toolConnectionFactory.getProcessorToolConnectionList().get(2);
-        SonarUtils.getToolCredentials(toolCredentialProvider,processorToolConnection);
-    }
+	@Test
+	public void testCloud() {
+		ProjectToolConnectionFactory toolConnectionFactory = ProjectToolConnectionFactory.newInstance();
+		ProcessorToolConnection processorToolConnection = toolConnectionFactory.getProcessorToolConnectionList().get(2);
+		SonarUtils.getToolCredentials(toolCredentialProvider, processorToolConnection);
+	}
 }

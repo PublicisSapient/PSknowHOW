@@ -16,9 +16,63 @@
  */
 package com.publicissapient.kpidashboard.common.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 
 public class AdditionalFilterCategoryServiceImplTest {
 
+	@Mock
+	private AdditionalFilterCategoryRepository additionalFilterCategoryRepository;
+
+	@InjectMocks
+	private AdditionalFilterCategoryServiceImpl additionalFilterCategoryService;
+
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void testGetAdditionalFilterCategories() {
+		// Arrange
+		AdditionalFilterCategory category1 = new AdditionalFilterCategory();
+        category1.setLevel(1);
+        category1.setFilterCategoryId("Category ID1");
+        category1.setFilterCategoryName("Category A");
+		AdditionalFilterCategory category2 = new AdditionalFilterCategory();
+        category2.setLevel(2);
+        category2.setFilterCategoryId("Category ID2");
+        category2.setFilterCategoryName("Category B");
+		List<AdditionalFilterCategory> mockCategories = Arrays.asList(category1, category2);
+
+		// Mocking repository behavior
+		when(additionalFilterCategoryRepository.findAllByOrderByLevel()).thenReturn(mockCategories);
+
+		// Act
+		List<AdditionalFilterCategory> result = additionalFilterCategoryService.getAdditionalFilterCategories();
+
+		// Assert
+		assertEquals(2, result.size());
+		assertEquals("Category ID1", result.get(0).getFilterCategoryId());
+		assertEquals(1, result.get(0).getLevel());
+		assertEquals("Category ID2", result.get(1).getFilterCategoryId());
+		assertEquals(2, result.get(1).getLevel());
+
+		// Verify that the repository method was called
+		verify(additionalFilterCategoryRepository, times(1)).findAllByOrderByLevel();
+	}
 }

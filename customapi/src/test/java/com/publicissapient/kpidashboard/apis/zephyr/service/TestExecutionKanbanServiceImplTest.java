@@ -119,7 +119,7 @@ public class TestExecutionKanbanServiceImplTest {
 			}
 		});
 		Map<String, AdditionalFilterCategory> additionalFilterCategoryList = new HashMap<>();
-		AdditionalFilterCategory additionalFilterCategory = new AdditionalFilterCategory();
+		AdditionalFilterCategory additionalFilterCategory = new AdditionalFilterCategory(1, "Category 1", "Category A");
 		additionalFilterCategory.setLevel(1);
 		additionalFilterCategory.setFilterCategoryId("12");
 		additionalFilterCategory.setFilterCategoryName("Test");
