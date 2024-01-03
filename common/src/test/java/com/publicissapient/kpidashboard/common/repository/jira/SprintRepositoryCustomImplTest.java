@@ -17,8 +17,29 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.jira;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 
 /*
 author @shi6
@@ -26,4 +47,30 @@ author @shi6
 @RunWith(MockitoJUnitRunner.class)
 public class SprintRepositoryCustomImplTest {
 
+	@InjectMocks
+	private SprintRepositoryCustomImpl sprintRepositoryCustomImpl;
+
+	@Mock
+	private MongoOperations operations;
+
+	@Test
+	public void testFindByBasicProjectConfigIdInAndStateInOrderByStartDateDesc() {
+		// Set up test data
+		Set<ObjectId> basicProjectConfigIds = new HashSet<>();
+		// Add ObjectIds to basicProjectConfigIds
+
+		List<String> sprintStatusList = Arrays.asList("ACTIVE", "CLOSED");
+
+		long limit = 5; // Set the desired limit
+		when(operations.aggregate(any(Aggregation.class), anyString(), any()))
+				.thenReturn(mock(AggregationResults.class));
+
+		// Call the method and assert the result
+		List<SprintDetails> result = sprintRepositoryCustomImpl
+				.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigIds, sprintStatusList,
+						limit);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
 }

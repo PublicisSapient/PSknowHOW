@@ -17,15 +17,46 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
-import static org.junit.Assert.*;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Query;
+
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 
 /*
 author @shi6
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UserInfoCustomRepositoryImplTest {
+
+	@Mock
+	private MongoOperations operations;
+
+	@InjectMocks
+	private UserInfoCustomRepositoryImpl userInfoCustomRepository;
+
+	@Test
+	public void testFindByBasicProjectConfigIdInAndStateInOrderByStartDateDesc() {
+
+		when(operations.find(any(Query.class), eq(UserInfo.class))).thenReturn(Collections.emptyList());
+		// Call the method and assert the result
+		List<UserInfo> result = userInfoCustomRepository.findAdminUserOfProject("basicConfigId");
+		userInfoCustomRepository.findByProjectAccess("basicConfigId");
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
 
 }

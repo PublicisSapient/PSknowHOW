@@ -157,8 +157,5 @@ public class KanbanJiraIssueRepositoryImplTest {
 		doReturn(mock).when(mongoOperations).updateMulti(any(Query.class), any(Update.class),
 				eq(KanbanJiraIssue.class));
 		kanbanJiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId, fieldsToUnset);
-
-		// Assert
-		// Add assertions if needed
 	}
 }

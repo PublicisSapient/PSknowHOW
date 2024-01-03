@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -47,7 +48,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
+import com.mongodb.client.result.UpdateResult;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
@@ -502,6 +506,9 @@ public class JiraIssueRepositoryImplTest {
 		// Call the method and assert the result
 		List<SprintWiseStory> result = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters, uniqueProjectMap,
 				filterToShowOnTrend, individualDevOrQa);
+		jiraIssueRepository.findIssuesAndTestDetailsGroupBySprint(mapOfFilters, uniqueProjectMap, filterToShowOnTrend,
+				individualDevOrQa, uniqueProjectMap);
+		jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
 
 		// Assert the result or perform further verifications
 		assertEquals(Collections.emptyList(), result);
@@ -637,31 +644,105 @@ public class JiraIssueRepositoryImplTest {
 		// Set up test data
 		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
 		// Add filter values to mapOfFilters
-		Map<String, Object> map= new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("sprintBeginDate", Arrays.asList("abc"));
-		map.put("sprintBeginDat",  Arrays.asList("abc"));
+		map.put("sprintBeginDat", Arrays.asList("abc"));
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		uniqueProjectMap.put("test", map);
 
-
 		// Add unique project map data
-
 		String filterToShowOnTrend = "filterToShowOnTrend";
 		String individualDevOrQa = "individualDevOrQa";
 
 		AggregationResults<IssueHistoryMappedData> anc = mock(AggregationResults.class);
 		doReturn(anc).when(operations).aggregate(any(), eq(JiraIssue.class), any());
 		doReturn(Collections.emptyList()).when(anc).getMappedResults();
-		
+
 		// Call the method and assert the result
 		List<SprintWiseStory> result = jiraIssueRepository.findStoriesByType(mapOfFilters, uniqueProjectMap,
 				filterToShowOnTrend, individualDevOrQa);
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+		jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectMap);
+
+		jiraIssueRepository.findIssueByNumber(mapOfFilters, new HashSet<>(), uniqueProjectMap);
 
 		// Assert the result or perform further verifications
 		assertEquals(Collections.emptyList(), result);
-		// Additional assertions or verifications based on the actual logic of the method
 	}
 
+	@Test
+	public void testFindDefectLinkedWithSprint() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findDefectLinkedWithSprint(mapOfFilters);
+
+		jiraIssueRepository.findByTypeNameAndDefectStoryIDIn("typeName", new ArrayList<>());
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testFindDefectCountByRCA() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findDefectCountByRCA(mapOfFilters);
+		jiraIssueRepository.findIssuesWithBoolean(mapOfFilters, "fieldName", true, "", "");
+		jiraIssueRepository.findStoriesBySprints(mapOfFilters, new ArrayList<>());
+		jiraIssueRepository.findCostOfDelayByType(mapOfFilters);
+		jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>());
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testUpdateByBasicProjectConfigId() {
+		String basicProjectConfigId = "projectId1";
+		List<String> fieldsToUnset = Arrays.asList("field1", "field2");
+
+		UpdateResult mock = mock(UpdateResult.class);
+		// Act
+		doReturn(mock).when(operations).updateMulti(any(Query.class), any(Update.class), eq(JiraIssue.class));
+		jiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId, fieldsToUnset);
+	}
+
+	@Test
+	public void testFindNonRegressionTestCases() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		String startDate = "2024-01-01T00:00:00.0000000";
+		String endDate = "2024-01-31T23:59:59.0000000";
+		// Add filter values to mapOfFilters
+		Map<String, Object> map = new HashMap<>();
+		map.put("storyType", Arrays.asList(Pattern.compile("Story")));
+		map.put("labels", Arrays.asList(Pattern.compile("Story")));
+		map.put("jiraStatus", Arrays.asList(Pattern.compile("Story")));
+		map.put("Release", Arrays.asList(Pattern.compile("Story")));
+
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1", map);
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findNonRegressionTestCases(mapOfFilters, uniqueProjectMap);
+
+		jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters, uniqueProjectMap, startDate, endDate,
+				"range", "nin", true);
+		jiraIssueRepository.findLinkedDefects(mapOfFilters, new HashSet<>(), uniqueProjectMap);
+		jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters, uniqueProjectMap);
+		jiraIssueRepository.findByRelease(mapOfFilters,uniqueProjectMap);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
 
 }
