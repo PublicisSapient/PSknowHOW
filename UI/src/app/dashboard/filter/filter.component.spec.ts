@@ -37,6 +37,23 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
 import { ConfigComponent } from 'src/app/config/config.component';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+class MockRouter {
+
+  // Mock navigate method
+  navigate(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  navigateByUrl(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  url: string = '/';
+}
+
+export { MockRouter };
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -49,6 +66,7 @@ describe('FilterComponent', () => {
   let helperService: HelperService;
   let excelService: ExcelService;
   let ga: GoogleAnalyticsService;
+  let router: Router;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
@@ -235,7 +253,6 @@ const completeHierarchyData = {
 };
 
   beforeEach(() => {
-
     const routes: Routes = [
       { path: 'dashboard', component: FilterComponent }
 
@@ -248,7 +265,9 @@ const completeHierarchyData = {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, 
+        { provide: APP_CONFIG, useValue: AppConfig }, 
+        { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
   });
@@ -263,6 +282,7 @@ const completeHierarchyData = {
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -1795,6 +1815,58 @@ const completeHierarchyData = {
     });
     const value1 = component.parentIDClean("Demo_port");
     expect(value1).toBe("Demo Portfolio");
+  })
+
+  it('should toggle filter', () => {
+    const mockTargetElement = document.createElement('div');
+    component.toggleDropdown = {
+      'showHide': false,
+      'commentSummary':  false
+    };
+    const spy = spyOn(sharedService, 'getClickedItem').and.returnValue(of(mockTargetElement));
+    component.toggleFilter();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should navigate to home page', () => {
+    (router as any).url = '/somepath/Config';
+    component.kanban = true;
+    component.selectedTab = 'maturity';
+    component.projectIndex = 1;
+    spyOn(sharedService, 'setEmptyFilter');
+    spyOn(sharedService, 'setSelectedType');
+    const spy = spyOn(router, 'navigateByUrl');
+    component.navigateToHomePage();
+    expect(spy).toHaveBeenCalledWith(`/dashboard/iteration`);
+  });
+
+  it('should get kpi order list on project level', () => {
+    component.kpiListDataProjectLevel = [];
+    component.kpiListData = [];
+    component.masterData = fakeMasterData;
+    component.filterData = fakeFilterData;
+    component.filterApplyData = filterApplyData;
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    const mockData = configGlobalData;
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(sharedService, 'setDashConfigData');
+    const spy = spyOn(sharedService, 'select');
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
+    spyOn(component, 'processKpiList');
+    spyOn(component, 'navigateToSelectedTab');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
   })
 
 });

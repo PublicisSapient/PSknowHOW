@@ -376,4 +376,237 @@ describe('AccessMgmtComponent', () => {
     expect(confirmationService.confirm).toHaveBeenCalled();
   })
 
+  it("should remove project", () => {
+    const itemName = "Project1";
+    const arr = [];
+    const spy = spyOn(component, 'removeByAttr')
+    component.removeProject(itemName, arr);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it("should remove by attribute", () => {
+    const itemName = "Project1";
+    const arr = [];
+    component.removeByAttr(arr, 'itemName', itemName)
+    expect(arr.length).toBe(0);
+  })
+
+  it('should cancel dialog', () => {
+    spyOn(component, 'hide');
+    component.cancelDialog();
+    expect(component.displayDialog).toBe(false);
+  })
+
+  it('should hide dialog', () => {
+    component.projectFilter = {
+      resetDropdowns: false
+    };
+    component.hide();
+    expect(component.projectFilter.resetDropdowns).toBe(true);
+  })
+
+  it('should remove row', () => {
+    const projectsAccess = [{
+      "role": "ROLE_PROJECT_VIEWER",
+      "accessNodes": [
+          {
+              "accessLevel": "project",
+              "accessItems": [
+                  {
+                      "itemId": "655f073bd08ea076bfb2c9cf",
+                      "itemName": "K Project"
+                  },
+                  {
+                      "itemId": "6449103b3be37902a3f1ba70",
+                      "itemName": "GearBox Squad 1"
+                  },
+                  {
+                      "itemId": "64ab97327d51263c17602b58",
+                      "itemName": "Unified Commerce - Dan's MVP"
+                  }
+              ]
+          }
+      ]
+    }]
+    const index = 0;
+    component.removeRow(projectsAccess, index);
+    expect(projectsAccess.length).toBe(0);
+  })
+
+  it('should add row', () => {
+    const projectsAccess = [{
+      "role": "ROLE_PROJECT_VIEWER",
+      "accessNodes": [
+          {
+              "accessLevel": "project",
+              "accessItems": [
+                  {
+                      "itemId": "655f073bd08ea076bfb2c9cf",
+                      "itemName": "K Project"
+                  },
+                  {
+                      "itemId": "6449103b3be37902a3f1ba70",
+                      "itemName": "GearBox Squad 1"
+                  },
+                  {
+                      "itemId": "64ab97327d51263c17602b58",
+                      "itemName": "Unified Commerce - Dan's MVP"
+                  }
+              ]
+          }
+      ]
+    }]
+    component.addRow(projectsAccess);
+    expect(projectsAccess.length).toBe(2);
+  });
+
+  it('should update access  and showAddUserForm is true', () => {
+    const userData = {
+      "id": "601d3d2630c49e000148b749",
+      "username": "Aadil",
+      "authorities": [
+          "ROLE_PROJECT_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "aadil.mohan@publicssapient.com",
+      "projectsAccess": [
+          {
+              "role": "ROLE_PROJECT_VIEWER",
+              "accessNodes": [
+                  {
+                      "accessLevel": "project",
+                      "accessItems": [
+                          {
+                              "itemId": "6449103b3be37902a3f1ba70",
+                              "itemName": "GearBox Squad 1"
+                          },
+                          {
+                              "itemId": "64ab97327d51263c17602b58",
+                              "itemName": "Unified Commerce - Dan's MVP"
+                          },
+                          {
+                              "itemId": "655ef009d08ea076bfb2c9ae",
+                              "itemName": "REDCLIFF"
+                          }
+                      ]
+                  }
+              ]
+          }
+      ]
+    };
+    const response = {
+      success: true
+    }
+    component.displayDuplicateProject = false;
+    component.showAddUserForm = true;
+    spyOn(httpService, 'updateAccess').and.returnValue(of(response));
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'resetAddDataForm');
+    component.saveAccessChange(userData);
+    expect(component.showAddUserForm).toBe(false);
+    expect(spy).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'User added.',
+      detail: ''
+    });
+  })
+
+  it('should update access when response is success and showAddUserForm is false', () => {
+    const userData = {
+      "id": "601d3d2630c49e000148b749",
+      "username": "Aadil",
+      "authorities": [
+          "ROLE_PROJECT_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "aadil.mohan@publicssapient.com",
+      "projectsAccess": [
+          {
+              "role": "ROLE_PROJECT_VIEWER",
+              "accessNodes": [
+                  {
+                      "accessLevel": "project",
+                      "accessItems": [
+                          {
+                              "itemId": "6449103b3be37902a3f1ba70",
+                              "itemName": "GearBox Squad 1"
+                          },
+                          {
+                              "itemId": "64ab97327d51263c17602b58",
+                              "itemName": "Unified Commerce - Dan's MVP"
+                          },
+                          {
+                              "itemId": "655ef009d08ea076bfb2c9ae",
+                              "itemName": "REDCLIFF"
+                          }
+                      ]
+                  }
+              ]
+          }
+      ]
+    };
+    const response = {
+      success: true
+    }
+    component.displayDuplicateProject = false;
+    component.showAddUserForm = false;
+    spyOn(httpService, 'updateAccess').and.returnValue(of(response));
+    const spy = spyOn(messageService, 'add');
+    // spyOn(component, 'resetAddDataForm');
+    component.saveAccessChange(userData);
+    expect(component.showAddUserForm).toBe(false);
+    expect(spy).toHaveBeenCalledWith({
+      severity: 'success',
+      summary: 'Access updated.',
+      detail: ''
+    });
+  })
+
+  it('should update access when response has failed', () => {
+    const userData = {
+      "id": "601d3d2630c49e000148b749",
+      "username": "Aadil",
+      "authorities": [
+          "ROLE_PROJECT_VIEWER"
+      ],
+      "authType": "STANDARD",
+      "emailAddress": "aadil.mohan@publicssapient.com",
+      "projectsAccess": [
+          {
+              "role": "ROLE_PROJECT_VIEWER",
+              "accessNodes": [
+                  {
+                      "accessLevel": "project",
+                      "accessItems": [
+                          {
+                              "itemId": "6449103b3be37902a3f1ba70",
+                              "itemName": "GearBox Squad 1"
+                          },
+                          {
+                              "itemId": "64ab97327d51263c17602b58",
+                              "itemName": "Unified Commerce - Dan's MVP"
+                          },
+                          {
+                              "itemId": "655ef009d08ea076bfb2c9ae",
+                              "itemName": "REDCLIFF"
+                          }
+                      ]
+                  }
+              ]
+          }
+      ]
+    };
+    const response = {
+      success: false
+    }
+    component.displayDuplicateProject = false;
+    spyOn(httpService, 'updateAccess').and.returnValue(of(response));
+    const spy = spyOn(messageService, 'add');
+    component.saveAccessChange(userData);
+    expect(component.showAddUserForm).toBe(false);
+    expect(spy).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Error in updating project access. Please try after some time.'
+    });
+  })
 });
