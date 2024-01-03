@@ -25,6 +25,34 @@
 
     <version>6.0.0-SNAPSHOT</version>
 
+
+
+    <properties>
+        <jacoco.destfile>${project.basedir}/../../target/jacoco.exec</jacoco.destfile>
+
+        <sonar.coverage.exclusions>
+            **com/publicissapient/kpidashboard/**/*Application.java,
+            **com/publicissapient/kpidashboard/**/model/**,
+            **com/publicissapient/kpidashboard/**/repository/**,
+            **com/publicissapient/kpidashboard/**/config/**,
+            **com/publicissapient/kpidashboard/**/utils/**,
+            **com/publicissapient/kpidashboard/**/enums/*,
+            **com/publicissapient/kpidashboard/**/constant/*,
+            **com/publicissapient/kpidashboard/**/pojos/*,
+            **com/publicissapient/kpidashboard/**/adapter/**,
+            **com/publicissapient/kpidashboard/**/criteria/*,
+            **com/publicissapient/kpidashboard/**/*Constants.java,
+            **com/publicissapient/kpidashboard/**/*Constant.java,
+            **com/publicissapient/kpidashboard/**/*Properties.java
+        </sonar.coverage.exclusions>
+        <sonar.test.exclusions>
+            **/src/test/java/**
+        </sonar.test.exclusions>
+        <sonar.exclusions>
+            **/src/test/java/**
+        </sonar.exclusions>
+    </properties>
+
     <profiles>
         <profile>
             <id>processors</id>
