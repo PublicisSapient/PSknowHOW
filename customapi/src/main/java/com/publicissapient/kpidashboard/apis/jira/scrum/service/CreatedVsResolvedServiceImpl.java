@@ -551,4 +551,11 @@ public class CreatedVsResolvedServiceImpl extends JiraKPIService<Double, List<Ob
 		}
 		return hoverMap;
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI126(),
+				KPICode.CREATED_VS_RESOLVED_DEFECTS.getKpiId());
+	}
+
 }

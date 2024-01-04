@@ -125,8 +125,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'Zephyr',
       connectionLabel: 'Zephyr',
-      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
-      inputFields: ['type', 'connectionName', 'cloudEnv', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
+      labels: ['Connection Type', 'Connection Name', 'Is Cloud Environment', 'Use Bearer Token', 'PatOAuthToken', 'Base Url', 'Username', 'Use vault password', 'Password', 'Api End Point', 'Access Token', 'Is Connection Private'],
+      inputFields: ['type', 'connectionName', 'cloudEnv', 'bearerToken', 'patOAuthToken', 'baseUrl', 'username', 'vault', 'password', 'apiEndPoint', 'accessToken', 'connPrivate']
     },
     {
       connectionType: 'RepoTool',
@@ -173,9 +173,15 @@ export class ConnectionListComponent implements OnInit {
         {
           field: 'sshUrl',
           isEnabled: false
-        }, 
+        },
       ],
-      accessTokenEnabled:[]
+      accessTokenEnabled:[],
+      bearerToken: [
+        {
+          field: 'patOAuthToken',
+          isEnabled: true
+        },
+      ]
     },
     enableDisableAnotherTime: {
       cloudEnv: [],
@@ -490,7 +496,7 @@ export class ConnectionListComponent implements OnInit {
       this.helper.getGlobalConfig();
       this.repoToolsEnabled = this.sharedService.getGlobalConfigData()?.repoToolFlag;
     }
-    
+
     // filtering connections based on repoToolFlag
     this.connectionTypeCompleteList = this.filterConnections(this.connectionTypeCompleteList,'label')
     this.addEditConnectionFieldsNlabels = this.filterConnections(this.addEditConnectionFieldsNlabels,'connectionLabel')
@@ -925,6 +931,7 @@ export class ConnectionListComponent implements OnInit {
 
   editConnection(connection) {
     this.connection = { ...connection };
+    this.connection['username'] = '';
     this.isNewlyConfigAdded = false;
     this.selectedConnectionType = this.connection.type;
     if (connection.type?.toLowerCase() == 'jira') {
@@ -1039,7 +1046,7 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['sshUrl'].disable();
     } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
       this.basicConnectionForm.controls['sshUrl'].enable();
-    }  
+    }
 
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
       this.basicConnectionForm.controls['password'].disable();
@@ -1127,8 +1134,9 @@ export class ConnectionListComponent implements OnInit {
     }
 
     this.checkBitbucketValue(event.checked, field, type);
-
-    this.checkZephyr();
+    if(type?.toLowerCase() == 'zephyr'){
+      this.checkZephyr();
+    }
     this.enableDisableFieldsOnIsCloudSwithChange();
   }
 
@@ -1354,7 +1362,7 @@ export class ConnectionListComponent implements OnInit {
       });
         break;
 
-      case 'Zephyr': this.testConnectionService.testZephyr(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['apiEndPoint'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault']).subscribe(next => {
+      case 'Zephyr': this.testConnectionService.testZephyr(reqData['baseUrl'], reqData['username'], reqData['password'], reqData['apiEndPoint'], reqData['accessToken'], reqData['cloudEnv'], reqData['vault'], reqData['bearerToken'], reqData['patOAuthToken']).subscribe(next => {
         if (next.success && next.data === 200) {
           this.testConnectionMsg = 'Valid Connection';
           this.testConnectionValid = true;
@@ -1369,7 +1377,7 @@ export class ConnectionListComponent implements OnInit {
         this.testingConnection = false;
       });
         break;
-        
+
       case 'RepoTool':
         this.testConnectionService.testRepoTool(reqData['httpUrl'], reqData['repoToolProvider'], reqData['username'], reqData['accessToken'], reqData['email']).subscribe(next => {
           if (next.success && next.data === 200) {
@@ -1431,6 +1439,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (this.connection['vault'] == true && this.connection['cloudEnv'] == false) {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
@@ -1439,6 +1450,9 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].disable();
       } else if (this.connection['vault'] == false && this.connection['cloudEnv'] == true) {
         this.basicConnectionForm.controls['baseUrl'].setValue(this.zephyrUrl);
         this.basicConnectionForm.controls['baseUrl'].disable();
@@ -1449,6 +1463,17 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].setValue('');
         this.basicConnectionForm.controls['password'].disable();
         this.basicConnectionForm.controls['accessToken']?.enable();
+        this.basicConnectionForm.controls['patOAuthToken'].setValue('');
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].disable();
+      } else if(this.connection['bearerToken'] == true){
+        this.basicConnectionForm.controls['patOAuthToken'].enable();
+        this.basicConnectionForm.controls['password'].setValue('');
+        this.basicConnectionForm.controls['password'].disable();
+        this.basicConnectionForm.controls['accessToken'].setValue('');
+        this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['vault'].disable();
+        this.basicConnectionForm.controls['cloudEnv'].disable();
       } else {
         this.basicConnectionForm.controls['baseUrl'].enable();
         this.basicConnectionForm.controls['apiEndPoint'].enable();
@@ -1456,6 +1481,11 @@ export class ConnectionListComponent implements OnInit {
         this.basicConnectionForm.controls['password'].enable();
         this.basicConnectionForm.controls['accessToken'].setValue('');
         this.basicConnectionForm.controls['accessToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].setValue('false');
+        this.basicConnectionForm.controls['patOAuthToken'].disable();
+        this.basicConnectionForm.controls['bearerToken'].enable();
+        this.basicConnectionForm.controls['vault'].enable();
+        this.basicConnectionForm.controls['cloudEnv'].enable();
       }
     }
   }

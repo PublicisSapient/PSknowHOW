@@ -266,7 +266,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 					sprintWiseRemovedListMap, sprintWiseInitialCommitListMap, currentNodeIdentifier);
 
 			for (Map.Entry<String, Map<String, List<JiraIssue>>> map : issueCountMap.entrySet()) {
-				DataCount dataCount = getDataCount(node, trendLineName, dataCountMap, map);
+				DataCount dataCount = getDataCount(node, trendLineName, dataCountMap, map, fieldMapping);
 				trendValueList.add(dataCount);
 			}
 			mapTmp.get(node.getId()).setValue(dataCountMap);
@@ -464,7 +464,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 				Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
 				sprintWiseAddedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 				sprintWiseRemovedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
-				KPIExcelUtility.populateStoryChunk(sprintName, totalSprintStoryMap, addedIssueDateMap,
+				KPIExcelUtility.populateScopeChurn(sprintName, totalSprintStoryMap, addedIssueDateMap,
 						removedIssueDateMap, excelData, fieldMapping);
 
 			}
@@ -472,12 +472,12 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	}
 
 	private DataCount getDataCount(Node node, String trendLineName, Map<String, List<DataCount>> dataCountMap,
-			Map.Entry<String, Map<String, List<JiraIssue>>> map) {
+			Map.Entry<String, Map<String, List<JiraIssue>>> map, FieldMapping fieldMapping) {
 		DataCount dataCount = new DataCount();
 		dataCount.setSProjectName(trendLineName);
 		dataCount.setSSprintID(node.getSprintFilter().getId());
 		dataCount.setSSprintName(node.getSprintFilter().getName());
-		getDataCountValues(map, dataCount);
+		getDataCountValues(map, dataCount, fieldMapping);
 		dataCount.setHoverValue(generateHoverMap(map.getValue(), map.getKey()));
 		dataCountMap.put(map.getKey(), new ArrayList<>(Collections.singletonList(dataCount)));
 		return dataCount;
@@ -509,8 +509,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		return issueCountMap;
 	}
 
-	private static void getDataCountValues(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount) {
-		setStoryPoints(map, dataCount);
+	private static void getDataCountValues(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount, FieldMapping fieldMapping) {
+		setStoryPoints(map, dataCount, fieldMapping);
 		setIssueCount(map, dataCount);
 	}
 
@@ -541,14 +541,13 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 	/*
 	 * This method sets story Points of both the scope change and initial scope
 	 */
-	private static void setStoryPoints(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount) {
+	private static void setStoryPoints(Map.Entry<String, Map<String, List<JiraIssue>>> map, DataCount dataCount, FieldMapping fieldMapping) {
 		if (STORY_POINTS.equalsIgnoreCase(map.getKey())) {
 			double scopeChangeStoryPoints = 0.0;
 			double initialScopeStoryPoints = 0.0;
 			for (Map.Entry<String, List<JiraIssue>> entry : map.getValue().entrySet()) {
 				String s = entry.getKey();
-				double storyPoints = entry.getValue().stream()
-						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0)).sum();
+				double storyPoints = KpiDataHelper.calculateStoryPoints(entry.getValue(), fieldMapping);
 
 				if (s.equalsIgnoreCase(SCOPE_CHANGE)) {
 					scopeChangeStoryPoints = storyPoints;

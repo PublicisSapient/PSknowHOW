@@ -90,8 +90,8 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 		if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 				&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
 			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints()).orElse(0.0d));
-		} else if (null != jiraIssue.getOriginalEstimateMinutes()) {
-			Double totalOriginalEstimateInHours = (double) (jiraIssue.getOriginalEstimateMinutes()) / 60;
+		} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+			Double totalOriginalEstimateInHours = (double) (jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
 			effectSumDouble.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
 		}
 	}
@@ -470,4 +470,10 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			}
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI5(), KPICode.SPRINT_PREDICTABILITY.getKpiId());
+	}
+
 }

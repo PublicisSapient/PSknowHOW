@@ -125,7 +125,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    width: 150px;
+    width: fit-content;
     padding: 10px;
     font-size: 13px;
     height: 40px;

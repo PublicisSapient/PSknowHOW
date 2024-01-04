@@ -441,7 +441,7 @@
     }
   } ,
   {
-    "fieldName" : "jiraDorKPI3" ,
+    "fieldName" : "jiraDorKPI171" ,
     "fieldLabel" : "DOR status" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "workflow" ,
@@ -636,48 +636,48 @@
     ]
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI82" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI82" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'FTPR' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'FTPR' calculation"
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI135" ,
-    "fieldLabel" : "Defect RCA exclusion from Quality KPIs" ,
+    "fieldName" : "includeRCAForKPI135" ,
+    "fieldLabel" : "Defect RCA inclusion for Quality KPIs" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "The defects tagged to priority values selected in this field on Mappings screen will be excluded"
+      "definition" : "The defects tagged to as per RCA values selected in this field on Mappings screen will be included."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI14" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI14" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Defect Injection rate' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Defect Injection rate' calculation."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromQAKPI111" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForQAKPI111" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Defect Density' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Defect Density' calculation."
     }
   } ,
   {
-    "fieldName" : "excludeRCAFromKPI133" ,
-    "fieldLabel" : "Root cause values to be excluded" ,
+    "fieldName" : "includeRCAForKPI133" ,
+    "fieldLabel" : "Root cause values to be included" ,
     "fieldType" : "chips" ,
     "section" : "Defects Mapping" ,
     "tooltip" : {
-      "definition" : "Root cause reasons for defects which are to be excluded from 'Quality Status' calculation"
+      "definition" : "Root cause reasons for defects which are to be included in 'Quality Status' calculation."
     }
   } ,
   {
@@ -721,7 +721,7 @@
     }
   } ,
   {
-    "fieldName" : "jiraDodKPI3" ,
+    "fieldName" : "jiraDodKPI171" ,
     "fieldLabel" : "DOD Status" ,
     "fieldType" : "chips" ,
     "fieldCategory" : "workflow" ,
@@ -1566,7 +1566,7 @@
     }
   } ,
   {
-    "fieldName" : "storyFirstStatusKPI3" ,
+    "fieldName" : "storyFirstStatusKPI171" ,
     "fieldLabel" : "Status when 'Story' issue type is created" ,
     "fieldType" : "text" ,
     "fieldCategory" : "workflow" ,
@@ -2044,7 +2044,7 @@
     "fieldName" : "uploadDataKPI42" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {
@@ -2055,7 +2055,7 @@
     "fieldName" : "uploadDataKPI16" ,
     "fieldLabel" : "KPI calculation logic" ,
     "fieldType" : "toggle" ,
-    "toggleLabel" : "Upload Data" ,
+    "toggleLabelRight" : "Upload Data" ,
     "section" : "WorkFlow Status Mapping" ,
     "processorCommon" : false ,
     "tooltip" : {
@@ -2479,6 +2479,15 @@
     }
   } ,
   {
+    "fieldName": "thresholdValueKPI3",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  } ,
+  {
     "fieldName": "jiraStoryIdentificationKPI166",
     "fieldLabel": "Issue type to identify Production incidents",
     "fieldType": "chips",
@@ -2654,6 +2663,276 @@
     "section": "WorkFlow Status Mapping",
     "tooltip": {
       "definition": "All status that identify hold/blocked statuses."
+    }
+  },
+  {
+    "fieldName": "populateByDevDoneKPI150",
+    "fieldLabel": "Prediction logic",
+    "fieldType": "toggle",
+    "toggleLabelLeft" : "Overall Completion",
+    "toggleLabelRight": "Dev Completion*",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Enabled State (KPI will populate w.r.t Dev Completion date), given that the Dev Completion Status is provided."
+    }
+  },
+  {
+    "fieldName": "jiraDevDoneStatusKPI150",
+    "fieldLabel": "Status to identify Dev completed issues",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status that confirms that the development work is completed and an issue can be passed on for testing"
+    }
+  },
+  {
+    "fieldName" : "jiraLabelsKPI135",
+    "fieldLabel" : "Labels to identify issues to be included",
+    "fieldType" : "chips",
+    "section" : "WorkFlow Status Mapping",
+    "tooltip" : {
+      "definition" : "Calculation should only those issues which have defined labels tagged."
+    }
+  },
+  {
+    "fieldName": "jiraStatusForInProgressKPI161",
+    "fieldLabel": "Status to identify In Progress issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that issues have moved from the Created status and also has not been completed."
+    }
+  },
+  {
+    "fieldName": "jiraStatusForRefinedKPI161",
+    "fieldLabel": "Status to identify In Refined issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that correspond to refined status of Iteration Readiness."
+    }
+  },
+  {
+    "fieldName": "jiraStatusForNotRefinedKPI161",
+    "fieldLabel": "Status to identify In Not Refined issues",
+    "section": "WorkFlow Status Mapping",
+    "fieldType": "chips",
+    "fieldCategory": "workflow",
+    "tooltip": {
+      "definition": "All statuses that correspond to not refined status of Iteration Readiness."
+    }
+  },
+  {
+    "fieldName": "jiraLiveStatusKPI171",
+    "fieldLabel": "Live Status - Cycle Time",
+    "fieldCategory": "workflow",
+    "fieldType": "chips",
+    "section": "WorkFlow Status Mapping",
+    "tooltip": {
+      "definition": "Status/es that identify that an issue is LIVE in Production"
+    }
+  },
+  {
+    "fieldName": "jiraIssueTypeKPI171",
+    "fieldLabel": "Issue type to be included",
+    "fieldCategory": "Issue_Type",
+    "fieldType": "chips",
+    "section": "Issue Types Mapping",
+    "tooltip": {
+      "definition": "All issue types that should be included in Lead time calculation."
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI126",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI42",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI168",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI70",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI40",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI5",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI39",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI46",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI8",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI73",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI113",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI149",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI153",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI162",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI116",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI156",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI118",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI127",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI170",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI139",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName": "thresholdValueKPI166",
+    "fieldLabel": "Target KPI Value",
+    "fieldType": "number",
+    "section": "Custom Fields Mapping",
+    "tooltip": {
+      "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
     }
   }
 ]
