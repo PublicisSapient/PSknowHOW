@@ -42,6 +42,7 @@ import javax.naming.directory.SearchResult;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserTokenService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -97,8 +96,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 	HttpServletRequest contextreq;
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
-	@Autowired
-	private UserInfoRepository userInfoRepository;
 	@Autowired
 	private UserInfoCustomRepository userInfoCustomRepository;
 	@Autowired
@@ -126,29 +123,33 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Autowired
 	private CookieUtil cookieUtil;
 	@Autowired
-	private UserTokenReopository userTokenReopository;
+	private UserTokenService userTokenService;
 
 	@Override
 	public Collection<GrantedAuthority> getAuthorities(String username) {
-		UserInfo userInfo = userInfoRepository.findByUsername(username);
+		UserInfo userInfo = getCentralAuthUserInfo(username);
 		List<String> roles = userInfo.getAuthorities();
 		return createAuthorities(roles);
 	}
 
 	@Override
-	public UserInfo getUserInfo(String username, AuthType authType) {
-
-		return userInfoRepository.findByUsernameAndAuthType(username, authType);
+	public UserInfo getUserInfoByUsernameAndAuthType(String username, AuthType authType) {
+		UserInfo userInfo = getCentralAuthUserInfo(username);
+		if(userInfo.getAuthType().equals(authType)){
+			return userInfo;
+		}
+		return new UserInfo();
 	}
 
 	@Override
 	public UserInfo getUserInfo(String username) {
-		return userInfoRepository.findByUsername(username);
+		return getCentralAuthUserInfo(username);
 	}
+
 
 	@Override
 	public Collection<UserInfo> getUsers() {
-		List<UserInfo> userInfoList = userInfoRepository.findAll();
+		List<UserInfo> userInfoList = findAllUsersFromCentralAuth();
 		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).collect(Collectors.toList());
 
 		List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
@@ -204,18 +205,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public UserInfo demoteFromAdmin(String username, AuthType authType) {
-		int numberOfAdmins = this.userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN))
+		int numberOfAdmins = this.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN))
 				.size();
 		if (numberOfAdmins <= 1) {
 			throw new DeleteLastAdminException();
 		}
-		UserInfo user = this.userInfoRepository.findByUsernameAndAuthType(username, authType);
+		UserInfo user = this.getUserInfoByUsernameAndAuthType(username, authType);
 		if (user == null) {
 			throw new UserNotFoundException(username, authType);
 		}
 
 		user.getAuthorities().remove(Constant.ROLE_SUPERADMIN);
-		return this.userInfoRepository.save(user);
+		return this.saveCentralAuthUserInfo(user);
 	}
 
 	/**
@@ -242,7 +243,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public boolean isUserValid(String userId, AuthType authType) {
-		if (this.userInfoRepository.findByUsernameAndAuthType(userId, authType) == null) {
+		if (this.getUserInfoByUsernameAndAuthType(userId, authType) == null) {
 			if (authType == AuthType.LDAP) {
 				try {
 					return searchLdapUser(userId);
@@ -336,7 +337,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public ServiceResponse updateUserRole(String username, UserInfo userInfo) {
-		UserInfo existingUserInfo = userInfoRepository.findByUsername(username);
+		UserInfo existingUserInfo = getCentralAuthUserInfo(username);
 
 		existingUserInfo = createUserInCaseSSOUserNotFound(existingUserInfo, userInfo);
 
@@ -356,7 +357,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				&& userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
 					userInfo.getEmailAddress());
-			existingUserInfo = save(defaultUserInfo);
+			existingUserInfo = saveDefaultUser(defaultUserInfo);
 		}
 		return existingUserInfo;
 	}
@@ -380,7 +381,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public UserInfo updateUserInfo(final UserInfo userInfo) {
-		return userInfoRepository.save(userInfo);
+		return saveCentralAuthUserInfo(userInfo);
 	}
 
 	/**
@@ -393,7 +394,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @return userinfo
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType) {
-		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
+		UserInfo userInfo = getUserInfoByUsernameAndAuthType(username, authType);
 		if (null != userInfo) {
 			addEmailForStandardAuthType(userInfo);
 		}
@@ -401,12 +402,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public UserInfo save(UserInfo userInfo) {
-		if (userInfoRepository.count() == 0) {
+	public UserInfo saveDefaultUser(UserInfo userInfo) {
+		if (CollectionUtils.isEmpty(findAllUsersFromCentralAuth())) {
 			UserInfo superAdminUserInfo = createSuperAdminUserInfo(userInfo.getUsername(), userInfo.getEmailAddress());
-			return userInfoRepository.save(superAdminUserInfo);
+			return saveCentralAuthUserInfo(superAdminUserInfo);
 		}
-		return userInfoRepository.save(userInfo);
+		return saveCentralAuthUserInfo(userInfo);
 
 	}
 
@@ -450,7 +451,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	@Override
+	/*@Override
 	public ServiceResponse deleteUser(String username) {
 		try {
 			userInfoRepository.deleteByUsername(username);
@@ -464,14 +465,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 
 		return new ServiceResponse(true, username + " deleted Successfully", "Ok");
-	}
+	}*/
+	//todo change
 
-	@Override
+	/*@Override
 	public List<UserInfo> getUserInfoByAuthType(String authType) {
 		return userInfoRepository.findByAuthType(authType);
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email) {
 		UserInfo userInfo = getUserInfo(username);
 		if (null == userInfo) {
@@ -479,7 +481,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userInfo = save(userInfo);
 		}
 		return convertToDTOObject(userInfo);
-	}
+	}*/
 
 	private UserInfoDTO convertToDTOObject(UserInfo userInfo) {
 		UserInfoDTO userInfoDTO = null;
@@ -503,14 +505,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return null;
 		}
 		String token = authCookie.getValue();
-		UserTokenData userTokenData = userTokenReopository.findByUserToken(token);
+		UserTokenData userTokenData = userTokenService.findByUserToken(token);
 		UserDetailsResponseDTO userDetailsResponseDTO = new UserDetailsResponseDTO();
 		if (Objects.nonNull(userTokenData)) {
 			String username = userTokenData.getUserName();
-			UserInfo userinfo = userInfoRepository.findByUsername(username);
-			Authentication authentication = authenticationRepository.findByUsername(username);
+			UserInfo userinfo = getCentralAuthUserInfo(username);
+			Authentication authentication = new Authentication();
+			//todo delete
+			//todo change
+					//authenticationRepository.findByUsername(username);
 			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
-
 			userDetailsResponseDTO.setUserName(username);
 			userDetailsResponseDTO.setUserEmail(email);
 			userDetailsResponseDTO.setAuthorities(userinfo.getAuthorities());
@@ -524,13 +528,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities) {
-		UserInfo userInfo = userInfoRepository.findByUsername(userName);
+		UserInfo userInfo = getCentralAuthUserInfo(userName);
 		if (userInfo == null) {
 			userInfo = new UserInfo();
 			userInfo.setUsername(userName);
 			userInfo.setAuthorities(authorities);
 			userInfo.setAuthType(authType);
-			userInfoRepository.save(userInfo);
+			saveCentralAuthUserInfo(userInfo);
 		}
 		return userInfo;
 	}
@@ -570,4 +574,40 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 	}
 
+
+	@Override
+	public UserInfo saveCentralAuthUserInfo(UserInfo userInfo){
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getSaveUserDetailsEndPoint() , "");
+		HttpEntity<?> body = new HttpEntity<>(userInfo , headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<UserInfo> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, body, UserInfo.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody();
+			} else {
+				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+						+ response.getStatusCodeValue());
+				return new UserInfo();
+			}
+		} catch (RuntimeException e) {
+			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			return null;
+		}
+	}
+
+	@Override
+	public List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin){
+		return new ArrayList<>();
+	}
+
+	@Override
+	public List<UserInfo> findAllUsersFromCentralAuth(){
+		return new ArrayList<>();
+	}
 }

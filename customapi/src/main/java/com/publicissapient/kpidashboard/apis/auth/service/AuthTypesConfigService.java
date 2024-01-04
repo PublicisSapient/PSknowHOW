@@ -5,9 +5,10 @@ import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 
 public interface AuthTypesConfigService {
 
-	AuthTypeConfig saveAuthTypeConfig(AuthTypeConfig authTypeConfig);
+	//AuthTypeConfig saveAuthTypeConfig(AuthTypeConfig authTypeConfig);
 
-	AuthTypeConfig getAuthTypeConfig();
+	//AuthTypeConfig getAuthTypeConfig();
 
-	AuthTypeStatus getAuthTypesStatus();
+	//AuthTypeStatus getAuthTypesStatus();
+	//todo delete
 }

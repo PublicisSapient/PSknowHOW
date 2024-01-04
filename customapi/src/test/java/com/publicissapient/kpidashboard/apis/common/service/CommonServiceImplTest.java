@@ -65,7 +65,6 @@ import com.publicissapient.kpidashboard.common.repository.application.GlobalConf
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 @SuppressWarnings("deprecation")
 @RunWith(MockitoJUnitRunner.class)

@@ -1,19 +1,9 @@
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeConfig;
-import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
-import com.publicissapient.kpidashboard.common.model.application.ValidationMessage;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 
 @Service
 public class AuthTypeConfigValidator {
@@ -22,9 +12,9 @@ public class AuthTypeConfigValidator {
 	private static final String AUTH_TYPE_STANDARD = "STANDARD";
 
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 
-	public ValidationMessage validateConfig(AuthTypeConfig authTypeConfig) {
+	/*public ValidationMessage validateConfig(AuthTypeConfig authTypeConfig) {
 		ValidationMessage validationMessage = new ValidationMessage();
 		AuthTypeStatus authTypeStatus = authTypeConfig.getAuthTypeStatus();
 		if (!authTypeStatus.isStandardLogin() && !authTypeStatus.isAdLogin()) {
@@ -112,5 +102,5 @@ public class AuthTypeConfigValidator {
 		}
 
 		return validationMessage;
-	}
+	}*/
 }

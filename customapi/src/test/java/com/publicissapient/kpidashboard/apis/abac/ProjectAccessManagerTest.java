@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -52,7 +53,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 
 /**
@@ -67,8 +67,8 @@ public class ProjectAccessManagerTest {
 	ProjectAccessManager projectAccessManager;
 	@Mock
 	AccessRequestsRepository accessRequestsRepository;
-	@Mock
-	UserInfoRepository userInfoRepository;
+
+	@Mock UserInfoService userInfoService;
 	@Mock
 	ProjectBasicConfigService projectBasicConfigService;
 	@Mock
@@ -121,7 +121,7 @@ public class ProjectAccessManagerTest {
 		notificationSubjects.put("Subject", "subject");
 		Authentication authentication = new Authentication();
 		authentication.setEmail("email@email.com");
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
 		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_PROJECT_ADMIN,
@@ -200,7 +200,7 @@ public class ProjectAccessManagerTest {
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
 		projectsAccess.setAccessNodes(Lists.newArrayList(accessNode));
 		userInfo.setProjectsAccess(Lists.newArrayList(projectsAccess));
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
 		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_PROJECT_ADMIN,
@@ -232,7 +232,7 @@ public class ProjectAccessManagerTest {
 		accessNode.setAccessItems(Lists.newArrayList(accessItem));
 		projectsAccess.setAccessNodes(Lists.newArrayList(accessNode));
 		userInfo.setProjectsAccess(Lists.newArrayList(projectsAccess));
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
 		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_PROJECT_VIEWER,
@@ -255,7 +255,7 @@ public class ProjectAccessManagerTest {
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
 		userInfo.setAuthorities(Lists.newArrayList());
 		userInfo.setProjectsAccess(Lists.newArrayList());
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
 		when(accessRequestsRepository.saveAll(getAccessRequestList(Constant.ROLE_PROJECT_VIEWER,
@@ -349,7 +349,7 @@ public class ProjectAccessManagerTest {
 
 	@Test
 	public void testGetProjectAccessesWithRole() {
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
 		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), anyList()))
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
@@ -367,7 +367,7 @@ public class ProjectAccessManagerTest {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername("user");
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_SUPERADMIN));
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString())).thenReturn(userInfo);
 		assertTrue(projectAccessManager.hasProjectEditPermission(new ObjectId(), userInfo.getUsername()));
 	}
 
@@ -377,13 +377,13 @@ public class ProjectAccessManagerTest {
 		userInfo.setUsername("user");
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_PROJECT_ADMIN));
 		userInfo.setProjectsAccess(Lists.newArrayList());
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString())).thenReturn(userInfo);
 		assertFalse(projectAccessManager.hasProjectEditPermission(new ObjectId(), userInfo.getUsername()));
 	}
 
 	@Test
 	public void testHasProjectEditPermission_getProjectAccessesWithRole() {
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
 		when(projectBasicConfigRepository.findByHierarchyLevelIdAndValues(anyString(), ArgumentMatchers.anyList()))
 				.thenReturn(Lists.newArrayList(projectBasicConfigObj()));
@@ -396,21 +396,21 @@ public class ProjectAccessManagerTest {
 		when(accessRequestsRepository.findById("61e4f7852747353d4405c761")).thenReturn(accessRequestObj(
 				Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"));
 		when(authenticationService.getLoggedInUser()).thenReturn("user");
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
 		assertTrue(projectAccessManager.deleteAccessRequestById("61e4f7852747353d4405c761"));
 	}
 
 	@Test
 	public void testGetAccessRoleOfNearestParent() {
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
 		assertNull(projectAccessManager.getAccessRoleOfNearestParent(projectBasicConfigObj(), "user"));
 	}
 
 	@Test
 	public void testAddNewProjectIntoUserInfo_projectAdmin() {
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
 		projectAccessManager.addNewProjectIntoUserInfo(projectBasicConfigObj(), "user");
 		assertNotNull(userInfoObj(Constant.ROLE_PROJECT_ADMIN));
@@ -418,7 +418,7 @@ public class ProjectAccessManagerTest {
 
 	@Test
 	public void testAddNewProjectIntoUserInfo_SuperAdmin() {
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString()))
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString()))
 				.thenReturn(userInfoObj(Constant.ROLE_SUPERADMIN));
 		projectAccessManager.addNewProjectIntoUserInfo(projectBasicConfigObj(), "user");
 		assertNotNull(userInfoObj(Constant.ROLE_SUPERADMIN));
@@ -452,7 +452,7 @@ public class ProjectAccessManagerTest {
 		notificationSubjects.put("Subject", "subject");
 		Authentication authentication = new Authentication();
 		authentication.setEmail("email@email.com");
-		when(userInfoRepository.findByUsername(userInfo.getUsername())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(userInfo.getUsername())).thenReturn(userInfo);
 		when(accessRequestsRepository.findByUsernameAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any()))
 				.thenReturn(null);
 		when(accessRequestsRepository.saveAll(ArgumentMatchers.any())).thenReturn(
@@ -577,7 +577,7 @@ public class ProjectAccessManagerTest {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername("test");
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_SUPERADMIN));
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString())).thenReturn(userInfo);
 
 		List<String> projectBasicConfigIds = new ArrayList<>();
 		projectBasicConfigIds.add("61d6d4235c76563333369f02");
@@ -617,7 +617,7 @@ public class ProjectAccessManagerTest {
 		accessNodes.add(accessNode);
 		pa.setAccessNodes(accessNodes);
 		userInfo.setProjectsAccess(projectAccesses);
-		when(userInfoRepository.findByUsername(ArgumentMatchers.anyString())).thenReturn(userInfo);
+		when(userInfoService.getCentralAuthUserInfo(ArgumentMatchers.anyString())).thenReturn(userInfo);
 		List<String> projectBasicConfigIds = new ArrayList<>();
 		projectBasicConfigIds.add("61d6d4235c76563333369f02");
 

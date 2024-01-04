@@ -66,7 +66,7 @@ public class UserTokenDeletionControllerApplication {
 	 * @param request
 	 *            the request
 	 */
-	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	/*@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity deleteUserToken(HttpServletRequest request) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
 		String token = StringUtils.removeStart(request.getHeader("Authorization"), "Bearer ");
@@ -74,6 +74,8 @@ public class UserTokenDeletionControllerApplication {
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
-	}
+	}*/
+
+	// todo delete code
 
 }

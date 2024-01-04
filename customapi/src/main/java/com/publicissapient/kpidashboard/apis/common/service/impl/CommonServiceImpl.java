@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -45,17 +44,18 @@ import org.springframework.stereotype.Service;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +71,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommonServiceImpl implements CommonService {
 
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
@@ -221,7 +221,7 @@ public class CommonServiceImpl implements CommonService {
 	 */
 	public List<String> getEmailAddressBasedOnRoles(List<String> roles) {
 		Set<String> emailAddresses = new HashSet<>();
-		List<UserInfo> superAdminUsersList = userInfoRepository.findByAuthoritiesIn(roles);
+		List<UserInfo> superAdminUsersList = userInfoService.findByAuthoritiesIn(roles);
 		if (CollectionUtils.isNotEmpty(superAdminUsersList)) {
 			List<String> userNames = superAdminUsersList.stream().map(UserInfo::getUsername)
 					.collect(Collectors.toList());
@@ -248,7 +248,7 @@ public class CommonServiceImpl implements CommonService {
 	public List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {
 		Set<String> emailAddresses = new HashSet<>();
 		List<String> usernameList = new ArrayList<>();
-		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
+		List<UserInfo> usersList = userInfoService.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_PROJECT_ADMIN));
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
 		if (CollectionUtils.isNotEmpty(usersList)) {
 			usersList.forEach(action -> {

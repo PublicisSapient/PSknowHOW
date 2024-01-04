@@ -47,7 +47,7 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 	@Autowired
 	private UserInfoService userInfoService;
 
-	@Override
+	/*@Override
 	public AuthTypeConfig saveAuthTypeConfig(AuthTypeConfig authTypeConfig) {
 
 		ValidationMessage validationMessage = authTypeConfigValidator.validateConfig(authTypeConfig);
@@ -71,9 +71,10 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 		}
 
 		return authTypeConfig;
-	}
+	}*/
+	//todo delete
 
-	private void invalidateUsersAuthToken(AuthTypeStatus authTypeStatus) {
+	/*private void invalidateUsersAuthToken(AuthTypeStatus authTypeStatus) {
 		List<String> usernames = new ArrayList<>();
 		// find users
 		if (!authTypeStatus.isStandardLogin()) {
@@ -121,5 +122,6 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 	private String encryptStringForDb(String plainText) {
 		String encryptedString = aesEncryptionService.encrypt(plainText, customApiConfig.getAesEncryptionKey());
 		return encryptedString == null ? "" : encryptedString;
-	}
+	}*/
+	//todo delete
 }

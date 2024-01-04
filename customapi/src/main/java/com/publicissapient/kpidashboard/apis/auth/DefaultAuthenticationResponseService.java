@@ -43,7 +43,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
  *
  */
 @Component
-public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
+public class DefaultAuthenticationResponseService {
+		//implements AuthenticationResponseService {
 
 	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
@@ -54,7 +55,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String emailAddress = StringUtils.EMPTY;
 		String username;
@@ -72,7 +73,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 
 		if (authType.equals(AuthType.LDAP) && userInfoService.getUserInfo(username) == null) {
 			UserInfo defaultUserInfo = userInfoService.createDefaultUserInfo(username, authType, emailAddress);
-			userInfoService.save(defaultUserInfo);
+			userInfoService.saveCentralAuthUserInfo(defaultUserInfo);
 		}
 
 		Collection<GrantedAuthority> authorities = userInfoService.getAuthorities(username);
@@ -81,6 +82,6 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 		authenticationWithAuthorities.setDetails(authType);
 		tokenAuthenticationService.addAuthentication(response, authenticationWithAuthorities);
 
-	}
+	}*/
 
 }

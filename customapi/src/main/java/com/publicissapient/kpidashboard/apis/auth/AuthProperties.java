@@ -73,6 +73,8 @@ public class AuthProperties {// NOPMD
 	private String resourceAPIKey;
 	private String resourcePolicyEndPoint;
 	private String fetchUserDetailsEndPoint;
+
+	private String saveUserDetailsEndPoint;
 	private String resourceName;
 
 	/**
@@ -431,6 +433,13 @@ public class AuthProperties {// NOPMD
 		return fetchUserDetailsEndPoint;
 	}
 
+	public String getSaveUserDetailsEndPoint() {
+		return saveUserDetailsEndPoint;
+	}
+
+	public void setSaveUserDetailsEndPoint(String saveUserDetailsEndPoint) {
+		this.saveUserDetailsEndPoint = saveUserDetailsEndPoint;
+	}
 
 	/**
 	 * get resourceAPIKey

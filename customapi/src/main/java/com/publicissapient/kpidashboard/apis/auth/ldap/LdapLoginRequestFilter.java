@@ -92,7 +92,7 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 	 *            response
 	 * @return Authentication
 	 */
-	@Override
+	/*@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
 
 		AuthTypeStatus authTypesStatus = authTypesConfigService.getAuthTypesStatus();
@@ -129,5 +129,6 @@ public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter
 		return this.getAuthenticationManager().authenticate(authRequest);
 
 	}
-
+*/
+	//todo delete
 }

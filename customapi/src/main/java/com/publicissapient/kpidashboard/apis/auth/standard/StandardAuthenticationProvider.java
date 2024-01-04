@@ -33,7 +33,8 @@ import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalExce
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 
 @Component
-public class StandardAuthenticationProvider implements AuthenticationProvider {
+public class StandardAuthenticationProvider {
+		//implements AuthenticationProvider {
 
 	private final AuthenticationService authService;
 	private final AuthProperties authProperties;
@@ -50,7 +51,7 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 	 * @param authentication
 	 * @return Authentication
 	 */
-	@Override
+	/*@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException { // NOSONAR
 																									   // //NOPMD
 		try {
@@ -70,16 +71,18 @@ public class StandardAuthenticationProvider implements AuthenticationProvider {
 			throw new PendingApprovalException(e.getMessage());
 		}
 
-	}
+	}*/
+	//todo delete
 
 	/**
 	 * 
 	 * @return true if this AuthenticationProvider supports theindicated
 	 *         Authentication object.
 	 */
-	@Override
+	/*@Override
 	public boolean supports(Class<?> authentication) {
 		return StandardAuthenticationToken.class.isAssignableFrom(authentication);
-	}
+	}*/
+	//todo delete
 
 }

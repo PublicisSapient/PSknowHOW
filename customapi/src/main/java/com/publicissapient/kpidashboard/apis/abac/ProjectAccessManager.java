@@ -38,7 +38,6 @@ import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServi
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.autoapprove.service.AutoApproveAccessService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
@@ -75,8 +75,8 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,7 +93,7 @@ public class ProjectAccessManager {
 	private static final String NOTIFICATION_KEY = "Access_Request";
 
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 
 	@Autowired
 	private AccessRequestsRepository accessRequestsRepository;
@@ -161,7 +161,7 @@ public class ProjectAccessManager {
 
 	// get current role and access - input user
 	public UserInfo getUserInfo(String username) {
-		return userInfoRepository.findByUsername(username);
+		return userInfoService.getCentralAuthUserInfo(username);
 	}
 
 	/**
@@ -637,7 +637,7 @@ public class ProjectAccessManager {
 	}
 
 	private UserInfo saveUserInfo(UserInfo userInfo) {
-		return userInfoRepository.save(userInfo);
+		return userInfoService.saveCentralAuthUserInfo(userInfo);
 	}
 
 	private UserInfo copyUserInfo(UserInfo userInfo) {
@@ -978,7 +978,7 @@ public class ProjectAccessManager {
 			userInfo.getAuthorities().add(Constant.ROLE_PROJECT_ADMIN);
 		}
 
-		return userInfoRepository.save(userInfo);
+		return userInfoService.saveCentralAuthUserInfo(userInfo);
 
 	}
 

@@ -62,7 +62,6 @@ import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.rbac.AccessRequestsRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.RolesRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 /**
  * This class provides various methods to TEST operations on AccessRequestsData

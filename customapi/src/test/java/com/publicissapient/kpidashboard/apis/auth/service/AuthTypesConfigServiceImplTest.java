@@ -58,7 +58,7 @@ public class AuthTypesConfigServiceImplTest {
 	@InjectMocks
 	private AuthTypesConfigServiceImpl authTypesConfigService;
 
-	@Test
+	/*@Test
 	public void saveAuthTypeConfig_OnlyAdLogin() {
 		ValidationMessage validationMessage = new ValidationMessage();
 		validationMessage.setValid(true);
@@ -175,5 +175,6 @@ public class AuthTypesConfigServiceImplTest {
 		userInfo.setUsername("user2");
 		userInfo.setAuthType(AuthType.LDAP);
 		return Arrays.asList(userInfo);
-	}
+	}*/
+	//todo delete
 }

@@ -126,7 +126,8 @@ public class AuthenticationController {
 	 * @throws ServletException
 	 *             the servlet exception
 	 */
-	@PostMapping(value = "/registerUser")
+	//todo delete
+	/*@PostMapping(value = "/registerUser")
 	@EnableFeatureToggle(name = "REGISTRATION")
 	public ResponseEntity<ServiceResponse> registerUser(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, @Valid @RequestBody AuthenticationRequest request) {
@@ -181,7 +182,7 @@ public class AuthenticationController {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ServiceResponse(true,
 					"Cannot complete the registration process, Try with different username", null));
 		}
-	}
+	}*/
 
 	private String getResponse(HttpServletResponse response) {
 		JSONObject json = new JSONObject();
@@ -229,7 +230,7 @@ public class AuthenticationController {
 	 * @throws ServletException
 	 *             the servlet exception
 	 */
-	@RequestMapping(value = "/changePassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
+	/*@RequestMapping(value = "/changePassword", method = POST, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> changePassword(HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, @Valid @RequestBody ChangePasswordRequest request)
 			throws IOException, ServletException { // NOSONAR
@@ -265,7 +266,7 @@ public class AuthenticationController {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
 					.body(new ServiceResponse(false, "Unprocessable Entity", null));
 		}
-	}
+	}*/
 
 	/**
 	 * @param isValidUser
@@ -273,7 +274,7 @@ public class AuthenticationController {
 	 * @param httpServletResponse
 	 * @return
 	 */
-	private ResponseEntity<ServiceResponse> isValidUser(boolean isValidUser, @Valid ChangePasswordRequest request,
+	/*private ResponseEntity<ServiceResponse> isValidUser(boolean isValidUser, @Valid ChangePasswordRequest request,
 			HttpServletResponse httpServletResponse) {
 		if (isValidUser) {
 			Authentication authentication = authenticationService.changePassword(request.getEmail(),
@@ -283,7 +284,7 @@ public class AuthenticationController {
 		} else {
 			return ResponseEntity.ok().body(new ServiceResponse(false, "Wrong Old Password", null));
 		}
-	}
+	}*/
 
 	@RequestMapping(value = "/users/{username}", method = GET) // NOSONAR
 	public ResponseEntity<ServiceResponse> getUser(@PathVariable String username, Principal principal) {
@@ -374,7 +375,7 @@ public class AuthenticationController {
 		return !(StringUtils.containsIgnoreCase(reqPassword, username));
 	}
 
-	@RequestMapping(value = "/authdetails", method = GET)
+	/*@RequestMapping(value = "/authdetails", method = GET)
 	public ResponseEntity<ServiceResponse> getAuthDetails(HttpServletRequest request, Authentication authentication) {
 		JSONObject jsonObject = tokenAuthenticationService.getOrSaveUserByToken(request, authentication);
 		if (jsonObject != null) {
@@ -382,6 +383,7 @@ public class AuthenticationController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "Invalid token", null));
 
-	}
+	}*/
+	//todo delete
 
 }

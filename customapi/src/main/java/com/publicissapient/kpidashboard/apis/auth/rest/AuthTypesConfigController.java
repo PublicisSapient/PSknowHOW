@@ -20,7 +20,7 @@ public class AuthTypesConfigController {
 	@Autowired
 	private AuthTypesConfigService authTypesConfigService;
 
-	@PostMapping("/auth-types")
+	/*@PostMapping("/auth-types")
 	@PreAuthorize("hasPermission(null,'CONFIGURE_LOGIN_TYPE')")
 	public ResponseEntity<ServiceResponse> addAuthTypesConfig(@RequestBody AuthTypeConfig authTypeConfig) {
 
@@ -69,6 +69,6 @@ public class AuthTypesConfigController {
 		}
 
 		return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-	}
-
+	}*/
+	//todo delete
 }

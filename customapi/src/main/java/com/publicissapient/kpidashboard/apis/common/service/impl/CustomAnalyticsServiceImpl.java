@@ -23,6 +23,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
+import org.apache.catalina.User;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,6 @@ import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,12 +61,10 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final Object USER_AUTHORITIES = "authorities";
 	public static final String SUCCESS = "SUCCESS";
 
-	@Autowired
+	/*@Autowired
 	UserAuthorizedProjectsService userAuthorizedProjectsService;
 	@Autowired
 	UserInfoService userInfoService;
-	@Autowired
-	private UserInfoRepository userInfoRepository;
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
 	@Autowired
@@ -75,16 +73,16 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
 	private UserLoginHistoryService userLoginHistoryService;
-	/**
+	*//**
 	 * {@inheritDoc}
-	 */
+	 *//*
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject addAnalyticsData(HttpServletResponse httpServletResponse, String username) {
 		JSONObject json = new JSONObject();
 		httpServletResponse.setContentType("application/json");
 		httpServletResponse.setCharacterEncoding("UTF-8");
-		UserInfo userinfo = userInfoRepository.findByUsername(username);
+		UserInfo userinfo = userInfoService.getCentralAuthUserInfo(username);
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
 		json.put(USER_NAME, username);
@@ -116,6 +114,6 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		JSONObject json = new JSONObject();
 		json.put("analyticsSwitch", settings.isAnalyticsSwitch());
 		return json;
-	}
+	}*/
 
 }

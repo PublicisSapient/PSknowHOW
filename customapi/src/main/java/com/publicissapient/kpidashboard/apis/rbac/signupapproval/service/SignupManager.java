@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.publicissapient.kpidashboard.common.service.NotificationService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,6 +18,7 @@ import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepos
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.NotificationCustomDataEnum;
@@ -26,7 +26,7 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.GrantApp
 import com.publicissapient.kpidashboard.apis.rbac.signupapproval.policy.RejectApprovalListener;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.service.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +44,7 @@ public class SignupManager {
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 	@Autowired
 	private CommonService commonService;
 	@Autowired
@@ -66,7 +66,7 @@ public class SignupManager {
 		String superAdminEmail;
 		String loggedInUser = authenticationService.getLoggedInUser();
 		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+			superAdminEmail = userInfoService.getCentralAuthUserInfo(loggedInUser).getEmailAddress();
 		} else {
 			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
 		}
@@ -92,7 +92,7 @@ public class SignupManager {
 	}
 
 	private boolean checkForLdapUser(String userName) {
-		UserInfo loggedInUser = userInfoRepository.findByUsername(userName);
+		UserInfo loggedInUser = userInfoService.getCentralAuthUserInfo(userName);
 		return loggedInUser.getAuthType().equals(AuthType.LDAP);
 
 	}
@@ -163,7 +163,7 @@ public class SignupManager {
 		String superAdminEmail;
 		String loggedInUser = authenticationService.getLoggedInUser();
 		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+			superAdminEmail = userInfoService.getCentralAuthUserInfo(loggedInUser).getEmailAddress();
 		} else {
 			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
 		}
@@ -180,7 +180,7 @@ public class SignupManager {
 				String serverPath = getServerPath();
 				Map<String, String> customData = createCustomData("", "", serverPath, superAdminEmail);
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_REJECT);
-				deleteUserById(username);
+				//deleteUserById(username);
 				listener.onSuccess(updatedAuthenticationRequest);
 			}
 		}
@@ -201,7 +201,7 @@ public class SignupManager {
 	 * @param username
 	 * @return
 	 */
-	public boolean deleteUserById(String username) {
+	/*public boolean deleteUserById(String username) {
 		boolean isDeleted = false;
 		Authentication authenticationById = getAuthenticationByUserName(username);
 		if (authenticationById == null) {
@@ -213,7 +213,7 @@ public class SignupManager {
 			log.info("Sign up request is deleted for the user: ", username);
 		}
 		return isDeleted;
-	}
+	}*/
 
 	/**
 	 * @param authentication

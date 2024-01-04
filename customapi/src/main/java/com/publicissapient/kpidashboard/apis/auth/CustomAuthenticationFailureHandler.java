@@ -26,9 +26,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.common.service.UserLoginHistoryService;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
@@ -50,7 +50,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 	@Autowired
 	private UserLoginHistoryService userLoginHistoryService;
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
 			AuthenticationException exception) throws IOException, ServletException {
@@ -71,7 +71,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 		data.put("path", httpServletRequest.getRequestURI());
 
 		String username = httpServletRequest.getParameter(USERNAME);
-		UserInfo userinfo = userInfoRepository.findByUsername(username);
+		UserInfo userinfo = userInfoService.getCentralAuthUserInfo(username);
 		if(userinfo != null) {
 			userLoginHistoryService.createUserLoginHistoryInfo(userinfo, FAIL);
 		}

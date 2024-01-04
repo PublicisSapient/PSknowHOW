@@ -3,6 +3,7 @@ package com.publicissapient.kpidashboard.common.service;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.springframework.kafka.core.KafkaTemplate;
 
 public interface NotificationService {
@@ -11,4 +12,6 @@ public interface NotificationService {
                                String notKey, String topic, boolean notificationSwitch, KafkaTemplate<String, Object> kafkaTemplate, String templateKey, boolean isMailWithoutKafka);
 
     void sendEmailWithoutKafka(List<String> emailAddresses, Map<String, String> additionalData, String notSubject, String notKey, String topic, String templateKey);
+
+    List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin);
 }

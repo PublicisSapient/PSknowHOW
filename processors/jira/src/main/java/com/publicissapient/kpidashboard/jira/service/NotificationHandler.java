@@ -41,7 +41,6 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.service.NotificationService;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 
@@ -62,8 +61,6 @@ public class NotificationHandler {
 	private KafkaTemplate<String, Object> kafkaTemplate;
 	@Autowired
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
-	@Autowired
-	private UserInfoRepository userInfoRepository;
 	@Autowired
 	private NotificationService notificationService;
 
@@ -95,7 +92,7 @@ public class NotificationHandler {
 
 	private List<String> getProjectAdminEmailAddressBasedProjectId(String projectConfigId) {
 		Set<String> emailAddresses = new HashSet<>();
-		List<UserInfo> usersList = userInfoRepository.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN));
+		List<UserInfo> usersList = notificationService.findByAuthoritiesIn(Arrays.asList(ROLE_PROJECT_ADMIN));
 		Map<String, String> projectMap = getHierarchyMap(projectConfigId);
 		if (CollectionUtils.isNotEmpty(usersList)) {
 			usersList.forEach(action -> {

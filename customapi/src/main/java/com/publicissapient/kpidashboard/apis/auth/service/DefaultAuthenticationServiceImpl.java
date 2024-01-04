@@ -18,37 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
-import com.publicissapient.kpidashboard.apis.auth.model.ActionPoliciesDTO;
-import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
-import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
-import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.util.CommonUtils;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,11 +37,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class DefaultAuthenticationServiceImpl implements AuthenticationService {
+public class DefaultAuthenticationServiceImpl {
+		//implements AuthenticationService {
 
-	private final AuthenticationRepository authenticationRepository;
-	private final AuthProperties authProperties;
-	private final UserInfoRepository userInfoRepository;
+	//private final AuthenticationRepository authenticationRepository;
+	//private final AuthProperties authProperties;
+	//private final UserInfoRepository userInfoRepository;
 
 	// ------- auth-N-auth required code starts here -------
 	private static final String HTTP_ENTITY = "httpEntity {}";
@@ -77,13 +54,13 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
 	// ----- auth-N-auth required code end here ----------------
 
-	@Autowired
+	/*@Autowired
 	public DefaultAuthenticationServiceImpl(AuthenticationRepository authenticationRepository,
 			AuthProperties authProperties, UserInfoRepository userInfoRepository) {
 		this.authenticationRepository = authenticationRepository;
 		this.authProperties = authProperties;
 		this.userInfoRepository = userInfoRepository;
-	}
+	}*/
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -91,15 +68,15 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public Iterable<Authentication> all() {
 		return authenticationRepository.findAll();
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public Authentication get(ObjectId id) {
 		Optional<Authentication> authOpt = authenticationRepository.findById(id);
 		Authentication authentication = null;
@@ -107,12 +84,12 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			authentication = authOpt.get();
 		}
 		return authentication;
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public org.springframework.security.core.Authentication create(String username, String password, String email) {
 		Authentication authentication = new Authentication(username, password, email);
 		if (authenticationRepository.count() == 0) {
@@ -123,12 +100,12 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 				authentication.getUsername(), authentication.getPassword(), new ArrayList<>());
 		token.setDetails(AuthType.STANDARD);
 		return token;
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public String update(String username, String password) {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		if (null == authentication) {
@@ -139,33 +116,33 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			return "User is updated";
 		}
 
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
-	 */
+	 *//*
 	@Override
 	public void delete(ObjectId id) {
 		Optional<Authentication> authentication = authenticationRepository.findById(id);
 		if (authentication.isPresent()) {
 			authenticationRepository.delete(authentication.get());
 		}
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
-	 */
+	 *//*
 	@Override
 	public void delete(String username) {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		if (authentication != null) {
 			authenticationRepository.delete(authentication);
 		}
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
-	 */
+	 *//*
 	@Override
 	public Boolean updateFailAttempts(String userName, DateTime unsuccessAttemptTime) {
 		Authentication authentication = authenticationRepository.findByUsername(userName);
@@ -183,12 +160,12 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			authenticationRepository.save(authentication);
 			return Boolean.TRUE;
 		}
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public void resetFailAttempts(String userName) {
 		Authentication authentication = authenticationRepository.findByUsername(userName);
 		if (null != authentication) {
@@ -197,12 +174,12 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			authentication.setLastUnsuccessfulLoginTime(null);
 			authenticationRepository.save(authentication);
 		}
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public Integer getUserAttempts(String userName) {
 		Authentication authentication = authenticationRepository.findByUsername(userName);
 		if (null == authentication) {
@@ -210,12 +187,12 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		} else {
 			return authentication.getLoginAttemptCount();
 		}
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public org.springframework.security.core.Authentication authenticate(String username, String password) {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		DateTime now = DateTime.now(DateTimeZone.UTC);
@@ -238,7 +215,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		// throw new BadCredentialsException("Login Failed: Invalid credentials
 		// for user
 		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
-	}
+	}*/
 
 	/**
 	 * Checks if user is locked
@@ -247,11 +224,11 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 *            the Authentication
 	 * @return true if user is locked
 	 */
-	private boolean checkForLockedUser(Authentication authentication) {
+	/*private boolean checkForLockedUser(Authentication authentication) {
 
 		return authentication != null && authentication.getLoginAttemptCount() != null
 				&& authentication.getLoginAttemptCount().equals(authProperties.getAccountLockedThreshold());
-	}
+	}*/
 
 	/**
 	 * Checks if need to reset fail attempts.
@@ -262,48 +239,48 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 *            current date time
 	 * @return true or false
 	 */
-	private boolean checkForResetFailAttempts(Authentication authentication, DateTime now) {
+	/*private boolean checkForResetFailAttempts(Authentication authentication, DateTime now) {
 		return authentication != null && null != authentication.getLastUnsuccessfulLoginTime() && now.isAfter(
 				authentication.getLastUnsuccessfulLoginTime().plusMinutes(authProperties.getAccountLockedPeriod()));
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public boolean isEmailExist(String email) {
 
 		List<Authentication> authenticate = authenticationRepository.findByEmail(email);
 
 		return CollectionUtils.isNotEmpty(authenticate);
 	}
-
-	@Override
+*/
+	/*@Override
 	public boolean isUsernameExists(String username) {
 		return authenticationRepository.findByUsername(username) != null;
 	}
-
-	@Override
+*/
+/*	@Override
 	public boolean isUsernameExistsInUserInfo(String username) {
 		return userInfoRepository.findByUsername(username) != null;
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public boolean checkIfValidOldPassword(String email, String oldPassword) {
 		List<Authentication> authenticateList = authenticationRepository.findByEmail(email);
 		if (CollectionUtils.isNotEmpty(authenticateList)) {
 			return authenticateList.get(0).checkPassword(oldPassword);
 		}
 		return false;
-	}
+	}*/
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
+	/*@Override
 	public org.springframework.security.core.Authentication changePassword(String email, String password) {
 		UsernamePasswordAuthenticationToken token = null;
 		List<Authentication> authenticateList = authenticationRepository.findByEmail(email);
@@ -316,14 +293,14 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			token.setDetails(AuthType.STANDARD);
 		}
 		return token;
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public Authentication getAuthentication(String username) {
 		return authenticationRepository.findByUsername(username);
 	}
-
-	@Override
+*/
+	/*@Override
 	public boolean updateEmail(String username, String email) {
 		Authentication authentication = authenticationRepository.findByUsername(username);
 		if (null == authentication) {
@@ -333,9 +310,9 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			authenticationRepository.save(authentication);
 			return true;
 		}
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public boolean isPasswordIdentical(String oldPassword, String newPassword) {
 		return oldPassword.equals(newPassword);
 	}
@@ -369,7 +346,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 			username = authentication.getPrincipal().toString();
 		}
 		return username;
-	}
+	}*/
 
 	/**
 	 * get authentication on the basis of approval
@@ -377,10 +354,10 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 * @param approved
 	 * @return
 	 */
-	@Override
+/*	@Override
 	public Iterable<Authentication> getAuthenticationByApproved(boolean approved) {
 		return authenticationRepository.findByApproved(approved);
-	}
+	}*/
 
 	// ---- auth-N-auth required code starts here ----
 
@@ -389,7 +366,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	 * 
 	 * @return
 	 */
-	@Override
+	/*@Override
 	public List<ActionPoliciesDTO> fetchActionPolicyByResource() {
 		log.info("fetching Action Policy Rules from central auth");
 		String actionPolicyUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
@@ -403,7 +380,7 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 				.getData();
 		log.info("Total policies fetched from central auth : {}" + data.size());
 		return data;
-	}
+	}*/
 
 	/**
 	 *

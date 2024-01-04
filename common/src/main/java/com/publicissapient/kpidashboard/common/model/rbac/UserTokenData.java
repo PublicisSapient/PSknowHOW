@@ -38,9 +38,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "usertokendata")
-public class UserTokenData extends BasicModel {
+public class UserTokenData {
 
+	private Long id;
 	private String userName;
 	private String userToken;
 	private String expiryDate;

@@ -18,10 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
+import com.publicissapient.kpidashboard.apis.common.service.UserTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,21 +34,22 @@ import lombok.extern.slf4j.Slf4j;
 public class UserTokenDeletionServiceImpl implements UserTokenDeletionService {
 
 	@Autowired
-	private UserTokenReopository userTokenReopository;
+	private UserTokenService userTokenService;
 
-	@Override
+	/*@Override
 	public void deleteUserDetails(String userToken) {
 
 		log.info("UserTokenDeletionServiceImpl::deleteUserDetails start");
 		userTokenReopository.deleteByUserToken(userToken);
 		log.info("UserTokenDeletionServiceImpl::deleteUserDetails end");
 
-	}
+	}*/
+	//todo delete
 
 	public void invalidateSession(String userName) {
 
 		log.info("UserTokenDeletionServiceImpl::deleteUserToken start");
-		userTokenReopository.deleteByuserName(userName);
+		userTokenService.deleteByUserName(userName);
 		log.info("UserTokenDeletionServiceImpl::deleteUserToken end");
 	}
 

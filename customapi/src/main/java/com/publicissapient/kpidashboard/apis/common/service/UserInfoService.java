@@ -56,7 +56,7 @@ public interface UserInfoService {
 	 *            the auth type
 	 * @return the user info
 	 */
-	UserInfo getUserInfo(String username, AuthType authType);
+	UserInfo getUserInfoByUsernameAndAuthType(String username, AuthType authType);
 
 	UserInfo getUserInfo(String username);
 
@@ -124,7 +124,7 @@ public interface UserInfoService {
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType);
 
-	UserInfo save(UserInfo userInfo);
+	UserInfo saveDefaultUser(UserInfo userInfo);
 
 	UserInfo createDefaultUserInfo(String username, AuthType authType, String email);
 
@@ -134,9 +134,10 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	ServiceResponse deleteUser(String username);
+	//ServiceResponse deleteUser(String username);
+	//todo change
 
-	List<UserInfo> getUserInfoByAuthType(String userType);
+	//List<UserInfo> getUserInfoByAuthType(String userType);
 
 	/**
 	 * get user details for profile screen and response will be same as login api
@@ -154,8 +155,8 @@ public interface UserInfoService {
 	 * @param email
 	 * @return user info dto object
 	 */
-	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
-
+	//UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+	//todo delete
 	/**
 	 * This method return user info object by comparing username, auth type and
 	 * authorities
@@ -165,8 +166,8 @@ public interface UserInfoService {
 	 * @param authorities
 	 * @return user info object
 	 */
-	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
-
+	//UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
+	//todo change
 	//----auth-N-auth----------
 
 	/**
@@ -175,5 +176,11 @@ public interface UserInfoService {
 	 * @return
 	 */
 	UserInfo getCentralAuthUserInfo(String username);
+
+	List<UserInfo> findAllUsersFromCentralAuth();
+
+	UserInfo saveCentralAuthUserInfo(UserInfo userInfo);
+
+	List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin);
 	//----auth-N-auth----------
 }

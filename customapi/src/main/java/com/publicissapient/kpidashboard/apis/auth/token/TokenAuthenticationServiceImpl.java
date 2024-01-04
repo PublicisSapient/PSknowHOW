@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
+import com.publicissapient.kpidashboard.apis.common.service.UserTokenService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -55,10 +55,8 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -91,7 +89,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	private AuthProperties tokenAuthProperties;
 	@Autowired
-	private UserTokenReopository userTokenReopository;
+	private UserTokenService userTokenService;
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
@@ -236,14 +234,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public void invalidateAuthToken(List<String> users) {
-		userTokenReopository.deleteByUserNameIn(users);
+		userTokenService.deleteByUserNameIn(users);
 	}
 
 	@Override
 	public void updateExpiryDate(String username, String expiryDate) {
-		List<UserTokenData> dataList = userTokenReopository.findAllByUserName(username);
+		List<UserTokenData> dataList = userTokenService.findAllByUserName(username);
 		dataList.stream().forEach(data -> data.setExpiryDate(expiryDate));
-		userTokenReopository.saveAll(dataList);
+		userTokenService.saveAll(dataList);
 	}
 
 	@Override
@@ -263,7 +261,8 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return Boolean.toString(false);
 	}
 
-	@Override
+	//todo delete
+	/*@Override
 	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
@@ -284,9 +283,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		}
 		return createAuthDetailsJson(userInfo);
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
 		if (userInfo != null) {
 			JSONObject json = new JSONObject();
@@ -299,6 +298,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			return json;
 		}
 		return null;
-	}
+	}*/
 
 }

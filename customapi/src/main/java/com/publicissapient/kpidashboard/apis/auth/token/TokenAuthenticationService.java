@@ -94,7 +94,7 @@ public interface TokenAuthenticationService {
 
 	String setUpdateAuthFlag(Date userTokenData);
 
-	JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
+	//JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication);
 
-	JSONObject createAuthDetailsJson(UserInfo userInfo);
+	//JSONObject createAuthDetailsJson(UserInfo userInfo);
 }

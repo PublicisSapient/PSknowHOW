@@ -135,7 +135,7 @@ public interface AuthenticationService {
 	 *            the username
 	 * @return true if username already exists in db
 	 */
-	boolean isUsernameExistsInUserInfo(String username);
+	//boolean isUsernameExistsInUserInfo(String username);
 
 	/**
 	 * Check if valid old Password

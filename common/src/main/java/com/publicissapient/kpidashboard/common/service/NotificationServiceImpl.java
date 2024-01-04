@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.common.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -123,5 +125,11 @@ public class NotificationServiceImpl implements NotificationService  {
         props.put("mail.smtp.ssl.trust", "*");
         props.put("mail.debug", "true");
         return mailSender;
+    }
+
+    //todo change
+    // user service move into common
+    public List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin){
+        return new ArrayList<>();
     }
 }

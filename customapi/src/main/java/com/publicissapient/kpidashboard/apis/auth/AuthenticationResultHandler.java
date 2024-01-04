@@ -35,7 +35,8 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 
 @Component
-public class AuthenticationResultHandler implements AuthenticationSuccessHandler {
+public class AuthenticationResultHandler {
+		//implements AuthenticationSuccessHandler {
 
 	@Autowired
 	private AuthenticationResponseService authenticationResponseService;
@@ -46,7 +47,7 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 	@Autowired
 	private AuthenticationService authenticationService;
 
-	@Override
+	/*@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		authenticationResponseService.handle(response, authentication);
@@ -59,6 +60,7 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 		out.print(json.toJSONString());
 		// sgu106: Google Analytics data population ends
 
-	}
+	}*/
+	//todo delete
 
 }

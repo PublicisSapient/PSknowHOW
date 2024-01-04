@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,12 +38,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,9 +63,6 @@ public class UserInfoController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
-
-	@Autowired
-	private UserInfoRepository userInfoRepository;
 
 	/**
 	 * Fetch only approved user info data.
@@ -127,7 +121,7 @@ public class UserInfoController {
 	 * }
 	 */
 
-	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
+	/*@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
 	public ResponseEntity<ServiceResponse> deleteUser(@PathVariable String userName) {
 		log.info("Inside deleteUser() method of UserInfoController ");
@@ -142,7 +136,8 @@ public class UserInfoController {
 					.body(new ServiceResponse(false, "Unauthorized to perform deletion of user", "Unauthorized"));
 		}
 
-	}
+	}*/
+	//todo change
 
 	/**
 	 * get user details via token
@@ -161,4 +156,5 @@ public class UserInfoController {
 
 		}
 	}
+	//todo change
 }

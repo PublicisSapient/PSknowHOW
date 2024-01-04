@@ -122,24 +122,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.headers().cacheControl();
-		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/error").permitAll()
-				.antMatchers("/auth-types-status").permitAll().antMatchers("/pushData/*").permitAll()
+		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll()
+				.antMatchers("/error").permitAll()
+				//.antMatchers("/auth-types-status").permitAll()
+				.antMatchers("/pushData/*").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
-
 				// management metrics
-				.antMatchers("/env").permitAll().antMatchers(HttpMethod.POST, "/validateToken").permitAll()
-				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
+				.antMatchers("/env").permitAll()
+				// auth service
+				.antMatchers(HttpMethod.POST, "/validateToken").permitAll()
+				//cache service
+				.antMatchers("/cache/clearAllCache")
+				.permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
 				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
+				// analytics API calls
+				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll()
+				.anyRequest().authenticated().and()
 				.httpBasic().and().csrf().disable().headers().and()
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+				//.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+				//todo delete
 				.addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class).exceptionHandling()
 				.authenticationEntryPoint(customAuthenticationEntryPoint);
 
 	}
-
-	@Override
+	//todo delete
+	/*@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
 
@@ -157,31 +165,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		}
 		auth.authenticationProvider(apiTokenAuthenticationProvider);
 	}
-
-	@Bean
+*/
+	/*@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
 		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler,
 				customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-	}
+	}*/
+	//todo delete
 
 	// update authenticatoin result handler
-	@Bean
+	/*@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/ldap", authenticationManager(), authenticationResultHandler,
 				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-	}
+	}*/
+	//todo delete
 
-	@Bean
+	/*@Bean
 	protected ApiTokenRequestFilter apiTokenRequestFilter() throws Exception {
 		return new ApiTokenRequestFilter("/**", authenticationManager(), authenticationResultHandler);
-	}
+	}*/
+	//todo delete
 
 	@Bean
 	protected CorsFilter corsFilterKnowHOW() throws Exception {// NOSONAR
 		return new CorsFilter();
 	}
 
-	@Bean
+	/*@Bean
 	protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
 		ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
 		if (adServerDetail == null || StringUtils.isBlank(adServerDetail.getHost())) {
@@ -193,7 +204,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		provider.setUseAuthenticationRequestCredentials(true);
 		provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
 		return provider;
-	}
+	}*/
+	//todo delete
 
 	@Bean
 	public CustomAuthenticationEntryPoint customAuthenticationEntryPoint() {

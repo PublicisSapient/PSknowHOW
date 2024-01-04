@@ -33,6 +33,7 @@ public interface AuthenticationResponseService {
 	 * @param response
 	 * @param authentication
 	 */
-	void handle(HttpServletResponse response, Authentication authentication);
+	//void handle(HttpServletResponse response, Authentication authentication);
+	//todo delete
 
 }
