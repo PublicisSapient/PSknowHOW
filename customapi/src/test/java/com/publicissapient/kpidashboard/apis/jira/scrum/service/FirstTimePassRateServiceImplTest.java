@@ -205,7 +205,7 @@ public class FirstTimePassRateServiceImplTest {
 		when(jiraIssueRepository.findByTypeNameAndDefectStoryIDIn(anyString(), anyList())).thenReturn(defects);
 
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
-				.thenReturn(kpiRequest.getRequestTrackerId());
+				.thenReturn(kpiRequest.getRequestTrackerId()+"Excel");
 		try {
 			KpiElement kpiElement = firstTimePassRateService.getKpiData(this.kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
