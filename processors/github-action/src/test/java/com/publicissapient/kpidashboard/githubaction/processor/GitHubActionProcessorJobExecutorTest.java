@@ -202,7 +202,6 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		Deployment build = new Deployment();
-//		build.setNumber("1");
 		build.setEnvUrl("JOB1_Env_URL");
 		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		build.setDeployedBy("TestUser");

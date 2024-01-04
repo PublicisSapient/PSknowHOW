@@ -19,12 +19,15 @@
 package com.publicissapient.kpidashboard.githubaction.processor;
 
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -35,6 +38,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
@@ -56,12 +60,18 @@ public class GitHubActionDeployClientTest {
 	@Mock
 	private GitHubActionConfig gitHubActionConfig;
 
-	@Test
-	public void getBuildJobsFromServerTest() throws Exception {
-		String restURI = "https://test.com/repos/username/reponame/deployments";
-		String serverResponse = getServerResponse("/githubaction_deploy.json");
+	String restURI = "https://test.com/repos/username/reponame/deployments";
+	String serverResponse;
+
+	@BeforeEach
+	public void setup() throws Exception {
+		serverResponse = getServerResponse("/githubaction_deploy.json");
 		doReturn("abcd").when(gitHubActionConfig).getAesEncryptionKey();
 		doReturn("test").when(aesEncryptionService).decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString());
+	}
+
+	@Test
+	public void getBuildJobsFromServerTest() throws Exception {
 		doReturn(new ResponseEntity<>(serverResponse, HttpStatus.OK)).when(restTemplate).exchange(
 				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
 				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
@@ -69,6 +79,22 @@ public class GitHubActionDeployClientTest {
 				.getDeployJobsFromServer(getToolConnection(), new ProjectBasicConfig());
 
 		Assert.assertEquals(2, deploymentsByJob.size());
+	}
+
+	@Test
+	public void getDeployJobsFromServerExceptionTest() throws Exception {
+		doThrow(RestClientException.class).when(restTemplate).exchange(
+				ArgumentMatchers.eq(restURI), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+		Map<Deployment, Set<Deployment>> deploymentsByJob = new HashMap<>();
+		try {
+			deploymentsByJob = gitHubActionDeployClient
+					.getDeployJobsFromServer(getToolConnection(), new ProjectBasicConfig());
+		} catch (Exception restClientException) {
+
+		}
+
+		Assert.assertEquals(0, deploymentsByJob.size());
 	}
 
 	private ProcessorToolConnection getToolConnection() {
