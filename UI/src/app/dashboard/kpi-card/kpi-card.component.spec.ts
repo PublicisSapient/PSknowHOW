@@ -276,4 +276,124 @@ describe('KpiCardComponent', () => {
     expect(component.fieldMappingMetaData).not.toBeNull();
   });
 
+  it('should prepare data when project is selected', () => {
+    component.kpiData = {
+      kpiId: 'kpi3',
+      kpiName: 'Lead Time',
+      isEnabled: true,
+      order: 25,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff0',
+        kpiId: 'kpi3',
+        kpiName: 'Lead Time',
+        kpiSource: 'Jira',
+        kanban: false,
+        kpiFilter: 'radioButton',
+      },
+      shown: true
+    };
+    component.colors = [
+      {
+        nodeName : "p1",
+        color : 'red'
+      },
+      {
+        nodeName : "p2",
+        color : 're2'
+      }
+    ];
+    component.trendValueList = [
+      {
+        "data": "p1",
+        "value": [
+          {
+              "sSprintID": "P1 PI-12",
+              "sSprintName": "P1 PI-12",
+              "dataValue": [
+                  {
+                      "name": "Achieved Value",
+                      "lineType": "solid",
+                      "data": "116.0",
+                      "value": 64.67,
+                      "hoverValue": {}
+                  },
+                  {
+                      "name": "Planned Value",
+                      "lineType": "dotted",
+                      "data": "116.0",
+                      "value": 116,
+                      "hoverValue": {}
+                  }
+              ],
+              "sprojectName": "p1"
+          },
+        ]
+      },{
+        "data": "p2",
+        "value": [
+          {
+              "sSprintID": "P2 PI-12",
+              "sSprintName": "P2 PI-12",
+              "dataValue": [
+                  {
+                      "name": "Achieved Value",
+                      "lineType": "solid",
+                      "data": "116.0",
+                      "value": 64.67,
+                      "hoverValue": {}
+                  },
+                  {
+                      "name": "Planned Value",
+                      "lineType": "dotted",
+                      "data": "116.0",
+                      "value": 116,
+                      "hoverValue": {}
+                  }
+              ],
+              "sprojectName": "p2"
+          },
+        ]
+      }
+    ];
+    const len = component.trendValueList[0]?.value[0]?.dataValue?.length + 1;
+    component.columnList = [];
+    component.prepareData();
+    expect(component.columnList.length).toBeGreaterThan(1);
+  })
+
+  it('should reload kpi', () => {
+    component.displayConfigModel = true;
+    component.kpiData = {
+      kpiId: 'kpi3',
+      kpiName: 'Lead Time',
+      isEnabled: true,
+      order: 25,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff0',
+        kpiId: 'kpi3',
+        kpiName: 'Lead Time',
+        kpiSource: 'Jira',
+        kanban: false,
+        kpiFilter: 'radioButton',
+      },
+      shown: true
+    };
+    const emitSpy = spyOn(component.reloadKPITab, 'emit');
+    component.reloadKPI();
+    expect(component.displayConfigModel).toBeFalse();
+    expect(emitSpy).toHaveBeenCalledWith(component.kpiData);
+  })
+
+  fit('should handle get count', () => {
+    const event = 'kpi120';
+    const emitSpy = spyOn(component.getCommentCountByKpi, 'emit');
+    component.handleGetCount(event);
+    expect(emitSpy).toHaveBeenCalledWith(event);
+  })
+
+  // it('should handle kpi click', () => {
+  //   spyOn(component, 'triggerGaEvent');
+  //   component.handleKpiClick();
+  // })
+
 });
