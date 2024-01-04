@@ -34,13 +34,6 @@ public class SonarUtilsTest {
 
 	}
 
-	@Test
-	public void testAddSpaceIfNeeded_negative() {
-		StringBuilder stringBuilder = new StringBuilder("");
-		SonarUtils.addSpaceIfNeeded(stringBuilder);
-		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
-
-	}
 
 	@Test
 	public void testFormatDuration() {

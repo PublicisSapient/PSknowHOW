@@ -59,11 +59,9 @@ import com.publicissapient.kpidashboard.sonar.model.Paging;
 import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class Sonar8ClientTest {
 	private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&p=1&ps=500";
-	private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
-	private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
 	private static final String SONAR_URL = "http://sonar.com";
 	private static final ProcessorToolConnection SONAR_SERVER = new ProcessorToolConnection();
 	private static final ProcessorToolConnection SONAR_CLOUD = new ProcessorToolConnection();

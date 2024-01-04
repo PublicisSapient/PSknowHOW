@@ -34,7 +34,7 @@ import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7C
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SonarClientFactoryTest {
 
 	@InjectMocks

@@ -35,7 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 /**
  * @author shi6
  */
-@ExtendWith(SpringExtension.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SonarConfigServiceTest {
 
 	@InjectMocks
