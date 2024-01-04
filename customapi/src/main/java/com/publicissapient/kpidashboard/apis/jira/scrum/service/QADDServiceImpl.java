@@ -321,9 +321,9 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 	 * @param storyPointList2
 	 *            the story point list 2
 	 */
-	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOPMD
+	private void processSubCategoryMap(List<String> storyIdList, Map<String, Object> storyDefectDataListMap, // NOSONAR
 																											 // //NOSONAR
-			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList, // NOSONAR
+			List<Double> qaddList, Set<JiraIssue> sprintWiseDefectList, List<String> totalStoryIdList,
 			List<JiraIssue> storyList, List<JiraIssue> storyFilteredList, List<String> storyPointList2,
 			FieldMapping fieldMapping) {// NOSONAR
 		HashMap<String, JiraIssue> mapOfStories = new HashMap<>();
@@ -353,8 +353,8 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
 				storyPointsTotal = storyList.stream().mapToDouble(JiraIssue::getStoryPoints).sum();// NOPMD
 			} else {
 				storyPointsTotal = storyList.stream()
-						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 				storyPointsTotal = storyPointsTotal / 60;
 				storyPointsTotal = storyPointsTotal / fieldMapping.getStoryPointToHourMapping();
 			}

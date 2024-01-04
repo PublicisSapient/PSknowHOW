@@ -352,8 +352,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						.mapToDouble(ji -> Double.valueOf(ji.getEstimate())).sum();
 			} else {
 				double totalOriginalEstimate = issueBacklogList.stream()
-						.filter(issueBacklog -> Objects.nonNull(issueBacklog.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+						.filter(issueBacklog -> Objects.nonNull(issueBacklog.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 				double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
 				sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
 			}
