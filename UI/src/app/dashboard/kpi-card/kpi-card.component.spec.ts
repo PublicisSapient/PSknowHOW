@@ -384,16 +384,32 @@ describe('KpiCardComponent', () => {
     expect(emitSpy).toHaveBeenCalledWith(component.kpiData);
   })
 
-  fit('should handle get count', () => {
+  it('should handle get count', () => {
     const event = 'kpi120';
     const emitSpy = spyOn(component.getCommentCountByKpi, 'emit');
     component.handleGetCount(event);
     expect(emitSpy).toHaveBeenCalledWith(event);
   })
 
-  // it('should handle kpi click', () => {
-  //   spyOn(component, 'triggerGaEvent');
-  //   component.handleKpiClick();
-  // })
+  it('should handle kpi click', () => {
+    component.kpiData = {
+      kpiId: 'kpi3',
+      kpiName: 'Lead Time',
+      isEnabled: true,
+      order: 25,
+      kpiDetail: {
+        id: '633ed17f2c2d5abef2451ff0',
+        kpiId: 'kpi3',
+        kpiName: 'Lead Time',
+        kpiSource: 'Jira',
+        kanban: false,
+        kpiFilter: 'radioButton',
+      },
+      shown: true
+    };
+    const spy = spyOn(component, 'triggerGaEvent');
+    component.handleKpiClick();
+    expect(spy).toHaveBeenCalled();
+  })
 
 });
