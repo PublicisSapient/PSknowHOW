@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
-import static org.mockito.Mockito.when;
+
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -32,6 +32,10 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author shi6
@@ -63,10 +67,8 @@ public class SonarProcessorUtilsTest {
 		ToolCredential credential = new ToolCredential();
 		credential.setUsername("dummy");
 		credential.setPassword("dummy");
-		// Mockito.when(toolCredentialProvider.findCredential(any())).thenReturn(credential);
-		when(toolCredentialProvider.findCredential(Mockito.anyString())).thenReturn(credential);
+		doReturn(credential).when(toolCredentialProvider).findCredential(any());
 		SonarUtils.getToolCredentials(toolCredentialProvider, processorToolConnection);
-		// Mockito.verify(toolCredentialProvider).findCredential(crede);
 	}
 
 	@Test
