@@ -18,15 +18,15 @@
 
 package com.publicissapient.kpidashboard.sonar.util;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
@@ -36,10 +36,11 @@ import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
 /**
  * @author shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarProcessorUtilsTest {
+
 	@Mock
-	public ToolCredentialProvider toolCredentialProvider;
+	private ToolCredentialProvider toolCredentialProvider;
 
 	@Test
 	public void getHeaders_BasicAuthTrue() {
@@ -62,8 +63,10 @@ public class SonarProcessorUtilsTest {
 		ToolCredential credential = new ToolCredential();
 		credential.setUsername("dummy");
 		credential.setPassword("dummy");
-		Mockito.when(toolCredentialProvider.findCredential(any())).thenReturn(credential);
+		// Mockito.when(toolCredentialProvider.findCredential(any())).thenReturn(credential);
+		when(toolCredentialProvider.findCredential(Mockito.anyString())).thenReturn(credential);
 		SonarUtils.getToolCredentials(toolCredentialProvider, processorToolConnection);
+		// Mockito.verify(toolCredentialProvider).findCredential(crede);
 	}
 
 	@Test

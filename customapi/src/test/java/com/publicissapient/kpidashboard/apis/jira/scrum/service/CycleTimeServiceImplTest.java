@@ -63,6 +63,7 @@ import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
 import com.publicissapient.kpidashboard.common.model.application.CycleTimeValidationData;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
@@ -107,6 +108,10 @@ public class CycleTimeServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiraLiveStatusKPI171(Arrays.asList("Live"));
+		fieldMapping.setJiraDodKPI171(Arrays.asList("Close", "Dropped"));
+		fieldMapping.setStoryFirstStatusKPI171("Open");
+		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress", "In Analysis"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
@@ -138,39 +143,19 @@ public class CycleTimeServiceImplTest {
 		assertEquals(1, sprintDataListMap.size());
 	}
 
-	//@Test
+	@Test
 	public void test_CycleTime_Positive() {
 		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
 		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
 				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(totalJiraIssueHistoryList, fieldMapping,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
+		DataCount trendValue = new DataCount();
+		cycleTimeService.getCycleTime(totalJiraIssueHistoryList, fieldMapping, cycleTimeValidationDataList,
+				kpiRequest.getKpiList().get(0), trendValue);
+		assertEquals(39, cycleTimeValidationDataList.size());
 
 	}
 
-	//@Test
-	public void test_CycleTime_NoJiraIssue() {
-		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
-		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
-				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(null, fieldMapping,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
-	}
-
-	//@Test
-	public void test_CycleTime_NoFieldMapping() {
-		List<CycleTimeValidationData> cycleTimeValidationDataList = new ArrayList<>();
-		// when(customApiConfig.getCycleTimeRange()).thenReturn(xAxisRange);
-		Set<String> issueTypes = totalJiraIssueHistoryList.stream().map(JiraIssueCustomHistory::getStoryType)
-				.collect(Collectors.toSet());
-		/*List<IterationKpiValue> cycleTime = cycleTimeService.getCycleTime(totalJiraIssueHistoryList, null,
-				cycleTimeValidationDataList, xAxisRange, issueTypes);
-		assertEquals(10, cycleTime.size());*/
-	}
-
-	//@Test
+	@Test
 	public void testGetKpiData() throws ApplicationException {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -185,8 +170,8 @@ public class CycleTimeServiceImplTest {
 		KpiElement responseKpiElement = cycleTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail);
 		assertNotNull(responseKpiElement);
-		List<IterationKpiValue> trendValueList = (List<IterationKpiValue>) responseKpiElement.getTrendValueList();
-		assertEquals(10, trendValueList.size());
+		int size = ((List<IterationKpiValue>) ((DataCount) responseKpiElement.getTrendValueList()).getValue()).size();
+		assertEquals(3, size);
 	}
 
 	@Test
