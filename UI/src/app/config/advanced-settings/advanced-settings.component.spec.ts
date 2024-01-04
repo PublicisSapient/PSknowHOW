@@ -32,20 +32,22 @@ import { AdvancedSettingsComponent } from './advanced-settings.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GetAuthorizationService } from '../../services/get-authorization.service';
 import { SharedService } from '../../services/shared.service';
-import { of } from 'rxjs';
-import { compileComponentFromMetadata } from '@angular/compiler';
+import { of, throwError } from 'rxjs';
 describe('AdvancedSettingsComponent', () => {
   let component: AdvancedSettingsComponent;
   let fixture: ComponentFixture<AdvancedSettingsComponent>;
   let httpService;
+  let getAuthorizationService;
   let httpMock;
+  let messageService;
   let confirmationService;
   const baseUrl = environment.baseUrl;  // Servers Env
   // var store = {};
   // var ls = function () {
-  //   return JSON.parse(store['storage']);
-  // };
-
+    //   return JSON.parse(store['storage']);
+    // };
+    
+  const fakeProjects = require('../../../test/resource/fakeProjectsDashConfig.json');
   const fakeProcessorData = {
     message: '',
     success: true,
@@ -195,8 +197,10 @@ describe('AdvancedSettingsComponent', () => {
     fixture = TestBed.createComponent(AdvancedSettingsComponent);
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
+    getAuthorizationService = TestBed.inject(GetAuthorizationService);
     httpMock = TestBed.inject(HttpTestingController);
     confirmationService = TestBed.inject(ConfirmationService);
+    messageService = TestBed.inject(MessageService);
     fixture.detectChanges();
   });
 
@@ -386,4 +390,41 @@ describe('AdvancedSettingsComponent', () => {
     const resp = component.showExecutionDate('Jira')
     expect(resp).not.toBe("NA")
   })  
+
+  it('should fetch all the projects when superadmin', () => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfSuperUser').and.returnValue(true)
+    spyOn(component, 'getProcessorsTraceLogsForProject');
+    const spy = spyOn(component, 'getAllToolConfigs');
+    component.getProjects();
+    expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  it('should fetch all the projects when project admin', () => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const response = fakeProjects;
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(response));
+    spyOn(getAuthorizationService, 'checkIfProjectAdmin').and.returnValue(true)
+    spyOn(component, 'getProcessorsTraceLogsForProject');
+    const spy = spyOn(component, 'getAllToolConfigs');
+    component.getProjects();
+    expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
+  })
+
+  xit('should not fetch all the projects', fakeAsync(() => {
+    component.userProjects = [];
+    component.selectedProject = {};
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getUserProjects').and.returnValue(throwError(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProjects();
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
 });
