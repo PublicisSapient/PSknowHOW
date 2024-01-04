@@ -11,5 +11,5 @@ steps:
     ls -al ./
   displayName: 'Test - file listing'
 - script: |
-    ls -al ./
+    cat ./azure-devops-pipelines/azure-pipelines.yml
   displayName: 'My custom task (shell)'  
