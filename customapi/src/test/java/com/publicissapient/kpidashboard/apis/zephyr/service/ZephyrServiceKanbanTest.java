@@ -48,6 +48,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -60,6 +61,7 @@ public class ZephyrServiceKanbanTest {
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+
 	@Mock
 	ConfigHelperService configHelperService;
 	@Mock
