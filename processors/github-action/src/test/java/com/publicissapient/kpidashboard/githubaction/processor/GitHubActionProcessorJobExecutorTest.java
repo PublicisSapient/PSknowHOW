@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,10 +39,13 @@ import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -61,6 +65,8 @@ import com.publicissapient.kpidashboard.githubaction.factory.GitHubActionClientF
 import com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor;
 import com.publicissapient.kpidashboard.githubaction.processor.adapter.GitHubActionClient;
 import com.publicissapient.kpidashboard.githubaction.repository.GitHubProcessorRepository;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 @SuppressWarnings("java:S5786")
 @ExtendWith(SpringExtension.class)
@@ -87,17 +93,20 @@ public class GitHubActionProcessorJobExecutorTest {
 	private BuildRepository buildRepository;
 	@Mock
 	private DeploymentRepository deploymentRepository;
+	@Mock
+	private RestTemplate restTemplate;
 	private List<ProcessorToolConnection> connList = new ArrayList<>();
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
 	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
+	GitHubActionClient client2;
 
 	@BeforeEach
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
-
+		client2 = mock(GitHubActionClient.class);
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		gitHubActionProcessor.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		githubSampleServer.setUrl("https://api.github.com");
@@ -121,19 +130,20 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		Mockito.when(gitHubActionConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 		when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+		doThrow(RestClientException.class).when(restTemplate).exchange(
+				ArgumentMatchers.anyString(), ArgumentMatchers.eq(HttpMethod.GET),
+				ArgumentMatchers.any(HttpEntity.class), ArgumentMatchers.eq(String.class));
+
+		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 	}
 
 	@SuppressWarnings("java:S2699")
 	@Test
 	public void buildJobsAdded() throws FetchingBuildException {
-
-		GitHubActionClient client2 = mock(GitHubActionClient.class);
-		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
-						.thenReturn(optionalProcessorExecutionTraceLog);
-		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		Build build = new Build();
@@ -149,7 +159,6 @@ public class GitHubActionProcessorJobExecutorTest {
 		builds.add(build);
 		when(buildRepository.findByProjectToolConfigIdAndNumberIn(any(), any())).thenReturn(builds);
 		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(oneJobWithBuilds(build2));
-
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		projectConfig.setSaveAssigneeDetails(false);
 		projectConfigList.add(projectConfig);
@@ -162,13 +171,10 @@ public class GitHubActionProcessorJobExecutorTest {
 
 	@Test
 	public void buildJobsAdded2() throws FetchingBuildException {
-
-		GitHubActionClient client2 = mock(GitHubActionClient.class);
 		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
 		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
 				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
 				.thenReturn(optionalProcessorExecutionTraceLog);
-		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
 		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
@@ -196,12 +202,6 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		GitHubActionClient client2 = mock(GitHubActionClient.class);
 		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
-		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
-		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
-
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		when(client2.getBuildJobsFromServer(any(), any())).thenThrow(FetchingBuildException.class);
 		try {
@@ -217,9 +217,6 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		GitHubActionClient client2 = mock(GitHubActionClient.class);
 		when(gitHubActionClientFactory.getGitHubActionClient("deploy")).thenReturn(client2);
-		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
-				.thenReturn(optionalProcessorExecutionTraceLog);
 		when(client2.getDeployJobsFromServer(any(), any())).thenReturn(new HashMap<>());
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
