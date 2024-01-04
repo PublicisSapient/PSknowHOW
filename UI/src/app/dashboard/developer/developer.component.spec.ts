@@ -41,6 +41,7 @@ import { DashboardComponent } from '../dashboard.component';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 import { Routes } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { of } from 'rxjs';
 
 const selectedTab = 'developer';
 const masterData = require('../../../test/resource/masterData.json');
@@ -240,6 +241,7 @@ describe('DeveloperComponent', () => {
   let excelService: ExcelService;
   let messageService: MessageService;
   let httpMock;
+  let exportExcelComponent;
 
   const baseUrl = environment.baseUrl;
 
@@ -274,6 +276,7 @@ describe('DeveloperComponent', () => {
 
     fixture = TestBed.createComponent(DeveloperComponent);
     component = fixture.componentInstance;
+    exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     fixture.detectChanges();
 
     const type = 'Scrum';
@@ -858,5 +861,52 @@ describe('DeveloperComponent', () => {
     expect(component.kpiSelectedFilterObj['kpi11']).toEqual(["debbie_integration -> PSKnowHOW -> KnowHOW"]);
     done();
   });
+
+  it('should work download excel functionality', () => {
+    spyOn(component.exportExcelComponent, 'downloadExcel')
+    component.downloadExcel('kpi122', 'name', true, true);
+    expect(exportExcelComponent).toBeDefined();
+})
+
+it('should noTabAccess false when emp details not available', () => {
+  service.setEmptyData('');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeFalsy();
+})
+
+it('should noTabAccess true when emp details available', () => {
+  service.setEmptyData('test');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeTruthy();
+})
+
+it('should set the tooltip and global config data if the http request is successful', () => {
+  const filterData = ['data-1', 'data-2'];
+  spyOn(httpService,'getConfigDetails').and.returnValue(of(filterData));
+  spyOn(service, 'setGlobalConfigData');
+  component.ngOnInit();
+  expect(httpService.getConfigDetails).toHaveBeenCalled();
+  expect(component.tooltip).toEqual(filterData);
+});
+
+it('should reload KPI once mapping saved ', () => {
+  const KPiList = [{
+      id: "kpi1"
+  }];
+  const fakeKPiDetails = {
+      kpiDetails: {
+          kpiSource: 'jira',
+          kanban: true,
+          groupId: 1
+      }
+  }
+  spyOn(service, 'getSelectedType').and.returnValue('kanban');
+  spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: KPiList })
+  const spy = spyOn(component, 'postBitBucketKanbanKpi');
+  component.reloadKPI(fakeKPiDetails);
+  expect(spy).toBeDefined();
+})
 
 });
