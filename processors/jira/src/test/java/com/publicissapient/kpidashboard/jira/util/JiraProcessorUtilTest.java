@@ -18,9 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -47,6 +45,29 @@ public class JiraProcessorUtilTest {
 	public void deodeUTF8StringNull() {
 		Object jiraResponse = null;
 		assertNotNull(JiraProcessorUtil.deodeUTF8String(jiraResponse));
+
+	}
+
+	@Test
+	public void testDecodeUTF8String_NullInput() {
+		String result = JiraProcessorUtil.deodeUTF8String(null);
+
+		assertEquals("", result);
+	}
+
+	@Test
+	public void testDecodeUTF8String_EmptyInput() {
+		Object jiraResponse = ""; // or null, or any other empty string format handled in your method
+		String result = JiraProcessorUtil.deodeUTF8String(jiraResponse);
+
+		assertEquals("", result);
+	}
+
+	@Test
+	public void testDecodeUTF8String_NormalInput() {
+		Object jiraResponse = "Some UTF-8 String"; // Replace with your test input
+		String result = JiraProcessorUtil.deodeUTF8String(jiraResponse);
+		assertTrue(!result.isEmpty());
 
 	}
 
