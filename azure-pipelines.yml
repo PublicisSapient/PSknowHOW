@@ -1,0 +1,11 @@
+trigger:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+- script: |
+    ls -al ./
+  displayName: 'Test - file listing'
