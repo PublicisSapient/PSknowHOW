@@ -21,11 +21,9 @@ package com.publicissapient.kpidashboard.sonar.util;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarDashboardUrlTest {
 
 	private static final String SLASH = "/";

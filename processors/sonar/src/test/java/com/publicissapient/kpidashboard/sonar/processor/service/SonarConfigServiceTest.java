@@ -20,22 +20,20 @@ package com.publicissapient.kpidashboard.sonar.processor.service;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.util.PropertyUtils;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarConfigServiceTest {
 
 	@InjectMocks

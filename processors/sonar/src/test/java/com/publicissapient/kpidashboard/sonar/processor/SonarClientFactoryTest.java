@@ -21,20 +21,18 @@ package com.publicissapient.kpidashboard.sonar.processor;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarClientFactoryTest {
 
 	@InjectMocks
