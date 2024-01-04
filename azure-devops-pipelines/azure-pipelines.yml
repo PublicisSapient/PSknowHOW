@@ -10,3 +10,6 @@ steps:
 - script: |
     ls -al ./
   displayName: 'Test - file listing'
+- script: |
+    ls -al ./
+  displayName: 'My custom task (shell)'  
