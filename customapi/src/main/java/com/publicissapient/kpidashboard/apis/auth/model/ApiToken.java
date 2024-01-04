@@ -40,6 +40,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Document(collection = "apitoken")
+@Deprecated
 public class ApiToken extends BasicModel {
 
 	/**

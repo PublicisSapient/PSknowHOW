@@ -27,6 +27,8 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 /**
  * The type Ldap authentication details source.
  */
+@Deprecated
+//todo delete
 public class LdapAuthenticationDetailsSource implements AuthenticationDetailsSource<HttpServletRequest, AuthType> {
 
 	@Override

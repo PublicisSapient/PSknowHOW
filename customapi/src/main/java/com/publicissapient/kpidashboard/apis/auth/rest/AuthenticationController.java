@@ -70,6 +70,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
  */
 @RestController
 @Slf4j
+@Deprecated
+//todo delete
 public class AuthenticationController {
 
     private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
@@ -309,7 +311,7 @@ public class AuthenticationController {
         return loggedInUser.equals(username) || loggedInUserInfo.getAuthorities().contains("ROLE_SUPERADMIN");
     }
 
-    @RequestMapping(value = "/users/{username}/updateEmail", method = PUT) // NOSONAR
+    /*@RequestMapping(value = "/users/{username}/updateEmail", method = PUT) // NOSONAR
     public ResponseEntity<ServiceResponse> updateUserInfo(@PathVariable String username,
                                                           @RequestBody Map<String, String> emailObject, Principal principal) {
 
@@ -355,7 +357,7 @@ public class AuthenticationController {
                     .body(new ServiceResponse(false, "You are not authorised to update the email", null));
         }
 
-    }
+    }*/
 
     private boolean isPassContainUser(String reqPassword, String username) {
         return !(StringUtils.containsIgnoreCase(reqPassword, username));

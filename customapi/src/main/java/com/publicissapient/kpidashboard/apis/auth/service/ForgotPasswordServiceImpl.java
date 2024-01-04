@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************//*
 
+
+*/
 /**
  * 
- */
+ *//*
+
 package com.publicissapient.kpidashboard.apis.auth.service;
 
 import java.util.Arrays;
@@ -47,21 +50,25 @@ import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 
 import lombok.extern.slf4j.Slf4j;
 
+*/
 /**
  * This class managed all the services for forgot password and reset new
  * password
  * 
  * @author vijmishr1
  *
- */
+ *//*
+//todo delete
 @Slf4j
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	private static final String FORGOT_PASSWORD_TEMPLATE = "Forgot_Password_Template";
-	/*
+	*/
+/*
 	 * validatePath
-	 */
+	 *//*
+
 	private static final String VALIDATE_PATH = "/validateToken?token="; // NOSONAR
 	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
 	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "Forgot_Password";
@@ -74,7 +81,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	@Autowired
 	private NotificationService notificationService;
 
-	/**
+	*/
+/**
 	 * Process forgotPassword request.
 	 * 
 	 * <p>
@@ -85,7 +93,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 * @param email
 	 * @param url
 	 * @return authentication
-	 */
+	 *//*
+
 	@Override
 	public Authentication processForgotPassword(String email, String url) {
 		log.info("ForgotPasswordServiceImpl: Requested mail {}", email);
@@ -102,7 +111,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		return null;
 	}
 
-	/**
+	*/
+/**
 	 * Validates Email Token sent to the user via email.
 	 * 
 	 * <p>
@@ -114,7 +124,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 * @param token
 	 * @return one of the enum <tt>INVALID, VALID, EXPIRED</tt> of type
 	 *         ResetPasswordTokenStatusEnum
-	 */
+	 *//*
+
 	@Override
 	public ResetPasswordTokenStatusEnum validateEmailToken(String token) {
 		log.info("ForgotPasswordServiceImpl: Validate the token {}", token);
@@ -122,7 +133,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		return checkTokenValidity(forgotPasswordToken);
 	}
 
-	/**
+	*/
+/**
 	 * Resets password after validating token
 	 * 
 	 * <p>
@@ -139,7 +151,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 *             if either <tt>forgotPasswordToken</tt> is invalid or
 	 *             <tt>username</tt> doen't exist in the database.
 	 * 
-	 */
+	 *//*
+
 	@Override
 	public Authentication resetPassword(ResetPasswordRequest resetPasswordRequest) throws ApplicationException {
 		log.info("ForgotPasswordServiceImpl: Reset token is {}", resetPasswordRequest.getResetToken());
@@ -173,13 +186,15 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	}
 
-	/**
+	*/
+/**
 	 * Checks if the email exists in the database.
 	 * 
 	 * @param email
 	 * @return Authentication if email exits or <tt>null</tt> if the email doesn't
 	 *         exist
-	 */
+	 *//*
+
 	private Authentication getEmailExistsInDB(String email) {
 		List<Authentication> authenticateList = authenticationRepository.findByEmail(email);
 		if (CollectionUtils.isNotEmpty(authenticateList)) {
@@ -188,14 +203,16 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		return null;
 	}
 
-	/**
+	*/
+/**
 	 * Creates UUID token and sets it to ForgotPasswordToken along with username and
 	 * expiry date and saves it to <tt>forgotPasswordToken</tt> collection in
 	 * database.
 	 * 
 	 * @param authentication
 	 * @return token
-	 */
+	 *//*
+
 	private String createForgetPasswordToken(Authentication authentication) {
 		String token = UUID.randomUUID().toString();
 		ForgotPasswordToken forgotPasswordToken = new ForgotPasswordToken();
@@ -206,14 +223,16 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		return token;
 	}
 
-	/**
+	*/
+/**
 	 * Checks the validity of <tt>forgotPasswordToken</tt>
 	 * 
 	 * @param forgotPasswordToken
 	 * @return ResetPasswordTokenStatusEnum <tt>INVALID</tt> if token is
 	 *         <tt>null</tt>, <tt>VALID</tt> if token is not expired,
 	 *         <tt>EXPIRED</tt> if token is expired
-	 */
+	 *//*
+
 	private ResetPasswordTokenStatusEnum checkTokenValidity(ForgotPasswordToken forgotPasswordToken) {
 		if (forgotPasswordToken == null) {
 			return ResetPasswordTokenStatusEnum.INVALID;
@@ -224,7 +243,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 		}
 	}
 
-	/**
+	*/
+/**
 	 * Validates if the given <tt>expiryDate</tt> is in the past
 	 * <p>
 	 * isExpired method checks the validity of token by comparing the validity of
@@ -234,7 +254,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 * @param expiryDate
 	 * @return boolean <tt>true</tt> if expiryDate is invalid/expired,<tt>false</tt>
 	 *         if token is valid
-	 */
+	 *//*
+
 	private boolean isExpired(Date expiryDate) {
 		return new Date().after(expiryDate);
 	}
@@ -264,7 +285,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 	}
 
-	/**
+	*/
+/**
 	 * * create custom data for email
 	 *
 	 * @param username
@@ -276,7 +298,8 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 * @param expiryTime
 	 *            expiryTime in Min
 	 * @return Map<String, String>
-	 */
+	 *//*
+
 	private Map<String, String> createCustomData(String username, String token, String url, String expiryTime) {
 		Map<String, String> customData = new HashMap<>();
 		customData.put("token", token);
@@ -287,3 +310,4 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	}
 
 }
+*/

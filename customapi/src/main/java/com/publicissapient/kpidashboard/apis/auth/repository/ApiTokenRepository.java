@@ -27,31 +27,32 @@ import com.publicissapient.kpidashboard.apis.auth.model.ApiToken;
 
 /**
  * Repository for api token
- */
-public interface ApiTokenRepository extends CrudRepository<ApiToken, ObjectId> {
-	/**
+ *///todo delete
+	@Deprecated
+public interface ApiTokenRepository { /*extends CrudRepository<ApiToken, ObjectId> {
+	*//**
 	 * Find api token by user and expiration date
 	 * 
 	 * @param apiUser
 	 * @param expirationDt
 	 * @return api token
-	 */
+	 *//*
 	ApiToken findByApiUserAndExpirationDt(String apiUser, Long expirationDt);
 
-	/**
+	*//**
 	 * Find api token by user and api key
 	 * 
 	 * @param apiUser
 	 * @param apiKey
 	 * @return api token
-	 */
+	 *//*
 	ApiToken findByApiUserAndApiKey(String apiUser, String apiKey);
 
-	/**
+	*//**
 	 * Returns List of api tokens by user
 	 * 
 	 * @param apiUser
 	 * @return
-	 */
-	List<ApiToken> findByApiUser(String apiUser);
+	 *//*
+	List<ApiToken> findByApiUser(String apiUser);*/
 }

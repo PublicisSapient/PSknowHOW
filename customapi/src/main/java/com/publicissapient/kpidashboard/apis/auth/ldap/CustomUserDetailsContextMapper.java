@@ -41,6 +41,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Configuration
 @Slf4j
+@Deprecated
+//todo delete
 public class CustomUserDetailsContextMapper extends LdapUserDetailsMapper {
 
 	public static final String INITIALS = "initials";

@@ -47,6 +47,8 @@ import com.publicissapient.kpidashboard.common.util.EncryptionException;
 @RestController
 @RequestMapping("/admin")
 @Admin
+@Deprecated
+//todo delete
 public class AdminController {
 
 	private final ApiTokenService apiTokenService;

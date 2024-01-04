@@ -146,16 +146,16 @@ public class UserInfoServiceImpl implements UserInfoService {
 		return createAuthorities(roles);
 	}
 
-	@Override
+	/*@Override
 	public UserInfo getUserInfo(String username, AuthType authType) {
 
 		return userInfoRepository.findByUsernameAndAuthType(username, authType);
-	}
+	}*/
 
-	@Override
+	/*@Override
 	public UserInfo getUserInfo(String username) {
 		return userInfoRepository.findByUsername(username);
-	}
+	}*/
 
 	@Override
 	public Collection<UserInfo> getUsers() {

@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- ******************************************************************************/
+ ******************************************************************************//*
+
 
 package com.publicissapient.kpidashboard.apis.auth.service;
 
@@ -40,7 +41,7 @@ import com.publicissapient.kpidashboard.apis.auth.repository.ApiTokenRepository;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import com.publicissapient.kpidashboard.common.util.Encryption;
 import com.publicissapient.kpidashboard.common.util.EncryptionException;
-
+//todo delete
 @Component
 public class ApiTokenServiceImpl implements ApiTokenService {
 
@@ -51,7 +52,8 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 		this.apiTokenRepository = apiTokenRepository;
 	}
 
-	/**
+	*/
+/**
 	 *
 	 * @param argA
 	 *            firstDate
@@ -59,7 +61,8 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 	 *            secondDate
 	 * @return 0 = equal, -1 = firstDate is before secondDate, 1 = firstDate is
 	 *         after secondDate
-	 */
+	 *//*
+
 	private static int compareDates(Date argA, Date argB) {
 
 		if (argA == null || argB == null) {
@@ -120,13 +123,15 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 		throw new BadCredentialsException("Login Failed: The username or password entered is incorrect");
 	}
 
-	/**
+	*/
+/**
 	 * check if user exists
 	 *
 	 * @param username
 	 * @param apiToken
 	 * @return
-	 */
+	 *//*
+
 	private boolean isUserExists(String username, ApiToken apiToken) {
 		return apiToken != null && username.equalsIgnoreCase(apiToken.getApiUser());
 	}
@@ -137,4 +142,4 @@ public class ApiTokenServiceImpl implements ApiTokenService {
 
 		return grantedAuthorities;
 	}
-}
+}*/

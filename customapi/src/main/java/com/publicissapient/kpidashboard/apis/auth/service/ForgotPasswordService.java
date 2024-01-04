@@ -21,7 +21,7 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
-
+//todo delete
 public interface ForgotPasswordService {
 
 	/**
@@ -32,7 +32,7 @@ public interface ForgotPasswordService {
 	 * @param url
 	 * @return Authentication
 	 */
-	Authentication processForgotPassword(String email, String url);
+	//Authentication processForgotPassword(String email, String url);
 
 	/**
 	 * Validate Email Token sent to the user via email.
@@ -40,7 +40,7 @@ public interface ForgotPasswordService {
 	 * @param token
 	 * @return ResetPasswordTokenStatusEnum
 	 */
-	ResetPasswordTokenStatusEnum validateEmailToken(String token);
+	//ResetPasswordTokenStatusEnum validateEmailToken(String token);
 
 	/**
 	 * Reset password after validating token
@@ -49,5 +49,5 @@ public interface ForgotPasswordService {
 	 * @return Authentication
 	 * @throws ApplicationException
 	 */
-	Authentication resetPassword(ResetPasswordRequest updatedPasswordRequest) throws ApplicationException;
+	//Authentication resetPassword(ResetPasswordRequest updatedPasswordRequest) throws ApplicationException;
 }

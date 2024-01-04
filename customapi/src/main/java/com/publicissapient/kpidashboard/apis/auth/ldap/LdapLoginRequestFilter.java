@@ -41,6 +41,8 @@ import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 /**
  * The type Ldap login request filter. Fills need for ldap based configurations.
  */
+//todo delete
+@Deprecated
 public class LdapLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 
 	private static final String LDAP_NOT_CONFIGURED = "Please contact your Superadmin or "

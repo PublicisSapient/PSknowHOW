@@ -43,6 +43,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "forgotPasswordToken")
+@Deprecated
 public class ForgotPasswordToken extends BasicModel {
 
 	private String token;
