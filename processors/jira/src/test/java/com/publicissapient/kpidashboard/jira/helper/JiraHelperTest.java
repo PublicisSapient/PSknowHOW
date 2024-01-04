@@ -61,7 +61,7 @@ public class JiraHelperTest {
 
     @Test
     public void testGetLabelsListWithNullLabels() {
-        
+
 
         List<String> labels = JiraHelper.getLabelsList(issue);
 
