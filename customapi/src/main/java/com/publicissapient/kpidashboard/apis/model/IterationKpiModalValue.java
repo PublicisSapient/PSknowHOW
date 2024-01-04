@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.model;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -137,16 +138,49 @@ public class IterationKpiModalValue implements Serializable {
 	private String releaseName;
 	@JsonProperty("Updated Date")
 	private String updatedDate;
-	@JsonProperty("Intake to DOR (In Days)")
-	private String intakeToDor;
-	@JsonProperty("DOR to DOD (In Days)")
-	private String dorToDod;
-	@JsonProperty("DOD TO Live (In Days)")
-	private String dodToLive;
 	@JsonProperty("Lead Time (In Days)")
 	private String leadTime;
 	@JsonProperty("DIR")
-	private Double DIR;
+	private Double defectInjectRate;
 	@JsonProperty("Defect Density")
 	private String defectDensity;
+	@JsonProperty("Test-Completed")
+	private String testCompletedInTime;
+	@JsonProperty("Dev-Completion-Date")
+	private String devCompletionDateInTime;
+	@JsonProperty("Actual-Completion-Date")
+	private String actualCompletionDateInTime;
+	@JsonProperty("Actual-Start-Date")
+	private String actualStartDateInTime;
+	private Map<String, List<String>> statusLogGroup;
+	private Map<String, List<String>> workLogGroup;
+	private Map<String, List<String>> assigneeLogGroup;
+	private String timeWithUser;
+	private String timeWithStatus;
+	private Long loggedWorkInSeconds;
+	private String epicName;
+	private boolean spill;
+	private Long remainingEstimateInSeconds;
+	private Long originalEstimateInSeconds;
+	private Set<String> subTask;
+	private Set<String> parentStory;
+	private boolean preClosed;
+	@JsonProperty("Intake to DOR")
+	private String intakeToDOR;
+
+	@JsonProperty("DOR to DOD")
+	private String dorToDod;
+
+	@JsonProperty("DOD to Live")
+	private String dodToLive;
+
+	@JsonProperty("DOR Date")
+	private String dorDate;
+
+	@JsonProperty("DOD Date")
+	private String dodDate;
+
+	@JsonProperty("Live Date")
+	private String liveDate;
+
 }

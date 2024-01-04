@@ -23,6 +23,7 @@ This files contain common methods that can be use in application
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class HelperService {
@@ -30,7 +31,7 @@ export class HelperService {
     grossMaturityObj = {};
     public passMaturityToFilter;
 
-    constructor(private httpService: HttpService, private excelService: ExcelService) {
+    constructor(private httpService: HttpService, private excelService: ExcelService,private sharedService : SharedService) {
         this.passMaturityToFilter = new EventEmitter();
     }
 
@@ -78,7 +79,7 @@ export class HelperService {
                 condition = obj.kpiCategory.toLowerCase() === selectedTab.toLowerCase() && condition;
             }
 
-            if(kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId){
+            if (kpiIdsForCurrentBoard && kpiIdsForCurrentBoard.length && obj?.kpiId) {
                 condition = kpiIdsForCurrentBoard.includes(obj.kpiId) && condition;
             }
 
@@ -330,13 +331,20 @@ export class HelperService {
     }
 
     // calculate gross maturity
-    calculateGrossMaturity(data, globalConfig) {
-        if (data && Object.keys(data)?.length) {
+    /*calculateGrossMaturity(data, globalConfig) {
+        if (data && Object.keys(data)?.length && globalConfig?.length && globalConfig[0] !== undefined) {
             const self = this;
             self.grossMaturityObj = {};
             Object.keys(data)?.forEach(key => {
                 data[key]?.forEach(element => {
-                    self.grossMaturityObj[element.data] = 0;
+                    if (element.data) {
+                        if (typeof element.data === 'string' || element.data instanceof String) {
+                            self.grossMaturityObj[element.data] = 0;
+                        }
+                    }
+                    // else if (element.value[0].data) {
+                    //     self.grossMaturityObj[element.value[0].data] = 0;
+                    // }
                 });
             });
 
@@ -348,9 +356,14 @@ export class HelperService {
                         // console.log(key, shouldIncludeMaturity[0]['kpiDetail'].kpiName, shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity, parseFloat(element.maturity));
                         shouldIncludeMaturity = shouldIncludeMaturity[0]['kpiDetail'].calculateMaturity;
 
-                        if (shouldIncludeMaturity === true) {
-                            self.grossMaturityObj[element.data] += parseFloat((element.maturity ? parseFloat(element.maturity) : 0) + '');
+                        if (shouldIncludeMaturity === true && element.data) {
+                            if (typeof element.data === 'string' || element.data instanceof String) {
+                                self.grossMaturityObj[element.data] += parseFloat((element.maturity ? parseFloat(element.maturity) : 0) + '');
+                            }
                         }
+                        // else if (shouldIncludeMaturity === true && element.value[0].data) {
+                        //     self.grossMaturityObj[element.value[0].data] += parseFloat((element.maturity ? parseFloat(element.maturity) : 0) + '');
+                        // }
                     }
                 });
                 let shouldCalculateMaturity = globalConfig.filter(configData => configData.kpiId === key);
@@ -368,11 +381,14 @@ export class HelperService {
                     self.grossMaturityObj[key] = self.grossMaturityObj[key] / divisor;
                 }
             });
-            setInterval(() => {
+            // setInterval(() => {
+            //     this.passMaturityToFilter.emit(self.grossMaturityObj);
+            // }, 500);
+            if (Object.keys(self.grossMaturityObj).length) {
                 this.passMaturityToFilter.emit(self.grossMaturityObj);
-            }, 500);
+            }
         }
-    }
+    }*/
 
 
     sortAlphabetically(objArray) {
@@ -408,7 +424,7 @@ export class HelperService {
         for (const key in obj) {
             for (let i = 0; i < obj[key]?.length; i++) {
                 const idx = aggArr?.findIndex(x => x?.data == obj[key][i]?.data);
-                if(aggArr[idx].hasOwnProperty('aggregationValue') && obj[key][i]?.hasOwnProperty('aggregationValue')){
+                if (aggArr[idx].hasOwnProperty('aggregationValue') && obj[key][i]?.hasOwnProperty('aggregationValue')) {
                     let tempArr = aggArr[idx]['aggregationValue'] ? [...aggArr[idx]['aggregationValue'], obj[key][i]['aggregationValue']] : [obj[key][i]['aggregationValue']]
                     aggArr[idx]['aggregationValue'] = [...tempArr];
                 }
@@ -452,9 +468,9 @@ export class HelperService {
 
             if (aggregationType?.toLowerCase() == 'sum') {
                 for (let i = 0; i < aggArr?.length; i++) {
-                    if(aggArr[i]?.hasOwnProperty('aggregationValue')){
+                    if (aggArr[i]?.hasOwnProperty('aggregationValue')) {
                         aggArr[i]['aggregationValue'] = aggArr[i]['aggregationValue']?.reduce((partialSum, a) => (partialSum + parseFloat(a)), 0);
-                        
+
                     }
                     aggArr[i].value?.map(x => {
                         x.value = (x.value?.reduce((partialSum, a) => partialSum + a, 0));
@@ -513,11 +529,39 @@ export class HelperService {
         return new Promise((resolve, reject) => this.httpService.getCommentCount(data).subscribe((response) => {
             if (response.success) {
                 resolve({ ...response.data });
-            }else{
+            } else {
                 resolve({});
             }
         }, error => {
             reject(error);
         }));
     }
+
+    /** sync shown property of project level and user level */
+    makeSyncShownProjectLevelAndUserLevelKpis(projectLevelKpi, userLevelKpi) {
+        Object.keys(userLevelKpi).forEach(boards => {
+          if (Array.isArray(userLevelKpi[boards])) {
+            userLevelKpi[boards].forEach(boardA => {
+              const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
+              if (boardB) {
+                boardA.kpis.forEach(kpiA => {
+                  const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);
+                  if (kpiB) {
+                    kpiA.shown = kpiB.shown;
+                  }
+                });
+              }
+            });
+          }
+        });
+        return userLevelKpi
+      }
+
+    getGlobalConfig(){
+        this.httpService.getConfigDetails().subscribe(res=>{
+          if(res && res['success']){
+            this.sharedService.setGlobalConfigData(res['data']);
+          }
+        })
+      }
 }

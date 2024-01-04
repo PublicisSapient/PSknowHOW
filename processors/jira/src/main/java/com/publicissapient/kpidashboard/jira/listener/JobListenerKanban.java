@@ -17,15 +17,18 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.listener;
 
-import java.text.SimpleDateFormat;
+import static com.publicissapient.kpidashboard.jira.helper.JiraHelper.convertDateToCustomFormat;
+
+import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +38,21 @@ import org.springframework.stereotype.Component;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import com.publicissapient.kpidashboard.jira.service.NotificationHandler;
 import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author pankumar8
- *
+ * @author purgupta2
  */
 @Component
 @Slf4j
@@ -55,7 +61,6 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 
 	@Autowired
 	private NotificationHandler handler;
-
 	private String projectId;
 
 	@Autowired
@@ -71,17 +76,17 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 	private OngoingExecutionsService ongoingExecutionsService;
 
 	@Autowired
+	private JiraProcessorConfig jiraProcessorConfig;
+
+	@Autowired
+	private ProjectBasicConfigRepository projectBasicConfigRepo;
+
+	@Autowired
+	private JiraCommonService jiraCommonService;
+
+	@Autowired
 	public JobListenerKanban(@Value("#{jobParameters['projectId']}") String projectId) {
 		this.projectId = projectId;
-	}
-
-	public static String convertDateToCustomFormat(long currentTimeMillis) {
-		Date inputDate = new Date(currentTimeMillis);
-		SimpleDateFormat outputFormat = new SimpleDateFormat("MMMM dd, yyyy, EEEE, hh:mm:ss a");
-
-		String outputStr = outputFormat.format(inputDate);
-
-		return outputStr;
 	}
 
 	@Override
@@ -102,34 +107,55 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT,
 				CommonConstant.CACHE_ACCOUNT_HIERARCHY_KANBAN);
 		jiraProcessorCacheEvictor.evictCache(CommonConstant.CACHE_CLEAR_ENDPOINT, CommonConstant.JIRAKANBAN_KPI_CACHE);
-		// sending notification in case of job failure
-		if (jobExecution.getStatus() == BatchStatus.FAILED) {
-			log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(), projectId);
-			setExecutionSuccessFalse();
-			sendNotification();
+		try {
+			// sending notification in case of job failure
+			if (jobExecution.getStatus() == BatchStatus.FAILED) {
+				log.error("job failed : {} for the project : {}", jobExecution.getJobInstance().getJobName(),
+						projectId);
+				Throwable stepFaliureException = null;
+				for (StepExecution stepExecution : jobExecution.getStepExecutions()) {
+					if (stepExecution.getStatus() == BatchStatus.FAILED) {
+						stepFaliureException = stepExecution.getFailureExceptions().get(0);
+						break;
+					}
+				}
+				setExecutionInfoInTraceLog(false);
+				sendNotification(stepFaliureException);
+			} else {
+				setExecutionInfoInTraceLog(true);
+			}
+		} catch (Exception e) {
+			log.error("An Exception has occured in kanban jobListener", e);
+		} finally {
+			log.info("removing project with basicProjectConfigId {}", projectId);
+			// Mark the execution as completed
+			ongoingExecutionsService.markExecutionAsCompleted(projectId);
 		}
-		log.info("removing project with basicProjectConfigId {}", projectId);
-		// Mark the execution as completed
-		ongoingExecutionsService.markExecutionAsCompleted(projectId);
 	}
 
-	private void sendNotification() {
+	private void sendNotification(Throwable stepFaliureException) throws UnknownHostException {
 		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-		if (fieldMapping.getNotificationEnabler()) {
-			handler.sendEmailToProjectAdmin(convertDateToCustomFormat(System.currentTimeMillis()), projectId);
+		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findById(new ObjectId(projectId)).orElse(null);
+		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
+			handler.sendEmailToProjectAdmin(
+					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
+							+ " for \"" + projectBasicConfig.getProjectName() + "\"",
+					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
 	}
 
-	private void setExecutionSuccessFalse() {
+	private void setExecutionInfoInTraceLog(boolean status) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo
 				.findByProcessorNameAndBasicProjectConfigIdIn(JiraConstants.JIRA, Arrays.asList(projectId));
 		if (CollectionUtils.isNotEmpty(procExecTraceLogs)) {
 			for (ProcessorExecutionTraceLog processorExecutionTraceLog : procExecTraceLogs) {
-				processorExecutionTraceLog.setExecutionSuccess(false);
+				processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+				processorExecutionTraceLog.setExecutionSuccess(status);
 			}
 			processorExecutionTraceLogRepo.saveAll(procExecTraceLogs);
 		}
 	}
+
 }

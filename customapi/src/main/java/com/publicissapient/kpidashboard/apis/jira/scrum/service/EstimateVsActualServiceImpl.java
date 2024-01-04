@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,7 +70,6 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 	private static final String ORIGINAL_ESTIMATES = "Original Estimates";
 	private static final String LOGGED_WORK = "Logged Work";
 	private static final String OVERALL = "Overall";
-	private static final String HOURS = "Hours";
 	@Autowired
 	private ConfigHelperService configHelperService;
 
@@ -161,7 +161,7 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			log.info("Estimate Vs Actual -> request id : {} total jira Issues : {}", requestTrackerId,
 					allIssues.size());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 			// Creating map of modal Objects
 			Map<String, IterationKpiModalValue> modalObjectMap = KpiDataHelper.createMapOfModalObject(allIssues);
 			Map<String, List<JiraIssue>> typeWiseIssues = allIssues.stream()
@@ -191,10 +191,10 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 					}
 				}
 				List<IterationKpiData> data = new ArrayList<>();
-				IterationKpiData originalEstimates = new IterationKpiData(ORIGINAL_ESTIMATES,
-						Double.valueOf(origEstData), null, null, HOURS, modalValues);
-				IterationKpiData loggedWork = new IterationKpiData(LOGGED_WORK, Double.valueOf(logWorkData), null, null,
-						HOURS, null);
+				IterationKpiData originalEstimates = new IterationKpiData(ORIGINAL_ESTIMATES, (double) origEstData,
+						null, null, CommonConstant.DAY, modalValues);
+				IterationKpiData loggedWork = new IterationKpiData(LOGGED_WORK, (double) logWorkData, null, null,
+						CommonConstant.DAY, null);
 				data.add(originalEstimates);
 				data.add(loggedWork);
 				IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, null, data);
@@ -204,9 +204,9 @@ public class EstimateVsActualServiceImpl extends JiraKPIService<Integer, List<Ob
 			List<IterationKpiData> data = new ArrayList<>();
 
 			IterationKpiData overAllorigEstimates = new IterationKpiData(ORIGINAL_ESTIMATES,
-					Double.valueOf(overAllOrigEst.get(0)), null, null, HOURS, overAllmodalValues);
+					Double.valueOf(overAllOrigEst.get(0)), null, null, CommonConstant.DAY, overAllmodalValues);
 			IterationKpiData overAllloggedWork = new IterationKpiData(LOGGED_WORK,
-					Double.valueOf(overAllLogWork.get(0)), null, null, HOURS, null);
+					Double.valueOf(overAllLogWork.get(0)), null, null, CommonConstant.DAY, null);
 			data.add(overAllorigEstimates);
 			data.add(overAllloggedWork);
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);

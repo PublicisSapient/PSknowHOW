@@ -56,7 +56,6 @@ public class DateUtil {
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
 	public static final String TIME_FORMAT_WITH_SEC = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
-	public static final String ISO_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
 	public static final String TIME_FORMAT_WITH_SEC_ZONE = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -199,6 +198,14 @@ public class DateUtil {
 		return !targetDate.isBefore(startDate) && !targetDate.isAfter(endDate);
 	}
 
+	public static boolean equalAndAfterTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isAfter(startDate) || targetDate.isEqual(startDate);
+	}
+
+	public static boolean equalAndBeforTime(LocalDateTime targetDate, LocalDateTime startDate) {
+		return targetDate.isBefore(startDate) || targetDate.isEqual(startDate);
+	}
+
 	public static String convertMillisToDateTime(long milliSeconds) {
 		return convertMillisToLocalDateTime(milliSeconds).toString();
 	}
@@ -277,6 +284,11 @@ public class DateUtil {
 	public static DateTime convertLocalDateTimeToDateTime(LocalDateTime dateTime) {
 		Instant instant = dateTime.atZone(ZoneId.systemDefault()).toInstant();
 		return new DateTime(instant.toEpochMilli());
+	}
+
+	public static LocalDateTime convertDateTimeToLocalDateTime(DateTime dateTime) {
+		return (ObjectUtils.isNotEmpty(dateTime)) ? LocalDateTime.ofInstant(
+				java.time.Instant.ofEpochMilli(dateTime.getMillis()), ZoneId.of(dateTime.getZone().getID())) : null;
 	}
 
 	public static String getWeekRange(LocalDate currentDate) {

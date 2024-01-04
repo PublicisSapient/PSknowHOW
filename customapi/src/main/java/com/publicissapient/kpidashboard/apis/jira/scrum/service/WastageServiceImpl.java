@@ -209,7 +209,7 @@ public class WastageServiceImpl extends JiraKPIService<Integer, List<Object>, Ma
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 
 			List<List<String>> fetchBlockAndWaitStatus = filedMappingExist(fieldMapping);
 			boolean flagIncluded = checkFlagIncludedStatus(fieldMapping);

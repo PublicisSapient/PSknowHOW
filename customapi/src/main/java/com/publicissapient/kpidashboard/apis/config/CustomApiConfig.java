@@ -144,6 +144,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
+	@Value("${centralAuth.switch}")
+	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -231,6 +233,35 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPRSizeUrl;
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
+	private List<String> flowEfficiencyXAxisRange;
+	private List<String> leadTimeRange;
+	private List<String> cycleTimeRange;
+
+	public List<String> getCycleTimeRange() {
+		return cycleTimeRange;
+	}
+
+	public void setCycleTimeRange(List<String> cycleTimeRange) {
+		this.cycleTimeRange = cycleTimeRange;
+	}
+
+
+
+	public List<String> getLeadTimeRange() {
+		return leadTimeRange;
+	}
+
+	public void setLeadTimeRange(List<String> leadTimeRange) {
+		this.leadTimeRange = leadTimeRange;
+	}
+
+	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
+		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;
+	}
+
+	public List<String> getFlowEfficiencyXAxisRange() {
+		return flowEfficiencyXAxisRange;
+	}
 
 	public void setRepoToolAPIKey(String repoToolAPIKey) {
 		this.repoToolAPIKey = repoToolAPIKey;
@@ -304,7 +335,6 @@ public class CustomApiConfig {// NOPMD
 		return repoToolDeleteRepoUrl;
 	}
 
-
 	public Boolean getIsRepoToolEnable() {
 		return isRepoToolEnable;
 	}
@@ -320,6 +350,8 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+
+	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
 		return sprintVelocityLimit;
@@ -923,6 +955,14 @@ public class CustomApiConfig {// NOPMD
 		this.notificationSwitch = notificationSwitch;
 	}
 
+	public boolean isCentralAuthSwitch() {
+		return centralAuthSwitch;
+	}
+
+	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
+		this.centralAuthSwitch = centralAuthSwitch;
+	}
+
 	public boolean isAnalyticsSwitch() {
 		return analyticsSwitch;
 	}
@@ -1133,5 +1173,13 @@ public class CustomApiConfig {// NOPMD
 
 	public void setFlowKpiMonthCount(int flowKpiMonthCount) {
 		this.flowKpiMonthCount = flowKpiMonthCount;
+	}
+
+	public Integer getSonarMonthCount() {
+		return sonarMonthCount;
+	}
+
+	public void setSonarMonthCount(Integer sonarMonthCount) {
+		this.sonarMonthCount = sonarMonthCount;
 	}
 }

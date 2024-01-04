@@ -12,10 +12,13 @@ ENV PID_LOC="/run/nginx" \
 
 RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOG}/default.conf ${HTML_LOC}index.html && apk add openssl
 
-COPY nginx/files/ui2.conf ${CONF_LOG}/ui2.conf
+COPY nginx/files/nginx-dev.conf /tmp/nginx_dev.conf
+COPY nginx/files/nginx-prod.conf /tmp/nginx_prod.conf
 COPY nginx/files/${ASSETS_ARCHIVE} ${HTML_LOC}
 COPY nginx/scripts/start_nginx.sh ${START_SCRIPT_LOC}/start_nginx.sh
 COPY nginx/files/certs/* ${CERT_LOC}/
+
+ENV ENVIRONMENT=dev
 
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC}${ERRORPAGE_ASSETS_ARCHIVE} -C ${UI2_LOC}
 RUN chmod +x ${START_SCRIPT_LOC}/start_nginx.sh && rm -f ${HTML_LOC}${ASSETS_ARCHIVE}

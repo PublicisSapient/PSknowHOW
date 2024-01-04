@@ -54,6 +54,8 @@ public class NotificationHandler {
 	public static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
 	private static final String NOTIFICATION_SUBJECT_KEY = "errorInJiraProcessor";
 	private static final String NOTIFICATION_KEY = "Error_In_Jira_Processor";
+	private static final String NOTIFICATION_MSG = "Notification_Msg";
+	private static final String NOTIFICATION_ERROR = "Notification_Error";
 	private static final String ERROR_IN_JIRA_PROCESSOR_TEMPLATE_KEY = "Error_In_Jira_Processor";
 	@Autowired
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -65,19 +67,26 @@ public class NotificationHandler {
 	private NotificationService notificationService;
 
 	/**
-	 *
 	 * @param value
 	 *            value
+	 * @param allFailureExceptions
 	 * @param projectBasicConfigId
 	 *            projectBasicConfigId
 	 */
-	public void sendEmailToProjectAdmin(String value, String projectBasicConfigId) {
+	public void sendEmailToProjectAdmin(String value, String allFailureExceptions, String projectBasicConfigId) {
 		List<String> emailAddresses = getProjectAdminEmailAddressBasedProjectId(projectBasicConfigId);
+		if (CollectionUtils.isNotEmpty(jiraProcessorConfig.getDomainNames())) {
+			emailAddresses = emailAddresses.stream().filter(emailAddress -> {
+				String domain = StringUtils.substringAfter(emailAddress, "@").trim();
+				return jiraProcessorConfig.getDomainNames().contains(domain);
+			}).collect(Collectors.toList());
+		}
 		Map<String, String> notificationSubjects = jiraProcessorConfig.getNotificationSubject();
 		if (CollectionUtils.isNotEmpty(emailAddresses) && MapUtils.isNotEmpty(notificationSubjects)) {
 
 			Map<String, String> customData = new HashMap<>();
-			customData.put(NOTIFICATION_KEY, value);
+			customData.put(NOTIFICATION_MSG, value);
+			customData.put(NOTIFICATION_ERROR, allFailureExceptions);
 			String subject = notificationSubjects.get(NOTIFICATION_SUBJECT_KEY);
 			log.info("Notification message sent to kafka with key : {}", NOTIFICATION_KEY);
 			String templateKey = jiraProcessorConfig.getMailTemplate()

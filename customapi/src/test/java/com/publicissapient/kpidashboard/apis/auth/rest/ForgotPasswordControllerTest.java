@@ -54,8 +54,8 @@ public class ForgotPasswordControllerTest extends Mockito {
 
 	private MockMvc mockMvc;
 
-	/*@InjectMocks
-	private ForgotPasswordController forgotPasswordController;*/
+	@InjectMocks
+	private ForgotPasswordController forgotPasswordController;
 
 	@Mock
 	private ForgotPasswordService forgotPasswordService;
@@ -65,10 +65,10 @@ public class ForgotPasswordControllerTest extends Mockito {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
-	/*@Before
+	@Before
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(forgotPasswordController).build();
-	}*/
+	}
 
 	@After
 	public void after() {
@@ -100,7 +100,7 @@ public class ForgotPasswordControllerTest extends Mockito {
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 
 		when(forgotPasswordService.validateEmailToken(any())).thenReturn(ResetPasswordTokenStatusEnum.VALID);
-		mockMvc.perform(MockMvcRequestBuilders.get("/validateToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
+		mockMvc.perform(MockMvcRequestBuilders.get("/validateEmailToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
 				.param("token", UUID.randomUUID().toString()));
 	}
 

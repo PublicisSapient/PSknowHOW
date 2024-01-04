@@ -1148,6 +1148,12 @@
     "defectStoryID": [
       "TEST-18557"
     ],
+    "parentStoryId": [
+      "TEST-18557",
+      "TEST-18547"
+    ],
+    "epicLinked": "TEST-18557",
+    "originalType" : "Task",
     "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "releaseVersions": [
@@ -1530,6 +1536,7 @@
     "processorId": "632902802757f265fcb6c452",
     "issueId": "15728954",
     "number": "TEST-18906",
+    "url": "http://example.url.com",
     "name": "Hover Aggregation_'Undefined name' showing up for higher level aggregation",
     "typeId": "1",
     "typeName": "Bug",
@@ -1597,6 +1604,10 @@
     "defectStoryID": [
       "TEST-18547"
     ],
+    "parentStoryId": [
+      "TEST-18547"
+    ],
+    "originalType" : "Task",
     "timeSpentInMinutes": 0,
     "basicProjectConfigId": "6335363749794a18e8a4479b",
     "releaseVersions": [
@@ -3498,6 +3509,8 @@
     "defectRaisedBy" : "",
     "jiraStatus" : "Closed",
     "defectStoryID" : [ "TEST-18922" ],
+    "parentStoryId" : [ "TEST-18922" ],
+    "originalType" : "Task",
     "timeSpentInMinutes" : 0,
     "basicProjectConfigId" : "6335363749794a18e8a4479b",
     "releaseVersions" : [

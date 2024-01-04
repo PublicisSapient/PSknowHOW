@@ -198,7 +198,7 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private boolean hasSingleValueList(String type) {
-		return KPICode.CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
+		return KPICode.SONAR_CODE_QUALITY.getKpiId().equalsIgnoreCase(type)
 				|| KPICode.CODE_QUALITY_KANBAN.getKpiId().equalsIgnoreCase(type);
 	}
 
@@ -259,7 +259,7 @@ public class CommonServiceImpl implements CommonService {
 						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
 								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							usernameList.add(action.getUsername());
-							emailAddresses.add(action.getEmailAddress());
+							emailAddresses.add(action.getEmailAddress().toLowerCase());
 						}
 					});
 				}

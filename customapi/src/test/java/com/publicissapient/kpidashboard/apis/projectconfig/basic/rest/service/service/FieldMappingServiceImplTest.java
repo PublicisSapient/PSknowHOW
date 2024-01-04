@@ -345,9 +345,9 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiraDefectCreatedStatusKPI14("Open");
 		fieldMapping.setStoryFirstStatus("Open");
 		fieldMapping.setJiraLiveStatus("Closed");
-		fieldMapping.setJiraDorKPI3(Arrays.asList("In Analysis"));
+		fieldMapping.setJiraDorKPI171(Arrays.asList("In Analysis"));
 		fieldMapping.setJiraDefectRejectionStatusKPI133("Closed");
-		fieldMapping.setJiraDodKPI3(Arrays.asList("Ready for Sign-Off"));
+		fieldMapping.setJiraDodKPI171(Arrays.asList("Ready for Sign-Off"));
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(Arrays.asList("Closed", "Ready for Delivery"));
 		fieldMapping.setJiraDefectRemovalStatusKPI34(Arrays.asList("Closed"));
 		fieldMapping.setResolutionTypeForRejectionKPI135(
@@ -363,6 +363,7 @@ public class FieldMappingServiceImplTest {
 
 		fieldMapping.setJiraBugRaisedByIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
+		fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
 		// techDebt
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraTechDebtValue(Arrays.asList("Story"));

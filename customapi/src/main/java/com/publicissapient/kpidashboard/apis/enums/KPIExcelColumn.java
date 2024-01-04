@@ -44,7 +44,10 @@ public enum KPIExcelColumn {
 							"kpi83",
 							Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Issue Type",
 									"Resolution Time(In Days)")),
-	LEAD_TIME("kpi3", Arrays.asList("Issue Id", "Issue Description", "Intake to DOR (In Days)", "DOR to DOD (In Days)", "DOD TO Live (In Days)", "Lead Time (In Days)")),
+
+	LEAD_TIME("kpi3", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Created Date", "Closed Date",
+			"Lead Time (In Days)")),
+
 	LEAD_TIME_KANBAN("kpi53", Arrays.asList("Project Name", "Story ID", "Issue Description", "Open to Triage(In Days)",
 			"Triage to Complete (In Days)", "Complete TO Live (In Days)", "Lead Time (In Days)")),
 
@@ -259,7 +262,7 @@ public enum KPIExcelColumn {
 									Arrays.asList("Date")), FLOW_LOAD("kpi148", Arrays.asList("Date")),
 
 	RELEASE_BURNUP("kpi150", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size(story point/hours)",
-			"Priority", "Assignee", "Issue Status")),
+			"Priority", "Assignee", "Issue Status", "Release Tag Date (Latest)", "Dev Completion Date", "Completion Date")),
 
 	PI_PREDICTABILITY("kpi153", Arrays.asList("Project Name", "Epic ID", "Epic Name", "Status", "PI Name",
 			"Planned Value", "Achieved Value")),
@@ -277,15 +280,28 @@ public enum KPIExcelColumn {
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
 			"Sprint Name", "Assignee", "Issue Status")),
+
 	PICKUP_TIME("kpi160",
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
-					"Pickup Time (In Hours)")), PR_SIZE("kpi162",
+					"Pickup Time (In Hours)")),
+
+	PR_SIZE("kpi162",
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",
 					"PR Size (No. of lines)")),
 
 	EPIC_PROGRESS("kpi165", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
 
-	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status"));
+	BACKLOG_EPIC_PROGRESS("kpi169", Arrays.asList("Epic ID", "Epic Name", "Size(story point/hours)", "Epic Status")),
+
+    MEAN_TIME_TO_RECOVER("kpi166", Arrays.asList("Project Name", "Date", "Story ID", "Issue Type", "Issue Description",
+            "Created Date", "Completion Date", "Time to Recover (In Hours)")),
+
+	CODE_QUALITY("kpi168", Arrays.asList("Project", "Job Name", "Code Quality", "Month")),
+	FLOW_EFFICIENCY("kpi170", Arrays.asList("Issue ID", "Issue Type", "Issue Description", "Size (In Story Points)",
+			"Wait Time", "Total Time", "Flow Efficiency")),
+
+	CYCLE_TIME("kpi171", Arrays.asList("Issue Id", "Issue Type", "Issue Description","DOR Date", "Intake to DOR",
+			"DOD Date", "DOR to DOD", "Live Date", "DOD to Live"));
 
 	// @formatter:on
 

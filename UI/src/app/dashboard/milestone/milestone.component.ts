@@ -97,9 +97,9 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
-        if (this.sharedObject || this.service.getFilterObject()) {
-          this.receiveSharedData(this.service.getFilterObject());
-        }
+        // if (this.sharedObject || this.service.getFilterObject()) {
+        //   this.receiveSharedData(this.service.getFilterObject());
+        // }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -151,7 +151,7 @@ export class MilestoneComponent implements OnInit {
       }
       return tabDetails;
     });
-    
+
     if (this.upDatedConfigData?.length === 0) {
       this.noKpis = true;
     } else {
@@ -482,20 +482,24 @@ export class MilestoneComponent implements OnInit {
             this.kpiChartData[kpiId] = this.applyAggregationLogic(preAggregatedValues);
           }
         } else {
-          this.kpiChartData[kpiId] = [...preAggregatedValues];
+          if(preAggregatedValues[0]?.hasOwnProperty('value')){
+            this.kpiChartData[kpiId] = preAggregatedValues[0]?.value;
+          }else{
+            this.kpiChartData[kpiId] = [...preAggregatedValues];
+          }
         }
       } else {
         this.kpiChartData[kpiId] = trendValueList.filter(kpiData => kpiData.filter1 === 'Overall');
       }
     }
     else if (trendValueList?.length > 0) {
-      this.kpiChartData[kpiId] = [...trendValueList];
+      this.kpiChartData[kpiId] = [...trendValueList[0]?.value];
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-      this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    }
+    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
   }
 
   getKpiChartType(kpiId) {
@@ -690,6 +694,19 @@ export class MilestoneComponent implements OnInit {
 
   handleTabChange(event){
     this.activeIndex = event.index;
+  }
+
+  checkIfDataPresent(data) {
+    let dataCount = 0;
+    if(data[0] && !isNaN(parseInt(data[0].data))) {
+      dataCount = data[0].data;
+    } else if(data[0] && data[0].value && !isNaN(parseInt(data[0].value[0].data))) {
+      dataCount = data[0].value[0].data;
+    }
+    if(parseInt(dataCount + '') > 0) {
+      return true;
+    }
+    return false;
   }
 
   /** unsubscribing all Kpi Request  */

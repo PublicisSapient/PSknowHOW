@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,8 +37,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.apis.common.service.UserTokenService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -53,11 +52,15 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.errors.NoSSOImplementationFoundException;
+import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessRequest;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
+import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import io.jsonwebtoken.Claims;
@@ -89,7 +92,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 	@Autowired
 	private AuthProperties tokenAuthProperties;
 	@Autowired
-	private UserTokenService userTokenService;
+	private UserTokenReopository userTokenReopository;
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
 	@Autowired
@@ -97,25 +100,29 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication) {
-		String jwt = Jwts.builder().setSubject(authentication.getName())
-				.claim(DETAILS_CLAIM, authentication.getDetails())
-				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
-				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
-				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
+		String jwt = createJwtToken(authentication);
 		UserTokenAuthenticationDTO data = new UserTokenAuthenticationDTO();
 		data.setUserName(authentication.getName());
 		data.setUserRoles(getRoles(authentication.getAuthorities()).stream().collect(Collectors.toList()));
+		data.setAuthToken(jwt);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
 		response.addCookie(cookie);
-   	    cookieUtil.addSameSiteCookieAttribute(response);
+		cookieUtil.addSameSiteCookieAttribute(response);
 		return data;
+	}
+
+	public String createJwtToken(Authentication authentication) {
+		return Jwts.builder().setSubject(authentication.getName()).claim(DETAILS_CLAIM, authentication.getDetails())
+				.claim(ROLES_CLAIM, getRoles(authentication.getAuthorities()))
+				.setExpiration(new Date(System.currentTimeMillis() + tokenAuthProperties.getExpirationTime()))
+				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
-											HttpServletResponse response) {
+			HttpServletRequest httpServletRequest, HttpServletResponse response) {
 
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
@@ -123,7 +130,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
 				String token = userTokenAuthenticationDTO.getAuthToken();
 				if (StringUtils.isBlank(token)) {
-					return null;
+					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+					if (Objects.nonNull(authCookieToken)) {
+						token = authCookieToken.getValue();
+					} else {
+						return null;
+					}
 				}
 				return createAuthentication(token, response);
 			} else {
@@ -234,14 +246,14 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 	@Override
 	public void invalidateAuthToken(List<String> users) {
-		userTokenService.deleteByUserNameIn(users);
+		userTokenReopository.deleteByUserNameIn(users);
 	}
 
 	@Override
 	public void updateExpiryDate(String username, String expiryDate) {
-		List<UserTokenData> dataList = userTokenService.findAllByUserName(username);
+		List<UserTokenData> dataList = userTokenReopository.findAllByUserName(username);
 		dataList.stream().forEach(data -> data.setExpiryDate(expiryDate));
-		userTokenService.saveAll(dataList);
+		userTokenReopository.saveAll(dataList);
 	}
 
 	@Override
@@ -255,14 +267,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					.optionalStart().appendPattern(".").appendFraction(ChronoField.MICRO_OF_SECOND, 1, 9, false)
 					.optionalEnd().toFormatter();
 			if (LocalDateTime.parse(expiryDate, formatter).isAfter(LocalDateTime.now())) {
-			return Boolean.toString(true);
+				return Boolean.toString(true);
 			}
 		}
 		return Boolean.toString(false);
 	}
 
-	//todo delete
-	/*@Override
+	@Override
 	public JSONObject getOrSaveUserByToken(HttpServletRequest request, Authentication authentication) {
 		UserInfo userInfo = new UserInfo();
 		if (cookieUtil.getAuthCookie(request) != null) {
@@ -271,10 +282,11 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			List<UserTokenData> userTokenDataList = userTokenReopository.findAllByUserName(userName);
 			UserTokenData userTokenData = getLatestUser(userTokenDataList);
 			if (userTokenData != null) {
-				updateExpiryDate(userTokenData.getUserName(), null);
+				updateExpiryDate(userTokenData.getUserName(), LocalDateTime.now().toString());
 			} else {
 				userTokenReopository.deleteAllByUserName(userName);
-				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(), null);
+				userTokenData = new UserTokenData(userName, cookieUtil.getAuthCookie(request).getValue(),
+						LocalDateTime.now().toString());
 				userTokenReopository.save(userTokenData);
 			}
 			List<String> authorities = new ArrayList<>(getRoles(authentication.getAuthorities()));
@@ -283,9 +295,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 
 		}
 		return createAuthDetailsJson(userInfo);
-	}*/
+	}
 
-	/*@Override
+	@Override
 	public JSONObject createAuthDetailsJson(UserInfo userInfo) {
 		if (userInfo != null) {
 			JSONObject json = new JSONObject();
@@ -298,6 +310,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			return json;
 		}
 		return null;
-	}*/
+	}
 
 }

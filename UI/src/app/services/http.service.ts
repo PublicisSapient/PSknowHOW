@@ -53,7 +53,7 @@ export class HttpService {
   private downloadAllKpiReportUrl = this.baseUrl + '/api/v1/kpi';
   private downloadKpiWiseReportUrl = this.baseUrl + '/api/v1/kpi';
   private logoutUrl = this.baseUrl + '/api/userlogout';
-  private tooltipDataUrl = this.baseUrl + '/api/configDetails';
+  private configDetailsUrl = this.baseUrl + '/api/configDetails';
   private enginneringMaturityUrl = this.baseUrl + '/api/v1/enggMaturity';
   private enginneringMaturityTableUrl = this.baseUrl + '/api/emm/tableview';
   private configUrl = this.baseUrl + '/api/project';
@@ -133,7 +133,7 @@ export class HttpService {
     this.baseUrl + `/api/landingpage/dojo/projectsummary`;
   private usersCountUrl = this.baseUrl + '/api/landingpage/userscount';
   private autoApproveUrl = this.baseUrl + '/api/autoapprove';
-  private showHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private saveShowHideKpiUrl = this.baseUrl + '/api/user-board-config/saveAdmin';
   private newUserAccessRequestUrl = this.baseUrl + '/api/userapprovals';
   private sonarVersionURL = this.baseUrl + '/api/sonar/version';
   private projectKeyRequestUrl = this.baseUrl + '/api/sonar/project';
@@ -174,6 +174,8 @@ export class HttpService {
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
+  private validateResourceUrl = this.baseUrl + '/api/validateResource';
+  private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
 
   constructor(
     private router: Router,
@@ -256,8 +258,8 @@ export class HttpService {
   }
 
   /** GET getTooltipData from the server */
-  getTooltipData(): Observable<any> {
-    return this.http.get(this.tooltipDataUrl);
+  getConfigDetails(): Observable<any> {
+    return this.http.get(this.configDetailsUrl);
   }
 
   /** GET getTooltipData from the server */
@@ -945,16 +947,21 @@ export class HttpService {
     return this.http.get<any>(this.autoApproveUrl);
   }
 
-  /** get show/Hide kpi  data */
-  getShowHideKpi() {
-    return this.http.get<any>(this.showHideKpiUrl);
+  /** show-Hide for dashboard config component  */
+  getShowHideKpi(projectID) {
+    return this.http.get<any>(this.getShowHideKpiUrl+ '/' + projectID);
   }
-  submitShowHideKpiData(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
+  submitShowHideKpiData(data,projectID): Observable<any> {
+    return this.http.post<object>(this.saveShowHideKpiUrl + '/' + projectID , data);
   }
 
-  updateUserBoardConfig(data): Observable<any> {
-    return this.http.post<object>(this.showHideKpiUrl, data);
+  /** show-Hide for other nav, filter component */
+  getShowHideOnDashboard(payload){
+    return this.http.post<any>(this.getShowHideKpiUrl + '/getConfig',payload);
+  }
+
+  submitShowHideOnDashboard(data){
+    return this.http.post<any>(this.getShowHideKpiUrl,data);
   }
 
   getNewUserAccessRequestFromAPI() {
@@ -1124,5 +1131,12 @@ export class HttpService {
 
   getUserValidation(data){
     return this.http.post<object>(this.validateTokenUrl, data);
+  }
+
+  handleValidateResource(data){
+    return this.http.post<object>(this.validateResourceUrl, data);
+  }
+  getFeatureFlags() {
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
 }

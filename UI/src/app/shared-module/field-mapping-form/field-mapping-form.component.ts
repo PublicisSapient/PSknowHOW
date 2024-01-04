@@ -81,7 +81,7 @@ private setting = {
     });
     this.fieldMappingSectionList = [...new Set(fieldMappingSections)].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     this.formConfig = fieldMappingConfigration;
-    
+
   }
 
   initializeForm(){
@@ -109,6 +109,8 @@ private setting = {
           return new FormControl('');
         case 'toggle':
           return new FormControl(false);
+        case 'number':
+          return new FormControl('');
         default:
           return new FormControl([]);
       }
@@ -305,9 +307,9 @@ private setting = {
     });
   }
 
-  
 
-  
+
+
   private dyanmicDownloadByHtmlTag(arg: {
     fileName: string;
     text: string;

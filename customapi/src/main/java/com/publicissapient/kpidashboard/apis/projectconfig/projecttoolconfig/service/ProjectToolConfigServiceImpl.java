@@ -171,9 +171,10 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& hasTool(projectToolConfig.getBasicProjectConfigId(), ProcessorConstants.JIRA)) {
 			return new ServiceResponse(false, "Jira already configured for this project", null);
 		}
-		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)
-				&& setRepoToolConfig(projectToolConfig) == HttpStatus.NOT_FOUND.value()) {
-			return new ServiceResponse(false, "", null);
+		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
+			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
+			if(Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
+				return repoToolServiceResponse;
 		}
 
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.JIRA_TEST)
@@ -314,8 +315,13 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 		ProjectToolConfig tool = optionalProjectToolConfig.get();
 		if (isValidTool(basicProjectConfigId, tool)) {
-			if (isRepoTool(tool) && !repoToolsConfigService.updateRepoToolProjectConfiguration(toolList, tool,
-					basicProjectConfigId)) {
+			if (isRepoTool(tool)
+					&& !repoToolsConfigService.updateRepoToolProjectConfiguration(
+							toolList.stream()
+									.filter(projectToolConfig -> projectToolConfig.getToolName()
+											.equals(CommonConstant.REPO_TOOLS))
+									.collect(Collectors.toList()),
+							tool, basicProjectConfigId)) {
 				return false;
 			}
 			cleanData(tool);
@@ -459,7 +465,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 						.collect(Collectors.toList());
 	}
 
-	private int setRepoToolConfig(ProjectToolConfig projectToolConfig) {
+	private ServiceResponse setRepoToolConfig(ProjectToolConfig projectToolConfig) {
 		Connection connection = getConnection(projectToolConfig.getConnectionId());
 		List<ProjectToolConfig> repoConfigList = getRepoTool(projectToolConfig.getBasicProjectConfigId(), connection,
 				ProcessorConstants.REPO_TOOLS);
@@ -471,7 +477,14 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 			projectToolConfig.setBranch(projectToolConfig.getDefaultBranch());
 		} else
 			branchList.add(projectToolConfig.getBranch());
-		return repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
+		int httpStatus = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, branchList);
+		if (httpStatus == HttpStatus.NOT_FOUND.value())
+			return new ServiceResponse(false, "", null);
+		if (httpStatus == HttpStatus.BAD_REQUEST.value())
+			return new ServiceResponse(false, "Project with similar configuration already exists", null);
+		if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR.value())
+			return new ServiceResponse(false, "Invalid Repository Name", null);
+		return new ServiceResponse(true, "", null);
 	}
 
 	@Override

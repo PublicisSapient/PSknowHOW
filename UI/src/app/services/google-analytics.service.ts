@@ -88,4 +88,20 @@ export class GoogleAnalyticsService {
       });
     }
   }
+
+  setProjectToolsData(data){
+    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    dataLayer?.push({
+      event: 'ProjectToolsConfigured',
+      ...data
+    });
+  }
+
+  setKpiData(data){
+    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
+    dataLayer?.push({
+      event: 'kpiViewed',
+      ...data
+    });
+  }
 }

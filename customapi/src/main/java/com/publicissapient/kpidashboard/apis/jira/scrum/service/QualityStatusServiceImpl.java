@@ -281,14 +281,14 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			List<JiraIssue> jiraIssueLinkedIssues = (List<JiraIssue>) resultMap.get(LINKED_ISSUES);
 			List<JiraIssue> totalJiraIssues = new ArrayList<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(latestSprint.getProjectFilter().getBasicProjectConfigId());
+					.get(Objects.requireNonNull(latestSprint).getProjectFilter().getBasicProjectConfigId());
 			Map<String, List<String>> projectWisePriority = new HashMap<>();
 			Map<String, List<String>> configPriority = customApiConfig.getPriority();
 			Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI133());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI133());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI133());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects,
 					latestSprint.getProjectFilter().getBasicProjectConfigId(),
 					fieldMapping.getResolutionTypeForRejectionKPI133(),
@@ -300,7 +300,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			allDefects = KpiHelperService.excludePriorityAndRCA(allDefects, projectWisePriority, projectWiseRCA);
+			allDefects = KpiHelperService.excludePriorityAndIncludeRCA(allDefects, projectWisePriority, projectWiseRCA);
 			List<JiraIssue> allStory = totalJiraIssues.stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			List<JiraIssue> allClosedStory = completedIssueList.stream()
@@ -402,7 +402,7 @@ public class QualityStatusServiceImpl extends JiraKPIService<Double, List<Object
 							jiraIssue1 -> jiraIssue1.getNumber() + " ( " + jiraIssue1.getPriority() + " ) ",
 							JiraIssue::getUrl));
 			jiraIssueModalObject.setLinkedDefefect(linkedDefects);
-			jiraIssueModalObject.setDIR((double) defects.size());
+			jiraIssueModalObject.setDefectInjectRate((double) defects.size());
 			jiraIssueModalObject
 					.setDefectDensity(String.valueOf(calculateDefectDensity(jiraIssueList, defects, fieldMapping)));
 			if (jiraIssueModalObject.getIssueSize() == null)

@@ -192,14 +192,14 @@ public class KpiHelperService { // NOPMD
 	}
 
 	/**
-	 * exclude defects with priority and RCA
+	 * exclude defects with priority and Filter RCA based on fieldMapping
 	 *
 	 * @param allDefects
 	 * @param projectWisePriority
 	 * @param projectWiseRCA
 	 * @return
 	 */
-	public static List<JiraIssue> excludePriorityAndRCA(List<JiraIssue> allDefects,
+	public static List<JiraIssue> excludePriorityAndIncludeRCA(List<JiraIssue> allDefects,
 			Map<String, List<String>> projectWisePriority, Map<String, Set<String>> projectWiseRCA) {
 		Set<JiraIssue> defects = new HashSet<>(allDefects);
 		List<JiraIssue> priorityRemaining = new ArrayList<>();
@@ -216,9 +216,11 @@ public class KpiHelperService { // NOPMD
 
 		List<JiraIssue> rcaRemaining = new ArrayList<>();
 		for (JiraIssue jiraIssue : priorityRemaining) {
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
 			if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
 				for (String toFindRca : jiraIssue.getRootCauseList()) {
-					if (!(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
 						rcaRemaining.add(jiraIssue);
 					}
 				}
@@ -230,8 +232,7 @@ public class KpiHelperService { // NOPMD
 
 	}
 
-	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf,
-			List<String> excludeRCA) {
+	public static void addRCAProjectWise(Map<String, Set<String>> projectWiseRCA, Node leaf, List<String> excludeRCA) {
 		if (CollectionUtils.isNotEmpty(excludeRCA)) {
 			Set<String> uniqueRCA = new HashSet<>();
 			for (String rca : excludeRCA) {
@@ -254,8 +255,7 @@ public class KpiHelperService { // NOPMD
 	public static void addPriorityProjectWise(Map<String, List<String>> projectWisePriority,
 			Map<String, List<String>> configPriority, Node leaf, List<String> defectPriority) {
 		if (CollectionUtils.isNotEmpty(defectPriority)) {
-			List<String> priorValue = defectPriority.stream().map(String::toUpperCase)
-					.collect(Collectors.toList());
+			List<String> priorValue = defectPriority.stream().map(String::toUpperCase).collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(priorValue)) {
 				List<String> priorityValues = new ArrayList<>();
 				priorValue.forEach(priority -> priorityValues.addAll(
@@ -381,7 +381,7 @@ public class KpiHelperService { // NOPMD
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
 			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityKPI14());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromKPI14());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI14());
 
 			mapOfProjectFiltersFH.put(JiraFeatureHistory.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
 					leaf.getProjectFilter().getBasicProjectConfigId());
@@ -393,8 +393,14 @@ public class KpiHelperService { // NOPMD
 			uniqueProjectMapFH.put(basicProjectConfigId.toString(), mapOfProjectFiltersFH);
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraDefectInjectionIssueTypeKPI14()));
+			if (CollectionUtils.isNotEmpty(fieldMapping.getJiraLabelsKPI14())) {
+				mapOfProjectFilters.put(JiraFeature.LABELS.getFieldValueInFeature(),
+						CommonUtils.convertToPatternList(fieldMapping.getJiraLabelsKPI14()));
+			}
 			uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
-			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,fieldMapping.getResolutionTypeForRejectionKPI14(), fieldMapping.getJiraDefectRejectionStatusKPI14());
+			KpiHelperService.getDroppedDefectsFilters(droppedDefects, basicProjectConfigId,
+					fieldMapping.getResolutionTypeForRejectionKPI14(),
+					fieldMapping.getJiraDefectRejectionStatusKPI14());
 		});
 
 		KpiDataHelper.createAdditionalFilterMap(kpiRequest, mapOfFilters, Constant.SCRUM, DEV, flterHelperService);
@@ -438,7 +444,7 @@ public class KpiHelperService { // NOPMD
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
+		resultListMap.put(DEFECT_DATA, excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
 		resultListMap.put(ISSUE_DATA, jiraIssueRepository.findIssueAndDescByNumber(storyIdList));
 
 		return resultListMap;
@@ -472,7 +478,7 @@ public class KpiHelperService { // NOPMD
 					CommonUtils.convertToPatternList(fieldMapping.getJiraQAKPI111IssueType()));
 
 			addPriorityProjectWise(projectWisePriority, configPriority, leaf, fieldMapping.getDefectPriorityQAKPI111());
-			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getExcludeRCAFromQAKPI111());
+			addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForQAKPI111());
 
 			List<String> dodList = fieldMapping.getJiraDodQAKPI111();
 			if (CollectionUtils.isNotEmpty(dodList)) {
@@ -534,7 +540,7 @@ public class KpiHelperService { // NOPMD
 		getDefectsWithoutDrop(droppedDefects, defectDataList, defectListWoDrop);
 		resultListMap.put(STORY_POINTS_DATA, storyList);
 		resultListMap.put(STORY_DATA, sprintWiseStoryList);
-		resultListMap.put(DEFECT_DATA, excludePriorityAndRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
+		resultListMap.put(DEFECT_DATA, excludePriorityAndIncludeRCA(defectListWoDrop, projectWisePriority, projectWiseRCA));
 
 		return resultListMap;
 	}
@@ -1581,6 +1587,87 @@ public class KpiHelperService { // NOPMD
 			}
 		});
 		return projectIssueWiseClosedDates;
+	}
+
+	/**
+	 * convert hours into work hours by 8 factor
+	 *
+	 * @param timeInHours
+	 * 			time in hours
+	 * @return time in work hours
+	 */
+	public long getTimeInWorkHours(long timeInHours) {
+		long timeInHrs = (timeInHours / 24) * 8;
+		long remainingTimeInMin = (timeInHours % 24);
+		if (remainingTimeInMin >= 8) {
+			timeInHrs = timeInHrs + 8;
+		} else {
+			timeInHrs = timeInHrs + remainingTimeInMin;
+		}
+		return timeInHrs;
+	}
+
+	/**
+	 * convert total hours to days
+	 *
+	 * @param hours
+	 * 			hours
+	 * @return time in days
+	 */
+	public String convertHoursToDaysString(long hours) {
+		hours = getTimeInWorkHours(hours);
+		long days = hours / 8;
+		long remainingHours = hours % 8;
+		return (days == 0 && remainingHours == 0) ? "0"
+				: (remainingHours == 0) ? String.format("%dd", days) : String.format("%dd %dhrs", days, remainingHours);
+	}
+
+	/**
+	 * get weekend between two dates
+	 *
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return weekends between start date and end date
+	 */
+	public int minusHoursOfWeekEndDays(LocalDateTime d1, LocalDateTime d2) {
+		int countOfWeekEndDays = saturdaySundayCount(d1, d2);
+		if (countOfWeekEndDays != 0) {
+			return countOfWeekEndDays * 24;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
+	 * check number of saturday, sunday between dates
+	 * @param d1
+	 * 			start date
+	 * @param d2
+	 * 			end date
+	 * @return number of sat, sun
+	 */
+	public int saturdaySundayCount(LocalDateTime d1, LocalDateTime d2) {
+		int countWeekEnd = 0;
+		while (!d1.isAfter(d2)) {
+			if (isWeekEnd(d1)) {
+				countWeekEnd++;
+			}
+			d1 = d1.plusDays(1);
+		}
+		return countWeekEnd;
+	}
+
+	/**
+	 * check if day is weekend
+	 * @param localDateTime
+	 * 			localdatetime of day
+	 * @return boolean
+	 */
+	public boolean isWeekEnd(LocalDateTime localDateTime) {
+		int dayOfWeek = localDateTime.getDayOfWeek().getValue();
+		return dayOfWeek == 6 || dayOfWeek == 7;
 	}
 
 }

@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.common.model.application;//NOPMD
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
 
 import lombok.AllArgsConstructor;
@@ -47,11 +45,14 @@ public class BaseFieldMappingStructure extends BasicModel {
 	private String fieldType;
 	private String fieldCategory;
 	private String toggleLabel;
+	private String toggleLabelLeft;
+	private String toggleLabelRight;
 	private String section;
 	private boolean processorCommon;
 	private MappingToolTip tooltip;
 	private List<Options> options;
 	private List<String> filterGroup;
+	private String readOnly;
 
 	@Data
 	@Getter

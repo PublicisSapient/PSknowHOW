@@ -251,12 +251,6 @@ public class ConfigHelperService {
 		kpiIdRangeMap.putAll(masterList.stream().filter(d -> d.getMaturityRange() != null)
 				.collect(Collectors.toMap(KpiMaster::getKpiId, KpiMaster::getMaturityRange)));
 
-		masterList.stream().filter(d -> d.getMaturityLevel() != null)
-				.forEach(master -> kpiIdRangeMap.putAll(master.getMaturityLevel().stream()
-						.collect(Collectors.toMap(MaturityLevel::getLevel, MaturityLevel::getRange)))
-
-				);
-
 		return kpiIdRangeMap;
 
 	}

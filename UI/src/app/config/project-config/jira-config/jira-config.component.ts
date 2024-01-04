@@ -2392,7 +2392,7 @@ export class JiraConfigComponent implements OnInit {
           } else {
             this.messenger.add({
               severity: 'error',
-              summary: 'Some error occurred. Please try again later.',
+              summary: `${response['message'] ? response['message'] : 'Some error occurred. Please try again later'}`
             });
           }
         });

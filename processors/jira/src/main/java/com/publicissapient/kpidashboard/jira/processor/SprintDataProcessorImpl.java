@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.processor;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashSet;
 import java.util.List;
@@ -54,7 +55,8 @@ public class SprintDataProcessorImpl implements SprintDataProcessor {
 	private FetchSprintReport fetchSprintReport;
 
 	@Override
-	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId) {
+	public Set<SprintDetails> processSprintData(Issue issue, ProjectConfFieldMapping projectConfig, String boardId)
+			throws IOException {
 		log.info("creating sprint report for the project : {}", projectConfig.getProjectName());
 		Set<SprintDetails> sprintDetailsSet = new HashSet<>();
 		FieldMapping fieldMapping = projectConfig.getFieldMapping();

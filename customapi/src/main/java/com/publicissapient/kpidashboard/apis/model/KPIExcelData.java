@@ -79,13 +79,13 @@ public class KPIExcelData {
 	@JsonProperty("Story Size(In story point)")
 	private String storyPoints;
 
-	@JsonProperty("Intake to DOR(In Days)")
+	@JsonProperty("Intake to DOR")
 	private String intakeToDOR;
 
-	@JsonProperty("DOR to DOD (In Days)")
+	@JsonProperty("DOR to DOD")
 	private String dorToDod;
 
-	@JsonProperty("DOD TO Live (In Days)")
+	@JsonProperty("DOD to Live")
 	private String dodToLive;
 
 	@JsonProperty("Open to Triage(In Days)")
@@ -150,6 +150,9 @@ public class KPIExcelData {
 
 	@JsonProperty("Sonar Violations")
 	private String sonarViolation;
+
+	@JsonProperty("Code Quality")
+	private String codeQuality;
 
 	@JsonProperty("Weeks")
 	private String weeks;
@@ -271,6 +274,9 @@ public class KPIExcelData {
 	@JsonProperty("Created Date")
 	private String createdDate;
 
+	@JsonProperty("Closed Date")
+	private String closeDate;
+
 	@JsonProperty("Updated Date")
 	private String updatedDate;
 
@@ -375,5 +381,24 @@ public class KPIExcelData {
 
 	@JsonProperty("Days/Weeks")
 	private String daysWeeks;
+
+	@JsonProperty("Time to Recover (In Hours)")
+	private String timeToRecover;
+
+	@JsonProperty("Wait Time")
+	private String waitTime;
+
+	@JsonProperty("Total Time")
+	private String totalTime;
+
+	@JsonProperty("Flow Efficiency")
+	private Long flowEfficiency;
+
+	@JsonProperty("Release Tag Date (Latest)")
+	private String latestReleaseTagDate;
+
+	@JsonProperty("Dev Completion Date")
+	private String devCompleteDate;
+
 
 }

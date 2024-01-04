@@ -42,19 +42,24 @@ import javax.naming.directory.SearchResult;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import com.publicissapient.kpidashboard.apis.common.service.UserTokenService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
@@ -75,6 +80,7 @@ import com.publicissapient.kpidashboard.apis.projectconfig.basic.service.Project
 import com.publicissapient.kpidashboard.apis.userboardconfig.service.UserBoardConfigService;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
@@ -82,6 +88,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,9 +101,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserInfoServiceImpl implements UserInfoService {
 
+	public static final String ERROR_MESSAGE_CONSUMING_REST_API = "Error while consuming rest service in userInfoServiceImpl. Status code: ";
+	public static final String ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL = "Error while consuming rest service in userInfoServiceImpl";
 	HttpServletRequest contextreq;
 	@Autowired
 	TokenAuthenticationService tokenAuthenticationService;
+	@Autowired
+	private UserInfoRepository userInfoRepository;
 	@Autowired
 	private UserInfoCustomRepository userInfoCustomRepository;
 	@Autowired
@@ -123,33 +135,31 @@ public class UserInfoServiceImpl implements UserInfoService {
 	@Autowired
 	private CookieUtil cookieUtil;
 	@Autowired
-	private UserTokenService userTokenService;
+	private UserTokenReopository userTokenReopository;
+
+	final ModelMapper modelMapper = new ModelMapper();
 
 	@Override
 	public Collection<GrantedAuthority> getAuthorities(String username) {
-		UserInfo userInfo = getCentralAuthUserInfo(username);
+		UserInfo userInfo = userInfoRepository.findByUsername(username);
 		List<String> roles = userInfo.getAuthorities();
 		return createAuthorities(roles);
 	}
 
 	@Override
-	public UserInfo getUserInfoByUsernameAndAuthType(String username, AuthType authType) {
-		UserInfo userInfo = getCentralAuthUserInfo(username);
-		if(userInfo.getAuthType().equals(authType)){
-			return userInfo;
-		}
-		return new UserInfo();
+	public UserInfo getUserInfo(String username, AuthType authType) {
+
+		return userInfoRepository.findByUsernameAndAuthType(username, authType);
 	}
 
 	@Override
 	public UserInfo getUserInfo(String username) {
-		return getCentralAuthUserInfo(username);
+		return userInfoRepository.findByUsername(username);
 	}
-
 
 	@Override
 	public Collection<UserInfo> getUsers() {
-		List<UserInfo> userInfoList = findAllUsersFromCentralAuth();
+		List<UserInfo> userInfoList = userInfoRepository.findAll();
 		List<String> userNames = userInfoList.stream().map(UserInfo::getUsername).collect(Collectors.toList());
 
 		List<Authentication> authentications = authenticationRepository.findByUsernameIn(userNames);
@@ -163,7 +173,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 			Authentication auth = authMap.get(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 				if (!auth.isApproved()) {
 					nonApprovedUserList.add(userInfo);
 				}
@@ -205,18 +215,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public UserInfo demoteFromAdmin(String username, AuthType authType) {
-		int numberOfAdmins = this.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN))
+		int numberOfAdmins = this.userInfoRepository.findByAuthoritiesIn(Arrays.asList(Constant.ROLE_SUPERADMIN))
 				.size();
 		if (numberOfAdmins <= 1) {
 			throw new DeleteLastAdminException();
 		}
-		UserInfo user = this.getUserInfoByUsernameAndAuthType(username, authType);
+		UserInfo user = this.userInfoRepository.findByUsernameAndAuthType(username, authType);
 		if (user == null) {
 			throw new UserNotFoundException(username, authType);
 		}
 
 		user.getAuthorities().remove(Constant.ROLE_SUPERADMIN);
-		return this.saveCentralAuthUserInfo(user);
+		return this.userInfoRepository.save(user);
 	}
 
 	/**
@@ -243,7 +253,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public boolean isUserValid(String userId, AuthType authType) {
-		if (this.getUserInfoByUsernameAndAuthType(userId, authType) == null) {
+		if (this.userInfoRepository.findByUsernameAndAuthType(userId, authType) == null) {
 			if (authType == AuthType.LDAP) {
 				try {
 					return searchLdapUser(userId);
@@ -337,7 +347,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public ServiceResponse updateUserRole(String username, UserInfo userInfo) {
-		UserInfo existingUserInfo = getCentralAuthUserInfo(username);
+		UserInfo existingUserInfo = userInfoRepository.findByUsername(username);
 
 		existingUserInfo = createUserInCaseSSOUserNotFound(existingUserInfo, userInfo);
 
@@ -356,8 +366,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (existingUserInfo == null && StringUtils.isNotEmpty(userInfo.getUsername()) && null != userInfo.getAuthType()
 				&& userInfo.getAuthType().equals(AuthType.SSO)) {
 			UserInfo defaultUserInfo = createDefaultUserInfo(userInfo.getUsername(), AuthType.SSO,
-					userInfo.getEmailAddress());
-			existingUserInfo = saveDefaultUser(defaultUserInfo);
+					userInfo.getEmailAddress().toLowerCase());
+			existingUserInfo = save(defaultUserInfo);
 		}
 		return existingUserInfo;
 	}
@@ -381,7 +391,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 	@Override
 	public UserInfo updateUserInfo(final UserInfo userInfo) {
-		return saveCentralAuthUserInfo(userInfo);
+		return userInfoRepository.save(userInfo);
 	}
 
 	/**
@@ -394,7 +404,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @return userinfo
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType) {
-		UserInfo userInfo = getUserInfoByUsernameAndAuthType(username, authType);
+		UserInfo userInfo = userInfoRepository.findByUsernameAndAuthType(username, authType);
 		if (null != userInfo) {
 			addEmailForStandardAuthType(userInfo);
 		}
@@ -402,12 +412,12 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public UserInfo saveDefaultUser(UserInfo userInfo) {
-		if (CollectionUtils.isEmpty(findAllUsersFromCentralAuth())) {
+	public UserInfo save(UserInfo userInfo) {
+		if (userInfoRepository.count() == 0) {
 			UserInfo superAdminUserInfo = createSuperAdminUserInfo(userInfo.getUsername(), userInfo.getEmailAddress());
-			return saveCentralAuthUserInfo(superAdminUserInfo);
+			return userInfoRepository.save(superAdminUserInfo);
 		}
-		return saveCentralAuthUserInfo(userInfo);
+		return userInfoRepository.save(userInfo);
 
 	}
 
@@ -440,7 +450,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 		if (AuthType.STANDARD == userInfo.getAuthType()) {
 			Authentication auth = authenticationRepository.findByUsername(userInfo.getUsername());
 			if (auth != null) {
-				userInfo.setEmailAddress(auth.getEmail());
+				userInfo.setEmailAddress(auth.getEmail().toLowerCase());
 			}
 		}
 	}
@@ -451,7 +461,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	/*@Override
+	@Override
 	public ServiceResponse deleteUser(String username) {
 		try {
 			userInfoRepository.deleteByUsername(username);
@@ -465,15 +475,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 		}
 
 		return new ServiceResponse(true, username + " deleted Successfully", "Ok");
-	}*/
-	//todo change
+	}
 
-	/*@Override
+	@Override
 	public List<UserInfo> getUserInfoByAuthType(String authType) {
 		return userInfoRepository.findByAuthType(authType);
-	}*/
+	}
 
-	/*@Override
+	@Override
 	public UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email) {
 		UserInfo userInfo = getUserInfo(username);
 		if (null == userInfo) {
@@ -481,13 +490,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 			userInfo = save(userInfo);
 		}
 		return convertToDTOObject(userInfo);
-	}*/
+	}
 
 	private UserInfoDTO convertToDTOObject(UserInfo userInfo) {
 		UserInfoDTO userInfoDTO = null;
 		if (null != userInfo) {
 			userInfoDTO = UserInfoDTO.builder().username(userInfo.getUsername()).authType(userInfo.getAuthType())
-					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress())
+					.authorities(userInfo.getAuthorities()).emailAddress(userInfo.getEmailAddress().toLowerCase())
 					.projectsAccess(userInfo.getProjectsAccess()).build();
 		}
 		return userInfoDTO;
@@ -505,16 +514,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 			return null;
 		}
 		String token = authCookie.getValue();
-		UserTokenData userTokenData = userTokenService.findByUserToken(token);
+		UserTokenData userTokenData = userTokenReopository.findByUserToken(token);
 		UserDetailsResponseDTO userDetailsResponseDTO = new UserDetailsResponseDTO();
 		if (Objects.nonNull(userTokenData)) {
 			String username = userTokenData.getUserName();
-			UserInfo userinfo = getCentralAuthUserInfo(username);
-			Authentication authentication = new Authentication();
-			//todo delete
-			//todo change
-					//authenticationRepository.findByUsername(username);
+			UserInfo userinfo = userInfoRepository.findByUsername(username);
+			Authentication authentication = authenticationRepository.findByUsername(username);
 			String email = authentication == null ? userinfo.getEmailAddress() : authentication.getEmail();
+
 			userDetailsResponseDTO.setUserName(username);
 			userDetailsResponseDTO.setUserEmail(email);
 			userDetailsResponseDTO.setAuthorities(userinfo.getAuthorities());
@@ -528,13 +535,13 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	public UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities) {
-		UserInfo userInfo = getCentralAuthUserInfo(userName);
+		UserInfo userInfo = userInfoRepository.findByUsername(userName);
 		if (userInfo == null) {
 			userInfo = new UserInfo();
 			userInfo.setUsername(userName);
 			userInfo.setAuthorities(authorities);
 			userInfo.setAuthType(authType);
-			saveCentralAuthUserInfo(userInfo);
+			userInfoRepository.save(userInfo);
 		}
 		return userInfo;
 	}
@@ -549,9 +556,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 */
 
 	@Override
-	public UserInfo getCentralAuthUserInfo(String username) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	public UserInfo getCentralAuthUserInfo(String username, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -559,55 +565,158 @@ public class UserInfoServiceImpl implements UserInfoService {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<UserInfo> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, entity, UserInfo.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, UserInfo.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return new UserInfo();
 			}
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
 
-
 	@Override
-	public UserInfo saveCentralAuthUserInfo(UserInfo userInfo){
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
-				authProperties.getSaveUserDetailsEndPoint() , "");
-		HttpEntity<?> body = new HttpEntity<>(userInfo , headers);
+				authProperties.getFetchUserDetailsEndPoint(), username);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<UserInfo> response = null;
+		ResponseEntity<String> response = null;
 		try {
-			response = restTemplate.exchange(fetchUserUrl, HttpMethod.POST, body, UserInfo.class);
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody();
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error("Error while consuming rest service in userInfoServiceImpl. Status code: "
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API
 						+ response.getStatusCodeValue());
-				return new UserInfo();
+				return new CentralUserInfoDTO();
 			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse apikey token.", e);
 		} catch (RuntimeException e) {
-			log.error("Error while consuming rest service in userInfoServiceImpl", e);
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
 			return null;
 		}
 	}
 
 	@Override
-	public List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin){
-		return new ArrayList<>();
+	public String getCentralAuthUserDeleteUserToken(String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/api/userlogout/");
+		uriBuilder.path(token);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody();
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return "";
+			}
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return null;
+		}
 	}
 
 	@Override
-	public List<UserInfo> findAllUsersFromCentralAuth(){
-		return new ArrayList<>();
+	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return modelMapper.map(jsonObject.get("data"), new TypeToken<List<CentralUserInfoDTO>>() {
+				}.getType());
+
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return (List<UserInfoDTO>) new UserInfo();
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return new ArrayList<>();
+		}
 	}
+
+	@Override
+	public boolean updateUserApprovalStatus(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
+				authProperties.getUpdateUserApprovalStatus(), user);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.PUT, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				JSONParser jsonParser = new JSONParser();
+				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+				return (boolean) jsonObject.get("data");
+
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return false;
+			}
+		} catch (ParseException e) {
+			throw new AuthenticationServiceException("Unable to parse response.", e);
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return false;
+		}
+	}
+
+	@Override
+	public String deleteRejectedUser(String user, String token) {
+		HttpHeaders headers = cookieUtil.setCookieIntoHeader(token);
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
+		uriBuilder.path("/api/deleteUser/");
+		uriBuilder.path(user);
+		String fetchUserUrl = uriBuilder.toUriString();
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = null;
+		try {
+			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
+
+			if (response.getStatusCode().is2xxSuccessful()) {
+				return response.getBody();
+			} else {
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				return "";
+			}
+		} catch (RuntimeException e) {
+			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
+			return null;
+		}
+	}
+
 }

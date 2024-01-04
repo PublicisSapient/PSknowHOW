@@ -55,6 +55,7 @@ export class SharedService {
   private passServerRole= new BehaviorSubject<boolean>(false);
   public boardId = 1;
   public isDownloadExcel;
+  private authToken = '';
 
   // make filterdata and masterdata persistent across dashboards
   private filterData = {};
@@ -89,6 +90,13 @@ export class SharedService {
   fieldMappingOptionsMetaData : any = []
   kpiCardView : string = "chart";
   maturityTableLoader = new Subject<boolean>();
+  globalConfigData : any
+  visibleSideBarSubject = new BehaviorSubject(false);
+  visibleSideBarObs = this.visibleSideBarSubject.asObservable();
+
+
+  private currentIssue = new BehaviorSubject({});
+  currentData = this.currentIssue.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();
@@ -98,6 +106,11 @@ export class SharedService {
     this.passEventToNav = new EventEmitter();
     this.isDownloadExcel = new EventEmitter();
     this.isSideNav = new EventEmitter();
+  }
+
+  // for DSV
+  setIssueData(data) {
+    this.currentIssue.next(data);
   }
 
 
@@ -155,6 +168,10 @@ export class SharedService {
 
   setLogoImage(logoImage: File) {
     this.subject.next({ File: logoImage });
+  }
+
+  setVisibleSideBar(value) {
+    this.visibleSideBarSubject.next(value);
   }
 
   clearLogoImage() {
@@ -360,6 +377,22 @@ export class SharedService {
 
   setMaturiyTableLoader(value){
     this.maturityTableLoader.next(value)
+  }
+
+  setGlobalConfigData(data){
+    this.globalConfigData = data;
+  }
+
+  getGlobalConfigData(){
+    return this.globalConfigData;
+  }
+
+  setAuthToken(value){
+    this.authToken = value;
+  }
+
+  getAuthToken(){
+    return this.authToken;
   }
 }
 

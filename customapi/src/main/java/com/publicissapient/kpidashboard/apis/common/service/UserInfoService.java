@@ -27,6 +27,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
@@ -56,7 +57,7 @@ public interface UserInfoService {
 	 *            the auth type
 	 * @return the user info
 	 */
-	UserInfo getUserInfoByUsernameAndAuthType(String username, AuthType authType);
+	UserInfo getUserInfo(String username, AuthType authType);
 
 	UserInfo getUserInfo(String username);
 
@@ -124,7 +125,7 @@ public interface UserInfoService {
 	 */
 	public UserInfo getUserInfoWithEmail(String username, AuthType authType);
 
-	UserInfo saveDefaultUser(UserInfo userInfo);
+	UserInfo save(UserInfo userInfo);
 
 	UserInfo createDefaultUserInfo(String username, AuthType authType, String email);
 
@@ -134,10 +135,9 @@ public interface UserInfoService {
 	 * @param username
 	 *            username
 	 */
-	//ServiceResponse deleteUser(String username);
-	//todo change
+	ServiceResponse deleteUser(String username);
 
-	//List<UserInfo> getUserInfoByAuthType(String userType);
+	List<UserInfo> getUserInfoByAuthType(String userType);
 
 	/**
 	 * get user details for profile screen and response will be same as login api
@@ -155,8 +155,8 @@ public interface UserInfoService {
 	 * @param email
 	 * @return user info dto object
 	 */
-	//UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
-	//todo delete
+	UserInfoDTO getOrSaveDefaultUserInfo(String username, AuthType authType, String email);
+
 	/**
 	 * This method return user info object by comparing username, auth type and
 	 * authorities
@@ -166,21 +166,28 @@ public interface UserInfoService {
 	 * @param authorities
 	 * @return user info object
 	 */
-	//UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
-	//todo change
-	//----auth-N-auth----------
+	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
+
+	// ----auth-N-auth----------
+	List<UserInfoDTO> findAllUnapprovedUsers(String token);
+
+	boolean updateUserApprovalStatus(String user, String token);
+
+	String deleteRejectedUser(String user, String token);
+
+	// ----auth-N-auth----------
 
 	/**
-	 * get User info from cental auth
+	 * getUser info from cental auth
+	 * 
 	 * @param username
 	 * @return
 	 */
-	UserInfo getCentralAuthUserInfo(String username);
+	UserInfo getCentralAuthUserInfo(String username, String token);
 
-	List<UserInfo> findAllUsersFromCentralAuth();
+	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token);
+	// ----auth-N-auth----------
 
-	UserInfo saveCentralAuthUserInfo(UserInfo userInfo);
+	String getCentralAuthUserDeleteUserToken(String token);
 
-	List<UserInfo> findByAuthoritiesIn(List<String> roleAdmin);
-	//----auth-N-auth----------
 }

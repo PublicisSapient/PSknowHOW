@@ -133,7 +133,7 @@ public class ProcessorToolConnectionServiceImpl implements ProcessorToolConnecti
 		processorToolConnection.setUsername(connection.getUsername());
 		processorToolConnection.setPassword(connection.getPassword());
 		processorToolConnection.setPatOAuthToken(connection.getPatOAuthToken());
-		processorToolConnection.setbearerToken(connection.isBearerToken());
+		processorToolConnection.setBearerToken(connection.isBearerToken());
 		processorToolConnection.setType(connection.getType());
 		processorToolConnection.setApiEndPoint(connection.getApiEndPoint());
 		processorToolConnection.setConsumerKey(connection.getConsumerKey());

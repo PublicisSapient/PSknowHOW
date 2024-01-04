@@ -30,6 +30,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.util.AggregationUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataValue;
@@ -555,7 +556,7 @@ public abstract class ToolsKPIService<R, S> {
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
-		calculateThresholdValue(selectedIds, kpiElement);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
@@ -587,17 +588,20 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
+	 *            kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return trend values
 	 */
-	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,
+	public List<DataCount> getAggregateTrendValues(KpiRequest kpiRequest,KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		List<DataCount> trendValues = new ArrayList<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel(), selectedId));
@@ -606,17 +610,16 @@ public abstract class ToolsKPIService<R, S> {
 
 				List<DataCount> dataCounts = obj instanceof List<?> ? (List<DataCount>) obj : null;
 				if (CollectionUtils.isNotEmpty(dataCounts)) {
-
-					Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, dataCounts);
 					List<R> aggValues = dataCounts.stream().filter(val -> val.getValue() != null)
 							.map(val -> (R) val.getValue()).collect(Collectors.toList());
 
 					R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
+					String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+							String.valueOf(calculatedAggValue));
+
 					String aggregateValue = null;
-					String maturity = null;
-					if (maturityValue != null) {
-						aggregateValue = maturityValue.getValue();
-						maturity = maturityValue.getKey();
+					if (StringUtils.isNotEmpty(maturity)) {
+						aggregateValue = String.valueOf(calculatedAggValue);
 					}
 					trendValues.add(new DataCount(node.getName(), maturity, aggregateValue,
 							getList(dataCounts, kpiName), calculatedAggValue));
@@ -672,7 +675,7 @@ public abstract class ToolsKPIService<R, S> {
 		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
-		calculateThresholdValue(selectedIds, kpiElement);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
@@ -709,17 +712,20 @@ public abstract class ToolsKPIService<R, S> {
 	 *
 	 * @param kpiRequest
 	 *            kpiRequest
+	 * @param kpiElement
+	 *            kpiElement
 	 * @param nodeWiseKPIValue
 	 *            nodeWiseKPIValue
 	 * @return map of string and list of trendvalue
 	 */
-	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,
+	public Map<String, List<DataCount>> getAggregateTrendValuesMap(KpiRequest kpiRequest,KpiElement kpiElement,
 			Map<Pair<String, String>, Node> nodeWiseKPIValue, KPICode kpiCode) {
 		String kpiName = kpiCode.name();
 		String kpiId = kpiCode.getKpiId();
 		Map<String, List<DataCount>> trendMap = new HashMap<>();
 
 		Set<String> selectedIds = getSelectedIds(kpiRequest);
+		calculateThresholdValue(selectedIds, kpiElement, kpiRequest.getLabel());
 
 		for (String selectedId : selectedIds) {
 			Node node = nodeWiseKPIValue.get(Pair.of(kpiRequest.getSelecedHierarchyLabel().toUpperCase(), selectedId));
@@ -732,15 +738,14 @@ public abstract class ToolsKPIService<R, S> {
 					valueMap.forEach((key, value) -> {
 						List<DataCount> trendValues = new ArrayList<>();
 
-						Pair<String, String> maturityValue = getMaturityValuePair(kpiName, kpiId, value);
 						List<R> aggValues = value.stream().filter(val -> val.getValue() != null)
 								.map(val -> (R) val.getValue()).collect(Collectors.toList());
 						R calculatedAggValue = getCalculatedAggValue(aggValues, kpiId);
 						String aggregateValue = null;
-						String maturity = null;
-						if (maturityValue != null) {
-							aggregateValue = maturityValue.getValue();
-							maturity = maturityValue.getKey();
+						String maturity = calculateMaturity(configHelperService.calculateMaturity().get(kpiId), kpiId,
+								String.valueOf(calculatedAggValue));
+						if (StringUtils.isNotEmpty(maturity)) {
+							aggregateValue = String.valueOf(calculatedAggValue);
 						}
 						trendValues.add(new DataCount(node.getName(), maturity, aggregateValue, getList(value, kpiName),
 								calculatedAggValue));
@@ -759,6 +764,7 @@ public abstract class ToolsKPIService<R, S> {
 	 * @param value
 	 *            value
 	 * @param kpiName
+	 *
 	 *            kpiName
 	 * @return list
 	 */
@@ -927,6 +933,9 @@ public abstract class ToolsKPIService<R, S> {
 			aggValue = (R) value.get(value.size() - 1).getValue();
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
+		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
+			aggValue = (R) value.stream().filter(dataCount -> dataCount.getsSprintID().equalsIgnoreCase("< 3 Months"))
+					.findFirst().get().getValue();
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
 			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
@@ -1151,19 +1160,18 @@ public abstract class ToolsKPIService<R, S> {
 	/**
 	 * on selection of single project the fieldmapping threshold value will be
 	 * selected
-	 * 
+	 *
 	 * @param selectIds
 	 *            projectIds
 	 * @param kpiElement
-	 *            kpiElement to set thresholdvalue
+	 *            kpiElement
+	 * @param labelName
+	 *            labelName
 	 */
-	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement) {
-		String basicProjectConfigId = null;
-
-		if (selectIds.size() == 1)
-			basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
-
-		if (StringUtils.isNotEmpty(basicProjectConfigId)) {
+	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
+		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
+				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
+			String basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(new ObjectId(basicProjectConfigId));
 			if (fieldMapping != null) {
@@ -1172,6 +1180,12 @@ public abstract class ToolsKPIService<R, S> {
 		}
 	}
 
+	/**
+	 *
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return
+	 */
 	public Double calculateThresholdValue(FieldMapping fieldMapping) {
 		return null;
 	}
@@ -1189,7 +1203,7 @@ public abstract class ToolsKPIService<R, S> {
 		if (StringUtils.isEmpty(fieldValue)) {
 			List<KpiMaster> masterList = (List<KpiMaster>) configHelperService.loadKpiMaster();
 			thresholdValue = masterList.stream().filter(kpi -> kpi.getKpiId().equalsIgnoreCase(kpiId))
-					.mapToDouble(KpiMaster::getThresholdValue).sum();
+					.mapToDouble(kpi -> kpi.getThresholdValue() != null ? kpi.getThresholdValue() : 0.0).sum();
 		} else {
 			thresholdValue = Double.valueOf(fieldValue);
 		}

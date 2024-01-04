@@ -1,0 +1,162 @@
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Copyright 2014 CapitalOne, LLC.
+  Further development Copyright 2022 Sapient Corporation.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<p-dropdown styleClass="statusFilterDropDown" placeholder="Filter by Status" [showClear]="true"
+    [options]="statusFilterOptions" [(ngModel)]="selectedStatus" optionLabel="name"
+    (onChange)="filterTasksByStatus($event)"></p-dropdown>
+<div class="kpi-card-icons"
+    [ngClass]="{'disable-setting-icon': (service.getSelectedType()?.toLowerCase() !== 'scrum' || service.getSelectedTrends().length > 1 || (service.getSelectedTab()?.toLowerCase() === 'release' && kpiData?.kpiId !== 'kpi163') || service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase() !== 'project' ||  userRole === 'roleViewer' || checkIfViewer)}">
+    <img src="../../../assets/img/setting-icon.svg" alt="KPI Setting" class="ico-active p-mr-1 kpi-download-icon"
+        (click)="onOpenFieldMappingDialog();" pTooltip="Setting" tooltipPosition="top" tooltipEvent="hover"
+        [escape]="false" />
+</div>
+<div>
+    <button class="legends-button" (click)="showLegends()">Legend</button>
+</div>
+
+<div id="chart-main-container">
+    <div id="chart-container">
+        <div id="scroller">
+            <div id="issueAxis"></div>
+            <div id="chart">
+                <div style="width:100%;" id="dateAxis"></div>
+                <div class="tooltip-container"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal">
+    <p-dialog [(visible)]="displayModal" header="Legend" [modal]="true" [draggable]="true" [resizable]="true"
+        [style]="{width: '60vw'}">
+        <div class="p-p-0">
+            <h1 class="p-mt-0 p-ml-4">Issue Types</h1>
+            <div class="p-grid">
+                <div class=" p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:32px; margin:auto;" alt="Epic" src="../../../assets/img/GenericIssue.svg" />
+                    <span class="p-d-block p-mt-2">Generic Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:32px; margin:auto;" alt="Epic" src="../../../assets/img/Epic.svg" />
+                    <span class="p-d-block p-mt-2">Epic</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:32px; margin:auto;" alt="Story" src="../../../assets/img/Story.svg" />
+                    <span class="p-d-block p-mt-2">Story</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:32px; margin:auto;" alt="Task" src="../../../assets/img/Subtask_icon.svg" />
+                    <span class="p-d-block p-mt-2">Subtask</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:32px; margin:auto;" alt="Bug" src="../../../assets/img/Bug.svg" />
+                    <span class="p-d-block p-mt-2">Defect</span>
+                </div>
+            </div>
+            <h1 class="p-ml-4">Issue Status</h1>
+            <div class="p-grid">
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Dev Due Date" src="../../../assets/img/DevDueDate.svg" />
+                    <span class="p-d-block">Dev Due Date</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Dev Due Date"
+                        src="../../../assets/img/OverallDueDate.svg" />
+                    <span class="p-d-block">Overall Due Date</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Due Date Exceeded"
+                        src="../../../assets/img/OverallDueDateExceeded.svg" />
+                    <span class="p-d-block">Due Date Exceeded</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:50px; margin:auto;" alt="Dev Completed"
+                        src="../../../assets/img/dev-completed.svg" />
+                    <span class="p-d-block">Dev Completed</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:50px; margin:auto;" alt="QA Completed"
+                        src="../../../assets/img/qa-completed.svg" />
+                    <span class="p-d-block">QA Completed</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:50px; margin:auto;" alt="Interim" src="../../../assets/img/intermin-status.JPG" />
+                    <span class="p-d-block">Interim Status</span>
+                </div>
+            </div>
+            <h1 class="p-ml-4">Timelines</h1>
+            <div class="p-grid">
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Spilled Active Issue"
+                        src="../../../assets/img/spill active issue.JPG" />
+                    <span class="p-d-block">Spilled Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto; margin-top: 14px; margin-bottom: 14px;"
+                        alt="Spilled Closed Issue" src="../../../assets/img/spill-issue-closed.JPG" />
+                    <span class="p-d-block">Spilled Closed Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Active Issue"
+                        src="../../../assets/img/active-issue.JPG" />
+                    <span class="p-d-block">Active Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Closed Issue"
+                        src="../../../assets/img/closed issue.JPG" />
+                    <span class="p-d-block">Closed Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Closed Issue"
+                        src="../../../assets/img/due-date-exceeded.PNG" />
+                    <span class="p-d-block">Due Date Exceeded</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Closed Issue"
+                        src="../../../assets/img/on-hold-spilled.PNG" />
+                    <span class="p-d-block">Spilled on-hold Issue</span>
+                </div>
+                <div class="p-col-2 p-d-flex p-flex-column legend-item">
+                    <img style="width:40px; margin:auto;" alt="Closed Issue"
+                        src="../../../assets/img/on-hold.PNG" />
+                    <span class="p-d-block">On-hold Issue</span>
+                </div>
+            </div>
+        </div>
+    </p-dialog>
+</div>
+<p-dialog [header]="'Daily Standup View'" [closable]="true" [(visible)]="displayConfigModel" [modal]="true"
+    styleClass="field-mapping">
+    <hr>
+    <ng-template pTemplate="content">
+        <app-field-mapping-form #fieldMappingForm
+            *ngIf="fieldMappingConfig?.length > 0 && this.selectedToolConfig?.length > 0 && !loading"
+            [disableSave]="disableSave" [fieldMappingMetaData]="fieldMappingMetaData"
+            [fieldMappingConfig]="fieldMappingConfig" [formData]="selectedFieldMapping"
+            [selectedConfig]="selectedConfig" [selectedToolConfig]="selectedToolConfig"
+            (reloadKPI)="reloadKPI()"></app-field-mapping-form>
+    </ng-template>
+    <ng-template pTemplate="footer"></ng-template>
+    <ng-container *ngIf=" noData && !loading">
+        <h2 class="p-text-center">No Configuration Available</h2>
+    </ng-container>
+    <ng-container *ngIf="loading">
+        <div class="overlay">
+            <div class="loading-img"></div>
+        </div>
+    </ng-container>
+</p-dialog>

@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,22 +64,19 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	private JiraCommonService jiraCommonService;
 
 	@Override
-	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
+	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+			throws IOException, ParseException {
 		boolean isKanban = projectConfig.isKanban();
 		log.info("Start Fetching Release Data");
 		ProjectRelease projectRelease = null;
-		try {
-			if (isKanban) {
-				List<KanbanAccountHierarchy> kanbanAccountHierarchyList = kanbanAccountHierarchyRepo
-						.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-								projectConfig.getBasicProjectConfigId());
-				KanbanAccountHierarchy kanbanAccountHierarchy = CollectionUtils.isNotEmpty(kanbanAccountHierarchyList)
-						? kanbanAccountHierarchyList.get(0)
-						: null;
-				saveProjectRelease(projectConfig, kanbanAccountHierarchy, projectRelease, krb5Client);
-			}
-		} catch (Exception ex) {
-			log.error("No hierarchy data found not processing for Version data");
+		if (isKanban) {
+			List<KanbanAccountHierarchy> kanbanAccountHierarchyList = kanbanAccountHierarchyRepo
+					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
+							projectConfig.getBasicProjectConfigId());
+			KanbanAccountHierarchy kanbanAccountHierarchy = CollectionUtils.isNotEmpty(kanbanAccountHierarchyList)
+					? kanbanAccountHierarchyList.get(0)
+					: null;
+			saveProjectRelease(projectConfig, kanbanAccountHierarchy, projectRelease, krb5Client);
 		}
 
 		return projectRelease;
@@ -89,7 +88,8 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 	 * @return
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping,
-			KanbanAccountHierarchy kanbanAccountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client) {
+			KanbanAccountHierarchy kanbanAccountHierarchy, ProjectRelease projectRelease, KerberosClient krb5Client)
+			throws IOException, ParseException {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
@@ -141,7 +141,7 @@ public class FetchKanbanReleaseDataImpl implements FetchKanbanReleaseData {
 
 	/**
 	 * create hierarchies for kanban
-	 * 
+	 *
 	 * @param projectRelease
 	 * @param projectBasicConfig
 	 * @param projectHierarchy

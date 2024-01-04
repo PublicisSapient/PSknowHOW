@@ -86,8 +86,9 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueScrumBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+					log.info(
+							"Jira Scrum data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -116,7 +117,7 @@ public class JobScheduler {
 					jobLauncher.run(fetchIssueScrumJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Scrum data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -142,8 +143,9 @@ public class JobScheduler {
 				try {
 					jobLauncher.run(fetchIssueKanbanBoardJob, params);
 				} catch (Exception e) {
-					log.info("Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+					log.info(
+							"Jira Kanban data for board fetch failed for BasicProjectConfigId : {}, with exception : {}",
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}
@@ -172,7 +174,7 @@ public class JobScheduler {
 					jobLauncher.run(fetchIssueKanbanJqlJob, params);
 				} catch (Exception e) {
 					log.info("Jira Kanban data for JQL fetch failed for BasicProjectConfigId : {}, with exception : {}",
-							params.getString(PROJECT_ID),e);
+							params.getString(PROJECT_ID), e);
 				}
 			});
 		}

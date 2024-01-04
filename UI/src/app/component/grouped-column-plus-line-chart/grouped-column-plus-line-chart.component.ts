@@ -179,7 +179,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
 
     const categoriesNames = data.map((d) => d.categorie);
     const rateNames = data[0].value.map((d) => d.rate);
-    const paddingTop = 24; 
+    const paddingTop = 24;
 
     const margin = { top: 35, right: 50, bottom: 50, left: 50 };
     const barWidth = 20;
@@ -321,7 +321,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       if (viewType === 'large' && selectedProjectCount === 1) {
         xAxisText.each((d, i, nodes) => {
           const textElement = d3.select(nodes[i]);
-          const width = tempAxis.bandwidth(); 
+          const width = tempAxis.bandwidth();
           this.wrap(textElement, width);
         });
       }
@@ -528,7 +528,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
           .domain([0, maxYValue])
           .range([height - margin.top, 0]);
 
-        let xScale 
+        let xScale
         if(viewType === 'large' && selectedProjectCount === 1){
           xScale =  d3.scaleBand()
           .rangeRound([0, width - margin.left])

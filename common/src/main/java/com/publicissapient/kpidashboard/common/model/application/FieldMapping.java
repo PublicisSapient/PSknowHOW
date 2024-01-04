@@ -65,7 +65,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraIssueEpicType;
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
-	private String storyFirstStatusKPI3;
 	private String rootCause;
 	private List<String> jiraStatusForDevelopment;
 	private List<String> jiraStatusForDevelopmentAVR;
@@ -88,7 +87,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraDodKPI151;
 	private List<String> jiraDodKPI14;
 	private List<String> jiraDodQAKPI111;
-	private List<String> jiraDodKPI3;
 	private List<String> jiraDodKPI127;
 	private List<String> jiraDodKPI37;
 
@@ -154,7 +152,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> readyForDevelopmentStatusKPI138;
 
 	private String jiraDor;
-	private List<String> jiraDorKPI3;
 
 	private List<String> jiraIntakeToDorIssueType;
 	private List<String> jiraIssueTypeKPI3;
@@ -199,11 +196,11 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
-	private List<String> excludeRCAFromKPI82;
-	private List<String> excludeRCAFromKPI135;
-	private List<String> excludeRCAFromKPI14;
-	private List<String> excludeRCAFromQAKPI111;
-	private List<String> excludeRCAFromKPI133;
+	private List<String> includeRCAForKPI82;
+	private List<String> includeRCAForKPI135;
+	private List<String> includeRCAForKPI14;
+	private List<String> includeRCAForQAKPI111;
+	private List<String> includeRCAForKPI133;
 
 	// For Lloyds KPIs
 	private List<String> jiraDorToLiveIssueType;
@@ -395,6 +392,10 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> jiraDodKPI156;
 	private List<String> jiraIssueTypeKPI156;
+	private List<String> jiraLabelsKPI14;
+	private List<String> jiraLabelsKPI82;
+	private List<String> jiraIssueWaitStateKPI170;
+	private List<String> jiraIssueClosedStateKPI170;
 
 	@Builder.Default
 	private String leadTimeConfigRepoTool = CommonConstant.JIRA;
@@ -402,6 +403,8 @@ public class FieldMapping extends BasicModel {
 	@Builder.Default
 	private String toBranchForMRKPI156 = "master";
 	private Integer startDateCountKPI150;
+	private List<String> jiraDevDoneStatusKPI150;
+	private boolean populateByDevDoneKPI150;
 
 	//threshold field
 	private String thresholdValueKPI14;
@@ -428,6 +431,56 @@ public class FieldMapping extends BasicModel {
 	private String thresholdValueKPI159;
 	private String thresholdValueKPI160;
 	private String thresholdValueKPI164;
+	private String thresholdValueKPI3;
+	private String thresholdValueKPI126;
+	private String thresholdValueKPI42;
+	private String thresholdValueKPI168;
+	private String thresholdValueKPI70;
+	private String thresholdValueKPI40;
+	private String thresholdValueKPI5;
+	private String thresholdValueKPI39;
+	private String thresholdValueKPI46;
+	private String thresholdValueKPI8;
+	private String thresholdValueKPI73;
+	private String thresholdValueKPI113;
+	private String thresholdValueKPI149;
+	private String thresholdValueKPI153;
+	private String thresholdValueKPI162;
+	private String thresholdValueKPI116;
+	private String thresholdValueKPI156;
+	private String thresholdValueKPI118;
+	private String thresholdValueKPI127;
+	private String thresholdValueKPI170;
+	private String thresholdValueKPI139;
+	private String thresholdValueKPI166;
+
+	// Production Incident Mapping
+	private String jiraProductionIncidentIdentification;
+	private String jiraProdIncidentRaisedByCustomField;
+	private List<String> jiraProdIncidentRaisedByValue;
+
+	private List<String> jiraStoryIdentificationKPI166;
+	private List<String> jiraDodKPI166;
+	private List<String> storyFirstStatusKPI154;
+	private List<String> jiraStatusForInProgressKPI154;
+	private List<String> jiraDevDoneStatusKPI154;
+	private List<String> jiraQADoneStatusKPI154;
+	private List<String> jiraOnHoldStatusKPI154;
+	private List<String> jiraIterationCompletionStatusKPI154;
+	private List<String> jiraSubTaskIdentification;
+	private List<String> jiraStatusStartDevelopmentKPI154;
+
+	private List<String> jiraLabelsKPI135;
+
+	private List<String> jiraStatusForInProgressKPI161;
+	private List<String> jiraStatusForRefinedKPI161;
+	private List<String> jiraStatusForNotRefinedKPI161;
+
+	private List<String> jiraIssueTypeKPI171;
+	private List<String> jiraDodKPI171;
+	private List<String> jiraDorKPI171;
+	private List<String> jiraLiveStatusKPI171;
+	private String storyFirstStatusKPI171;
 
 	/**
 	 * Get jira issue type names string [ ].
@@ -450,5 +503,14 @@ public class FieldMapping extends BasicModel {
 
 	public boolean getNotificationEnabler() {
 		return notificationEnabler;
+	}
+
+	public List<String> getJiraStatusForInProgressKPI154() {
+		return jiraStatusForInProgressKPI119;
+	}
+
+	public void setJiraStatusForInProgressKPI119(List<String> status) {
+		this.jiraStatusForInProgressKPI154 = status;
+		this.jiraStatusForInProgressKPI119 = status;
 	}
 }

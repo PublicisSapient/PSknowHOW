@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +32,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,21 +69,18 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	private JiraCommonService jiraCommonService;
 
 	@Override
-	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client) {
+	public ProjectRelease processReleaseInfo(ProjectConfFieldMapping projectConfig, KerberosClient krb5Client)
+			throws IOException, ParseException {
 		log.info("Start Fetching Release Data");
 		ProjectRelease projectRelease = null;
-		try {
-			List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository
-					.findByLabelNameAndBasicProjectConfigId(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT,
-							projectConfig.getBasicProjectConfigId());
-			AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
-					? accountHierarchyList.get(0)
-					: null;
 
-			saveProjectRelease(projectConfig, accountHierarchy, projectRelease, krb5Client);
-		} catch (Exception ex) {
-			log.error("No hierarchy data found not processing for Version data {}", ex);
-		}
+		List<AccountHierarchy> accountHierarchyList = accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(
+				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, projectConfig.getBasicProjectConfigId());
+		AccountHierarchy accountHierarchy = CollectionUtils.isNotEmpty(accountHierarchyList)
+				? accountHierarchyList.get(0)
+				: null;
+
+		saveProjectRelease(projectConfig, accountHierarchy, projectRelease, krb5Client);
 
 		return projectRelease;
 	}
@@ -91,7 +90,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 	 * @param accountHierarchy
 	 */
 	private void saveProjectRelease(ProjectConfFieldMapping confFieldMapping, AccountHierarchy accountHierarchy,
-			ProjectRelease projectRelease, KerberosClient krb5Client) {
+			ProjectRelease projectRelease, KerberosClient krb5Client) throws IOException, ParseException {
 		List<ProjectVersion> projectVersionList = jiraCommonService.getVersion(confFieldMapping, krb5Client);
 		if (CollectionUtils.isNotEmpty(projectVersionList)) {
 			if (null != accountHierarchy) {
@@ -154,7 +153,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 
 	/**
 	 * create hierarchy for scrum
-	 * 
+	 *
 	 * @param projectRelease
 	 * @param projectBasicConfig
 	 * @param projectHierarchy
@@ -168,7 +167,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 		Map<String, HierarchyLevel> hierarchyLevelsMap = hierarchyLevelList.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
 		HierarchyLevel hierarchyLevel = hierarchyLevelsMap.get(CommonConstant.HIERARCHY_LEVEL_ID_RELEASE);
-		//fetching all the release versions from history whereever an issue
+		// fetching all the release versions from history whereever an issue
 		// was tagged
 		Set<String> releaseVersions = jiraIssueCustomHistoryRepository
 				.findByBasicProjectConfigIdIn(projectBasicConfig.getId().toString()).stream()

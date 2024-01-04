@@ -122,19 +122,27 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.headers().cacheControl();
-		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll()
+		http.csrf().disable().authorizeRequests()
+				.antMatchers("/appinfo").permitAll()
 				.antMatchers("/error").permitAll()
-				//.antMatchers("/auth-types-status").permitAll()
-				.antMatchers("/pushData/*").permitAll()
+				.antMatchers("/auth-types-status").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
+				// push API calls
+				.antMatchers("/pushData/*").permitAll()
 				// management metrics
-				.antMatchers("/env").permitAll()
+				.antMatchers("/info").permitAll()
+				.antMatchers("/health").permitAll().antMatchers("/env").permitAll()
+				.antMatchers("/metrics").permitAll()
+				//togglz API calls
+				.antMatchers("/actuator/togglz**").permitAll()
+				.antMatchers("/togglz-console**").permitAll()
+				.antMatchers("/actuator**").permitAll()
 				// auth service
-				.antMatchers(HttpMethod.POST, "/validateToken").permitAll()
-				//cache service
-				.antMatchers("/cache/clearAllCache")
-				.permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
-				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.antMatchers("/validateToken**").permitAll()
+				// cache service calls
+				.antMatchers("/cache/clearAllCache").permitAll()
+				.antMatchers(HttpMethod.GET, "/cache/clearCache/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				// analytics API calls
 				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll()
 				.anyRequest().authenticated().and()

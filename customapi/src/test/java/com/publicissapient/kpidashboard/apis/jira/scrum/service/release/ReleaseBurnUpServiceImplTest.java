@@ -108,7 +108,6 @@ public class ReleaseBurnUpServiceImplTest {
 		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst()
 				.orElse(new JiraIssueCustomHistory());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
-		fieldMappingMap.put(new ObjectId(history.getBasicProjectConfigId()), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 

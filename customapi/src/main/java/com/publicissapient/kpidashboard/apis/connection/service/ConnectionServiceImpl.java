@@ -38,9 +38,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -51,6 +54,8 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
@@ -75,6 +80,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private static final String CONNECTION_EMPTY_MSG = "Connection name cannot be empty";
 	private static final String ERROR_MSG = "A connection with same details already exists. Connection name is ";
+	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -97,6 +103,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@Autowired
+	private RepoToolsProviderRepository repoToolsProviderRepository;
+
 	/**
 	 * Fetch all connection data.
 	 *
@@ -105,11 +114,22 @@ public class ConnectionServiceImpl implements ConnectionService {
 	 */
 	@Override
 	public ServiceResponse getAllConnection() {
-		final List<Connection> connectionData = connectionRepository.findAllWithoutSecret();
-		if (CollectionUtils.isEmpty(connectionData)) {
+		final List<Connection> data = connectionRepository.findAllWithoutSecret();
+		if (CollectionUtils.isEmpty(data)) {
 			log.info("Db has no connectionData");
-			return new ServiceResponse(false, "No connectionData in connection db", connectionData);
+			return new ServiceResponse(false, "No connectionData in connection db", data);
 		}
+		List<Connection> connectionData = new ArrayList<>(data);
+		connectionData.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 
 		if (authorizedProjectsService.ifSuperAdminUser()) {
 			log.info("Successfully fetched all connectionData");
@@ -130,6 +150,53 @@ public class ConnectionServiceImpl implements ConnectionService {
 		return new ServiceResponse(true, "Found all connectionData", connectionData);
 	}
 
+	private String maskStrings(String username) {
+		if (StringUtils.isNotEmpty(username)) {
+			if (username.contains("@")) {
+				String[] parts = username.split("@");
+				if (parts.length == 2) {
+					String localPart = parts[0];
+					String domainPart = parts[1];
+					String maskedLocalPart = maskingLogic(localPart);
+					return maskedLocalPart + "@" + domainPart;
+				}
+			} else {
+				return maskingLogic(username);
+			}
+		}
+		return username;
+	}
+
+	/**
+	 * if length is more than 2 and less than 8, mask the last 3 characters if lenth
+	 * is more than 8 mask the last 3 character and the 4th character
+	 * 
+	 * @param userInput
+	 *            inputString
+	 * @return maskedString
+	 */
+	private String maskingLogic(String userInput) {
+		if (userInput.length() > 2) {
+			userInput = maskCharacters(userInput);
+			if (userInput.length() >= 8) {
+				StringBuilder stringBuilder = new StringBuilder(userInput);
+				stringBuilder.setCharAt(4, '*');
+				userInput = stringBuilder.toString();
+			}
+		}
+		return userInput;
+	}
+
+	private static String maskCharacters(String input) {
+		int length = input.length();
+		int startIndex = length - 3;
+		StringBuilder maskedString = new StringBuilder(input);
+		for (int i = startIndex; i < length; i++) {
+			maskedString.setCharAt(i, '*');
+		}
+		return maskedString.toString();
+	}
+
 	/**
 	 * Fetch a connection by type.
 	 *
@@ -144,7 +211,17 @@ public class ConnectionServiceImpl implements ConnectionService {
 			return new ServiceResponse(false, "No type in this collection", type);
 		}
 
-		List<Connection> typeList = connectionRepository.findByType(type);
+		List<Connection> typeList = getConnectionList(type);
+		typeList.forEach(original -> {
+			original.setCreatedBy(maskStrings(original.getCreatedBy()));
+			original.setUsername(maskStrings(original.getUsername()));
+			original.setUpdatedBy(maskStrings(original.getUpdatedBy()));
+			if(CollectionUtils.isNotEmpty(original.getConnectionUsers())){
+				List<String> connectionUsers=new ArrayList<>();
+				original.getConnectionUsers().forEach(connectionUser->connectionUsers.add(maskStrings(connectionUser)));
+				original.setConnectionUsers(connectionUsers);
+			}
+		});
 
 		if (CollectionUtils.isEmpty(typeList)) {
 			log.info("connection Db returned null");
@@ -167,6 +244,19 @@ public class ConnectionServiceImpl implements ConnectionService {
 		log.info("Successfully found type@{}", type);
 
 		return new ServiceResponse(true, "Found type@" + type, typeList);
+	}
+
+	// To do - Handle scenario once github action screen is developed
+	private List<Connection> getConnectionList(String type) {
+		List<Connection> allWithoutSecret = connectionRepository.findAllWithoutSecret().stream().filter(connection -> StringUtils.isNotEmpty(connection.getType())).collect(Collectors.toList());
+		if (Boolean.TRUE.equals(customApiConfig.getIsRepoToolEnable()) && type.equalsIgnoreCase(TOOL_GITHUB)) {
+			return allWithoutSecret.stream()
+					.filter(connection -> connection.getType().equalsIgnoreCase(REPO_TOOLS)
+							&& connection.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB))
+					.collect(Collectors.toList());
+		}
+		return allWithoutSecret.stream().filter(connection -> connection.getType().equalsIgnoreCase(type))
+				.collect(Collectors.toList());
 	}
 
 	/**
@@ -209,8 +299,9 @@ public class ConnectionServiceImpl implements ConnectionService {
 			} else {
 
 				List<String> connectionUser = new ArrayList<>();
-				if(conn.getType().equals(REPO_TOOLS))
-					conn.setBaseUrl(conn.getHttpUrl());
+				if (conn.getType().equals(REPO_TOOLS)) {
+					setBaseUrlForRepoTool(conn);
+				}
 				connectionUser.add(username);
 				encryptSecureFields(conn);
 				conn.setCreatedAt(DateUtil.dateTimeFormatter(LocalDateTime.now(), DateUtil.TIME_FORMAT));
@@ -230,6 +321,15 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 		return new ServiceResponse(false, "Connection already exists with same name. Please choose a different name",
 				null);
+	}
+
+	private void setBaseUrlForRepoTool(Connection conn) {
+		if (conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
+			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(TOOL_GITHUB.toLowerCase());
+			Matcher matcher = URL_PATTERN.matcher(repoToolsProvider.getTestApiUrl());
+			if (matcher.find())
+				conn.setBaseUrl(matcher.group(1).concat(matcher.group(2)));
+		}
 	}
 
 	/*
@@ -295,7 +395,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection = checkConnDetailsZephyr(inputConn, currConn, api);
 			break;
 		case REPO_TOOLS:
-			if(inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
+			if (inputConn.getHttpUrl().equals(currConn.getHttpUrl()))
 				existingConnection = currConn;
 			break;
 		default:
@@ -461,7 +561,10 @@ public class ConnectionServiceImpl implements ConnectionService {
 			existingConnection.setApiKey(connection.getApiKey());
 		}
 		existingConnection.setApiKeyFieldName(connection.getApiKeyFieldName());
-		existingConnection.setBaseUrl(connection.getBaseUrl());
+		if (connection.getType().equals(REPO_TOOLS))
+			setBaseUrlForRepoTool(existingConnection);
+		else
+			existingConnection.setBaseUrl(connection.getBaseUrl());
 		if (StringUtils.isNotEmpty(connection.getClientId())) {
 			existingConnection.setClientId(connection.getClientId());
 		}
@@ -616,6 +719,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 			break;
 		case ProcessorConstants.GITLAB:
 		case ProcessorConstants.GITHUB:
+		case ProcessorConstants.REPO_TOOLS:
 			setEncryptedAccessTokenForDb(conn);
 			break;
 		case ProcessorConstants.JENKINS:

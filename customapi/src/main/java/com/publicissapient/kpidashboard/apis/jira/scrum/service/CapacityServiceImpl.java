@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.bson.types.ObjectId;
@@ -116,7 +117,7 @@ public class CapacityServiceImpl extends JiraKPIService<Integer, List<Object>, M
 		if (null != capacityKpiData) {
 			log.info("Capacity -> request id : {} Project Name : {}  Sprint Id : {}", requestTrackerId,
 					capacityKpiData.getProjectName(), capacityKpiData.getSprintID());
-			kpiElement.setSprint(latestSprint.getName());
+			kpiElement.setSprint(Objects.requireNonNull(latestSprint).getName());
 			trendValue.setValue(capacityKpiData.getCapacityPerSprint());
 			kpiElement.setTrendValueList(trendValue);
 		}
