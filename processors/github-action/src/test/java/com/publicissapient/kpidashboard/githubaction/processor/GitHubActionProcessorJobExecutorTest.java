@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.githubaction.processor;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -160,7 +161,7 @@ public class GitHubActionProcessorJobExecutorTest {
 	}
 
 	@Test
-	public void buildJobsAddedThrowsException() throws FetchingBuildException {
+	public void buildJobsAdded2() throws FetchingBuildException {
 
 		GitHubActionClient client2 = mock(GitHubActionClient.class);
 		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
@@ -187,6 +188,27 @@ public class GitHubActionProcessorJobExecutorTest {
 
 		gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
 		assertTrue(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
+
+	}
+
+	@Test
+	public void buildJobsAddedThrowsException() throws FetchingBuildException {
+
+		GitHubActionClient client2 = mock(GitHubActionClient.class);
+		when(gitHubActionClientFactory.getGitHubActionClient("build")).thenReturn(client2);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
+				ProcessorConstants.GITHUBACTION, "624d5c9ed837fc14d40b3039"))
+				.thenReturn(optionalProcessorExecutionTraceLog);
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new LinkedHashSet<>());
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList);
+
+		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
+		when(client2.getBuildJobsFromServer(any(), any())).thenThrow(FetchingBuildException.class);
+		try {
+			gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor);
+		} catch (Exception ex) {}
+
+		assertFalse(gitHubActionProcessorJobExecutor.execute(gitHubActionProcessor));
 
 	}
 
