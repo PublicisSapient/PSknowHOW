@@ -20,12 +20,23 @@ package com.publicissapient.kpidashboard.sonar.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 public class SonarUtilsTest {
 
 	@Test
 	public void testAddSpaceIfNeeded() {
 		StringBuilder stringBuilder = new StringBuilder("Test message");
+		SonarUtils.addSpaceIfNeeded(stringBuilder);
+		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
+
+	}
+
+	@Test
+	public void testAddSpaceIfNeeded_negative() {
+		StringBuilder stringBuilder = new StringBuilder("");
 		SonarUtils.addSpaceIfNeeded(stringBuilder);
 		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
 

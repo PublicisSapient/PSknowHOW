@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,11 +33,12 @@ import com.publicissapient.kpidashboard.common.model.ToolCredential;
 import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.sonar.data.ProjectToolConnectionFactory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarProcessorUtilsTest {
 	@Mock
 	public ToolCredentialProvider toolCredentialProvider;
