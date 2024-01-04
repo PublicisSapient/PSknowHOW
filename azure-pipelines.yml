@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - master
+      - add_pipeline_file
 
 pool:
   vmImage: 'ubuntu-latest'
