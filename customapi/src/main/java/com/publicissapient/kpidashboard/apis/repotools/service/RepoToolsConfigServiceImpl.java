@@ -227,34 +227,36 @@ public class RepoToolsConfigServiceImpl {
 	public boolean updateRepoToolProjectConfiguration(List<ProjectToolConfig> toolList, ProjectToolConfig tool,
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
-		repoToolsClient = createRepoToolsClient();
-		if (toolList.size() > 1) {
-			toolList.remove(tool);
-			toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
-					.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
+		try {
+			repoToolsClient = createRepoToolsClient();
 			if (toolList.size() > 1) {
-				// delete only the repository
-				String deleteRepoUrl = customApiConfig.getRepoToolURL()
-						+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
-								createProjectCode(basicProjectConfigId), tool.getRepositoryName());
-				httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
-						restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+				toolList.remove(tool);
+				toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
+						.equalsIgnoreCase(tool.getRepositoryName())).collect(Collectors.toList());
+				if (toolList.size() > 1) {
+
+					// delete only the repository
+					String deleteRepoUrl = customApiConfig.getRepoToolURL()
+							+ String.format(customApiConfig.getRepoToolDeleteRepoUrl(),
+									createProjectCode(basicProjectConfigId), tool.getRepositoryName());
+					httpStatus = repoToolsClient.deleteRepositories(deleteRepoUrl,
+							restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
+				} else {
+					// configure debbie project with
+					List<String> branch = new ArrayList<>();
+					toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
+					Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
+					toolList.get(0).setIsNew(false);
+					httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+				}
 			} else {
-				// configure debbie project with
-				List<String> branch = new ArrayList<>();
-				toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
-				Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
-				toolList.get(0).setIsNew(false);
-				httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
-			}
-		} else {
-			try {
+
 				ProjectBasicConfig projectBasicConfig = configHelperService.getProjectConfig(basicProjectConfigId);
 				// delete the project from repo tool if only one repository is present
 				httpStatus = deleteRepoToolProject(projectBasicConfig, false);
-			} catch (Exception ex) {
-				log.error("Exception while deleting project {}", ex);
 			}
+		} catch (Exception ex) {
+			log.error("Exception while deleting project {}", ex);
 		}
 		return httpStatus == HttpStatus.OK.value();
 	}
