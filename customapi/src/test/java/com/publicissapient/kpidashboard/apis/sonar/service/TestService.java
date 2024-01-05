@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.sonar.rest;
+package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import java.util.List;
 import java.util.Map;
