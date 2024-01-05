@@ -40,7 +40,6 @@ public class KanbanCapacityRepositoryImpl implements KanbanCapacityRepoCustom {
 
 	private static final String START_DATE = "startDate";
 	private static final String END_DATE = "endDate";
-	private static final String TICKET_PROJECT_ID_FIELD = "projectId";
 	private static final String DATE_PATTERN = "yyyy-MM-dd";
 	@Autowired
 	private MongoOperations operations;

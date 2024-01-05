@@ -16,32 +16,48 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.repository;
+package com.publicissapient.kpidashboard.common.repository.jira;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
+import com.mongodb.client.result.UpdateResult;
+import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
+import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
 
-public class JiraIssueRepositoryTest {
+@RunWith(MockitoJUnitRunner.class)
+public class JiraIssueRepositoryImplTest {
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
 	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";
 	private static final String generalUseDate3 = "2015-12-15T00:00:00Z";
@@ -62,17 +78,11 @@ public class JiraIssueRepositoryTest {
 	@Mock
 	private JiraIssueRepository featureRepo;
 
-	public static List<Pattern> convertToPatternList(List<String> stringList) {
-		List<Pattern> regexList = new ArrayList<>();
-		for (String value : stringList) {
-			regexList.add(Pattern.compile(value, Pattern.CASE_INSENSITIVE));
-		}
-		return regexList;
-	}
+	@Mock
+	private MongoTemplate operations;
 
-	public static Pattern convertToPatternText(String text) {
-		return Pattern.compile(text, Pattern.CASE_INSENSITIVE);
-	}
+	@InjectMocks
+	private JiraIssueRepositoryImpl jiraIssueRepository;
 
 	@Before
 	public void setUp() {
@@ -479,116 +489,260 @@ public class JiraIssueRepositoryTest {
 	}
 
 	@Test
-	public void validateConnectivity_HappyPath() {
-		MockitoAnnotations.initMocks(this);
-		featureRepo.save(mockV1JiraIssue);
-		featureRepo.save(mockJiraJiraIssue);
-		featureRepo.save(mockJiraJiraIssue2);
-		List<JiraIssue> jiraIssueList = new ArrayList<>();
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssueList.add(jiraIssue);
-		when(featureRepo.findAll()).thenReturn(jiraIssueList);
-		assertTrue("Happy-path MongoDB connectivity validation for the FeatureRepository has failed",
-				jiraIssueList.iterator().hasNext());
+	public void testFindIssuesGroupBySprint() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+
+		String filterToShowOnTrend = "filterToShowOnTrend";
+		String individualDevOrQa = "individualDevOrQa";
+
+		AggregationResults<IssueHistoryMappedData> anc = mock(AggregationResults.class);
+		doReturn(anc).when(operations).aggregate(any(), eq(JiraIssue.class), any());
+		doReturn(Collections.emptyList()).when(anc).getMappedResults();
+
+		// Call the method and assert the result
+		List<SprintWiseStory> result = jiraIssueRepository.findIssuesGroupBySprint(mapOfFilters, uniqueProjectMap,
+				filterToShowOnTrend, individualDevOrQa);
+		jiraIssueRepository.findIssuesAndTestDetailsGroupBySprint(mapOfFilters, uniqueProjectMap, filterToShowOnTrend,
+				individualDevOrQa, uniqueProjectMap);
+		jiraIssueRepository.findUniqueReleaseVersionByUniqueTypeName(mapOfFilters);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
 	}
 
 	@Test
-	public void testGetFeatureIdById_HappyPath() {
-		MockitoAnnotations.initMocks(this);
-		featureRepo.save(mockV1JiraIssue);
-		featureRepo.save(mockJiraJiraIssue);
-		featureRepo.save(mockJiraJiraIssue2);
-		String testStoryId = "0812345";
-		List<JiraIssue> jiraIssueList = new ArrayList<>();
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssue.setIssueId("0812345");
-		jiraIssue.setBasicProjectConfigId("676987987897");
-		jiraIssueList.add(jiraIssue);
-		when(featureRepo.findByIssueIdAndBasicProjectConfigId(StringEscapeUtils.escapeHtml4(testStoryId),
-				"676987987897")).thenReturn(jiraIssueList.get(0));
-		assertEquals("Expected feature ID did not match actual feature ID", testStoryId,
-				jiraIssueList.get(0).getIssueId().toString());
+	public void testFindIssueByStoryNumber() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		List<String> storyNumbers = Arrays.asList("STORY1", "STORY2");
+
+		Map<String, Map<String, Object>> uniqueProjectMapFolder = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+
+		// Add unique project map folder data
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findIssueByStoryNumber(mapOfFilters, storyNumbers,
+				uniqueProjectMapFolder);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+		// Additional assertions or verifications based on the actual logic of the
+		// method
 	}
 
 	@Test
-	public void testFindTopByOrderByChangeDateDesc_HappyPath() {
-		MockitoAnnotations.initMocks(this);
-		featureRepo.save(mockV1JiraIssue);
-		featureRepo.save(mockJiraJiraIssue);
-		featureRepo.save(mockJiraJiraIssue2);
-		featureRepo.save(mockJiraJiraIssue3);
-		featureRepo.save(mockJiraJiraIssue4);
-		List<JiraIssue> jiraIssueList = new ArrayList<>();
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssue.setChangeDate(maxDateWinner);
-		jiraIssueList.add(jiraIssue);
-		when(featureRepo.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId,
-				maxDateLoser)).thenReturn(jiraIssueList);
-		assertEquals("Expected feature max change date did not match actual feature max change date", maxDateWinner,
-				jiraIssueList.get(0).getChangeDate().toString());
+	public void testFindIssuesBySprintAndType() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1",
+				Collections.singletonMap("storyType", Arrays.asList(Pattern.compile("Story"))));
+		// Add unique project map data
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+		// Additional assertions or verifications based on the actual logic of the
+		// method
 	}
 
 	@Test
-	public void testFindTopByOrderByChangeDateDesc_BVA() {
-		MockitoAnnotations.initMocks(this);
-		featureRepo.save(mockV1JiraIssue);
-		featureRepo.save(mockJiraJiraIssue);
-		featureRepo.save(mockJiraJiraIssue2);
-		featureRepo.save(mockJiraJiraIssue3);
-		featureRepo.save(mockJiraJiraIssue4);
-		// Setting slight differences in testable values for last change date
-		int lastDigit = Integer
-				.parseInt(maxDateWinner.substring(maxDateWinner.length() - 3, maxDateWinner.length() - 1));
-		int biggerThanDigit = lastDigit + 1;
-		int smallerThanDigit = lastDigit - 1;
-		String biggerThanDigitConv;
-		String smallerThanDigitConv;
-		if (biggerThanDigit < 10) {
-			biggerThanDigitConv = "0" + Integer.toString(biggerThanDigit);
-		} else {
-			biggerThanDigitConv = Integer.toString(biggerThanDigit);
-		}
-		if (smallerThanDigit < 10) {
-			smallerThanDigitConv = "0" + Integer.toString(smallerThanDigit);
-		} else {
-			smallerThanDigitConv = Integer.toString(smallerThanDigit);
-		}
-		String biggerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3) + biggerThanDigitConv + "Z";
-		String smallerThanWinner = maxDateWinner.substring(0, maxDateWinner.length() - 3) + smallerThanDigitConv + "Z";
-		List<JiraIssue> jiraIssueList = new ArrayList<>();
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssueList.add(jiraIssue);
-		when(featureRepo.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId,
-				smallerThanWinner)).thenReturn(jiraIssueList);
-		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, maxDateWinner)
-				.size());
-		assertEquals("Actual size should result in a size of 0", 0, featureRepo
-				.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId, biggerThanWinner)
-				.size());
-		assertEquals("Actual size should result in a size of 1", 1, jiraIssueList.size());
+	public void testFindIssuesBySprintAndTypeNotIn2() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		// Add unique project map data
+
+		Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
+		// Add unique project map not in data
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap,
+				uniqueProjectMapNotIn);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+		// Additional assertions or verifications based on the actual logic of the
+		// method
 	}
 
 	@Test
-	public void testFindTopByOrderByChangeDateDesc_RealisticDeltaStartDate() {
-		MockitoAnnotations.initMocks(this);
-		featureRepo.save(mockV1JiraIssue);
-		featureRepo.save(mockJiraJiraIssue);
-		featureRepo.save(mockJiraJiraIssue2);
-		featureRepo.save(mockJiraJiraIssue3);
-		featureRepo.save(mockJiraJiraIssue4);
-		List<JiraIssue> jiraIssueList1 = new ArrayList<>();
-		JiraIssue jiraIssue1 = new JiraIssue();
-		jiraIssue1.setChangeDate(maxDateWinner);
-		jiraIssueList1.add(jiraIssue1);
-		List<JiraIssue> jiraIssueList2 = new ArrayList<>();
-		when(featureRepo.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId,
-				"2015-10-01T00:00:00Z")).thenReturn(jiraIssueList1);
-		when(featureRepo.findTopByProcessorIdAndChangeDateGreaterThanOrderByChangeDateDesc(jiraCollectorId,
-				maxDateWinner)).thenReturn(jiraIssueList2);
-		assertTrue("Actual size should result in a size of 1", jiraIssueList1.size() == 1);
-		assertTrue("Actual size should result in a size of 0", jiraIssueList2.size() == 0);
-		assertTrue("Expected response of the maximum change date did not match the actual match change date",
-				jiraIssueList1.get(0).getChangeDate().toString().equalsIgnoreCase(maxDateWinner));
+	public void testFindIssuesBySprintAndTypeNotIn() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		// Add unique project map data
+
+		Map<String, Map<String, Object>> uniqueProjectMapNotIn = new HashMap<>();
+		// Add unique project map not in data
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findIssuesBySprintAndType(mapOfFilters, uniqueProjectMap,
+				uniqueProjectMapNotIn);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+		// Additional assertions or verifications based on the actual logic of the
+		// method
 	}
+
+	@Test
+	public void testFindUnassignedIssues() {
+		// Set up test data
+		String startDate = "2024-01-01T00:00:00.0000000";
+		String endDate = "2024-01-31T23:59:59.0000000";
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findUnassignedIssues(startDate, endDate, mapOfFilters);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testFindByType() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findIssuesByType(mapOfFilters);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testFindStoriesByType() {
+		// Set up test data
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+		Map<String, Object> map = new HashMap<>();
+		map.put("sprintBeginDate", Arrays.asList("abc"));
+		map.put("sprintBeginDat", Arrays.asList("abc"));
+
+		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
+		uniqueProjectMap.put("test", map);
+
+		// Add unique project map data
+		String filterToShowOnTrend = "filterToShowOnTrend";
+		String individualDevOrQa = "individualDevOrQa";
+
+		AggregationResults<IssueHistoryMappedData> anc = mock(AggregationResults.class);
+		doReturn(anc).when(operations).aggregate(any(), eq(JiraIssue.class), any());
+		doReturn(Collections.emptyList()).when(anc).getMappedResults();
+
+		// Call the method and assert the result
+		List<SprintWiseStory> result = jiraIssueRepository.findStoriesByType(mapOfFilters, uniqueProjectMap,
+				filterToShowOnTrend, individualDevOrQa);
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+		jiraIssueRepository.findDefectsWithoutStoryLink(mapOfFilters, uniqueProjectMap);
+
+		jiraIssueRepository.findIssueByNumber(mapOfFilters, new HashSet<>(), uniqueProjectMap);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testFindDefectLinkedWithSprint() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findDefectLinkedWithSprint(mapOfFilters);
+
+		jiraIssueRepository.findByTypeNameAndDefectStoryIDIn("typeName", new ArrayList<>());
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testFindDefectCountByRCA() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		// Add filter values to mapOfFilters
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findDefectCountByRCA(mapOfFilters);
+		jiraIssueRepository.findIssuesWithBoolean(mapOfFilters, "fieldName", true, "", "");
+		jiraIssueRepository.findStoriesBySprints(mapOfFilters, new ArrayList<>());
+		jiraIssueRepository.findCostOfDelayByType(mapOfFilters);
+		jiraIssueRepository.findIssueAndDescByNumber(new ArrayList<>());
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
+	@Test
+	public void testUpdateByBasicProjectConfigId() {
+		String basicProjectConfigId = "projectId1";
+		List<String> fieldsToUnset = Arrays.asList("field1", "field2");
+
+		UpdateResult mock = mock(UpdateResult.class);
+		// Act
+		doReturn(mock).when(operations).updateMulti(any(Query.class), any(Update.class), eq(JiraIssue.class));
+		jiraIssueRepository.updateByBasicProjectConfigId(basicProjectConfigId, fieldsToUnset);
+	}
+
+	@Test
+	public void testFindNonRegressionTestCases() {
+		Map<String, List<String>> mapOfFilters = Collections.singletonMap("key", Collections.singletonList("value"));
+		String startDate = "2024-01-01T00:00:00.0000000";
+		String endDate = "2024-01-31T23:59:59.0000000";
+		// Add filter values to mapOfFilters
+		Map<String, Object> map = new HashMap<>();
+		map.put("storyType", Arrays.asList(Pattern.compile("Story")));
+		map.put("labels", Arrays.asList(Pattern.compile("Story")));
+		map.put("jiraStatus", Arrays.asList(Pattern.compile("Story")));
+		map.put("Release", Arrays.asList(Pattern.compile("Story")));
+
+		Map<String, Map<String, Object>> uniqueProjectMap = Collections.singletonMap("PROJ1", map);
+
+		when(operations.find(any(), eq(JiraIssue.class))).thenReturn(Collections.emptyList());
+
+		// Call the method and assert the result
+		List<JiraIssue> result = jiraIssueRepository.findNonRegressionTestCases(mapOfFilters, uniqueProjectMap);
+
+		jiraIssueRepository.findIssuesByDateAndTypeAndStatus(mapOfFilters, uniqueProjectMap, startDate, endDate,
+				"range", "nin", true);
+		jiraIssueRepository.findLinkedDefects(mapOfFilters, new HashSet<>(), uniqueProjectMap);
+		jiraIssueRepository.findIssuesByFilterAndProjectMapFilter(mapOfFilters, uniqueProjectMap);
+		jiraIssueRepository.findByRelease(mapOfFilters,uniqueProjectMap);
+
+		// Assert the result or perform further verifications
+		assertEquals(Collections.emptyList(), result);
+	}
+
 }
