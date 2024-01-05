@@ -444,7 +444,7 @@ public class KPIExcelUtility {
 		return description;
 	}
 
-	private static String checkEmptyURL(Object object) {
+	protected static String checkEmptyURL(Object object) {
 		String url = "";
 		if (object instanceof JiraIssue) {
 			JiraIssue jiraIssue = (JiraIssue) object;

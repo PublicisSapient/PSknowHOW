@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -70,12 +71,37 @@ public class RestAPIUtilsTest {
 		String accessToken = "mockAccessToken";
 		boolean usingBasicAuth = false;
 
-
 		// Mock the result
 		HttpHeaders headers = RestAPIUtils.getHeaders(accessToken, usingBasicAuth);
 
 		// Assertions
 		assertEquals("Bearer mockAccessToken", headers.getFirst("Authorization"));
+	}
+
+	@Test
+	public void testGetHeadersWithAccessTokenNull() {
+		// Mock data
+		String accessToken = null;
+		boolean usingBasicAuth = false;
+
+		// Mock the result
+		HttpHeaders headers = RestAPIUtils.getHeaders(accessToken, usingBasicAuth);
+
+		// Assertions
+		assertNull("Bearer mockAccessToken", headers.getFirst("Authorization"));
+	}
+
+	@Test
+	public void testGetHeadersWithAccessTokenEmpty() {
+		// Mock data
+		String accessToken = "";
+		boolean usingBasicAuth = false;
+
+		// Mock the result
+		HttpHeaders headers = RestAPIUtils.getHeaders(accessToken, usingBasicAuth);
+
+		// Assertions
+		assertNull( headers.getFirst("Authorization"));
 	}
 
 	@Test
@@ -241,16 +267,4 @@ public class RestAPIUtilsTest {
 		return jsonArray;
 	}
 
-	private JSONObject createJsonObject() {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("key", createJsonArray("value1", "value2"));
-		return jsonObject;
-	}
-
-	private JSONArray createJsonArray() {
-		JSONArray jsonArray = new JSONArray();
-		jsonArray.add("value1");
-		jsonArray.add("value2");
-		return jsonArray;
-	}
 }
