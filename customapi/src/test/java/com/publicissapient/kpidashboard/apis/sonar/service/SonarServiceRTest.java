@@ -22,8 +22,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -33,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +69,7 @@ import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactor
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.slf4j.Logger;
 
 /**
  *
@@ -98,6 +104,9 @@ public class SonarServiceRTest {
 	@Mock
 	private List<SonarKPIService> services;
 
+	@Mock
+	private Logger logger;
+
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
@@ -106,7 +115,6 @@ public class SonarServiceRTest {
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 
-	// @Mock
 	private SonarKPIServiceFactory sonarKPIServiceFactory;
 	@Mock
 	private SonarKPIService<?, ?, ?> sonarKPIService;
@@ -116,15 +124,9 @@ public class SonarServiceRTest {
 
 	@Before
 	public void setup() throws IllegalAccessException, ApplicationException {
-
 		MockitoAnnotations.initMocks(this);
-
 		List<SonarKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
-
 		sonarKPIServiceFactory = SonarKPIServiceFactory.builder().services(mockServices).build();
-
-		// Stub the behavior of getKpiData
-		when(sonarKPIService.getKpiData(any(), any(), any())).thenReturn(new KpiElement());
 		doReturn(TESTSONAR).when(service).getQualifierType();
 		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 
@@ -203,10 +205,8 @@ public class SonarServiceRTest {
 	}
 
 	@Test
-	public void sonarViolationsTestProcess_Excel() throws Exception {
-
+	public void sonarViolationsTestProcess_Excel() {
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
 				.thenReturn(exampleStringList);
@@ -221,17 +221,11 @@ public class SonarServiceRTest {
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
-				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
-
 		try {
-
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
-
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	@Test

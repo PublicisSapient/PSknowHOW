@@ -109,15 +109,6 @@ public abstract class SonarKPIService<R, S, T> extends ToolsKPIService<R, S> imp
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException;
 
 	/**
-	 * @param projectList
-	 * @param tempMap
-	 * @param kpiElement
-	 * @return
-	 */
-	public abstract Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement);
-
-	/**
 	 * fetching data greater than start date from sonar history table
 	 * 
 	 * @param projectId

@@ -36,10 +36,4 @@ public class TestService extends SonarKPIService<Long, List<Object>, List<SonarD
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 		return new KpiElement();
 	}
-
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return null;
-	}
 }

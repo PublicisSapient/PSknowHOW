@@ -120,20 +120,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		return kpiElement;
 	}
 
-	/**
-	 * @param projectList
-	 *            projectList
-	 * @param kpiElement
-	 *            kpiElement
-	 * @return map
-	 */
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(final List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-
-		return new HashMap<>();
-	}
-
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 
