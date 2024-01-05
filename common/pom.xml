@@ -175,6 +175,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -198,6 +204,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.jayway.jsonpath</groupId>
+					<artifactId>json-path</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<dependency>
@@ -230,14 +242,14 @@
         <dependency>
             <groupId>org.togglz</groupId>
             <artifactId>togglz-spring-boot-starter</artifactId>
-            <version>3.1.2</version>
+            <version>4.4.0</version>
         </dependency>
 
         <!-- Togglz Admin Console (optional) -->
         <dependency>
             <groupId>org.togglz</groupId>
             <artifactId>togglz-console</artifactId>
-            <version>3.1.2</version>
+            <version>4.0.0</version>
         </dependency>
 
         <dependency>
@@ -256,6 +268,12 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
         </dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.14</version>
+			<scope>compile</scope>
+		</dependency>
 
 	</dependencies>
 
