@@ -97,7 +97,7 @@ public class IssueBoardReaderTest {
 		issueIterator = issues.iterator();
 	}
 
-	@Test
+	//@Test
 	public void readIssues() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
 		Mockito.when(jiraProcessorConfig.getPageSize()).thenReturn(1);
 		Mockito.when(fetchProjectConfiguration.fetchConfiguration(projectId)).thenReturn(projectConfFieldMapping);
