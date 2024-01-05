@@ -263,7 +263,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			isValid = testConnection(connection, toolName, apiUrl, password, false);
 			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
 		}
-
 		}
 		return statusCode;
 	}
