@@ -415,16 +415,81 @@ describe('AdvancedSettingsComponent', () => {
     expect(spy).toHaveBeenCalledWith(component.selectedProject['id']);
   })
 
-  xit('should not fetch all the projects', fakeAsync(() => {
+  it('should not fetch all the projects', fakeAsync(() => {
     component.userProjects = [];
     component.selectedProject = {};
     const errResponse = {
       'error': "Something went wrong"
     };
-    spyOn(httpService, 'getUserProjects').and.returnValue(throwError(errResponse));
+    spyOn(httpService, 'getUserProjects').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add')
     component.getProjects();
     tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not get all tools config', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getAllToolConfigs').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getAllToolConfigs(basicProjectConfigId);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should get processors tracelog for project', fakeAsync(() => {
+    const basicProjectConfigId = '63b51633f33fd2360e9e72bd';
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getProcessorsTraceLogsForProject').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProcessorsTraceLogsForProject(basicProjectConfigId);
+    tick();
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not get processor data', fakeAsync(() => {
+    component.dataLoading = true;
+    const errResponse = {
+      'error': "Something went wrong"
+    };
+    spyOn(httpService, 'getProcessorData').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.getProcessorData();
+    tick();
+    expect(spy).toHaveBeenCalled();
+    expect(component.dataLoading).toBe(false);
+  }))
+
+  it('should not run Processor when processor is jira', fakeAsync(() => {
+    component.selectedProject = {
+      'id': '651af337d18501286c28a464'
+    }
+    const errResponse = {
+      data: "Error in running Jira processor. Please try after some time.",
+      message: "Got HTTP response: 404 on url: http://jira-processor:50008/api/job/startprojectwiseissuejob",
+      success: false
+    };
+    spyOn(component, 'isProjectSelected').and.returnValue(true);
+    const spy = spyOn(httpService, 'runProcessor').and.returnValue(of(errResponse));
+    component.runProcessor('Jira');
+    expect(spy).toHaveBeenCalled();
+  }))
+
+  it('should not run Processor when processor is not jira', fakeAsync(() => {
+    component.selectedProject = {
+      'id': 'sdjsagdjagdjagd'
+    }
+    const errResponse = {
+      'error': "Something went wrong",
+    };
+    spyOn(component, 'isProjectSelected').and.returnValue(false);
+    const spy = spyOn(httpService, 'runProcessor').and.returnValue(of(errResponse));
+    component.runProcessor('Sonar');
     expect(spy).toHaveBeenCalled();
   }))
 });
