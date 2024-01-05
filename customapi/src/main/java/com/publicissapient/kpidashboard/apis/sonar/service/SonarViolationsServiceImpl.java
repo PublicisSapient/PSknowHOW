@@ -72,8 +72,12 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	private static final String BLOCKER = "blocker";
 	private static final String INFO = "info";
 
+	public void setCustomApiConfig(CustomApiConfig customApiConfig) {
+		this.customApiConfig = customApiConfig;
+	}
+
 	@Autowired
-	private CustomApiConfig customApiConfig;
+	protected CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets KPI Data
