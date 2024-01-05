@@ -22,7 +22,7 @@ unit test cases.
 @author rishabh
 *******************************/
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -908,5 +908,53 @@ it('should reload KPI once mapping saved ', () => {
   component.reloadKPI(fakeKPiDetails);
   expect(spy).toBeDefined();
 })
+
+it('should set the kpiCommentsCountObj for a single kpiId', fakeAsync((done) => {
+  const kpiId = 'kpi-1';
+  const requestObj = {
+    nodes: ['project-1', 'project-2'],
+    level: 'level-1',
+    nodeChildId: '',
+    kpiIds: [kpiId],
+  };
+  component.filterApplyData = filterApplyData;
+  const response = { [kpiId]: 10 };
+  spyOn(helperService,'getKpiCommentsHttp').and.resolveTo(response);
+  component.getKpiCommentsCount(kpiId);
+  expect(component.kpiCommentsCountObj).toBeDefined();
+}));
+
+it('should set the kpiCommentsCountObj for all kpiIds', fakeAsync((done) => {
+  const kpiId = '';
+  const requestObj = {
+    nodes: ['project-1', 'project-2'],
+    level: 'level-1',
+    nodeChildId: '',
+    kpiIds: [kpiId],
+  };
+  component.filterApplyData = filterApplyData;
+  const response = { [kpiId]: 10 };
+  component.updatedConfigGlobalData = [{kpiId :'123'}]
+  spyOn(helperService,'getKpiCommentsHttp').and.resolveTo(response);
+  component.getKpiCommentsCount(kpiId);
+  expect(component.kpiCommentsCountObj).toBeDefined();
+}));
+
+it('should generate the color object and return the filtered array', () => {
+  const kpiId = 'kpi-1';
+  const arr = [
+    { data: 'node-1' },
+    { data: 'node-2' },
+    { data: 'node-3' },
+  ];
+  component.colorObj = {
+    node1: { nodeName: 'node-1', color: 'red' },
+    node2: { nodeName: 'node-2', color: 'green' },
+    node3: { nodeName: 'node-3', color: 'blue' },
+  };
+  const result = component.generateColorObj(kpiId, arr);
+  expect(component.chartColorList[kpiId]).toEqual(['red', 'green', 'blue']);
+  expect(result).toEqual(arr);
+});
 
 });
