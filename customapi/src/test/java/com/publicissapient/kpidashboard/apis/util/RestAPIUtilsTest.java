@@ -17,11 +17,10 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import java.util.List;
 
@@ -29,14 +28,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
@@ -44,7 +43,7 @@ import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 /**
  * @author shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class RestAPIUtilsTest {
 
 	@Mock
@@ -69,7 +68,6 @@ public class RestAPIUtilsTest {
 		// Mock data
 		String accessToken = "mockAccessToken";
 		boolean usingBasicAuth = false;
-
 
 		// Mock the result
 		HttpHeaders headers = RestAPIUtils.getHeaders(accessToken, usingBasicAuth);
@@ -194,7 +192,7 @@ public class RestAPIUtilsTest {
 		assertEquals(1, result.size()); // No items should be added because _class is not
 										// "com.cloudbees.hudson.plugins.folder.Folder"
 
-        assertTrue(result.contains("value"));
+		assertTrue(result.contains("value"));
 		// Mock data with the correct _class
 		innerJsonObject.put("_class", "com.cloudbees.hudson.plugins.folder.Folder");
 
@@ -241,16 +239,4 @@ public class RestAPIUtilsTest {
 		return jsonArray;
 	}
 
-	private JSONObject createJsonObject() {
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("key", createJsonArray("value1", "value2"));
-		return jsonObject;
-	}
-
-	private JSONArray createJsonArray() {
-		JSONArray jsonArray = new JSONArray();
-		jsonArray.add("value1");
-		jsonArray.add("value2");
-		return jsonArray;
-	}
 }
