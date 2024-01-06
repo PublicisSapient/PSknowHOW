@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public final class JiraConstants {
+	private JiraConstants() {
+	}
 
 	public static final Set<String> ISSUE_FIELD_SET = new HashSet<>();// NOSONAR
 	public static final String STATUS = "status";
