@@ -1,7 +1,6 @@
-package com.publicissapient.kpidashboard.jira.service;
+package com.publicissapient.kpidashboard.jira.processor;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -14,22 +13,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
@@ -45,147 +45,93 @@ import com.atlassian.jira.rest.client.api.domain.IssueLink;
 import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.Status;
 import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilter;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
-import com.publicissapient.kpidashboard.jira.dataFactories.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ToolConfigDataFactory;
+import com.publicissapient.kpidashboard.jira.helper.AdditionalFilterHelper;
+import com.publicissapient.kpidashboard.jira.model.JiraProcessor;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-
-import io.atlassian.util.concurrent.Promise;
+import com.publicissapient.kpidashboard.jira.repository.JiraProcessorRepository;
+import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FetchIssueSprintImplTest {
-
-	private static final String PLAIN_TEXT_PASSWORD = "TestPlain";
+public class KanbanJiraIssueProcessorImplTest {
 
 	@Mock
-	private JiraProcessorConfig jiraProcessorConfig;
-
+	FieldMapping fieldMapping;
+	@InjectMocks
+	KanbanJiraIssueProcessorImpl transformFetchedIssueToKanbanJiraIssue;
+	List<Issue> issues = new ArrayList<>();
+	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 	@Mock
-	private SprintRepository sprintRepository;
-
-	@Mock
-	private JiraIssueRepository jiraIssueRepository;
-	@Mock
-	private SearchRestClient searchRestClient;
-	@Mock
-	private Promise<SearchResult> promisedRs;
+	JiraProcessor jiraProcessor;
+	List<ProjectBasicConfig> projectConfigsList;
 	List<ProjectToolConfig> projectToolConfigs;
 	Optional<Connection> connection;
-	List<ProjectBasicConfig> projectConfigsList;
 	List<FieldMapping> fieldMappingList;
-	List<Issue> issues = new ArrayList<>();
-	SearchResult searchResult;
-	@InjectMocks
-	private FetchIssueSprintImpl fetchIssueSprint;
 	@Mock
-	private ProcessorJiraRestClient client;
+	private KanbanJiraIssueRepository kanbanJiraRepo;
 	@Mock
-	private AesEncryptionService aesEncryptionService;
+	private JiraProcessorRepository jiraProcessorRepository;
 	@Mock
-	private SprintDetails sprintDetails;
-
+	private JiraProcessorConfig jiraProcessorConfig;
+	@Mock
+	private AdditionalFilterHelper additionalFilterHelper;
+	@Mock
+	private JiraCommonService jiraCommonService;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		projectToolConfigs = getMockProjectToolConfig();
-		fieldMappingList = getMockFieldMapping();
-		connection = getMockConnection();
+	public void setup() throws URISyntaxException {
+		fieldMapping = getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
-
-		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
-		sprintDetails = sprintDetailsDataFactory.getSprintDetails().get(0);
+		projectToolConfigs = getMockProjectToolConfig();
+		connection = getMockConnection();
+		fieldMappingList = getMockFieldMappingList();
+		createProjectConfigMap();
+		createIssue();
 	}
 
 	@Test
-	public void fetchIssuesSprintBasedOnJql() throws InterruptedException {
-		String sprintID = "sprint123";
+	public void convertToJiraIssue() throws JSONException {
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
+		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
+		when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(), any())).thenReturn(new KanbanJiraIssue());
+		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
+				.thenReturn(getMockAdditionalFilterFromJiraIssue());
+		Assert.assertEquals(KanbanJiraIssue.class, (transformFetchedIssueToKanbanJiraIssue
+				.convertToKanbanJiraIssue(issues.get(0), projectConfFieldMapping, "111")).getClass());
 
-		List<ProjectToolConfig> projectToolConfigList = new ArrayList<>();
-		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
-		projectToolConfig.setBasicProjectConfigId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectToolConfig.setConnectionId(new ObjectId("5b719d06a500d00814bfb2b9"));
-		projectToolConfig.setToolName(ProcessorConstants.JIRA);
-		projectToolConfigList.add(projectToolConfig);
-
-		Optional<Connection> conn = Optional.of(new Connection());
-		conn.get().setOffline(Boolean.FALSE);
-		conn.get().setIsOAuth(Boolean.TRUE);
-		conn.get().setUsername("xyz");
-		conn.get().setBearerToken(true);
-		conn.get().setPatOAuthToken("testPassword");
-
-		when(sprintRepository.findBySprintID(sprintID)).thenReturn(sprintDetails);
-
-		ProjectBasicConfig projectBasicConfig = ProjectBasicConfig.builder().build();
-		projectBasicConfig.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-		projectBasicConfig.setProjectName("test-project");
-
-		when(client.getProcessorSearchClient()).thenReturn(searchRestClient);
-		when(searchRestClient.searchJql(anyString(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anySet()))
-				.thenReturn(promisedRs);
-		when(promisedRs.claim()).thenReturn(searchResult);
-		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false), client, 50,
-				sprintID);
-
-		assertEquals(0, result.size());
 	}
 
-	private ProjectConfFieldMapping createProjectConfig(boolean isKanban) {
-		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-		ProjectBasicConfig projectConfig = projectConfigsList.get(2);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
-		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-		if (isKanban) {
-			projectConfFieldMapping.setKanban(true);
-		} else {
-			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-		}
-		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-		projectConfFieldMapping.setJira(getJiraToolConfig());
-		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
-		projectConfFieldMapping.setProjectToolConfig(projectToolConfigs.get(0));
-
-		return projectConfFieldMapping;
+	@Test
+	public void updateAssigneeDetailsToggleWise() {
+		transformFetchedIssueToKanbanJiraIssue.updateAssigneeDetailsToggleWise(new KanbanJiraIssue(), projectConfFieldMapping,
+				Arrays.asList("1234"), Arrays.asList("username"), Arrays.asList("username"));
 	}
 
-	private List<ProjectBasicConfig> getMockProjectConfig() {
-		ProjectBasicConfigDataFactory projectConfigDataFactory = ProjectBasicConfigDataFactory
-				.newInstance("/json/default/project_basic_configs.json");
-		return projectConfigDataFactory.getProjectBasicConfigs();
-	}
-
-	private JiraToolConfig getJiraToolConfig() {
-		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
-		toolObj.setConnection(connection);
-		return toolObj;
+	private Optional<Connection> getMockConnection() {
+		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
+				.newInstance("/json/default/connections.json");
+		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
 	private List<ProjectToolConfig> getMockProjectToolConfig() {
@@ -195,16 +141,21 @@ public class FetchIssueSprintImplTest {
 				"63c04dc7b7617e260763ca4e");
 	}
 
-	private Optional<Connection> getMockConnection() {
-		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
-				.newInstance("/json/default/connections.json");
-		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
+	private List<AdditionalFilter> getMockAdditionalFilterFromJiraIssue() {
+		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issues.json");
+		return jiraIssueDataFactory.getAdditionalFilter();
 	}
 
-	private List<FieldMapping> getMockFieldMapping() {
+	private List<ProjectBasicConfig> getMockProjectConfig() {
+		ProjectBasicConfigDataFactory projectConfigDataFactory = ProjectBasicConfigDataFactory
+				.newInstance("/json/default/project_basic_configs.json");
+		return projectConfigDataFactory.getProjectBasicConfigs();
+	}
+
+	private FieldMapping getMockFieldMapping() {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-				.newInstance("/json/default/field_mapping.json");
-		return fieldMappingDataFactory.getFieldMappings();
+				.newInstance("/json/default/kanban_project_field_mappings.json");
+		return fieldMappingDataFactory.findByBasicProjectConfigId("6335368249794a18e8a4479f");
 	}
 
 	private void createIssue() throws URISyntaxException {
@@ -220,12 +171,12 @@ public class FetchIssueSprintImplTest {
 		User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
 				null);
 		Map<String, String> map = new HashMap<>();
-		map.put("customfield_12121", "Client Testing (UAT)");
+		map.put("customfield_19121", "Client Testing (UAT)");
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
-		IssueField issueField = new IssueField("20810", "Component", null, value);
+		IssueField issueField = new IssueField("customfield_19121", "Component", null, value);
 		List<IssueField> issueFields = Arrays.asList(issueField);
 		Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
 				new Visibility(Visibility.Type.ROLE, "abc"), 1l);
@@ -239,20 +190,12 @@ public class FetchIssueSprintImplTest {
 				"toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
-		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
-				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
-				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
-		Issue issue1 = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "Defect",
+		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
 				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
 				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
-		issues.add(issue1);
-
-		searchResult = new SearchResult(0, 10, 2, issues);
 
 	}
 
@@ -265,4 +208,37 @@ public class FetchIssueSprintImplTest {
 
 		return issueLinkList;
 	}
+
+	private void createProjectConfigMap() {
+		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
+		try {
+			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+
+		}
+		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping.setJira(getJiraToolConfig());
+		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
+		projectConfFieldMapping.setFieldMapping(fieldMapping);
+	}
+
+	private JiraToolConfig getJiraToolConfig() {
+		JiraToolConfig toolObj = new JiraToolConfig();
+		try {
+			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
+		} catch (IllegalAccessException | InvocationTargetException e) {
+
+		}
+		toolObj.setConnection(connection);
+		return toolObj;
+	}
+
+	private List<FieldMapping> getMockFieldMappingList() {
+		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
+				.newInstance("/json/default/field_mapping.json");
+		return fieldMappingDataFactory.getFieldMappings();
+	}
+
 }
