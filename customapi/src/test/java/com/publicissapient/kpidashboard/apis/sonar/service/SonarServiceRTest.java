@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -221,6 +223,8 @@ public class SonarServiceRTest {
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
+				.thenReturn(new ArrayList<KpiElement>());
 		try {
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
 		} catch (Exception e) {
