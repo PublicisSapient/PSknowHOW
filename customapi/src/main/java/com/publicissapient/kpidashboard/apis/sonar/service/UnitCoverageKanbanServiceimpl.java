@@ -132,12 +132,6 @@ public class UnitCoverageKanbanServiceimpl
 	}
 
 	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	@Override
 	public Double calculateKPIMetrics(Map<String, List<SonarHistory>> stringListMap) {
 		return null;
 	}
