@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
@@ -196,6 +199,37 @@ public class SonarServiceKanbanRTest {
 		}
 
 	}
+
+
+	@Test
+	public void sonarViolationsTestProcess_cache() throws Exception {
+		String[] exampleStringList = { "exampleElement", "exampleElement" };
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFilteredBuildsKanban(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyKanbanDataList, kpiRequest))
+				.thenReturn(exampleStringList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyKanbanDataList))
+				.thenReturn(accountHierarchyKanbanDataList);
+		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.SONARKANBAN.name()), eq(1), isNull()))
+				.thenReturn(new ArrayList<KpiElement>());
+
+
+		try {
+			List<KpiElement> resultList = sonarService.process(kpiRequest);
+		} catch (Exception e) {
+
+		}
+
+	}
+
 
 	@Test
 	public void sonarViolationsTestProcessCachedData() {
