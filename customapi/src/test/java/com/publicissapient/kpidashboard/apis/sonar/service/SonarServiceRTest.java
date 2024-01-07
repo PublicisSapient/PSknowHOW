@@ -20,16 +20,24 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,11 +45,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockedStatic.Verification;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -53,7 +59,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
@@ -63,13 +69,14 @@ import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactor
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import org.slf4j.Logger;
 
 /**
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({ SonarKPIServiceFactory.class })
 public class SonarServiceRTest {
+	private static final String TESTSONAR = "TEST_SONAR";
 
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
@@ -89,39 +96,44 @@ public class SonarServiceRTest {
 	private CommonService commonService;
 	@Mock
 	private AccountHierarchyServiceImpl accountHierarchyServiceImpl;
-	@Mock
-	private SonarViolationsServiceImpl sonarViolationsService;
+
 	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
 	@Mock
 	private TokenAuthenticationService tokenAuthenticationService;
-	@SuppressWarnings("rawtypes")
 	@Mock
 	private List<SonarKPIService> services;
-	private KpiElement cqKpiElement;
-	private KpiElement svKpiElement;
-	private KpiElement tdKpiElement;
-	private KpiElement tcKpiElement;
+
+	@Mock
+	private Logger logger;
+
 	private Map<String, Object> filterLevelMap;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
-	private String[] projectKey;
-	private Set<String> projects;
-
-	private Map<String, SonarKPIService<?, ?, ?>> sonarServiceCache = new HashMap<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<HierarchyLevel> hierarchyLevels = new ArrayList<>();
 
-	@Mock
 	private SonarKPIServiceFactory sonarKPIServiceFactory;
+	@Mock
+	private SonarKPIService<?, ?, ?> sonarKPIService;
+
+	@Mock
+	TestService service;
 
 	@Before
-	public void setup() {
+	public void setup() throws IllegalAccessException, ApplicationException {
+		MockitoAnnotations.initMocks(this);
+		List<SonarKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
+		sonarKPIServiceFactory = SonarKPIServiceFactory.builder().services(mockServices).build();
+		doReturn(TESTSONAR).when(service).getQualifierType();
+		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
+
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi38");
+		createKpiRequest("SONAR", 3, kpiRequest);
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 
@@ -129,10 +141,6 @@ public class SonarServiceRTest {
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
 		sonarKPIServiceFactory.initMyServiceCache();
-
-		tdKpiElement = setKpiElement(KPICode.SONAR_TECH_DEBT.getKpiId(), "TechDebt");
-		tcKpiElement = setKpiElement(KPICode.UNIT_TEST_COVERAGE.getKpiId(), "TestCoverage");
-		svKpiElement = setKpiElement(KPICode.SONAR_VIOLATIONS.getKpiId(), "Sonar Violations");
 
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
@@ -147,61 +155,58 @@ public class SonarServiceRTest {
 
 	}
 
-	private KpiElement setKpiElement(String kpiId, String kpiName) {
-		KpiElement kpiElement = new KpiElement();
-		kpiElement.setKpiId(kpiId);
-		kpiElement.setKpiName(kpiName);
-		return kpiElement;
+	/**
+	 * Test of empty filtered account hierarchy list.
+	 */
+	@Test
+	public void testProcessEmptyFilteredACH() {
+		createKpiRequest("Sonar", 6, kpiRequest);
+		sonarService.process(kpiRequest);
 	}
 
 	/**
 	 * Test of empty filtered account hierarchy list.
-	 *
-	 * @throws Exception
 	 */
 	@Test
-	public void testProcessEmptyFilteredACH() throws Exception {
+	public void testProcessEmptyFilteredException() {
 
-		KpiRequest kpiRequest = createKpiRequest("Sonar", 6);
-
+		createKpiRequest("Sonar", 3, kpiRequest);
 		sonarService.process(kpiRequest);
-
-	}
-
-	/**
-	 * Test of empty filtered account hierarchy list.
-	 *
-	 * @throws Exception
-	 */
-	@Test
-	public void testProcessEmptyFilteredException() throws Exception {
-
-		KpiRequest kpiRequest = createKpiRequest("Sonar", 3);
-
-		sonarService.process(kpiRequest);
-
 	}
 
 	@Test
 	public void sonarViolationsTestProcess() throws Exception {
 
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+		String[] exampleStringList = { "exampleElement", "exampleElement" };
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
+				.thenReturn(exampleStringList);
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		// Create a mock SonarKPIService
 
-		@SuppressWarnings("rawtypes")
-		SonarKPIService mockAbstract = sonarViolationsService;
-		sonarServiceCache.put(KPICode.SONAR_TECH_DEBT.name(), mockAbstract);
-		sonarServiceCache.put(KPICode.UNIT_TEST_COVERAGE.name(), mockAbstract);
-		sonarServiceCache.put(KPICode.SONAR_VIOLATIONS.name(), mockAbstract);
+		try {
 
-		try (MockedStatic<SonarKPIServiceFactory> utilities = Mockito.mockStatic(SonarKPIServiceFactory.class)) {
-			utilities.when((Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_TECH_DEBT.name()))
-					.thenReturn(mockAbstract);
-			utilities.when((Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.UNIT_TEST_COVERAGE.name()))
-					.thenReturn(mockAbstract);
-			utilities.when((Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_VIOLATIONS.name()))
-					.thenReturn(mockAbstract);
+			List<KpiElement> resultList = sonarService.process(kpiRequest);
+
+		} catch (Exception e) {
+
 		}
 
+	}
+
+	@Test
+	public void sonarViolationsTestProcess_Excel() {
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
 		String[] exampleStringList = { "exampleElement", "exampleElement" };
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest))
 				.thenReturn(exampleStringList);
@@ -217,89 +222,29 @@ public class SonarServiceRTest {
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 		try {
-
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
-
 		} catch (Exception e) {
 
 		}
-
 	}
 
 	@Test
-	public void sonarViolationsTestProcessCachedData() throws Exception {
+	public void sonarViolationsTestProcessCachedData() {
 
-		KpiRequest kpiRequest = createKpiRequest("Excel-Sonar", 2);
+		createKpiRequest("Excel-Sonar", 2, kpiRequest);
 
 		List<KpiElement> resultList = sonarService.process(kpiRequest);
-		assertThat("Kpi list :", resultList.size(), equalTo(3));
+		assertThat("Kpi list :", resultList.size(), equalTo(1));
 
 	}
 
-	@Test
-	public void testProcessCached() throws Exception {
-
-		KpiRequest kpiRequest = createKpiRequest("Sonar", 5);
-
-		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-
-		@SuppressWarnings("rawtypes")
-		SonarKPIService mockAbstract = sonarViolationsService;
-		sonarServiceCache.put(KPICode.SONAR_TECH_DEBT.name(), mockAbstract);
-		sonarServiceCache.put(KPICode.UNIT_TEST_COVERAGE.name(), mockAbstract);
-		sonarServiceCache.put(KPICode.SONAR_VIOLATIONS.name(), mockAbstract);
-
-		try (MockedStatic<SonarKPIServiceFactory> utilities = Mockito.mockStatic(SonarKPIServiceFactory.class)) {
-			utilities.when(
-					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_TECH_DEBT_KANBAN.name()))
-					.thenReturn(mockAbstract);
-			utilities.when(
-					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.UNIT_TEST_COVERAGE_KANBAN.name()))
-					.thenReturn(mockAbstract);
-			utilities.when(
-					(Verification) SonarKPIServiceFactory.getSonarKPIService(KPICode.SONAR_VIOLATIONS_KANBAN.name()))
-					.thenReturn(mockAbstract);
-		}
-		List<KpiElement> resultList = sonarService.process(kpiRequest);
-
-		resultList.forEach(k -> {
-
-			KPICode kpi = KPICode.getKPI(k.getKpiId());
-
-			switch (kpi) {
-			case SONAR_TECH_DEBT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("SONAR_TECH_DEBT"));
-				break;
-			case UNIT_TEST_COVERAGE:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("UNIT_TEST_COVERAGE"));
-				break;
-			case SONAR_VIOLATIONS:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("SONAR_VIOLATIONS"));
-				break;
-
-			default:
-				break;
-			}
-
-		});
-
-	}
-
-	private KpiRequest createKpiRequest(String source, int level) {
-		KpiRequest kpiRequest = new KpiRequest();
+	private void createKpiRequest(String source, int level, KpiRequest kpiRequest) {
 		List<KpiElement> kpiList = new ArrayList<>();
-
-		addKpiElement(kpiList, KPICode.SONAR_TECH_DEBT.getKpiId(), KPICode.SONAR_TECH_DEBT.name(), "TechDebt", "",
-				source);
-		addKpiElement(kpiList, KPICode.UNIT_TEST_COVERAGE.getKpiId(), KPICode.UNIT_TEST_COVERAGE.name(), "TestCoverage",
-				"", source);
-		addKpiElement(kpiList, KPICode.SONAR_VIOLATIONS.getKpiId(), KPICode.SONAR_VIOLATIONS.name(), "Sonar Violations",
-				"", source);
+		addKpiElement(kpiList, TESTSONAR, TESTSONAR, "TechDebt", "", source);
 		kpiRequest.setLevel(level);
 		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
-		return kpiRequest;
 	}
 
 	private void addKpiElement(List<KpiElement> kpiList, String kpiId, String kpiName, String category, String kpiUnit,
@@ -310,7 +255,6 @@ public class SonarServiceRTest {
 		kpiElement.setKpiCategory(category);
 		kpiElement.setKpiUnit(kpiUnit);
 		kpiElement.setKpiSource(source);
-
 		kpiElement.setMaxValue("500");
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);

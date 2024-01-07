@@ -486,7 +486,12 @@ public enum KPICode {
     /**
      * Cycle Time (Backlog)
      */
-    CYCLE_TIME("kpi171", KPISource.JIRA.name());
+    CYCLE_TIME("kpi171", KPISource.JIRA.name()),
+
+    /*
+    FOR TESTING PURPOSE
+     */
+    TEST_SONAR("TEST_SONAR", KPISource.SONAR.name());
 
 
     // @formatter:on
