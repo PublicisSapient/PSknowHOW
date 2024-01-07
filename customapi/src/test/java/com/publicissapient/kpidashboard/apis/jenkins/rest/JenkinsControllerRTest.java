@@ -32,15 +32,15 @@ import java.util.Collections;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigServiceImpl;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -50,7 +50,7 @@ import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceKanba
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JenkinsControllerRTest {
 
 	private MockMvc mockMvc;
@@ -70,12 +70,12 @@ public class JenkinsControllerRTest {
 	@Mock
 	private JenkinsToolConfigServiceImpl jenkinsToolConfigService;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		mockMvc = MockMvcBuilders.standaloneSetup(jenkinsController).build();
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		mockMvc = null;
 	}
