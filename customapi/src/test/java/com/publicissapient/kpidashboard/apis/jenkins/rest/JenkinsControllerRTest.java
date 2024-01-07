@@ -18,14 +18,20 @@
 
 package com.publicissapient.kpidashboard.apis.jenkins.rest;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsToolConfigServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +66,9 @@ public class JenkinsControllerRTest {
 
 	@Mock
 	private CacheService cacheService;
+
+	@Mock
+	private JenkinsToolConfigServiceImpl jenkinsToolConfigService;
 
 	@Before
 	public void before() {
@@ -134,6 +143,33 @@ public class JenkinsControllerRTest {
 		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
+	}
+
+	@Test
+	public void testGetJenkinsJobsWhenJobsFound() throws Exception {
+		// Arrange
+		String connectionId = "yourConnectionId";
+		List<String> jobUrlList = Arrays.asList("jobUrl1", "jobUrl2");
+		when(jenkinsToolConfigService.getJenkinsJobNameList(connectionId)).thenReturn(jobUrlList);
+
+		// Act & Assert
+		mockMvc.perform(get("/jenkins/jobName/{connectionId}", connectionId))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success").value(true))
+				.andExpect(jsonPath("$.message").value("Fetched Jobs Successfully"))
+				.andExpect(jsonPath("$.data", hasSize(jobUrlList.size())));
+	}
+
+	@Test
+	public void testGetJenkinsJobsWhenNoJobsFound() throws Exception {
+		String connectionId = "yourConnectionId";
+		when(jenkinsToolConfigService.getJenkinsJobNameList(connectionId)).thenReturn(Collections.emptyList());
+
+		mockMvc.perform(get("/jenkins/jobName/{connectionId}", connectionId))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.success").value(false))
+				.andExpect(jsonPath("$.message").value("No Jobs details found"))
+				.andExpect(jsonPath("$.data").doesNotExist());
 	}
 
 }
