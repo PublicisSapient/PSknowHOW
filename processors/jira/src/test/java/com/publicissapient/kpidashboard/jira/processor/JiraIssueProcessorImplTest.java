@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
+import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
 import com.atlassian.jira.rest.client.api.domain.BasicProject;
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
@@ -57,10 +59,10 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
-import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.ToolConfigDataFactory;
@@ -80,8 +82,7 @@ public class JiraIssueProcessorImplTest {
 	@Mock
 	JiraProcessor jiraProcessor;
 
-//	 @Mock
-//	 FieldMapping fieldMapping;
+	FieldMapping fieldMapping;
 	List<ProjectBasicConfig> projectConfigsList;
 	List<ProjectToolConfig> projectToolConfigs;
 	Optional<Connection> connection;
@@ -101,10 +102,12 @@ public class JiraIssueProcessorImplTest {
 	private JiraProcessorConfig jiraProcessorConfig;
 	@Mock
 	private AdditionalFilterHelper additionalFilterHelper;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 
 	@Before
 	public void setup() throws URISyntaxException, JSONException {
-//		 fieldMapping=getMockFieldMapping();
+		// fieldMapping=getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
 		projectToolConfigs = getMockProjectToolConfig();
 		connection = getMockConnection();
@@ -131,6 +134,12 @@ public class JiraIssueProcessorImplTest {
 
 	}
 
+	@Test
+	public void updateAssigneeDetailsToggleWise() {
+		transformFetchedIssueToJiraIssue.updateAssigneeDetailsToggleWise(new JiraIssue(), projectConfFieldMapping,
+				Arrays.asList("1234"), Arrays.asList("username"), Arrays.asList("username"));
+	}
+
 	private Optional<Connection> getMockConnection() {
 		ConnectionsDataFactory connectionDataFactory = ConnectionsDataFactory
 				.newInstance("/json/default/connections.json");
@@ -155,34 +164,26 @@ public class JiraIssueProcessorImplTest {
 		return projectConfigDataFactory.getProjectBasicConfigs();
 	}
 
-	private FieldMapping getMockFieldMapping() {
-		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-				.newInstance("/json/default/field_mapping.json");
-		return fieldMappingDataFactory.findByBasicProjectConfigId("63bfa0d5b7617e260763ca21");
-	}
-
 	private void createIssue() throws URISyntaxException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
-		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));
+		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", true, "desc", new URI("iconURI"));
 		Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
 				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
 		BasicPriority basicPriority = new BasicPriority(new URI("self"), 1l, "priority1");
 		Resolution resolution = new Resolution(new URI("self"), 1l, "resolution", "resolution");
 		Map<String, URI> avatarMap = new HashMap<>();
 		avatarMap.put("48x48", new URI("value"));
-		User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
-				null);
-		 Map<String, String> map = new HashMap<>();
-		 map.put("customfield_19121", "Client Testing (UAT)");
-		 map.put("self",
-		 "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
-		 map.put("value", "Component");
-		 map.put("id", "20810");
-		 JSONObject value = new JSONObject(map);
-		 IssueField issueField = new IssueField("customfield_19121", "Component",
-		 null, value);
-		 List<IssueField> issueFields = Arrays.asList(issueField);
+		URI uri = new URI("self");
+		User user1 = new User(uri, "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap, null);
+		Map<String, String> map = new HashMap<>();
+		map.put("customfield_19121", "Client Testing (UAT)");
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "Component");
+		map.put("id", "20810");
+		JSONObject value = new JSONObject(map);
+		IssueField issueField = new IssueField("customfield_19121", "Component", null,value);
+		List<IssueField> issueFields = Arrays.asList(issueField);
 
 		Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
 				new Visibility(Visibility.Type.ROLE, "abc"), 1l);
@@ -195,11 +196,13 @@ public class JiraIssueProcessorImplTest {
 		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to",
 				"toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
+		BasicComponent basicComponent = new BasicComponent(new URI("self"), 1l, "component1", "abc");
+		List<BasicComponent> component = Collections.singletonList(basicComponent);
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFieldList, comments,
-				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				DateTime.now(), new ArrayList<>(), new ArrayList<>(), component, null, issueFieldList, comments, null,
+				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
 
@@ -307,6 +310,15 @@ public class JiraIssueProcessorImplTest {
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
+
+		fieldMapping.setProductionDefectIdentifier("Component");
+		fieldMapping.setJiraBugRaisedByQAIdentification("Labels");
+		fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+		fieldMapping.setProductionDefectComponentValue("component1");
+		fieldMapping.setTestingPhaseDefectsIdentifier("Component");
+		fieldMapping.setTestingPhaseDefectComponentValue("component1");
+		fieldMapping.setJiraProductionIncidentIdentification("CustomField");
+		fieldMapping.setJiraProdIncidentRaisedByCustomField("CustomField");
 		fieldMappingList.add(fieldMapping);
 
 	}
@@ -388,7 +400,9 @@ public class JiraIssueProcessorImplTest {
 		map.put("value", "code");
 		map.put("id", "19121");
 		JSONObject jsonObject = new JSONObject(map);
-		issueField = new IssueField("customfield_19121", "code_issue", null, jsonObject);
+		List<Object> rcaList = new ArrayList<>();
+		rcaList.add(jsonObject);
+		issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
@@ -412,6 +426,9 @@ public class JiraIssueProcessorImplTest {
 		issueFieldList.add(issueField);
 
 		issueField = new IssueField("", "Due_Date", null, "");
+		issueFieldList.add(issueField);
+
+		issueField = new IssueField("parent", "Due_Date", null, jsonObject1);
 		issueFieldList.add(issueField);
 
 	}
