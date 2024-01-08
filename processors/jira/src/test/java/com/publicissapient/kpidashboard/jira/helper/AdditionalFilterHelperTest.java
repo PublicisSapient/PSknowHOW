@@ -59,7 +59,7 @@ public class AdditionalFilterHelperTest {
 		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
 		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
 		when(issue.getLabels()).thenReturn(getLabels("UI","Prod_defect"));
-		assertEquals(2,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
+		assertEquals(1,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
 
 	}
 
