@@ -3,11 +3,9 @@ package com.publicissapient.kpidashboard.jira.helper;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,10 +39,25 @@ public class AdditionalFilterHelperTest {
         when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
         AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
         AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
-        when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));        ;
+        when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
 		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
 
     }
+
+	@Test
+	public void getAdditionalFilterSecondTest(){
+
+		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
+		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
+		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
+		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
+
+	}
 
 	@Test(expected = NullPointerException.class)
     public void getAdditionalFilterFieldMappingNullTest(){
@@ -81,5 +94,13 @@ public class AdditionalFilterHelperTest {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setAdditionalFilterConfig(additionalFilterConfigList);
 		return fieldMapping;
+	}
+
+	AdditionalFilterCategory getAdditionalFilterCategory(int level,String filterCategoryId,String filterCategoryName){
+		AdditionalFilterCategory additionalFilterCategory= new AdditionalFilterCategory();
+		additionalFilterCategory.setLevel(level);
+		additionalFilterCategory.setFilterCategoryId(filterCategoryId);
+		additionalFilterCategory.setFilterCategoryName(filterCategoryName);
+		return additionalFilterCategory;
 	}
 }
