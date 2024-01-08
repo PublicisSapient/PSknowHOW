@@ -62,11 +62,11 @@ describe('ExecutiveComponent', () => {
   let service: SharedService;
   let httpService: HttpService;
   let helperService: HelperService;
-
+  let exportExcelComponent;
   const baseUrl = environment.baseUrl;  // Servers Env
   const fakeDoraKpis = require('../../../test/resource/fakeDoraKpis.json');
   const fakeDoraKpiFilters = require('../../../test/resource/fakeDoraKpiFilters.json');
-  const globalData =require('../../../test/resource/fakeGlobalConfigData.json');
+  const globalData = require('../../../test/resource/fakeGlobalConfigData.json');
   const configGlobalData = [
     {
       kpiId: 'kpi74',
@@ -2421,40 +2421,40 @@ describe('ExecutiveComponent', () => {
   const fakeAllKpiArrayForTableDataWithFilter = require('../../../test/resource/fakeAllKpiArrayForTableDataWithFilter.json');
   const fakeKpiTableHeadingArray = [
     {
-        "field": "kpiName",
-        "header": "Kpi Name"
+      "field": "kpiName",
+      "header": "Kpi Name"
     },
     {
-        "field": "frequency",
-        "header": "Frequency"
+      "field": "frequency",
+      "header": "Frequency"
     },
     {
-        "field": 1,
-        "header": 1
+      "field": 1,
+      "header": 1
     },
     {
-        "field": 2,
-        "header": 2
+      "field": 2,
+      "header": 2
     },
     {
-        "field": 3,
-        "header": 3
+      "field": 3,
+      "header": 3
     },
     {
-        "field": 4,
-        "header": 4
+      "field": 4,
+      "header": 4
     },
     {
-        "field": 5,
-        "header": 5
+      "field": 5,
+      "header": 5
     },
     {
-        "field": "trend",
-        "header": "Trend"
+      "field": "trend",
+      "header": "Trend"
     },
     {
-        "field": "maturity",
-        "header": "Maturity"
+      "field": "maturity",
+      "header": "Maturity"
     }
   ]
   beforeEach(() => {
@@ -2528,7 +2528,7 @@ describe('ExecutiveComponent', () => {
 
     // We set the expectations for the HttpClient mock
     reqJira = httpMock.match((request) => request.url);
-
+    exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
     spyOn(helperService, 'colorAccToMaturity').and.returnValue(('#44739f'));
 
 
@@ -2627,7 +2627,7 @@ describe('ExecutiveComponent', () => {
 
   xit('cycle time priority Sum in kanban', ((done) => {
     const type = 'Kanban';
-    service.selectedtype =type;
+    service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     httpMock.match(baseUrl + '/api/jirakanban/kpi')[0].flush(fakejiraKanban);
     httpMock.match(baseUrl + '/api/jenkinskanban/kpi')[0].flush(fakeJenkinsKanban);
@@ -4596,1054 +4596,1054 @@ describe('ExecutiveComponent', () => {
     const kpiId = "kpi72";
     component.allKpiArray = [
       {
-          "kpiId": "kpi72",
-          "kpiName": "Commitment Reliability",
-          "unit": "%",
-          "maxValue": "200",
-          "chartType": "",
-          "kpiInfo": {
-              "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
-              "formula": [
-                  {
-                      "lhs": "Commitment reliability",
-                      "operator": "division",
-                      "operands": [
-                          "No. of issues or Size of issues completed",
-                          "No. of issues or Size of issues committed"
-                      ]
-                  }
-              ],
-              "details": [
-                  {
-                      "type": "link",
-                      "kpiLinkDetail": {
-                          "text": "Detailed Information at",
-                          "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
-                      }
-                  }
+        "kpiId": "kpi72",
+        "kpiName": "Commitment Reliability",
+        "unit": "%",
+        "maxValue": "200",
+        "chartType": "",
+        "kpiInfo": {
+          "definition": "Measures the percentage of work completed at the end of a iteration in comparison to the initial scope and the final scope",
+          "formula": [
+            {
+              "lhs": "Commitment reliability",
+              "operator": "division",
+              "operands": [
+                "No. of issues or Size of issues completed",
+                "No. of issues or Size of issues committed"
               ]
-          },
-          "id": "64a58c54600c3151b16a1196",
-          "isDeleted": "False",
-          "kpiUnit": "%",
-          "kanban": false,
-          "kpiSource": "Jira",
-          "thresholdValue": 85,
-          "trendValueList": [
-              {
-                  "filter1": "Initial Commitment (Story Points)",
-                  "filter2": "Overall",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "43",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 43,
-                                  "hoverValue": {
-                                      "Delivered": 78.5,
-                                      "Initially Commited": 181.5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "37",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 37,
-                                  "hoverValue": {
-                                      "Delivered": 87,
-                                      "Initially Commited": 229
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "39",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 39,
-                                  "hoverValue": {
-                                      "Delivered": 78,
-                                      "Initially Commited": 200
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "38",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 38,
-                                  "hoverValue": {
-                                      "Delivered": 83.5,
-                                      "Initially Commited": 217.5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "66",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 66,
-                                  "hoverValue": {
-                                      "Delivered": 125,
-                                      "Initially Commited": 189
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "45"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Story Points)",
-                  "filter2": "Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "42",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 42,
-                                  "hoverValue": {
-                                      "Delivered": 77.5,
-                                      "Initially Commited": 180.5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "37",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 37,
-                                  "hoverValue": {
-                                      "Delivered": 83,
-                                      "Initially Commited": 222
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "39",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 39,
-                                  "hoverValue": {
-                                      "Delivered": 78,
-                                      "Initially Commited": 198
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "37",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 37,
-                                  "hoverValue": {
-                                      "Delivered": 79.5,
-                                      "Initially Commited": 211.5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "65",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 65,
-                                  "hoverValue": {
-                                      "Delivered": 123,
-                                      "Initially Commited": 187
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "44"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Story Points)",
-                  "filter2": "Enabler Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Initially Commited": 0
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Enabler Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "1",
-                          "maturityValue": "0"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Story Points)",
-                  "filter2": "Defect",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "100",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 100,
-                                  "hoverValue": {
-                                      "Delivered": 1,
-                                      "Initially Commited": 1
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "57",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 57,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Initially Commited": 7
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Initially Commited": 2
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "66",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 66,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Initially Commited": 6
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "100",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 100,
-                                  "hoverValue": {
-                                      "Delivered": 2,
-                                      "Initially Commited": 2
-                                  },
-                                  "kpiGroup": "Initial Commitment (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "3",
-                          "maturityValue": "65"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Count)",
-                  "filter2": "Overall",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "53",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 53,
-                                  "hoverValue": {
-                                      "Delivered": 26,
-                                      "Initially Commited": 49
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "43",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 43,
-                                  "hoverValue": {
-                                      "Delivered": 24,
-                                      "Initially Commited": 55
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "46",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 46,
-                                  "hoverValue": {
-                                      "Delivered": 29,
-                                      "Initially Commited": 62
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "42",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 42,
-                                  "hoverValue": {
-                                      "Delivered": 27,
-                                      "Initially Commited": 63
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "64",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 64,
-                                  "hoverValue": {
-                                      "Delivered": 37,
-                                      "Initially Commited": 57
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "50"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Count)",
-                  "filter2": "Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "48",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 48,
-                                  "hoverValue": {
-                                      "Delivered": 22,
-                                      "Initially Commited": 45
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "40",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 40,
-                                  "hoverValue": {
-                                      "Delivered": 20,
-                                      "Initially Commited": 49
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "45",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 45,
-                                  "hoverValue": {
-                                      "Delivered": 26,
-                                      "Initially Commited": 57
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "36",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 36,
-                                  "hoverValue": {
-                                      "Delivered": 20,
-                                      "Initially Commited": 55
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "65",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 65,
-                                  "hoverValue": {
-                                      "Delivered": 34,
-                                      "Initially Commited": 52
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "47"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Count)",
-                  "filter2": "Enabler Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Initially Commited": 0
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Enabler Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "1",
-                          "maturityValue": "0"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Initial Commitment (Count)",
-                  "filter2": "Defect",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "100",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 100,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Initially Commited": 4
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "66",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 66,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Initially Commited": 6
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "60",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 60,
-                                  "hoverValue": {
-                                      "Delivered": 3,
-                                      "Initially Commited": 5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "87",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 87,
-                                  "hoverValue": {
-                                      "Delivered": 7,
-                                      "Initially Commited": 8
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "60",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 60,
-                                  "hoverValue": {
-                                      "Delivered": 3,
-                                      "Initially Commited": 5
-                                  },
-                                  "kpiGroup": "Initial Commitment (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "4",
-                          "maturityValue": "75"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Story Points)",
-                  "filter2": "Overall",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "47",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 47,
-                                  "hoverValue": {
-                                      "Delivered": 91.5,
-                                      "Final Scope": 193.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "38",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 38,
-                                  "hoverValue": {
-                                      "Delivered": 92.5,
-                                      "Final Scope": 241.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "43",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 43,
-                                  "hoverValue": {
-                                      "Delivered": 101,
-                                      "Final Scope": 231.2
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "37",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 37,
-                                  "hoverValue": {
-                                      "Delivered": 85.5,
-                                      "Final Scope": 228.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "59",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 59,
-                                  "hoverValue": {
-                                      "Delivered": 131,
-                                      "Final Scope": 222
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "45"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Story Points)",
-                  "filter2": "Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "46",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 46,
-                                  "hoverValue": {
-                                      "Delivered": 88.5,
-                                      "Final Scope": 189.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "37",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 37,
-                                  "hoverValue": {
-                                      "Delivered": 88.5,
-                                      "Final Scope": 234.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "44",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 44,
-                                  "hoverValue": {
-                                      "Delivered": 101,
-                                      "Final Scope": 229.2
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "36",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 36,
-                                  "hoverValue": {
-                                      "Delivered": 81.5,
-                                      "Final Scope": 222.5
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "58",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 58,
-                                  "hoverValue": {
-                                      "Delivered": 129,
-                                      "Final Scope": 219
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "44"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Story Points)",
-                  "filter2": "Enabler Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Final Scope": 0
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Enabler Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "1",
-                          "maturityValue": "0"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Story Points)",
-                  "filter2": "Defect",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "75",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 75,
-                                  "hoverValue": {
-                                      "Delivered": 3,
-                                      "Final Scope": 4
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "57",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 57,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Final Scope": 7
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Final Scope": 2
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "66",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 66,
-                                  "hoverValue": {
-                                      "Delivered": 4,
-                                      "Final Scope": 6
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "66",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 66,
-                                  "hoverValue": {
-                                      "Delivered": 2,
-                                      "Final Scope": 3
-                                  },
-                                  "kpiGroup": "Final Scope (Story Points)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "53"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Count)",
-                  "filter2": "Overall",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "63",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 63,
-                                  "hoverValue": {
-                                      "Delivered": 41,
-                                      "Final Scope": 65
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "42",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 42,
-                                  "hoverValue": {
-                                      "Delivered": 30,
-                                      "Final Scope": 71
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "52",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 52,
-                                  "hoverValue": {
-                                      "Delivered": 47,
-                                      "Final Scope": 89
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "45",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 45,
-                                  "hoverValue": {
-                                      "Delivered": 38,
-                                      "Final Scope": 83
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "64",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 64,
-                                  "hoverValue": {
-                                      "Delivered": 53,
-                                      "Final Scope": 82
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#overAll",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "53"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Count)",
-                  "filter2": "Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "58",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 58,
-                                  "hoverValue": {
-                                      "Delivered": 32,
-                                      "Final Scope": 55
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "40",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 40,
-                                  "hoverValue": {
-                                      "Delivered": 24,
-                                      "Final Scope": 60
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "46",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 46,
-                                  "hoverValue": {
-                                      "Delivered": 32,
-                                      "Final Scope": 69
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "35",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 35,
-                                  "hoverValue": {
-                                      "Delivered": 23,
-                                      "Final Scope": 65
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "62",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 62,
-                                  "hoverValue": {
-                                      "Delivered": 37,
-                                      "Final Scope": 59
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "2",
-                          "maturityValue": "48"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Count)",
-                  "filter2": "Enabler Story",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "0",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 0,
-                                  "hoverValue": {
-                                      "Delivered": 0,
-                                      "Final Scope": 1
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Enabler Story",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "1",
-                          "maturityValue": "0"
-                      }
-                  ]
-              },
-              {
-                  "filter1": "Final Scope (Count)",
-                  "filter2": "Defect",
-                  "value": [
-                      {
-                          "data": "AddingIterationProject",
-                          "value": [
-                              {
-                                  "data": "90",
-                                  "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
-                                  "value": 90,
-                                  "hoverValue": {
-                                      "Delivered": 9,
-                                      "Final Scope": 10
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "54",
-                                  "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                                  "value": 54,
-                                  "hoverValue": {
-                                      "Delivered": 6,
-                                      "Final Scope": 11
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "75",
-                                  "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                                  "value": 75,
-                                  "hoverValue": {
-                                      "Delivered": 15,
-                                      "Final Scope": 20
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "83",
-                                  "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                                  "value": 83,
-                                  "hoverValue": {
-                                      "Delivered": 15,
-                                      "Final Scope": 18
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              },
-                              {
-                                  "data": "72",
-                                  "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                                  "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                                  "value": 72,
-                                  "hoverValue": {
-                                      "Delivered": 16,
-                                      "Final Scope": 22
-                                  },
-                                  "kpiGroup": "Final Scope (Count)#Defect",
-                                  "sprojectName": "AddingIterationProject"
-                              }
-                          ],
-                          "maturity": "4",
-                          "maturityValue": "75"
-                      }
-                  ]
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
               }
-          ],
-          "maturityRange": [
-              "-40",
-              "40-60",
-              "60-75",
-              "75-90",
-              "90-"
-          ],
-          "groupId": 2
+            }
+          ]
+        },
+        "id": "64a58c54600c3151b16a1196",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+        "thresholdValue": 85,
+        "trendValueList": [
+          {
+            "filter1": "Initial Commitment (Story Points)",
+            "filter2": "Overall",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "43",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 43,
+                    "hoverValue": {
+                      "Delivered": 78.5,
+                      "Initially Commited": 181.5
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "Delivered": 87,
+                      "Initially Commited": 229
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "39",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 39,
+                    "hoverValue": {
+                      "Delivered": 78,
+                      "Initially Commited": 200
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "38",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 38,
+                    "hoverValue": {
+                      "Delivered": 83.5,
+                      "Initially Commited": 217.5
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "66",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 66,
+                    "hoverValue": {
+                      "Delivered": 125,
+                      "Initially Commited": 189
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "45"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Story Points)",
+            "filter2": "Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "42",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 42,
+                    "hoverValue": {
+                      "Delivered": 77.5,
+                      "Initially Commited": 180.5
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "Delivered": 83,
+                      "Initially Commited": 222
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "39",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 39,
+                    "hoverValue": {
+                      "Delivered": 78,
+                      "Initially Commited": 198
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "Delivered": 79.5,
+                      "Initially Commited": 211.5
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "65",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 65,
+                    "hoverValue": {
+                      "Delivered": 123,
+                      "Initially Commited": 187
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "44"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Story Points)",
+            "filter2": "Enabler Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "0",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Initially Commited": 0
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Enabler Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "1",
+                "maturityValue": "0"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Story Points)",
+            "filter2": "Defect",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "100",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 100,
+                    "hoverValue": {
+                      "Delivered": 1,
+                      "Initially Commited": 1
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "57",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 57,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Initially Commited": 7
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "0",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Initially Commited": 2
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "66",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 66,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Initially Commited": 6
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "100",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 100,
+                    "hoverValue": {
+                      "Delivered": 2,
+                      "Initially Commited": 2
+                    },
+                    "kpiGroup": "Initial Commitment (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "3",
+                "maturityValue": "65"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Count)",
+            "filter2": "Overall",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "53",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 53,
+                    "hoverValue": {
+                      "Delivered": 26,
+                      "Initially Commited": 49
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "43",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 43,
+                    "hoverValue": {
+                      "Delivered": 24,
+                      "Initially Commited": 55
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "46",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 46,
+                    "hoverValue": {
+                      "Delivered": 29,
+                      "Initially Commited": 62
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "42",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 42,
+                    "hoverValue": {
+                      "Delivered": 27,
+                      "Initially Commited": 63
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "64",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 64,
+                    "hoverValue": {
+                      "Delivered": 37,
+                      "Initially Commited": 57
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "50"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Count)",
+            "filter2": "Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "48",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 48,
+                    "hoverValue": {
+                      "Delivered": 22,
+                      "Initially Commited": 45
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "40",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 40,
+                    "hoverValue": {
+                      "Delivered": 20,
+                      "Initially Commited": 49
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "45",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 45,
+                    "hoverValue": {
+                      "Delivered": 26,
+                      "Initially Commited": 57
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "36",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 36,
+                    "hoverValue": {
+                      "Delivered": 20,
+                      "Initially Commited": 55
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "65",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 65,
+                    "hoverValue": {
+                      "Delivered": 34,
+                      "Initially Commited": 52
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "47"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Count)",
+            "filter2": "Enabler Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "0",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Initially Commited": 0
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Enabler Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "1",
+                "maturityValue": "0"
+              }
+            ]
+          },
+          {
+            "filter1": "Initial Commitment (Count)",
+            "filter2": "Defect",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "100",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 100,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Initially Commited": 4
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "66",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 66,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Initially Commited": 6
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "60",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 60,
+                    "hoverValue": {
+                      "Delivered": 3,
+                      "Initially Commited": 5
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "87",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 87,
+                    "hoverValue": {
+                      "Delivered": 7,
+                      "Initially Commited": 8
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "60",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 60,
+                    "hoverValue": {
+                      "Delivered": 3,
+                      "Initially Commited": 5
+                    },
+                    "kpiGroup": "Initial Commitment (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "4",
+                "maturityValue": "75"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Story Points)",
+            "filter2": "Overall",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "47",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 47,
+                    "hoverValue": {
+                      "Delivered": 91.5,
+                      "Final Scope": 193.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "38",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 38,
+                    "hoverValue": {
+                      "Delivered": 92.5,
+                      "Final Scope": 241.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "43",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 43,
+                    "hoverValue": {
+                      "Delivered": 101,
+                      "Final Scope": 231.2
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "Delivered": 85.5,
+                      "Final Scope": 228.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "59",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 59,
+                    "hoverValue": {
+                      "Delivered": 131,
+                      "Final Scope": 222
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "45"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Story Points)",
+            "filter2": "Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "46",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 46,
+                    "hoverValue": {
+                      "Delivered": 88.5,
+                      "Final Scope": 189.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "Delivered": 88.5,
+                      "Final Scope": 234.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "44",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 44,
+                    "hoverValue": {
+                      "Delivered": 101,
+                      "Final Scope": 229.2
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "36",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 36,
+                    "hoverValue": {
+                      "Delivered": 81.5,
+                      "Final Scope": 222.5
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "58",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 58,
+                    "hoverValue": {
+                      "Delivered": 129,
+                      "Final Scope": 219
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "44"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Story Points)",
+            "filter2": "Enabler Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "0",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Final Scope": 0
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Enabler Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "1",
+                "maturityValue": "0"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Story Points)",
+            "filter2": "Defect",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "75",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 75,
+                    "hoverValue": {
+                      "Delivered": 3,
+                      "Final Scope": 4
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "57",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 57,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Final Scope": 7
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "0",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Final Scope": 2
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "66",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 66,
+                    "hoverValue": {
+                      "Delivered": 4,
+                      "Final Scope": 6
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "66",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 66,
+                    "hoverValue": {
+                      "Delivered": 2,
+                      "Final Scope": 3
+                    },
+                    "kpiGroup": "Final Scope (Story Points)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "53"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Count)",
+            "filter2": "Overall",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "63",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 63,
+                    "hoverValue": {
+                      "Delivered": 41,
+                      "Final Scope": 65
+                    },
+                    "kpiGroup": "Final Scope (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "42",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 42,
+                    "hoverValue": {
+                      "Delivered": 30,
+                      "Final Scope": 71
+                    },
+                    "kpiGroup": "Final Scope (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "52",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 52,
+                    "hoverValue": {
+                      "Delivered": 47,
+                      "Final Scope": 89
+                    },
+                    "kpiGroup": "Final Scope (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "45",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 45,
+                    "hoverValue": {
+                      "Delivered": 38,
+                      "Final Scope": 83
+                    },
+                    "kpiGroup": "Final Scope (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "64",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 64,
+                    "hoverValue": {
+                      "Delivered": 53,
+                      "Final Scope": 82
+                    },
+                    "kpiGroup": "Final Scope (Count)#overAll",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "53"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Count)",
+            "filter2": "Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "58",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 58,
+                    "hoverValue": {
+                      "Delivered": 32,
+                      "Final Scope": 55
+                    },
+                    "kpiGroup": "Final Scope (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "40",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 40,
+                    "hoverValue": {
+                      "Delivered": 24,
+                      "Final Scope": 60
+                    },
+                    "kpiGroup": "Final Scope (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "46",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 46,
+                    "hoverValue": {
+                      "Delivered": 32,
+                      "Final Scope": 69
+                    },
+                    "kpiGroup": "Final Scope (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "35",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 35,
+                    "hoverValue": {
+                      "Delivered": 23,
+                      "Final Scope": 65
+                    },
+                    "kpiGroup": "Final Scope (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "62",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 62,
+                    "hoverValue": {
+                      "Delivered": 37,
+                      "Final Scope": 59
+                    },
+                    "kpiGroup": "Final Scope (Count)#Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "2",
+                "maturityValue": "48"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Count)",
+            "filter2": "Enabler Story",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "0",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 0,
+                    "hoverValue": {
+                      "Delivered": 0,
+                      "Final Scope": 1
+                    },
+                    "kpiGroup": "Final Scope (Count)#Enabler Story",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "1",
+                "maturityValue": "0"
+              }
+            ]
+          },
+          {
+            "filter1": "Final Scope (Count)",
+            "filter2": "Defect",
+            "value": [
+              {
+                "data": "AddingIterationProject",
+                "value": [
+                  {
+                    "data": "90",
+                    "sSprintID": "43306_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_2_AddingIterationProject",
+                    "value": 90,
+                    "hoverValue": {
+                      "Delivered": 9,
+                      "Final Scope": 10
+                    },
+                    "kpiGroup": "Final Scope (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "54",
+                    "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
+                    "value": 54,
+                    "hoverValue": {
+                      "Delivered": 6,
+                      "Final Scope": 11
+                    },
+                    "kpiGroup": "Final Scope (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "75",
+                    "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
+                    "value": 75,
+                    "hoverValue": {
+                      "Delivered": 15,
+                      "Final Scope": 20
+                    },
+                    "kpiGroup": "Final Scope (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "83",
+                    "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
+                    "value": 83,
+                    "hoverValue": {
+                      "Delivered": 15,
+                      "Final Scope": 18
+                    },
+                    "kpiGroup": "Final Scope (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "72",
+                    "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
+                    "value": 72,
+                    "hoverValue": {
+                      "Delivered": 16,
+                      "Final Scope": 22
+                    },
+                    "kpiGroup": "Final Scope (Count)#Defect",
+                    "sprojectName": "AddingIterationProject"
+                  }
+                ],
+                "maturity": "4",
+                "maturityValue": "75"
+              }
+            ]
+          }
+        ],
+        "maturityRange": [
+          "-40",
+          "40-60",
+          "60-75",
+          "75-90",
+          "90-"
+        ],
+        "groupId": 2
       }
-  ];
+    ];
     component.colorObj = {
       "AddingIterationProject_64a4ff265b5fdd437756f904": {
-          "nodeName": "AddingIterationProject",
-          "color": "#079FFF"
+        "nodeName": "AddingIterationProject",
+        "color": "#079FFF"
       }
-  };
+    };
 
-  const response = [
-    {
+    const response = [
+      {
         "filterType": "Select a filter",
         "options": [
-            "Initial Commitment (Story Points)",
-            "Initial Commitment (Count)",
-            "Final Scope (Story Points)",
-            "Final Scope (Count)"
+          "Initial Commitment (Story Points)",
+          "Initial Commitment (Count)",
+          "Final Scope (Story Points)",
+          "Final Scope (Count)"
         ]
-    },
-    {
+      },
+      {
         "filterType": "Filter by issue type",
         "options": [
-            "Overall",
-            "Story",
-            "Enabler Story",
-            "Defect"
+          "Overall",
+          "Story",
+          "Enabler Story",
+          "Defect"
         ]
-    }
-]
+      }
+    ]
     const spyData = component.getDropdownArray(kpiId);
     expect(component.kpiDropdowns["kpi72"]).toEqual(response);
   });
@@ -5823,101 +5823,101 @@ describe('ExecutiveComponent', () => {
 
   });
 
-  it('should reload KPI once jira mapping saved ',()=>{
+  it('should reload KPI once jira mapping saved ', () => {
     const KPiList = [{
-      id : "kpi1"
+      id: "kpi1"
     }];
     const fakeKPiDetails = {
-      kpiDetails : {
-        kpiSource : 'jira',
-        kanban : true,
-        groupId : 1
+      kpiDetails: {
+        kpiSource: 'jira',
+        kanban: true,
+        groupId: 1
       }
     }
-    spyOn(service,'getSelectedType').and.returnValue('kanban');
-    spyOn(helperService,'groupKpiFromMaster').and.returnValue({kpiList : KPiList})
-    const spy = spyOn(component,'postJiraKanbanKpi');
+    spyOn(service, 'getSelectedType').and.returnValue('kanban');
+    spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: KPiList })
+    const spy = spyOn(component, 'postJiraKanbanKpi');
     component.reloadKPI(fakeKPiDetails);
     expect(spy).toBeDefined();
   });
 
-  it('should checkLatestAndTrendValue for kpi',()=>{
+  it('should checkLatestAndTrendValue for kpi', () => {
     let kpiData = {
       "kpiId": "kpi153",
       "kpiName": "PI Predictability",
       "isEnabled": true,
       "order": 29,
       "kpiDetail": {
-          "id": "64d475511a944f265d7760be",
-          "kpiId": "kpi153",
-          "kpiName": "PI Predictability",
-          "isDeleted": "False",
-          "defaultOrder": 29,
-          "kpiUnit": "",
-          "chartType": "multipleline",
-          "showTrend": true,
-          "isPositiveTrend": true,
-          "calculateMaturity": false,
-          "aggregationCriteria": "sum",
-          "trendCalculative": false,
-          "additionalFilterSupport": true,
-          "yaxisLabel": "Business Value",
-          "xaxisLabel": "PIs"
+        "id": "64d475511a944f265d7760be",
+        "kpiId": "kpi153",
+        "kpiName": "PI Predictability",
+        "isDeleted": "False",
+        "defaultOrder": 29,
+        "kpiUnit": "",
+        "chartType": "multipleline",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": false,
+        "aggregationCriteria": "sum",
+        "trendCalculative": false,
+        "additionalFilterSupport": true,
+        "yaxisLabel": "Business Value",
+        "xaxisLabel": "PIs"
       },
       "shown": true
-  };
+    };
 
-  const item = {
-    "data": "KnowHOW",
-    "value": [
+    const item = {
+      "data": "KnowHOW",
+      "value": [
         {
-            "sSprintID": "KnowHOW PI-12",
-            "sSprintName": "KnowHOW PI-12",
-            "dataValue": [
-                {
-                    "name": "Achieved Value",
-                    "lineType": "solid",
-                    "data": "116.0",
-                    "value": 64.67,
-                    "hoverValue": {}
-                },
-                {
-                    "name": "Planned Value",
-                    "lineType": "dotted",
-                    "data": "116.0",
-                    "value": 116,
-                    "hoverValue": {}
-                }
-            ],
-            "sprojectName": "KnowHOW"
+          "sSprintID": "KnowHOW PI-12",
+          "sSprintName": "KnowHOW PI-12",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "116.0",
+              "value": 64.67,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "116.0",
+              "value": 116,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
         },
         {
-            "sSprintID": "KnowHOW PI-13",
-            "sSprintName": "KnowHOW PI-13",
-            "dataValue": [
-                {
-                    "name": "Achieved Value",
-                    "lineType": "solid",
-                    "data": "56.0",
-                    "value": 14.6,
-                    "hoverValue": {}
-                },
-                {
-                    "name": "Planned Value",
-                    "lineType": "dotted",
-                    "data": "56.0",
-                    "value": 56,
-                    "hoverValue": {}
-                }
-            ],
-            "sprojectName": "KnowHOW"
+          "sSprintID": "KnowHOW PI-13",
+          "sSprintName": "KnowHOW PI-13",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "56.0",
+              "value": 14.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "56.0",
+              "value": 56,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
         }
-    ]
-};
+      ]
+    };
 
-const result = component.checkLatestAndTrendValueForKpi(kpiData,item);
-expect(result[0]).toEqual('14.6');
-expect(result[1]).toEqual('-ve');
+    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    expect(result[0]).toEqual('14.6');
+    expect(result[1]).toEqual('-ve');
   });
 
   it('should get kpi comments count', fakeAsync(() => {
@@ -5982,8 +5982,8 @@ expect(result[1]).toEqual('-ve');
     component.noOfDataPoints = 5;
     component.colorObj = {
       "AddingIterationProject_64e739541426ba469c39c102": {
-          "nodeName": "AddingIterationProject",
-          "color": "#079FFF"
+        "nodeName": "AddingIterationProject",
+        "color": "#079FFF"
       }
     };
     component.kpiTableDataObj['AddingIterationProject'] = [];
@@ -5996,28 +5996,29 @@ expect(result[1]).toEqual('-ve');
       "order": '1'
     }
     const returnedObj = {
-      'AddingIterationProject':[{
-      "1": "122.6",
-      "2": "126.9",
-      "3": "176.5",
-      "4": "83.3",
-      "5": "57.7",
-      "kpiId": "kpi14",
-      "kpiName": "Defect Injection Rate",
-      "frequency": "Sprints",
-      "show": true,
-      "hoverText": [
+      'AddingIterationProject': [{
+        "1": "122.6",
+        "2": "126.9",
+        "3": "176.5",
+        "4": "83.3",
+        "5": "57.7",
+        "kpiId": "kpi14",
+        "kpiName": "Defect Injection Rate",
+        "frequency": "Sprints",
+        "show": true,
+        "hoverText": [
           "1 - DRP Sprint 71_AddingIterationProject",
           "2 - DRP Sprint 72_AddingIterationProject",
           "3 - DRP Sprint 73_AddingIterationProject",
           "4 - DRP Sprint 74_AddingIterationProject",
           "5 - DRP Sprint 75_AddingIterationProject"
-      ],
-      "latest": "85 %",
-      "trend": "-ve",
-      "maturity": "M3",
-      "order": '1'
-    }]}
+        ],
+        "latest": "85 %",
+        "trend": "-ve",
+        "maturity": "M3",
+        "order": '1'
+      }]
+    }
 
     component.getTableData('kpi14', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
@@ -6029,8 +6030,8 @@ expect(result[1]).toEqual('-ve');
     component.noOfDataPoints = 5;
     component.colorObj = {
       "AddingIterationProject_64e739541426ba469c39c102": {
-          "nodeName": "AddingIterationProject",
-          "color": "#079FFF"
+        "nodeName": "AddingIterationProject",
+        "color": "#079FFF"
       }
     };
     component.kpiTableDataObj['AddingIterationProject'] = [];
@@ -6043,7 +6044,7 @@ expect(result[1]).toEqual('-ve');
       "order": '1'
     }
     const returnedObj = {
-      'AddingIterationProject':[{
+      'AddingIterationProject': [{
         "1": "38",
         "2": "33",
         "3": "32",
@@ -6054,17 +6055,18 @@ expect(result[1]).toEqual('-ve');
         "frequency": "Sprints",
         "show": true,
         "hoverText": [
-            "1 - DRP Sprint 71_AddingIterationProject",
-            "2 - DRP Sprint 72_AddingIterationProject",
-            "3 - DRP Sprint 73_AddingIterationProject",
-            "4 - DRP Sprint 74_AddingIterationProject",
-            "5 - DRP Sprint 75_AddingIterationProject",
+          "1 - DRP Sprint 71_AddingIterationProject",
+          "2 - DRP Sprint 72_AddingIterationProject",
+          "3 - DRP Sprint 73_AddingIterationProject",
+          "4 - DRP Sprint 74_AddingIterationProject",
+          "5 - DRP Sprint 75_AddingIterationProject",
         ],
         "latest": "25",
         "trend": "-ve",
         "maturity": "NA",
         "order": '1'
-    }]}
+      }]
+    }
 
     component.getTableData('kpi28', 0, enabledKpi);
     expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
@@ -6072,42 +6074,42 @@ expect(result[1]).toEqual('-ve');
 
   it('should create all kpi Table Heads when scrum is selected', () => {
     const tableHeadsArr = [
-        {
-            "field": "kpiName",
-            "header": "Kpi Name"
-        },
-        {
-            "field": "frequency",
-            "header": "Frequency"
-        },
-        {
-            "field": 1,
-            "header": 1
-        },
-        {
-            "field": 2,
-            "header": 2
-        },
-        {
-            "field": 3,
-            "header": 3
-        },
-        {
-            "field": 4,
-            "header": 4
-        },
-        {
-            "field": 5,
-            "header": 5
-        },
-        {
-            "field": "trend",
-            "header": "Trend"
-        },
-        {
-            "field": "maturity",
-            "header": "Maturity"
-        }
+      {
+        "field": "kpiName",
+        "header": "Kpi Name"
+      },
+      {
+        "field": "frequency",
+        "header": "Frequency"
+      },
+      {
+        "field": 1,
+        "header": 1
+      },
+      {
+        "field": 2,
+        "header": 2
+      },
+      {
+        "field": 3,
+        "header": 3
+      },
+      {
+        "field": 4,
+        "header": 4
+      },
+      {
+        "field": 5,
+        "header": 5
+      },
+      {
+        "field": "trend",
+        "header": "Trend"
+      },
+      {
+        "field": "maturity",
+        "header": "Maturity"
+      }
     ];
     component.selectedtype = 'Scrum';
     component.noOfDataPoints = 5;
@@ -6118,42 +6120,42 @@ expect(result[1]).toEqual('-ve');
 
   it('should create all kpi Table Heads when kanban is selected', () => {
     const tableHeadsArr = [
-        {
-            "field": "kpiName",
-            "header": "Kpi Name"
-        },
-        {
-            "field": "frequency",
-            "header": "Frequency"
-        },
-        {
-            "field": 1,
-            "header": 1
-        },
-        {
-            "field": 2,
-            "header": 2
-        },
-        {
-            "field": 3,
-            "header": 3
-        },
-        {
-            "field": 4,
-            "header": 4
-        },
-        {
-            "field": 5,
-            "header": 5
-        },
-        {
-            "field": "trend",
-            "header": "Trend"
-        },
-        {
-            "field": "maturity",
-            "header": "Maturity"
-        }
+      {
+        "field": "kpiName",
+        "header": "Kpi Name"
+      },
+      {
+        "field": "frequency",
+        "header": "Frequency"
+      },
+      {
+        "field": 1,
+        "header": 1
+      },
+      {
+        "field": 2,
+        "header": 2
+      },
+      {
+        "field": 3,
+        "header": 3
+      },
+      {
+        "field": 4,
+        "header": 4
+      },
+      {
+        "field": 5,
+        "header": 5
+      },
+      {
+        "field": "trend",
+        "header": "Trend"
+      },
+      {
+        "field": "maturity",
+        "header": "Maturity"
+      }
     ];
     component.selectedtype = 'Kanban';
     component.filterApplyData = {
@@ -6179,24 +6181,25 @@ expect(result[1]).toEqual('-ve');
   it('should create all kpi array when trendValueList does not have filter', () => {
     const data = {
       'kpi14': {
-      "kpiId": "kpi14",
-      "kpiName": "Defect Injection Rate",
-      "unit": "%",
-      "maxValue": "200",
-      "chartType": "",
-      "id": "64e72b51cab22644f44242f5",
-      "isDeleted": "False",
-      "kpiUnit": "%",
-      "kanban": false,
-      "kpiSource": "Jira",
-    }};
+        "kpiId": "kpi14",
+        "kpiName": "Defect Injection Rate",
+        "unit": "%",
+        "maxValue": "200",
+        "chartType": "",
+        "id": "64e72b51cab22644f44242f5",
+        "isDeleted": "False",
+        "kpiUnit": "%",
+        "kanban": false,
+        "kpiSource": "Jira",
+      }
+    };
     component.updatedConfigGlobalData = [{
       "kpiId": "kpi14",
       "kpiName": "Defect Injection Rate",
       "isEnabled": true,
       "order": 1,
       "kpiDetail": {
-          "aggregationCriteria": "average"
+        "aggregationCriteria": "average"
       },
       "shown": true
     }];
@@ -6221,153 +6224,154 @@ expect(result[1]).toEqual('-ve');
         "kpiSource": "Jira",
         "thresholdValue": 55,
         "trendValueList": [
-            {
-                "filter": "Overall",
-                "value":[
+          {
+            "filter": "Overall",
+            "value": [
+              {
+                "data": "KnowHOW",
+                "value": [
                   {
-                      "data": "KnowHOW",
-                      "value": [
-                          {
-                              "data": "4",
-                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
-                              "value": 4,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "1",
-                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
-                              "value": 1,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "6",
-                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
-                              "value": 6,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "19",
-                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
-                              "value": 19,
-                              "hoverValue": {
-                                  "P1": 1,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "3",
-                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
-                              "value": 3,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          }
-                      ]
+                    "data": "4",
+                    "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                    "value": 4,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "1",
+                    "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                    "value": 1,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "6",
+                    "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                    "value": 6,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "19",
+                    "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                    "value": 19,
+                    "hoverValue": {
+                      "P1": 1,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "3",
+                    "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                    "value": 3,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
                   }
                 ]
-            },
-            {
-                "filter": "P1",
-                "value":[
+              }
+            ]
+          },
+          {
+            "filter": "P1",
+            "value": [
+              {
+                "data": "KnowHOW",
+                "value": [
                   {
-                      "data": "KnowHOW",
-                      "value": [
-                          {
-                              "data": "4",
-                              "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
-                              "value": 4,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "1",
-                              "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
-                              "value": 1,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "6",
-                              "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
-                              "value": 6,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "19",
-                              "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
-                              "value": 19,
-                              "hoverValue": {
-                                  "P1": 1,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          },
-                          {
-                              "data": "3",
-                              "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
-                              "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
-                              "value": 3,
-                              "hoverValue": {
-                                  "P1": 0,
-                              },
-                              "kpiGroup": "Overall",
-                              "sprojectName": "KnowHOW"
-                          }
-                      ]
+                    "data": "4",
+                    "sSprintID": "43310_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_13| ITR_6_KnowHOW",
+                    "value": 4,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "1",
+                    "sSprintID": "45160_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_1_KnowHOW",
+                    "value": 1,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "6",
+                    "sSprintID": "45161_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_2_KnowHOW",
+                    "value": 6,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "19",
+                    "sSprintID": "45162_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_3_KnowHOW",
+                    "value": 19,
+                    "hoverValue": {
+                      "P1": 1,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
+                  },
+                  {
+                    "data": "3",
+                    "sSprintID": "45163_KnowHOW_6360fefc3fa9e175755f0728",
+                    "sSprintName": "KnowHOW | PI_14| ITR_4_KnowHOW",
+                    "value": 3,
+                    "hoverValue": {
+                      "P1": 0,
+                    },
+                    "kpiGroup": "Overall",
+                    "sprojectName": "KnowHOW"
                   }
                 ]
-            },
+              }
+            ]
+          },
         ],
-    }};
+      }
+    };
     component.updatedConfigGlobalData = [{
       "kpiId": "kpi28",
       "kpiName": "Defect Injection Rate",
       "isEnabled": true,
       "order": 1,
       "kpiDetail": {
-          "aggregationCriteria": "average",
-          'kpiFilter': 'dropdown'
+        "aggregationCriteria": "average",
+        'kpiFilter': 'dropdown'
       },
       "shown": true
     }];
     spyOn(component, 'ifKpiExist');
     component.kpiSelectedFilterObj['kpi28'] = {};
     spyOn(component, 'getDropdownArray');
-    component.kpiSelectedFilterObj['action']='new';
+    component.kpiSelectedFilterObj['action'] = 'new';
     spyOn(service, 'setKpiSubFilterObj');
     const spy = spyOn(component, 'getChartData').and.callThrough();
     component.createAllKpiArray(data, false);
@@ -6388,227 +6392,228 @@ expect(result[1]).toEqual('-ve');
         "kanban": false,
         "kpiSource": "Jira",
         "trendValueList": [
-            {
-                "filter": "Total Defects",
+          {
+            "filter": "Total Defects",
+            "value": [
+              {
+                "data": "AddingIterationProject",
                 "value": [
-                    {
-                        "data": "AddingIterationProject",
-                        "value": [
-                            {
-                                "data": "38.0",
-                                "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 76_AddingIterationProject",
-                                "value": 38,
-                                "hoverValue": {
-                                    "createdDefects": 38,
-                                    "resolvedDefects": 24
-                                },
-                                "kpiGroup": "Total Defects",
-                                "sprintIds": [
-                                    "974_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 76_AddingIterationProject"
-                                ],
-                                "lineValue": 24,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "33.0",
-                                "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 77_AddingIterationProject",
-                                "value": 33,
-                                "hoverValue": {
-                                    "createdDefects": 33,
-                                    "resolvedDefects": 28
-                                },
-                                "kpiGroup": "Total Defects",
-                                "sprintIds": [
-                                    "975_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 77_AddingIterationProject"
-                                ],
-                                "lineValue": 28,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "23.0",
-                                "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 78_AddingIterationProject",
-                                "value": 23,
-                                "hoverValue": {
-                                    "createdDefects": 23,
-                                    "resolvedDefects": 21
-                                },
-                                "kpiGroup": "Total Defects",
-                                "sprintIds": [
-                                    "976_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 78_AddingIterationProject"
-                                ],
-                                "lineValue": 21,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "37.0",
-                                "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 79_AddingIterationProject",
-                                "value": 37,
-                                "hoverValue": {
-                                    "createdDefects": 37,
-                                    "resolvedDefects": 28
-                                },
-                                "kpiGroup": "Total Defects",
-                                "sprintIds": [
-                                    "977_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 79_AddingIterationProject"
-                                ],
-                                "lineValue": 28,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "32.0",
-                                "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 80_AddingIterationProject",
-                                "value": 32,
-                                "hoverValue": {
-                                    "createdDefects": 32,
-                                    "resolvedDefects": 29
-                                },
-                                "kpiGroup": "Total Defects",
-                                "sprintIds": [
-                                    "978_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 80_AddingIterationProject"
-                                ],
-                                "lineValue": 29,
-                                "sprojectName": "AddingIterationProject"
-                            }
-                        ]
-                    }
+                  {
+                    "data": "38.0",
+                    "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                    "value": 38,
+                    "hoverValue": {
+                      "createdDefects": 38,
+                      "resolvedDefects": 24
+                    },
+                    "kpiGroup": "Total Defects",
+                    "sprintIds": [
+                      "974_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 76_AddingIterationProject"
+                    ],
+                    "lineValue": 24,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "33.0",
+                    "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                    "value": 33,
+                    "hoverValue": {
+                      "createdDefects": 33,
+                      "resolvedDefects": 28
+                    },
+                    "kpiGroup": "Total Defects",
+                    "sprintIds": [
+                      "975_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 77_AddingIterationProject"
+                    ],
+                    "lineValue": 28,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "23.0",
+                    "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                    "value": 23,
+                    "hoverValue": {
+                      "createdDefects": 23,
+                      "resolvedDefects": 21
+                    },
+                    "kpiGroup": "Total Defects",
+                    "sprintIds": [
+                      "976_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 78_AddingIterationProject"
+                    ],
+                    "lineValue": 21,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "37.0",
+                    "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                    "value": 37,
+                    "hoverValue": {
+                      "createdDefects": 37,
+                      "resolvedDefects": 28
+                    },
+                    "kpiGroup": "Total Defects",
+                    "sprintIds": [
+                      "977_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 79_AddingIterationProject"
+                    ],
+                    "lineValue": 28,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "32.0",
+                    "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                    "value": 32,
+                    "hoverValue": {
+                      "createdDefects": 32,
+                      "resolvedDefects": 29
+                    },
+                    "kpiGroup": "Total Defects",
+                    "sprintIds": [
+                      "978_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 80_AddingIterationProject"
+                    ],
+                    "lineValue": 29,
+                    "sprojectName": "AddingIterationProject"
+                  }
                 ]
-            },
-            {
-                "filter": "Added Defects",
+              }
+            ]
+          },
+          {
+            "filter": "Added Defects",
+            "value": [
+              {
+                "data": "AddingIterationProject",
                 "value": [
-                    {
-                        "data": "AddingIterationProject",
-                        "value": [
-                            {
-                                "data": "30.0",
-                                "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 76_AddingIterationProject",
-                                "value": 30,
-                                "hoverValue": {
-                                    "createdDefects": 30,
-                                    "resolvedDefects": 18
-                                },
-                                "kpiGroup": "Added Defects",
-                                "sprintIds": [
-                                    "974_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 76_AddingIterationProject"
-                                ],
-                                "lineValue": 18,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "16.0",
-                                "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 77_AddingIterationProject",
-                                "value": 16,
-                                "hoverValue": {
-                                    "createdDefects": 16,
-                                    "resolvedDefects": 14
-                                },
-                                "kpiGroup": "Added Defects",
-                                "sprintIds": [
-                                    "975_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 77_AddingIterationProject"
-                                ],
-                                "lineValue": 14,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "21.0",
-                                "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 78_AddingIterationProject",
-                                "value": 21,
-                                "hoverValue": {
-                                    "createdDefects": 21,
-                                    "resolvedDefects": 19
-                                },
-                                "kpiGroup": "Added Defects",
-                                "sprintIds": [
-                                    "976_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 78_AddingIterationProject"
-                                ],
-                                "lineValue": 19,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "26.0",
-                                "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 79_AddingIterationProject",
-                                "value": 26,
-                                "hoverValue": {
-                                    "createdDefects": 26,
-                                    "resolvedDefects": 20
-                                },
-                                "kpiGroup": "Added Defects",
-                                "sprintIds": [
-                                    "977_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 79_AddingIterationProject"
-                                ],
-                                "lineValue": 20,
-                                "sprojectName": "AddingIterationProject"
-                            },
-                            {
-                                "data": "27.0",
-                                "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
-                                "sSprintName": "DRP Sprint 80_AddingIterationProject",
-                                "value": 27,
-                                "hoverValue": {
-                                    "createdDefects": 27,
-                                    "resolvedDefects": 24
-                                },
-                                "kpiGroup": "Added Defects",
-                                "sprintIds": [
-                                    "978_AddingIterationProject_64e739541426ba469c39c102"
-                                ],
-                                "sprintNames": [
-                                    "DRP Sprint 80_AddingIterationProject"
-                                ],
-                                "lineValue": 24,
-                                "sprojectName": "AddingIterationProject"
-                            }
-                        ]
-                    }
+                  {
+                    "data": "30.0",
+                    "sSprintID": "974_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 76_AddingIterationProject",
+                    "value": 30,
+                    "hoverValue": {
+                      "createdDefects": 30,
+                      "resolvedDefects": 18
+                    },
+                    "kpiGroup": "Added Defects",
+                    "sprintIds": [
+                      "974_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 76_AddingIterationProject"
+                    ],
+                    "lineValue": 18,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "16.0",
+                    "sSprintID": "975_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 77_AddingIterationProject",
+                    "value": 16,
+                    "hoverValue": {
+                      "createdDefects": 16,
+                      "resolvedDefects": 14
+                    },
+                    "kpiGroup": "Added Defects",
+                    "sprintIds": [
+                      "975_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 77_AddingIterationProject"
+                    ],
+                    "lineValue": 14,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "21.0",
+                    "sSprintID": "976_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 78_AddingIterationProject",
+                    "value": 21,
+                    "hoverValue": {
+                      "createdDefects": 21,
+                      "resolvedDefects": 19
+                    },
+                    "kpiGroup": "Added Defects",
+                    "sprintIds": [
+                      "976_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 78_AddingIterationProject"
+                    ],
+                    "lineValue": 19,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "26.0",
+                    "sSprintID": "977_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 79_AddingIterationProject",
+                    "value": 26,
+                    "hoverValue": {
+                      "createdDefects": 26,
+                      "resolvedDefects": 20
+                    },
+                    "kpiGroup": "Added Defects",
+                    "sprintIds": [
+                      "977_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 79_AddingIterationProject"
+                    ],
+                    "lineValue": 20,
+                    "sprojectName": "AddingIterationProject"
+                  },
+                  {
+                    "data": "27.0",
+                    "sSprintID": "978_AddingIterationProject_64e739541426ba469c39c102",
+                    "sSprintName": "DRP Sprint 80_AddingIterationProject",
+                    "value": 27,
+                    "hoverValue": {
+                      "createdDefects": 27,
+                      "resolvedDefects": 24
+                    },
+                    "kpiGroup": "Added Defects",
+                    "sprintIds": [
+                      "978_AddingIterationProject_64e739541426ba469c39c102"
+                    ],
+                    "sprintNames": [
+                      "DRP Sprint 80_AddingIterationProject"
+                    ],
+                    "lineValue": 24,
+                    "sprojectName": "AddingIterationProject"
+                  }
                 ]
-            }
+              }
+            ]
+          }
         ],
-    }};
+      }
+    };
     component.updatedConfigGlobalData = [{
       "kpiId": "kpi126",
       "kpiName": "Defect Injection Rate",
       "isEnabled": true,
       "order": 1,
       "kpiDetail": {
-          "aggregationCriteria": "average",
-          'kpiFilter': 'radiobutton',
-          "kpiUnit": "Number"
+        "aggregationCriteria": "average",
+        'kpiFilter': 'radiobutton',
+        "kpiUnit": "Number"
       },
       "shown": true
     }];
@@ -6617,14 +6622,14 @@ expect(result[1]).toEqual('-ve');
     spyOn(component, 'getDropdownArray');
     component.kpiDropdowns['kpi126'] = [
       {
-          "filterType": "Select a filter",
-          "options": [
-              "Total Defects",
-              "Added Defects"
-          ]
+        "filterType": "Select a filter",
+        "options": [
+          "Total Defects",
+          "Added Defects"
+        ]
       }
     ]
-    component.kpiSelectedFilterObj['action']='new';
+    component.kpiSelectedFilterObj['action'] = 'new';
     spyOn(service, 'setKpiSubFilterObj');
     const spy = spyOn(component, 'getChartData').and.callThrough();
     component.createAllKpiArray(data, false);
@@ -6633,16 +6638,16 @@ expect(result[1]).toEqual('-ve');
 
   it("should take care of loader untill full table data is loading", () => {
     component.kpiTableDataObj = {
-      'knowhow': [ {
-          kpiId: 'kpi123'
-        },
-        {
-          kpiId: 'kpi1234'
-        }]
-     }
-    component.maturityTableKpiList = ['kpi123','kpi1234']
-    spyOn(component,'ifKpiExist').and.returnValue(1);
-    const spy = spyOn(service,'setMaturiyTableLoader');
+      'knowhow': [{
+        kpiId: 'kpi123'
+      },
+      {
+        kpiId: 'kpi1234'
+      }]
+    }
+    component.maturityTableKpiList = ['kpi123', 'kpi1234']
+    spyOn(component, 'ifKpiExist').and.returnValue(1);
+    const spy = spyOn(service, 'setMaturiyTableLoader');
     component.handleMaturityTableLoader();
     expect(spy).toBeDefined();
   })
@@ -6783,71 +6788,17 @@ expect(result[1]).toEqual('-ve');
       worksheet = workbook.addWorksheet('Kpi Data');
       saveAsSpy = spyOn(fs, 'saveAs');
       spyOn(workbook, 'addWorksheet').and.returnValue(worksheet);
-      
+
       spyOn(worksheet, 'addRow');
       spyOn(worksheet, 'eachRow');
       spyOn(worksheet, 'mergeCells');
     });
 
-    // xit('should create and download an Excel file', () => {
-    //   component.updatedConfigGlobalData = [
-    //     {
-    //       kpiId: 1,
-    //       kpiName: 'KPI 1',
-    //     },
-    //     {
-    //       kpiId: 2,
-    //       kpiName: 'KPI 2',
-    //     },
-    //   ];
-    //   component.kpiTrendsObj = {
-    //     1: [
-    //       {
-    //         hierarchyName: 'Hierarchy 1',
-    //         value: 10,
-    //         maturity: 5,
-    //         trend: 2,
-    //       },
-    //     ],
-    //     2: [
-    //       {
-    //         hierarchyName: 'Hierarchy 2',
-    //         value: 20,
-    //         maturity: 3,
-    //         trend: 1,
-    //       },
-    //     ],
-    //   };
-    //   component.trendBoxColorObj = {
-    //     'Node 1': {
-    //       color: '#FF0000',
-    //     },
-    //     'Node 2': {
-    //       color: '#00FF00',
-    //     },
-    //   };
-    //   component.service = {
-    //     getSelectedTrends: () => [
-    //       {
-    //         nodeName: 'Node 1',
-    //       },
-    //       {
-    //         nodeName: 'Node 2',
-    //       },
-    //     ],
-    //   };
-    //   spyOn(component.service, 'getSelectedTrends').and.callThrough();
-
-    //   component.downloadGlobalExcel();
-
-    //   expect(workbook.addWorksheet).toHaveBeenCalledWith('Kpi Data');
-    //   expect(worksheet.getRow).toHaveBeenCalledWith(1);
-    //   expect(worksheet.addRow).toHaveBeenCalledTimes(2);
-    //   expect(worksheet.eachRow).toHaveBeenCalled();
-    //   expect(worksheet.mergeCells).toHaveBeenCalledWith('A3:F3');
-    //   expect(component.service.getSelectedTrends).toHaveBeenCalled();
-    //   expect(saveAsSpy).toHaveBeenCalled();
-    // });
+    it('should work download excel functionality', () => {
+      spyOn(component.exportExcelComponent, 'downloadExcel')
+      component.downloadExcel('kpi70', 'name', true, true);
+      expect(exportExcelComponent).toBeDefined();
+    });
   });
 
 

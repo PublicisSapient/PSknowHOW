@@ -44,6 +44,52 @@ describe('DailyScrumTabComponent', () => {
     expect(component.displayModal).toBeFalse();
   });
 
-  // Add more test cases as needed
+  it('should update the assigneeList and set the displayModal to the provided value', () => {
+    const assigneeList = [
+      { name: 'John' },
+      { name: 'Jane' },
+      { name: 'Alice' },
+    ];
+    component.assigneeList = assigneeList;
+    const e = true;
+    component.setExpandView(e);
+    expect(component.assigneeList).toEqual(assigneeList);
+    expect(component.displayModal).toBe(e);
+  });
+
+  it('should toggle the showLess property', () => {
+    component.showLess = true;
+    component.onShowLessOrMore();
+    expect(component.showLess).toBe(false);
+    component.onShowLessOrMore();
+    expect(component.showLess).toBe(true);
+  });
+
+  it('should update the filters property with the provided filters', () => {
+    const filters = { column1: 'value1', column2: 'value2' };
+    component.onFilterChange(filters);
+    expect(component.filters).toEqual(filters);
+  });
+
+  it('should update the selectedUser to "Overall" if it matches the provided selectedUser', () => {
+    const selectedUser = 'John';
+    component.selectedUser = 'John';
+    component.onSelectedUserChange(selectedUser);
+    expect(component.selectedUser).toBe('Overall');
+  });
+
+  it('should update the selectedUser to the provided selectedUser if it does not match', () => {
+    const selectedUser = 'Jane';
+    component.selectedUser = 'John';
+    component.onSelectedUserChange(selectedUser);
+    expect(component.selectedUser).toBe('Jane');
+  });
+
+  it('should emit the reloadKPITab event with the provided event data', () => {
+    const event = { data: 'some-data' };
+    spyOn(component.reloadKPITab, 'emit');
+    component.reloadKPI(event);
+    expect(component.reloadKPITab.emit).toHaveBeenCalledWith(event);
+  });
 
 });
