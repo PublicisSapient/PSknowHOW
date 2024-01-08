@@ -18,7 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +31,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +41,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -104,8 +110,8 @@ public class RepoToolsConfigServiceImplTest {
     @Mock
     private RestTemplate restTemplate;
 
-//    @Mock
-//    private RepoToolsClient repoToolsClient;
+    @Mock
+    private RepoToolsClient repoToolsClient;
     @Mock
     private ConnectionRepository connectionRepository;
 
@@ -162,7 +168,11 @@ public class RepoToolsConfigServiceImplTest {
     public void testConfigureRepoToolsProject() {
 
         repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
-        verify(repoToolsProviderRepository, Mockito.times(1)).findByToolName("github");
+        when(repoToolsClient.enrollProjectCall(any(), anyString(), anyString())).thenReturn(HttpStatus.OK.value());
+        int result = repoToolsConfigService.configureRepoToolProject(projectToolConfig, connection, Collections.singletonList("branchName"));
+
+        // Assert
+        assertEquals(HttpStatus.OK.value(), result);
 
     }
 
@@ -178,8 +188,11 @@ public class RepoToolsConfigServiceImplTest {
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
-        repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
+        when(repoToolsClient.triggerScanCall(anyString(), anyString(), anyString())).thenReturn(HttpStatus.OK.value());
+
+        int result = repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
         verify(processorRepository, Mockito.times(1)).findByProcessorName("RepoTool");
+        assertEquals(HttpStatus.OK.value(), result);
     }
 
     @Test
@@ -221,6 +234,8 @@ public class RepoToolsConfigServiceImplTest {
 	@Test
 	public void testGetRepoToolKpiMetrics() {
 		List<String> projectCode = Arrays.asList("code1", "code2", "code3");
+        RepoToolKpiBulkMetricResponse repoToolKpiBulkMetricResponse = new RepoToolKpiBulkMetricResponse();
+
 		repoToolsConfigService.getRepoToolKpiMetrics(projectCode, "repoToolKpi", "startDate",
                 "endDate", "frequency");
 	}

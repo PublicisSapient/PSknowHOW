@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.zephyr.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,7 +31,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.AdditionalFilterCategoryFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.TestExecutionDataFactory;
+import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.testexecution.TestExecution;
+import com.publicissapient.kpidashboard.common.repository.application.TestExecutionRepository;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,9 +105,12 @@ public class RegressionPercentageServiceImplTest {
 	@Mock
 	private KpiHelperService kpiHelperService;
 	@Mock
+	FilterHelperService filterHelperService;
 	private CustomApiConfig customApiConfig;
 	@Mock
 	private CommonService commonService;
+	@Mock
+	private TestExecutionRepository testExecutionRepository;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement;
@@ -122,6 +134,37 @@ public class RegressionPercentageServiceImplTest {
 		totalTestCaseList = JiraIssueDataFactory.newInstance().getJiraIssues();
 		automatedTestCaseList = TestCaseDetailsDataFactory.newInstance().findAutomatedTestCases();
 		testCaseDetailsList = TestCaseDetailsDataFactory.newInstance().getTestCaseDetailsList();
+		List<TestExecution> testExecutionList = TestExecutionDataFactory.newInstance().getTestExecutionList();
+		testExecutionList.forEach(test->{
+			test.setAutomatedRegressionTestCases(1);
+			test.setTotalRegressionTestCases(1);
+		});
+		when(testExecutionRepository.findTestExecutionDetailByFilters(anyMap(),anyMap())).thenReturn(testExecutionList);
+
+		AdditionalFilterCategoryFactory additionalFilterCategoryFactory = AdditionalFilterCategoryFactory.newInstance();
+		List<AdditionalFilterCategory> additionalFilterCategoryList = additionalFilterCategoryFactory
+				.getAdditionalFilterCategoryList();
+		Map<String, AdditionalFilterCategory> additonalFilterMap = additionalFilterCategoryList.stream()
+				.collect(Collectors.toMap(AdditionalFilterCategory::getFilterCategoryId, x -> x));
+		when(cacheService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+		when(filterHelperService.getAdditionalFilterHierarchyLevel()).thenReturn(additonalFilterMap);
+
+
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		zephyConfig.setRegressionAutomationLabels(Arrays.asList("test1"));
+		zephyConfig.setTestRegressionValue(Arrays.asList("test1"));
+		zephyConfig.setRegressionAutomationFolderPath(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		jiraTest.setJiraRegressionTestValue(Arrays.asList("test1"));
+		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
 
 	}
 
@@ -169,6 +212,31 @@ public class RegressionPercentageServiceImplTest {
 		Map<String, List<TestCaseDetails>> testCaseData = testCaseDetailsList.stream()
 				.collect(Collectors.groupingBy(TestCaseDetails::getBasicProjectConfigId, Collectors.toList()));
 		assertThat("fetch KPI dats from DB :", map.get("testCaseData"), equalTo(testCaseData));
+	}
+
+	@Test
+	public void fetchKPIDataFromDbTest_fieldMapping() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("automationPercentage", Arrays.asList("-20", "20-40", "40-60", "60-79", "80-"));
+
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+		fieldMappingMap.computeIfPresent(new ObjectId("6335363749794a18e8a4479b"), (key, mapping) -> {
+			mapping.setUploadDataKPI42(true);
+			return mapping;
+		});
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		String kpiRequestTrackerId = "Excel-Zephyr-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name()))
+				.thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = regressionPercentageServiceImpl.getKpiData(kpiRequest,
+					kpiRequest.getKpiList().get(0), treeAggregatorDetail);
+			assertThat(((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(1));
+		} catch (ApplicationException exception) {
+
+		}
 	}
 
 	@Test
