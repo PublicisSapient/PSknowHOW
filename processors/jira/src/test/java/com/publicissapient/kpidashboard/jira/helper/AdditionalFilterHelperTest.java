@@ -96,8 +96,9 @@ public class AdditionalFilterHelperTest {
 		return fieldMapping;
 	}
 
-	AdditionalFilterCategory getAdditionalFilterCategory(int level,String filterCategoryId,String filterCategoryName){
-		AdditionalFilterCategory additionalFilterCategory= new AdditionalFilterCategory();
+	AdditionalFilterCategory getAdditionalFilterCategory(int level, String filterCategoryId,
+			String filterCategoryName) {
+		AdditionalFilterCategory additionalFilterCategory = new AdditionalFilterCategory();
 		additionalFilterCategory.setLevel(level);
 		additionalFilterCategory.setFilterCategoryId(filterCategoryId);
 		additionalFilterCategory.setFilterCategoryName(filterCategoryName);
