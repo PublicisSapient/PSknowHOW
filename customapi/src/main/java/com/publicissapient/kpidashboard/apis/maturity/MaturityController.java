@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,7 +62,7 @@ public class MaturityController {
      * @return List of KPIs with trend and aggregated data.
      * @throws Exception
      */
-	@GetMapping(value = "/maturityValues", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/maturityValues", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<KpiElement>> getMaturityValues(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest) {
 		log.info("Received {} request for /maturityValues", request.getMethod());
