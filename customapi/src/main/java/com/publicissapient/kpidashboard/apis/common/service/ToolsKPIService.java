@@ -928,14 +928,18 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return aggregated value
 	 */
 	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values, String kpiId) {
-		R aggValue;
+		R aggValue = null;
 		if (kpiName.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE.name())) {
 			aggValue = (R) value.get(value.size() - 1).getValue();
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
 		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
-			aggValue = (R) value.stream().filter(dataCount -> dataCount.getsSprintID().equalsIgnoreCase("< 3 Months"))
-					.findFirst().get().getValue();
+			//the maturity has to be gven for <3 Months value
+			List<DataCount> lessThan3Month = value.stream()
+					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID())).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(lessThan3Month)) {
+				aggValue = (R) lessThan3Month.get(0).getValue();
+			}
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
 			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
