@@ -184,7 +184,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 						for (Application applicationitem : listOfApplications.getItems()) {
 							Application application = argoCDClient.getApplicationByName(baseUrl,
 									applicationitem.getMetadata().getName(), accessToken);
-							count += saveRevisionsinDB(application, deploymentJobs, argoCDJob, processor.getId());
+							count += saveRevisionsInDbAndGetCount(application, deploymentJobs, argoCDJob, processor.getId());
 						}
 					}
 					log.info("Finished ArgoCD Job started at :: {}", startTime);
@@ -197,7 +197,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 					processorExecutionTraceLog.setExecutionSuccess(executionStatus);
 					processorExecutionTraceLogService.save(processorExecutionTraceLog);
-					log.error("Error getting ArgoCD jobs for :: {} with exception {}", baseUrl, exception);
+					log.error("Error getting ArgoCD jobs for ::" + baseUrl + " with exception :: ", exception);
 				}
 			}
 		}
@@ -282,7 +282,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * 
 	 * @return int
 	 */
-	private int saveRevisionsinDB(Application application, List<Deployment> exisitingEntries,
+	private int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
 			ProcessorToolConnection argoCDJob, ObjectId processorId) {
 		Map<Pair<String, String>, Deployment> deployments = mapRevisionsToDeployment(application, argoCDJob,
 				processorId);
@@ -356,7 +356,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		try {
 			response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 		} catch (RestClientException e) {
-			log.error("[ARGOCD-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service {}", e);
+			log.error("[ARGOCD-CUSTOMAPI-CACHE-EVICT]. Error while consuming rest service ", e);
 		}
 
 		if (null != response && response.getStatusCode().is2xxSuccessful()) {

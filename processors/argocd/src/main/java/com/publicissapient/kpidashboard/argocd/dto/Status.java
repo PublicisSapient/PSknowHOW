@@ -18,11 +18,12 @@
 
 package com.publicissapient.kpidashboard.argocd.dto;
 
+import java.util.Collections;
 import java.util.List;
 
 import lombok.Data;
 
 @Data
 public class Status {
-	private List<History> history;
+	private List<History> history = Collections.emptyList();
 }

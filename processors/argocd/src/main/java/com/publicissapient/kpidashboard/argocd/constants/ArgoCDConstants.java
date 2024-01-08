@@ -52,7 +52,5 @@ public class ArgoCDConstants {
 	
 	public static final String TOTAL_CONFIGURED_PROJECTS = "TotalConfiguredProject";
 	
-	public static final String DATETIME_FORMAT_UTC = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-	
 	public static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 }

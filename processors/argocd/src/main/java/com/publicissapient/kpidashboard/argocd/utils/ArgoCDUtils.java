@@ -20,11 +20,9 @@ package com.publicissapient.kpidashboard.argocd.utils;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.DATETIME_FORMAT_UTC;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.DATETIME_FORMAT;
 
 /**
@@ -41,11 +39,8 @@ public class ArgoCDUtils {
 	 * @return long - time difference in milliseconds
 	 */
 	public static long calculateDuration(String startTime, String endTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIME_FORMAT_UTC);
-		LocalDateTime start = LocalDateTime.parse(startTime, formatter);
-		LocalDateTime end = LocalDateTime.parse(endTime, formatter);
-		Instant startInstant = start.toInstant(ZoneOffset.UTC);
-		Instant endInstant = end.toInstant(ZoneOffset.UTC);
+		Instant startInstant = Instant.parse(startTime);
+		Instant endInstant = Instant.parse(endTime);
 		Duration duration = Duration.between(startInstant, endInstant);
 		return duration.toMillis();
 	}
@@ -55,8 +50,9 @@ public class ArgoCDUtils {
 	 * @return String - formatted Date
 	 */
 	public static String formatDate(String date) {
-		LocalDateTime dateTime = LocalDateTime.parse(date, DateTimeFormatter.ofPattern(DATETIME_FORMAT_UTC));
-		return dateTime.format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
+		Instant dateTime = Instant.parse(date);
+		return dateTime.atZone(ZoneId.systemDefault()).toLocalDateTime()
+				.format(DateTimeFormatter.ofPattern(DATETIME_FORMAT));
 	}
 
 }

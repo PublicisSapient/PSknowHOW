@@ -69,7 +69,7 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<ApplicationsList> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), ApplicationsList.class);
-			log.info("ArgoCDClient :: getApplications response :: {}", response.getBody());
+			log.debug("ArgoCDClient :: getApplications response :: {}", response.getBody());
 			return response.getBody();
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getApplications Exception occured :: {}", ex.getMessage());
@@ -93,7 +93,7 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<Application> response = restTemplate.exchange(URI.create(url), HttpMethod.GET,
 					new HttpEntity<>(requestHeaders), Application.class);
-			log.info("ArgoCDClient :: getApplicationByName response :: {}", response.getBody());
+			log.debug("ArgoCDClient :: getApplicationByName response :: {}", response.getBody());
 			return response.getBody();
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getApplicationByName Exception occured :: {}", ex.getMessage());
@@ -112,18 +112,18 @@ public class ArgoCDClient {
 		String url = baseUrl + AUTHTOKEN_ENDPOINT;
 		HttpHeaders requestHeaders = new HttpHeaders();
 		requestHeaders.setContentType(MediaType.APPLICATION_JSON);
-		String accessToken = null;
 		try {
 			ResponseEntity<TokenDTO> response = restTemplate.exchange(URI.create(url), HttpMethod.POST,
 					new HttpEntity<>(userCredentialsDTO, requestHeaders), TokenDTO.class);
-			if (Objects.nonNull(response.getBody())) {
-				accessToken = response.getBody().getToken();
+			if (Objects.isNull(response.getBody())) {
+				throw new RestClientException("Unable to fetch token for the user");
+			} else {
+				return response.getBody().getToken();
 			}
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getAuthToken Exception occured :: {}", ex.getMessage());
 			throw ex;
 		}
-		return accessToken;
 	}
 
 }

@@ -113,6 +113,14 @@ class ArgoCDClientTest {
 				.thenReturn(new ResponseEntity<TokenDTO>(accessToken, HttpStatus.OK));
 		assertEquals(null, argoCDClient.getAuthToken(ARGOCD_URL, null));
 	}
+	
+	@Test
+	void testGetAccessTokenWithNoBody() {
+		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
+				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
+				.thenReturn(new ResponseEntity<TokenDTO>(HttpStatus.OK));
+		Assertions.assertThrows(RestClientException.class, () -> argoCDClient.getAuthToken(ARGOCD_URL, null));
+	}
 
 	@Test
 	void testGetAccessTokenWithException() {

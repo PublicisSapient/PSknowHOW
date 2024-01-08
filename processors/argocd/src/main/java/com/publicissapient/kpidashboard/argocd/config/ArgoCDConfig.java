@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -31,9 +29,7 @@ import lombok.NoArgsConstructor;
  * Bean to hold settings specific to the ArgoCD processor.
  */
 @Component
-@Builder
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "argocd")
 public class ArgoCDConfig {
