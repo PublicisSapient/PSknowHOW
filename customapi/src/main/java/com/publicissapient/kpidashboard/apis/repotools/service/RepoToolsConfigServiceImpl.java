@@ -83,7 +83,7 @@ public class RepoToolsConfigServiceImpl {
 	private ProcessorItemRepository processorItemRepository;
 
 	@Autowired
-	private ProcessorRepository processorRepository;
+	private ProcessorRepository<?> processorRepository;
 
 	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
@@ -91,9 +91,10 @@ public class RepoToolsConfigServiceImpl {
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 	@Autowired
 	private ConnectionRepository connectionRepository;
-
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
+	@Autowired
+	private RepoToolsClient repoToolsClient;
 
 	public static final String TOOL_BRANCH = "branch";
 	public static final String SCM = "scm";
@@ -101,11 +102,6 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPO_BRANCH = "defaultBranch";
 	public static final String VALID_REPO = ".git";
 
-	private RepoToolsClient repoToolsClient;
-
-	public RepoToolsClient createRepoToolsClient() {
-		return new RepoToolsClient();
-	}
 
 	/**
 	 * enroll a project to the repo tool
@@ -138,7 +134,6 @@ public class RepoToolsConfigServiceImpl {
 					createProjectCode(projectToolConfig.getBasicProjectConfigId().toString()),
 					fistScan.toString().replace("T", " "), toolCredential, branchNames, connection.getIsCloneable());
 
-			repoToolsClient = createRepoToolsClient();
 			// api call to enroll the project
 			httpStatus = repoToolsClient.enrollProjectCall(repoToolConfig,
 					customApiConfig.getRepoToolURL() + customApiConfig.getRepoToolEnrollProjectUrl(),
@@ -181,7 +176,6 @@ public class RepoToolsConfigServiceImpl {
 				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
 						new ObjectId(basicProjectconfigIdList.get(0)).toHexString());
 				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
-				repoToolsClient = createRepoToolsClient();
 
 				// api call to start project scanning
 				httpStatus = repoToolsClient.triggerScanCall(projectCode,
@@ -228,7 +222,6 @@ public class RepoToolsConfigServiceImpl {
 			String basicProjectConfigId) {
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
-			repoToolsClient = createRepoToolsClient();
 			if (toolList.size() > 1) {
 				toolList.remove(tool);
 				toolList = toolList.stream().filter(projectToolConfig -> projectToolConfig.getRepositoryName()
@@ -273,7 +266,6 @@ public class RepoToolsConfigServiceImpl {
 	 */
 	public List<RepoToolKpiMetricResponse> getRepoToolKpiMetrics(List<String> projectCode, String repoToolKpi,
 			String startDate, String endDate, String frequency) {
-		repoToolsClient = createRepoToolsClient();
 		String repoToolUrl = customApiConfig.getRepoToolURL().concat(repoToolKpi);
 		String repoToolApiKey = restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey());
 		List<RepoToolKpiMetricResponse> repoToolKpiMetricRespons = new ArrayList<>();
@@ -286,7 +278,7 @@ public class RepoToolsConfigServiceImpl {
 					repoToolApiKey, repoToolKpiRequestBody);
 			repoToolKpiMetricRespons = repoToolKpiBulkMetricResponse.getValues().stream().flatMap(List::stream)
 					.collect(Collectors.toList());
-		} catch (HttpClientErrorException ex) {
+		} catch (Exception ex) {
 			log.error("Exception while fetching KPI data {}", projectCode, ex);
 		}
 		return repoToolKpiMetricRespons;
@@ -330,7 +322,6 @@ public class RepoToolsConfigServiceImpl {
 						projectCode, onlyData);
 		int httpStatus = HttpStatus.NOT_FOUND.value();
 		try {
-			repoToolsClient = createRepoToolsClient();
 			httpStatus = repoToolsClient.deleteProject(deleteUrl,
 					restAPIUtils.decryptPassword(customApiConfig.getRepoToolAPIKey()));
 		} catch (Exception ex) {
