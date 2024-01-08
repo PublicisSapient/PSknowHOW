@@ -1,10 +1,13 @@
 package com.publicissapient.kpidashboard.jira.helper;
 
+import static org.apache.commons.collections4.IterableUtils.forEach;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.util.*;
 
+import com.atlassian.jira.rest.client.api.domain.BasicComponent;
 import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
 import org.bson.types.ObjectId;
 import org.junit.Test;
@@ -45,7 +48,7 @@ public class AdditionalFilterHelperTest {
     }
 
 	@Test
-	public void getAdditionalFilterSecondTest(){
+	public void getAdditionalFilterLabelsTest(){
 
 		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
 		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Labels","",getValueSet());
@@ -55,6 +58,46 @@ public class AdditionalFilterHelperTest {
 		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
 		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
 		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
+		when(issue.getLabels()).thenReturn(getLabels("UI","Prod_defect"));
+		assertEquals(2,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
+
+	}
+
+	@Test
+	public void getAdditionalFilterComponentsTest(){
+
+		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
+		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","Component","",getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
+		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
+		List<BasicComponent> componentList= Arrays.asList(new BasicComponent(null, 1234567L,"Component","desc"));
+		Iterable<BasicComponent> components =new Iterable<BasicComponent>() {
+			@Override
+			public Iterator<BasicComponent> iterator() {
+				return componentList.iterator();
+			}
+		};
+		when(issue.getComponents()).thenReturn(components);
+		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
+
+	}
+
+	@Test
+	public void getAdditionalFilterCustomfieldTest(){
+
+		when(projectConfig.getBasicProjectConfigId()).thenReturn(ObjectId.get());
+		AdditionalFilterConfig additionalFilterConfig1=getAdditionalFilterConfig("afOne","CustomField","",getValueSet());
+		AdditionalFilterConfig additionalFilterConfig2=getAdditionalFilterConfig("","","",getValueSet());
+		when(projectConfig.getFieldMapping()).thenReturn(getFieldMapping(Arrays.asList(additionalFilterConfig1,additionalFilterConfig2)));
+		List<AdditionalFilterCategory> additionalFilterCategories =new ArrayList<>();
+		additionalFilterCategories.add(getAdditionalFilterCategory(1,"afOne","Teams"));
+		additionalFilterCategories.add(getAdditionalFilterCategory(2,"afOne1","Teams1"));
+		when(additionalFilterCategoryService.getAdditionalFilterCategories()).thenReturn(additionalFilterCategories);
+
 		assertEquals(0,additionalFilterHelper.getAdditionalFilter(issue,projectConfig).size());
 
 	}
@@ -73,8 +116,8 @@ public class AdditionalFilterHelperTest {
 	AdditionalFilterConfig getAdditionalFilterConfig(String filterId, String identifyFrom, String identificationField,
 			Set<String> valueSet) {
 		AdditionalFilterConfig additionalFilterConfig = new AdditionalFilterConfig();
-		additionalFilterConfig.setFilterId("afOne");
-		additionalFilterConfig.setIdentifyFrom("Labels");
+		additionalFilterConfig.setFilterId(filterId);
+		additionalFilterConfig.setIdentifyFrom(identifyFrom);
 		additionalFilterConfig.setIdentificationField("");
 		additionalFilterConfig.setValues(valueSet);
 		return additionalFilterConfig;
@@ -103,5 +146,13 @@ public class AdditionalFilterHelperTest {
 		additionalFilterCategory.setFilterCategoryId(filterCategoryId);
 		additionalFilterCategory.setFilterCategoryName(filterCategoryName);
 		return additionalFilterCategory;
+	}
+
+	Set<String> getLabels(String... labelArr) {
+		Set<String> labels = new HashSet<>();
+		for (String s : labelArr) {
+			labels.add(s);
+		}
+		return labels;
 	}
 }
