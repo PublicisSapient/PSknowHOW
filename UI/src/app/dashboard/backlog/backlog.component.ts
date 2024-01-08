@@ -22,13 +22,9 @@ export class BacklogComponent implements OnInit, OnDestroy {
   selectedtype = '';
   configGlobalData;
   kpiJira = <any>{};
-  kpiZypher = <any>{};
   loaderJiraArray = [];
   jiraKpiRequest = <any>'';
   jiraKpiData = <any>{};
-  zypherKpiRequest = <any>'';
-  loaderZypher = false;
-  zypherKpiData = <any>{};
   maturityColorCycleTime = <any>['#f5f5f5', '#f5f5f5', '#f5f5f5'];
   kanbanActivated = false;
   kpiConfigData: Object = {};
@@ -217,7 +213,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
       const kpiIdsForCurrentBoard = this.configGlobalData?.map(kpiDetails => kpiDetails.kpiId);
       // call kpi request according to tab selected
       if (this.masterData && Object.keys(this.masterData).length) {
-        this.groupZypherKpi(kpiIdsForCurrentBoard);
         this.groupJiraKpi(kpiIdsForCurrentBoard);
         this.getKpiCommentsCount();
       }
@@ -333,50 +328,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   // Used for grouping all Sonar kpi from master data and calling Sonar kpi.
-  groupZypherKpi(kpiIdsForCurrentBoard) {
-    // creating a set of unique group Ids
-    const groupIdSet = new Set();
-    this.masterData.kpiList.forEach((obj) => {
-      if (!obj.kanban && obj.kpiSource === 'Zypher' && obj.kpiCategory === 'Backlog') {
-        groupIdSet.add(obj.groupId);
-      }
-    });
-
-    groupIdSet.forEach((groupId) => {
-      if (groupId) {
-        this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, kpiIdsForCurrentBoard, groupId, 'Backlog');
-        if (this.kpiZypher?.kpiList?.length > 0) {
-          this.postZypherKpi(this.kpiZypher, 'zypher');
-        }
-      }
-    });
-  }
-
-  // calling post request of Zypher(scrum)
-  postZypherKpi(postData, source): void {
-    this.loaderZypher = true;
-    if (this.zypherKpiRequest && this.zypherKpiRequest !== '') {
-      this.zypherKpiRequest.unsubscribe();
-    }
-    this.zypherKpiRequest = this.httpService.postKpi(postData, source)
-      .subscribe(getData => {
-        this.afterZypherKpiResponseReceived(getData);
-      });
-  }
-
-  // calls after receiving response from zypher
-  afterZypherKpiResponseReceived(getData) {
-    this.loaderZypher = false;
-    if (getData !== null && getData[0] !== 'error' && !getData['error']) {
-      // creating array into object where key is kpi id
-      this.zypherKpiData = this.helperService.createKpiWiseId(getData);
-      this.createAllKpiArray(this.zypherKpiData);
-    } else {
-      this.zypherKpiData = getData;
-    }
-    this.kpiLoader = false;
-    this.fullPageLoader = false;
-  }
   // Return boolean flag based on link is available and video is enabled
   isVideoLinkAvailable(kpiId) {
     let kpiData;
@@ -657,8 +608,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     // }
   }
 
-  getkpi171Data(kpiId, trendValueList) {
-    let durationChanged = false;
+  getkpi171Data(kpiId, trendValueList) {   
+    let durationChanged = false;   
     if (this.kpiSelectedFilterObj[kpiId].hasOwnProperty('filter1') && this.kpiSelectedFilterObj[kpiId]['filter1'] !== this.durationFilter) {
       durationChanged = true;
       this.kpiChartData[kpiId] = [];
@@ -880,11 +831,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
   applyAggregationLogicForkpi138(arr) {
     const aggregatedArr = JSON.parse(JSON.stringify(arr));
     aggregatedArr.forEach(x => {
-      x.data[2].value = x.data[2].value * x.data[0].value;
+      x.data[2].value = x.data[2].value * x.data[0]?.value;
     });
 
     const kpi138 = this.applyAggregationLogic(aggregatedArr);
-    kpi138[0].data[2].value = Math.round(kpi138[0].data[2].value / kpi138[0].data[0].value);
+    kpi138[0].data[2].value = Math.round(kpi138[0]?.data[2].value / kpi138[0]?.data[0]?.value);
     return kpi138;
   }
 
@@ -1062,7 +1013,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
     } else {
       trend = 'NA';
-    }
+    }   
     return [latest, trend, unit];
   }
 

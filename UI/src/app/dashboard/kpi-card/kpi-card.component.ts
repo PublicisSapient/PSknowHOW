@@ -151,7 +151,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       } else {
         this.optionSelected.emit(this.filterOptions);
       }
-      // this.showFilterTooltip(true);
     }
     const gaObj = {
       "kpiName": this.kpiData?.kpiName,

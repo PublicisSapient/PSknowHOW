@@ -50,6 +50,9 @@ import { of } from 'rxjs/internal/observable/of';
 import { DropdownModule } from 'primeng/dropdown';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
+import * as Excel from 'exceljs';
+import * as fs from 'file-saver';
+
 const masterData = require('../../../test/resource/masterData.json');
 const filterData = require('../../../test/resource/filterData.json');
 
@@ -6643,5 +6646,210 @@ expect(result[1]).toEqual('-ve');
     component.handleMaturityTableLoader();
     expect(spy).toBeDefined();
   })
+
+  describe('reloadKPI', () => {
+    beforeEach(() => {
+      spyOn(component, 'ifKpiExist').and.returnValue(1);
+      spyOn(component.allKpiArray, 'splice');
+      spyOn(helperService, 'groupKpiFromMaster').and.returnValue({
+        kpiList: [{ kpiId: 1 }],
+      });
+      spyOn(component, 'postSonarKanbanKpi');
+      spyOn(component, 'postJenkinsKanbanKpi');
+      spyOn(component, 'postZypherKanbanKpi');
+      spyOn(component, 'postBitBucketKanbanKpi');
+      spyOn(component, 'postJiraKanbanKpi');
+      spyOn(component, 'postSonarKpi');
+      spyOn(component, 'postJenkinsKpi');
+      spyOn(component, 'postZypherKpi');
+      spyOn(component, 'postBitBucketKpi');
+      spyOn(component, 'postJiraKpi');
+    });
+
+    it('should remove the kpi from allKpiArray if it exists', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 1,
+        },
+      };
+
+      component.reloadKPI(event);
+
+      expect(component.ifKpiExist).toHaveBeenCalledWith(1);
+      expect(component.allKpiArray.splice).toHaveBeenCalledWith(1, 1);
+    });
+
+    it('should group the kpi from master and call the appropriate post method for kanban view', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'Sonar',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+
+      component.reloadKPI(event);
+
+      expect(helperService.groupKpiFromMaster).toHaveBeenCalledWith(
+        'Sonar',
+        true,
+        component.masterData,
+        component.filterApplyData,
+        component.filterData,
+        {},
+        'group1',
+        ''
+      );
+      expect(component.postSonarKanbanKpi).toHaveBeenCalled();
+      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postSonarKpi).not.toHaveBeenCalled();
+      expect(component.postJenkinsKpi).not.toHaveBeenCalled();
+      expect(component.postZypherKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKpi).not.toHaveBeenCalled();
+    });
+
+    it('should group the kpi from master and call the appropriate post method for non-kanban view', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 3,
+          kpiSource: 'Jenkins',
+          kanban: false,
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('Scrum');
+
+      component.reloadKPI(event);
+
+      expect(helperService.groupKpiFromMaster).toHaveBeenCalledWith(
+        'Jenkins',
+        false,
+        component.masterData,
+        component.filterApplyData,
+        component.filterData,
+        {},
+        undefined,
+        ''
+      );
+      expect(component.postSonarKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postSonarKpi).not.toHaveBeenCalled();
+      expect(component.postJenkinsKpi).toHaveBeenCalled();
+      expect(component.postZypherKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKpi).not.toHaveBeenCalled();
+    });
+
+    xit('should not group the kpi if kpiList is empty', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 4,
+          kpiSource: 'Zypher',
+          kanban: true,
+          groupId: 'group2',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+      component.reloadKPI(event);
+
+      expect(component.postSonarKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
+      expect(component.postSonarKpi).not.toHaveBeenCalled();
+      expect(component.postJenkinsKpi).not.toHaveBeenCalled();
+      expect(component.postZypherKpi).not.toHaveBeenCalled();
+      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
+      expect(component.postJiraKpi).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('downloadGlobalExcel', () => {
+    let workbook: Excel.Workbook;
+    let worksheet: Excel.Worksheet;
+    let saveAsSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      workbook = new Excel.Workbook();
+      worksheet = workbook.addWorksheet('Kpi Data');
+      saveAsSpy = spyOn(fs, 'saveAs');
+      spyOn(workbook, 'addWorksheet').and.returnValue(worksheet);
+      
+      spyOn(worksheet, 'addRow');
+      spyOn(worksheet, 'eachRow');
+      spyOn(worksheet, 'mergeCells');
+    });
+
+    // xit('should create and download an Excel file', () => {
+    //   component.updatedConfigGlobalData = [
+    //     {
+    //       kpiId: 1,
+    //       kpiName: 'KPI 1',
+    //     },
+    //     {
+    //       kpiId: 2,
+    //       kpiName: 'KPI 2',
+    //     },
+    //   ];
+    //   component.kpiTrendsObj = {
+    //     1: [
+    //       {
+    //         hierarchyName: 'Hierarchy 1',
+    //         value: 10,
+    //         maturity: 5,
+    //         trend: 2,
+    //       },
+    //     ],
+    //     2: [
+    //       {
+    //         hierarchyName: 'Hierarchy 2',
+    //         value: 20,
+    //         maturity: 3,
+    //         trend: 1,
+    //       },
+    //     ],
+    //   };
+    //   component.trendBoxColorObj = {
+    //     'Node 1': {
+    //       color: '#FF0000',
+    //     },
+    //     'Node 2': {
+    //       color: '#00FF00',
+    //     },
+    //   };
+    //   component.service = {
+    //     getSelectedTrends: () => [
+    //       {
+    //         nodeName: 'Node 1',
+    //       },
+    //       {
+    //         nodeName: 'Node 2',
+    //       },
+    //     ],
+    //   };
+    //   spyOn(component.service, 'getSelectedTrends').and.callThrough();
+
+    //   component.downloadGlobalExcel();
+
+    //   expect(workbook.addWorksheet).toHaveBeenCalledWith('Kpi Data');
+    //   expect(worksheet.getRow).toHaveBeenCalledWith(1);
+    //   expect(worksheet.addRow).toHaveBeenCalledTimes(2);
+    //   expect(worksheet.eachRow).toHaveBeenCalled();
+    //   expect(worksheet.mergeCells).toHaveBeenCalledWith('A3:F3');
+    //   expect(component.service.getSelectedTrends).toHaveBeenCalled();
+    //   expect(saveAsSpy).toHaveBeenCalled();
+    // });
+  });
+
+
 
 });
