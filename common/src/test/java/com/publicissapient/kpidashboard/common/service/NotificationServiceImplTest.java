@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class NotificationServiceImplTest {
 		emailServerDetail.setEmailPort(25);
 		emailServerDetail.setEmailHost("xyz.smtp.com");
 		emailServerDetail.setFromEmail("xyz@abc.com");
+		emailServerDetail.setFeedbackEmailIds(Arrays.asList("abc.com","cde.com"));
 		globalConfig.setEmailServerDetail(emailServerDetail);
 		globalConfigs.add(globalConfig);
 	}

@@ -7,13 +7,15 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { throwError } from 'rxjs';
 
 describe('AutoApprovalComponent', () => {
   let component: AutoApprovalComponent;
   let fixture: ComponentFixture<AutoApprovalComponent>;
-  let httpService: HttpService;
-  let messageService;
   let httpMock;
+  let httpService;
+  let messageService;
   const baseUrl = environment.baseUrl;
   const fakeRolesData = {
     message: 'Found all roles',
@@ -123,10 +125,10 @@ describe('AutoApprovalComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AutoApprovalComponent);
     component = fixture.componentInstance;
-    messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
     fixture.detectChanges();
+    messageService = TestBed.inject(MessageService);
   });
 
   it('should create', () => {
@@ -211,4 +213,27 @@ describe('AutoApprovalComponent', () => {
     component.onSubmit();
     httpMock.match(baseUrl + '/api/autoapprove/' + component.autoApprovedId)[0].flush(fakeUpdateResponse);
   });
+
+  it('should handle change when event is false', () => {
+    const event = {
+      checked: false
+    }
+    component.autoApprovalForm = new UntypedFormGroup({
+      roles: new UntypedFormControl([]),
+    });
+    component.handleChange(event);
+    expect(component.autoApprovalForm.controls['roles'].value).toEqual([]);
+  })
+
+  it('should handle error response and display error message', () => {
+    spyOn(httpService, 'getAutoApprovedRoleList').and.returnValue(throwError({ error: { message: 'Test Error' } }));
+    const spy = spyOn(messageService, 'add');
+    component.getAutoApprovedRoles();
+
+    expect(spy).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Test Error'
+    });
+  });
+
 });

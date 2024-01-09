@@ -5,12 +5,9 @@ import { Component, OnInit, Input } from '@angular/core';
   templateUrl: './issue-body.component.html',
   styleUrls: ['./issue-body.component.css']
 })
-export class IssueBodyComponent implements OnInit {
+export class IssueBodyComponent {
   @Input() issueData;
   constructor() { }
-
-  ngOnInit(): void {
-  }
 
   convertToHoursIfTime(val, unit) {
     if (val === '-' || isNaN(val)) {
@@ -36,10 +33,6 @@ export class IssueBodyComponent implements OnInit {
       val = '0d'
     }
     return val;
-  }
-
-  convertToHours(rminutes, rhours) {
-    return rhours + 'h ';
   }
 
   convertToDays(rminutes, rhours) {

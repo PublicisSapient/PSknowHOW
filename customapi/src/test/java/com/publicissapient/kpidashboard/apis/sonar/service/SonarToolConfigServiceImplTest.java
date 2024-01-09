@@ -32,6 +32,7 @@ import org.springframework.web.client.RestTemplate;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.sonar.SonarVersionResponseDTO;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
@@ -198,6 +199,30 @@ public class SonarToolConfigServiceImplTest {
 	private String getJSONDataResponse(String fileName) throws IOException {
 		String filePath = "src/test/resources/json/toolConfig/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
+	}
+
+	@Test
+	public void testGetSonarVersionList() {
+		// Arrange
+		List<SonarVersionResponseDTO> sonarVersionResponseList = new ArrayList<>();
+		sonarVersionResponseList.add(prepareSonarVersionList("abc", true, Arrays.asList("8.x")));
+
+		// Act
+		ServiceResponse result = sonarToolConfigService.getSonarVersionList();
+
+		// Assert
+		Assert.assertTrue(result.getSuccess());
+		Assert.assertEquals("Version List Successfully Fetched", result.getMessage());
+
+	}
+
+	private SonarVersionResponseDTO prepareSonarVersionList(String type, boolean branchSupport,
+			List<String> versionList) {
+		SonarVersionResponseDTO sonarVersionList = new SonarVersionResponseDTO();
+		sonarVersionList.setType(type);
+		sonarVersionList.setBranchSupport(branchSupport);
+		sonarVersionList.setVersions(versionList);
+		return sonarVersionList;
 	}
 
 }
