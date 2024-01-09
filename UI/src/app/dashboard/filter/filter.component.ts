@@ -45,7 +45,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
-
+  appList: MenuItem[] | undefined;
   subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
@@ -128,6 +128,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -136,9 +137,10 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  showSwitchDropdown: boolean = false;
 
   showHideLoader: boolean = false;
-  kpiListDataProjectLevel: any = {};
+  kpiListDataProjectLevel : any = {};
 
   constructor(
     private service: SharedService,
@@ -159,6 +161,33 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.logout();
         },
       });
+
+      this.appList = [
+          {
+              label: 'KnowHOW',
+              icon: ''
+          },
+          {
+              label: 'Assessments',
+              icon: '',
+              command: () => {
+                 window.open(
+                  environment['MAP_URL'],
+                  '_blank'
+                );
+              }
+          },
+          {
+            label: 'Retros',
+            icon: '',
+            command: () => {
+               window.open(
+                  environment['RETROS_URL'],
+                  '_blank'
+                );
+            }
+          }
+      ];
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
@@ -1390,7 +1419,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        this.router.navigate(['./authentication/login']);
+        if(!environment['AUTHENTICATION_SERVICE']){
+          this.router.navigate(['./authentication/login']);
+        }else{
+          let redirect_uri = window.location.href;
+          window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+        }
       }
     });
   }
@@ -1430,9 +1464,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-    if (this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project') {
-      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
-    }
+    if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
+            projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
+          }
     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
@@ -1470,13 +1504,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCurrentUserDetails() {
-    this.httpService.getCurrentUserDetails().subscribe(details => {
-      if (details['success']) {
-        this.service.setCurrentUserDetails(details['data']);
-      }
-    });
-  }
   handleMilestoneFilter(level) {
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []

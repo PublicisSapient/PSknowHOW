@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -40,6 +42,7 @@ import com.publicissapient.kpidashboard.apis.abac.AccessRequestListener;
 import com.publicissapient.kpidashboard.apis.abac.GrantAccessListener;
 import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.abac.RejectAccessListener;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessRequestsHelperService;
@@ -69,6 +72,9 @@ public class AccessRequestsController {
 
 	@Autowired
 	private ProjectAccessManager projectAccessManager;
+	
+	@Autowired
+	private CookieUtil cookieUtil;
 
 	/**
 	 * Gets all access requests data.
@@ -245,9 +251,13 @@ public class AccessRequestsController {
 	 * @return responseEntity with data,message and status
 	 */
 	@RequestMapping(value = "/{status}/notification", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status) {
+	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status,
+			HttpServletRequest request) {
 		log.info("Getting requests count with current status {}", status);
-		return ResponseEntity.status(HttpStatus.OK).body(accessRequestsHelperService.getNotificationByStatus(status));
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		String token = authCookie.getValue();
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(accessRequestsHelperService.getNotificationByStatus(status, token));
 	}
 
 }
