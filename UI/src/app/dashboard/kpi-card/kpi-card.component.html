@@ -104,14 +104,6 @@
                 </app-trend-indicator>
             </div>
         </div>
-        <!-- <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="(showChartView === 'table') && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
-            <div class="trend-box" *ngFor="let item of trendData; let i = index;">
-                <app-trend-indicator
-                    [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color"
-                    [kpiData]="kpiData" [noOfBox]="trendData?.length">
-                </app-trend-indicator>
-            </div>
-        </div> -->
         <!--place for chart to be rendered-->
         <ng-content></ng-content>
     </div>
@@ -126,7 +118,6 @@
             <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon"
                 (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover"
                 [escape]="false" />
-            <!-- <i class="fas fa-expand mr-10"></i> -->
         </div>
     </div>
 </div>

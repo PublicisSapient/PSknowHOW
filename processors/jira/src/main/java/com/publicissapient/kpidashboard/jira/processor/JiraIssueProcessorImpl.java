@@ -282,7 +282,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+	void updateAssigneeDetailsToggleWise(JiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
 			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 

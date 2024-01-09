@@ -16,10 +16,10 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { FilterComponent } from './filter.component';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -35,8 +35,23 @@ import { MessageService } from 'primeng/api';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
-import { ConfigComponent } from 'src/app/config/config.component';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+
+class MockRouter {
+
+  // Mock navigate method
+  navigate(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  navigateByUrl(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  url: string = '/';
+}
+
+export { MockRouter };
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -49,6 +64,7 @@ describe('FilterComponent', () => {
   let helperService: HelperService;
   let excelService: ExcelService;
   let ga: GoogleAnalyticsService;
+  let router: Router;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
@@ -71,6 +87,12 @@ describe('FilterComponent', () => {
       hierarchyLevelId: 'hierarchyLevelThree',
       hierarchyLevelName: 'Level Three',
       id: '63b3f4ea6770d3a031b92492',
+      level: 3,
+    },
+    {
+      hierarchyLevelId: 'project',
+      hierarchyLevelName: 'Project',
+      id: '63b3f4ea6770d3a031b92493',
       level: 3,
     },
   ];
@@ -235,7 +257,6 @@ const completeHierarchyData = {
 };
 
   beforeEach(() => {
-
     const routes: Routes = [
       { path: 'dashboard', component: FilterComponent }
 
@@ -248,7 +269,9 @@ const completeHierarchyData = {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, 
+        { provide: APP_CONFIG, useValue: AppConfig }, 
+        { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
   });
@@ -263,6 +286,7 @@ const completeHierarchyData = {
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
+    router = TestBed.inject(Router);
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -1795,6 +1819,219 @@ const completeHierarchyData = {
     });
     const value1 = component.parentIDClean("Demo_port");
     expect(value1).toBe("Demo Portfolio");
+  })
+
+  it('should toggle filter', () => {
+    const mockTargetElement = document.createElement('div');
+    component.toggleDropdown = {
+      'showHide': false,
+      'commentSummary':  false
+    };
+    component.toggleDropdownObj = {
+      "sprint": false,
+      "release": false,
+      "sqd": false
+    }
+    const spy = spyOn(sharedService, 'getClickedItem').and.returnValue(of(mockTargetElement));
+    component.toggleFilter();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should navigate to home page', () => {
+    (router as any).url = '/somepath/Config';
+    component.kanban = true;
+    component.selectedTab = 'maturity';
+    component.projectIndex = 1;
+    spyOn(sharedService, 'setEmptyFilter');
+    spyOn(sharedService, 'setSelectedType');
+    const spy = spyOn(router, 'navigateByUrl');
+    component.navigateToHomePage();
+    expect(spy).toHaveBeenCalledWith(`/dashboard/iteration`);
+  });
+
+  it('should get kpi order list on project level', () => {
+    component.kpiListDataProjectLevel = [];
+    component.kpiListData = [];
+    component.masterData = fakeMasterData;
+    component.filterData = fakeFilterData;
+    component.filterApplyData = filterApplyData;
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    const mockData = configGlobalData;
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(sharedService, 'setDashConfigData');
+    const spy = spyOn(sharedService, 'select');
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
+    spyOn(component, 'processKpiList');
+    spyOn(component, 'navigateToSelectedTab');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
+  })
+
+  it('should get kpi order list on project level', () => {
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(throwError('Something went wrong'));
+    const spy = spyOn(messageService, 'add');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalled()
+  })
+
+  it('should handle kpi change if all kpis are enabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true) 
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeTruthy;
+  });
+
+  it('should handle kpi change- if atleast one kpi is disabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true),
+      kpi39: new UntypedFormControl(false)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeFalsy;
+  });
+
+  it('should set trend value filter when allowMultipleSelection is true', () => {
+    component.allowMultipleSelection = true;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
+  })
+
+  it('should set trend value filter when allowMultipleSelection is false', () => {
+    component.allowMultipleSelection = false;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(nodeId)
+  })
+
+  it('should find project which has data when selectedTab is release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.selectedTab = 'release';
+    component.hierarchyLevels = hierarchyLevels;
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasRelease');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
+
+  it('should find project which has data when selectedTab is not release', () => {
+    component.defaultFilterSelection = true;
+    component.trendLineValueList = [];
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl('project'),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    component.filterData = fakeFilterData.data;
+    component.hierarchyLevels = hierarchyLevels;
+    component.selectedTab = 'backlog';
+    spyOn(component, 'sortAlphabetically').and.callThrough();
+    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(component, 'checkIfProjectHasData');
+    const len = component.trendLineValueList.length;
+    spyOn(sharedService, 'setSelectedLevel');
+    spyOn(sharedService, 'setSelectedTrends')
+    component.findProjectWhichHasData();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(component.trendLineValueList[len]?.nodeId);
+  });
+
+  it('should get logo image', () => {
+    const logoImage = {
+      image: 'logo.png'
+    }
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of(logoImage));
+    component.getLogoImage();
+    expect(component.logoImage).toBe("data:image/png;base64," + logoImage.image);
+  })
+
+  it('should not get logo image', () => {
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of({}));
+    component.getLogoImage();
+    expect(component.logoImage).toBe(undefined);
   })
 
 });

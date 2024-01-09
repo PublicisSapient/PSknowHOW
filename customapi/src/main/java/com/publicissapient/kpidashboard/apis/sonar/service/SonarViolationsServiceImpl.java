@@ -72,8 +72,12 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 	private static final String BLOCKER = "blocker";
 	private static final String INFO = "info";
 
+	public void setCustomApiConfig(CustomApiConfig customApiConfig) {
+		this.customApiConfig = customApiConfig;
+	}
+
 	@Autowired
-	private CustomApiConfig customApiConfig;
+	protected CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets KPI Data
@@ -114,20 +118,6 @@ public class SonarViolationsServiceImpl extends SonarKPIService<Long, List<Objec
 		kpiElement.setTrendValueList(dataCountGroups);
 
 		return kpiElement;
-	}
-
-	/**
-	 * @param projectList
-	 *            projectList
-	 * @param kpiElement
-	 *            kpiElement
-	 * @return map
-	 */
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(final List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-
-		return new HashMap<>();
 	}
 
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {

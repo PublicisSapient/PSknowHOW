@@ -564,4 +564,8 @@ export class HelperService {
           }
         })
       }
+
+    windowReload(){
+        window.location.reload();
+    }
 }

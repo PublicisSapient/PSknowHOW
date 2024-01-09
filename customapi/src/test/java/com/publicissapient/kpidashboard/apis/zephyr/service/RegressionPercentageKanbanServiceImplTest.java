@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,6 +105,23 @@ public class RegressionPercentageKanbanServiceImplTest {
 		kpiRequest.setLabel("PROJECT");
 		kpiElement = kpiRequest.getKpiList().get(0);
 		kpiWiseAggregation.put("defectInjectionRate", "average");
+		Map<ObjectId, Map<String, List<ProjectToolConfig>>> toolMap= new HashMap<>();
+		Map<String, List<ProjectToolConfig>> projectTool= new HashMap<>();
+
+		ProjectToolConfig zephyConfig= new ProjectToolConfig();
+		zephyConfig.setRegressionAutomationLabels(Arrays.asList("test1"));
+		zephyConfig.setTestRegressionValue(Arrays.asList("test1"));
+		zephyConfig.setRegressionAutomationFolderPath(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		ProjectToolConfig jiraTest= new ProjectToolConfig();
+		jiraTest.setJiraRegressionTestValue(Arrays.asList("test1"));
+		jiraTest.setTestCaseStatus(Arrays.asList("test1"));
+		projectTool.put(ProcessorConstants.ZEPHYR, Arrays.asList(zephyConfig));
+		projectTool.put(ProcessorConstants.JIRA_TEST, Arrays.asList(jiraTest));
+		toolMap.put(new ObjectId("6335363749794a18e8a4479b"), projectTool);
+		when(cacheService
+				.cacheProjectToolConfigMapData()).thenReturn(toolMap);
+
 	}
 
 	@Test

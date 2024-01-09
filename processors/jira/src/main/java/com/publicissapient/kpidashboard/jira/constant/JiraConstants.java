@@ -84,5 +84,6 @@ public final class JiraConstants {
 	static {
 		ISSUE_FIELD_SET.add("*all,-attachment,-worklog,-comment,-votes,-watches");
 	}
-
+	
+	private JiraConstants(){ }
 }
