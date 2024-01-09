@@ -1,14 +1,12 @@
 package com.publicissapient.kpidashboard.jira.helper;
 
-import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
+import com.atlassian.jira.rest.client.api.domain.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -46,6 +44,20 @@ public class JiraHelperTest {
 
         assertNotNull(fieldMap);
         assertTrue(fieldMap.isEmpty());
+    }
+
+    @Test
+    public void getAffectedVersionsTest(){
+        Version v =new Version(null, 1234567L,"v1","desc",true,false,null);
+        Iterable<Version> iterable=new Iterable() {
+            @Override
+            public Iterator<Version> iterator() {
+                return Collections.singletonList(v).iterator();
+            }
+        };
+        when(issue.getAffectedVersions()).thenReturn(iterable );
+
+        assertEquals(1,JiraHelper.getAffectedVersions(issue).size());
     }
 
 //    @Test
