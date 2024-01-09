@@ -768,13 +768,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         }
     }
 
-    sortAlphabetically(objArray) {
-        if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data?.localeCompare(b.data));
-        }
-        return objArray;
-    }
-
     getChartData(kpiId, idx, aggregationType) {
         const trendValueList = this.allKpiArray[idx]?.trendValueList;
         this.kpiThresholdObj[kpiId] = this.allKpiArray[idx]?.thresholdValue ? this.allKpiArray[idx]?.thresholdValue : null;
@@ -836,9 +829,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiChartData[kpiId] = [];
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
-              } else if (trendValueList?.length > 0) {
-                this.kpiChartData[kpiId] = [...trendValueList];
-              } else {
+              } 
+            //   else if (trendValueList?.length > 0) {
+            //     this.kpiChartData[kpiId] = [...trendValueList];
+            //   } 
+              else {
                 //const obj = JSON.parse(JSON.stringify(trendValueList));
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
@@ -846,7 +841,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
           }
           else {
             if (trendValueList?.length > 0) {
-              this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
+              this.kpiChartData[kpiId] = [...this.helperService.sortAlphabetically(trendValueList)];
             } else {
               this.kpiChartData[kpiId] = [];
             }
@@ -1189,11 +1184,12 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               for (let i = 0; i < event[key]?.length; i++) {
                 this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
               }
-            }else{
-                for (let i = 0; i < event[key]?.length; i++) {
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
-                  }
             }
+            // else{ 
+            //     for (let i = 0; i < event[key]?.length; i++) {
+            //         this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
+            //       }
+            // }
           }
         } else {
           this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
