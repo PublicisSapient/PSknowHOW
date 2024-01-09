@@ -427,8 +427,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 		Object responseBody = responseEntity.getBody();
 		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR)
-				&& ((responseBody != null && responseBody.toString().contains("false"))
-						|| responseBody.toString().contains("</html>"))) {
+				&& (responseBody != null
+				&& (responseBody.toString().contains("false") || responseBody.toString().contains("</html>")))) {
 			return HttpStatus.UNAUTHORIZED;
 		}
 		if (toolName.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
@@ -453,10 +453,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		}
 		HttpStatus responseCode = responseEntity.getStatusCode();
 
-		if (responseCode.is2xxSuccessful() && null != responseEntity.getBody()
-				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)) {
+		Object responseBody = responseEntity.getBody();
+		if (responseCode.is2xxSuccessful() && responseBody != null
+				&& WRONG_JIRA_BEARER.equalsIgnoreCase(responseBody.toString())) {
 			responseCode = HttpStatus.UNAUTHORIZED;
 		}
+
+
 		return responseCode;
 	}
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.data;
+package com.publicissapient.kpidashboard.apis.mongock.data;
 
 import java.io.IOException;
 import java.util.List;

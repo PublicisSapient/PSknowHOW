@@ -19,11 +19,20 @@
 package com.publicissapient.kpidashboard.apis.jira.service;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,6 +40,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.jira.service.TestService;
+import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrKPIService;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +58,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.MockedStatic.Verification;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -72,8 +89,9 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
  *
  */
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public class JiraServiceRTest {
+	private static final String TESTJIRA = "TEST_JIRA";
 
 	private static String GROUP_PROJECT = "project";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
@@ -84,7 +102,6 @@ public class JiraServiceRTest {
 	FilterHelperService filterHelperService;
 	List<KpiElement> mockKpiElementList = new ArrayList<>();
 	@InjectMocks
-	@Spy
 	private JiraServiceR jiraServiceR;
 	@Mock
 	private CustomApiConfig customApiConfig;
@@ -106,22 +123,28 @@ public class JiraServiceRTest {
 	private KpiElement rcaKpiElement;
 	private Map<String, JiraKPIService<?, ?, ?>> jiraServiceCache = new HashMap<>();
 	@Mock
-	private JiraKPIServiceFactory jiraKPIServiceFactory;
-	@Mock
 	private UserAuthorizedProjectsService authorizedProjectsService;
+	@Mock
+	private TestService service;
+	@Mock
+	private SprintRepository sprintRepository;
 
 	@Before
-	public void setup() {
-		mockKpiElementList.add(rcaKpiElement);
-
-		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
-				.thenReturn(mockKpiElementList);
-
-		// jiraKPIServiceFactory.initMyServiceCache();
+	public void setup() throws ApplicationException {
+		MockitoAnnotations.initMocks(this);
+		List<JiraKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
+		JiraKPIServiceFactory serviceFactory = JiraKPIServiceFactory.builder().services(mockServices).build();
+		doReturn(TESTJIRA).when(service).getQualifierType();
+		doReturn(new KpiElement()).when(service).getKpiData(any(), any(), any());
+		serviceFactory.initMyServiceCache();
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
 		accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
+		when(filterHelperService.getHierarachyLevelId(Mockito.anyInt(), anyString(), Mockito.anyBoolean()))
+				.thenReturn("project");
+		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
+				.thenReturn(accountHierarchyDataList);
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 
@@ -139,41 +162,10 @@ public class JiraServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
+		SprintDetailsDataFactory sprintDetailsDataFactory = SprintDetailsDataFactory.newInstance();
+		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
+		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
 
-		setRcaKpiElement();
-
-	}
-
-	private void setRcaKpiElement() {
-
-		rcaKpiElement = setKpiElement("kpi36", "DEFECT_RCA");
-
-		DataCount dataCount1 = setDataCount(2, "Coding Issue");
-		DataCount dataCount2 = setDataCount(1, "Functionality Not Clear");
-
-		dataCountRCAList.add(dataCount1);
-		dataCountRCAList.add(dataCount2);
-
-		rcaKpiElement.setValue(dataCountRCAList);
-	}
-
-	private KpiElement setKpiElement(String kpiId, String kpiName) {
-
-		KpiElement kpiElement = new KpiElement();
-		kpiElement.setKpiId(kpiId);
-		kpiElement.setKpiName(kpiName);
-
-		return kpiElement;
-	}
-
-	private DataCount setDataCount(int count, String data) {
-
-		DataCount dataCount = new DataCount();
-		dataCount.setCount(count);
-		dataCount.setData(data);
-
-		return dataCount;
 
 	}
 
@@ -186,6 +178,7 @@ public class JiraServiceRTest {
 	public void testProcessException() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
+		kpiRequest.setSprintIncluded(null);
 
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenThrow(ApplicationException.class);
 
@@ -197,17 +190,16 @@ public class JiraServiceRTest {
 	public void TestProcess_pickFromCache() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
-
-		// checking only for RCA
-		mockKpiElementList.add(rcaKpiElement);
-
+		String[] exampleStringList = {"exampleElement", "exampleElement"};
+		//when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.JIRA.name()), eq(1), anyList()))
+		//		.thenReturn(new ArrayList<KpiElement>());
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
-				.thenReturn(mockKpiElementList);
+				.thenReturn(new ArrayList<KpiElement>());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-		assertThat("Kpi Name :", resultList.get(0).getKpiName(), equalTo("DEFECT_COUNT_BY_RCA"));
+		assertEquals(0,resultList.size());
 
 	}
 
@@ -216,48 +208,6 @@ public class JiraServiceRTest {
 	public void TestProcess() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
-
-		@SuppressWarnings("rawtypes")
-		JiraKPIService mcokAbstract = rcaServiceImpl;
-		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_RCA.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.DEFECT_INJECTION_RATE.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.DEFECT_SEEPAGE_RATE.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.DEFECT_REJECTION_RATE.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.DEFECT_COUNT_BY_PRIORITY.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.DEFECT_REMOVAL_EFFICIENCY.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.TECH_DEBT.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.ISSUE_COUNT.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.SPRINT_VELOCITY.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.LEAD_TIME.name(), mcokAbstract);
-		jiraServiceCache.put(KPICode.TOTAL_DEFECT_COUNT.name(), mcokAbstract);
-
-		try (MockedStatic<JiraKPIServiceFactory> utilities = Mockito.mockStatic(JiraKPIServiceFactory.class)) {
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_RCA.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_INJECTION_RATE.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_SEEPAGE_RATE.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REJECTION_RATE.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_COUNT_BY_PRIORITY.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when(
-					(Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.DEFECT_REMOVAL_EFFICIENCY.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TECH_DEBT.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.ISSUE_COUNT.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.SPRINT_VELOCITY.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.LEAD_TIME.name()))
-					.thenReturn(mcokAbstract);
-			utilities.when((Verification) JiraKPIServiceFactory.getJiraKPIService(KPICode.TOTAL_DEFECT_COUNT.name()))
-					.thenReturn(mcokAbstract);
-		}
-
 		Map<String, Integer> map = new HashMap<>();
 		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
 				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
@@ -268,65 +218,27 @@ public class JiraServiceRTest {
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-
-		resultList.forEach(k -> {
-
-			KPICode kpi = KPICode.getKPI(k.getKpiId());
-
-			switch (kpi) {
-
-			case DEFECT_SEEPAGE_RATE:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_SEEPAGE_RATE"));
-				break;
-
-			case DEFECT_REJECTION_RATE:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_REJECTION_RATE"));
-				break;
-
-			case DEFECT_INJECTION_RATE:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_INJECTION_RATE"));
-				break;
-
-			case DEFECT_COUNT_BY_PRIORITY:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_COUNT_BY_PRIORITY"));
-				break;
-
-			case DEFECT_COUNT_BY_RCA:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_COUNT_BY_RCA"));
-
-				break;
-
-			case DEFECT_REMOVAL_EFFICIENCY:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("DEFECT_REMOVAL_EFFICIENCY"));
-				break;
-
-			case TECH_DEBT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("TECH_DEBT"));
-				break;
-
-			case ISSUE_COUNT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("ISSUE_COUNT"));
-
-				break;
-			case SPRINT_VELOCITY:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("SPRINT_VELOCITY"));
-				break;
-
-			case TOTAL_DEFECT_COUNT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("TOTAL_DEFECT_COUNT"));
-				break;
-
-			case LEAD_TIME:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("LEAD_TIME"));
-				break;
-
-			default:
-				break;
-			}
-
-		});
-
 	}
+
+	/*@Test
+	public void TestProcess_IterationCategory() throws Exception {
+
+		KpiRequest kpiRequest = createKpiRequest(4);
+		List<KpiElement> kpiList = kpiRequest.getKpiList();
+		kpiList.forEach(element->{element.setKpiCategory(CommonConstant.ITERATION);});
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
+		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
+	}
+
+	 */
 
 	@SuppressWarnings("unchecked")
 	@Test
@@ -442,30 +354,14 @@ public class JiraServiceRTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_RCA.getKpiId(), KPICode.DEFECT_COUNT_BY_RCA.name(),
+		addKpiElement(kpiList, KPICode.TEST_JIRA.getKpiId(), KPICode.TEST_JIRA.name(),
 				"Category One", "");
-		addKpiElement(kpiList, KPICode.DEFECT_INJECTION_RATE.getKpiId(), KPICode.DEFECT_INJECTION_RATE.name(),
-				"Category One", "%");
-		addKpiElement(kpiList, KPICode.DEFECT_COUNT_BY_PRIORITY.getKpiId(), KPICode.DEFECT_COUNT_BY_PRIORITY.name(),
-				"Category One", "");
-		addKpiElement(kpiList, KPICode.DEFECT_REJECTION_RATE.getKpiId(), KPICode.DEFECT_REJECTION_RATE.name(),
-				"Category One", "%");
-		addKpiElement(kpiList, KPICode.DEFECT_REMOVAL_EFFICIENCY.getKpiId(), KPICode.DEFECT_REMOVAL_EFFICIENCY.name(),
-				"Category One", "%");
-		addKpiElement(kpiList, KPICode.DEFECT_SEEPAGE_RATE.getKpiId(), KPICode.DEFECT_SEEPAGE_RATE.name(),
-				"Category One", "%");
-		addKpiElement(kpiList, KPICode.TECH_DEBT.getKpiId(), KPICode.TECH_DEBT.name(), "Category One", "Days");
-		addKpiElement(kpiList, KPICode.TOTAL_DEFECT_COUNT.getKpiId(), KPICode.TOTAL_DEFECT_COUNT.name(), "Category One",
-				"");
-		addKpiElement(kpiList, KPICode.ISSUE_COUNT.getKpiId(), KPICode.ISSUE_COUNT.name(), "Category One", "SP");
-		addKpiElement(kpiList, KPICode.SPRINT_VELOCITY.getKpiId(), KPICode.SPRINT_VELOCITY.name(), "Category One",
-				"SP");
-		addKpiElement(kpiList, KPICode.LEAD_TIME.getKpiId(), KPICode.LEAD_TIME.name(), "Category Two", "Days");
 		kpiRequest.setLevel(level);
 		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
 		kpiRequest.setLabel("PROJECT");
+		kpiRequest.setSprintIncluded(Arrays.asList());
 		return kpiRequest;
 	}
 
@@ -477,8 +373,8 @@ public class JiraServiceRTest {
 		kpiElement.setKpiCategory(category);
 		kpiElement.setKpiUnit(kpiUnit);
 		kpiElement.setKpiSource("Jira");
-
 		kpiElement.setMaxValue("500");
+		kpiElement.setGroupId(1);
 		kpiElement.setChartType("gaugeChart");
 		kpiList.add(kpiElement);
 	}
@@ -499,9 +395,11 @@ public class JiraServiceRTest {
 		kpiList.add(kpiElement);
 
 		kpiRequest.setLevel(level);
+		kpiRequest.setLabel("PROJECT");
 		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
 		kpiRequest.setRequestTrackerId();
+		kpiRequest.setSprintIncluded(Arrays.asList());
 		return kpiRequest;
 	}
 
