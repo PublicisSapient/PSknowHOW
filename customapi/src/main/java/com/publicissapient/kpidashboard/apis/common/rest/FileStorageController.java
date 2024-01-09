@@ -18,16 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -46,8 +37,6 @@ import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.ValidExtension;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.validation.Valid;
 
 /**
  * REST service managing all requests to File storage utilities
