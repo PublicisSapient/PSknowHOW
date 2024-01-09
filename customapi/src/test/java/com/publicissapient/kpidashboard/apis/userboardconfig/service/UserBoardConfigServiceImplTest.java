@@ -47,8 +47,8 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.KpiCategoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiCategoryMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
@@ -366,7 +366,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
-		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -436,7 +436,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
-		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 6");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 6");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
@@ -470,7 +470,7 @@ public class UserBoardConfigServiceImplTest {
 				.collect(Collectors.toList()));
 		when(kpiCategoryMappingRepository.findAll()).thenReturn(kpiCategoryMappingList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig(listOfReqProjects);
-		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 5, "Previously 4 kpis now 5");
+		assertEquals(userBoardConfigDTO.getScrum().get(2).getKpis().size(), 6, "Previously 4 kpis now 5");
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}
