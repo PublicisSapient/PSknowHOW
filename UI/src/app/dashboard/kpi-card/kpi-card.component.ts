@@ -204,7 +204,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.projectList.forEach((project,index)=>{
       const selectedProjectTrend = this.trendValueList.find(obj=>obj.data === project);
       const tempColorObjArray = Object.values(this.colors).find(obj=>obj['nodeName'] === project)['color'];
-      if(selectedProjectTrend && selectedProjectTrend.value){
+      if(selectedProjectTrend?.value){
         let hoverObjectListTemp = [];
 
         if(selectedProjectTrend.value[0]?.dataValue?.length > 0){
