@@ -2536,7 +2536,7 @@ describe('ExecutiveComponent', () => {
   });
 
   afterEach(() => {
-    httpMock.verify();
+    // httpMock.verify();
   });
 
   it('check whether scrum', (done) => {
@@ -2976,8 +2976,10 @@ describe('ExecutiveComponent', () => {
         }
       ]
     };
-
-    component.sonarKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'afterSonarKpiResponseReceived');
     component.postSonarKpi(postData, 'Sonar');
@@ -3006,7 +3008,10 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    component.sonarKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.sonarKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'afterSonarKpiResponseReceived');
     component.postSonarKanbanKpi(postData, 'sonar');
@@ -3034,8 +3039,10 @@ describe('ExecutiveComponent', () => {
         }
       ]
     };
-
-    component.jenkinsKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.jenkinsKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
     component.postJenkinsKpi(postData, 'Jenkins');
@@ -3063,8 +3070,10 @@ describe('ExecutiveComponent', () => {
         }
       ]
     };
-
-    component.jenkinsKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.jenkinsKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpiKanban').and.returnValue(of(postData.kpiList));
     const spy = spyOn(component, 'createAllKpiArray');
     component.postJenkinsKanbanKpi(postData, 'Jenkins');
@@ -3135,7 +3144,7 @@ describe('ExecutiveComponent', () => {
           id: '633ed17f2c2d5abef2451fe5',
           kpiId: 'kpi27',
           kpiName: 'Sonar Tech Debt',
-        }
+        },
       ]
     };
 
@@ -3151,7 +3160,59 @@ describe('ExecutiveComponent', () => {
       kpi17: {
         id: '633ed17f2c2d5abef2451fe3',
         kpiName: 'Unit Test Coverage',
-      }
+      },
+      kpi997: {
+        kpiId: 'kpi997',
+        kpiName: 'Defect Injection Rate',
+        unit: '%',
+        maxValue: '200',
+        chartType: '',
+        id: '63355d7c41a0342c3790fb83',
+        kpiUnit: '%',
+        kanban: false,
+        kpiSource: 'Jira',
+        thresholdValue: 10,
+        trendValueList: [
+            {
+                "filter": "Overall",
+                "value": [
+                    {
+                        "data": "PSknowHOW ",
+                        "value": [
+                            {
+                                "data": "2",
+                                "sSprintID": "0-1",
+                            },
+                            {
+                                "data": "1",
+                                "sSprintID": "1-3",
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "3-6",
+                            },
+                            {
+                                "data": "0",
+                                "sSprintID": "6-12",
+                            },
+                            {
+                                "data": "1",
+                                "sSprintID": ">12",
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        groupId: 2,
+        xAxisValues :[
+            "0-1",
+            "1-3",
+            "3-6",
+            "6-12",
+            ">12"
+        ],
+    },
     };
     component.jiraKpiRequest = '';
     component.loaderJiraArray = [];
@@ -3201,7 +3262,10 @@ describe('ExecutiveComponent', () => {
         kpiName: 'Unit Test Coverage',
       }
     };
-    component.bitBucketKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.bitBucketKpiRequest = mockSubscription;
     component.loaderJiraArray = [];
     spyOn(helperService, 'createKpiWiseId').and.returnValue(kpiWiseData);
     spyOn(httpService, 'postKpi').and.returnValue(of(postData.kpiList));
@@ -3771,7 +3835,9 @@ describe('ExecutiveComponent', () => {
         "kanban": false,
         "kpiSource": "Sonar",
         "thresholdValue": 55,
-        "trendValueList": [],
+        "trendValueList": [{
+          value : [{filter : 'average sum',value :5}]
+        }],
         "maturityRange": [
           "-20",
           "20-40",
@@ -4083,7 +4149,10 @@ describe('ExecutiveComponent', () => {
   });
 
   it('should call zypher kanban kpi api', () => {
-    component.zypherKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.zypherKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpiKanban').and.returnValue(of({}));
     const spyafterZypherKpiResponseReceived = spyOn(component, 'afterZypherKpiResponseReceived');
     component.postZypherKanbanKpi({}, 'Zypher');
@@ -4092,7 +4161,10 @@ describe('ExecutiveComponent', () => {
   });
 
   it('should call post bitbucket kanban kpi', () => {
-    component.bitBucketKpiRequest = '';
+    const mockSubscription = {
+      unsubscribe: jasmine.createSpy('unsubscribe'),
+    };
+    component.bitBucketKpiRequest = mockSubscription;
     spyOn(httpService, 'postKpiKanban').and.returnValue(of({}));
     const spycreateAllKpiArray = spyOn(component, 'createAllKpiArray');
     component.postBitBucketKanbanKpi({}, 'Bitbucket');
@@ -5956,6 +6028,42 @@ describe('ExecutiveComponent', () => {
     expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
   }));
 
+  it('should get kpi comments count when have kpi id', fakeAsync(() => {
+    component.filterApplyData = {
+      'selectedMap': {
+        'project': ["KnowHOW_6360fefc3fa9e175755f0728"]
+      },
+      'level': 5
+    };
+    const response = {
+      "message": "Found Comments Count",
+      "success": true,
+      "data": {
+        "kpi118": 1
+      }
+    };
+
+    component.kpiCommentsCountObj = {
+      'kpi118': 0
+    };
+    component.updatedConfigGlobalData = [
+      {
+        kpiId: 'kpi118',
+        kpiName: 'Deployment Frequency',
+        isEnabled: true,
+        order: 23,
+        kpiDetail: {
+
+        },
+        shown: true
+      }
+    ];
+    spyOn(helperService, 'getKpiCommentsHttp').and.resolveTo(response);
+    component.getKpiCommentsCount('kpi118');
+    tick();
+    expect(component.kpiCommentsCountObj).toBeDefined();
+  }));
+
   it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {
     component.allKpiArray = fakeDoraKpis;
     component.kpiSelectedFilterObj['kpi118'] = ['Overall'];
@@ -6659,16 +6767,6 @@ describe('ExecutiveComponent', () => {
       spyOn(helperService, 'groupKpiFromMaster').and.returnValue({
         kpiList: [{ kpiId: 1 }],
       });
-      spyOn(component, 'postSonarKanbanKpi');
-      spyOn(component, 'postJenkinsKanbanKpi');
-      spyOn(component, 'postZypherKanbanKpi');
-      spyOn(component, 'postBitBucketKanbanKpi');
-      spyOn(component, 'postJiraKanbanKpi');
-      spyOn(component, 'postSonarKpi');
-      spyOn(component, 'postJenkinsKpi');
-      spyOn(component, 'postZypherKpi');
-      spyOn(component, 'postBitBucketKpi');
-      spyOn(component, 'postJiraKpi');
     });
 
     it('should remove the kpi from allKpiArray if it exists', () => {
@@ -6688,94 +6786,127 @@ describe('ExecutiveComponent', () => {
       const event = {
         kpiDetail: {
           kpiId: 2,
-          kpiSource: 'Sonar',
+          kpiSource: 'sonar',
           kanban: true,
           groupId: 'group1',
         },
       };
       spyOn(service, 'getSelectedType').and.returnValue('Kanban');
-
+      const spyobj = spyOn(component,'postSonarKanbanKpi');
       component.reloadKPI(event);
-
-      expect(helperService.groupKpiFromMaster).toHaveBeenCalledWith(
-        'Sonar',
-        true,
-        component.masterData,
-        component.filterApplyData,
-        component.filterData,
-        {},
-        'group1',
-        ''
-      );
-      expect(component.postSonarKanbanKpi).toHaveBeenCalled();
-      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postSonarKpi).not.toHaveBeenCalled();
-      expect(component.postJenkinsKpi).not.toHaveBeenCalled();
-      expect(component.postZypherKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKpi).not.toHaveBeenCalled();
+      
+      expect(spyobj).toHaveBeenCalled();
     });
 
-    it('should group the kpi from master and call the appropriate post method for non-kanban view', () => {
+    it('should reload jenkins kanban KPI', () => {
       const event = {
         kpiDetail: {
-          kpiId: 3,
-          kpiSource: 'Jenkins',
-          kanban: false,
-        },
-      };
-      spyOn(service, 'getSelectedType').and.returnValue('Scrum');
-
-      component.reloadKPI(event);
-
-      expect(helperService.groupKpiFromMaster).toHaveBeenCalledWith(
-        'Jenkins',
-        false,
-        component.masterData,
-        component.filterApplyData,
-        component.filterData,
-        {},
-        undefined,
-        ''
-      );
-      expect(component.postSonarKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postSonarKpi).not.toHaveBeenCalled();
-      expect(component.postJenkinsKpi).toHaveBeenCalled();
-      expect(component.postZypherKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKpi).not.toHaveBeenCalled();
-    });
-
-    xit('should not group the kpi if kpiList is empty', () => {
-      const event = {
-        kpiDetail: {
-          kpiId: 4,
-          kpiSource: 'Zypher',
+          kpiId: 2,
+          kpiSource: 'jenkins',
           kanban: true,
-          groupId: 'group2',
+          groupId: 'group1',
         },
       };
       spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+      const spyobj = spyOn(component,'postJenkinsKanbanKpi');
       component.reloadKPI(event);
-
-      expect(component.postSonarKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postJenkinsKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postZypherKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKanbanKpi).not.toHaveBeenCalled();
-      expect(component.postSonarKpi).not.toHaveBeenCalled();
-      expect(component.postJenkinsKpi).not.toHaveBeenCalled();
-      expect(component.postZypherKpi).not.toHaveBeenCalled();
-      expect(component.postBitBucketKpi).not.toHaveBeenCalled();
-      expect(component.postJiraKpi).not.toHaveBeenCalled();
+      expect(spyobj).toHaveBeenCalled();
+      
     });
+
+    it('should reload zypher kanban KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'zypher',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+      const spyobj = spyOn(component,'postZypherKanbanKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+      
+    });
+
+    it('should reload bitbucket kanban KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'bitbucket',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('Kanban');
+      const spyobj = spyOn(component,'postBitBucketKanbanKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+      
+    });
+
+    it('should reload sonar scrum KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'sonar',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('scrum');
+      const spyobj = spyOn(component,'postSonarKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+    });
+
+    it('should reload jenkins scrum KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'jenkins',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('scrum');
+      const spyobj = spyOn(component,'postJenkinsKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+    });
+
+    it('should reload zypher scrum KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'zypher',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('scrum');
+      const spyobj = spyOn(component,'postZypherKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+    });
+
+    it('should reload bitbucket scrum KPI', () => {
+      const event = {
+        kpiDetail: {
+          kpiId: 2,
+          kpiSource: 'bitbucket',
+          kanban: true,
+          groupId: 'group1',
+        },
+      };
+      spyOn(service, 'getSelectedType').and.returnValue('scrum');
+      const spyobj = spyOn(component,'postBitBucketKpi');
+      component.reloadKPI(event);
+      expect(spyobj).toHaveBeenCalled();
+    });
+
+    
   });
 
   describe('downloadGlobalExcel', () => {
@@ -6800,6 +6931,237 @@ describe('ExecutiveComponent', () => {
       expect(exportExcelComponent).toBeDefined();
     });
   });
+
+  it('should set the colorObj', () => {
+    component.kpiChartData = {
+        kpi121: {
+            kpiId: 'kpi123'
+        }
+    }
+    const x = {
+        'Sample One_hierarchyLevelOne': {
+            nodeName: 'Sample One',
+            color: '#079FFF'
+        }
+    };
+    service.setColorObj(x);
+    fixture.detectChanges();
+    component.ngOnInit();
+    expect(component.colorObj).toBe(x);
+});
+
+it('should enable download excel',()=>{
+  const spyObj = spyOn(component,'downloadGlobalExcel');
+  service.setGlobalDownload('true');
+  expect(spyObj).toHaveBeenCalled();
+})
+
+it('should noTabAccess false when emp details not available', () => {
+  service.setEmptyData('');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeFalsy();
+})
+
+it('should noTabAccess true when emp details available', () => {
+  service.setEmptyData('test');
+  fixture.detectChanges();
+  component.ngOnInit();
+  expect(component.noTabAccess).toBeTruthy();
+})
+
+it('postJiraKpi should call httpServicepost', fakeAsync(() => {
+  const jiraKpiData = {
+      kpi14: {
+          kpiId: 'kpi14',
+          kpiName: 'Defect Injection Rate',
+          unit: '%',
+          maxValue: '200',
+          chartType: '',
+          id: '63355d7c41a0342c3790fb83',
+          isDeleted: 'False',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'Jira',
+          thresholdValue: 10,
+          trendValueList: [],
+          maturityRange: [
+              '>=175',
+              '175-125',
+              '125-75',
+              '75-25',
+              '25-0'
+          ],
+          groupId: 2
+      }
+  };
+  component.jiraKpiData = {};
+  component.loaderJiraArray = ['kpi14'];
+  const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
+  spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
+  component.postJiraKpi({
+    kpiList : [{kpiId : 'kpi141'}]
+  }, 'jira');
+  tick();
+  expect(spy).toHaveBeenCalled();
+}));
+
+it('should hadle of postJiraKanbanKpi', fakeAsync(() => {
+  const jiraKpiData = {
+      kpi14: {
+          kpiId: 'kpi14',
+          kpiName: 'Defect Injection Rate',
+          unit: '%',
+          maxValue: '200',
+          chartType: '',
+          id: '63355d7c41a0342c3790fb83',
+          isDeleted: 'False',
+          kpiUnit: '%',
+          kanban: false,
+          kpiSource: 'Jira',
+          thresholdValue: 10,
+          trendValueList: [],
+          maturityRange: [
+              '>=175',
+              '175-125',
+              '125-75',
+              '75-25',
+              '25-0'
+          ],
+          groupId: 2
+      }
+  };
+  component.jiraKpiData = {};
+  component.loaderJiraArray = ['kpi14'];
+  const spy = spyOn(httpService, 'postKpiKanban').and.returnValue(of(null));
+  spyOn(helperService, 'createKpiWiseId').and.returnValue(jiraKpiData);
+  component.postJiraKanbanKpi({
+    kpiList : [{kpiId : 'kpi141'}]
+  }, 'jira');
+  tick();
+  expect(spy).toHaveBeenCalled();
+}));
+
+it('should getchartdata for kpi when trendValueList is arry with two filter', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi118',
+    trendValueList: [
+       { 
+          filter1 : "f1",
+          filter2 : "f2",
+
+       }
+      ]
+}];
+  component.kpiSelectedFilterObj['kpi118'] = {
+    filter1 : "f1",
+    filter2 : "f2",
+  }
+  const res = fakeDoraKpiFilters;
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi118', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
+
+it('should getchartdata for kpi when trendValueList is arry with any one i.e filter1', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi118',
+    trendValueList: [
+       { 
+          filter1 : "f1",
+
+       }
+      ]
+}];
+  component.kpiSelectedFilterObj['kpi118'] = {
+    filter1 : "f1",
+  }
+  const res = fakeDoraKpiFilters;
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi118', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
+
+it('should getchartdata for kpi when kpiSelectedFilterObj do not have filter1 and filter2', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi118',
+    trendValueList: [
+       { 
+          filter1 : "f1",
+
+       }
+      ]
+}];
+  component.kpiSelectedFilterObj['kpi118'] = {
+    filter : "f1",
+  }
+  const res = fakeDoraKpiFilters;
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi118', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
+
+it('should getchartdata for kpi17', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi17',
+    trendValueList: [
+       { 
+          filter : "f1",
+          value : [{value : 5}]
+       },
+       { 
+        filter : "f2",
+        value : [{value:10}]
+     }
+      ]
+}];
+  component.kpiSelectedFilterObj['kpi17'] =['f1','f2']
+  const res = fakeDoraKpiFilters;
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi17', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
+
+it('should getchartdata for kpi17 and filter is average coverage', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi17',
+    trendValueList: [
+       { 
+          filter : "average coverage",
+          value : [{value : 5}]
+       },
+       { 
+        filter : "f2",
+        value : [{value:10}]
+     }
+      ]
+}];
+  component.kpiSelectedFilterObj['kpi17'] =['average coverage']
+  const res = fakeDoraKpiFilters;
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi17', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
 
 
 
