@@ -240,7 +240,8 @@ public class RepoToolsConfigServiceImpl {
 					toolList.forEach(projectToolConfig -> branch.add(projectToolConfig.getBranch()));
 					Optional<Connection> optConnection = connectionRepository.findById(tool.getConnectionId());
 					toolList.get(0).setIsNew(false);
-					httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
+					if(optConnection.isPresent())
+						httpStatus = configureRepoToolProject(toolList.get(0), optConnection.get(), branch);
 				}
 			} else {
 
