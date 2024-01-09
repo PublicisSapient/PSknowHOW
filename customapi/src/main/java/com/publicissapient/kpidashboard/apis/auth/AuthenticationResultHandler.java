@@ -20,8 +20,10 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +34,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
 
 @Component
@@ -46,17 +49,21 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 	@Autowired
 	private AuthenticationService authenticationService;
 
+	@Autowired
+	private CookieUtil cookieUtil;
+
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws IOException, ServletException {
 		authenticationResponseService.handle(response, authentication);
 		// sgu106: Google Analytics data population starts
 		String username = authenticationService.getUsername(authentication);
-
-		JSONObject json = customAnalyticsService.addAnalyticsData(response, username);
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		String token = authCookie.getValue();
+		Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, username, token);
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print(json.toJSONString());
+		out.print(userMap);
 		// sgu106: Google Analytics data population ends
 
 	}

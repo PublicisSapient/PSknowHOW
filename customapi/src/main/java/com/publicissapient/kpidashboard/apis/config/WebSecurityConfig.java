@@ -122,28 +122,33 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.headers().cacheControl();
-		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/registerUser")
-				.permitAll().antMatchers("/changePassword").permitAll().antMatchers("/login/captcha").permitAll()
-				.antMatchers("/login/captchavalidate").permitAll().antMatchers("/login**").permitAll()
-				.antMatchers("/error").permitAll().antMatchers("/authenticationProviders").permitAll()
-				.antMatchers("/auth-types-status").permitAll().antMatchers("/pushData/*").permitAll()
+		http.csrf().disable().authorizeRequests()
+				.antMatchers("/appinfo").permitAll()
+				.antMatchers("/error").permitAll()
+				.antMatchers("/auth-types-status").permitAll()
 				.antMatchers("/getversionmetadata").permitAll()
-
+				// push API calls
+				.antMatchers("/pushData/*").permitAll()
 				// management metrics
-				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
+				.antMatchers("/info").permitAll()
+				.antMatchers("/health").permitAll().antMatchers("/env").permitAll()
 				.antMatchers("/metrics").permitAll()
+				//togglz API calls
 				.antMatchers("/actuator/togglz**").permitAll()
 				.antMatchers("/togglz-console**").permitAll()
-				.antMatchers("/actuator**").permitAll().antMatchers("/forgotPassword").permitAll()
-				.antMatchers("/validateToken**").permitAll().antMatchers("/resetPassword").permitAll()
-				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
-				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
+				.antMatchers("/actuator**").permitAll()
+				// auth service
+				.antMatchers("/validateToken**").permitAll()
+				// cache service calls
+				.antMatchers("/cache/clearAllCache").permitAll()
+				.antMatchers(HttpMethod.GET, "/cache/clearCache/**").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				// analytics API calls
+				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll()
+				.anyRequest().authenticated().and()
 				.httpBasic().and().csrf().disable().headers().and()
-				.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(ldapLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
-				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 				.addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class).exceptionHandling()
 				.authenticationEntryPoint(customAuthenticationEntryPoint);
 
