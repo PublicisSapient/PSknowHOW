@@ -20,6 +20,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,9 @@ public class IterationReadinessServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiraStatusForInProgressKPI161(Arrays.asList("In Progress", "In Analysis"));
+		fieldMapping.setJiraStatusForRefinedKPI161(Arrays.asList("Closed","Live"));
+		fieldMapping.setJiraStatusForNotRefinedKPI161(Arrays.asList("Open"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
 	}

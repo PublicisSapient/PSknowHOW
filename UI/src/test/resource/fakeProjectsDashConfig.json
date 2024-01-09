@@ -1,0 +1,133 @@
+{
+    "message": "Fetched successfully",
+    "success": true,
+    "data": [
+        {
+            "id": "63621fdbf6f1c850816cee4c",
+            "projectName": "Kanban KnowHow",
+            "createdAt": "2022-11-02T07:44:27",
+            "kanban": true,
+            "hierarchy": [
+                {
+                    "hierarchyLevel": {
+                        "level": 1,
+                        "hierarchyLevelId": "bu",
+                        "hierarchyLevelName": "BU"
+                    },
+                    "value": "Internal"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 2,
+                        "hierarchyLevelId": "ver",
+                        "hierarchyLevelName": "Vertical"
+                    },
+                    "value": "PS Internal"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 3,
+                        "hierarchyLevelId": "acc",
+                        "hierarchyLevelName": "Account"
+                    },
+                    "value": "Methods and Tools"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 4,
+                        "hierarchyLevelId": "port",
+                        "hierarchyLevelName": "Portfolio"
+                    },
+                    "value": "Business Consulting"
+                }
+            ],
+            "saveAssigneeDetails": false,
+            "isKanban": true
+        },
+        {
+            "id": "6377306a175a953a0a49d322",
+            "projectName": "Integration Services",
+            "createdAt": "2022-11-18T07:12:42",
+            "updatedAt": "2023-08-16T13:56:55",
+            "kanban": false,
+            "hierarchy": [
+                {
+                    "hierarchyLevel": {
+                        "level": 1,
+                        "hierarchyLevelId": "bu",
+                        "hierarchyLevelName": "BU"
+                    },
+                    "value": "North America"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 2,
+                        "hierarchyLevelId": "ver",
+                        "hierarchyLevelName": "Vertical"
+                    },
+                    "value": "Retail"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 3,
+                        "hierarchyLevelId": "acc",
+                        "hierarchyLevelName": "Account"
+                    },
+                    "value": "Sunbelt Rentals"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 4,
+                        "hierarchyLevelId": "port",
+                        "hierarchyLevelName": "Portfolio"
+                    },
+                    "value": "Sunbelt Rentals"
+                }
+            ],
+            "saveAssigneeDetails": true,
+            "isKanban": false
+        },
+        {
+            "id": "63777558175a953a0a49d363",
+            "projectName": "VDOS",
+            "createdAt": "2022-11-18T12:06:48",
+            "kanban": false,
+            "hierarchy": [
+                {
+                    "hierarchyLevel": {
+                        "level": 1,
+                        "hierarchyLevelId": "bu",
+                        "hierarchyLevelName": "BU"
+                    },
+                    "value": "North America"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 2,
+                        "hierarchyLevelId": "ver",
+                        "hierarchyLevelName": "Vertical"
+                    },
+                    "value": "Retail"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 3,
+                        "hierarchyLevelId": "acc",
+                        "hierarchyLevelName": "Account"
+                    },
+                    "value": "Sunbelt Rentals"
+                },
+                {
+                    "hierarchyLevel": {
+                        "level": 4,
+                        "hierarchyLevelId": "port",
+                        "hierarchyLevelName": "Portfolio"
+                    },
+                    "value": "Sunbelt Rentals"
+                }
+            ],
+            "saveAssigneeDetails": false,
+            "isKanban": false
+        }
+    ]
+}

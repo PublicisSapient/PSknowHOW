@@ -117,7 +117,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
     noOfDataPoints:number = 5;
     maturityTableKpiList = [];
 
-    constructor(private service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
+    constructor(public service: SharedService, private httpService: HttpService, private excelService: ExcelService, private helperService: HelperService, private route: ActivatedRoute) {
         const selectedTab = window.location.hash.substring(1);
          this.selectedTab = selectedTab?.split('/')[2] ? selectedTab?.split('/')[2] :'iteration' ;
 
@@ -310,41 +310,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                             if(this.filterApplyData.level == projectLevel) this.getKpiCommentsCount();
                         }
                     }
-                } else if (this.filterData?.length && !$event.makeAPICall) {
-                    // alert('no call');
-                    this.allKpiArray.forEach(element => {
-                        this.getDropdownArray(element?.kpiId);
-                        // For kpi3 and kpi53 generating table column headers and table data
-                        if (element.kpiId === 'kpi3' || element.kpiId === 'kpi53') {
-                            //generating column headers
-                            const columnHeaders = [];
-                            if (Object.keys(this.kpiSelectedFilterObj)?.length && this.kpiSelectedFilterObj[element.kpiId]?.length && this.kpiSelectedFilterObj[element.kpiId][0]) {
-                                columnHeaders.push({ field: 'name', header: this.hierarchyLevel[+this.filterApplyData.level - 1]?.hierarchyLevelName + ' Name' });
-                                columnHeaders.push({ field: 'value', header: this.kpiSelectedFilterObj[element.kpiId][0] });
-                                columnHeaders.push({ field: 'maturity', header: 'Maturity' });
-                            }
-                            if (this.kpiChartData[element.kpiId]) {
-                                this.kpiChartData[element.kpiId].columnHeaders = columnHeaders;
-                            }
-                            //generating Table data
-                            const kpiUnit = this.updatedConfigGlobalData?.find(kpi => kpi.kpiId === element.kpiId)?.kpiDetail?.kpiUnit;
-                            const data = [];
-                            if (this.kpiChartData[element.kpiId] && this.kpiChartData[element.kpiId].length) {
-                                for (let i = 0; i < this.kpiChartData[element.kpiId].length; i++) {
-                                    const rowData = {
-                                        name: this.kpiChartData[element.kpiId][i].data,
-                                        maturity: 'M' + this.kpiChartData[element.kpiId][i].maturity,
-                                        value: this.kpiChartData[element.kpiId][i].value[0].data + ' ' + kpiUnit
-                                    };
-                                    data.push(rowData);
-                                }
-
-                                this.kpiChartData[element.kpiId].data = data;
-                            }
-                            this.showKpiTrendIndicator[element.kpiId] = false;
-
-                        }
-                    });
                 } else {
                     this.noTabAccess = true;
                 }

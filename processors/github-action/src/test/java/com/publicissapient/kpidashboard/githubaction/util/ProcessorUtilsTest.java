@@ -26,6 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ExtendWith(SpringExtension.class)
 class ProcessorUtilsTest {
 
@@ -34,6 +37,16 @@ class ProcessorUtilsTest {
 	void firstCulprit() {
 		JSONObject d = new JSONObject();
 		ProcessorUtils.authorName(d);
+	}
+
+	@SuppressWarnings("java:S2699")
+	@Test
+	void firstCulpritNotNull() {
+		Map<String, Object> d = new HashMap<>();
+		Map<String, Object> temp = new HashMap<>();
+		temp.put("author", new JSONObject());
+		d.put("head_commit", new JSONObject(temp));
+		ProcessorUtils.authorName(new JSONObject(d));
 	}
 
 	@Test

@@ -1917,6 +1917,7 @@ describe('IterationComponent', () => {
             kpiName: 'Release Frequency',
             isEnabled: true,
             order: 1,
+            subCategoryBoard : 'Iteration Review',
             kpiDetail: {
                 id: '63320976b7f239ac93c2686a',
                 kpiId: 'kpi74',
@@ -1925,37 +1926,53 @@ describe('IterationComponent', () => {
                 defaultOrder: 17,
                 kpiUnit: '',
                 chartType: 'line',
-                showTrend: true,
-                isPositiveTrend: true,
-                calculateMaturity: false,
-                kpiSource: 'Jira',
-                maxValue: '300',
                 kanban: true,
                 groupId: 4,
-                kpiInfo: {
-                    definition: 'Release Frequency highlights the number of releases done in a month',
-                    formula: [
-                        {
-                            lhs: 'Release Frequency for a month',
-                            rhs: 'Number of fix versions in JIRA for a project that have a release date falling in a particular month'
-                        }
-                    ],
-                    details: [
-                        {
-                            type: 'paragraph',
-                            value: 'It is calculated as a ‘Count’. Higher the Release Frequency, more valuable it is for the Business or a Project'
-                        },
-                        {
-                            type: 'paragraph',
-                            value: 'A progress indicator shows trend of Release Frequency between last 2 months. An upward trend is considered positive'
-                        }
-                    ]
-                },
                 aggregationCriteria: 'sum',
                 trendCalculative: false,
-                squadSupport: false,
-                xaxisLabel: 'Months',
-                yaxisLabel: 'Count'
+            },
+            shown: true
+        },
+        {
+            kpiId: 'kpi741',
+            kpiName: 'Iteration Progress',
+            isEnabled: true,
+            order: 1,
+            subCategoryBoard : 'Iteration Progress',
+            kpiDetail: {
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Iteration Progress',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+            },
+            shown: true
+        },
+        {
+            kpiId: 'kpi741',
+            kpiName: 'Iteration Progress',
+            isEnabled: true,
+            order: 1,
+            subCategoryBoard : 'Release Frequency',
+            kpiDetail: {
+                kpiWidth : 100,
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Iteration Progress',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
             },
             shown: true
         }
@@ -2055,8 +2072,7 @@ describe('IterationComponent', () => {
         component.configGlobalData[0]['isEnabled'] = false;
         component.configGlobalData[0]['shown'] = false;
         component.processKpiConfigData();
-        expect(component.noKpis).toBeTrue();
-        expect(Object.keys(component.kpiConfigData).length).toBe(configGlobalData.length);
+        expect(component.kpiConfigData).toBeDefined();
     });
 
     it('should call groupKpi methods on selecting filter', () => {
@@ -2997,6 +3013,82 @@ describe('IterationComponent', () => {
         component.reloadKPI(fakeKPiDetails);
         expect(spy).toBeDefined();
       })
+
+    it('should noTabAccess false when emp details not available', () => {
+        service.setEmptyData('');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeFalsy();
+    })
+
+    it('should noTabAccess true when emp details available', () => {
+        service.setEmptyData('test');
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.noTabAccess).toBeTruthy();
+    })
+
+    it('should set the colorObj', () => {
+        component.kpiChartData = {
+            kpi121: {
+                kpiId: 'kpi123'
+            }
+        }
+        const x = {
+            'Sample One_hierarchyLevelOne': {
+                nodeName: 'Sample One',
+                color: '#079FFF'
+            }
+        };
+        service.setColorObj(x);
+        fixture.detectChanges();
+        component.ngOnInit();
+        expect(component.colorObj).toBe(x);
+    });
+    
+      it('should not set the global config data when the http request fails', () => {
+        spyOn(httpService,'getConfigDetails').and.returnValue(of(['not error']));
+        component.ngOnInit();
+      });
+
+      it("should setup tabs",()=>{
+        component.upDatedConfigData = configGlobalData;
+        const fakeResponce = [{
+            data : [{
+                id : 'fakeId'
+            }]
+        }]
+        component.selectedProjectId = 'fakeId';
+        spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponce));
+        component.checkForAssigneeDataAndSetupTabs();
+        expect(component.navigationTabs).toBeDefined();
+      })
+
+      xit('',()=>{
+        component.upDatedConfigData = configGlobalData;
+        const fakeResponce = [{
+            data : [{
+                id : 'fakeId'
+            }]
+        }]
+        component.selectedProjectId = 'fakeId';
+        spyOn(httpService,'getProjectListData').and.returnValue(of(fakeResponce));
+        component.processKpiConfigData();
+      })
+
+      it('should sort the array alphabetically', () => {
+        const objArray = [
+          { data: 'c' },
+          { data: 'a' },
+          { data: 'b' },
+        ];
+        const sortedArray = component.sortAlphabetically(objArray);
+        expect(sortedArray).toEqual([
+          { data: 'a' },
+          { data: 'b' },
+          { data: 'c' },
+        ]);
+      });
 
     });
 

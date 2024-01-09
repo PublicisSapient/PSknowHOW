@@ -212,12 +212,12 @@ return item.kpiId;
        }
      }
      // on kpicategory flag change,  setting all of its kpi flag
-     handleKpiCategoryChange(event, boardData) {
+     handleKpiCategoryChange(event, boardData) { 
        const modifiedObj = {...boardData};
        const targetSelector = event.originalEvent?.target?.closest('.kpi-category-header')?.querySelector('.kpis-list');
        if (event.checked) {
-        if(targetSelector.classList.contains('hide-kpisList')) {
-          targetSelector.classList.remove('hide-kpisList');
+        if(targetSelector?.classList.contains('hide-kpisList')) {
+          targetSelector?.classList.remove('hide-kpisList');
         }
         modifiedObj.kpis.forEach((item) => {
           item.shown = true;
@@ -226,7 +226,7 @@ return item.kpiId;
           return item;
         });
        } else {
-        targetSelector.classList.add('hide-kpisList');
+        targetSelector?.classList.add('hide-kpisList');
         modifiedObj.kpis.forEach((item) => {
           item.shown = false;
           this.kpiFormValue.kpis['controls'][item.kpiId].setValue(false);

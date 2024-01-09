@@ -38,7 +38,6 @@ import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 @Service
 public class TestCaseDetailsRepositoryImpl implements TestCaseDetailsRepositoryCustom {
 
-	private static final String UNCHECKED = "unchecked";
 	private static final String BASIC_PROJ_CONF_ID = "basicProjectConfigId";
 	private static final String NIN = "nin";
 	private static final String TEST_CASE_STATUS = "testCaseStatus";
