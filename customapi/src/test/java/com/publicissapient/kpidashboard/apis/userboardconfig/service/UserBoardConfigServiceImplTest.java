@@ -47,8 +47,8 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.data.KpiCategoryDataFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiCategoryMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiCategoryMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiMasterDataFactory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategory;
 import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;

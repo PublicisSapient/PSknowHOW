@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.data;
+package com.publicissapient.kpidashboard.apis.mongock.data;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.mongock.FieldMappingStructureForMongock;
+import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,23 +35,23 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SuppressWarnings("java:S1075")
-public class FieldMappingStructureDataFactory {
-	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/field_mapping_structure.json";
-	private List<FieldMappingStructureForMongock> fieldMappingStructureList;
+public class MetaDataIdentifierDataFactory {
+	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/metadata_identifier.json";
+	private List<MetadataIdentifier> metadataIdentifierList;
 	private ObjectMapper mapper;
 
-	private FieldMappingStructureDataFactory() {
+	private MetaDataIdentifierDataFactory() {
 	}
 
-	public static FieldMappingStructureDataFactory newInstance(String filePath) {
+	public static MetaDataIdentifierDataFactory newInstance(String filePath) {
 
-		FieldMappingStructureDataFactory factory = new FieldMappingStructureDataFactory();
+		MetaDataIdentifierDataFactory factory = new MetaDataIdentifierDataFactory();
 		factory.createObjectMapper();
 		factory.init(filePath);
 		return factory;
 	}
 
-	public static FieldMappingStructureDataFactory newInstance() {
+	public static MetaDataIdentifierDataFactory newInstance() {
 
 		return newInstance(null);
 	}
@@ -61,8 +61,8 @@ public class FieldMappingStructureDataFactory {
 
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
 
-			fieldMappingStructureList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<FieldMappingStructureForMongock>>() {
+			metadataIdentifierList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<MetadataIdentifier>>() {
 					});
 		} catch (IOException e) {
 			log.error("Error in reading from file = " + filePath, e);
@@ -80,8 +80,7 @@ public class FieldMappingStructureDataFactory {
 		}
 	}
 
-	public List<FieldMappingStructureForMongock> getFieldMappingStructureList() {
-		return fieldMappingStructureList;
+	public List<MetadataIdentifier> getMetadataIdentifierList() {
+		return metadataIdentifierList;
 	}
-
 }

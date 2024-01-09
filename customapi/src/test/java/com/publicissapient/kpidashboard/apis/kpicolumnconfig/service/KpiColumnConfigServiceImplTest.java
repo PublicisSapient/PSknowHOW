@@ -34,7 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.modelmapper.ModelMapper;
 
-import com.publicissapient.kpidashboard.apis.data.KpiColumnConfigDataFactory;
+import com.publicissapient.kpidashboard.apis.mongock.data.KpiColumnConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
 import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfigDTO;
