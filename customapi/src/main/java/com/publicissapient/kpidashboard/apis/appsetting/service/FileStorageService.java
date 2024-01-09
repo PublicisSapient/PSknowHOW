@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.publicissapient.kpidashboard.apis.model.BaseResponse;
@@ -63,4 +65,5 @@ public interface FileStorageService {
 	 */
 	boolean deleteLogo();
 
+	ResponseEntity<ServiceResponse> uploadCertificates(MultipartFile file);
 }
