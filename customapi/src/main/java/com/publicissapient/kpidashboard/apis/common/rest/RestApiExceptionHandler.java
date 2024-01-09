@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.apis.common.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang3.NotImplementedException;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
 import com.publicissapient.kpidashboard.common.util.UnsafeDeleteException;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**

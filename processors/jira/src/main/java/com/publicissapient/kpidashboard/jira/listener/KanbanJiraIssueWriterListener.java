@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExec
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import org.springframework.batch.item.Chunk;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -59,7 +60,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 	 * org.springframework.batch.core.ItemWriteListener#beforeWrite(java.util.List)
 	 */
 	@Override
-	public void beforeWrite(List<? extends CompositeResult> compositeResult) {
+	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
 		// in future we can use this method to do something before saving data in db
 	}
 
@@ -70,12 +71,12 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
 	@Override
-	public void afterWrite(List<? extends CompositeResult> compositeResults) {
+	public void afterWrite(Chunk<? extends CompositeResult> compositeResults) {
 		log.info("Saving status in Processor execution Trace log for Kanban board project");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
-		List<KanbanJiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getKanbanJiraIssue)
-				.collect(Collectors.toList());
+		List<KanbanJiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getKanbanJiraIssue)
+				.toList();
 
 		Map<String, Map<String, List<KanbanJiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC))
@@ -129,7 +130,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 	}
 
 	@Override
-	public void onWriteError(Exception exception, List<? extends CompositeResult> compositeResult) {
+	public void onWriteError(Exception exception, Chunk<? extends CompositeResult> compositeResult) {
 		log.error("Exception occured while writing jira Issue for Kanban board project", exception);
 	}
 }

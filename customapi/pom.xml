@@ -21,13 +21,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.3</version>
+		<version>3.2.0</version>
 		<relativePath />
 	</parent>
 
 	<properties>
-		<java.version>1.8</java.version>
-		<guava.version>31.1-jre</guava.version>
+		<java.version>17</java.version>
+		<guava.version>33.0.0-jre</guava.version>
+		<lombok.version>1.18.30</lombok.version>
 		<application.version.number>2.5.0</application.version.number>
 		<suiteXmlFile>src/test/resources/default-testng.xml</suiteXmlFile>
 		<final.name>customapi</final.name>
@@ -110,6 +111,7 @@
 		<dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
 		</dependency>
 
 		<dependency>
@@ -213,11 +215,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.fasterxml.jackson.datatype</groupId>
-			<artifactId>jackson-datatype-joda</artifactId>
-			<version>2.13.4</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
@@ -263,7 +260,7 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.10-FINAL</version>
+			<version>3.17</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -285,6 +282,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -315,7 +313,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-			<version>2.7.3</version>
+			<version>3.2.0</version>
 		</dependency>
 
         <dependency>
@@ -340,10 +338,12 @@
 		<dependency>
 			<groupId>io.mongock</groupId>
 			<artifactId>mongock-springboot</artifactId>
+			<version>5.3.6</version>
 		</dependency>
 		<dependency>
 			<groupId>io.mongock</groupId>
 			<artifactId>mongodb-springdata-v3-driver</artifactId>
+			<version>5.3.6</version>
 		</dependency>
     </dependencies>
 	<dependencyManagement>
@@ -394,6 +394,7 @@
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.13</version>
 				<executions>
 					<execution>
 						<id>build</id>
@@ -432,6 +433,7 @@
 					<plugin>
 						<groupId>org.jacoco</groupId>
 						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>0.8.8</version>
 						<executions>
 							<execution>
 								<id>jacoco-initialize</id>
