@@ -2067,6 +2067,13 @@ describe('CapacityPlanningComponent', () => {
       component.numericInputUpDown(event);
       expect(component.enableDisableSubmitButton).toHaveBeenCalled();
     });
+
+    it('should call enableDisableSubmitButton if the input value is less than 0', () => {
+      const event = { target: { value: '-1', name: 'test' } };
+      component.enableDisableSubmitButton = jasmine.createSpy();
+      component.numericInputUpDown(event);
+      expect(component.enableDisableSubmitButton).not.toHaveBeenCalled();
+    });
   });
 
   describe('makeUniqueArrayList', () => {
@@ -2406,6 +2413,190 @@ describe('CapacityPlanningComponent', () => {
     });
   });
 
+  it('should set the trendLineValueList to the projectListArr, set the selectedProjectValue to the first element of the trendLineValueList, and call handleIterationFilters if flag is true', () => {
+    component.projectListArr = [
+      { nodeId: 'node1', name: 'Project 1' },
+      { nodeId: 'node2', name: 'Project 2' },
+      { nodeId: 'node3', name: 'Project 3' },
+    ];
+    component.filterForm = new UntypedFormGroup({
+      selectedProjectValue : new UntypedFormControl()
+    })
+    const flag = true;
+    component.checkDefaultFilterSelection(flag);
+    expect(component.trendLineValueList).toEqual(component.projectListArr);
+  });
 
+  it("should call getCapacityData if selectedProjectBaseConfigId is truthy",()=>{
+    const spyObj = spyOn(component,'getCapacityData')
+    component.selectedProjectBaseConfigId = "testID";
+    component.getProjectBasedData();
+    expect(spyObj).toHaveBeenCalled();
+  })
+
+  it('should call saveOrUpdateSprintHappinessIndex with the correct postData, call getCapacityData with the correct basicProjectConfigId, set the expandedRows, and show a success message if the response is successful', () => {
+    component.selectedSprintDetails = {
+      basicProjectConfigId: 'config1',
+      sprintNodeId: 'sprint1',
+      startDate: '2022-01-01',
+    };
+    component.kanban = true;
+    const capacitySaveData = {
+      basicProjectConfigId: 'config1',
+      sprintNodeId: 'sprint1',
+      assigneeCapacity: [
+        { userId: 'user1', userName: 'User 1', happinessRating: 3 },
+        { userId: 'user2', userName: 'User 2', happinessRating: 4 },
+      ],
+    };
+    const response = { success: true, data: {} };
+    spyOn(httpService,'saveOrUpdateSprintHappinessIndex').and.returnValue(of(response));
+    component.sendSprintHappinessIndexForAddOrRemove(capacitySaveData);
+    expect(httpService.saveOrUpdateSprintHappinessIndex).toHaveBeenCalledWith({
+      basicProjectConfigId: capacitySaveData['basicProjectConfigId'],
+      sprintID: capacitySaveData['sprintNodeId'],
+      userRatingList: capacitySaveData['assigneeCapacity'].map((assignee) => ({
+        userId: assignee['userId'],
+        userName: assignee['userName'],
+        rating: assignee['happinessRating'] ? assignee['happinessRating'] : 0,
+      })),
+    });
+  });
+
+  it('should call saveOrUpdateSprintHappinessIndex error id response is fail', () => {
+    component.selectedSprintDetails = {
+      basicProjectConfigId: 'config1',
+      sprintNodeId: 'sprint1',
+      startDate: '2022-01-01',
+    };
+    component.kanban = true;
+    const capacitySaveData = {
+      basicProjectConfigId: 'config1',
+      sprintNodeId: 'sprint1',
+      assigneeCapacity: [
+        { userId: 'user1', userName: 'User 1', happinessRating: 3 },
+        { userId: 'user2', userName: 'User 2', happinessRating: 4 },
+      ],
+    };
+    const response = { success: false, data: {} };
+    spyOn(httpService,'saveOrUpdateSprintHappinessIndex').and.returnValue(of(response));
+
+    // Act
+    component.sendSprintHappinessIndexForAddOrRemove(capacitySaveData);
+
+    // Assert
+    expect(httpService.saveOrUpdateSprintHappinessIndex).toHaveBeenCalledWith({
+      basicProjectConfigId: capacitySaveData['basicProjectConfigId'],
+      sprintID: capacitySaveData['sprintNodeId'],
+      userRatingList: capacitySaveData['assigneeCapacity'].map((assignee) => ({
+        userId: assignee['userId'],
+        userName: assignee['userName'],
+        rating: assignee['happinessRating'] ? assignee['happinessRating'] : 0,
+      })),
+    });
+  });
+
+  it('should reset  to old values when clicked on cancel btn on selected sprint when kanban is true ', () => {
+    const selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "testUserId15",
+          "userName": "testUser",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.capacityKanbanData = [{
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "testUserId16",
+          "userName": "testUser",
+          "role": "TESTER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": true,
+      "assigneeDetails": true
+    }];
+
+    component.selectedSprint = {
+      "id": "63e4c5b4fba71c2bff2815d8",
+      "projectNodeId": "TestProject123_63d8bca4af279c1d507cb8b0",
+      "projectName": "TestProject123",
+      "sprintNodeId": "41963_TestProject123_63d8bca4af279c1d507cb8b0",
+      "sprintName": "PS HOW |PI_12|ITR_3|25_Jan",
+      "sprintState": "CLOSED",
+      "capacity": 28,
+      "basicProjectConfigId": "63d8bca4af279c1d507cb8b0",
+      "assigneeCapacity": [
+        {
+          "userId": "testUserId17",
+          "userName": "testUser",
+          "role": "FRONTEND_DEVELOPER",
+          "plannedCapacity": 40,
+          "leaves": 12,
+          "availableCapacity": 28
+        }
+      ],
+      "kanban": false,
+      "assigneeDetails": true
+    };
+
+    component.kanban = true;
+    component.onSprintCapacityCancel(selectedSprint);
+    expect(component.capacityKanbanData).toBeDefined();
+  });
+
+
+  it('should prevent default behavior if the key is "e"', () => {
+    const event = { key: 'e', preventDefault: jasmine.createSpy('preventDefault') };
+    component.validateInput(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+
+  it('should prevent default behavior if the key is "-"', () => {
+    const event = { key: '-', preventDefault: jasmine.createSpy('preventDefault') };
+    component.validateInput(event);
+    expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('should sort the array alphabetically by nodeName', () => {
+    const objArray = [
+      { nodeId: 'node1', nodeName: 'Apple' },
+      { nodeId: 'node2', nodeName: 'Banana' },
+      { nodeId: 'node3', nodeName: 'Cherry' },
+    ];
+    const result = component.sortAlphabetically(objArray);
+    expect(result).toEqual([
+      { nodeId: 'node1', nodeName: 'Apple' },
+      { nodeId: 'node2', nodeName: 'Banana' },
+      { nodeId: 'node3', nodeName: 'Cherry' },
+    ]);
+  });
 
 });
