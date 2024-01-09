@@ -57,6 +57,8 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author pankumar8
  */
@@ -83,19 +85,15 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
 	Boolean fetchLastIssue = false;
+	@Autowired
 	private ReaderRetryHelper retryHelper;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
 	private ProjectConfFieldMapping projectConfFieldMapping;
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public IssueBoardReader(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
 
 	public void initializeReader(String projectId) {
 		pageSize = jiraProcessorConfig.getPageSize();
