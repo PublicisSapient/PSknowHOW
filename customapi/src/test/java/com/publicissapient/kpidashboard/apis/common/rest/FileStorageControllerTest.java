@@ -93,7 +93,7 @@ public class FileStorageControllerTest {
 		mockMvc.perform(fileUpload("/file/upload").file(file)).andExpect(status().isOk());
 	}
 
-	//@Test
+	@Test
 	public void testUploadCertificateSuccess() throws Exception {
 		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert",
 				"LDAP certificate file success scenario to be mocked".getBytes());
@@ -102,7 +102,7 @@ public class FileStorageControllerTest {
 		Assert.assertNotNull(response.getStatusCode());
 	}
 
-	//@Test
+	@Test
 	public void testUploadCertificateFailure() throws Exception {
 		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert",
 				"LDAP certificate file failure scenario to be mocked".getBytes());
@@ -114,7 +114,7 @@ public class FileStorageControllerTest {
 		Assert.assertNotNull(serviceResponse.getMessage());
 	}
 
-	//@Test
+	@Test
 	public void testUploadCertificateTypeFailure() throws Exception {
 		MockMultipartFile file = new MockMultipartFile("file", "cerFile.txt", "application/x-x509-ca-cert",
 				"LDAP certificate file type scenario to be mocked".getBytes());

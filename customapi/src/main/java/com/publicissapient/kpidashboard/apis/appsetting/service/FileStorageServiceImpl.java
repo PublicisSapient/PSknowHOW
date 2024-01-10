@@ -18,15 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
@@ -36,8 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -64,9 +58,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FileStorageServiceImpl implements FileStorageService {
 
-	public static final String STR_CAPACITY = "CAPACITY";
-	public static final String STR_TESTEXECUTION = "TEST_EXECUTION";
-	public static final String STR_KANBAN_CAPACITY = "KANBAN_CAPACITY";
 	public static final String FILE_NAME = "filename";
 	public static final String UPLOAD_SUCCESS = "File uploaded successfully";
 	public static final String UPLOAD_FAIL = "Upload failed : ";
@@ -201,45 +192,6 @@ public class FileStorageServiceImpl implements FileStorageService {
 		String fileName = Constant.LOGO_FIL_NAME;
 		gridOperations.delete(new Query().addCriteria(Criteria.where(FILE_NAME).is(fileName)));
 		return true;
-	}
-
-	@Override
-	public ResponseEntity<ServiceResponse> uploadCertificates(MultipartFile file) {
-		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error",
-				file.getOriginalFilename());
-
-		String extension = file.getOriginalFilename();
-		// Validate the file type
-		if (!isValidFile(extension)) {
-			response.setMessage("Invalid file type. Please upload a .cer file.");
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		}
-		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-
-		String fileName = extension.replace(".cer", "") + "_" + timestamp + ".cer";
-		File dest = new File(customApiConfig.getHostPath(), fileName);
-		try {
-			dest.getParentFile().mkdirs();
-			file.transferTo(dest);
-			response.setSuccess(true);
-			response.setMessage(
-					"LDAP certificate copied successfully, please restart the customapi container service.");
-			return ResponseEntity.status(HttpStatus.OK).body(response);
-		} catch (IOException e) {
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
-		}
-	}
-
-	private boolean isValidFile(String extension) {
-
-		boolean isValidFileExtension = false;
-		try {
-			isValidFileExtension = (null != extension) && (extension.endsWith(".cer"));
-
-		} catch (Exception e) {
-			log.error("Uploded File is either null or in incorrect format");
-		}
-		return isValidFileExtension;
 	}
 
 }

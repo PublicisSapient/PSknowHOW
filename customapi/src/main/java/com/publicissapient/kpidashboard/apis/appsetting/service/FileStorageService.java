@@ -64,6 +64,4 @@ public interface FileStorageService {
 	 * @return boolean
 	 */
 	boolean deleteLogo();
-
-	ResponseEntity<ServiceResponse> uploadCertificates(MultipartFile file);
 }

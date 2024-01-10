@@ -18,7 +18,13 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -108,9 +114,42 @@ public class FileStorageController {
 	}
 
 	@PostMapping("/file/uploadCertificate")
-	@PreAuthorize("hasPermission('LOGO', 'FILE_UPLOAD')")
-	public ResponseEntity<ServiceResponse> uploadCertificate(@ValidExtension @RequestParam("file") MultipartFile file) {
-		return fileStorageService.uploadCertificates(file);
+	public ResponseEntity<ServiceResponse> uploadCertificate(@RequestParam("file") MultipartFile file) {
+		ServiceResponse response = new ServiceResponse(false, "LDAP certificate not copied due to some error",
+				file.getOriginalFilename());
+
+		String extension = file.getOriginalFilename();
+		// Validate the file type
+		if (!isValidFile(extension)) {
+			response.setMessage("Invalid file type. Please upload a .cer file.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+		String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+		String fileName = extension.replace(".cer", "") + "_" + timestamp + ".cer";
+		File dest = new File(customApiConfig.getHostPath(), fileName);
+		try {
+			dest.getParentFile().mkdirs();
+			file.transferTo(dest);
+			response.setSuccess(true);
+			response.setMessage(
+					"LDAP certificate copied successfully, please restart the customapi container service.");
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} catch (IOException e) {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+		}
+	}
+
+	private boolean isValidFile(String extension) {
+
+		boolean isValidFileExtension = false;
+		try {
+			isValidFileExtension = (null != extension) && (extension.endsWith(".cer"));
+
+		} catch (Exception e) {
+			log.error("Uploded File is either null or in incorrect format");
+		}
+		return isValidFileExtension;
 	}
 
 }
