@@ -32,7 +32,6 @@ import com.publicissapient.kpidashboard.common.repository.application.AccountHie
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-
 public class JiraIssueClientUtilTest {
 	@InjectMocks
 	private JiraIssueClientUtil jiraIssueClientUtil;

@@ -15,6 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package com.publicissapient.kpidashboard.jira.reader;
 
 import static org.junit.Assert.assertEquals;
@@ -63,11 +64,10 @@ import com.publicissapient.kpidashboard.jira.helper.ReaderRetryHelper;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 import com.publicissapient.kpidashboard.jira.model.ReadData;
 import com.publicissapient.kpidashboard.jira.service.FetchEpicData;
-import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
+import com.publicissapient.kpidashboard.jira.service.FetchIssueSprint;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IssueBoardReaderTest {
-
+public class IssueSprintReaderTest {
 	@Mock
 	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 
@@ -75,7 +75,7 @@ public class IssueBoardReaderTest {
 	private JiraClient jiraClient;
 
 	@Mock
-	private JiraCommonService jiraCommonService;
+	private FetchIssueSprint fetchIssueSprint;
 
 	@Mock
 	private JiraProcessorConfig jiraProcessorConfig;
@@ -108,7 +108,7 @@ public class IssueBoardReaderTest {
 	ProcessorJiraRestClient client;
 
 	@InjectMocks
-	IssueBoardReader issueBoardReader;
+	IssueSprintReader issueSprintReader;
 
 	@Mock
 	private ReaderRetryHelper retryHelper;
@@ -137,13 +137,14 @@ public class IssueBoardReaderTest {
 		projectConfigsList = IssueReaderUtil.getMockProjectConfig();
 		connection = IssueReaderUtil.getMockConnection(connectionId);
 		fieldMapping = IssueReaderUtil.getMockFieldMapping(projectId);
-		projectConfFieldMapping = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping, projectToolConfigs);
+		projectConfFieldMapping = IssueReaderUtil.createProjectConfigMap(projectConfigsList, connection, fieldMapping,
+				projectToolConfigs);
 		pl = IssueReaderUtil.mockProcessorExecutionTraceLog(projectId);
-		issues =IssueReaderUtil.createIssue();
+		issues = IssueReaderUtil.createIssue();
 		boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 		issueIterator = issues.iterator();
 		when(jiraProcessorConfig.getPageSize()).thenReturn(1);
-		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
+		when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(null)).thenReturn(projectConfFieldMapping);
 
 	}
 
@@ -154,104 +155,16 @@ public class IssueBoardReaderTest {
 				.thenReturn(pl);
 		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
-		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
-				.thenReturn(issues);
+		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, 0, null)).thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
 
 		// Act
-		ReadData result = issueBoardReader.read();
+		ReadData result = issueSprintReader.read();
 
 		// Assert
 		assertEquals(mockReadData.getIssue(), result.getIssue());
-	}
-
-
-	@Test
-	public void testGetDeltaDateFromTraceLog() throws Exception {
-
-		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueBoardReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueBoardReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testGetDeltaDateFromTraceLogWithRepo() throws Exception {
-
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setBoardId("11856");
-		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
-				.thenReturn(null);
-		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueBoardReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueBoardReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testGetDeltaDateFromTraceLogWithRepoAndWithoutBoardId() throws Exception {
-
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
-				.thenReturn(Arrays.asList(processorExecutionTraceLog));
-		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueBoardReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueBoardReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testFetchIssues() throws Exception {
-		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
-		// Use reflection to access the private method
-		Method method = IssueBoardReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		// List<Issue> result = (List<Issue>) method.invoke(issueBoardReader, client);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testFetchEpic() throws Exception {
-		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
-		// Use reflection to access the private method
-		Method method = IssueBoardReader.class.getDeclaredMethod("fetchEpics", KerberosClient.class,
-				ProcessorJiraRestClient.class);
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		// List<Issue> result = (List<Issue>) method.invoke(issueBoardReader,
-		// krb5Client, client);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
 	}
 
 }
