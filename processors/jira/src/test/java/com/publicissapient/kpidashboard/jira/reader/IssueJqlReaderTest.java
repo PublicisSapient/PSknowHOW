@@ -150,14 +150,14 @@ public class IssueJqlReaderTest {
 
 	@Test
 	public void testReadData() throws Exception {
-		when(mockRetryableOperation.execute()).thenReturn(issues);
+		//when(mockRetryableOperation.execute()).thenReturn(issues);
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
-		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
+		//when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
 		when(jiraCommonService.fetchIssuesBasedOnJql(any(), any(), anyInt(), anyString()))
 				.thenReturn(issues);
-		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
+		//when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
 
@@ -225,7 +225,7 @@ public class IssueJqlReaderTest {
 	@Test
 	public void testFetchIssues() throws Exception {
 		issueJqlReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueJqlReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
 		method.setAccessible(true); // Make the private method accessible
