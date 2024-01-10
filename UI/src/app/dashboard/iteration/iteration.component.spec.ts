@@ -2682,7 +2682,7 @@ describe('IterationComponent', () => {
             filter2: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -2848,7 +2848,7 @@ describe('IterationComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -2885,7 +2885,7 @@ describe('IterationComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
     })
@@ -2900,7 +2900,7 @@ describe('IterationComponent', () => {
         component.kpiSelectedFilterObj['kpi124'] = {}
         const combo = [{ filter1: 'Overall' }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
     })
@@ -3237,18 +3237,6 @@ describe('IterationComponent', () => {
         ]);
       });
 
-      it('should call createCombinations', () => {
-        const t1 = ['Initial Commitment (Story Points)']
-        const t2 = ['Overall']
-        const response = component.createCombinations(t1, t2);
-        const t3 = [
-          {
-            "filter1": "Initial Commitment (Story Points)",
-            "filter2": "Overall"
-          }
-        ]
-        expect(response).toEqual(t3);
-      });
 
       it("should createapiarry for radiobutton",()=>{
         const data = {

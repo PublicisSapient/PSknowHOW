@@ -5,7 +5,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-backlog',
@@ -925,24 +925,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>, tab) {
-    if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if (tab.width === 'half') {
-        const updatedTabsDetails = this.navigationTabs.find(tabs => tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
-      }
-      this.updatedConfigGlobalData = [];
-      this.navigationTabs.forEach(tabs => {
-        this.updatedConfigGlobalData = this.updatedConfigGlobalData.concat(tabs['kpis']);
-      })
-      this.updatedConfigGlobalData.map((kpi, index) => kpi.order = index + 3);
-      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-      disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
-      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
-      hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
-      this.service.kpiListNewOrder.next([...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
-    }
+  drop(event: CdkDragDrop<string[]>, updatedContainer) {
+    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.updatedConfigGlobalData,this.configGlobalData);
   }
 
   handleTabChange(event) {
