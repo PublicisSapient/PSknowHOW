@@ -57,6 +57,8 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.util.StringUtils;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @author pankumar8
  */
@@ -82,7 +84,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
-	Boolean fetchLastIssue = false;
+	boolean fetchLastIssue = false;
 	@Autowired
 	private ReaderRetryHelper retryHelper;
 	@Autowired
@@ -115,14 +117,13 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		ReadData readData = null;
 		KerberosClient krb5Client = null;
 		if (!fetchLastIssue) {
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
-				if (boardIterator == null
-						&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping)) {
+				if (boardIterator == null && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 				}
-				if (issueIterator == null || !issueIterator.hasNext()) {
+				if (checkIssueIterator()) {
 					List<Issue> epicIssues;
-					if (null == issueIterator || boardIssueSize < pageSize) {
+					if (checkIssue()) {
 						pageNumber = 0;
 						if (boardIterator.hasNext()) {
 							BoardDetails boardDetails = boardIterator.next();
@@ -159,6 +160,14 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 			}
 		}
 		return readData;
+	}
+
+	private boolean checkIssue() {
+		return null == issueIterator || boardIssueSize < pageSize;
+	}
+
+	private boolean checkIssueIterator() {
+		return issueIterator == null || !issueIterator.hasNext();
 	}
 
 	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
