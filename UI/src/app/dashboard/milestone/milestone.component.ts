@@ -144,7 +144,7 @@ export class MilestoneComponent implements OnInit {
     });
   }
 
-  formatnavigationTabs(){
+  formatNavigationTabs(){
     this.navigationTabs.map(tabDetails => {
       if(tabDetails['width'] === 'half'){
         let fullWidthKPis = [];
