@@ -174,7 +174,7 @@ public class IssueBoardReaderTest {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		//method.setAccessible(true); // Make the private method accessible
+		method.setAccessible(true); // Make the private method accessible
 
 		// Invoke the private method
 		String result = (String) method.invoke(issueBoardReader);
