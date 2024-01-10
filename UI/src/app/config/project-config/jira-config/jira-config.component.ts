@@ -103,9 +103,9 @@ export class JiraConfigComponent implements OnInit {
     }
   ];
 
-  jiraTemplate : any[];
-  gitActionWorkflowNameList : any[];
-  cloudEnv : any ;
+  jiraTemplate: any[];
+  gitActionWorkflowNameList: any[];
+  cloudEnv: any;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -184,7 +184,7 @@ export class JiraConfigComponent implements OnInit {
           summary: error.message,
         });
       }
-    },(err) => {
+    }, (err) => {
       console.log(err);
       this.messenger.add({
         severity: 'error',
@@ -199,29 +199,29 @@ export class JiraConfigComponent implements OnInit {
       this.bambooPlanList = [];
       this.showLoadingOnFormElement('planName');
       this.http.getPlansForBamboo(connectionId).subscribe((data) => {
-          if (data.success && data?.data?.length > 0) {
-            this.bambooProjectDataFromAPI = [...data.data];
-            this.bambooPlanList = [...this.bambooProjectDataFromAPI].map(
-              (item) => ({ planName: item.projectAndPlanName }),
-            );
-            this.bambooPlanList = this.bambooPlanList.map(element => ({
-              name: element.planName,
-              code: element.planName
-            }));
-            this.hideLoadingOnFormElement('planName');
-          } else {
-            this.bambooPlanList = [];
-            this.toolForm?.controls['planKey'].setValue('');
-            this.toolForm?.controls['branchKey'].setValue('');
-            this.bambooBranchList = [];
-            this.hideLoadingOnFormElement('planName');
-            if (this.toolForm?.controls['jobType'].value === 'Build') {
-              this.messenger.add({
-                severity: 'error',
-                summary: data.message,
-              });
-            }
+        if (data.success && data?.data?.length > 0) {
+          this.bambooProjectDataFromAPI = [...data.data];
+          this.bambooPlanList = [...this.bambooProjectDataFromAPI].map(
+            (item) => ({ planName: item.projectAndPlanName }),
+          );
+          this.bambooPlanList = this.bambooPlanList.map(element => ({
+            name: element.planName,
+            code: element.planName
+          }));
+          this.hideLoadingOnFormElement('planName');
+        } else {
+          this.bambooPlanList = [];
+          this.toolForm?.controls['planKey'].setValue('');
+          this.toolForm?.controls['branchKey'].setValue('');
+          this.bambooBranchList = [];
+          this.hideLoadingOnFormElement('planName');
+          if (this.toolForm?.controls['jobType'].value === 'Build') {
+            this.messenger.add({
+              severity: 'error',
+              summary: data.message,
+            });
           }
+        }
       });
     }
 
@@ -336,16 +336,17 @@ export class JiraConfigComponent implements OnInit {
       this.isLoading = false;
     }
 
-    if(this.urlParam === 'GitHubAction'){
+    if (this.urlParam === 'GitHubAction') {
       this.gitActionWorkflowNameList = [];
       this.toolForm.get('repositoryName').reset();
       this.toolForm.get('workflowID').reset();
     }
 
     if (this.urlParam === 'Azure') {
-          this.fetchTeams(this);
-          this.isLoading = false;
-        }
+      this.toolForm.get('team').reset();
+      this.fetchTeams(this);
+      this.isLoading = false;
+    }
 
   }
 
@@ -410,22 +411,22 @@ export class JiraConfigComponent implements OnInit {
       return this.jobType;
     } else if (id === 'deploymentProject') {
       return this.deploymentProjectList;
-    }else if(id === 'testAutomatedIdentification'
-    || id === 'testAutomationCompletedIdentification'
-    || id === 'testRegressionIdentification'){
+    } else if (id === 'testAutomatedIdentification'
+      || id === 'testAutomationCompletedIdentification'
+      || id === 'testRegressionIdentification') {
       return this.testCaseIdentification;
-    }else if(id === 'workflowID'){
+    } else if (id === 'workflowID') {
       return this.gitActionWorkflowNameList;
     }
   }
   getConnectionList(toolName) {
     this.loading = true;
     let finalToolName = "";
-    if(toolName === 'JiraTest'){
+    if (toolName === 'JiraTest') {
       finalToolName = 'Jira';
-    }else if(toolName === 'GitHubAction'){
+    } else if (toolName === 'GitHubAction') {
       finalToolName = 'GitHub';
-    }else{
+    } else {
       finalToolName = toolName;
     }
 
@@ -544,18 +545,29 @@ export class JiraConfigComponent implements OnInit {
     }
   };
 
-fetchTeams(self) {
+  fetchTeams(self) {
     if (self.selectedConnection && self.selectedConnection.id) {
-        self.isLoading = true;
-        let connectionId = self.selectedConnection.id;
-        self.http.getAzureTeams(connectionId).subscribe((response) => {
-          if (response && response['data']) {
-            self.teamData = response['data'];
-            self.filteredTeam = response['data'];
-            }
-          self.isLoading = false;
-        });
-      
+      self.isLoading = true;
+      let connectionId = self.selectedConnection.id;
+      self.http.getAzureTeams(connectionId).subscribe((response) => {
+        if (response && response['success']) {
+          self.teamData = response['data'];
+          self.filteredTeam = response['data'];
+          self.toolForm.controls['team'].enable();
+        } else {
+          self.messenger.add({
+            severity: 'error',
+            summary:
+              'No teams found for the selected Connection.',
+          });
+          self.teamData = [];
+          self.filteredTeam = [];
+          self.toolForm.controls['team'].setValue('');
+          self.toolForm.controls['team'].disable();
+        }
+        self.isLoading = false;
+      });
+
     } else {
       self.toolForm.controls['team'].setValue('');
       self.messenger.add({
@@ -581,7 +593,7 @@ fetchTeams(self) {
     this.boardsData = this.boardsData.filter((data) => (data.boardId + '') !== (value.boardId + ''));
   };
 
-  
+
   onTeamSelect = (value) => {
     this.teamData = this.teamData.filter((data) => (data.id + '') !== (value.name + ''));
   };
@@ -695,7 +707,7 @@ fetchTeams(self) {
     switch (this.urlParam) {
       case 'Bamboo':
         if (value.toLowerCase() === 'build') {
-          const planField =this.formTemplate?.elements?.find(element => element.id === 'planName');
+          const planField = this.formTemplate?.elements?.find(element => element.id === 'planName');
           if (this.bambooPlanList?.length == 0 && !planField?.isLoading) {
             this.messenger.add({
               severity: 'error',
@@ -727,10 +739,10 @@ fetchTeams(self) {
         }
         break;
       case 'GitHubAction':
-        if(value.toLowerCase() === 'build'){
+        if (value.toLowerCase() === 'build') {
           this.showFormElements(['workflowID']);
-        } else{
-         this.hideFormElements(['workflowID']);
+        } else {
+          this.hideFormElements(['workflowID']);
         }
         break;
     }
@@ -835,7 +847,7 @@ fetchTeams(self) {
               });
               this.hideLoadingOnFormElement('projectKey');
             }
-          },(err) => {
+          }, (err) => {
             console.log(err);
             this.messenger.add({
               severity: 'error',
@@ -907,7 +919,7 @@ fetchTeams(self) {
   bambooPlanSelectHandler = (value: any, elementId?) => {
     this.showLoadingOnFormElement('branchName');
     this.bambooPlanKeyForSelectedPlan = [...this.bambooProjectDataFromAPI]
-    .filter((item) => item.projectAndPlanName === value)[0]?.jobNameKey;
+      .filter((item) => item.projectAndPlanName === value)[0]?.jobNameKey;
     this.toolForm.controls['planKey'].setValue(this.bambooPlanKeyForSelectedPlan);
     if (this.bambooPlanKeyForSelectedPlan) {
       try {
@@ -1023,8 +1035,8 @@ fetchTeams(self) {
                 show: true,
                 isLoading: this.isLoading,
                 disabled: this.checkBoards,
-                field:'boardName',
-                multiple:true
+                field: 'boardName',
+                multiple: true
               },
               {
                 type: 'textarea',
@@ -1094,8 +1106,8 @@ fetchTeams(self) {
                 show: true,
                 isLoading: this.isLoading,
                 disabled: this.checkTeams,
-                field:'name',
-                multiple:false
+                field: 'name',
+                multiple: false
               },
               {
                 type: 'text',
@@ -1353,17 +1365,17 @@ fetchTeams(self) {
                 label: 'SDM ID',
                 id: 'gitLabSdmID',
                 validators: [{
-                  type : 'pattern',
-                  value : '^[a-zA-Z0-9,: ]+$'
+                  type: 'pattern',
+                  value: '^[a-zA-Z0-9,: ]+$'
                 }],
                 containerClass: 'p-sm-6',
                 show: true,
                 tooltip: `This key would not use for Sonar.<br />
               <i>
                 Impacted : GitLab processor</i>`,
-                onFocusOut : this.onSdmIdChange,
-                errorMsg : "Only Alphanumeric,Comma and Colon allowed.",
-                placeholder : "This key would not use for Sonar."
+                onFocusOut: this.onSdmIdChange,
+                errorMsg: "Only Alphanumeric,Comma and Colon allowed.",
+                placeholder: "This key would not use for Sonar."
               },
               {
                 type: 'text',
@@ -1965,67 +1977,67 @@ fetchTeams(self) {
           };
         }
         break;
-        case 'GitHubAction':
-          {
-            this.formTitle = 'GitHub Action';
-            this.connectionTableCols = [
+      case 'GitHubAction':
+        {
+          this.formTitle = 'GitHub Action';
+          this.connectionTableCols = [
+            {
+              field: 'connectionName',
+              header: 'Connection Name',
+              class: 'long-text',
+            },
+            { field: 'username', header: 'User Name', class: 'normal' },
+            { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
+          ];
+
+          this.configuredToolTableCols = [
+            { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+            { field: 'repositoryName', header: 'Repository Name', class: 'long-text' },
+            { field: 'jobType', header: 'Job Type', class: 'long-text' },
+            { field: 'jobName', header: 'Workflow Name', class: 'long-text' },
+          ];
+
+          this.formTemplate = {
+            group: 'GitHub Action',
+            elements: [
               {
-                field: 'connectionName',
-                header: 'Connection Name',
-                class: 'long-text',
+                type: 'dropdown',
+                label: 'Job Type',
+                id: 'jobType',
+                containerClass: 'p-sm-6',
+                optionsList: this.jobType,
+                changeHandler: this.jobTypeChangeHandler,
+                validators: ['required'],
+                show: true,
+                isLoading: false
               },
-              { field: 'username', header: 'User Name', class: 'normal' },
-              { field: 'baseUrl', header: 'Base URL', class: 'long-text' },
-            ];
-
-            this.configuredToolTableCols = [
-              { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
-              {field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
-              { field: 'jobType', header: 'Job Type', class: 'long-text' },
-              { field: 'jobName', header: 'Workflow Name', class: 'long-text' },
-            ];
-
-            this.formTemplate = {
-              group: 'GitHub Action',
-              elements: [
-                {
-                  type: 'dropdown',
-                  label: 'Job Type',
-                  id: 'jobType',
-                  containerClass: 'p-sm-6',
-                  optionsList: this.jobType,
-                  changeHandler: this.jobTypeChangeHandler,
-                  validators: ['required'],
-                  show: true,
-                  isLoading: false
-                },
-                {
-                  type: 'text',
-                  label: 'Repository Name',
-                  id: 'repositoryName',
-                  validators: ['required'],
-                  containerClass: 'p-sm-6',
-                  show: true,
-                  tooltip: `GitHub Repository Name.<br / <i>Impacted : All GitHub Repository based KPIs</i>`,
-                  onFocusOut : this.getGitActionWorkflowName
-                },
-                {
-                  type: 'dropdown',
-                  label: 'WorkFlow Name',
-                  id: 'workflowID',
-                  containerClass: 'p-sm-6',
-                  optionsList: this.gitActionWorkflowNameList,
-                  changeHandler: ()=>true,
-                  filterValue: 'true',
-                  filterByName: 'name',
-                  optionLabel: 'name',
-                  show: false,
-                  isLoading: false
-                },
-              ]
-            };
-          }
-          break;
+              {
+                type: 'text',
+                label: 'Repository Name',
+                id: 'repositoryName',
+                validators: ['required'],
+                containerClass: 'p-sm-6',
+                show: true,
+                tooltip: `GitHub Repository Name.<br / <i>Impacted : All GitHub Repository based KPIs</i>`,
+                onFocusOut: this.getGitActionWorkflowName
+              },
+              {
+                type: 'dropdown',
+                label: 'WorkFlow Name',
+                id: 'workflowID',
+                containerClass: 'p-sm-6',
+                optionsList: this.gitActionWorkflowNameList,
+                changeHandler: () => true,
+                filterValue: 'true',
+                filterByName: 'name',
+                optionLabel: 'name',
+                show: false,
+                isLoading: false
+              },
+            ]
+          };
+        }
+        break;
       case 'JiraTest':
         {
           this.formTitle = 'JiraTest';
@@ -2183,7 +2195,7 @@ fetchTeams(self) {
           };
         }
         break;
-        case 'RepoTool':
+      case 'RepoTool':
         {
           this.formTitle = 'RepoTool';
           this.connectionTableCols = [
@@ -2197,8 +2209,8 @@ fetchTeams(self) {
             { field: 'httpUrl', header: 'Http URL', class: 'long-text' },
           ];
           this.configuredToolTableCols = [
-            { field: 'connectionName',header: 'Connection Name',class: 'long-text'},
-            { field: 'repositoryName', header: 'Repository Name', class: 'long-text'},
+            { field: 'connectionName', header: 'Connection Name', class: 'long-text' },
+            { field: 'repositoryName', header: 'Repository Name', class: 'long-text' },
             { field: 'defaultBranch', header: 'Default Branch', class: 'long-text' },
             { field: 'branch', header: 'Scanning Branch', class: 'long-text' },
           ];
@@ -2250,9 +2262,9 @@ fetchTeams(self) {
       if (inputTemplate.validators) {
         const validatorArr = [];
         inputTemplate.validators.forEach((element) => {
-          if(element === 'required'){
+          if (element === 'required') {
             validatorArr.push(Validators[element]);
-          }else{
+          } else {
             validatorArr.push(Validators.pattern(element.value));
           }
 
@@ -2267,14 +2279,14 @@ fetchTeams(self) {
     if (this.urlParam === 'Jira' || this.urlParam === 'Azure' || this.urlParam === 'Zephyr' || this.urlParam === 'JiraTest') {
       if (this.selectedToolConfig && this.selectedToolConfig.length) {
         for (const obj in this.selectedToolConfig[0]) {
-          if (obj !== 'queryEnabled' && obj!== "team") {
+          if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
               this.toolForm.controls[obj].setValue(
                 this.selectedToolConfig[0][obj],
               );
               this.toolForm.controls[obj].markAsDirty();
             }
-          } else if(obj === 'queryEnabled'){
+          } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
               const fakeEvent = {
@@ -2282,24 +2294,26 @@ fetchTeams(self) {
               };
               this.jiraMethodChange(fakeEvent, self);
             }
-          }else if(obj === 'team'){
+          } else if (obj === 'team') {
             if (this.toolForm && this.toolForm.controls[obj]) {
               this.toolForm.controls[obj].setValue(
-                {name:this.selectedToolConfig[0][obj],
-                  id:'dummy'}
+                {
+                  name: this.selectedToolConfig[0][obj],
+                  id: 'dummy'
+                }
               );
               this.toolForm.controls[obj].markAsDirty();
             }
           }
         }
-        if(this.urlParam === 'JiraTest'){
-          if(this.toolForm.controls['testAutomatedIdentification']?.value){
+        if (this.urlParam === 'JiraTest') {
+          if (this.toolForm.controls['testAutomatedIdentification']?.value) {
             this.changeHandler(this.toolForm.controls['testAutomatedIdentification']?.value, 'testAutomatedIdentification');
           }
-          if(this.toolForm.controls['testAutomationCompletedIdentification']?.value){
+          if (this.toolForm.controls['testAutomationCompletedIdentification']?.value) {
             this.changeHandler(this.toolForm.controls['testAutomationCompletedIdentification']?.value, 'testAutomationCompletedIdentification');
           }
-          if(this.toolForm.controls['testRegressionIdentification']?.value){
+          if (this.toolForm.controls['testRegressionIdentification']?.value) {
             this.changeHandler(this.toolForm.controls['testRegressionIdentification']?.value, 'testRegressionIdentification');
           }
         }
@@ -2308,7 +2322,7 @@ fetchTeams(self) {
       }
 
       if (self.urlParam === 'Jira') {
-        if(this.isEdit) {
+        if (this.isEdit) {
           this.toolForm.controls['queryEnabled'].disable();
         }
       }
@@ -2414,20 +2428,20 @@ fetchTeams(self) {
 
     }
 
-    if(this.urlParam === 'Jira'){
+    if (this.urlParam === 'Jira') {
       submitData['metadataTemplateCode'] = submitData['metadataTemplateCode'].templateCode;
-    }else{
+    } else {
       delete submitData['metadataTemplateCode'];
     }
-    if(this.urlParam === 'GitHubAction'){
-      submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj=> obj.code === submitData['workflowID'])[0]?.name || "";
+    if (this.urlParam === 'GitHubAction') {
+      submitData['jobName'] = this.gitActionWorkflowNameList.filter(obj => obj.code === submitData['workflowID'])[0]?.name || "";
     }
 
     if (this.urlParam === 'AzurePipeline') {
       submitData['apiVersion'] = this.azurePipelineApiVersion;
       submitData['deploymentProjectName'] = this.tool['azurePipelineName'].value;
     }
-   
+
     submitData['toolName'] = this.urlParam;
     submitData['basicProjectConfigId'] = this.selectedProject.id;
     submitData['connectionId'] = this.selectedConnection.id;
@@ -2452,7 +2466,7 @@ fetchTeams(self) {
       }
 
       if (this.urlParam === 'Azure') {
-        if(submitData["team"]){
+        if (submitData["team"]) {
           submitData['team'] = submitData["team"].name;
         }
         delete submitData["boards"];
@@ -2474,9 +2488,9 @@ fetchTeams(self) {
 
               // empty the form
               this.toolForm.reset();
-              if(this.urlParam === 'Sonar'){
+              if (this.urlParam === 'Sonar') {
                 this.tool['apiVersion'].enable();
-                 this.tool['projectKey'].enable();
+                this.tool['projectKey'].enable();
               }
 
               this.configuredTools.push(response['data']);
@@ -2504,11 +2518,11 @@ fetchTeams(self) {
       }
 
       if (this.urlParam === 'Azure') {
-            if(submitData["team"]){
-              submitData['team'] = submitData["team"].name;
-            }
-            delete submitData["boards"];
-          }
+        if (submitData["team"]) {
+          submitData['team'] = submitData["team"].name;
+        }
+        delete submitData["boards"];
+      }
       this.http
         .editTool(
           this.selectedProject.id,
@@ -2645,7 +2659,7 @@ fetchTeams(self) {
   // Preserve original property order
   originalOrder = (a: KeyValue<number, string>, b: KeyValue<number, string>): number => 0;
 
-  changeHandler = (value:string, elementId) => {
+  changeHandler = (value: string, elementId) => {
     value = value['name'] || value;
     if (value.toLowerCase() === 'customfield' && elementId === 'testAutomatedIdentification') {
       this.showFormElements(['testAutomated', 'jiraCanBeAutomatedTestValue']);
@@ -2654,80 +2668,80 @@ fetchTeams(self) {
       this.showFormElements(['jiraCanBeAutomatedTestValue']);
     } else if (value.toLowerCase() === 'customfield' && elementId === 'testAutomationCompletedIdentification') {
       this.showFormElements(['testAutomationCompletedByCustomField', 'jiraAutomatedTestValue']);
-    } else if(value.toLowerCase() === 'labels' && elementId === 'testAutomationCompletedIdentification'){
+    } else if (value.toLowerCase() === 'labels' && elementId === 'testAutomationCompletedIdentification') {
       this.hideFormElements(['testAutomationCompletedByCustomField']);
       this.showFormElements(['jiraAutomatedTestValue']);
-    }else if (value.toLowerCase() === 'customfield' && elementId === 'testRegressionIdentification') {
+    } else if (value.toLowerCase() === 'customfield' && elementId === 'testRegressionIdentification') {
       this.showFormElements(['testRegressionByCustomField', 'jiraRegressionTestValue']);
-    }else if (value.toLowerCase() === 'labels' && elementId === 'testRegressionIdentification') {
+    } else if (value.toLowerCase() === 'labels' && elementId === 'testRegressionIdentification') {
       this.hideFormElements(['testRegressionByCustomField']);
       this.showFormElements(['jiraRegressionTestValue']);
     }
   }
 
-  getJiraTemplate(){
+  getJiraTemplate() {
     const isKanban = this.selectedProject?.Type?.toLowerCase() === 'kanban' ? true : false;
-    this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp=>{
-      this.jiraTemplate = resp.filter(temp=>temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
-     if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
-        const selectedTemplate = this.jiraTemplate.find(tem=>tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
+    this.http.getJiraTemplate(this.selectedProject?.id).subscribe(resp => {
+      this.jiraTemplate = resp.filter(temp => temp.tool?.toLowerCase() === 'jira' && temp.kanban === isKanban);
+      if (this.selectedToolConfig && this.selectedToolConfig.length && this.jiraTemplate && this.jiraTemplate.length) {
+        const selectedTemplate = this.jiraTemplate.find(tem => tem.templateCode === this.selectedToolConfig[0]['metadataTemplateCode'])
         this.toolForm.get('metadataTemplateCode')?.setValue(selectedTemplate);
-        if(selectedTemplate?.templateName === 'Custom Template'){
+        if (selectedTemplate?.templateName === 'Custom Template') {
           this.toolForm.get('metadataTemplateCode').disable();
         }
       }
     })
   }
 
-  getGitActionWorkflowName(event, self){
+  getGitActionWorkflowName(event, self) {
     self.showLoadingOnFormElement("workflowID");
     self.toolForm.get('workflowID').reset();
     self.gitActionWorkflowNameList = [];
-    if(self.toolForm.get('jobType').value === 'Deploy'){
+    if (self.toolForm.get('jobType').value === 'Deploy') {
       self.hideLoadingOnFormElement("workflowID");
       return;
     }
-    if(!self.selectedConnection?.id || event.target.value === ''){
+    if (!self.selectedConnection?.id || event.target.value === '') {
       self.hideLoadingOnFormElement("workflowID");
-      self.showPrompt('error',"Please fill all fields and select a connection.");
+      self.showPrompt('error', "Please fill all fields and select a connection.");
       return;
     }
-    const postJson = {connectionID : self.selectedConnection?.id,repositoryName:event.target.value};
-    self.http.getGitActionWorkFlowName(postJson).subscribe(resp=>{
-      if(resp && resp['success']){
-        self.gitActionWorkflowNameList = resp['data'].map(option=>{
-          return {'name' : option['workflowName'],'code':option['workflowID']}
+    const postJson = { connectionID: self.selectedConnection?.id, repositoryName: event.target.value };
+    self.http.getGitActionWorkFlowName(postJson).subscribe(resp => {
+      if (resp && resp['success']) {
+        self.gitActionWorkflowNameList = resp['data'].map(option => {
+          return { 'name': option['workflowName'], 'code': option['workflowID'] }
         })
         self.hideLoadingOnFormElement("workflowID");
-      }else{
+      } else {
         self.hideLoadingOnFormElement("workflowID");
-        self.showPrompt('error',"No Workflow list found.");
+        self.showPrompt('error', "No Workflow list found.");
       }
     })
 
   }
 
   /** Generic method for showing notification prompt */
-  showPrompt(type,msg){
+  showPrompt(type, msg) {
     this.messenger.add({
       severity: type,
       summary: msg,
     });
   }
 
-  onSdmIdChange(event,self){
+  onSdmIdChange(event, self) {
     const sdmID = self.toolForm.get('gitLabSdmID').value.trim();
-     if(sdmID){
+    if (sdmID) {
       self.clearSonarForm()
       self.tool['organizationKey'].disable();
       self.tool['apiVersion'].disable();
       self.tool['projectKey'].disable();
       self.tool['branch'].disable();
-     }else{
+    } else {
       self.toolForm.get('gitLabSdmID').setValidators([Validators.pattern('^[a-zA-Z0-9,: ]+$')]);
       self.enableDisableOrganizationKey(self.cloudEnv);
       self.tool['apiVersion'].enable();
       self.tool['projectKey'].enable();
-     }
+    }
   }
 }
