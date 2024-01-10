@@ -109,8 +109,6 @@
 			<version>1.5.4</version>
 		</dependency>
 
-
-
 		<!-- Query DSL -->
 		<dependency>
 			<groupId>com.querydsl</groupId>
