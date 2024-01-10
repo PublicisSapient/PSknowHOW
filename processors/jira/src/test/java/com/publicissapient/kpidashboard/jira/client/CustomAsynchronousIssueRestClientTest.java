@@ -16,7 +16,6 @@
  *
  ******************************************************************************/
 
-
 package com.publicissapient.kpidashboard.jira.client;
 
 import static org.junit.Assert.assertNotNull;
@@ -28,6 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -83,6 +83,26 @@ public class CustomAsynchronousIssueRestClientTest {
 	@Test(expected = NullPointerException.class)
 	public void searchBoardIssueTest() {
 		customAsynchronousIssueRestClient.searchBoardIssue("123", null, 7, 1, new HashSet<>());
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void searchBoardIssueGetTest() {
+		Set<String> set = new HashSet<>();
+		set.add("field1");
+		set.add("field2");
+		customAsynchronousIssueRestClient.searchBoardIssue("BoardId", "dummyStr", 12, 1, set);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void searchBoardIssuePostTest() {
+		Set<String> set = new HashSet<>();
+		set.add("field1");
+		set.add("field2");
+		StringBuilder sb = new StringBuilder("dummyString");
+		for (int i = 0; i < 277; i++) {
+			sb.append("dummyString");
+		}
+		customAsynchronousIssueRestClient.searchBoardIssue("BoardId", sb.toString(), 12, 1, set);
 	}
 
 }
