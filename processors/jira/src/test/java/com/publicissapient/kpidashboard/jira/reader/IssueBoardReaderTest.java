@@ -1,8 +1,10 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -19,7 +21,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -63,7 +64,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 import com.publicissapient.kpidashboard.jira.client.JiraClient;
 import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
 import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
@@ -81,7 +81,7 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 public class IssueBoardReaderTest {
 
 	@Mock
-	private FetchProjectConfiguration fetchProjectConfiguration;
+	private FetchProjectConfigurationImpl fetchProjectConfiguration;
 
 	@Mock
 	private JiraClient jiraClient;
@@ -156,24 +156,18 @@ public class IssueBoardReaderTest {
 		issueIterator = issues.iterator();
 		jiraProcessorConfig = new JiraProcessorConfig();
 		jiraProcessorConfig.setPageSize(50);
-		FetchProjectConfigurationImpl fetchProjectConfigurationImpl = new FetchProjectConfigurationImpl(
-				fieldMappingRepository, toolRepository, projectConfigRepository, connectionRepository,
-				sprintRepository);
-		when(mockRetryableOperation.execute()).thenReturn(issues);
+		when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
 	}
 
 	@Test
 	public void testReadData() throws Exception {
-		when(projectConfigRepository.findById(new ObjectId(projectId)))
-				.thenReturn(Optional.ofNullable(projectConfigsList.get(1)));
-		when(fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId))).thenReturn(fieldMapping);
-		when(toolRepository.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA, new ObjectId(projectId)))
-				.thenReturn(projectToolConfigs);
-		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(connection);
-		doReturn(projectConfFieldMapping).when(fetchProjectConfiguration).fetchConfiguration(projectId);
+		when(mockRetryableOperation.execute()).thenReturn(issues);
 		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
+		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
+				.thenReturn(issues);
+		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = getMockReadData();
 
@@ -182,6 +176,16 @@ public class IssueBoardReaderTest {
 
 		// Assert
 		assertEquals(mockReadData.getIssue(), result.getIssue());
+	}
+
+	@Test
+	public void testReadDataNoDataFound() throws Exception {
+		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
+		when(mockRetryableOperation.execute()).thenReturn(null);
+		when(retryHelper.executeWithRetry(any())).thenReturn(null);
+
+		// Assert
+		assertThrows(NullPointerException.class, () -> issueBoardReader.read());
 	}
 
 	private ReadData getMockReadData() {

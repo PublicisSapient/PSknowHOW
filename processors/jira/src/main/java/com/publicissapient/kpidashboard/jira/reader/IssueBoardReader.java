@@ -92,8 +92,23 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private Iterator<BoardDetails> boardIterator;
 	private Iterator<Issue> issueIterator;
 	private ProjectConfFieldMapping projectConfFieldMapping;
-	@Value("#{jobParameters['projectId']}")
 	private String projectId;
+
+	@Autowired
+	public IssueBoardReader(FetchProjectConfiguration fetchProjectConfiguration, JiraClient jiraClient,
+			JiraCommonService jiraCommonService, JiraProcessorConfig jiraProcessorConfig, FetchEpicData fetchEpicData
+			, ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo,
+			ProjectConfFieldMapping projectConfFieldMapping, @Value("#{jobParameters['projectId']}") String projectId) {
+		this.fetchProjectConfiguration = fetchProjectConfiguration;
+		this.jiraClient = jiraClient;
+		this.jiraCommonService = jiraCommonService;
+		this.jiraProcessorConfig = jiraProcessorConfig;
+		this.fetchEpicData = fetchEpicData;
+		this.retryHelper = new ReaderRetryHelper();;
+		this.processorExecutionTraceLogRepo = processorExecutionTraceLogRepo;
+		this.projectConfFieldMapping = projectConfFieldMapping;
+		this.projectId = projectId;
+	}
 
 	public void initializeReader(String projectId) {
 		pageSize = jiraProcessorConfig.getPageSize();
@@ -106,7 +121,7 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	 * @see org.springframework.batch.item.ItemReader#read()
 	 */
 	@Override
-	public ReadData read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+	public ReadData read() throws Exception, NullPointerException , UnexpectedInputException, ParseException, NonTransientResourceException {
 
 		if (null == projectConfFieldMapping) {
 			log.info("Gathering data to fetch jira issues for the project : {}", projectId);
@@ -164,8 +179,8 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	private void fetchIssues(ProcessorJiraRestClient client) throws Exception {
 
 		ReaderRetryHelper.RetryableOperation<Void> retryableOperation = () -> {
-			log.info("Reading issues for project: {} boardid: {}, page No: {}",
-					projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
+//			log.info("Reading issues for project: {} boardid: {}, page No: {}",
+//					projectConfFieldMapping.getProjectName(), boardId, pageNumber / pageSize);
 
 			String deltaDate = getDeltaDateFromTraceLog();
 
