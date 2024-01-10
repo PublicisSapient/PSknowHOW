@@ -24,6 +24,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -181,9 +182,14 @@ public class ConnectionServiceImplTest {
 
 	@Test
 	public void testgetAllConnection() {
-		List<Connection> dataConnection = new ArrayList<>();
-		dataConnection.add(listDataConnection);
-		when(connectionRepository.findAllWithoutSecret()).thenReturn(connectionsDataFactory.getConnections());
+		List<Connection> connections = connectionsDataFactory.getConnections();
+		connections.forEach(connection -> {
+			connection.setCreatedBy("test@gmail.com");
+			connection.setUsername("test");
+			connection.setUpdatedBy("test@gmail.com");
+		});
+
+		when(connectionRepository.findAllWithoutSecret()).thenReturn(connections);
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 		ServiceResponse response = connectionServiceImpl.getAllConnection();
 		Assertions.assertEquals(Boolean.TRUE, response.getSuccess());
@@ -210,7 +216,6 @@ public class ConnectionServiceImplTest {
 	@Test
 	public void testgetConnectionByTypeNoData() {
 		String type = "jira";
-		when(connectionRepository.findByType(type)).thenReturn(null);
 		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
 		assertThat("status", response.getSuccess(), equalTo(false));
 
@@ -611,6 +616,170 @@ public class ConnectionServiceImplTest {
 		assertFalse(serviceResponse.getSuccess());
 
 	}
+
+	@Test
+	public void testgetConnectionByTypeForUser_checkConnectionType() {
+		String type = "GitHub";
+		List<Connection> dataConnection1 = new ArrayList<>();
+		listDataConnection.setType(type);
+		dataConnection1.add(listDataConnection);
+		dataConnection1.add(listDataConnection1);
+		when(customApiConfig.getIsRepoToolEnable()).thenReturn(Boolean.TRUE);
+
+		when(connectionRepository.findAllWithoutSecret()).thenReturn(dataConnection1);
+		ServiceResponse response = connectionServiceImpl.getConnectionByType(type);
+		dataConnection1.get(0).getConnectionUsers().get(0).equals("user91");
+		assertThat("status", response.getSuccess(), equalTo(false));
+	}
+
+	@Test
+	public void saveTeamCityConnection_test() {
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
+		connUsers.add("test");
+		Connection c1 = new Connection();
+		c1.setConnPrivate(true);
+		c1.setType("GitHub");
+		c1.setConnectionName("Test GitHub");
+		c1.setBaseUrl("https://test.server.com//gitlab");
+		c1.setUsername("testUser");
+		c1.setConnectionUsers(connUsers);
+		Connection c2 = new Connection();
+		c2.setConnPrivate(true);
+		c2.setType(ProcessorConstants.TEAMCITY);
+		c2.setConnectionName("Test TeamCity");
+		c2.setBaseUrl("https://test.server.com//teamcity");
+		c2.setUsername("testUser");
+		c2.setConnectionUsers(connUsers);
+		connList.add(c1);
+		connList.add(c2);
+		when(authenticationService.getLoggedInUser()).thenReturn("test");
+		when(connectionRepository.findByTypeAndConnPrivate(anyString(), anyBoolean())).thenReturn(connList);
+		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
+		assertFalse(serviceResponse.getSuccess());
+
+	}
+
+	@Test
+	public void saveAzureRepoConnection_test() {
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
+		connUsers.add("test");
+		Connection c1 = new Connection();
+		c1.setConnPrivate(true);
+		c1.setType("GitHub");
+		c1.setConnectionName("Test GitHub");
+		c1.setBaseUrl("https://test.server.com//gitlab");
+		c1.setUsername("testUser");
+		c1.setConnectionUsers(connUsers);
+		Connection c2 = new Connection();
+		c2.setConnPrivate(true);
+		c2.setPat("pat");
+		c2.setType(ProcessorConstants.AZUREREPO);
+		c2.setConnectionName("Test AzureRepo");
+		c2.setBaseUrl("https://test.server.com//teamcity");
+		c2.setUsername("testUser");
+		c2.setConnectionUsers(connUsers);
+		connList.add(c1);
+		connList.add(c2);
+		when(authenticationService.getLoggedInUser()).thenReturn("test");
+		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		when(connectionRepository.findByTypeAndConnPrivate(anyString(), anyBoolean())).thenReturn(connList);
+		when(aesEncryptionService.decrypt(anyString(),anyString())).thenReturn("pat");
+		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
+		assertTrue(serviceResponse.getSuccess());
+
+	}
+
+	@Test
+	public void saveJenkinsConnection_test() {
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
+		connUsers.add("test");
+		Connection c1 = new Connection();
+		c1.setConnPrivate(true);
+		c1.setType("GitHub");
+		c1.setConnectionName("Test GitHub");
+		c1.setBaseUrl("https://test.server.com//gitlab");
+		c1.setUsername("testUser");
+		c1.setConnectionUsers(connUsers);
+		Connection c2 = new Connection();
+		c2.setConnPrivate(true);
+		c2.setApiKey("apiKey");
+		c2.setType(ProcessorConstants.JENKINS);
+		c2.setConnectionName("Jenkins");
+		c2.setBaseUrl("https://test.server.com//jenkins");
+		c2.setUsername("testUser");
+		c2.setConnectionUsers(connUsers);
+		connList.add(c1);
+		connList.add(c2);
+		when(authenticationService.getLoggedInUser()).thenReturn("test");
+		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		when(connectionRepository.findByTypeAndConnPrivate(anyString(), anyBoolean())).thenReturn(connList);
+		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
+		assertTrue(serviceResponse.getSuccess());
+	}
+
+	@Test
+	public void saveBitBucketConnection_test() {
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
+		connUsers.add("test");
+		Connection c1 = new Connection();
+		c1.setConnPrivate(true);
+		c1.setType("GitHub");
+		c1.setConnectionName("Test GitHub");
+		c1.setBaseUrl("https://test.server.com//gitlab");
+		c1.setUsername("testUser");
+		c1.setConnectionUsers(connUsers);
+		Connection c2 = new Connection();
+		c2.setConnPrivate(true);
+		c2.setApiEndPoint("pat");
+		c2.setType(ProcessorConstants.BITBUCKET);
+		c2.setConnectionName("Test BitBucket");
+		c2.setBaseUrl("https://test.server.com//bitbucket");
+		c2.setUsername("testUser");
+		c2.setConnectionUsers(connUsers);
+		connList.add(c1);
+		connList.add(c2);
+		when(authenticationService.getLoggedInUser()).thenReturn("test");
+		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		when(connectionRepository.findByTypeAndConnPrivate(anyString(), anyBoolean())).thenReturn(connList);
+		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
+		assertFalse(serviceResponse.getSuccess());
+	}
+
+	@Test
+	public void saveRepoConnection_test() {
+		List<Connection> connList = new ArrayList<>();
+		List<String> connUsers = new ArrayList<>();
+		connUsers.add("test");
+		Connection c1 = new Connection();
+		c1.setConnPrivate(true);
+		c1.setType("GitHub");
+		c1.setConnectionName("Test GitHub");
+		c1.setBaseUrl("https://test.server.com//gitlab");
+		c1.setUsername("testUser");
+		c1.setConnectionUsers(connUsers);
+		Connection c2 = new Connection();
+		c2.setConnPrivate(true);
+		c2.setApiEndPoint("pat");
+		c2.setType(ProcessorConstants.REPO_TOOLS);
+		c2.setConnectionName("Test BitBucket");
+		c2.setBaseUrl("https://test.server.com//bitbucket");
+		c2.setHttpUrl("https://test.server.com//bitbucket");
+		c2.setUsername("testUser");
+		c2.setConnectionUsers(connUsers);
+		connList.add(c1);
+		connList.add(c2);
+		when(authenticationService.getLoggedInUser()).thenReturn("test");
+		when(connectionRepository.save(any(Connection.class))).thenReturn(connList.get(1));
+		when(connectionRepository.findByTypeAndConnPrivate(anyString(), anyBoolean())).thenReturn(connList);
+		ServiceResponse serviceResponse = connectionServiceImpl.saveConnectionDetails(connList.get(1));
+		assertFalse(serviceResponse.getSuccess());
+	}
+
+
 
 	private Connection getExistingGitHubConnection() {
 		return createAndGetOneGitHubConnection("/json/connections/saved_github_connection.json");
