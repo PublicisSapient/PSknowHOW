@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -199,7 +199,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 
 	public List<Pattern> convertToPatternList(List<String> stringList) {
 		List<Pattern> regexList = new ArrayList<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(stringList)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(stringList)) {
 			for (String value : stringList) {
 				regexList.add(
 						Pattern.compile(TILDA_SYMBOL + Pattern.quote(value) + DOLLAR_SYMBOL, Pattern.CASE_INSENSITIVE));
