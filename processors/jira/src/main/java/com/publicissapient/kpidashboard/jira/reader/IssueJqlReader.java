@@ -83,20 +83,17 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<Issue> issueIterator;
-	private ProjectConfFieldMapping projectConfFieldMapping;
-	private String projectId;
+	ProjectConfFieldMapping projectConfFieldMapping;
 	private ReaderRetryHelper retryHelper;
 
-	@Autowired
-	public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
 	public void initializeReader(String projectId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		retryHelper = new ReaderRetryHelper();
 	}
 
 	/*
