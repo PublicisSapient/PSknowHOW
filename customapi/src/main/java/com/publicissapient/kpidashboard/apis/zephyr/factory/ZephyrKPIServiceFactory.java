@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrKPIService;
  * @author tauakram
  */
 @Service
+@Builder
 public class ZephyrKPIServiceFactory {
 
 	private static final Map<String, ZephyrKPIService<?, ?, ?>> ZEPHYR_SERVICE_CACHE = new HashMap<>();

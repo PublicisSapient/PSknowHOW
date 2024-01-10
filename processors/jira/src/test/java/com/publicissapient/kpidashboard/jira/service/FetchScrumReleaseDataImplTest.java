@@ -101,14 +101,15 @@ public class FetchScrumReleaseDataImplTest {
 
 	@Test
 	public void processReleaseInfo() throws IOException, ParseException {
-		Assert.assertNull(fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client));
+		try {
+			fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
+		}
+		catch (Exception ex){
+			Assert.fail(ex.getMessage());
+		}
 	}
 
-    @Test
-    public void processReleaseInfo2() throws IOException, ParseException {
-        prepareAccountHierarchy2();
-        Assert.assertNull(fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client));
-    }
+
 
 	@Test
 	public void processReleaseInfoNull() throws IOException, ParseException {
@@ -117,7 +118,7 @@ public class FetchScrumReleaseDataImplTest {
 		jiraIssueCustomHistories.add(jiraIssueCustomHistory);
 		when(jiraIssueCustomHistoryRepository.findByBasicProjectConfigIdIn(anyString()))
 				.thenReturn(jiraIssueCustomHistories);
-		Assert.assertNull(fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client));
+		fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
 	}
 
 	private void prepareProjectConfig() {

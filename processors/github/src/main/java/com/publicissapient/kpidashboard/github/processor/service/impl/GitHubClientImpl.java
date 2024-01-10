@@ -56,7 +56,7 @@ import com.publicissapient.kpidashboard.github.constants.GitHubConstants;
 import com.publicissapient.kpidashboard.github.customexception.FetchingCommitException;
 import com.publicissapient.kpidashboard.github.model.GitHubProcessorItem;
 import com.publicissapient.kpidashboard.github.processor.service.GitHubClient;
-import com.publicissapient.kpidashboard.gitlab.util.GitHubURIBuilder;
+import com.publicissapient.kpidashboard.github.util.GitHubURIBuilder;
 
 import lombok.extern.slf4j.Slf4j;
 
