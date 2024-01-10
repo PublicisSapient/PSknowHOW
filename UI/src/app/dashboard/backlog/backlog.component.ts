@@ -84,9 +84,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      // if(this.sharedObject || this.service.getFilterObject()){
-      //   this.receiveSharedData(this.service.getFilterObject());
-      // }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
@@ -270,46 +267,21 @@ export class BacklogComponent implements OnInit, OnDestroy {
           for (const kpi in localVariable) {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
           }
-          if (localVariable['kpi127']) {
-            if (localVariable['kpi127'].trendValueList && localVariable['kpi127'].xAxisValues) {
-              localVariable['kpi127'].trendValueList.forEach(trendElem => {
+          const localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
+          if (localVarKpi) {
+            if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
+              localVarKpi.trendValueList.forEach(trendElem => {
                 trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi127'].xAxisValues.length === 5) {
+                  if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
                     valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi127'].xAxisValues[index];
+                      element['xAxisTick'] = localVarKpi.xAxisValues[index];
                     });
                   }
                 });
               });
             }
           }
-          if (localVariable['kpi170']) {
-            if (localVariable['kpi170'].trendValueList && localVariable['kpi170'].xAxisValues) {
-              localVariable['kpi170'].trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi170'].xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi170'].xAxisValues[index];
-                    });
-                  }
-                });
-              });
-            }
-          }
-
-          if (localVariable['kpi3']) {
-            if (localVariable['kpi3'].trendValueList && localVariable['kpi3'].xAxisValues) {
-              localVariable['kpi3'].trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi3'].xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi3'].xAxisValues[index];
-                    });
-                  }
-                });
-              });
-            }
-          }
+          
           // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
           //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
           // }
@@ -602,10 +574,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-
-    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
   }
 
   getkpi171Data(kpiId, trendValueList) {   
