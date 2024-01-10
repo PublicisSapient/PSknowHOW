@@ -20,14 +20,10 @@ package com.publicissapient.kpidashboard.apis.jira.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -40,13 +36,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.jira.service.TestService;
-import com.publicissapient.kpidashboard.apis.zephyr.service.ZephyrKPIService;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -59,7 +48,6 @@ import org.mockito.MockedStatic;
 import org.mockito.MockedStatic.Verification;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
@@ -69,6 +57,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.apis.data.SprintDetailsDataFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
@@ -82,6 +71,8 @@ import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 
 /**
  *
@@ -166,7 +157,6 @@ public class JiraServiceRTest {
 		List<SprintDetails> sprintDetails = sprintDetailsDataFactory.getSprintDetails();
 		when(sprintRepository.findBySprintIDIn(anyList())).thenReturn(sprintDetails);
 
-
 	}
 
 	@After
@@ -190,16 +180,17 @@ public class JiraServiceRTest {
 	public void TestProcess_pickFromCache() throws Exception {
 
 		KpiRequest kpiRequest = createKpiRequest(4);
-		String[] exampleStringList = {"exampleElement", "exampleElement"};
-		//when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.JIRA.name()), eq(1), anyList()))
-		//		.thenReturn(new ArrayList<KpiElement>());
+		String[] exampleStringList = { "exampleElement", "exampleElement" };
+		// when(cacheService.getFromApplicationCache(eq(exampleStringList),
+		// eq(KPISource.JIRA.name()), eq(1), anyList()))
+		// .thenReturn(new ArrayList<KpiElement>());
 		when(cacheService.getFromApplicationCache(any(), Mockito.anyString(), any(), ArgumentMatchers.anyList()))
 				.thenReturn(new ArrayList<KpiElement>());
 		when(authorizedProjectsService.ifSuperAdminUser()).thenReturn(true);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
-		assertEquals(0,resultList.size());
+		assertEquals(0, resultList.size());
 
 	}
 
@@ -220,24 +211,28 @@ public class JiraServiceRTest {
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 	}
 
-	/*@Test
-	public void TestProcess_IterationCategory() throws Exception {
-
-		KpiRequest kpiRequest = createKpiRequest(4);
-		List<KpiElement> kpiList = kpiRequest.getKpiList();
-		kpiList.forEach(element->{element.setKpiCategory(CommonConstant.ITERATION);});
-		Map<String, Integer> map = new HashMap<>();
-		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
-				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
-		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
-		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(filterHelperService.getFirstHierarachyLevel()).thenReturn("hierarchyLevelOne");
-		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
-	}
-
+	/*
+	 * @Test public void TestProcess_IterationCategory() throws Exception {
+	 * 
+	 * KpiRequest kpiRequest = createKpiRequest(4); List<KpiElement> kpiList =
+	 * kpiRequest.getKpiList();
+	 * kpiList.forEach(element->{element.setKpiCategory(CommonConstant.ITERATION);})
+	 * ; Map<String, Integer> map = new HashMap<>(); Map<String, HierarchyLevel>
+	 * hierarchyMap = hierarchyLevels.stream()
+	 * .collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+	 * hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(),
+	 * k.getValue().getLevel()));
+	 * when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+	 * when(filterHelperService.getFilteredBuilds(kpiRequest,
+	 * GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+	 * when(authorizedProjectsService.getProjectKey(accountHierarchyDataList,
+	 * kpiRequest)).thenReturn(projectKey);
+	 * when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).
+	 * thenReturn(accountHierarchyDataList);
+	 * when(filterHelperService.getFirstHierarachyLevel()).thenReturn(
+	 * "hierarchyLevelOne"); List<KpiElement> resultList =
+	 * jiraServiceR.process(kpiRequest); }
+	 * 
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -354,8 +349,7 @@ public class JiraServiceRTest {
 		KpiRequest kpiRequest = new KpiRequest();
 		List<KpiElement> kpiList = new ArrayList<>();
 
-		addKpiElement(kpiList, KPICode.TEST_JIRA.getKpiId(), KPICode.TEST_JIRA.name(),
-				"Category One", "");
+		addKpiElement(kpiList, KPICode.TEST_JIRA.getKpiId(), KPICode.TEST_JIRA.name(), "Category One", "");
 		kpiRequest.setLevel(level);
 		kpiRequest.setIds(new String[] { "Scrum Project_6335363749794a18e8a4479b" });
 		kpiRequest.setKpiList(kpiList);
