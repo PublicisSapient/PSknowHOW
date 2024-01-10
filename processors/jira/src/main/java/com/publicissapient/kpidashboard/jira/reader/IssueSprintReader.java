@@ -94,8 +94,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping) {
-			KerberosClient krb5Client = null;
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping)) {
 				if (null == issueIterator) {
 					pageNumber = 0;
 					fetchIssues(client);

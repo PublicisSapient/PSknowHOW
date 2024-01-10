@@ -164,7 +164,7 @@ public class IssueBoardReaderTest {
 	public void testReadData() throws Exception {
 		when(mockRetryableOperation.execute()).thenReturn(issues);
 		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
+		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
 		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
 				.thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
@@ -180,7 +180,7 @@ public class IssueBoardReaderTest {
 
 	@Test
 	public void testReadDataNoDataFound() throws Exception {
-		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
+		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
 		when(mockRetryableOperation.execute()).thenReturn(null);
 		when(retryHelper.executeWithRetry(any())).thenReturn(null);
 

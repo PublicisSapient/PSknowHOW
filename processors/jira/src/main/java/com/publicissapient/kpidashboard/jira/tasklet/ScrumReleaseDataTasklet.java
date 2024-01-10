@@ -75,7 +75,7 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		KerberosClient krb5Client = null;
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping);) {
 			fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		}
 		log.info("**** ReleaseData fetch ended ****");
