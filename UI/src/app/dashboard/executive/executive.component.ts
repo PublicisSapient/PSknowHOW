@@ -298,7 +298,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                         } else {
 
                             this.groupJiraKpi(kpiIdsForCurrentBoard);
-                           // this.groupBitBucketKpi(kpiIdsForCurrentBoard);
                             this.groupSonarKpi(kpiIdsForCurrentBoard);
                             this.groupJenkinsKpi(kpiIdsForCurrentBoard);
                             this.groupZypherKpi(kpiIdsForCurrentBoard);
@@ -363,9 +362,6 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 }
             }
         });
-
-        // this.kpiZypher = this.helperService.groupKpiFromMaster('Zypher', false, this.masterData, this.filterApplyData, this.filterData, '');
-        // this.postZypherKpi(this.kpiZypher, 'zypher');
 
     }
 
@@ -830,11 +826,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               if (trendValueList &&  trendValueList?.length > 0) {
                 this.kpiChartData[kpiId]?.push(trendValueList?.filter((x) => x['filter'] == 'Overall')[0]);
               } 
-            //   else if (trendValueList?.length > 0) {
-            //     this.kpiChartData[kpiId] = [...trendValueList];
-            //   } 
               else {
-                //const obj = JSON.parse(JSON.stringify(trendValueList));
                 this.kpiChartData[kpiId]?.push(trendValueList);
               }
             }
@@ -1204,10 +1196,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         let worksheet;
         const workbook = new Excel.Workbook();
         worksheet = workbook.addWorksheet('Kpi Data');
-        // let level = this.service.getSelectedLevel();
         let trends = this.service.getSelectedTrends();
-        // let firstRow = [level['hierarchyLevelName']];
-        // let headerNames = ["KPI Name"];
         let headers = [{header: 'KPI Name', key: 'kpiName', width: 30}];
         for(let i = 0; i<trends.length; i++){
             let colorCode = this.trendBoxColorObj[trends[i]['nodeName']]?.color;
@@ -1323,54 +1312,16 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
         return maturity;
       }
 
-      checkLatestAndTrendValueForKpi(kpiData, item){
-        let latest:string = '';
-        let trend:string = '';
-        if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-            var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit.trim() : '';
-            latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
-        }
-        if(item?.value?.length > 0 && kpiData?.kpiDetail?.showTrend) {
-            if(kpiData?.kpiDetail?.trendCalculative){
-                let lhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.lhs : '';
-                let rhsKey = kpiData?.kpiDetail?.trendCalculation?.length > 0 ? kpiData?.kpiDetail?.trendCalculation[0]?.rhs : '';
-                let lhs = item?.value[item?.value?.length - 1][lhsKey];
-                let rhs = item?.value[item?.value?.length - 1][rhsKey];
-                let operator = lhs < rhs ? '<' : lhs > rhs ? '>' : '=';
-                let trendObj = kpiData?.kpiDetail?.trendCalculation?.find((item) => item.operator == operator);
-                if(trendObj){
-                    trend = trendObj['type']?.toLowerCase() == 'downwards' ? '-ve' : trendObj['type']?.toLowerCase() == 'upwards' ? '+ve' : '-- --';
-                }else{
-                    trend = 'NA';
-                }
-            }else{
-                let lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
-                let secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
-                let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
-                if(secondLastVal > lastVal && !isPositive){
-                    trend = '+ve';
-                }else if(secondLastVal < lastVal && !isPositive){
-                    trend = '-ve';
-                }else if(secondLastVal < lastVal && isPositive){
-                    trend = '+ve';
-                }else if(secondLastVal > lastVal && isPositive){
-                    trend = '-ve';
-                }else {
-                    trend = '-- --';
-                }
-            }
-        }else{
-            trend = 'NA';
-        }
-        return [latest, trend, unit];
-      }
-
       checkLatestAndTrendValue(kpiData, item){
         let latest:string = '';
         let trend:string = '';
         if(item?.value?.length > 0){
-            let tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
+            let tempVal;
+            if(item?.value[item?.value?.length - 1]?.dataValue){
+                tempVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+            }else{
+                tempVal = item?.value[item?.value?.length - 1]?.lineValue ? item?.value[item?.value?.length - 1]?.lineValue : item?.value[item?.value?.length - 1]?.value;
+            }
             var unit = kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'number' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'stories' && kpiData?.kpiDetail?.kpiUnit?.toLowerCase() != 'tickets'? kpiData?.kpiDetail?.kpiUnit?.trim() : '';
             latest = tempVal > 0 ? (Math.round(tempVal * 10) / 10) + (unit ? ' ' + unit : '') : tempVal + (unit ? ' ' + unit : '');
         }
@@ -1388,8 +1339,14 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                     trend = 'NA';
                 }
             }else{
-                let lastVal = item?.value[item?.value?.length - 1]?.value;
-                let secondLastVal = item?.value[item?.value?.length - 2]?.value;
+                let lastVal, secondLastVal;
+                if(item?.value[item?.value?.length - 1]?.dataValue){
+                    lastVal = item?.value[item?.value?.length - 1]?.dataValue.find(d => d.lineType === 'solid')?.value;
+                    secondLastVal = item?.value[item?.value?.length - 2]?.dataValue.find(d => d.lineType === 'solid')?.value;
+                }else{
+                    lastVal = item?.value[item?.value?.length - 1]?.value;
+                    secondLastVal = item?.value[item?.value?.length - 2]?.value;
+                }
                 let isPositive = kpiData?.kpiDetail?.isPositiveTrend;
                 if(secondLastVal > lastVal && !isPositive){
                     trend = '+ve';
@@ -1417,7 +1374,7 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
                 for(let i = 0; i < this.kpiChartData[kpiId]?.length; i++){
                     if(this.kpiChartData[kpiId][i]?.value?.length > 0){
                         let trendObj = {};
-                        const [latest, trend,unit] = !this.kpiChartData[kpiId][i].value[0]?.dataValue ? this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]) : this.checkLatestAndTrendValueForKpi(enabledKpiObj, this.kpiChartData[kpiId][i]);
+                        const [latest, trend,unit] = this.checkLatestAndTrendValue(enabledKpiObj, this.kpiChartData[kpiId][i]);
                         trendObj = {
                             "hierarchyName": this.kpiChartData[kpiId][i]?.data,
                             "value": latest,
