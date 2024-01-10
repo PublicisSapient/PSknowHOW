@@ -200,7 +200,7 @@ public class CycleTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map
 		kpiElement.setModalHeads(KPIExcelColumn.CYCLE_TIME.getColumns());
 	}
 
-	private void getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
+	public void getCycleTime(List<JiraIssueCustomHistory> jiraIssueCustomHistoriesList, FieldMapping fieldMapping,
 			List<CycleTimeValidationData> cycleTimeList, KpiElement kpiElement, DataCount trendValue) {
 
 		Set<String> issueTypeFilter = new LinkedHashSet<>();

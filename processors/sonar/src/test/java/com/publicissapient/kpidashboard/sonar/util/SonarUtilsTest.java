@@ -20,7 +20,10 @@ package com.publicissapient.kpidashboard.sonar.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 public class SonarUtilsTest {
 
 	@Test
@@ -30,6 +33,7 @@ public class SonarUtilsTest {
 		Assert.assertEquals(' ', stringBuilder.toString().charAt(stringBuilder.length() - 1));
 
 	}
+
 
 	@Test
 	public void testFormatDuration() {

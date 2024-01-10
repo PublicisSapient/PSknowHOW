@@ -39,6 +39,10 @@ interface TepSubmissionReq {
     endDate?: string;
     totalTestCases?: string;
     executedTestCase?: string;
+    automatedTestCases?: string;
+    automatableTestCases?: string;
+    automatedRegressionTestCases?: string;
+    totalRegressionTestCases?: string;
     passedTestCase?: string;
     sprintId?: string;
     sprintName?: string;
@@ -546,7 +550,7 @@ export class UploadComponent implements OnInit {
         });
 
         // Remove previous selected elements
-        dataArray.forEach(obj => {
+        dataArray?.forEach(obj => {
             if (obj.nodeId !== data.nodeId) {
                 obj.isSelected = false;
             }
@@ -921,9 +925,11 @@ export class UploadComponent implements OnInit {
     }
 
     getTestExecutionData(projectId) {
+        console.log(projectId);
         this.isAddtionalTestField = false
         this.http_service.getTestExecutionData(projectId).subscribe((response) => {
             if (response && response?.success && response?.data) {
+                console.log(response);
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
                     this.isAddtionalTestField = this.testExecutionKanbanData[0]['uploadEnable'];
@@ -946,7 +952,7 @@ export class UploadComponent implements OnInit {
                 } else {
                     this.testExecutionScrumData = response?.data;
                     this.isAddtionalTestField = this.testExecutionScrumData[0]['uploadEnable'];
-                     if(!this.isAddtionalTestField){
+                    if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {

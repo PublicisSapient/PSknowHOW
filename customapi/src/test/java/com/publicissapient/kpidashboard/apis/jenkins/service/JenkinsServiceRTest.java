@@ -21,21 +21,27 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -95,7 +101,7 @@ public class JenkinsServiceRTest {
 	@Before
 	public void setup() {
 
-		KpiRequest kpiRequestJenkins = createKpiRequest(2, "Jenkins");
+		KpiRequest kpiRequestJenkins = createKpiRequest(5, "Jenkins");
 
 		jenkinsKPIServiceFactory.initMyServiceCache();
 
@@ -117,7 +123,16 @@ public class JenkinsServiceRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		List<HierarchyLevel> hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
+
+		when(filterHelperService.getHierarachyLevelId(4, "project", false)).thenReturn("project");
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME.getKpiId(), "CODE_BUILD_TIME");
 	}
@@ -136,6 +151,8 @@ public class JenkinsServiceRTest {
 
 	}
 
+
+
 	@Test
 	public void testProcess() throws Exception {
 
@@ -145,15 +162,10 @@ public class JenkinsServiceRTest {
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
-		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
+		try (MockedStatic<JenkinsKPIServiceFactory> utilities = mockStatic(JenkinsKPIServiceFactory.class)) {
 			utilities.when((Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
 					.thenReturn(mcokAbstract);
 		}
-
-		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
-
-		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
 
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 
@@ -179,20 +191,24 @@ public class JenkinsServiceRTest {
 	@Test
 	public void testProcess1() throws Exception {
 
-		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
 
-		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
-			utilities.when((Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
-					.thenReturn(mcokAbstract);
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeServiceImpl mockService = mock(CodeBuildTimeServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
+			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())))
+					.thenReturn(mockService);
+			resultList = jenkinsServiceR.process(kpiRequest);
+			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME.name())));
 		}
 
-		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
 
-		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 
 		resultList.forEach(k -> {
 
@@ -216,13 +232,13 @@ public class JenkinsServiceRTest {
 	@Test(expected = HttpMessageNotWritableException.class)
 	public void testProcessException() throws Exception {
 
-		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME.name(), mcokAbstract);
 
-		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
+		try (MockedStatic<JenkinsKPIServiceFactory> utilities = mockStatic(JenkinsKPIServiceFactory.class)) {
 			utilities.when((Verification) JenkinsKPIServiceFactory.getJenkinsKPIService(KPICode.CODE_BUILD_TIME.name()))
 					.thenReturn(mcokAbstract);
 		}
@@ -236,10 +252,10 @@ public class JenkinsServiceRTest {
 	@Test
 	public void testProcessCachedData() throws Exception {
 
-		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
-
-		when(cacheService.getFromApplicationCache(any(), any(), any(), ArgumentMatchers.anyList()))
-				.thenReturn(new ArrayList<>());
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+		when(filterHelperService.getFilteredBuilds(kpiRequest, "project")).thenReturn(accountHierarchyDataList);
+		when(cacheService.getFromApplicationCache(any(), any(), any(), any()))
+				.thenReturn(Arrays.asList(buildKpiElement));
 
 		List<KpiElement> resultList = jenkinsServiceR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(1));
