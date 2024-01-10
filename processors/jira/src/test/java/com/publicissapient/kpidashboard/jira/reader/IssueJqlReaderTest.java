@@ -154,7 +154,7 @@ public class IssueJqlReaderTest {
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
 		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
+		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
 		when(jiraCommonService.fetchIssuesBasedOnJql(any(), any(), anyInt(), anyString()))
 				.thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);

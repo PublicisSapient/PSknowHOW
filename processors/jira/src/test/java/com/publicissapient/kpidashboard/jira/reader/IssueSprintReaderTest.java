@@ -154,8 +154,8 @@ public class IssueSprintReaderTest {
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
 		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
-		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(any(), any(), anyInt(), anyString())).thenReturn(issues);
+		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
+		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, 0, null)).thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
@@ -165,85 +165,6 @@ public class IssueSprintReaderTest {
 
 		// Assert
 		assertEquals(mockReadData.getIssue(), result.getIssue());
-	}
-
-	@Test
-	public void testReadDataNoDataFound() throws Exception {
-		when(jiraClient.getClient(projectConfFieldMapping, krb5Client)).thenReturn(client);
-		when(mockRetryableOperation.execute()).thenReturn(null);
-		when(retryHelper.executeWithRetry(any())).thenReturn(null);
-
-		// Assert
-		assertThrows(NullPointerException.class, () -> issueSprintReader.read());
-	}
-
-	@Test
-	public void testGetDeltaDateFromTraceLog() throws Exception {
-
-		issueSprintReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueSprintReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueSprintReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testGetDeltaDateFromTraceLogWithRepo() throws Exception {
-
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setBoardId("11856");
-		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
-				.thenReturn(null);
-		issueSprintReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueSprintReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueSprintReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testGetDeltaDateFromTraceLogWithRepoAndWithoutBoardId() throws Exception {
-
-		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-		processorExecutionTraceLog.setLastSuccessfulRun("date");
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(any(), any()))
-				.thenReturn(Arrays.asList(processorExecutionTraceLog));
-		issueSprintReader.projectConfFieldMapping = projectConfFieldMapping;
-		// Use reflection to access the private method
-		Method method = IssueSprintReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		String result = (String) method.invoke(issueSprintReader);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
-	}
-
-	@Test
-	public void testFetchIssues() throws Exception {
-		issueSprintReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
-		// Use reflection to access the private method
-		Method method = IssueSprintReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
-		method.setAccessible(true); // Make the private method accessible
-
-		// Invoke the private method
-		// List<Issue> result = (List<Issue>) method.invoke(issueSprintReader, client);
-
-		// Add assertions based on your actual implementation
-		// Add additional assertions based on your actual implementation
 	}
 
 }

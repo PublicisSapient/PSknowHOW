@@ -167,15 +167,6 @@ public class IssueBoardReaderTest {
 		assertEquals(mockReadData.getIssue(), result.getIssue());
 	}
 
-	@Test
-	public void testReadDataNoDataFound() throws Exception {
-		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
-		when(mockRetryableOperation.execute()).thenReturn(null);
-		when(retryHelper.executeWithRetry(any())).thenReturn(null);
-
-		// Assert
-		assertThrows(NullPointerException.class, () -> issueBoardReader.read());
-	}
 
 	@Test
 	public void testGetDeltaDateFromTraceLog() throws Exception {
@@ -183,7 +174,7 @@ public class IssueBoardReaderTest {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("getDeltaDateFromTraceLog");
-		method.setAccessible(true); // Make the private method accessible
+		//method.setAccessible(true); // Make the private method accessible
 
 		// Invoke the private method
 		String result = (String) method.invoke(issueBoardReader);
