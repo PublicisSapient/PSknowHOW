@@ -129,9 +129,6 @@ export class IterationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if(globalConfig && this.sharedObject){
-        // if(this.sharedObject || this.service.getFilterObject()){
-        //   this.receiveSharedData(this.service.getFilterObject());
-        // }
         this.configGlobalData = globalConfig['scrum'].filter((item) => item.boardName.toLowerCase() == 'iteration')[0]?.kpis;
         this.checkForAssigneeDataAndSetupTabs();
         this.processKpiConfigData();
@@ -179,7 +176,24 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.navigationTabs[0]['count']++;
     }
 
-    this.navigationTabs.map(tabDetails => {
+    this.formatNavigationTabs();
+
+    if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
+      this.noKpis = true;
+    } else {
+      this.noKpis = false;
+    }
+    this.configGlobalData.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+  formatNavigationTabs(){
+    this.navigationTabs.forEach(tabDetails => {
       if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
@@ -198,19 +212,6 @@ export class IterationComponent implements OnInit, OnDestroy {
       }
       return tabDetails;
     })
-
-    if (this.upDatedConfigData?.length === 0 && !this.commitmentReliabilityKpi?.isEnabled) {
-      this.noKpis = true;
-    } else {
-      this.noKpis = false;
-    }
-    this.configGlobalData.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
-    });
   }
 
   getSelectedType(sharedobject) {
@@ -294,25 +295,7 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.navigationTabs[0]['count']++;
       }
 
-      this.navigationTabs.map(tabDetails => {
-        if (tabDetails['width'] === 'half') {
-          let fullWidthKPis = [];
-          let halfWithKpis = []
-          tabDetails['kpis'].forEach(kpiDetails => {
-            if (kpiDetails.kpiDetail.kpiWidth && kpiDetails.kpiDetail.kpiWidth === 100) {
-              fullWidthKPis = fullWidthKPis.concat(kpiDetails);
-            } else {
-              halfWithKpis = halfWithKpis.concat(kpiDetails);
-            }
-          })
-          const dataLength = halfWithKpis.length;
-          const middleIndex = Math.floor(dataLength / 2);
-          tabDetails['kpiPart1'] = halfWithKpis.slice(0, middleIndex + (dataLength % 2));
-          tabDetails['kpiPart2'] = halfWithKpis.slice(middleIndex + (dataLength % 2));
-          tabDetails['fullWidthKpis'] = fullWidthKPis;
-        }
-        return tabDetails;
-      });
+      this.formatNavigationTabs();
 
       if (this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup').length) {
         this.dailyStandupData = this.navigationTabs.filter((tab) => tab['label'] === 'Daily Standup')[0]['kpis'];
@@ -359,9 +342,6 @@ export class IterationComponent implements OnInit, OnDestroy {
           for (const kpi in localVariable) {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
           }
-          // if (localVariable && localVariable['kpi76'] && localVariable['kpi76'].maturityValue) {
-          //   this.colorAccToMaturity(localVariable['kpi76'].maturityValue);
-          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(localVariable);
         } else {
@@ -374,15 +354,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.kpiLoader = false;
       });
   }
-
-  // return colors according to maturity only for CycleTime
-  /*colorAccToMaturity(maturityValue) {
-    const maturityArray = maturityValue.toString().split('-');
-    for (let index = 0; index <= 2; index++) {
-      const maturity = maturityArray[index];
-      this.maturityColorCycleTime[index] = this.helperService.colorAccToMaturity(maturity);
-    }
-  }*/
 
   ngOnInit() {
     this.service.kpiListNewOrder.next([]);
@@ -624,9 +595,6 @@ export class IterationComponent implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     if (kpiId === 'kpi121') {
       const iterationConfigData = {
         daysLeft: this.timeRemaining,
@@ -672,7 +640,6 @@ export class IterationComponent implements OnInit, OnDestroy {
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
         }
         else if (formType?.toLowerCase() == 'dropdown') {
@@ -687,7 +654,6 @@ export class IterationComponent implements OnInit, OnDestroy {
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
         } else {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);

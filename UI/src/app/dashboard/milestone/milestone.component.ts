@@ -25,7 +25,6 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { CdkDragDrop} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-import { TableService } from 'primeng/table';
 
 declare let require: any;
 
@@ -97,9 +96,6 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
-        // if (this.sharedObject || this.service.getFilterObject()) {
-        //   this.receiveSharedData(this.service.getFilterObject());
-        // }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -132,6 +128,23 @@ export class MilestoneComponent implements OnInit {
       }
     }
 
+    this.formatNavigationTabs();
+
+    if (this.upDatedConfigData?.length === 0) {
+      this.noKpis = true;
+    } else {
+      this.noKpis = false;
+    }
+    this.configGlobalData.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+  formatnavigationTabs(){
     this.navigationTabs.map(tabDetails => {
       if(tabDetails['width'] === 'half'){
         let fullWidthKPis = [];
@@ -150,19 +163,6 @@ export class MilestoneComponent implements OnInit {
         tabDetails['fullWidthKpis'] = fullWidthKPis;
       }
       return tabDetails;
-    });
-
-    if (this.upDatedConfigData?.length === 0) {
-      this.noKpis = true;
-    } else {
-      this.noKpis = false;
-    }
-    this.configGlobalData.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
     });
   }
 
@@ -239,7 +239,6 @@ export class MilestoneComponent implements OnInit {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      // this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
@@ -360,12 +359,10 @@ export class MilestoneComponent implements OnInit {
         this.getDropdownArray(data[key]?.kpiId);
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        // this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
         this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
         }
         else if (formType?.toLowerCase() == 'dropdown') {
@@ -380,7 +377,6 @@ export class MilestoneComponent implements OnInit {
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
         } else {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
@@ -487,9 +483,6 @@ export class MilestoneComponent implements OnInit {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
   }
 
   getKpiChartType(kpiId) {

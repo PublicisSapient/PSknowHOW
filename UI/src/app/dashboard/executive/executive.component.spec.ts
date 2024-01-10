@@ -5928,7 +5928,7 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('14.6');
     expect(result[1]).toEqual('-ve');
   });
@@ -6007,7 +6007,7 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('14.6');
     expect(result[1]).toEqual('+ve');
   });
@@ -6086,7 +6086,7 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('67.6');
     expect(result[1]).toEqual('-ve');
   });
@@ -6165,7 +6165,7 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('67.6');
     expect(result[1]).toEqual('+ve');
   });
@@ -6244,7 +6244,7 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('67.6');
     expect(result[1]).toEqual('-- --');
   });
@@ -7494,7 +7494,7 @@ it('should checkLatestAndTrendValue for kpi when trendCalculative is true', () =
     ]
   };
 
-  const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+  const result = component.checkLatestAndTrendValue(kpiData, item);
   expect(result[0]).toEqual('64.7');
   expect(result[1]).toEqual('+ve');
 });
