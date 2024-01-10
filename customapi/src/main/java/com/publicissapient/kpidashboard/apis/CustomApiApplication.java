@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.apis;
 
-import javax.validation.Validator;
+//import javax.validation.Validator;
 
 import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -108,7 +108,7 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	 * @return Bean of Validator class
 	 */
 	@Bean
-	public Validator validator() {
+	public LocalValidatorFactoryBean validator() {
 		return new LocalValidatorFactoryBean();
 	}
 
