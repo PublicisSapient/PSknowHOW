@@ -112,8 +112,6 @@ public class BitBucketServiceRTest {
 	@Before
 	public void setup() {
 
-		// bitbucketKPIServiceFactory.initMyServiceCache();
-
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CODE_COMMIT.getKpiId());
 		kpiRequest.setLabel("PROJECT");
