@@ -8,7 +8,7 @@ import { APP_CONFIG, AppConfig } from '../../../services/app.config';
 import { environment } from 'src/environments/environment';
 import { SharedService } from 'src/app/services/shared.service';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('AutoApprovalComponent', () => {
   let component: AutoApprovalComponent;
@@ -235,5 +235,111 @@ describe('AutoApprovalComponent', () => {
       summary: 'Test Error'
     });
   });
+
+  it('should handle error on fetching roles', () => {
+    spyOn(httpService, 'getRolesList').and.returnValue(of('Error'));
+    spyOn(messageService, 'add');
+    component.getRolesList();
+    expect(messageService.add).toHaveBeenCalled();
+  })
+
+  it('should handle error while submitting', () => {
+    component.autoApprovalForm = new UntypedFormGroup({
+      roles: new UntypedFormControl(['ROLE_PROJECT_VIEWER', 'ROLE_GUEST']),
+      enableAutoApprove: new UntypedFormControl(true, [Validators.required])
+    });
+    component.autoApprovedId = '61dee937b316a50f2bee7227';
+    component.rolesData = [
+      {
+          "id": "64b4ed7d138ed232323cfb9c",
+          "roleName": "ROLE_PROJECT_VIEWER",
+          "roleDescription": "read kpi data at project level",
+          "createdDate": 1689578877955,
+          "lastModifiedDate": 1689578877955,
+          "isDeleted": "False",
+          "permissions": [
+              {
+                  "id": "64b4ed7daca5f8c8952dcdd6",
+                  "permissionName": "View",
+                  "operationName": "Read",
+                  "resourceName": "resource4",
+                  "createdDate": 1689578877756,
+                  "lastModifiedDate": 1689578877756,
+                  "isDeleted": "False"
+              }
+          ],
+          "displayName": "Project Viewer"
+      },
+      {
+          "id": "64b4ed7d138ed232323cfb9d",
+          "roleName": "ROLE_PROJECT_ADMIN",
+          "roleDescription": "manage user-roles at project level",
+          "createdDate": 1689578877955,
+          "lastModifiedDate": 1689578877955,
+          "isDeleted": "False",
+          "permissions": [
+              {
+                  "id": "64b4ed7daca5f8c8952dcdd6",
+                  "permissionName": "View",
+                  "operationName": "Read",
+                  "resourceName": "resource4",
+                  "createdDate": 1689578877756,
+                  "lastModifiedDate": 1689578877756,
+                  "isDeleted": "False"
+              }
+          ],
+          "displayName": "Project Admin"
+      },
+      {
+          "id": "64b4ed7d138ed232323cfb9e",
+          "roleName": "ROLE_SUPERADMIN",
+          "roleDescription": "access to every resource in the instance",
+          "createdDate": 1689578877955,
+          "lastModifiedDate": 1689578877955,
+          "isDeleted": "False",
+          "permissions": [
+              {
+                  "id": "64b4ed7daca5f8c8952dcdd7",
+                  "permissionName": "ViewAll",
+                  "operationName": "Read",
+                  "resourceName": "resource5",
+                  "createdDate": 1689578877756,
+                  "lastModifiedDate": 1689578877756,
+                  "isDeleted": "False"
+              }
+          ],
+          "displayName": "Super Admin"
+      },
+      {
+          "id": "64b4ed7d138ed232323cfb9f",
+          "roleName": "ROLE_GUEST",
+          "roleDescription": "read access for the instance",
+          "createdDate": 1689578877955,
+          "lastModifiedDate": 1689578877955,
+          "isDeleted": "False",
+          "permissions": [
+              {
+                  "id": "64b4ed7daca5f8c8952dcdd6",
+                  "permissionName": "View",
+                  "operationName": "Read",
+                  "resourceName": "resource4",
+                  "createdDate": 1689578877756,
+                  "lastModifiedDate": 1689578877756,
+                  "isDeleted": "False"
+              }
+          ],
+          "displayName": "Guest"
+      }
+    ]
+    const errResponse = {
+      error: "Something went wrong",
+      success: false,
+      message: 'Something went wrong'
+    }
+    spyOn(httpService, 'submitAutoApproveData').and.returnValue(throwError(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.onSubmit();
+    expect(spy).toHaveBeenCalled();
+  })
 
 });

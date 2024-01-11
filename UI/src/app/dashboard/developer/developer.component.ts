@@ -23,14 +23,13 @@ scrum and kanban code .
 *******************************/
 
 /** Importing Services **/
-import { Component, OnInit, OnDestroy, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { MessageService } from 'primeng/api';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-import { distinctUntilChanged, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-developer',
@@ -121,38 +120,6 @@ export class DeveloperComponent implements OnInit {
         }
       }
     }));
-
-    // this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
-    //   if (Object.keys(x).length > 0) {
-    //     this.colorObj = x;
-    //     this.trendBoxColorObj = { ...x };
-    //     let tempObj = {};
-    //     for (const key in this.trendBoxColorObj) {
-    //       const idx = key.lastIndexOf('_');
-    //       const nodeName = key.slice(0, idx);
-    //       this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-    //       tempObj[nodeName] = [];
-    //     }
-    //     if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-    //       for (const key in this.kpiChartData) {
-    //         this.kpiChartData[key] = this.generateColorObj(key, this.kpiChartData[key]);
-    //         this.createTrendsData(key);
-    //       }
-    //     }
-    //   }
-    //   return this.service.passDataToDashboard;
-    // }), distinctUntilChanged()).subscribe((sharedobject: any) => {
-    //   // used to get all filter data when user click on apply button in filter
-    //   if (sharedobject?.filterData?.length) {
-    //     this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
-    //     this.iSAdditionalFilterSelected = sharedobject?.isAdditionalFilters;
-    //     this.receiveSharedData(sharedobject);
-    //     this.noTabAccess = false;
-    //   } else {
-    //     this.noTabAccess = true;
-    //   }
-    // }));
-
     
     this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
       if (Object.keys(x).length > 0) {
@@ -253,7 +220,6 @@ export class DeveloperComponent implements OnInit {
             }
           }
         } else if (this.filterData?.length && !$event.makeAPICall) {
-          // alert('no call');
           this.allKpiArray.forEach(element => {
             this.getDropdownArray(element?.kpiId);
           });
@@ -465,10 +431,6 @@ export class DeveloperComponent implements OnInit {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.createTrendsData(kpiId);
   }
 
