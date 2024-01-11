@@ -150,14 +150,10 @@ public class IssueJqlReaderTest {
 
 	@Test
 	public void testReadData() throws Exception {
-		//when(mockRetryableOperation.execute()).thenReturn(issues);
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
-		//when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping,krb5Client)).thenReturn(client);
 		when(jiraCommonService.fetchIssuesBasedOnJql(any(), any(), anyInt(), anyString()))
 				.thenReturn(issues);
-		//when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
 
