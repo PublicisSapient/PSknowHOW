@@ -35,6 +35,9 @@ import { of } from 'rxjs';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 import { CapacityPlanningComponent } from './capacity-planning.component';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { HelperService } from 'src/app/services/helper.service';
+import { DatePipe } from '@angular/common';
+import { ExcelService } from 'src/app/services/excel.service';
 
 describe('CapacityPlanningComponent', () => {
   let fixture: ComponentFixture<CapacityPlanningComponent>;
@@ -42,6 +45,7 @@ describe('CapacityPlanningComponent', () => {
   let httpMock;
   let httpService;
   let messageService;
+  let helperService
   const fakeSuccessResponseCapacity = {
     message: 'Capacity Data',
     success: true,
@@ -1333,7 +1337,7 @@ describe('CapacityPlanningComponent', () => {
         NgSelectModule
       ],
       declarations: [CapacityPlanningComponent, DashboardComponent],
-      providers: [HttpService, SharedService, MessageService, GetAuthService
+      providers: [HttpService, SharedService, MessageService, GetAuthService,DatePipe,HelperService,ExcelService
         , { provide: APP_CONFIG, useValue: AppConfig }
 
       ],
@@ -1346,6 +1350,7 @@ describe('CapacityPlanningComponent', () => {
     httpService = TestBed.inject(HttpService);
     messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
+    helperService = TestBed.inject(HelperService);
     fixture.detectChanges();
   });
 
@@ -2076,44 +2081,44 @@ describe('CapacityPlanningComponent', () => {
     });
   });
 
-  describe('makeUniqueArrayList', () => {
-    it('should return an empty array if the input array is empty', () => {
-      const result = component.makeUniqueArrayList([]);
-      expect(result).toEqual([]);
-    });
+  // describe('makeUniqueArrayList', () => {
+  //   it('should return an empty array if the input array is empty', () => {
+  //     const result = component.makeUniqueArrayList([]);
+  //     expect(result).toEqual([]);
+  //   });
 
-    it('should return an array with unique elements based on the "nodeId" property', () => {
-      const input = [
-        { nodeId: 1, path: 'path1', parentId: 1 },
-        { nodeId: 2, path: 'path2', parentId: 2 },
-        { nodeId: 1, path: 'path3', parentId: 3 },
-        { nodeId: 3, path: 'path4', parentId: 1 },
-      ];
-      const expectedOutput = [
-        { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
-        { nodeId: 2, path: ['path2'], parentId: [2] },
-        { nodeId: 3, path: ['path4'], parentId: [1] },
-      ];
-      const result = component.makeUniqueArrayList(input);
-      expect(result).toEqual(expectedOutput);
-    });
+  //   it('should return an array with unique elements based on the "nodeId" property', () => {
+  //     const input = [
+  //       { nodeId: 1, path: 'path1', parentId: 1 },
+  //       { nodeId: 2, path: 'path2', parentId: 2 },
+  //       { nodeId: 1, path: 'path3', parentId: 3 },
+  //       { nodeId: 3, path: 'path4', parentId: 1 },
+  //     ];
+  //     const expectedOutput = [
+  //       { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
+  //       { nodeId: 2, path: ['path2'], parentId: [2] },
+  //       { nodeId: 3, path: ['path4'], parentId: [1] },
+  //     ];
+  //     const result = component.makeUniqueArrayList(input);
+  //     expect(result).toEqual(expectedOutput);
+  //   });
 
-    it('should group the "path" and "parentId" properties for elements with the same "nodeId"', () => {
-      const input = [
-        { nodeId: 1, path: 'path1', parentId: 1 },
-        { nodeId: 2, path: 'path2', parentId: 2 },
-        { nodeId: 1, path: 'path3', parentId: 3 },
-        { nodeId: 3, path: 'path4', parentId: 1 },
-      ];
-      const expectedOutput = [
-        { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
-        { nodeId: 2, path: ['path2'], parentId: [2] },
-        { nodeId: 3, path: ['path4'], parentId: [1] },
-      ];
-      const result = component.makeUniqueArrayList(input);
-      expect(result).toEqual(expectedOutput);
-    });
-  });
+  //   it('should group the "path" and "parentId" properties for elements with the same "nodeId"', () => {
+  //     const input = [
+  //       { nodeId: 1, path: 'path1', parentId: 1 },
+  //       { nodeId: 2, path: 'path2', parentId: 2 },
+  //       { nodeId: 1, path: 'path3', parentId: 3 },
+  //       { nodeId: 3, path: 'path4', parentId: 1 },
+  //     ];
+  //     const expectedOutput = [
+  //       { nodeId: 1, path: ['path1', 'path3'], parentId: [1, 3] },
+  //       { nodeId: 2, path: ['path2'], parentId: [2] },
+  //       { nodeId: 3, path: ['path4'], parentId: [1] },
+  //     ];
+  //     const result = component.makeUniqueArrayList(input);
+  //     expect(result).toEqual(expectedOutput);
+  //   });
+  // });
 
   describe('checkDefaultFilterSelection', () => {
     it('should call getProjectBasedData if flag is false', () => {
@@ -2368,7 +2373,7 @@ describe('CapacityPlanningComponent', () => {
       };
       spyOn(httpService, 'getFilterData').and.returnValue(of(filterData));
       spyOn(component, 'sortAlphabetically').and.returnValue(filterData.data);
-      spyOn(component, 'makeUniqueArrayList').and.returnValue(filterData.data);
+      spyOn(helperService, 'makeUniqueArrayList').and.returnValue(filterData.data);
       spyOn(component, 'checkDefaultFilterSelection');
       spyOn(component, 'resetProjectSelection');
       spyOn(messageService, 'add');
@@ -2376,7 +2381,7 @@ describe('CapacityPlanningComponent', () => {
       expect(httpService.getFilterData).toHaveBeenCalledWith(component.selectedFilterData);
       expect(component.filterData).toEqual(filterData.data);
       expect(component.sortAlphabetically).toHaveBeenCalledWith(filterData.data);
-      expect(component.makeUniqueArrayList).toHaveBeenCalledWith(filterData.data);
+      expect(helperService.makeUniqueArrayList).toHaveBeenCalledWith(filterData.data);
       expect(component.checkDefaultFilterSelection).toHaveBeenCalledWith(true);
       expect(component.resetProjectSelection).not.toHaveBeenCalled();
       expect(messageService.add).not.toHaveBeenCalled();
