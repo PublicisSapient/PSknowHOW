@@ -1657,7 +1657,7 @@ describe('JiraConfigComponent', () => {
     expect(result).toBe(true);
   });
 
-  xit('should give error when getting plans for bamboo', () => {
+  it('should give error when getting plans for bamboo', () => {
     const connectionId = 'dsdaddad';
     component.bambooPlanList = [];
     component.formTemplate = {
@@ -1675,10 +1675,11 @@ describe('JiraConfigComponent', () => {
       ]
     }
     component.toolForm = new UntypedFormGroup({
-      jobType: new UntypedFormControl({name: 'Build'}),
+      jobType: new UntypedFormControl(),
       planKey : new UntypedFormControl(),
       branchKey:  new UntypedFormControl(),
     })
+    component.toolForm.controls['jobType'].setValue('Build')
     component.bambooBranchList = []
     spyOn(component, 'showLoadingOnFormElement').and.callThrough();
     const errResponse = {
@@ -1758,14 +1759,15 @@ describe('JiraConfigComponent', () => {
   
   })
 
-  xit('should throw error on getting jenkins job names', () => {
+  it('should throw error on getting jenkins job names', () => {
     const connectionId = 'skdhakda';
     const errResponse = {
-      error: 'Something went wrong',
-      success: false
+        error : {
+          message : 'error msg'
+        }
     }
-    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
-    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(of(errResponse));
+    spyOn(component, 'showLoadingOnFormElement')
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(throwError(errResponse));
     component.jenkinsJobNameList = [];
     spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
     const spy = spyOn(messageService, 'add')
