@@ -108,6 +108,7 @@ public class JiraClientTest {
 	public void getJiraOAuthClientProxyTest() throws URISyntaxException {
 		JiraInfo jiraInfo = getJiraInfo("uName", "password", "https://www.baseurl.com/", "https://www.proxyurl.com/",
 				"1771", "token", true);
+		jiraClient.getJiraOAuthClient(jiraInfo);
 	}
 
 	@Test
