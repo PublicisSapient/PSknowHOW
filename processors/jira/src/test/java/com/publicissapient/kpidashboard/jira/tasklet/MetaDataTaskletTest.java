@@ -55,17 +55,15 @@ public class MetaDataTaskletTest {
     @Test
     public void testExecute() throws Exception {
         // Arrange
-        String projectId = "5fd99f7bc8b51a7b55aec836";
         ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().projectName("KnowHow").build();
 
         when(fetchProjectConfiguration.fetchConfiguration(null)).thenReturn(projectConfFieldMapping);
 
         ProcessorJiraRestClient client = mock(ProcessorJiraRestClient.class);
-        when(jiraClient.getClient(projectConfFieldMapping, null)).thenReturn(client);
+        when(jiraClient.getClient(projectConfFieldMapping,null)).thenReturn(client);
         when(jiraProcessorConfig.isFetchMetadata()).thenReturn(true);
         // Act
         RepeatStatus result = metaDataTasklet.execute(stepContribution, chunkContext);
-
         // Assert
         verify(createMetadata, times(1)).collectMetadata(projectConfFieldMapping, null);
         assertEquals(RepeatStatus.FINISHED, result);
