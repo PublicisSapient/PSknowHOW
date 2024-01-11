@@ -47,6 +47,7 @@ export class NavComponent implements OnInit {
   ssoLogin= environment.SSO_LOGIN;
   visibleSidebar;
   kanban = false;
+  navItems: number = 7;
   
   constructor(
     private httpService: HttpService,

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.gitlab.util;
+package com.publicissapient.kpidashboard.github.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -69,20 +69,16 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	int issueSize = 0;
 	private Iterator<Issue> issueIterator;
-	private ProjectConfFieldMapping projectConfFieldMapping;
+	ProjectConfFieldMapping projectConfFieldMapping;
+	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 	private ReaderRetryHelper retryHelper;
-
-	@Autowired
-	public IssueSprintReader(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
 
 	public void initializeReader(String sprintId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
+		retryHelper = new ReaderRetryHelper();
 	}
 
 	@Override
@@ -94,8 +90,7 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping) {
-			KerberosClient krb5Client = null;
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping)) {
 				if (null == issueIterator) {
 					pageNumber = 0;
 					fetchIssues(client);
