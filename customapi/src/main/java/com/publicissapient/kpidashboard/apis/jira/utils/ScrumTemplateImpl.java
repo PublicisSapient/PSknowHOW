@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.jira.scrum.service;
+package com.publicissapient.kpidashboard.apis.jira.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
