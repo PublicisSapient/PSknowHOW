@@ -56,12 +56,8 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public JiraIssueReleaseStatusTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
@@ -75,7 +71,8 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping)) {
+		KerberosClient krb5Client = null;
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
 			log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
 			createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
 		}

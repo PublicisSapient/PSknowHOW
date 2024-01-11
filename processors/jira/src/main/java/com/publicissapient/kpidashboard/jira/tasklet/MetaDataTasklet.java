@@ -56,12 +56,8 @@ public class MetaDataTasklet implements Tasklet {
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public MetaDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
@@ -77,7 +73,8 @@ public class MetaDataTasklet implements Tasklet {
 	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		log.info("Fetching metadata for the project : {}", projConfFieldMapping.getProjectName());
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping);) {
+		KerberosClient krb5Client = null;
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
 			if (jiraProcessorConfig.isFetchMetadata()) {
 				createMetadata.collectMetadata(projConfFieldMapping, client);
 			}
