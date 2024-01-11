@@ -29,6 +29,7 @@ import { GetAuthorizationService } from '../../services/get-authorization.servic
 import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 declare let $: any;
+import { HelperService } from 'src/app/services/helper.service';
 
 interface TepSubmissionReq {
     projectNodeId: string;
@@ -162,7 +163,7 @@ export class UploadComponent implements OnInit {
         }
     ]
 
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef,private helperService : HelperService) {
     }
 
     ngOnInit() {
@@ -517,7 +518,7 @@ export class UploadComponent implements OnInit {
                     this.filterData = filterData['data'];
                     if (this.filterData && this.filterData.length > 0) {
                         this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-                        this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
+                        this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
                         if (Object.keys(filterData).length === 0) {
@@ -901,22 +902,23 @@ export class UploadComponent implements OnInit {
         objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
         return objArray;
     }
-    makeUniqueArrayList(arr) {
-        let uniqueArray = [];
-        for (let i = 0; i < arr?.length; i++) {
-            const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-            if (idx == -1) {
-                uniqueArray = [...uniqueArray, arr[i]];
-                uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-                uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-            } else {
-                uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-                uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-            }
+    /** moved to service layer */ 
+    // makeUniqueArrayList(arr) {
+    //     let uniqueArray = [];
+    //     for (let i = 0; i < arr?.length; i++) {
+    //         const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
+    //         if (idx == -1) {
+    //             uniqueArray = [...uniqueArray, arr[i]];
+    //             uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+    //             uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+    //         } else {
+    //             uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+    //             uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+    //         }
 
-        }
-        return uniqueArray;
-    }
+    //     }
+    //     return uniqueArray;
+    // }
 
     validateInput($event) {
         if ($event.key === 'e' || $event.key === '-') {
