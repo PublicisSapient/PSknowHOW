@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.http.HttpResponse;
@@ -36,6 +36,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -194,7 +195,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 				log.error("exception occured while trying to hit api.");
 			}
 		} else {
-			HttpStatus status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
+			HttpStatusCode status = getApiResponseWithBasicAuth(connection.getUsername(), password, apiUrl, toolName,
 					isSonarWithAccessToken);
 			isValidConnection = status.is2xxSuccessful();
 		}
@@ -209,7 +210,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private boolean testConnectionWithBearerToken(String apiUrl, String pat) {
 		boolean isValidConnection;
-		HttpStatus status = null;
+		HttpStatusCode status = null;
 		status = getApiResponseWithBearer(pat, apiUrl);
 		isValidConnection = status.is2xxSuccessful();
 		return isValidConnection;
@@ -412,8 +413,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 * @param apiUrl
 	 * @return API response
 	 */
-	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
-			boolean isSonarWithAccessToken) {
+	private HttpStatusCode getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
+													   boolean isSonarWithAccessToken) {
 		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
@@ -440,7 +441,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return responseEntity.getStatusCode();
 	}
 
-	private HttpStatus getApiResponseWithBearer(String pat, String apiUrl) {
+	private HttpStatusCode getApiResponseWithBearer(String pat, String apiUrl) {
 		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
@@ -452,7 +453,7 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
-		HttpStatus responseCode = responseEntity.getStatusCode();
+		HttpStatusCode responseCode = responseEntity.getStatusCode();
 
 		if (responseCode.is2xxSuccessful() && null != responseEntity.getBody()
 				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)) {
