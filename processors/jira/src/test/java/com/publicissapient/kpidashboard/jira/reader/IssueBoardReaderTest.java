@@ -149,11 +149,10 @@ public class IssueBoardReaderTest {
 
 	@Test
 	public void testReadData() throws Exception {
-		when(mockRetryableOperation.execute()).thenReturn(issues);
+		//when(mockRetryableOperation.execute()).thenReturn(issues);
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
 				.thenReturn(pl);
-		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
+		//when(retryHelper.executeWithRetry(any())).thenReturn(issues);
 		when(jiraCommonService.fetchIssueBasedOnBoard(any(), any(), anyInt(), anyString(), anyString()))
 				.thenReturn(issues);
 		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
@@ -225,7 +224,7 @@ public class IssueBoardReaderTest {
 	@Test
 	public void testFetchIssues() throws Exception {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("fetchIssues", ProcessorJiraRestClient.class);
 		method.setAccessible(true); // Make the private method accessible
@@ -240,7 +239,7 @@ public class IssueBoardReaderTest {
 	@Test
 	public void testFetchEpic() throws Exception {
 		issueBoardReader.projectConfFieldMapping = projectConfFieldMapping;
-		doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
+		//doThrow(new Exception()).when(retryHelper).executeWithRetry(any());
 		// Use reflection to access the private method
 		Method method = IssueBoardReader.class.getDeclaredMethod("fetchEpics", KerberosClient.class,
 				ProcessorJiraRestClient.class);

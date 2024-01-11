@@ -53,12 +53,8 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public ScrumReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
@@ -75,7 +71,7 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		KerberosClient krb5Client = null;
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping);) {
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
 			fetchScrumReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		}
 		log.info("**** ReleaseData fetch ended ****");

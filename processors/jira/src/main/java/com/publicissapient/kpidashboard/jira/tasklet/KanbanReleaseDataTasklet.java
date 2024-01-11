@@ -48,12 +48,8 @@ public class KanbanReleaseDataTasklet implements Tasklet {
 	@Autowired
 	JiraClient jiraClient;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public KanbanReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
@@ -69,7 +65,7 @@ public class KanbanReleaseDataTasklet implements Tasklet {
 		log.info("**** ReleaseData fetch started ****");
 		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
 		KerberosClient krb5Client = null;
-		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping);) {
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client);) {
 			fetchKanbanReleaseData.processReleaseInfo(projConfFieldMapping, krb5Client);
 		}
 		log.info("**** ReleaseData fetch ended ****");

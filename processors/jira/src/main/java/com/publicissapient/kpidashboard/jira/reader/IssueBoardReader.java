@@ -85,7 +85,6 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 	Map<String, Map<String, String>> projectBoardWiseDeltaDate = new HashMap<>();
 	int boardIssueSize = 0;
 	boolean fetchLastIssue = false;
-	@Autowired
 	private ReaderRetryHelper retryHelper;
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
@@ -117,8 +116,9 @@ public class IssueBoardReader implements ItemReader<ReadData> {
 		ReadData readData = null;
 		KerberosClient krb5Client = null;
 		if (!fetchLastIssue) {
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping)) {
-				if (boardIterator == null && CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+				if (boardIterator == null
+						&& CollectionUtils.isNotEmpty(projectConfFieldMapping.getProjectToolConfig().getBoards())) {
 					boardIterator = projectConfFieldMapping.getProjectToolConfig().getBoards().iterator();
 				}
 				if (checkIssueIterator()) {

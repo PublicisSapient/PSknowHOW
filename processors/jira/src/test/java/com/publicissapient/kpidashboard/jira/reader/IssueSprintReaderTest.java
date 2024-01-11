@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.jira.reader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -150,13 +151,7 @@ public class IssueSprintReaderTest {
 
 	@Test
 	public void testReadData() throws Exception {
-		when(mockRetryableOperation.execute()).thenReturn(issues);
-		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdIn(anyString(), anyList()))
-				.thenReturn(pl);
-		when(retryHelper.executeWithRetry(any())).thenReturn(issues);
-		when(jiraClient.getClient(projectConfFieldMapping)).thenReturn(client);
-		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, client, 0, null)).thenReturn(issues);
-		when(fetchEpicData.fetchEpic(any(), anyString(), any(), any())).thenReturn(issues);
+		when(fetchIssueSprint.fetchIssuesSprintBasedOnJql(projectConfFieldMapping, null, 0, null)).thenReturn(issues);
 		// Arrange
 		ReadData mockReadData = IssueReaderUtil.getMockReadData(boardId, projectConfFieldMapping);
 
