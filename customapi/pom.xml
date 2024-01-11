@@ -32,7 +32,7 @@
 		<application.version.number>2.5.0</application.version.number>
 		<suiteXmlFile>src/test/resources/default-testng.xml</suiteXmlFile>
 		<final.name>customapi</final.name>
-		<logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
+		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 		<sonar.coverage.exclusions>
 			**com/publicissapient/kpidashboard/**/*Application.java,
 			**com/publicissapient/kpidashboard/**/model/**/*,
