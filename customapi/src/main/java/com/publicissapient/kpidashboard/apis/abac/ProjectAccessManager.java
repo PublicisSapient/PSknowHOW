@@ -39,7 +39,7 @@ import java.util.stream.Stream;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.common.service.NotificationService;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;

@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.auth.repository;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
@@ -30,7 +31,7 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
  *
  * @author anisingh4
  */
-public interface AuthenticationRepository extends PagingAndSortingRepository<Authentication, ObjectId> {
+public interface AuthenticationRepository extends PagingAndSortingRepository<Authentication, ObjectId>, CrudRepository<Authentication, ObjectId> {
 
 	/**
 	 * Find by username authentication.

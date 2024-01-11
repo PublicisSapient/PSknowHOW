@@ -27,12 +27,12 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +53,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
-
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 /**
  * This class contains test cases for ProcessorServiceImpl.class

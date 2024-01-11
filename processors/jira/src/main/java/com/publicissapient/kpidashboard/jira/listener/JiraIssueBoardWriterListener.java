@@ -26,8 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 
 	@Override
-	public void beforeWrite(List<? extends CompositeResult> compositeResult) {
+	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
 		// in future we can use this method to do something before saving data in db
 	}
 
@@ -64,13 +65,13 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
 	@Override
-	public void afterWrite(List<? extends CompositeResult> compositeResults) {
+	public void afterWrite(Chunk<? extends CompositeResult> compositeResults) {
 
 		log.info("Write listner called for scrum board project and saving status in Processor execution Trace log");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
-		List<JiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getJiraIssue)
-				.collect(Collectors.toList());
+		List<JiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getJiraIssue)
+				.toList();
 
 		Map<String, Map<String, List<JiraIssue>>> projectBoardWiseIssues = jiraIssues.stream()
 				.filter(issue -> !issue.getTypeName().equalsIgnoreCase(JiraConstants.EPIC)).collect(Collectors
@@ -123,7 +124,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 	}
 
 	@Override
-	public void onWriteError(Exception exception, List<? extends CompositeResult> compositeResult) {
+	public void onWriteError(Exception exception, Chunk<? extends CompositeResult> compositeResult) {
 		log.error("Exception occured while writing jira Issue ", exception);
 	}
 }
