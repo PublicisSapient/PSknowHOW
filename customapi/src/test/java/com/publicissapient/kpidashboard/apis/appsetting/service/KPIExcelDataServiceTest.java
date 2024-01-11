@@ -241,10 +241,31 @@ public class KPIExcelDataServiceTest {
 		idList.add("THPRO_THPRO");
 
 		acceptedFilterList.add(Filters.PROJECT.name());
-		KPIExcelValidationDataResponse kPIExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
-				.process("kpi52", level, idList, acceptedFilterList, null, true);
+		kpiExcelDataService
+				.process("kpi48", level, idList, acceptedFilterList, null, true);
 
-		Assert.assertNotNull(kpiExcelDataService.process("kpi52", level, idList, acceptedFilterList, null, true));
+		Assert.assertNotNull(kpiExcelDataService.process("kpi48", level, idList, acceptedFilterList, null, true));
+
+		kpiExcelDataService
+				.process("kpi61", level, idList, acceptedFilterList, null, true);
+
+		Assert.assertNotNull(kpiExcelDataService.process("kpi61", level, idList, acceptedFilterList, null, true));
+
+		kpiExcelDataService
+				.process("kpi63", level, idList, acceptedFilterList, null, true);
+
+		Assert.assertNotNull(kpiExcelDataService.process("kpi63", level, idList, acceptedFilterList, null, true));
+
+		kpiExcelDataService
+				.process("kpi65", level, idList, acceptedFilterList, null, true);
+
+		Assert.assertNotNull(kpiExcelDataService.process("kpi65", level, idList, acceptedFilterList, null, true));
+
+		kpiExcelDataService
+				.process("kpi66", level, idList, acceptedFilterList, null, true);
+
+		Assert.assertNotNull(kpiExcelDataService.process("kpi66", level, idList, acceptedFilterList, null, true));
+
 
 	}
 
@@ -262,9 +283,20 @@ public class KPIExcelDataServiceTest {
 		KPIExcelValidationDataResponse kpiExcelValidationDataResponse = (KPIExcelValidationDataResponse) kpiExcelDataService
 				.process("kpi14", level, idList, null, kpiRequest, null);
 
+		kpiRequest = createKpiRequest("kpi8", "");
+		kpiExcelDataService.process("kpi8", level, idList, null, kpiRequest, null);
+
+		kpiRequest = createKpiRequest("kpi11", "");
+		kpiExcelDataService.process("kpi11", level, idList, null, kpiRequest, null);
+
+		kpiRequest = createKpiRequest("kpi168", "");
+		kpiExcelDataService.process("kpi168", level, idList, null, kpiRequest, null);
+
+		kpiRequest = createKpiRequest("kpi16", "");
+		kpiExcelDataService.process("kpi16", level, idList, null, kpiRequest, null);
+
 		assertThat("Excel Validation Process Data: ", kpiExcelValidationDataResponse.getMapOfSprintAndData()
 				.get("Alpha_Project1_Sprint1_name").getDefectKeyList().size(), equalTo(1));
-
 	}
 
 	@Test

@@ -65,7 +65,7 @@ public class IssueScrumWriterTest {
     public void testWrite() throws Exception {
         // Mock data
         List<CompositeResult> kanbanCompositeResults = createMockScrumCompositeResults();
-        when(jiraProcessorConfig.getPageSize()).thenReturn(50);
+        //when(jiraProcessorConfig.getPageSize()).thenReturn(50);
         // Invoke the method to be tested
         issueScrumWriter.write(kanbanCompositeResults);
 

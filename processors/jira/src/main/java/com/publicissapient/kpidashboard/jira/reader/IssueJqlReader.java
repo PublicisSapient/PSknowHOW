@@ -83,20 +83,17 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 	@Autowired
 	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
 	private Iterator<Issue> issueIterator;
-	private ProjectConfFieldMapping projectConfFieldMapping;
-	private String projectId;
+	ProjectConfFieldMapping projectConfFieldMapping;
 	private ReaderRetryHelper retryHelper;
 
-	@Autowired
-	public IssueJqlReader(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
 	public void initializeReader(String projectId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		retryHelper = new ReaderRetryHelper();
 	}
 
 	/*
@@ -114,8 +111,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		ReadData readData = null;
 		if (null != projectConfFieldMapping && !fetchLastIssue) {
-			KerberosClient krb5Client = null;
-			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping, krb5Client)) {
+			try (ProcessorJiraRestClient client = jiraClient.getClient(projectConfFieldMapping)) {
 				if (issueIterator == null || !issueIterator.hasNext()) {
 					fetchIssues(client);
 					if (CollectionUtils.isNotEmpty(issues)) {
@@ -123,7 +119,7 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 					}
 				}
 
-				if (null != issueIterator && issueIterator.hasNext()) {
+				if (checkIssueIterator()) {
 					Issue issue = issueIterator.next();
 					readData = new ReadData();
 					readData.setIssue(issue);
@@ -140,6 +136,10 @@ public class IssueJqlReader implements ItemReader<ReadData> {
 		}
 		return readData;
 
+	}
+
+	private boolean checkIssueIterator() {
+		return null != issueIterator && issueIterator.hasNext();
 	}
 
 	@TrackExecutionTime

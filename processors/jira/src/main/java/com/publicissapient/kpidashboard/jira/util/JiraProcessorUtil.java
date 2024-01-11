@@ -45,6 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JiraProcessorUtil {
 
+	private  JiraProcessorUtil(){}
+
 	// not static because not thread safe
 	private static final String SPRINT_SPLIT = "(?=,\\w+=)";
 	private static final String NULL_STR = "null";

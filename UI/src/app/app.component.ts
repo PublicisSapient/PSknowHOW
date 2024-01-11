@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   authorized = <boolean>true;
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService) {
+    public ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService) {
     this.authorized = this.getAuth.checkAuth();
   }
 

@@ -23,6 +23,7 @@ File contains code for daily scrum component.
 
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SortEvent } from 'primeng/api';
+import { stringify } from 'querystring';
 import { SharedService } from 'src/app/services/shared.service';
 
 @Component({
@@ -71,6 +72,9 @@ export class DailyScrumComponent implements OnInit, OnChanges {
     if (changes['assigneeList']) {
       this.allAssignee = changes['assigneeList']?.currentValue;
     }
+    if (changes['filters']) {
+      this.filters = changes['filters']?.currentValue;
+    }
     if (Object.keys(this.filters).length > 0) {
       for (const key in this.filters) {
         if (this.filters[key]) {
@@ -112,8 +116,8 @@ export class DailyScrumComponent implements OnInit, OnChanges {
   }
 
   handleSingleSelectChange(e, filterKey) {
-    if (this.allAssignee && this.allAssignee.length) {
-      if (e && e.value) {
+    if (this.allAssignee?.length) {
+      if (e?.value) {
         this.assigneeList = this.allAssignee.filter(assignee => assignee[filterKey] === e.value);
       } else {
         this.assigneeList = this.allAssignee;
@@ -140,6 +144,8 @@ export class DailyScrumComponent implements OnInit, OnChanges {
         this.totals[col].value += isNaN(assignee.cardDetails[col].value) ? 0 : +assignee.cardDetails[col].value;
         if ('value1' in this.totals[col]) {
           this.totals[col].value1 += isNaN(assignee.cardDetails[col].value1) ? 0 : +assignee.cardDetails[col].value1;
+        } else {
+          this.totals[col].value1 = 0;
         }
       });
     });
@@ -158,9 +164,7 @@ export class DailyScrumComponent implements OnInit, OnChanges {
       } else {
         this.totals[col].value1 = this.totals[col].value1?.toFixed(2);
       }
-
-
-
+      console.log(JSON.stringify(this.totals));
     });
   }
 
