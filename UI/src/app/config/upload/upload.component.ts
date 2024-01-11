@@ -927,11 +927,9 @@ export class UploadComponent implements OnInit {
     }
 
     getTestExecutionData(projectId) {
-        console.log(projectId);
         this.isAddtionalTestField = false
         this.http_service.getTestExecutionData(projectId).subscribe((response) => {
             if (response && response?.success && response?.data) {
-                console.log(response);
                 if (this.kanban) {
                     this.testExecutionKanbanData = response?.data;
                     this.isAddtionalTestField = this.testExecutionKanbanData[0]['uploadEnable'];
