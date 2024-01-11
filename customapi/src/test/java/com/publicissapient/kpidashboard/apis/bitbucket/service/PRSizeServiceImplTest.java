@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -117,14 +118,14 @@ public class PRSizeServiceImplTest {
         kpiRequest.setLabel("Project");
         kpiElement = kpiRequest.getKpiList().get(0);
         kpiRequest.setXAxisDataPoints(5);
-        kpiRequest.setDuration("WEEKS");
+        kpiRequest.setDuration("DAYS");
 
         AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
                 .newInstance();
         accountHierarchyDataList = accountHierarchyFilterDataFactory.getAccountHierarchyDataList();
         RepoToolsKpiRequestDataFactory repoToolsKpiRequestDataFactory = RepoToolsKpiRequestDataFactory.newInstance();
         repoToolKpiMetricResponseList = repoToolsKpiRequestDataFactory.getRepoToolsKpiRequest();
-
+        repoToolKpiMetricResponseList.get(0).setDateLabel(LocalDate.now().minusDays(2).toString());
         projectConfigList.forEach(projectConfig -> {
             projectConfigMap.put(projectConfig.getProjectName(), projectConfig);
         });
@@ -170,6 +171,8 @@ public class PRSizeServiceImplTest {
         Tool tool = new Tool();
         tool.setTool(toolType);
         tool.setUrl(url);
+        tool.setBranch("master");
+        tool.setRepositoryName("PSknowHOW");
 
         tool.setProcessorItemList(collectorItemList);
         return tool;
