@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.azure.processor.mode;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +121,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	private String getAzureProjectKey(ObjectId basicProjectConfigId) {
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
-		return Optional.of(azureBoardsDetails.get(0).getProjectKey()).orElse(StringUtils.EMPTY);
+		return azureBoardsDetails.isEmpty() ? StringUtils.EMPTY :
+				Optional.ofNullable(azureBoardsDetails.get(0)).map(ProjectToolConfig::getProjectKey).orElse(StringUtils.EMPTY);
 	}
 
 	/**
