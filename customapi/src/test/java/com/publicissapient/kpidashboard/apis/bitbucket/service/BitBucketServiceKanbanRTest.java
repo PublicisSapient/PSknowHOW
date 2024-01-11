@@ -42,7 +42,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -154,16 +153,17 @@ public class BitBucketServiceKanbanRTest {
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
 
-		List<KpiElement> resultList= null;
+		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
 			CodeCommitKanbanServiceImpl mockService = mock(CodeCommitKanbanServiceImpl.class);
 			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
-			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
+			mockedStatic.when(
+					() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())))
 					.thenReturn(mockService);
 			resultList = bitbucketServiceKanbanR.process(kpiRequest);
-			mockedStatic.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
+			mockedStatic.verify(
+					() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.NUMBER_OF_CHECK_INS.name())));
 		}
-
 
 		resultList.forEach(k -> {
 
@@ -182,7 +182,6 @@ public class BitBucketServiceKanbanRTest {
 		});
 
 	}
-
 
 	@Test
 	public void testProcessCachedData() throws Exception {
