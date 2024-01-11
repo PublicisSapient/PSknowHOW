@@ -69,20 +69,16 @@ public class IssueSprintReader implements ItemReader<ReadData> {
 	List<Issue> issues = new ArrayList<>();
 	int issueSize = 0;
 	private Iterator<Issue> issueIterator;
-	private ProjectConfFieldMapping projectConfFieldMapping;
+	ProjectConfFieldMapping projectConfFieldMapping;
+	@Value("#{jobParameters['sprintId']}")
 	private String sprintId;
 	private ReaderRetryHelper retryHelper;
-
-	@Autowired
-	public IssueSprintReader(@Value("#{jobParameters['sprintId']}") String sprintId) {
-		this.sprintId = sprintId;
-		this.retryHelper = new ReaderRetryHelper();
-	}
 
 	public void initializeReader(String sprintId) {
 		log.info("**** Jira Issue fetch started * * *");
 		pageSize = jiraProcessorConfig.getPageSize();
 		projectConfFieldMapping = fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(sprintId);
+		retryHelper = new ReaderRetryHelper();
 	}
 
 	@Override

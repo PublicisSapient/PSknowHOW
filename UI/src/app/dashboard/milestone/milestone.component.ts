@@ -23,9 +23,8 @@ import { HttpService } from '../../services/http.service';
 import { ExcelService } from '../../services/excel.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
-import { TableService } from 'primeng/table';
 
 declare let require: any;
 
@@ -97,9 +96,6 @@ export class MilestoneComponent implements OnInit {
     /** When click on show/Hide button on filter component */
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
       if (globalConfig) {
-        // if (this.sharedObject || this.service.getFilterObject()) {
-        //   this.receiveSharedData(this.service.getFilterObject());
-        // }
         this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'release')[0]?.kpis;
         this.processKpiConfigData();
       }
@@ -132,6 +128,23 @@ export class MilestoneComponent implements OnInit {
       }
     }
 
+    this.formatNavigationTabs();
+
+    if (this.upDatedConfigData?.length === 0) {
+      this.noKpis = true;
+    } else {
+      this.noKpis = false;
+    }
+    this.configGlobalData.forEach(element => {
+      if (element.shown && element.isEnabled) {
+        this.kpiConfigData[element.kpiId] = true;
+      } else {
+        this.kpiConfigData[element.kpiId] = false;
+      }
+    });
+  }
+
+  formatNavigationTabs(){
     this.navigationTabs.map(tabDetails => {
       if(tabDetails['width'] === 'half'){
         let fullWidthKPis = [];
@@ -150,19 +163,6 @@ export class MilestoneComponent implements OnInit {
         tabDetails['fullWidthKpis'] = fullWidthKPis;
       }
       return tabDetails;
-    });
-
-    if (this.upDatedConfigData?.length === 0) {
-      this.noKpis = true;
-    } else {
-      this.noKpis = false;
-    }
-    this.configGlobalData.forEach(element => {
-      if (element.shown && element.isEnabled) {
-        this.kpiConfigData[element.kpiId] = true;
-      } else {
-        this.kpiConfigData[element.kpiId] = false;
-      }
     });
   }
 
@@ -239,7 +239,6 @@ export class MilestoneComponent implements OnInit {
       }
       this.kpiSelectedFilterObj[kpi?.kpiId] = event;
     } else {
-      // this.kpiSelectedFilterObj[kpi?.kpiId].push(event);
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
@@ -360,12 +359,10 @@ export class MilestoneComponent implements OnInit {
         this.getDropdownArray(data[key]?.kpiId);
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        // this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
         this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
         }
         else if (formType?.toLowerCase() == 'dropdown') {
@@ -380,7 +377,6 @@ export class MilestoneComponent implements OnInit {
           }
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
         } else {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
           this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
         }
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
@@ -389,16 +385,6 @@ export class MilestoneComponent implements OnInit {
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
-  }
-
-  createCombinations(arr1, arr2) {
-    let arr = [];
-    for (let i = 0; i < arr1?.length; i++) {
-      for (let j = 0; j < arr2?.length; j++) {
-        arr.push({ filter1: arr1[i], filter2: arr2[j] });
-      }
-    }
-    return arr;
   }
 
   getChartData(kpiId, idx, aggregationType?) {
@@ -411,7 +397,7 @@ export class MilestoneComponent implements OnInit {
         let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+        tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
         for (let i = 0; i < tempArr?.length; i++) {
           preAggregatedValues?.push(...trendValueList['value']?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
         }
@@ -452,7 +438,7 @@ export class MilestoneComponent implements OnInit {
         let tempArr = [];
         const preAggregatedValues = [];
         /** tempArr: array with combination of all items of filter1 and filter2 */
-        tempArr = this.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
+        tempArr = this.helperService.createCombinations(this.kpiSelectedFilterObj[kpiId]['filter1'], this.kpiSelectedFilterObj[kpiId]['filter2'])
         for (let i = 0; i < tempArr?.length; i++) {
           preAggregatedValues?.push(...trendValueList?.filter(k => k['filter1'] == tempArr[i]?.filter1 && k['filter2'] == tempArr[i]?.filter2));
         }
@@ -497,9 +483,6 @@ export class MilestoneComponent implements OnInit {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
   }
 
   getKpiChartType(kpiId) {
@@ -642,24 +625,8 @@ export class MilestoneComponent implements OnInit {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>,tab) {
-    if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if(tab.width === 'half'){
-        const updatedTabsDetails = this.navigationTabs.find(tabs=>tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
-      }
-      this.upDatedConfigData = [];
-      this.navigationTabs.forEach(tabs=>{
-        this.upDatedConfigData  = this.upDatedConfigData.concat(tabs['kpis']);
-      })
-      this.upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
-      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-      disabledKpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + index + 3);
-      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
-      hiddenkpis.map((kpi, index) => kpi.order = this.upDatedConfigData.length + disabledKpis.length + index + 3);
-      this.service.kpiListNewOrder.next([...this.upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
-    }
+  drop(event: CdkDragDrop<string[]>,updatedContainer) {
+    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.upDatedConfigData,this.configGlobalData);
   }
 
   getKpiCommentsCount(kpiId?) {

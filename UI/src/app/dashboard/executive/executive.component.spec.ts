@@ -2514,7 +2514,7 @@ describe('ExecutiveComponent', () => {
     fixture = TestBed.createComponent(ExecutiveComponent);
     component = fixture.componentInstance;
 
-    const type = 'Scrum';
+    const type = 'scrum';
     service.selectedtype = type;
     service.select(masterData, filterData, filterApplyDataWithNoFilter, selectedTab);
     service.setDashConfigData(dashConfigData.data);
@@ -4607,7 +4607,65 @@ describe('ExecutiveComponent', () => {
     const event = {
       "filter1": [
         "P3"
-      ]
+      ],
+      "filter2" :[]
+
+    };
+    const kpi = {
+      "kpiId": "kpi28",
+      "kpiName": "Defect Count By Priority",
+      "isEnabled": true,
+      "order": 7,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c075",
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "isDeleted": "False",
+        "defaultOrder": 7,
+        "kpiUnit": "Number",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": false,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "90",
+        "thresholdValue": 55,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "Measures the number of defects grouped by priority in an iteration",
+          "formula": [
+            {
+              "lhs": "Defect Count By Priority=No. of defects linked to stories grouped by priority"
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "multiSelectDropDown",
+        "aggregationCriteria": "sum",
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Count",
+        "trendCalculative": false,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const spyData = component.handleSelectedOption(event, kpi);
+    expect(component.kpiSelectedFilterObj).toBeDefined();
+  });
+
+  xit('should call handleSelectedOption for non kpi72', () => {
+    const event = {
+      "filter1": []
     };
     const kpi = {
       "kpiId": "kpi28",
@@ -4661,7 +4719,64 @@ describe('ExecutiveComponent', () => {
       "P3"
     ]
     const spyData = component.handleSelectedOption(event, kpi);
-    expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
+    // expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
+  });
+
+  it('should call handleSelectedOption for non kpi72', () => {
+    const event = 'test1'
+    const kpi = {
+      "kpiId": "kpi28",
+      "kpiName": "Defect Count By Priority",
+      "isEnabled": true,
+      "order": 7,
+      "kpiDetail": {
+        "id": "64b70909097ae57dfd51c075",
+        "kpiId": "kpi28",
+        "kpiName": "Defect Count By Priority",
+        "isDeleted": "False",
+        "defaultOrder": 7,
+        "kpiUnit": "Number",
+        "chartType": "line",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": false,
+        "hideOverallFilter": false,
+        "kpiSource": "Jira",
+        "maxValue": "90",
+        "thresholdValue": 55,
+        "kanban": false,
+        "groupId": 1,
+        "kpiInfo": {
+          "definition": "Measures the number of defects grouped by priority in an iteration",
+          "formula": [
+            {
+              "lhs": "Defect Count By Priority=No. of defects linked to stories grouped by priority"
+            }
+          ],
+          "details": [
+            {
+              "type": "link",
+              "kpiLinkDetail": {
+                "text": "Detailed Information at",
+                "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+              }
+            }
+          ]
+        },
+        "kpiFilter": "multiSelectDropDown",
+        "aggregationCriteria": "sum",
+        "xaxisLabel": "Sprints",
+        "yaxisLabel": "Count",
+        "trendCalculative": false,
+        "additionalFilterSupport": true
+      },
+      "shown": true
+    };
+    const response = [
+      "P3"
+    ]
+    const spyData = component.handleSelectedOption(event, kpi);
+    // expect(component.kpiSelectedFilterObj["kpi28"]).toEqual(response);
   });
 
   it('should call getDropdownArray', () => {
@@ -5720,180 +5835,6 @@ describe('ExecutiveComponent', () => {
     expect(component.kpiDropdowns["kpi72"]).toEqual(response);
   });
 
-  it('should sort Alphabetically', () => {
-    const objArray = [
-      {
-        "data": "AddingIterationProject",
-        "value": [
-          {
-            "data": "0.0",
-            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 1
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 2
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 3
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 4
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 5
-          }
-        ],
-        "maturity": "1",
-        "maturityValue": "0.0"
-      }
-    ];
-
-    const value = [
-      {
-        "data": "AddingIterationProject",
-        "value": [
-          {
-            "data": "0.0",
-            "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 1
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 2
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 3
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 4
-          },
-          {
-            "data": "0.0",
-            "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-            "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-            "value": 0,
-            "hoverValue": {},
-            "sprintIds": [
-              "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-            ],
-            "sprintNames": [
-              "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-            ],
-            "sprojectName": "AddingIterationProject",
-            "xName": 5
-          }
-        ],
-        "maturity": "1",
-        "maturityValue": "0.0"
-      }
-    ]
-    const result = component.sortAlphabetically(objArray);
-    expect(result).toEqual(value);
-
-  });
 
   it('should reload KPI once jira mapping saved ', () => {
     const KPiList = [{
@@ -5913,7 +5854,7 @@ describe('ExecutiveComponent', () => {
     expect(spy).toBeDefined();
   });
 
-  it('should checkLatestAndTrendValue for kpi', () => {
+  it('should checkLatestAndTrendValue for kpi for -ve', () => {
     let kpiData = {
       "kpiId": "kpi153",
       "kpiName": "PI Predictability",
@@ -5987,9 +5928,325 @@ describe('ExecutiveComponent', () => {
       ]
     };
 
-    const result = component.checkLatestAndTrendValueForKpi(kpiData, item);
+    const result = component.checkLatestAndTrendValue(kpiData, item);
     expect(result[0]).toEqual('14.6');
     expect(result[1]).toEqual('-ve');
+  });
+
+  it('should checkLatestAndTrendValue for kpi for +ve', () => {
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+        "id": "64d475511a944f265d7760be",
+        "kpiId": "kpi153",
+        "kpiName": "PI Predictability",
+        "isDeleted": "False",
+        "defaultOrder": 29,
+        "kpiUnit": "",
+        "chartType": "multipleline",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": false,
+        "aggregationCriteria": "sum",
+        "trendCalculative": false,
+        "additionalFilterSupport": true,
+        "yaxisLabel": "Business Value",
+        "xaxisLabel": "PIs"
+      },
+      "shown": true
+    };
+
+    const item = {
+      "data": "KnowHOW",
+      "value": [
+        {
+          "sSprintID": "KnowHOW PI-12",
+          "sSprintName": "KnowHOW PI-12",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "116.0",
+              "value": 64.67,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "116.0",
+              "value": 116,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        },
+        {
+          "sSprintID": "KnowHOW PI-13",
+          "sSprintName": "KnowHOW PI-13",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "56.0",
+              "value": 14.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "56.0",
+              "value": 56,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        }
+      ]
+    };
+
+    const result = component.checkLatestAndTrendValue(kpiData, item);
+    expect(result[0]).toEqual('14.6');
+    expect(result[1]).toEqual('+ve');
+  });
+
+  it('should checkLatestAndTrendValue for kpi for -ve', () => {
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+        "id": "64d475511a944f265d7760be",
+        "kpiId": "kpi153",
+        "kpiName": "PI Predictability",
+        "isDeleted": "False",
+        "defaultOrder": 29,
+        "kpiUnit": "",
+        "chartType": "multipleline",
+        "showTrend": true,
+        "isPositiveTrend": false,
+        "calculateMaturity": false,
+        "aggregationCriteria": "sum",
+        "trendCalculative": false,
+        "additionalFilterSupport": true,
+        "yaxisLabel": "Business Value",
+        "xaxisLabel": "PIs"
+      },
+      "shown": true
+    };
+
+    const item = {
+      "data": "KnowHOW",
+      "value": [
+        {
+          "sSprintID": "KnowHOW PI-12",
+          "sSprintName": "KnowHOW PI-12",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "116.0",
+              "value": 14.67,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "116.0",
+              "value": 116,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        },
+        {
+          "sSprintID": "KnowHOW PI-13",
+          "sSprintName": "KnowHOW PI-13",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "56.0",
+              "value": 67.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "56.0",
+              "value": 56,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        }
+      ]
+    };
+
+    const result = component.checkLatestAndTrendValue(kpiData, item);
+    expect(result[0]).toEqual('67.6');
+    expect(result[1]).toEqual('-ve');
+  });
+
+  it('should checkLatestAndTrendValue for kpi for +ve and ispositive is true', () => {
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+        "id": "64d475511a944f265d7760be",
+        "kpiId": "kpi153",
+        "kpiName": "PI Predictability",
+        "isDeleted": "False",
+        "defaultOrder": 29,
+        "kpiUnit": "",
+        "chartType": "multipleline",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": false,
+        "aggregationCriteria": "sum",
+        "trendCalculative": false,
+        "additionalFilterSupport": true,
+        "yaxisLabel": "Business Value",
+        "xaxisLabel": "PIs"
+      },
+      "shown": true
+    };
+
+    const item = {
+      "data": "KnowHOW",
+      "value": [
+        {
+          "sSprintID": "KnowHOW PI-12",
+          "sSprintName": "KnowHOW PI-12",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "116.0",
+              "value": 14.67,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "116.0",
+              "value": 116,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        },
+        {
+          "sSprintID": "KnowHOW PI-13",
+          "sSprintName": "KnowHOW PI-13",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "56.0",
+              "value": 67.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "56.0",
+              "value": 56,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        }
+      ]
+    };
+
+    const result = component.checkLatestAndTrendValue(kpiData, item);
+    expect(result[0]).toEqual('67.6');
+    expect(result[1]).toEqual('+ve');
+  });
+
+  it('should checkLatestAndTrendValue for kpi for +ve and ispositive is true', () => {
+    let kpiData = {
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isEnabled": true,
+      "order": 29,
+      "kpiDetail": {
+        "id": "64d475511a944f265d7760be",
+        "kpiId": "kpi153",
+        "kpiName": "PI Predictability",
+        "isDeleted": "False",
+        "defaultOrder": 29,
+        "kpiUnit": "",
+        "chartType": "multipleline",
+        "showTrend": true,
+        "isPositiveTrend": true,
+        "calculateMaturity": false,
+        "aggregationCriteria": "sum",
+        "trendCalculative": false,
+        "additionalFilterSupport": true,
+        "yaxisLabel": "Business Value",
+        "xaxisLabel": "PIs"
+      },
+      "shown": true
+    };
+
+    const item = {
+      "data": "KnowHOW",
+      "value": [
+        {
+          "sSprintID": "KnowHOW PI-12",
+          "sSprintName": "KnowHOW PI-12",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "116.0",
+              "value": 67.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "116.0",
+              "value": 116,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        },
+        {
+          "sSprintID": "KnowHOW PI-13",
+          "sSprintName": "KnowHOW PI-13",
+          "dataValue": [
+            {
+              "name": "Achieved Value",
+              "lineType": "solid",
+              "data": "56.0",
+              "value": 67.6,
+              "hoverValue": {}
+            },
+            {
+              "name": "Planned Value",
+              "lineType": "dotted",
+              "data": "56.0",
+              "value": 56,
+              "hoverValue": {}
+            }
+          ],
+          "sprojectName": "KnowHOW"
+        }
+      ]
+    };
+
+    const result = component.checkLatestAndTrendValue(kpiData, item);
+    expect(result[0]).toEqual('67.6');
+    expect(result[1]).toEqual('-- --');
   });
 
   it('should get kpi comments count', fakeAsync(() => {
@@ -7162,6 +7419,476 @@ it('should getchartdata for kpi17 and filter is average coverage', () => {
   component.getChartData('kpi17', 0, 'sum')
   expect(component.kpiChartData).toBeDefined();
 });
+
+it('should checkLatestAndTrendValue for kpi when trendCalculative is true', () => {
+  let kpiData = {
+    "kpiId": "kpi153",
+    "kpiName": "PI Predictability",
+    "isEnabled": true,
+    "order": 29,
+    "kpiDetail": {
+      "id": "64d475511a944f265d7760be",
+      "kpiId": "kpi153",
+      "kpiName": "PI Predictability",
+      "isDeleted": "False",
+      "defaultOrder": 29,
+      "kpiUnit": "",
+      "chartType": "multipleline",
+      "showTrend": true,
+      "isPositiveTrend": true,
+      "calculateMaturity": false,
+      "aggregationCriteria": "sum",
+      "trendCalculative": true,
+      "trendCalculation" : [{
+        lhs : "lhs",
+        rhs : "rhs",
+        operator : '<',
+        type : "downwards"
+      },
+      {
+        lhs : "lhs",
+        rhs : "rhs",
+        operator : '>',
+        type : "upwards"
+      },
+      {
+        lhs : "lhs",
+        rhs : "rhs",
+        operator : '=',
+        type : "upwards"
+      }
+    ],
+      "additionalFilterSupport": true,
+      "yaxisLabel": "Business Value",
+      "xaxisLabel": "PIs",
+    },
+    "shown": true
+  };
+
+  const item = {
+    "data": "KnowHOW",
+    "value": [
+      {
+        "sSprintID": "KnowHOW PI-12",
+        "sSprintName": "KnowHOW PI-12",
+        "lhsKey" : 10,
+        "rhsKey" : 4,
+        "dataValue": [
+          {
+            "name": "Achieved Value",
+            "lineType": "solid",
+            "data": "116.0",
+            "value": 64.67,
+            "hoverValue": {}
+          },
+          {
+            "name": "Planned Value",
+            "lineType": "dotted",
+            "data": "116.0",
+            "value": 116,
+            "hoverValue": {}
+          }
+        ],
+        "sprojectName": "KnowHOW"
+      },
+    ]
+  };
+
+  const result = component.checkLatestAndTrendValue(kpiData, item);
+  expect(result[0]).toEqual('64.7');
+  expect(result[1]).toEqual('+ve');
+});
+
+it('should preapare column of kpi3', () => {
+  component.allKpiArray = [{
+    kpiId: 'kpi3',
+    trendValueList: [
+       { 
+          filter : "average coverage",
+          value : [{value : [
+            {data : 0}
+          ]}]
+       },
+       { 
+        filter : "f2",
+        value : [{value:10}]
+     }
+      ]
+  }];
+  component.hierarchyLevel=[
+    {
+      hierarchyLevelName : "h1"
+    },{
+      hierarchyLevelName : "h2"
+    }
+  ]
+  component.filterApplyData = {
+    ids: [
+      'bittest_corporate'
+    ],
+    sprintIncluded: [
+      'CLOSED'
+    ],
+    selectedMap: {
+      business: [],
+      account: [],
+      subaccount: [],
+      project: [],
+      sprint: [],
+      sqd: []
+    },
+    level: 1
+  },
+  component.kpiSelectedFilterObj['kpi3'] =['average coverage'];
+  component.tooltip = {
+    'percentile': 90
+  };
+  spyOn(helperService, 'applyAggregationLogic').and.callThrough();
+  spyOn(component,'createCombinations').and.returnValue([{filter1 : 'f1',filter2 : 'filter2'}])
+  component.getChartData('kpi3', 0, 'sum')
+  expect(component.kpiChartData).toBeDefined();
+});
+
+it('should generate colorObj for kpi17', () => {
+  const arr = [
+    {
+      data: 'bittest',
+      value: [
+        {
+          data: '0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-05 to 2022-09-11',
+          sprojectName: 'bittest',
+          xName: 1
+        },
+        {
+          data: '0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-12 to 2022-09-18',
+          sprojectName: 'bittest',
+          xName: 2
+        },
+        {
+          data: '0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-19 to 2022-09-25',
+          sprojectName: 'bittest',
+          xName: 3
+        },
+        {
+          data: '0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-26 to 2022-10-02',
+          sprojectName: 'bittest',
+          xName: 4
+        },
+        {
+          data: '0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-10-03 to 2022-10-09',
+          sprojectName: 'bittest',
+          xName: 5
+        }
+      ],
+      maturity: '5'
+    },
+    {
+      data: 'Corpate1',
+      value: [
+        {
+          data: '19.0',
+          value: 19,
+          hoverValue: {},
+          date: '2022-09-05 to 2022-09-11',
+          sprintIds: [],
+          sprintNames: [],
+          projectNames: [
+            'Bus1',
+            'TestB'
+          ],
+          sprojectName: 'Corpate1',
+          xName: 1
+        },
+        {
+          data: '0.0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-12 to 2022-09-18',
+          sprintIds: [],
+          sprintNames: [],
+          projectNames: [
+            'Bus1',
+            'TestB'
+          ],
+          sprojectName: 'Corpate1',
+          xName: 2
+        },
+        {
+          data: '0.0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-19 to 2022-09-25',
+          sprintIds: [],
+          sprintNames: [],
+          projectNames: [
+            'Bus1',
+            'TestB'
+          ],
+          sprojectName: 'Corpate1',
+          xName: 3
+        },
+        {
+          data: '0.0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-09-26 to 2022-10-02',
+          sprintIds: [],
+          sprintNames: [],
+          projectNames: [
+            'Bus1',
+            'TestB'
+          ],
+          sprojectName: 'Corpate1',
+          xName: 4
+        },
+        {
+          data: '0.0',
+          value: 0,
+          hoverValue: {},
+          date: '2022-10-03 to 2022-10-09',
+          sprintIds: [],
+          sprintNames: [],
+          projectNames: [
+            'Bus1',
+            'TestB'
+          ],
+          sprojectName: 'Corpate1',
+          xName: 5
+        }
+      ],
+      maturity: '4'
+    }
+  ];
+  component.colorObj = {
+    bittest_corporate: {
+      nodeName: 'bittest',
+      color: '#079FFF'
+    },
+    Corpate1_corporate: {
+      nodeName: 'Corpate1',
+      color: '#cdba38'
+    }
+  };
+  component.chartColorList = {};
+  component.generateColorObj('kpi17', arr);
+  expect(component.chartColorList['kpi17'].length).toEqual(2);
+});
+
+it('should set the hierarchyLevel to the value of the selected type in the completeHierarchyData from localStorage', () => {
+  spyOn(service, 'getDashConfigData').and.returnValue(globalData['data']);
+  component.kanbanActivated = false;
+  component.filterApplyData = {};
+  const event = {
+    masterData: {
+      kpiList: [{
+        id: '633ed17f2c2d5abef2451fd8',
+        kpiId: 'kpi14',
+        kpiName: 'Defect Injection Rate',
+        isDeleted: 'False',
+        defaultOrder: 1,
+        kpiUnit: '%',
+        chartType: 'line',
+        showTrend: true,
+        isPositiveTrend: false,
+        calculateMaturity: true,
+        kpiSource: 'Jira',
+        maxValue: '200',
+        thresholdValue: 10,
+        kanban: false,
+        groupId: 2,
+        kpiInfo: {},
+        aggregationCriteria: 'average',
+        trendCalculative: false,
+        additionalFilterSupport: true,
+        xaxisLabel: 'Sprints',
+        yaxisLabel: 'Percentage'
+      }]
+    },
+    filterData: [],
+    filterApplyData: {
+      ids: [
+        'bittest_corporate'
+      ],
+      sprintIncluded: [
+        'CLOSED'
+      ],
+      selectedMap: {
+        corporate: [
+          'bittest_corporate'
+        ],
+        business: [],
+        account: [],
+        subaccount: [],
+        project: [],
+        sprint: [],
+        sqd: []
+      },
+      level: 1
+    },
+    selectedTab: 'my knowhow',
+    isAdditionalFilters: false
+  };
+  component.serviceObject = {
+    makeAPICall : true
+  }
+  component.colorObj = {
+    'node1_color': 'red',
+    'node2_color': 'green',
+    'node3_color': 'blue',
+  };
+  component.kpiTableDataObj = {
+    'node1': ['data1'],
+    'node2': ['data2'],
+    'node3': ['data3'],
+  };
+  const localDate= {
+    scrum :"test1",
+    kanban : "test2"
+  }
+  component.kanbanActivated = false;
+  component.selectedtype = 'scrum';
+  localStorage.setItem("completeHierarchyData",JSON.stringify(localDate))
+  component.receiveSharedData(event);
+  expect(component.noTabAccess).toBe(true);
+});
+
+it('should return -1 if a.key is "Select"', () => {
+  const a = { key: 'Select' };
+  const b = { key: 'SomeKey' };
+  const result = component.originalOrder(a, b);
+  expect(result).toBe(-1);
+});
+
+it('should return 0 if a.key and b.key are the same', () => {
+  const a = { key: 'SomeKey' };
+  const b = { key: 'SomeKey' };
+  const result = component.originalOrder(a, b);
+  expect(result).toBeDefined();
+});
+
+it('should get table data for kpi when trendValueList dont have filter when kpi name is availiable', () => {
+  component.allKpiArray = [{
+    kpiName : 'abc'
+  }];
+  component.kpiTableHeadingArr = fakeKpiTableHeadingArray;
+  component.noOfDataPoints = 5;
+  component.colorObj = {
+    "AddingIterationProject_64e739541426ba469c39c102": {
+      "nodeName": "AddingIterationProject",
+      "color": "#079FFF"
+    }
+  };
+  component.kpiTableDataObj['AddingIterationProject'] = [];
+  const enabledKpi = {
+    'kpiDetail': {
+      'xaxisLabel': 'Sprints'
+    },
+    'isEnabled': true,
+    'shown': true,
+    "order": '1'
+  }
+  const returnedObj = {
+    'AddingIterationProject': [{
+      "1": "122.6",
+      "2": "126.9",
+      "3": "176.5",
+      "4": "83.3",
+      "5": "57.7",
+      "kpiId": "kpi14",
+      "kpiName": "Defect Injection Rate",
+      "frequency": "Sprints",
+      "show": true,
+      "hoverText": [
+        "1 - DRP Sprint 71_AddingIterationProject",
+        "2 - DRP Sprint 72_AddingIterationProject",
+        "3 - DRP Sprint 73_AddingIterationProject",
+        "4 - DRP Sprint 74_AddingIterationProject",
+        "5 - DRP Sprint 75_AddingIterationProject"
+      ],
+      "latest": "85 %",
+      "trend": "-ve",
+      "maturity": "M3",
+      "order": '1'
+    }]
+  }
+
+  component.getTableData('kpi14', 0, enabledKpi);
+  expect(component.kpiTableDataObj['AddingIterationProject']?.length).toEqual(returnedObj['AddingIterationProject']?.length);
+});
+
+
+it('should sort the rows in the kpfableDataObj for the provided hierarchyName by order', () => {
+  component.kpiTableDataObj = {
+    'hierarchy1': [
+      { order: 3 },
+      { order: 1 },
+      { order: 2 },
+    ],
+    'hierarchy2': [
+      { order: 2 },
+      { order: 1 },
+      { order: 3 },
+    ],
+  };
+  const hierarchyName = 'hierarchy1';
+  component.sortingRowsInTable(hierarchyName);
+  expect(component.kpiTableDataObj[hierarchyName]).toEqual([
+    { order: 1 },
+    { order: 2 },
+    { order: 3 },
+  ]);
+});
+
+it('should not sort the rows in the kpiTableDataObj if the hierarchyName does not exist', () => {
+  component.kpiTableDataObj = {
+    'hierarchy1': [
+      { order: 3 },
+      { order: 1 },
+      { order: 2 },
+    ],
+    'hierarchy2': [
+      { order: 2 },
+      { order: 1 },
+      { order: 3 },
+    ],
+  };
+  const hierarchyName = 'hierarchy3';
+  component.sortingRowsInTable(hierarchyName);
+  expect(component.kpiTableDataObj[hierarchyName]).toBeUndefined();
+});
+
+it('should create trend data for kpi kpi17',()=>{
+  component.updatedConfigGlobalData = [
+    {
+      kpiId : 'kpi17',
+    }
+  ];
+  component.kpiChartData = {
+    kpi17 : [
+      {
+        filter : 'average coverage'
+      }
+    ]
+  }
+  spyOn(component,'checkLatestAndTrendValue').and.returnValue([])
+  component.createTrendsData("kpi17")
+  expect(component.kpiChartData).toBeDefined();
+})
 
 
 

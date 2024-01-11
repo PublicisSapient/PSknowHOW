@@ -139,11 +139,15 @@ public class JobListenerKanban extends JobExecutionListenerSupport {
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
 			handler.sendEmailToProjectAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
-							+ " for \"" + projectBasicConfig.getProjectName() + "\"",
+							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getStackTrace(stepFaliureException), projectId);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
+	}
+
+	private static String getProjectName(ProjectBasicConfig projectBasicConfig) {
+		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
 	}
 
 	private void setExecutionInfoInTraceLog(boolean status) {
