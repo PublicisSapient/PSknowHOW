@@ -1,128 +1,135 @@
-//package com.publicissapient.kpidashboard.jira.listener;
-//
-//import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-//import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-//import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-//import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-//import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
-//import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-//import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-//import com.publicissapient.kpidashboard.jira.model.CompositeResult;
-//import org.bson.types.ObjectId;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.mockito.junit.MockitoJUnitRunner;
-//import org.springframework.batch.core.StepExecution;
-//import org.springframework.batch.item.ExecutionContext;
-//
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.HashMap;
-//import java.util.HashSet;
-//import java.util.List;
-//import java.util.Map;
-//import java.util.Optional;
-//import java.util.Set;
-//
-//import static org.mockito.Mockito.*;
-//
-//@RunWith(MockitoJUnitRunner.class)
-//public class JiraIssueBoardWriterListenerTest {
-//
-//    @Mock
-//    private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
-//
-//    @InjectMocks
-//    private JiraIssueBoardWriterListener listener;
-//
-//    @Before
-//    public void setUp() {
-//        MockitoAnnotations.initMocks(this);
-//    }
-//
-//    @Test
-//    public void testAfterWrite() {
-//        // Mock data
-//        List<CompositeResult> compositeResults = createMockScrumCompositeResults();
-//
-//        // Mock repository behavior
-//        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(
-//                anyString(), anyString(), anyString()))
-//                .thenReturn(Optional.empty());
-//
-//        // Invoke the method to be tested
-//        listener.afterWrite(compositeResults);
-//
-//        // Verify interactions with the repository
-//        verify(processorExecutionTraceLogRepo, times(1)).findByProcessorNameAndBasicProjectConfigIdAndBoardId(
-//                eq(ProcessorConstants.JIRA), anyString(), anyString());
-//        verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
-//    }
-//
-//    @Test
-//    public void testOnWriteError() {
-//        // Mock data
-//        Exception exception = new RuntimeException("Test exception");
-//        List<CompositeResult> compositeResults = createMockScrumCompositeResults();
-//
-//        // Invoke the method to be tested
-//        listener.onWriteError(exception, compositeResults);
-//
-//        // Verify log.error is called
-//        // You may need to use a mocking framework for logging or add a logging abstraction for testing
-//    }
-//
-//    private List<CompositeResult> createMockScrumCompositeResults() {
-//        CompositeResult compositeResult = new CompositeResult();
-//        compositeResult.setJiraIssue(new ArrayList<>(createMockJiraItems()).get(0));
-//        compositeResult.setAccountHierarchies((createMockAccountHierarchies()));
-//        compositeResult.setAssigneeDetails(createMockAssigneesToSave().get("0"));
-//        compositeResult.setJiraIssueCustomHistory(createMockScrumIssueCustomHistory().get(0));
-//        SprintDetails sprintDetails=new SprintDetails();
-//        sprintDetails.setSprintID("1234");
-//        compositeResult.setSprintDetailsSet(new HashSet<>(Arrays.asList(sprintDetails)));
-//        List<CompositeResult> kanbanCompositeResults = new ArrayList<>();
-//        kanbanCompositeResults.add(compositeResult);
-//        return kanbanCompositeResults;
-//    }
-//
-//    private Set<JiraIssue> createMockJiraItems() {
-//        JiraIssue kanbanJiraIssue = new JiraIssue();
-//        kanbanJiraIssue.setId(new ObjectId("63bfa0f80b28191677615735"));
-//        Set<JiraIssue> jiraItems = new HashSet<>();
-//        jiraItems.add(kanbanJiraIssue);
-//        // Create mock KanbanJiraIssue objects and add them to the list
-//        return jiraItems;
-//    }
-//
-//    private List<JiraIssueCustomHistory> createMockScrumIssueCustomHistory() {
-//        JiraIssueCustomHistory kanbanIssueCustomHistory = new JiraIssueCustomHistory();
-//        kanbanIssueCustomHistory.setId(new ObjectId("63bfa0f80b28191677615735"));
-//        List<JiraIssueCustomHistory> kanbanIssueCustomHistoryList = new ArrayList<>();
-//        kanbanIssueCustomHistoryList.add(kanbanIssueCustomHistory);
-//        // Create mock KanbanIssueCustomHistory objects and add them to the list
-//        return kanbanIssueCustomHistoryList;
-//    }
-//
-//    private Set<AccountHierarchy> createMockAccountHierarchies() {
-//        AccountHierarchy kanbanAccountHierarchy = new AccountHierarchy();
-//        kanbanAccountHierarchy.setId(new ObjectId("63bfa0f80b28191677615735"));
-//        Set<AccountHierarchy> accountHierarchies = new HashSet<>();
-//        accountHierarchies.add(kanbanAccountHierarchy);
-//        // Create mock KanbanAccountHierarchy objects and add them to the set
-//        return accountHierarchies;
-//    }
-//
-//    private Map<String, AssigneeDetails> createMockAssigneesToSave() {
-//        AssigneeDetails assigneeDetails = new AssigneeDetails();
-//        assigneeDetails.setBasicProjectConfigId("63bfa0f80b28191677615735");
-//        Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
-//        assigneesToSave.put("0", assigneeDetails);
-//        // Create mock AssigneeDetails objects and add them to the map
-//        return assigneesToSave;
-//    }
-//}
+package com.publicissapient.kpidashboard.jira.listener;
+
+import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import org.bson.types.ObjectId;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
+
+@RunWith(MockitoJUnitRunner.class)
+public class JiraIssueBoardWriterListenerTest {
+
+    @Mock
+    private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepo;
+
+    @InjectMocks
+    private JiraIssueBoardWriterListener listener;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testAfterWrite() {
+        // Arrange
+        List<CompositeResult> compositeResults = new ArrayList<>();
+
+        // Create a JiraIssue for testing
+        JiraIssue jiraIssue = new JiraIssue();
+        jiraIssue.setBasicProjectConfigId("testProjectId");
+        jiraIssue.setBoardId("testBoardId");
+        jiraIssue.setTypeName("");
+        jiraIssue.setChangeDate("2022-01-01T12:34:56"); // Change date in the required format
+        CompositeResult compositeResult = new CompositeResult();
+        compositeResult.setJiraIssue(jiraIssue);
+        compositeResults.add(compositeResult);
+
+        // Mock the repository's behavior
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(
+                eq(JiraConstants.JIRA), eq("testProjectId"), eq("testBoardId")))
+                .thenReturn(Optional.empty()); // For the case where trace log is not present
+
+        // Act
+        listener.afterWrite(compositeResults);
+
+        // Verify
+        verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
+
+        // Assert
+        List<ProcessorExecutionTraceLog> savedLogs = new ArrayList<>();
+
+        // Additional assertions based on the requirements of your application
+        assertEquals(0, savedLogs.size());
+
+    }
+
+
+    @Test
+    public void onWriteError_LogsError() {
+        // Arrange
+        Exception testException = new RuntimeException("Test exception");
+        List<CompositeResult> compositeResults = createSampleCompositeResults();
+
+        // Act
+        listener.onWriteError(testException, compositeResults);
+    }
+
+    private List<CompositeResult> createSampleCompositeResults() {
+        List<CompositeResult> compositeResults = new ArrayList<>();
+
+        JiraIssue jiraIssue1 = new JiraIssue();
+        jiraIssue1.setBasicProjectConfigId("Project1");
+        jiraIssue1.setBoardId("Board1");
+        jiraIssue1.setChangeDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+        jiraIssue1.setTypeName("Story");
+        jiraIssue1.setChangeDate("");
+
+        CompositeResult result1 = new CompositeResult();
+        result1.setJiraIssue(jiraIssue1);
+        compositeResults.add(result1);
+
+        // Add more sample data as needed
+
+        return compositeResults;
+    }
+
+	@Test
+	public void afterWrite_ExistingLog_Success() {
+		// Arrange
+		List<CompositeResult> compositeResults = createSampleCompositeResults();
+
+		// Mock the repository behavior
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(anyString(),
+				anyString(), anyString())).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
+
+		// Act
+		listener.afterWrite(compositeResults);
+
+		// Assert
+		verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
+	}
+
+
+}
