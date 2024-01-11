@@ -18,24 +18,17 @@
 
 package com.publicissapient.kpidashboard.jira.client;
 
-import com.atlassian.httpclient.api.HttpClient;
-import com.atlassian.httpclient.api.Request;
-import com.atlassian.httpclient.api.ResponsePromise;
-import com.atlassian.httpclient.api.ResponseTransformation;
-import com.atlassian.jira.rest.client.internal.async.DisposableHttpClient;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.atlassian.jira.rest.client.internal.async.DisposableHttpClient;
 
 public class ProcessorAsynchJiraRestClientTest {
 
