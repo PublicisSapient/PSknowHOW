@@ -56,12 +56,8 @@ public class JiraIssueReleaseStatusTasklet implements Tasklet {
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public JiraIssueReleaseStatusTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
