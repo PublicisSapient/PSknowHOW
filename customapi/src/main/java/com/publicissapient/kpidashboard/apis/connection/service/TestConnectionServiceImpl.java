@@ -255,14 +255,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
+			} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
 				isValid = testConnectionForRepoTools(apiUrl, password, connection);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			}
-		else {
-			isValid = testConnection(connection, toolName, apiUrl, password, false);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		}
+			} else {
+				isValid = testConnection(connection, toolName, apiUrl, password, false);
+				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+      }
 		}
 		return statusCode;
 	}
@@ -413,13 +412,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private HttpStatus getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
 			boolean isSonarWithAccessToken) {
-		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithAuthentication(username, password, isSonarWithAccessToken);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
@@ -440,13 +438,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	}
 
 	private HttpStatus getApiResponseWithBearer(String pat, String apiUrl) {
-		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithBearer(pat);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();

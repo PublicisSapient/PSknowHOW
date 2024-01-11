@@ -24,6 +24,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import { HttpService } from './http.service';
 import { ExcelService } from './excel.service';
 import { SharedService } from './shared.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Injectable()
 export class HelperService {
@@ -568,4 +569,43 @@ export class HelperService {
     windowReload(){
         window.location.reload();
     }
+
+   
+    drop(event: CdkDragDrop<string[]>,updatedContainer,navigationTabs,upDatedConfigData,configGlobalData,extraKpis?) {
+        if (event?.previousIndex !== event.currentIndex) {
+            moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+            if(updatedContainer.width === 'half'){
+            const updatedTabsDetails = navigationTabs.find(tabs=>tabs['label'].toLowerCase() === updatedContainer['label'].toLowerCase());
+            updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'],...updatedTabsDetails['kpiPart2'],...updatedTabsDetails['fullWidthKpis']];
+            }
+            upDatedConfigData = [];
+            navigationTabs.forEach(tabs=>{
+            upDatedConfigData  = upDatedConfigData.concat(tabs['kpis']);
+            })
+            upDatedConfigData.map((kpi, index) => kpi.order = index + 3);
+            const disabledKpis = configGlobalData.filter(item => item.shown && !item.isEnabled);
+            disabledKpis.map((kpi, index) => kpi.order = upDatedConfigData.length + index + 3);
+            const hiddenkpis = configGlobalData.filter(item => !item.shown);
+            hiddenkpis.map((kpi, index) => kpi.order = upDatedConfigData.length + disabledKpis.length + index + 3);
+            if(extraKpis){
+                console.log(extraKpis)
+                this.sharedService.kpiListNewOrder.next([extraKpis,...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            }else{
+                console.log('without extra container')
+                this.sharedService.kpiListNewOrder.next([...upDatedConfigData, ...disabledKpis, ...hiddenkpis]);
+            }
+            
+        }
+     }
+
+     createCombinations(arr1, arr2) {
+        let arr = [];
+        for (let i = 0; i < arr1?.length; i++) {
+          for (let j = 0; j < arr2?.length; j++) {
+            arr.push({ filter1: arr1[i], filter2: arr2[j] });
+          }
+        }
+        return arr;
+      }
+    
 }

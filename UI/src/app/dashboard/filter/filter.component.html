@@ -308,7 +308,6 @@
    <div class="filter-nav">
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'release' && selectedTab?.toLowerCase() !== 'dora'">
          <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-            <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
                <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
@@ -395,7 +394,6 @@
             </div>
 
             <!-- Download button start -->
-            <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
                *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
                id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart || noProjects}"
