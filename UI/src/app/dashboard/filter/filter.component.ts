@@ -450,21 +450,22 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.navigateToSelectedTab();
   }
 
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-    }
-    return uniqueArray;
-  }
+  /** moved to service layer */ 
+  // makeUniqueArrayList(arr) {
+  //   let uniqueArray = [];
+  //   for (let i = 0; i < arr?.length; i++) {
+  //     const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+  //     if (idx == -1) {
+  //       uniqueArray = [...uniqueArray, arr[i]];
+  //       uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+  //     } else {
+  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+  //     }
+  //   }
+  //   return uniqueArray;
+  // }
 
   getFilterDataOnLoad() {
     if (this.filterKpiRequest && this.filterKpiRequest !== '') {
@@ -503,7 +504,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         let arr = this.filterData.filter((x) => x.labelName.toLowerCase() === this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase());
         if (arr?.length > 0) {
           arr = this.sortAlphabetically(arr);
-          arr = this.makeUniqueArrayList(arr);
+          arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
@@ -1021,7 +1022,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   handleSelect(event) {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-    this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+    this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId?.toLowerCase() === event?.toLowerCase()));
     this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
@@ -1111,7 +1112,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
       this.setTrendValueFilter();
       this.service.setSelectedLevel(this.hierarchyLevels[this.hierarchyLevels.length - 1]);
       this.service.setSelectedTrends([this.trendLineValueList[0]]);
@@ -1155,7 +1156,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let projectIndex = 0;
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
 
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
@@ -1483,7 +1484,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (Object.keys(selectedLevel).length > 0) {
           this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
           this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+          this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
         }
         this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
         const selectedTrends = this.service.getSelectedTrends();

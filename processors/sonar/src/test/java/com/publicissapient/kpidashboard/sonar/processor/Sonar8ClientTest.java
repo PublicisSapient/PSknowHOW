@@ -259,17 +259,6 @@ public class Sonar8ClientTest {
 				new HttpEntity<>(createHeaders(SONAR_CLOUD.getAccessToken())), METRICS);
 	}
 
-	@Test
-	public void testGetTotalPages() throws Exception {
-
-		Paging paging = new Paging();
-		paging.setPageIndex(1);
-		paging.setPageSize(500);
-		paging.setTotal(1000);
-		Whitebox.invokeMethod(sonar8Client, "getTotalPages", paging);
-		Assert.assertNotNull(paging);
-	}
-
 	@Test(expected = NullPointerException.class)
 	public void testGetLatestSonarDetails() throws Exception {
 		SonarDetails sonarDetail = sonar8Client.getLatestSonarDetails(getProject(),

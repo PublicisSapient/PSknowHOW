@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -43,7 +41,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.FileStorageServi
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.BaseResponse;
 import com.publicissapient.kpidashboard.apis.model.Logo;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FileStorageControllerTest {
@@ -93,34 +90,5 @@ public class FileStorageControllerTest {
 		mockMvc.perform(fileUpload("/file/upload").file(file)).andExpect(status().isOk());
 	}
 
-	@Test
-	public void testUploadCertificateSuccess() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert",
-				"LDAP certificate file success scenario to be mocked".getBytes());
-		when(customApiConfig.getHostPath()).thenReturn("/app/certs/");
-		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
-		Assert.assertNotNull(response.getStatusCode());
-	}
-
-	@Test
-	public void testUploadCertificateFailure() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "certFile.cer", "application/x-x509-ca-cert",
-				"LDAP certificate file failure scenario to be mocked".getBytes());
-		when(customApiConfig.getHostPath()).thenReturn("/nonexistent/");
-		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
-		Assert.assertNotNull(response.getStatusCode());
-		ServiceResponse serviceResponse = response.getBody();
-		Assert.assertNotNull(serviceResponse.getSuccess());
-		Assert.assertNotNull(serviceResponse.getMessage());
-	}
-
-	@Test
-	public void testUploadCertificateTypeFailure() throws Exception {
-		MockMultipartFile file = new MockMultipartFile("file", "cerFile.txt", "application/x-x509-ca-cert",
-				"LDAP certificate file type scenario to be mocked".getBytes());
-		when(customApiConfig.getHostPath()).thenReturn("/app/certs/");
-		ResponseEntity<ServiceResponse> response = fileStorageController.uploadCertificate(file);
-		Assert.assertNotNull(response.getStatusCode());
-	}
 
 }

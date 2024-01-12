@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package com.publicissapient.kpidashboard.apis.data;
+package com.publicissapient.kpidashboard.apis.mongock.data;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.KpiCategoryMapping;
+import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,24 +36,23 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SuppressWarnings("java:S1075")
-public class KpiCategoryMappingDataFactory {
-
-	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_category_mapping.json";
-	private List<KpiCategoryMapping> kpiCategoryMappingList;
+public class KpiDefinationDataFactory {
+	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
+	private List<KpiMaster> kpiList;
 	private ObjectMapper mapper;
 
-	private KpiCategoryMappingDataFactory() {
+	private KpiDefinationDataFactory() {
 	}
 
-	public static KpiCategoryMappingDataFactory newInstance(String filePath) {
+	public static KpiDefinationDataFactory newInstance(String filePath) {
 
-		KpiCategoryMappingDataFactory factory = new KpiCategoryMappingDataFactory();
+		KpiDefinationDataFactory factory = new KpiDefinationDataFactory();
 		factory.createObjectMapper();
 		factory.init(filePath);
 		return factory;
 	}
 
-	public static KpiCategoryMappingDataFactory newInstance() {
+	public static KpiDefinationDataFactory newInstance() {
 
 		return newInstance(null);
 	}
@@ -63,8 +62,8 @@ public class KpiCategoryMappingDataFactory {
 
 			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
 
-			kpiCategoryMappingList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<KpiCategoryMapping>>() {
+			kpiList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<KpiMaster>>() {
 					});
 		} catch (IOException e) {
 			log.error("Error in reading account hierarchies from file = " + filePath, e);
@@ -82,8 +81,11 @@ public class KpiCategoryMappingDataFactory {
 		}
 	}
 
-	public List<KpiCategoryMapping> getKpiCategoryMappingList() {
-		return kpiCategoryMappingList;
+	public List<KpiMaster> getKpiList() {
+		return kpiList;
 	}
 
+	public List<KpiMaster> getSpecificKpis(List<String> kpis) {
+		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
+	}
 }

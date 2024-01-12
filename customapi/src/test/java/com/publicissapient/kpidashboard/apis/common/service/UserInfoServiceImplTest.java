@@ -27,6 +27,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -382,6 +383,34 @@ public class UserInfoServiceImplTest {
 		assertTrue(result.getSuccess());
 	}
 
+	@Test
+	public void validateUpdateUserRole_UserNotFound() {
+		ProjectsAccess pa = new ProjectsAccess();
+		pa.setRole("Role");
+		pa.setAccessNodes(new ArrayList<>());
+
+		List<ProjectsAccess> paList = new ArrayList<>();
+		paList.add(pa);
+
+		UserInfo testUser = new UserInfo();
+		testUser.setUsername("User");
+		testUser.setAuthType(AuthType.SSO);
+		testUser.setAuthorities(Arrays.asList("ROLE_VIEWER"));
+		testUser.setProjectsAccess(paList);
+
+		UserInfo u = new UserInfo();
+		u.setProjectsAccess(paList);
+		u.setUsername("user");
+		u.setAuthType(AuthType.SSO);
+
+		when(userInfoRepository.findByUsername("User")).thenReturn(null);
+		when(userInfoRepository.save(any())).thenReturn(testUser);
+		when(projectAccessManager.updateAccessOfUserInfo(any(UserInfo.class), any(UserInfo.class)))
+				.thenReturn(testUser);
+		ServiceResponse result = service.updateUserRole("User", u);
+		assertTrue(result.getSuccess());
+	}
+
 	/**
 	 * method to test deleteUser() ;
 	 * <p>
@@ -428,4 +457,28 @@ public class UserInfoServiceImplTest {
 		assertNotNull(userDetailsResponseDTO);
 	}
 
+	@Test
+	public void getOrSaveDefaultUser() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.count()).thenReturn(1l);
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfoDTO userInfo = service.getOrSaveDefaultUserInfo("user", AuthType.STANDARD, "email");
+		assertNotNull(userInfo);
+	}
+
+	@Test
+	public void getOrSaveUserInfo() {
+		UserInfo user = new UserInfo();
+		user.setUsername("testUser");
+		user.setAuthType(AuthType.STANDARD);
+		user.setAuthorities(Lists.newArrayList("ROLE_SUPERADMIN"));
+		user.setEmailAddress("email");
+		when(userInfoRepository.save(any())).thenReturn(user);
+		UserInfo userInfo = service.getOrSaveUserInfo("user", AuthType.STANDARD, new ArrayList<>());
+		assertNotNull(userInfo);
+	}
 }

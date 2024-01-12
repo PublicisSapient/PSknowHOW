@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.publicissapient.kpidashboard.apis.data;
+
+package com.publicissapient.kpidashboard.apis.mongock.data;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
+import com.publicissapient.kpidashboard.common.model.application.KpiColumnConfig;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,23 +36,24 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @SuppressWarnings("java:S1075")
-public class KpiDefinationDataFactory {
-	private static final String FILE_PATH_KPI_LIST = "/json/mongock/default/kpi_master.json";
-	private List<KpiMaster> kpiList;
+public class KpiColumnConfigDataFactory {
+	private static final String FILE_PATH_KPI_COL_CONFIG = "/json/mongock/default/project_kpi_column_config.json";
+	private List<KpiColumnConfig> kpiColumnConfigs;
 	private ObjectMapper mapper;
 
-	private KpiDefinationDataFactory() {
+	private KpiColumnConfigDataFactory() {
+
 	}
 
-	public static KpiDefinationDataFactory newInstance(String filePath) {
+	public static KpiColumnConfigDataFactory newInstance(String filePath) {
 
-		KpiDefinationDataFactory factory = new KpiDefinationDataFactory();
+		KpiColumnConfigDataFactory factory = new KpiColumnConfigDataFactory();
 		factory.createObjectMapper();
 		factory.init(filePath);
 		return factory;
 	}
 
-	public static KpiDefinationDataFactory newInstance() {
+	public static KpiColumnConfigDataFactory newInstance() {
 
 		return newInstance(null);
 	}
@@ -60,13 +61,13 @@ public class KpiDefinationDataFactory {
 	private void init(String filePath) {
 		try {
 
-			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_LIST : filePath;
+			String resultPath = StringUtils.isEmpty(filePath) ? FILE_PATH_KPI_COL_CONFIG : filePath;
 
-			kpiList = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
-					new TypeReference<List<KpiMaster>>() {
+			kpiColumnConfigs = mapper.readValue(TypeReference.class.getResourceAsStream(resultPath),
+					new TypeReference<List<KpiColumnConfig>>() {
 					});
 		} catch (IOException e) {
-			log.error("Error in reading account hierarchies from file = " + filePath, e);
+			log.error("Error in reading project basic config from file = " + filePath, e);
 		}
 	}
 
@@ -77,15 +78,11 @@ public class KpiDefinationDataFactory {
 			mapper.registerModule(new JavaTimeModule());
 			mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
 		}
+
 	}
 
-	public List<KpiMaster> getKpiList() {
-		return kpiList;
-	}
-
-	public List<KpiMaster> getSpecificKpis(List<String> kpis) {
-		return kpiList.stream().filter(master -> kpis.contains(master.getKpiId())).collect(Collectors.toList());
+	public List<KpiColumnConfig> getKpiColumnConfigs() {
+		return kpiColumnConfigs;
 	}
 }

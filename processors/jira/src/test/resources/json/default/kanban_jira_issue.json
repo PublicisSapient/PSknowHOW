@@ -263,7 +263,7 @@
     "assigneeName": "testUser3",
     "jiraStatus": "Closed",
     "timeSpentInMinutes": 30,
-    "basicProjectConfigId": "6335368249794a18e8a4479f",
+    "basicProjectConfigId": "63c04dc7b7617e260763ca4e",
     "productionDefect": false,
     "_class": "com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue"
   },
