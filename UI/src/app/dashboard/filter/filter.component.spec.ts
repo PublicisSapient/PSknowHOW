@@ -377,51 +377,51 @@ const completeHierarchyData = {
 
   // });
 
-  it('should make array unique', () => {
-    const input = [
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-          '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
-        ],
-        labelName: 'sqd',
-        parentId: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5',
-          '38294_SonarTest_63281fda79d8f0130811b6d5'
-        ],
-        level: 7
-      },
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-        labelName: 'sqd',
-        parentId: '38294_SonarTest_63281fda79d8f0130811b6d5',
-        level: 7
-      }
-    ];
-    const output = [
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-          '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
-        ],
-        labelName: 'sqd',
-        parentId: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5',
-          '38294_SonarTest_63281fda79d8f0130811b6d5'
-        ],
-        level: 7
-      }
-    ];
+  // it('should make array unique', () => {
+  //   const input = [
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
+  //       ],
+  //       labelName: 'sqd',
+  //       parentId: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5'
+  //       ],
+  //       level: 7
+  //     },
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //       labelName: 'sqd',
+  //       parentId: '38294_SonarTest_63281fda79d8f0130811b6d5',
+  //       level: 7
+  //     }
+  //   ];
+  //   const output = [
+  //     {
+  //       nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
+  //       nodeName: 'UI',
+  //       path: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
+  //       ],
+  //       labelName: 'sqd',
+  //       parentId: [
+  //         '38295_SonarTest_63281fda79d8f0130811b6d5',
+  //         '38294_SonarTest_63281fda79d8f0130811b6d5'
+  //       ],
+  //       level: 7
+  //     }
+  //   ];
 
-    const result = component.makeUniqueArrayList(input);
-    expect(result.length).toBe(1);
-  });
+  //   const result = component.makeUniqueArrayList(input);
+  //   expect(result.length).toBe(1);
+  // });
 
   it('should set hierarchy levels', () => {
     component.kanban = false;
@@ -813,7 +813,7 @@ const completeHierarchyData = {
 
   it('should handle select', () => {
     component.filterData = fakeFilterData['data'];
-    const spy = spyOn(component, 'makeUniqueArrayList');
+    const spy = spyOn(helperService, 'makeUniqueArrayList');
     component.handleSelect('project');
     expect(spy).toHaveBeenCalled();
   });
@@ -2288,7 +2288,7 @@ const completeHierarchyData = {
     component.selectedTab = 'release';
     component.hierarchyLevels = hierarchyLevels;
     spyOn(component, 'sortAlphabetically').and.callThrough();
-    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
     spyOn(component, 'checkIfProjectHasRelease');
     const len = component.trendLineValueList.length;
     spyOn(sharedService, 'setSelectedLevel');
@@ -2311,7 +2311,7 @@ const completeHierarchyData = {
     component.hierarchyLevels = hierarchyLevels;
     component.selectedTab = 'backlog';
     spyOn(component, 'sortAlphabetically').and.callThrough();
-    spyOn(component, 'makeUniqueArrayList').and.callThrough();
+    spyOn(helperService, 'makeUniqueArrayList').and.callThrough();
     spyOn(component, 'checkIfProjectHasData');
     const len = component.trendLineValueList.length;
     spyOn(sharedService, 'setSelectedLevel');

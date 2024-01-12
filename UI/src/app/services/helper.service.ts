@@ -607,5 +607,21 @@ export class HelperService {
         }
         return arr;
       }
+
+      makeUniqueArrayList(arr) {
+        let uniqueArray = [];
+        for (let i = 0; i < arr?.length; i++) {
+          const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+          if (idx == -1) {
+            uniqueArray = [...uniqueArray, arr[i]];
+            uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+            uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+          } else {
+            uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+            uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+          }
+        }
+        return uniqueArray;
+      }
     
 }
