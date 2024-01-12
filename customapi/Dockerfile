@@ -1,15 +1,14 @@
 # Use a base image
 FROM psknowhow/amazoncorretto:8.1
 
-# Change bash as default
-RUN ln -sf /bin/bash /bin/sh
-
 # Set a non-root user
-ARG USER=myuser
+ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
 
-RUN groupadd -g $GID $USER \
+RUN yum install -y shadow-utils \
+    && ln -sf /bin/bash /bin/sh \ 
+    && groupadd -g $GID $USER \
     && useradd -u $UID -g $GID -m -s /bin/bash $USER
 
 # Set the environment variables
