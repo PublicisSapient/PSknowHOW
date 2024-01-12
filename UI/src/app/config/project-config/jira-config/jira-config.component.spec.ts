@@ -1774,4 +1774,75 @@ describe('JiraConfigComponent', () => {
     component.getJenkinsJobNames(connectionId);
     expect(spy).toHaveBeenCalled();
   })
+
+  it('should give error while getting connection list', () => {
+    component.loading = true;
+    const errResponse = {
+      error : 'Something went wrong',
+      success: false
+    }
+    spyOn(httpService, 'getAllConnectionTypeBased').and.returnValue(of(errResponse))
+    component.connections = [];
+    const spy = spyOn(messageService, 'add');
+    component.getConnectionList('Jira');
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should check boards when queryEnabled is false', () => {
+    component.queryEnabled = false;
+    component.toolForm = new UntypedFormGroup({
+      projectKey: new UntypedFormControl(false),
+    })
+    const spy = component.checkBoards();
+    expect(spy).toBeTruthy();
+  })
+
+  xit('should handle error when fetching boards', fakeAsync(() => {
+    component.urlParam = 'Jira'
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    const errResponse = {
+      error: 'Something went wrong', 
+      success: false
+    }
+    fixture.detectChanges();
+    spyOn(httpService, 'getAllBoards').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add').and.callThrough(); 
+    component.boardsData = [];
+    component.toolForm = new UntypedFormGroup({
+      boards: new UntypedFormControl(), 
+      projectKey: new UntypedFormControl('dydad76876a8d')
+    })
+    component.fetchBoards(component);
+    tick();
+    expect(spy).toHaveBeenCalled()
+  }));
+
+  it('should handle error when getting azure build pipelines', () => {
+    const connection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    };
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    component.azurePipelineApiVersion = '6.0';
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    const errResponse = {
+      message: "No pipelines details found",
+      sucess: false
+    }
+    spyOn(httpService, 'getAzurePipelineList').and.returnValue(of(errResponse))
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    component.azurePipelineList = [];
+    const spy = spyOn(messageService, 'add').and.callThrough();
+    component.getAzureBuildPipelines(connection)
+    expect(spy).toHaveBeenCalled(); 
+  })
 });
