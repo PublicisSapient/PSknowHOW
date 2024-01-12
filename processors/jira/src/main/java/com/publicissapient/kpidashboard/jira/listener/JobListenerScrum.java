@@ -62,6 +62,7 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 	@Autowired
 	private NotificationHandler handler;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
 	@Autowired
@@ -84,11 +85,6 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 
 	@Autowired
 	private JiraCommonService jiraCommonService;
-
-	@Autowired
-	public JobListenerScrum(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -134,8 +130,8 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 	}
 
 	private void sendNotification(Throwable stepFaliureException) throws UnknownHostException {
-		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findById(new ObjectId(projectId)).orElse(null);
+		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
+		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
 			handler.sendEmailToProjectAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()

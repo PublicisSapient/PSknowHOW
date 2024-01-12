@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-
 import com.publicissapient.kpidashboard.common.client.KerberosClient;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
@@ -18,7 +17,6 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
 import java.util.Arrays;
-import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,13 +56,11 @@ public class SprintReportTaskletTest {
     public void testExecute() throws Exception {
         // Arrange
         ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().projectName("KnowHow").build();
-        when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(anyString())).thenReturn(projectConfFieldMapping);
         SprintDetails sprintDetails=new SprintDetails();
         sprintDetails.setSprintID("");
         sprintDetails.setOriginBoardId(Arrays.asList("xyz"));
         when(sprintRepository.findBySprintID(null)).thenReturn(sprintDetails);
         when(fetchSprintReport.getSprints(any(),anyString(),any())).thenReturn(Arrays.asList(sprintDetails));
-        when(fetchSprintReport.fetchSprints(projectConfFieldMapping,new HashSet<>(Arrays.asList(sprintDetails)),kerberosClient,true)).thenReturn(new HashSet<>(Arrays.asList(sprintDetails)));
         assertEquals(RepeatStatus.FINISHED,sprintReportTasklet.execute(stepContribution,chunkContext));
     }
 }
