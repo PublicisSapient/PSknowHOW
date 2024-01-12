@@ -1,13 +1,9 @@
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
    <div class="p-d-flex p-align-center">
-      <div class="position-relative" *ngIf="auth_service">
-         <img src="assets/img/icon-dice.png" class="icon-dice p-mr-2" (click)="showSwitchDropdown = !showSwitchDropdown" alt="Switch" width="50"/>
-         <div class="down-arrow cursor-pointer" (click)="showSwitchDropdown = !showSwitchDropdown"></div>
-         <ul class="switch-dropdown" *ngIf="showSwitchDropdown">
-            <li class="app-links active"><a href="http://172.26.20.205/">KnowHOW</a></li>
-            <li class="app-links"><a href="http://172.26.20.204/" target="_blank">Assessments</a></li>
-            <li class="app-links"><a href="https://tengine.tremend.com/" target="_blank">Retros</a></li>
-         </ul>
+      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service">
+         <img src="assets/img/icon-dice.png" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
+         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
+         <p-menu [model]="appList" [popup]="true" #appItems></p-menu>
       </div>
       <div class="logo cursor-pointer">
          <img *ngIf="logoImage" src={{logoImage}} (click)="navigateToHomePage()" alt="Logo" />

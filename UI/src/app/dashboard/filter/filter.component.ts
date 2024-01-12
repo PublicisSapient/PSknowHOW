@@ -45,7 +45,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
-
+  appList: MenuItem[] | undefined;
   subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
@@ -161,6 +161,33 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.logout();
         },
       });
+
+      this.appList = [
+          {
+              label: 'KnowHOW',
+              icon: ''
+          },
+          {
+              label: 'Assessments',
+              icon: '',
+              command: () => {
+                 window.open(
+                  environment['MAP_URL'],
+                  '_blank'
+                );
+              }
+          },
+          {
+            label: 'Retros',
+            icon: '',
+            command: () => {
+               window.open(
+                  environment['RETROS_URL'],
+                  '_blank'
+                );
+            }
+          }
+      ];
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
