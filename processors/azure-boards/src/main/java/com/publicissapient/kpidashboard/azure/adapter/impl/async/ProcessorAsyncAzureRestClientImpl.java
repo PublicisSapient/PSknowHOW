@@ -291,7 +291,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		if(projectConfig.getProjectToolConfig() != null){
 			if(StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())){
 				url.append(AzureConstants.FORWARD_SLASH);
-				url.append(projectConfig.getProjectToolConfig().getTeam());
+				url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
 			}
 		}
 		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointWiql()));
@@ -499,7 +499,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 		if(StringUtils.isNotEmpty(azureServer.getTeam())){
 			url.append(AzureConstants.FORWARD_SLASH);
-			url.append(azureServer.getTeam());
+			url.append(url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam())));
 		}
 
 		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
