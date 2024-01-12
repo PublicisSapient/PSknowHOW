@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
 import java.util.List;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.modelmapper.ModelMapper;
@@ -50,6 +48,8 @@ import com.publicissapient.kpidashboard.apis.rbac.signupapproval.service.SignupM
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequestDecision;
 import com.publicissapient.kpidashboard.common.model.rbac.AuthenticationDTO;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**

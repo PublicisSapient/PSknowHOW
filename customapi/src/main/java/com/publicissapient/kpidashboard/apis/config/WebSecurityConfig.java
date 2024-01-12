@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -33,7 +35,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -61,8 +62,6 @@ import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Extension of {WebSecurityConfigurerAdapter} to provide configuration
@@ -164,6 +163,36 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
+    protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
+        List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
+
+        if (authenticationProviders.contains(AuthType.STANDARD)) {
+            auth.authenticationProvider(standardAuthenticationProvider);
+        }
+        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
+        if (authenticationProviders.contains(AuthType.LDAP) && adServerDetail != null) {
+            auth.ldapAuthentication().userSearchBase(adServerDetail.getRootDn())
+                    .userDnPatterns(adServerDetail.getUserDn()).contextSource().url(adServerDetail.getHost())
+                    .port(adServerDetail.getPort()).managerDn(adServerDetail.getUsername())
+                    .managerPassword(adServerDetail.getPassword()).and().passwordCompare()
+                    .passwordAttribute("password");
+            auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
+        }
+        auth.authenticationProvider(apiTokenAuthenticationProvider);
+    }
+
+    @Bean
+    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
+                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
+    }
+
+    // update authenticatoin result handler
+    @Bean
+    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
+                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
+    }
 
     @Bean
     protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) throws Exception {
@@ -173,6 +202,20 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     protected CorsFilter corsFilterKnowHOW() throws Exception {// NOSONAR
         return new CorsFilter();
+    }
+
+    @Bean
+    protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
+        if (adServerDetail == null || StringUtils.isBlank(adServerDetail.getHost())) {
+            return null;
+        }
+        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(
+                adServerDetail.getDomain(), adServerDetail.getHost(), adServerDetail.getRootDn());
+        provider.setConvertSubErrorCodesToExceptions(true);
+        provider.setUseAuthenticationRequestCredentials(true);
+        provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
+        return provider;
     }
 
     @Bean
