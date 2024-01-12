@@ -52,6 +52,7 @@ public class SprintReportTaskletTest {
         // Mock any setup or common behavior needed before each test
     }
 
+
     @Test
     public void testExecute() throws Exception {
         // Arrange
