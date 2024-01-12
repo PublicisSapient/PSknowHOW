@@ -60,7 +60,7 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 		String username;
 
 		if (authentication.getPrincipal() instanceof CustomUserDetails) {
-			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress();
+			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress().toLowerCase();
 			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
 
 		} else {

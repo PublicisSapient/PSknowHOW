@@ -33,6 +33,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.MongoCursor;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigProcessorItem;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
+import org.springframework.data.mongodb.core.convert.MongoConverter;
 
 /**
  * An implementation of {@link ProjectToolConfigRepositoryCustom}
@@ -55,7 +56,8 @@ public class ProjectToolConfigRepositoryImpl implements ProjectToolConfigReposit
 		List<ProjectToolConfigProcessorItem> returnList = new ArrayList<>();
 		while (itr.hasNext()) {
 			Document obj = itr.next();
-			ProjectToolConfigProcessorItem item = operations.getConverter().read(ProjectToolConfigProcessorItem.class,
+			MongoConverter converter = operations.getConverter();
+			ProjectToolConfigProcessorItem item = converter.read(ProjectToolConfigProcessorItem.class,
 					obj);
 			returnList.add(item);
 		}

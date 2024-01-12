@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author vijmishr1
  *
  */
+
 @RestController
 @Slf4j
 public class ForgotPasswordController {
@@ -60,10 +61,13 @@ public class ForgotPasswordController {
 	/**
 	 * Relative path of reset password of UI
 	 */
+
 	private static final String UI_RESET_PATH = "/authentication/resetPassword?resetToken="; // NOSONAR
+
 	/**
 	 * Relative path of accountType of UI
 	 */
+
 	private static final String UI_ACCOUNT_PATH = "/authentication/accountType?resetTokenStatus="; // NOSONAR
 	@Autowired
 	private ForgotPasswordService forgotPasswordService;
@@ -124,7 +128,8 @@ public class ForgotPasswordController {
 	 *         <tt>UI_ACCOUNT_PATH</tt> incase of invalid token.
 	 * @throws UnknownHostException
 	 */
-	@RequestMapping(value = "/validateToken", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
+
+	@RequestMapping(value = "/validateEmailToken", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public RedirectView validateToken(HttpServletRequest httpServletRequest, @RequestParam("token") UUID token)
 			throws UnknownHostException {
 		log.info("ForgotPasswordController: requested token for validate {}", token);
@@ -151,6 +156,7 @@ public class ForgotPasswordController {
 	 *         incase of a invalid request appends the logError message with
 	 *         response code <tt>-14</tt>
 	 */
+
 	@RequestMapping(value = "/resetPassword", method = POST, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> resetPassword(@RequestBody ResetPasswordRequest updatedPasswordRequest) {
 		boolean isSuccess = false;
@@ -175,6 +181,7 @@ public class ForgotPasswordController {
 	 * 
 	 * Gets api host
 	 **/
+
 	private String getApiHost() throws UnknownHostException {
 
 		StringBuilder urlPath = new StringBuilder();
@@ -197,6 +204,7 @@ public class ForgotPasswordController {
 	 * @return
 	 * @throws UnknownHostException
 	 */
+
 	private String getUIHost() throws UnknownHostException {
 		StringBuilder urlPath = new StringBuilder();
 		urlPath.append(':').append(File.separator + File.separator);

@@ -242,6 +242,7 @@ public final class KPIHelperUtil {
 		Map<String, Node> mapTmp = new HashMap<>();
 		List<Node> aggregatedTreeNodeList = new ArrayList<>();
 		List<Node> filteredNode = null;
+		Node root = null;
 		if (CollectionUtils.isNotEmpty(filteredAccountDataList)) {
 			filteredAccountDataList.forEach(data -> cloneNode(data.getNode(), aggregatedTreeNodeList));
 			filteredNode = setRootFilterAndLimitHierarchy(aggregatedTreeNodeList, false, firstLevel, leafNodeLevel);
@@ -249,8 +250,10 @@ public final class KPIHelperUtil {
 			filteredAccountDataKanban.forEach(data -> cloneNode(data.getNode(), aggregatedTreeNodeList));
 			filteredNode = setRootFilterAndLimitHierarchy(aggregatedTreeNodeList, true, firstLevel, leafNodeLevel);
 		}
-
-		Node root = createTree(filteredNode, mapTmp);
+		
+		if (CollectionUtils.isNotEmpty(filteredNode)) {
+			root = createTree(filteredNode, mapTmp);
+		}
 
 		if (null == root) {
 			throw new ApplicationException(KpiRequest.class, "kpiRequestTrackerId", kpiRequest.getRequestTrackerId());
@@ -341,51 +344,6 @@ public final class KPIHelperUtil {
 	}
 
 	public static Map<String, Long> setpriorityScrum(List<JiraIssue> sprintWiseDefectDataList,
-			CustomApiConfig customApiConfig) {
-		Map<String, Long> priorityCountMap = new HashMap<>();
-		Long p1Count = 0L;
-		Long p2Count = 0L;
-		Long p3Count = 0L;
-		Long p4Count = 0L;
-		Long p5Count = 0L;
-
-		for (JiraIssue issue : sprintWiseDefectDataList) {
-
-			if (StringUtils.isBlank(issue.getPriority())) {
-				p5Count++;
-				priorityCountMap.put(Constant.MISC, p5Count);
-			} else {
-				if (StringUtils.containsIgnoreCase(
-						customApiConfig.getpriorityP1().replaceAll(Constant.WHITESPACE, "").trim(),
-						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-					p1Count++;
-					priorityCountMap.put(Constant.P1, p1Count);
-				} else if (StringUtils.containsIgnoreCase(
-						customApiConfig.getpriorityP2().replaceAll(Constant.WHITESPACE, "").trim(),
-						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-					p2Count++;
-					priorityCountMap.put(Constant.P2, p2Count);
-				} else if (StringUtils.containsIgnoreCase(
-						customApiConfig.getpriorityP3().replaceAll(Constant.WHITESPACE, "").trim(),
-						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-					p3Count++;
-					priorityCountMap.put(Constant.P3, p3Count);
-				} else if (StringUtils.containsIgnoreCase(
-						customApiConfig.getpriorityP4().replaceAll(Constant.WHITESPACE, "").trim(),
-						issue.getPriority().replaceAll(Constant.WHITESPACE, "").toLowerCase().trim())) {
-					p4Count++;
-					priorityCountMap.put(Constant.P4, p4Count);
-				} else {
-					p5Count++;
-					priorityCountMap.put(Constant.MISC, p5Count);
-				}
-			}
-		}
-
-		return priorityCountMap;
-	}
-
-	public static Map<String, Long> setpriorityScrumForBacklog(List<JiraIssue> sprintWiseDefectDataList,
 			CustomApiConfig customApiConfig) {
 		Map<String, Long> priorityCountMap = new HashMap<>();
 		Long p1Count = 0L;

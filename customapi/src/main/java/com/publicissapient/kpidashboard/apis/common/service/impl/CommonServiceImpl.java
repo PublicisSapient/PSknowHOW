@@ -258,7 +258,7 @@ public class CommonServiceImpl implements CommonService {
 						if (accessNode.getAccessItems().stream().anyMatch(item -> item.getItemId()
 								.equalsIgnoreCase(projectMap.get(accessNode.getAccessLevel())))) {
 							usernameList.add(action.getUsername());
-							emailAddresses.add(action.getEmailAddress());
+							emailAddresses.add(action.getEmailAddress().toLowerCase());
 						}
 					});
 				}

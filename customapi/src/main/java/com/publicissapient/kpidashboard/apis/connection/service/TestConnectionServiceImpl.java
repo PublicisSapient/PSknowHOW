@@ -256,15 +256,13 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 			if (connection.isBearerToken()) {
 				isValid = testConnectionWithBearerToken(apiUrl, password);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
+			} else if (toolName.equalsIgnoreCase(CommonConstant.REPO_TOOLS)) {
 				isValid = testConnectionForRepoTools(apiUrl, password, connection);
 				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-			}
-		else {
-			isValid = testConnection(connection, toolName, apiUrl, password, false);
-			statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
-		}
-
+			} else {
+				isValid = testConnection(connection, toolName, apiUrl, password, false);
+				statusCode = isValid ? HttpStatus.OK.value() : HttpStatus.UNAUTHORIZED.value();
+      }
 		}
 		return statusCode;
 	}
@@ -415,13 +413,12 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	 */
 	private HttpStatusCode getApiResponseWithBasicAuth(String username, String password, String apiUrl, String toolName,
 													   boolean isSonarWithAccessToken) {
-		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithAuthentication(username, password, isSonarWithAccessToken);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
@@ -429,8 +426,8 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 
 		Object responseBody = responseEntity.getBody();
 		if (toolName.equalsIgnoreCase(Constant.TOOL_SONAR)
-				&& ((responseBody != null && responseBody.toString().contains("false"))
-						|| responseBody.toString().contains("</html>"))) {
+				&& (responseBody != null
+				&& (responseBody.toString().contains("false") || responseBody.toString().contains("</html>")))) {
 			return HttpStatus.UNAUTHORIZED;
 		}
 		if (toolName.equalsIgnoreCase(Constant.TOOL_BITBUCKET)
@@ -442,23 +439,25 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	}
 
 	private HttpStatusCode getApiResponseWithBearer(String pat, String apiUrl) {
-		RestTemplate rest = new RestTemplate();
 		HttpHeaders httpHeaders;
 		ResponseEntity<?> responseEntity;
 		httpHeaders = createHeadersWithBearer(pat);
 		HttpEntity<?> requestEntity = new HttpEntity<>(httpHeaders);
 		try {
-			responseEntity = rest.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
+			responseEntity = restTemplate.exchange(URI.create(apiUrl), HttpMethod.GET, requestEntity, String.class);
 		} catch (HttpClientErrorException e) {
 			log.error("Invalid login credentials");
 			return e.getStatusCode();
 		}
 		HttpStatusCode responseCode = responseEntity.getStatusCode();
 
-		if (responseCode.is2xxSuccessful() && null != responseEntity.getBody()
-				&& responseEntity.getBody().toString().equalsIgnoreCase(WRONG_JIRA_BEARER)) {
+		Object responseBody = responseEntity.getBody();
+		if (responseCode.is2xxSuccessful() && responseBody != null
+				&& WRONG_JIRA_BEARER.equalsIgnoreCase(responseBody.toString())) {
 			responseCode = HttpStatus.UNAUTHORIZED;
 		}
+
+
 		return responseCode;
 	}
 

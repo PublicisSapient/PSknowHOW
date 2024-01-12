@@ -156,8 +156,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/cache/clearAllCache").permitAll().requestMatchers(HttpMethod.GET, "/cache/clearCache/**")
                         .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
-                .addFilterBefore(standardLoginRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(ldapLoginRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(apiTokenRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class)
@@ -166,36 +164,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return http.build();
     }
 
-    protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
-        List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
-
-        if (authenticationProviders.contains(AuthType.STANDARD)) {
-            auth.authenticationProvider(standardAuthenticationProvider);
-        }
-        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
-        if (authenticationProviders.contains(AuthType.LDAP) && adServerDetail != null) {
-            auth.ldapAuthentication().userSearchBase(adServerDetail.getRootDn())
-                    .userDnPatterns(adServerDetail.getUserDn()).contextSource().url(adServerDetail.getHost())
-                    .port(adServerDetail.getPort()).managerDn(adServerDetail.getUsername())
-                    .managerPassword(adServerDetail.getPassword()).and().passwordCompare()
-                    .passwordAttribute("password");
-            auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
-        }
-        auth.authenticationProvider(apiTokenAuthenticationProvider);
-    }
-
-    @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
-        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-    }
-
-    // update authenticatoin result handler
-    @Bean
-    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
-        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-    }
 
     @Bean
     protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) throws Exception {
@@ -205,20 +173,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     protected CorsFilter corsFilterKnowHOW() throws Exception {// NOSONAR
         return new CorsFilter();
-    }
-
-    @Bean
-    protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-        ADServerDetail adServerDetail = adServerDetailsService.getADServerConfig();
-        if (adServerDetail == null || StringUtils.isBlank(adServerDetail.getHost())) {
-            return null;
-        }
-        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(
-                adServerDetail.getDomain(), adServerDetail.getHost(), adServerDetail.getRootDn());
-        provider.setConvertSubErrorCodesToExceptions(true);
-        provider.setUseAuthenticationRequestCredentials(true);
-        provider.setUserDetailsContextMapper(new CustomUserDetailsContextMapper());
-        return provider;
     }
 
     @Bean

@@ -31,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.ResponseCookie;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -40,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @RunWith(MockitoJUnitRunner.class)
+@WebMvcTest(UserTokenDeletionControllerApplication.class)
 public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	private MockMvc mockMvc;
@@ -52,6 +54,8 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	@Mock
 	private CookieUtil cookieUtil;
+	@Mock
+	UserInfoServiceImpl userInfoService;
 
 	@InjectMocks
 	private UserTokenDeletionControllerApplication userTokenDeletionControllerApplication;
@@ -69,10 +73,15 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 	@Test
 	public void testDeleteUserToken() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
+		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("foo1", "bar1"));
 		ResponseCookie foo11 = ResponseCookie.from("foo1", "bar1").build();
 		when(cookieUtil.deleteAccessTokenCookie()).thenReturn(foo11);
 		request.setAttribute("Authorization", "Bearer abcde");
-		mockMvc.perform(get("/userlogout")).andExpect(status().isOk());
+		when(userInfoService.getCentralAuthUserDeleteUserToken(anyString())).thenReturn("true");
+		mockMvc.perform(get("/userlogout").cookie(new Cookie("foo1", "bar1")))
+				.andExpect(status().isOk());
+
+
 	}
 
 }

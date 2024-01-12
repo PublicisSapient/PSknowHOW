@@ -69,7 +69,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
 
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
     this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
       if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
         this.allKpiArray = [];
@@ -298,7 +298,6 @@ export class DoraComponent implements OnInit {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
-
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
@@ -392,10 +391,6 @@ export class DoraComponent implements OnInit {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
-    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
     this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
@@ -411,16 +406,9 @@ export class DoraComponent implements OnInit {
         this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-        if (formType?.toLowerCase() == 'radiobutton') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-        } else if (formType?.toLowerCase() == 'dropdown') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          let initialC = trendValueList[0].filter1;
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
-        } else {
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-        }
+
+        this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+
         this.kpiSelectedFilterObj['action'] = 'new';
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       }
@@ -579,11 +567,11 @@ export class DoraComponent implements OnInit {
       };
 
       let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
-      
+
       let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
       let displayRange = maturityLevel.map((item) => item.displayRange);
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
-    
+
       if (findIncrementalOrDecrementalRange === 'decremental') {
         maturityRange = maturityRange.reverse();
       } else {

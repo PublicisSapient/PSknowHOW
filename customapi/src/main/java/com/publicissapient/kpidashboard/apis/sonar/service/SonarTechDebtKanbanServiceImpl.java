@@ -230,13 +230,7 @@ public class SonarTechDebtKanbanServiceImpl
 		return getSonarHistoryForAllProjects(leafNodeList, getKanbanCurrentDateToFetchFromDb(startDate));
 	}
 
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> pList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	private Long getTechDebtValue(Object sqlIndex) {
+	public Long getTechDebtValue(Object sqlIndex) {
 		Long techDebtValue = -1l;
 		if (sqlIndex != null) {
 			if (sqlIndex instanceof Double) {

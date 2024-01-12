@@ -128,12 +128,6 @@ public class UnitCoverageServiceimpl extends SonarKPIService<Double, List<Object
 		return new HashMap<>();
 	}
 
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> pList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
 	public void getSonarKpiData(List<Node> pList, Map<String, Node> tempMap, KpiElement kpiElement) {
 		List<KPIExcelData> excelData = new ArrayList<>();
 		getSonarHistoryForAllProjects(pList,

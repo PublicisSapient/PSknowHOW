@@ -18,11 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.auth;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -62,14 +65,21 @@ public class AuthenticationResultHandlerTest {
 
 	@Mock
 	private AuthenticationService authenticationService;
+	@Mock
+	private CookieUtil cookieUtil;
 
 	@Test
 	public void testOnSucess() throws IOException, ServletException {
-		JSONObject jsonObject = new JSONObject();
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
+		Map<String, Object> map = new HashMap<>();
+		map.put("username", "username");
+		map.put("user_id", null);
+		map.put("user_email", "username@gmail.com");
+		map.put("projectsAccess", null);
+		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName" , "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
+		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);
 		verify(authenticationResponseService).handle(response, authentication);
 	}
@@ -78,11 +88,16 @@ public class AuthenticationResultHandlerTest {
 	public void testOnSucess1() throws IOException, ServletException {
 		CustomUserDetails cud = new CustomUserDetails();
 		cud.setUsername("userName");
-		JSONObject jsonObject = new JSONObject();
-		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName")).thenReturn(jsonObject);
+		Map<String, Object> map = new HashMap<>();
+		map.put("username", "username");
+		map.put("user_id", null);
+		map.put("user_email", "username@gmail.com");
+		map.put("projectsAccess", null);
+		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName", "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
 		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
+		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);
 		verify(authenticationResponseService).handle(response, authentication);
 	}

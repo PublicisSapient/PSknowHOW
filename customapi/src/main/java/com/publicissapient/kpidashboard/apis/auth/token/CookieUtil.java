@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
@@ -53,5 +54,13 @@ public class CookieUtil {
 			response.addHeader(HttpHeaders.SET_COOKIE,
 					String.format("%s; %s", header, customApiConfig.getAuthCookieSameSite()));
 		}
+	}
+
+	public HttpHeaders setCookieIntoHeader(String token) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.add(HttpHeaders.COOKIE, AUTH_COOKIE + "=" + token);
+		return headers;
+
 	}
 }

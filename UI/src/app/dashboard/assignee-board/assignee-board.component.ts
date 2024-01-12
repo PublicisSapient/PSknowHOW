@@ -45,6 +45,9 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   filteredIssueDataList: any[];
 
   constructor(private sharedService: SharedService) {
+  }
+
+  ngOnInit(): void {
     this.sharedService.currentData.subscribe(data => {
       if (data && Object.keys(data).length) {
         this.showIssueDetails = true;
@@ -54,15 +57,14 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
         this.graphWidth = 100;
       }
     });
-  }
-
-  ngOnInit(): void {
     this.currentSprint = this.sharedService.currentSelectedSprint;
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.currentIssueIndex = 0;
-    this.filteredIssueDataList = JSON.parse(JSON.stringify(this.issueDataList));
+    if (changes['issueDataList']) {
+      this.filteredIssueDataList = JSON.parse(JSON.stringify(changes['issueDataList'].currentValue));
+    }
   }
 
   onPreviousIssue() {
@@ -73,7 +75,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   }
 
   onNextIssue() {
-    if (this.currentIssueIndex < this.filteredIssueDataList.length - 1) {
+    if (this.currentIssueIndex < this.filteredIssueDataList?.length - 1) {
       this.currentIssueIndex = this.currentIssueIndex + 1;
       this.sharedService.setIssueData(this.filteredIssueDataList[this.currentIssueIndex]);
     }
@@ -89,7 +91,7 @@ export class AssigneeBoardComponent implements OnInit, OnChanges {
   }
 
   filterTasksByStatus() {
-    if (this.selectedTaskStatusFilter && this.selectedTaskStatusFilter.length) {
+    if (this.selectedTaskStatusFilter && this.selectedTaskStatusFilter?.length) {
       this.filteredIssueDataList = this.issueDataList.filter((d) => this.standUpStatusFilter.find(item => item['filterName'].toLowerCase() === this.selectedTaskStatusFilter.toLowerCase())?.options.includes(d['Issue Status']));
     } else {
       this.filteredIssueDataList = JSON.parse(JSON.stringify(this.issueDataList));
