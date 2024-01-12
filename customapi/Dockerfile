@@ -1,22 +1,45 @@
+# Use a base image
 FROM psknowhow/amazoncorretto:8.1
 
-# There are environment variables with periods in the names so change bash as default
-RUN ln -sf /bin/bash /bin/sh 
-#&& apt-get update && apt upgrade libc-bin -y
+# Change bash as default
+RUN ln -sf /bin/bash /bin/sh
 
-ENV CONFIG_LOCATION="/app/properties/customapi.properties" certhostpath="/app/certs/" keytoolalias="myknowhow" JAVA_OPTS="" keystorefile="/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+# Set a non-root user
+ARG USER=myuser
+ARG UID=1000
+ARG GID=1000
 
+RUN groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER
+
+# Set the environment variables
+ENV CONFIG_LOCATION="/app/properties/customapi.properties" \
+    certhostpath="/app/certs/" \
+    keytoolalias="myknowhow" \
+    JAVA_OPTS="" \
+    keystorefile="/usr/lib/jvm/java-1.8.0-amazon-corretto/jre/lib/security/cacerts"
+
+# Set the working directory
+WORKDIR /app
+
+# Copy your application files to the container
 ARG JAR_FILE
 ADD ${JAR_FILE} /app/customapi.jar
-
-WORKDIR /app
 
 COPY src/main/resources/application.properties /app/properties/customapi.properties
 COPY start_combined_collector.sh /app/start_combined_collector.sh
 
-RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
+# Change ownership to the non-root user
+RUN chown -R $USER:$USER /app
 
+# Give execute permissions to the script
+RUN chmod +x /app/start_combined_collector.sh
+
+# Expose the port
 EXPOSE 8080
 
-CMD ["sh", "start_combined_collector.sh"]
+# Switch to the non-root user
+USER $USER:$GID
 
+# Specify the command to run your application
+CMD ["sh", "start_combined_collector.sh"]
