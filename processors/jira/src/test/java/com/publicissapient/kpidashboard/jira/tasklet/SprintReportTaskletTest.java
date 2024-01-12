@@ -58,13 +58,13 @@ public class SprintReportTaskletTest {
     public void testExecute() throws Exception {
         // Arrange
         ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().projectName("KnowHow").build();
-        when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(anyString())).thenReturn(projectConfFieldMapping);
+        //when(fetchProjectConfiguration.fetchConfigurationBasedOnSprintId(anyString())).thenReturn(projectConfFieldMapping);
         SprintDetails sprintDetails=new SprintDetails();
         sprintDetails.setSprintID("");
         sprintDetails.setOriginBoardId(Arrays.asList("xyz"));
         when(sprintRepository.findBySprintID(null)).thenReturn(sprintDetails);
         when(fetchSprintReport.getSprints(any(),anyString(),any())).thenReturn(Arrays.asList(sprintDetails));
-        when(fetchSprintReport.fetchSprints(projectConfFieldMapping,new HashSet<>(Arrays.asList(sprintDetails)),kerberosClient,true)).thenReturn(new HashSet<>(Arrays.asList(sprintDetails)));
+        //when(fetchSprintReport.fetchSprints(projectConfFieldMapping,new HashSet<>(Arrays.asList(sprintDetails)),kerberosClient,true)).thenReturn(new HashSet<>(Arrays.asList(sprintDetails)));
         assertEquals(RepeatStatus.FINISHED,sprintReportTasklet.execute(stepContribution,chunkContext));
     }
 }
