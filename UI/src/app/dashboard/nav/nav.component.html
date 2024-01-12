@@ -51,7 +51,6 @@
     </div>
     <!--Scrum/Kanban Switch Ends-->
     <div class="navigation rows ">
-      <!-- <ul class=" nav nav-pills p-d-flex p-pl-0 p-justify-between"> -->
       <ng-container *ngIf="boardNameArr?.length>0">
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
           <ng-container *ngFor="let board of boardNameArr">
@@ -78,32 +77,11 @@
       </ng-container>
       <ng-container *ngIf="boardNameArr?.length === 0">
         <ul class="nav-menu p-d-flex p-pl-3 p-pr-3 p-mt-0">
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
+          <li *ngFor="let item in navItems" class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
             <p-skeleton width="14rem" height="3rem"></p-skeleton>
           </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-          <li class="nav-item p-d-flex p-pt-1 p-pb-1 w-100">
-            <p-skeleton width="14rem" height="3rem"></p-skeleton>
-          </li>
-
         </ul>
       </ng-container>
-
-      <!-- </ul> -->
     </div>
     <div class="close-btn cursor-pointer" (click)="visibleSidebar = false;service.setSideNav(false)">
       <img src="../../../assets/img/menu-fold.svg" alt="Edit" class="icon-hamburger" />

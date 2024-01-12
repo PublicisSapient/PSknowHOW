@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.jira.scrum.service;
+package com.publicissapient.kpidashboard.apis.jira.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -129,9 +129,9 @@ public class JiraCommonServiceTest {
 		connection = getMockConnection();
 		fieldMapping = getMockFieldMapping();
 		createIssue();
-		when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("AesEncryptionKey");
-		when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-				.thenReturn("PLAIN_TEXT_PASSWORD");
+		//when(jiraProcessorConfig.getAesEncryptionKey()).thenReturn("AesEncryptionKey");
+		//when(aesEncryptionService.decrypt(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+		//		.thenReturn("PLAIN_TEXT_PASSWORD");
 	}
 
 	@Test

@@ -9,6 +9,7 @@ import { HelperService } from 'src/app/services/helper.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { of } from 'rxjs';
+import { ExportExcelComponent } from 'src/app/component/export-excel/export-excel.component';
 
 describe('DoraComponent', () => {
   let component: DoraComponent;
@@ -19946,7 +19947,7 @@ describe('DoraComponent', () => {
       imports: [
         HttpClientTestingModule
       ],
-      declarations: [DoraComponent],
+      declarations: [DoraComponent,ExportExcelComponent],
       providers: [
         HelperService,
         HttpService,
@@ -19962,6 +19963,8 @@ describe('DoraComponent', () => {
     httpService = TestBed.inject(HttpService);
     helperService = TestBed.inject(HelperService);
     component = fixture.componentInstance;
+    component.globalConfig = {}
+    service.select(masterData, filterData, {}, 'dora');
     component.filterApplyData = {
       "ids": [
         "PSknowHOW _6527af981704342160f43748"
@@ -20080,9 +20083,11 @@ describe('DoraComponent', () => {
       selectedTab: 'My Test1',
       isAdditionalFilters: false
     };
+    component.selectedtype = 'scrum'
+    const lstotage = {'scrum' : []}
+    localStorage.setItem('completeHierarchyData',JSON.stringify(lstotage))
     component.receiveSharedData(event);
     expect(component.noTabAccess).toBe(true);
-
   });
 
   it('should call grouping kpi functions when filterdata is available', () => {
@@ -21217,5 +21222,72 @@ describe('DoraComponent', () => {
       expect(component.noTabAccess).toBeFalse();
     });
   });
+
+  it('should set dashboard config data',()=>{
+    service.setDashConfigData({"others": [
+      {
+        boardName : 'dora',
+        kpis : [{
+          kpiId : 'kpi123'
+        }]
+      }
+    ]})
+    expect(component.configGlobalData.length).toBeGreaterThan(0);
+  })
+
+  it('should set dashboard config data when dora is undefined',()=>{
+    service.setDashConfigData({"others": [
+      {
+        boardName : 'nondora',
+        kpis : undefined
+      }
+    ]})
+    expect(component.configGlobalData).toBe(undefined);
+  })
+
+  it('should set the colorObj', () => {
+    component.kpiChartData = {
+        kpi121: {
+            kpiId: 'kpi123'
+        }
+    }
+    const x = {
+        'Sample One_hierarchyLevelOne': {
+            nodeName: 'Sample One',
+            color: '#079FFF'
+        }
+    };
+    component.ngOnInit();
+    service.setColorObj(x);
+    expect(component.colorObj).toBe(x);
+});
+
+it('should work download excel functionality', () => {
+  const exportExcelComponent = TestBed.createComponent(ExportExcelComponent).componentInstance;
+  spyOn(component.exportExcelComponent, 'downloadExcel')
+  component.downloadExcel('kpi122', 'name', true, true);
+  expect(exportExcelComponent).toBeDefined();
+})
+
+it('should make post call when kpi available for Jira for Scrum', () => {
+  const kpiListJira = [{
+      id: '6332dd4b82451128f9939a29',
+      kpiId: 'kpi17',
+      kpiName: 'Unit Test Coverage'
+  }];
+  component.masterData = {
+      kpiList: [{
+          kpiId: 'kpi17',
+          kanban: false,
+          kpiSource: 'Jira',
+          kpiCategory: 'Dora',
+          groupId: 1
+      }]
+  };
+  const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+  const postJiraSpy = spyOn(component, 'postJiraKpi');
+  component.groupJiraKpi(['kpi17']);
+  expect(postJiraSpy).toHaveBeenCalled();
+});
 
 });

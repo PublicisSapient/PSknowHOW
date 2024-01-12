@@ -5,7 +5,7 @@ import { ExcelService } from 'src/app/services/excel.service';
 import { HelperService } from 'src/app/services/helper.service';
 import { HttpService } from 'src/app/services/http.service';
 import { SharedService } from 'src/app/services/shared.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-backlog',
@@ -84,9 +84,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }));
 
     this.subscriptions.push(this.service.globalDashConfigData.subscribe((globalConfig) => {
-      // if(this.sharedObject || this.service.getFilterObject()){
-      //   this.receiveSharedData(this.service.getFilterObject());
-      // }
       this.configGlobalData = globalConfig['others'].filter((item) => item.boardName.toLowerCase() == 'backlog')[0]?.kpis;
       this.processKpiConfigData();
     }));
@@ -270,46 +267,21 @@ export class BacklogComponent implements OnInit, OnDestroy {
           for (const kpi in localVariable) {
             this.loaderJiraArray.splice(this.loaderJiraArray.indexOf(kpi), 1);
           }
-          if (localVariable['kpi127']) {
-            if (localVariable['kpi127'].trendValueList && localVariable['kpi127'].xAxisValues) {
-              localVariable['kpi127'].trendValueList.forEach(trendElem => {
+          const localVarKpi = localVariable['kpi127'] || localVariable['kpi170'] || localVariable['kpi3']
+          if (localVarKpi) {
+            if (localVarKpi.trendValueList && localVarKpi.xAxisValues) {
+              localVarKpi.trendValueList.forEach(trendElem => {
                 trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi127'].xAxisValues.length === 5) {
+                  if (valElem.value.length === 5 && localVarKpi.xAxisValues.length === 5) {
                     valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi127'].xAxisValues[index];
+                      element['xAxisTick'] = localVarKpi.xAxisValues[index];
                     });
                   }
                 });
               });
             }
           }
-          if (localVariable['kpi170']) {
-            if (localVariable['kpi170'].trendValueList && localVariable['kpi170'].xAxisValues) {
-              localVariable['kpi170'].trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi170'].xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi170'].xAxisValues[index];
-                    });
-                  }
-                });
-              });
-            }
-          }
-
-          if (localVariable['kpi3']) {
-            if (localVariable['kpi3'].trendValueList && localVariable['kpi3'].xAxisValues) {
-              localVariable['kpi3'].trendValueList.forEach(trendElem => {
-                trendElem.value.forEach(valElem => {
-                  if (valElem.value.length === 5 && localVariable['kpi3'].xAxisValues.length === 5) {
-                    valElem.value.forEach((element, index) => {
-                      element['xAxisTick'] = localVariable['kpi3'].xAxisValues[index];
-                    });
-                  }
-                });
-              });
-            }
-          }
+          
           // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
           //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
           // }
@@ -602,10 +574,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     } else {
       this.kpiChartData[kpiId] = [];
     }
-
-    // if (Object.keys(this.kpiChartData)?.length === this.updatedConfigGlobalData?.length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
   }
 
   getkpi171Data(kpiId, trendValueList) {   
@@ -925,24 +893,8 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
   }
 
-  drop(event: CdkDragDrop<string[]>, tab) {
-    if (event?.previousIndex !== event.currentIndex) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-      if (tab.width === 'half') {
-        const updatedTabsDetails = this.navigationTabs.find(tabs => tabs['label'].toLowerCase() === tab['label'].toLowerCase());
-        updatedTabsDetails['kpis'] = [...updatedTabsDetails['kpiPart1'], ...updatedTabsDetails['kpiPart2'], ...updatedTabsDetails['fullWidthKpis']];
-      }
-      this.updatedConfigGlobalData = [];
-      this.navigationTabs.forEach(tabs => {
-        this.updatedConfigGlobalData = this.updatedConfigGlobalData.concat(tabs['kpis']);
-      })
-      this.updatedConfigGlobalData.map((kpi, index) => kpi.order = index + 3);
-      const disabledKpis = this.configGlobalData.filter(item => item.shown && !item.isEnabled);
-      disabledKpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + index + 3);
-      const hiddenkpis = this.configGlobalData.filter(item => !item.shown);
-      hiddenkpis.map((kpi, index) => kpi.order = this.updatedConfigGlobalData.length + disabledKpis.length + index + 3);
-      this.service.kpiListNewOrder.next([...this.updatedConfigGlobalData, ...disabledKpis, ...hiddenkpis]);
-    }
+  drop(event: CdkDragDrop<string[]>, updatedContainer) {
+    this.helperService.drop(event,updatedContainer,this.navigationTabs,this.updatedConfigGlobalData,this.configGlobalData);
   }
 
   handleTabChange(event) {

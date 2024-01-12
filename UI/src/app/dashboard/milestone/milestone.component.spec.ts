@@ -906,7 +906,7 @@ describe('MilestoneComponent', () => {
             filter2: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -956,7 +956,7 @@ describe('MilestoneComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toEqual(res.data.length);
     })
@@ -993,7 +993,7 @@ describe('MilestoneComponent', () => {
             filter1: 'Overall',
         }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'][0].data.length).toBeGreaterThan(0)
     })
@@ -1008,7 +1008,7 @@ describe('MilestoneComponent', () => {
         component.kpiSelectedFilterObj['kpi124'] = {}
         const combo = [{ filter1: 'Overall' }]
 
-        spyOn(component, 'createCombinations').and.returnValue(combo);
+        spyOn(helperService, 'createCombinations').and.returnValue(combo);
         component.getChartData('kpi124', 0)
         expect(component.kpiChartData['kpi124'].length).toBeGreaterThan(0)
     })
@@ -1185,16 +1185,6 @@ describe('MilestoneComponent', () => {
         component.ngOnInit();
         expect(component.noTabAccess).toBeTruthy();
     })
-
-    it('should return an array of objects with all possible combinations of the input arrays', () => {
-        const result = component.createCombinations([1, 2], ['a', 'b']);
-        expect(result).toEqual([
-            { filter1: 1, filter2: 'a' },
-            { filter1: 1, filter2: 'b' },
-            { filter1: 2, filter2: 'a' },
-            { filter1: 2, filter2: 'b' }
-        ]);
-    });
 
     it('should get chartdata for kpi when trendValueList is an Array of two filters for card', () => {
         component.allKpiArray = [{

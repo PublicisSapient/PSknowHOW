@@ -53,12 +53,8 @@ public class ScrumReleaseDataTasklet implements Tasklet {
 	@Autowired
 	JiraProcessorConfig jiraProcessorConfig;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public ScrumReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc
