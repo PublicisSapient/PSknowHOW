@@ -60,7 +60,6 @@ public class KpiColumnConfigServiceImplTest {
 
 	@Test
 	public void testSaveKpiColumnConfig() {
-		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(null);
 		ServiceResponse response = kpiColumnConfigService
 				.saveKpiColumnConfig(convertToKpiColumnConfigDTO(kpiColumnConfigs.get(0)));
 		assertEquals(response.getSuccess(), Boolean.FALSE);
@@ -120,14 +119,29 @@ public class KpiColumnConfigServiceImplTest {
 	@Test
 	public void testSaveKpiColumnConfigUpdateExistingDoc() {
 		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
+		kpiColumnConfig1.setBasicProjectConfigId(new ObjectId("6417fe6a74821060a7133de7"));
 		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(kpiColumnConfig1);
-		List<KpiColumnDetails> updatedConfig = kpiColumnConfig1.getKpiColumnDetails();
+		when(kpiColumnConfigRepository.save(any())).thenReturn(kpiColumnConfig1);
 		KpiColumnConfig kpiColumnConfig2 = new KpiColumnConfig();
 		kpiColumnConfig2.setBasicProjectConfigId(kpiColumnConfig1.getBasicProjectConfigId());
 		kpiColumnConfig2.setKpiId(kpiColumnConfig1.getKpiId());
 		KpiColumnConfigDTO kpiColumnConfig2DTO = convertToKpiColumnConfigDTO(kpiColumnConfig2);
 		ServiceResponse response = kpiColumnConfigService.saveKpiColumnConfig(kpiColumnConfig2DTO);
-		assertEquals(response.getSuccess(), Boolean.FALSE);
+		assertEquals(response.getSuccess(), Boolean.TRUE);
+	}
+
+	@Test
+	public void testSaveKpiColumnConfigUpdateExistingDoc2() {
+		KpiColumnConfig kpiColumnConfig1 = kpiColumnConfigs.get(0);
+		kpiColumnConfig1.setBasicProjectConfigId(new ObjectId("6417fe6a74821060a7133de7"));
+		when(kpiColumnConfigRepository.findByBasicProjectConfigIdAndKpiId(any(), any())).thenReturn(null);
+		when(kpiColumnConfigRepository.save(any())).thenReturn(kpiColumnConfig1);
+		KpiColumnConfig kpiColumnConfig2 = new KpiColumnConfig();
+		kpiColumnConfig2.setBasicProjectConfigId(kpiColumnConfig1.getBasicProjectConfigId());
+		kpiColumnConfig2.setKpiId(kpiColumnConfig1.getKpiId());
+		KpiColumnConfigDTO kpiColumnConfig2DTO = convertToKpiColumnConfigDTO(kpiColumnConfig2);
+		ServiceResponse response = kpiColumnConfigService.saveKpiColumnConfig(kpiColumnConfig2DTO);
+		assertEquals(response.getSuccess(), Boolean.TRUE);
 	}
 
 	private KpiColumnConfigDTO convertToKpiColumnConfigDTO(KpiColumnConfig kpiColumnConfig) {

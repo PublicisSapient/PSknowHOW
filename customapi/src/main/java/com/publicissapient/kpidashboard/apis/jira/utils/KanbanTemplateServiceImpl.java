@@ -1,4 +1,4 @@
-package com.publicissapient.kpidashboard.apis.jira.kanban.service;
+package com.publicissapient.kpidashboard.apis.jira.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
