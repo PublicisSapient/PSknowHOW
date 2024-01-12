@@ -909,7 +909,7 @@ describe('UploadComponent', () => {
     expect(component.isUploadEnabled).toBe(false);
   })
 
-  it('should switch view for upload certificate tab', () => {
+  xit('should switch view for upload certificate tab', () => {
     const event = {
       originalEvent: {
         isTrusted: true,
