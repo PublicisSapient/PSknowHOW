@@ -816,8 +816,26 @@ describe('DailyScrumComponent', () => {
 
   it('should set selected user', () => {
     const spySelecteUserChange = spyOn(component.onSelectedUserChange, 'emit');
+    component.assigneeList = [
+      {assigneeId : 'dummyUserId'}
+    ]
     component.setSelectedUser('dummyUserId', 'dummy');
     expect(spySelecteUserChange).toHaveBeenCalled();
+
+  });
+
+  it('should set selected user', () => {
+    const spySelecteUserChange = spyOn(component.onSelectedUserChange, 'emit');
+    component.setSelectedUser('Overall', 'dummy');
+    expect(component.activeIndex2).toBe(0);
+
+  });
+
+  it('should set selected user when assigneeid is blank', () => {
+    const spySelecteUserChange = spyOn(component.onSelectedUserChange, 'emit');
+    spyOn(component, 'getCurrentAssigneeIssueData');
+    component.setSelectedUser('', 'dummy');
+    expect(component.activeIndex2).toBe(0);
 
   });
 
@@ -1446,6 +1464,48 @@ describe('DailyScrumComponent', () => {
       "Remaining Work":{"value":"10","value1":"25.00","unit1":"SP"},
       "Delay":{"value":"0d","unit":"day","value1":"0.00"}}`
     ));
+
+  });
+
+  it('should calculate totals correctly', () => {
+    component.assigneeList = [
+      {
+        "assigneeId": "712020:ef53b477-a4b6-4c00-9af9-fecbcc5e6e53",
+        "assigneeName": "Akshat Shrivastav",
+        "role": "Backend Developer",
+        "cardDetails": {
+          "Remaining Capacity": {
+            "value": "-",
+            "unit": "day",
+            "unit1": "day"
+          },
+          "Remaining Estimate": {
+            "value": "0",
+            "unit": "day",
+            "unit1": "day"
+          },
+          "Remaining Work": {
+            "value": "1",
+            "value1": "0.0",
+            "unit1": "SP"
+          },
+          "Delay": {
+            "value": "-",
+            "unit": "day"
+          }
+        }
+      },
+    ];
+    component.columns = [
+      "Remaining Capacity",
+      "Remaining Estimate",
+      "Remaining Work",
+      "Delay"
+    ];
+    
+    spyOn(component,'convertToHoursIfTime')
+    component.calculateTotal();
+    
   });
 
   it('should set loader to true and emit reloadKPITab event', () => {
@@ -1467,4 +1527,275 @@ describe('DailyScrumComponent', () => {
 
   /**AI Generated */
 
+  describe('YourComponent', () => {
+  
+    it('should initialize the filters object with null values for new filter keys', () => {
+
+      component.filterData = [
+        { filterKey: 'name' },
+        { filterKey: 'age' },
+        { filterKey: 'gender' }
+      ];
+      component.ngOnInit();
+      expect(component.filters).toEqual({
+        name: null,
+        age: null,
+        gender: null
+      });
+    });
+  
+    it('should not overwrite existing filter values in the filters object', () => {
+
+      component.filterData = [
+        { filterKey: 'name' },
+        { filterKey: 'age' },
+        { filterKey: 'gender' }
+      ];
+      component.filters = {
+        name: 'John',
+        age: 30,
+        gender: 'male'
+      };
+      component.ngOnInit();
+      expect(component.filters).toEqual({
+        name: 'John',
+        age: 30,
+        gender: 'male'
+      });
+    });
+  
+    it('should not modify the filters object if filterData is undefined', () => {
+
+      component.filterData = undefined;
+      component.filters = {
+        name: 'John',
+        age: 30,
+        gender: 'male'
+      };
+      component.ngOnInit();
+      expect(component.filters).toEqual({
+        name: 'John',
+        age: 30,
+        gender: 'male'
+      });
+    });
+  });
+
+  it('should call setSelectedUser with the provided id and name', () => {
+    const id = 1;
+    const name = 'John';
+    spyOn(component, 'setSelectedUser');
+    component.handleTabChange(id, name);
+    expect(component.setSelectedUser).toHaveBeenCalledWith(id, name);
+  });
+
+  it('should return the hours with "h" appended', () => {
+    const rminutes = 0;
+    const rhours = 2;
+    const result = component.convertToHours(rminutes, rhours);
+    expect(result).toBe('2h');
+  });
+
+  describe('customSort', () => {
+  
+    beforeEach(() => {
+      component.assigneeList = [
+        {
+          assigneeName: 'John',
+          cardDetails: {
+            field1: { value: 'value1' },
+            field2: { value: 'value2' },
+            field3: { value: 'value3' }
+          }
+        },
+        {
+          assigneeName: 'Jane',
+          cardDetails: {
+            field1: { value: 'value4' },
+            field2: { value: 'value5' },
+            field3: { value: 'value6' }
+          }
+        },
+        {
+          assigneeName: 'Bob',
+          cardDetails: {
+            field1: { value: 'value7' },
+            field2: { value: 'value8' },
+            field3: { value: 'value9' }
+          }
+        }
+      ];
+    });
+
+    it('should sort the assigneeList by the specified field in ascending order', () => {
+
+      const event = { field: 'field2', order: 1 };
+      component.assigneeList = [
+        {
+          assigneeName: 'John',
+          cardDetails: {
+            field1: { value: 'value1' },
+            field2: { value: '-' },
+            field3: { value: 'value3' }
+          }
+        },
+        {
+          assigneeName: 'Jane',
+          cardDetails: {
+            field1: { value: 'value4' },
+            field2: { value: '-' },
+            field3: { value: 'value6' }
+          }
+        },
+      ];
+      component.customSort(event);
+      expect(component.assigneeList).toBeDefined();
+    });
+  
+    it('should sort the assigneeList by the specified field in ascending order', () => {
+
+      const event = { field: 'field2', order: 1 };
+      component.customSort(event);
+      expect(component.assigneeList).toEqual([
+        {
+          assigneeName: 'John',
+          cardDetails: {
+            field1: { value: 'value1' },
+            field2: { value: 'value2' },
+            field3: { value: 'value3' }
+          }
+        },
+        {
+          assigneeName: 'Jane',
+          cardDetails: {
+            field1: { value: 'value4' },
+            field2: { value: 'value5' },
+            field3: { value: 'value6' }
+          }
+        },
+        {
+          assigneeName: 'Bob',
+          cardDetails: {
+            field1: { value: 'value7' },
+            field2: { value: 'value8' },
+            field3: { value: 'value9' }
+          }
+        }
+      ]);
+    });
+  
+    it('should sort the assigneeList by the specified field in descending order', () => {
+
+      const event = { field: 'field2', order: -1 };
+      component.customSort(event);
+      expect(component.assigneeList).toEqual([
+        {
+          assigneeName: 'Bob',
+          cardDetails: {
+            field1: { value: 'value7' },
+            field2: { value: 'value8' },
+            field3: { value: 'value9' }
+          }
+        },
+        {
+          assigneeName: 'Jane',
+          cardDetails: {
+            field1: { value: 'value4' },
+            field2: { value: 'value5' },
+            field3: { value: 'value6' }
+          }
+        },
+        {
+          assigneeName: 'John',
+          cardDetails: {
+            field1: { value: 'value1' },
+            field2: { value: 'value2' },
+            field3: { value: 'value3' }
+          }
+        }
+      ]);
+    });
+  });
+
+  describe('getNameInitials', () => {
+    it('should return the initials of a name with two or fewer words', () => {
+
+      const name = 'John Doe';
+      const result = component.getNameInitials(name);
+      expect(result).toBe('JD');
+    });
+  
+    it('should return the first two initials of a name with more than two words', () => {
+
+      const name = 'John Doe Smith';
+      const result = component.getNameInitials(name);
+      expect(result).toBe('JD');
+    });
+  
+    it('should return the uppercase initials of a name', () => {
+
+      const name = 'john doe abc';
+      const result = component.getNameInitials(name);
+      expect(result).toBe('JD');
+    });
+  });
+
+  describe('getCurrentAssigneeIssueData', () => {
+  
+    beforeEach(() => {
+      component.issueData = [
+        {
+          Assignee: 'John',
+          subTask: ['subtask1', 'subtask2']
+        },
+        {
+          Assignee: 'Jane',
+          subTask: ['subtask3', 'subtask4']
+        },
+        {
+          Assignee: 'Bob',
+          subTask: ['subtask5', 'subtask6']
+        }
+      ];
+    });
+  
+    it('should filter the issueData by the specified assigneeName', () => {
+
+      const assigneeName = 'John';
+      component.getCurrentAssigneeIssueData(assigneeName);
+      expect(component.currentAssigneeissueData).toBeDefined();
+    });
+  
+    it('should update the subTask property if it is a string', () => {
+
+      const assigneeName = 'John';
+      component.getCurrentAssigneeIssueData(assigneeName);
+      expect(component.currentAssigneeissueData).toBeDefined();
+    });
+  
+    it('should not update the subTask property if it is already an object', () => {
+      const assigneeName = 'Jane';
+      component.issueData[1].subTask = [
+        {
+          subTaskName: 'subtask3',
+          subTaskDetails: { field1: 'value1', field2: 'value2' }
+        },
+        {
+          subTaskName: 'subtask4',
+          subTaskDetails: { field1: 'value3', field2: 'value4' }
+        }
+      ];
+      component.getCurrentAssigneeIssueData(assigneeName);
+      expect(component.currentAssigneeissueData).toBeDefined();
+    });
+
+
+    it('should not update when issueData is undefined', () => {
+      const assigneeName = 'Jane';
+      component.issueData = undefined
+      component.getCurrentAssigneeIssueData(assigneeName);
+      expect(component.currentAssigneeissueData).toBeUndefined();
+    });
+  });
+  
 });
