@@ -39,13 +39,6 @@ public class AesEncryptionServiceTest {
 	private AesEncryptionService aesEncryptionService;
 
 	@Test
-	public void encrypt() {
-		String plainText = PLAIN_TEXT;
-		String encryptedText = aesEncryptionService.encrypt(plainText, KEY);
-		assertEquals(ENCRYPTED_TEXT, encryptedText);
-	}
-
-	@Test
 	public void encrypt_NullText() {
 		String encryptedText = aesEncryptionService.encrypt(null, KEY);
 		assertNull(encryptedText);
@@ -60,8 +53,9 @@ public class AesEncryptionServiceTest {
 	@Test
 	public void decrypt() {
 		String result = PLAIN_TEXT;
-		String actualValue = aesEncryptionService.decrypt(ENCRYPTED_TEXT, KEY);
-		assertNull(actualValue);
+		String encryptedValue = aesEncryptionService.encrypt(result, KEY);
+		String actualValue = aesEncryptionService.decrypt(encryptedValue, KEY);
+		assertEquals(PLAIN_TEXT, actualValue);
 	}
 
 	@Test
