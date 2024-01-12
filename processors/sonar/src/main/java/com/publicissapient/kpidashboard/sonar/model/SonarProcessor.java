@@ -24,7 +24,6 @@ import java.util.List;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.constant.ProcessorType;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
-import org.bson.types.ObjectId;
 
 /**
  * The Sonar Processor which extends processor.
@@ -42,7 +41,6 @@ public class SonarProcessor extends Processor {
 	 */
 	public static SonarProcessor getSonarConfig(List<String> metrics) {
 		SonarProcessor sonarInput = new SonarProcessor();
-		sonarInput.setId(new ObjectId("64428163f96c42bdbc8d4ce4"));
 		sonarInput.setProcessorName(ProcessorConstants.SONAR);
 		sonarInput.setProcessorType(ProcessorType.SONAR_ANALYSIS);
 		sonarInput.setOnline(true);

@@ -49,8 +49,6 @@ import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
 import com.publicissapient.kpidashboard.common.service.ToolCredentialProvider;
 import com.publicissapient.kpidashboard.common.util.RestOperationsFactory;
 import com.publicissapient.kpidashboard.sonar.config.SonarConfig;
-import com.publicissapient.kpidashboard.sonar.model.Paging;
-import com.publicissapient.kpidashboard.sonar.model.SearchProjectsResponse;
 import com.publicissapient.kpidashboard.sonar.model.SonarProcessorItem;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.util.SonarDashboardUrl;
@@ -101,28 +99,8 @@ public class Sonar8Client implements SonarClient {
 	 */
 	@Override
 	public List<SonarProcessorItem> getSonarProjectList(ProcessorToolConnection sonarServer) {
-		List<SonarProcessorItem> projectList = new ArrayList<>();
-
-		int defaultPageSize = sonarConfig.getPageSize();
-		Paging paging = new Paging(1, defaultPageSize, 0);
-
-		int nextPageIndex = paging.getPageIndex();
-		do {
-
-			SearchProjectsResponse response = SonarClientCommonUtils.getProjects(sonarServer, paging, nextPageIndex,
-					toolCredentialProvider, restOperations);
-			List<SonarProcessorItem> theProjectsList = SonarClientCommonUtils.getProjectsListFromResponse(response,
-					sonarServer);
-			if (CollectionUtils.isNotEmpty(theProjectsList)) {
-				projectList.addAll(theProjectsList);
-			}
-
-			paging = response == null ? null : response.getPaging();
-			nextPageIndex++;
-
-		} while (SonarClientCommonUtils.hasNextPage(paging));
-
-		return projectList;
+		return SonarClientCommonUtils.getProcessorItemList(sonarServer, sonarConfig, toolCredentialProvider,
+				restOperations);
 	}
 
 	/**
@@ -227,63 +205,7 @@ public class Sonar8Client implements SonarClient {
 	@Override
 	public List<SonarHistory> getPastSonarDetails(SonarProcessorItem project, HttpEntity<String> httpHeaders,
 			String metrics) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
-		String lastUpdated = SonarClientCommonUtils.DEFAULT_DATE;
-		if (project.getUpdatedTime() != 0) {
-			lastUpdated = sdf.format(new Date(project.getUpdatedTime()));
-			log.info("FormattedTime: {}", lastUpdated);
-		}
-		log.info("Last UpdatedTime: {}", lastUpdated);
-
-		String url = "";
-
-		List<SonarHistory> codeList = new ArrayList<>();
-		try {
-			int pageIndex = 1;
-			do {
-				url = SonarClientCommonUtils.createHistoryUrl(project, metrics, lastUpdated, pageIndex);
-				ResponseEntity<String> response = restOperations.exchange(url, HttpMethod.GET, httpHeaders,
-						String.class);
-				JSONParser jsonParser = new JSONParser();
-				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-				if (jsonObject != null) {
-					Gson gson = new Gson();
-					Type listType = new TypeToken<ArrayList<SonarMeasureData>>() {
-					}.getType();
-					List<SonarMeasureData> qualityList = gson
-							.fromJson(jsonObject.get(SonarClientCommonUtils.PROJECT_MSR).toString(), listType);
-					if (CollectionUtils.isEmpty(qualityList)) {
-						return codeList;
-					}
-					if (qualityList.get(0).getHistory().size() <= 1) {
-						return codeList;
-					}
-
-					for (int singleHistory = 0; singleHistory < qualityList.get(0).getHistory()
-							.size(); singleHistory++) {
-						SonarHistory sonarHistory = new SonarHistory();
-						sonarHistory.setKey(project.getKey());
-						sonarHistory.setName(project.getProjectName());
-						sonarHistory.setProcessorItemId(project.getId());
-						sonarHistory.setBranch(project.getBranch());
-
-						SonarClientCommonUtils.populateCodeQualityHistory(qualityList, singleHistory, sonarHistory);
-						project.setTimestamp(sonarHistory.getTimestamp());
-						codeList.add(sonarHistory);
-					}
-					pageIndex++;
-				} else {
-					break;
-				}
-			} while (pageIndex < 100);
-
-		} catch (ParseException | RestClientException | NullPointerException ex) {
-			log.error("Unable to Parse Response for url: {}", url);
-			log.error(ex.getMessage(), ex);
-		}
-
-		return codeList;
+		return SonarClientCommonUtils.getSonarHistories(project, httpHeaders, metrics, restOperations);
 	}
 
 }
