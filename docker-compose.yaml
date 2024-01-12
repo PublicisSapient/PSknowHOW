@@ -13,8 +13,6 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=<DB ROOT USERNAME>
       - MONGO_INITDB_ROOT_PASSWORD=<DB ROOT PASSWORD>
-      - MONGODB_APPLICATION_USER=<DB APPLICATION USERNAME>
-      - MONGODB_APPLICATION_PASS=<DB APPLICATION PASSWORD>
     networks:
       - Network_apps
 
@@ -41,8 +39,8 @@ services:
       - corsFilterValidOrigin=<Your-Public-IP>,localhost,<Your-DNS>
       - versionnumber=7.0.0
       - JAVA_OPTS-XX:+HeapDumpOnOutOfMemoryError
-      - spring.data.mongodb.username=<DB APPLICATION USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.username=<DB ROOT USERNAME>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
       - auth.secret=<Your Auth Secret>
     links:
@@ -91,7 +89,7 @@ services:
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -116,7 +114,7 @@ services:
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -140,7 +138,7 @@ services:
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
@@ -165,7 +163,7 @@ services:
     environment:
       - JAVA_OPTS=-XX:+HeapDumpOnOutOfMemoryError
       - spring.data.mongodb.username=<DB ROOT USERNAME>
-      - spring.data.mongodb.password=<DB APPLICATION PASSWORD>
+      - spring.data.mongodb.password=<DB ROOT PASSWORD>
       - aesEncryptionKey=<Your AES Encryption KEY here>
     links:
       - MongoDB:mongodb
