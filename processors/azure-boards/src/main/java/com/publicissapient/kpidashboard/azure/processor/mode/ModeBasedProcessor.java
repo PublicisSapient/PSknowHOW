@@ -18,16 +18,15 @@
 
 package com.publicissapient.kpidashboard.azure.processor.mode;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.publicissapient.kpidashboard.azure.model.AzureToolConfig;
@@ -75,20 +74,13 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
 		CollectionUtils.emptyIfNull(projectConfigList).forEach(projectConfig -> {
 			ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-			try {
-				BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-				projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
-				projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-				projectConfFieldMapping.setAzure(getAzureToolConfig(projectConfig.getId()));
-				projectConfFieldMapping.setProjectKey(getAzureProjectKey(projectConfig.getId()));
-				projectConfFieldMapping.setAzureBoardToolConfigId(getToolConfigId(projectConfig.getId()));
-				projectConfFieldMapping.setProjectBasicConfig(projectConfig);
-			} catch (IllegalAccessException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-			} catch (InvocationTargetException e) {
-				log.error("Error while copying Project Config to ProjectConfFieldMapping invocation error", e);
-				log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-			}
+			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
+			projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
+			projectConfFieldMapping.setAzure(getAzureToolConfig(projectConfig.getId()));
+			projectConfFieldMapping.setProjectKey(getAzureProjectKey(projectConfig.getId()));
+			projectConfFieldMapping.setAzureBoardToolConfigId(getToolConfigId(projectConfig.getId()));
+			projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 			CollectionUtils.emptyIfNull(fieldMappingList).stream()
 					.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
 					.forEach(projectConfFieldMapping::setFieldMapping);
@@ -129,7 +121,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 	private String getAzureProjectKey(ObjectId basicProjectConfigId) {
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
-		return Optional.of(azureBoardsDetails.get(0).getProjectKey()).orElse(StringUtils.EMPTY);
+		return azureBoardsDetails.isEmpty() ? StringUtils.EMPTY :
+				Optional.ofNullable(azureBoardsDetails.get(0)).map(ProjectToolConfig::getProjectKey).orElse(StringUtils.EMPTY);
 	}
 
 	/**
@@ -144,11 +137,7 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(azureBoardsDetails)) {
-			try {
-				BeanUtils.copyProperties(toolObj, azureBoardsDetails.get(0));
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				log.error("Could not set AzureToolConfig", e);
-			}
+			BeanUtils.copyProperties(toolObj, azureBoardsDetails.get(0));
 			if (Optional.ofNullable(azureBoardsDetails.get(0).getConnectionId()).isPresent()) {
 				Optional<Connection> conn = connectionRepository.findById(azureBoardsDetails.get(0).getConnectionId());
 				if (conn.isPresent()) {

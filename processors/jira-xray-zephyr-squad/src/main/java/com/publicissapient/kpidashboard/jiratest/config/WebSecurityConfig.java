@@ -17,9 +17,9 @@
 
 package com.publicissapient.kpidashboard.jiratest.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
 /**
  * Security configuration
@@ -27,10 +27,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author HirenKumar babariya
  */
 @Configuration
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
-	@Override
-	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/processor/run").antMatchers("/togglz-console/*");
+	//TODO:Fix websecurity using new spring boot.
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers("/processor/run", "/togglz-console/*");
 	}
 }

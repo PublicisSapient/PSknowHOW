@@ -28,7 +28,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 
 /**
- * An extension of {@link WebMvcConfigurerAdapter} to provide project specific
+ * An extension of {@link WebMvcConfigurer} to provide project specific
  * web mvc configuration.
  * 
  * @author anisingh4
@@ -44,7 +44,7 @@ import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.publicissapient.kpidashboard.apis")
-public class WebMVCConfig extends WebMvcConfigurerAdapter {
+public class WebMVCConfig implements WebMvcConfigurer {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable("api");

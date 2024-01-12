@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -35,6 +33,8 @@ import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationServi
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class call repository method to save the user authentication.

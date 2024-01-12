@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
@@ -56,7 +56,8 @@ public class NotificationEventProducer {
 				ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, headerDetails, topic);
 				LOGGER.info(
 						"created producer record.....");
-				ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
+				//TODO:Check the functionality
+				ListenableFuture<SendResult<String, Object>> listenableFuture = (ListenableFuture<SendResult<String, Object>>) kafkaTemplate.send(producerRecord);
 				LOGGER.info(
 						"sent msg.....");
 				listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {

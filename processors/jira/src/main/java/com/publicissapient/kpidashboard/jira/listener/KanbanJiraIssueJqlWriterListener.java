@@ -26,8 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.batch.core.ItemWriteListener;
+import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -59,7 +60,7 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	 * org.springframework.batch.core.ItemWriteListener#beforeWrite(java.util.List)
 	 */
 	@Override
-	public void beforeWrite(List<? extends CompositeResult> compositeResult) {
+	public void beforeWrite(Chunk<? extends CompositeResult> compositeResult) {
 		// in future we can use this method to do something before saving data in db
 	}
 
@@ -70,12 +71,12 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	 * org.springframework.batch.core.ItemWriteListener#afterWrite(java.util.List)
 	 */
 	@Override
-	public void afterWrite(List<? extends CompositeResult> compositeResults) {
+	public void afterWrite(Chunk<? extends CompositeResult> compositeResults) {
 		log.info("Saving status in Processor execution Trace log for Kanban JQL project");
 
 		List<ProcessorExecutionTraceLog> processorExecutionToSave = new ArrayList<>();
-		List<KanbanJiraIssue> jiraIssues = compositeResults.stream().map(CompositeResult::getKanbanJiraIssue)
-				.collect(Collectors.toList());
+		List<KanbanJiraIssue> jiraIssues = compositeResults.getItems().stream().map(CompositeResult::getKanbanJiraIssue)
+				.toList();
 
 		Map<String, List<KanbanJiraIssue>> projectWiseIssues = jiraIssues.stream()
 				.collect(Collectors.groupingBy(KanbanJiraIssue::getBasicProjectConfigId));
@@ -118,7 +119,7 @@ public class KanbanJiraIssueJqlWriterListener implements ItemWriteListener<Compo
 	}
 
 	@Override
-	public void onWriteError(Exception exception, List<? extends CompositeResult> compositeResult) {
+	public void onWriteError(Exception exception, Chunk<? extends CompositeResult> compositeResult) {
 		log.error("Exception occured while writing jira Issue for Kanban JQL project ", exception);
 	}
 }
