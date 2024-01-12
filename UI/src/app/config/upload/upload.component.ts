@@ -243,7 +243,7 @@ export class UploadComponent implements OnInit {
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: false
+                    expanded: true
                 }
             );
             this.selectedView = 'logo_upload';
@@ -254,19 +254,20 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
-        this.selectedView = 'cert_upload';
+        // this.selectedView = 'cert_upload';
         if (this.isSuperAdmin) {
-            this.items.unshift(
+            this.items.push(
                 {
                     label: 'Upload certificate',
                     icon: 'pi pi-image',
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: true
+                    expanded: false,
+                    disabled: true
                 }
             );
-            this.selectedView = 'cert_upload';
+            // this.selectedView = 'cert_upload';
         } else {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
@@ -334,12 +335,12 @@ export class UploadComponent implements OnInit {
                 this.message = '';
             }
                 break;
-            case 'Upload certificate': {
-                this.selectedView = 'cert_upload';
-                this.error = '';
-                this.message = '';
-            }
-                break;
+            // case 'Upload certificate': {
+            //     this.selectedView = 'cert_upload';
+            //     this.error = '';
+            //     this.message = '';
+            // }
+            //     break;
             case 'Test Execution Percentage': {
                 this.handleTepSelect('upload_tep');
                 this.addActiveToTab();
