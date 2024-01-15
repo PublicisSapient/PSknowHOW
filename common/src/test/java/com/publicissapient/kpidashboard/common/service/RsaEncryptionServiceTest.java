@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Map;
 
@@ -60,6 +61,21 @@ public class RsaEncryptionServiceTest {
 		String decryptResult = rsaEncryptionService.decrypt(cipherContent, PRIVATE_KEY);
 		// Assertion of 'plain' and 'decryptResult'.
 		assertEquals(plain, decryptResult);
+
+	}
+
+	@Test
+	public void cipherTestEmpty() {
+
+		String cipherContent = rsaEncryptionService.encrypt("", PUBLIC_KEY);
+		assertNull(cipherContent);
+		String decryptResult = rsaEncryptionService.decrypt("", PRIVATE_KEY);
+		assertNull(decryptResult);
+
+		cipherContent = rsaEncryptionService.encrypt("text", "");
+		assertNull(cipherContent);
+		decryptResult = rsaEncryptionService.decrypt("text", "");
+		assertNull(decryptResult);
 
 	}
 

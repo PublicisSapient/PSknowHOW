@@ -45,7 +45,6 @@
             **com/publicissapient/kpidashboard/**/*Constant.java,
             **com/publicissapient/kpidashboard/**/*Properties.java,
             **com/publicissapient/kpidashboard/**/factory/**,
-            **com/publicissapient/kpidashboard/**/controller/**,
             **com/publicissapient/kpidashboard/**/scheduler/**,
         </sonar.coverage.exclusions>
         <sonar.test.exclusions>

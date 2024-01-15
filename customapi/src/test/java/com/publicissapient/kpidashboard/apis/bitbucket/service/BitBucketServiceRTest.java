@@ -20,8 +20,12 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -30,7 +34,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -103,11 +110,11 @@ public class BitBucketServiceRTest {
 	@Before
 	public void setup() {
 
-		// bitbucketKPIServiceFactory.initMyServiceCache();
-
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest(KPICode.CODE_COMMIT.getKpiId());
 		kpiRequest.setLabel("PROJECT");
+		String[] ids = { "5" };
+		kpiRequest.setIds(ids);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -126,6 +133,16 @@ public class BitBucketServiceRTest {
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		List<HierarchyLevel> hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(false)).thenReturn(map);
+
+		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 
 		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
@@ -170,7 +187,16 @@ public class BitBucketServiceRTest {
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
-		List<KpiElement> resultList = bitbucketServiceR.process(kpiRequest);
+		List<KpiElement> resultList = null;
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
+					.thenReturn(mockService);
+			resultList = bitbucketServiceR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+		}
 
 		resultList.forEach(k -> {
 
@@ -179,7 +205,7 @@ public class BitBucketServiceRTest {
 			switch (kpi) {
 
 			case CODE_COMMIT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Code Commit Time"));
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
 				break;
 
 			default:
@@ -198,17 +224,20 @@ public class BitBucketServiceRTest {
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), mcokAbstract);
 
-		try (MockedStatic<BitBucketKPIServiceFactory> utilities = Mockito
-				.mockStatic(BitBucketKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) BitBucketKPIServiceFactory
-					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
-		}
-
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 
 		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
-		List<KpiElement> resultList = bitbucketServiceR.process(kpiRequest);
+		List<KpiElement> resultList = null;
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
+					.thenReturn(mockService);
+			resultList = bitbucketServiceR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+		}
 
 		resultList.forEach(k -> {
 
@@ -217,7 +246,7 @@ public class BitBucketServiceRTest {
 			switch (kpi) {
 
 			case CODE_COMMIT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Code Commit Time"));
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
 				break;
 
 			default:
@@ -235,20 +264,21 @@ public class BitBucketServiceRTest {
 		BitBucketKPIService mcokAbstract = codeCommitServiceImpl;
 		bitbucketServiceCache.put(KPISource.EXCEL.name(), mcokAbstract);
 
-		try (MockedStatic<BitBucketKPIServiceFactory> utilities = Mockito
-				.mockStatic(BitBucketKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) BitBucketKPIServiceFactory
-					.getBitBucketKPIService(KPICode.CODE_COMMIT.name())).thenReturn(mcokAbstract);
-		}
-
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
-
-		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
 		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
 				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
 
-		List<KpiElement> resultList = bitbucketServiceR.process(kpiRequest);
+		List<KpiElement> resultList = null;
+		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
+			CodeCommitServiceImpl mockService = mock(CodeCommitServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(commitKpiElement);
+			mockedStatic.when(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())))
+					.thenReturn(mockService);
+			resultList = bitbucketServiceR.process(kpiRequest);
+			mockedStatic
+					.verify(() -> BitBucketKPIServiceFactory.getBitBucketKPIService(eq(KPICode.CODE_COMMIT.name())));
+		}
 
 		resultList.forEach(k -> {
 
@@ -257,7 +287,7 @@ public class BitBucketServiceRTest {
 			switch (kpi) {
 
 			case CODE_COMMIT:
-				assertThat("Kpi Name :", k.getKpiName(), equalTo("Code Commit Time"));
+				assertThat("Kpi Name :", k.getKpiName(), equalTo("Check-Ins & Merge Requests"));
 				break;
 
 			default:

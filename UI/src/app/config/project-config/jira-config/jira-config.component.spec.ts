@@ -50,6 +50,7 @@ describe('JiraConfigComponent', () => {
   let httpService: HttpService;
   let httpMock;
   let router;
+  let messageService;
   const baseUrl = environment.baseUrl;
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' })
@@ -182,6 +183,7 @@ describe('JiraConfigComponent', () => {
     sharedService = TestBed.inject(SharedService);
     sharedService.setSelectedProject(fakeProject);
     sharedService.setSelectedToolConfig(fakeSelectedTool);
+    messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
   });
@@ -1655,5 +1657,244 @@ describe('JiraConfigComponent', () => {
     expect(result).toBe(true);
   });
 
+  it('should give error when getting plans for bamboo', () => {
+    const connectionId = 'dsdaddad';
+    component.bambooPlanList = [];
+    component.formTemplate = {
+      group: 'Bamboo',
+      elements: [
+        {
+          type: 'dropdown',
+          label: 'Job Type',
+          id: 'jobType',
+          validators: ['required'],
+          containerClass: 'p-sm-6',
+          show: true,
+          isLoading: false
+        },
+      ]
+    }
+    component.toolForm = new UntypedFormGroup({
+      jobType: new UntypedFormControl(),
+      planKey : new UntypedFormControl(),
+      branchKey:  new UntypedFormControl(),
+    })
+    component.toolForm.controls['jobType'].setValue('Build')
+    component.bambooBranchList = []
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    const errResponse = {
+      message: "No plans details found",
+      success: false
+    }
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getPlansForBamboo').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.getPlansForBamboo(connectionId);
+    expect(spy).toHaveBeenCalled(); 
+  })
 
+  it('should handle deployment projects when success false', () => {
+    const connectionId = 'dsdaddad';
+    component.formTemplate = {
+      group: 'Bamboo',
+      elements: [
+        {
+          type: 'dropdown',
+          label: 'Job Type',
+          id: 'jobType',
+          validators: ['required'],
+          containerClass: 'p-sm-6',
+          show: true,
+          isLoading: false
+        },
+      ]
+    }
+    component.deploymentProjectList = [];
+    component.toolForm = new UntypedFormGroup({
+      jobType: new UntypedFormControl({name: 'Deploy'}),
+    })
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    const errResponse = {
+      error: 'Something went wrong',
+      success: false
+    }
+    spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough(); 
+    component.getDeploymentProjects(connectionId);
+    expect(spy).toHaveBeenCalled(); 
+  
+  })
+
+  it('should handle error on getting deployment projects', () => {
+    const connectionId = 'dsdaddad';
+    component.formTemplate = {
+      group: 'Bamboo',
+      elements: [
+        {
+          type: 'dropdown',
+          label: 'Job Type',
+          id: 'jobType',
+          validators: ['required'],
+          containerClass: 'p-sm-6',
+          show: true,
+          isLoading: false
+        },
+      ]
+    }
+    component.deploymentProjectList = [];
+    component.toolForm = new UntypedFormGroup({
+      jobType: new UntypedFormControl({name: 'Deploy'}),
+    })
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    const errResponse = {
+      message: 'Something went wrong',
+      error: 'Error'
+    }
+    spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough(); 
+    component.getDeploymentProjects(connectionId);
+    expect(spy).toHaveBeenCalled(); 
+  
+  })
+
+  xit('should throw error on getting jenkins job names', () => {
+    const connectionId = 'skdhakda';
+    const errResponse = {
+        error : {
+          message : 'error msg'
+        }
+    }
+    spyOn(component, 'showLoadingOnFormElement')
+    spyOn(httpService, 'getJenkinsJobNameList').and.returnValue(throwError(errResponse));
+    component.jenkinsJobNameList = [];
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    const spy = spyOn(messageService, 'add')
+    component.getJenkinsJobNames(connectionId);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should give error while getting connection list', () => {
+    component.loading = true;
+    const errResponse = {
+      error : 'Something went wrong',
+      success: false
+    }
+    spyOn(httpService, 'getAllConnectionTypeBased').and.returnValue(of(errResponse))
+    component.connections = [];
+    const spy = spyOn(messageService, 'add');
+    component.getConnectionList('Jira');
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should check boards when queryEnabled is false', () => {
+    component.queryEnabled = false;
+    component.toolForm = new UntypedFormGroup({
+      projectKey: new UntypedFormControl(false),
+    })
+    const spy = component.checkBoards();
+    expect(spy).toBeTruthy();
+  })
+
+  it('should handle error when catching error on getting azure release pipelines', () => {
+    const connection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    component.azurePipelineApiVersion = '6.0';
+    const errResponse = {
+      error: {
+        message: "No pipelines details found",
+      },
+      success: false
+    }
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(errResponse))
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    component.azurePipelineList = [];
+    const spy = spyOn(messageService, 'add').and.callThrough();
+    component.getAzureReleasePipelines(connection);
+    expect(spy).toHaveBeenCalled(); 
+  })
+
+  it('should handle error when success is false on getting azure release pipelines', () => {
+    const connection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    component.azurePipelineApiVersion = '6.0';
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(errResponse))
+    component.azurePipelineList = [];
+    const spy = spyOn(messageService, 'add');
+    component.getAzureReleasePipelines(connection);
+    expect(spy).toHaveBeenCalled(); 
+  })
+
+  it('should handle error when apiVersionHandler when sucess is false', () => {
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.toolForm = new UntypedFormGroup({
+      organizationKey: new UntypedFormControl()
+    })
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    component.projectKeyList = [];
+    component.branchList = [];
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getProjectKeyList').and.returnValue(of(errResponse))
+    component.apiVersionHandler('6.0');
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should handle error when apiVersionHandler when sucess is false', () => {
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.toolForm = new UntypedFormGroup({
+      organizationKey: new UntypedFormControl(),
+      apiVersion: new UntypedFormControl('6.0')
+    })
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    component.disableBranchDropDown = true;
+    component.branchList = [];
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getBranchListForProject').and.returnValue(of(errResponse))
+    component.projectKeyClickHandler('ENGINEERING.KPIDASHBOARD.PROCESSORS');
+    expect(spy).toHaveBeenCalled();
+  })
 });

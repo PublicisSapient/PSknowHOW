@@ -1,8 +1,5 @@
 package com.publicissapient.kpidashboard.jira.writer;
 
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyMap;
-import static org.mockito.Mockito.anySet;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
