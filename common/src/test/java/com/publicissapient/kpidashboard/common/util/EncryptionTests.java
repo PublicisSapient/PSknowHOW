@@ -21,6 +21,9 @@ package com.publicissapient.kpidashboard.common.util;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+
+import java.security.GeneralSecurityException;
 
 public class EncryptionTests {
 
@@ -29,6 +32,32 @@ public class EncryptionTests {
 		String key = Encryption.getStringKey();
 		assertNotEquals(null, key);
 		assertNotEquals("", key);
+	}
+
+
+	@Test
+	public void testAesEncryptionAndDecryption() throws GeneralSecurityException, EncryptionException {
+		String plainText = "Hello, World!";
+		String key = Encryption.getStringKey();
+
+		String encryptedText = Encryption.aesEncryptString(plainText, key);
+		String decryptedText = Encryption.aesDecryptString(encryptedText, key);
+
+		Assertions.assertEquals(plainText, decryptedText);
+	}
+
+	@Test
+	public void testAesEncryptionAndDecryptionWithInvalidKey() {
+		String plainText = "Hello, World!";
+		String key = "InvalidKey";
+
+		Assertions.assertThrows(GeneralSecurityException.class, () -> {
+			Encryption.aesEncryptString(plainText, key);
+		});
+
+		Assertions.assertThrows(GeneralSecurityException.class, () -> {
+			Encryption.aesDecryptString(plainText, key);
+		});
 	}
 
 }
