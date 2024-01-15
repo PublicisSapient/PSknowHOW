@@ -82,7 +82,6 @@ public class CustomChangelogJsonParserTest {
 		author1.put("name", "John Doe");
 		author1.put("key", "johndoe");
 		author1.put("self", "http://example.com/rest/api/2/user/101");
-		// Add more author details as needed
 
 		changelogGroup1.put("author", author1);
 
