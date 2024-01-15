@@ -1,9 +1,11 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -13,12 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -241,4 +245,77 @@ public class KanbanJiraIssueProcessorImplTest {
 		return fieldMappingDataFactory.getFieldMappings();
 	}
 
+	@Test
+	public void testSetEpicIssueData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		// Arrange
+		FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
+		fieldMapping.setEpicJobSize("8.0");
+		fieldMapping.setEpicRiskReduction("8.0");
+		fieldMapping.setEpicTimeCriticality("8.0");
+		fieldMapping.setEpicUserBusinessValue("8.0");
+		fieldMapping.setEpicWsjf("8.0");
+		fieldMapping.setEpicPlannedValue("8.0");
+		fieldMapping.setEpicAchievedValue("8.0");
+
+		KanbanJiraIssue jiraIssue = new KanbanJiraIssue(); // Set up your JiraIssue instance
+		jiraIssue.setBusinessValue(8.0);
+		jiraIssue.setRiskReduction(8.0);
+		jiraIssue.setTimeCriticality(8.0);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		// Add other fields as needed
+
+		// Use reflection to access the private method
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class, KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+
+		// Act
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+
+		// Assert
+//			assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add assertions for other fields
+	}
+
+	@Test
+	public void testSetStoryLinkWithDefect() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(jiraProcessorConfig.getExcludeLinks()).thenReturn(Arrays.asList("Blocks"));
+		KanbanJiraIssue jiraIssue=new KanbanJiraIssue();
+		jiraIssue.setTypeName("Bug");
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setStoryLinkWithDefect", Issue.class, KanbanJiraIssue.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, issues.get(0), jiraIssue);
+	}
+
+	@Test
+	public void testSetJiraAssigneeDetailsWhenUserIsNull() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", KanbanJiraIssue.class, User.class, ProjectConfFieldMapping.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, new KanbanJiraIssue(), null,projectConfFieldMapping);
+	}
+
+	@Test
+	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class, Map.class);
+		method.setAccessible(true);
+		FieldMapping fieldMapping=new FieldMapping();
+		fieldMapping.setRootCause("code_issue");
+		Map<String,String> map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "code");
+		map.put("id", "19121");
+		JSONObject jsonObject = new JSONObject(map);
+		List<Object> rcaList = new ArrayList<>();
+		rcaList.add(jsonObject);
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String,IssueField> fields = new HashMap<>();
+		fields.put("code_issue",issueField);
+
+		method.invoke(transformFetchedIssueToKanbanJiraIssue,fieldMapping,fields);
+	}
 }

@@ -18,8 +18,11 @@
 
 package com.publicissapient.kpidashboard.jira.service;
 
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -39,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.atlassian.jira.rest.client.api.RestClientException;
 import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -206,6 +210,16 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> versions = jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
 		Assert.assertEquals(0, versions.size());
 	}
+//	@Test(expected = RestClientException.class)
+//	public void getVersionTest1() throws IOException, ParseException {
+//		projectToolConfigsBoard = getMockProjectToolConfig("63bfa0d5b7617e260763ca21");
+//		createProjectConfigMap(false);
+//		when(jiraProcessorConfig.getJiraVersionApi()).thenReturn("rest/api/7/project/{projectKey}/versions");
+//		URL mockedUrl = new URL("https://www.testurl.com/");
+//		Connection connection1 = new Connection();
+//		connection1.setBaseUrl("https://www.testurl.com/");
+//		when(projectConfFieldMapping1.getJira()).thenThrow(new RestClientException(new RestClientException(new Exception())));
+//	}
 
 	@Test
 	public void testGetApiHost() {
@@ -338,5 +352,72 @@ public class JiraCommonServiceTest {
 				.newInstance("/json/default/field_mapping.json");
 		return fieldMappingDataFactory.findByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
 	}
+
+	@Test
+	public void testGetApiHostWithUiHost() throws UnknownHostException {
+		// Arrange
+		when(jiraProcessorConfig.getUiHost()).thenReturn("example.com");
+		String expected = "https:\\\\example.com";
+
+		// Act
+		String result = jiraCommonService.getApiHost();
+
+		// Assert
+		assertTrue(result.contains("example.com"));
+	}
+
+	@Test
+	public void testGetApiHostWithoutUiHost() {
+		// Arrange
+		when(jiraProcessorConfig.getUiHost()).thenReturn(null);
+
+		// Act and Assert
+		UnknownHostException exception = assertThrows(UnknownHostException.class, () -> {
+			jiraCommonService.getApiHost();
+		});
+
+		assertEquals("Api host not found in properties.", exception.getMessage());
+	}
+
+//	@Test
+//	public void testGetOptionalStringWhenAttributeExists() {
+//		// Arrange
+//		JSONObject jsonObject = new JSONObject();
+//		jsonObject.put("attributeName", "TestValue");
+//
+//		// Act
+//		 yourClassUnderTest = new YourClassUnderTest();
+//		String result = yourClassUnderTest.getOptionalString(jsonObject, "attributeName");
+//
+//		// Assert
+//		assertEquals("TestValue", result);
+//	}
+//
+//	@Test
+//	public void testGetOptionalStringWhenAttributeDoesNotExist() {
+//		// Arrange
+//		JSONObject jsonObject = new JSONObject();
+//
+//		// Act
+//		YourClassUnderTest yourClassUnderTest = new YourClassUnderTest();
+//		String result = yourClassUnderTest.getOptionalString(jsonObject, "nonExistentAttribute");
+//
+//		// Assert
+//		assertNull(result);
+//	}
+//
+//	@Test
+//	public void testGetOptionalStringWhenAttributeIsNull() {
+//		// Arrange
+//		JSONObject jsonObject = new JSONObject();
+//		jsonObject.put("attributeName", null);
+//
+//		// Act
+//		YourClassUnderTest yourClassUnderTest = new YourClassUnderTest();
+//		String result = yourClassUnderTest.getOptionalString(jsonObject, "attributeName");
+//
+//		// Assert
+//		assertNull(result);
+//	}
 
 }

@@ -54,11 +54,6 @@ public class CustomChangelogJsonParserTest {
 		sampleJson.put("author", changelogGroup1.getJSONObject("author"));
 		sampleJson.put("items", changelogGroup1.getJSONArray("items"));
 
-		// Mock behavior for the dependencies
-		Mockito.when(mockJsonObject.getJSONObject("author")).thenReturn(changelogGroup1.getJSONObject("author"));
-		Mockito.when(mockJsonObject.getJSONArray("items")).thenReturn(changelogGroup1.getJSONArray("items"));
-		Mockito.when(mockChangelogItemJsonParser.parse(Mockito.any(JSONObject.class))).thenReturn(changelogItem);
-
 		try {
 			ChangelogGroup changelogGroup = customChangelogJsonParser.parse(sampleJson);
 
@@ -87,7 +82,6 @@ public class CustomChangelogJsonParserTest {
 		author1.put("name", "John Doe");
 		author1.put("key", "johndoe");
 		author1.put("self", "http://example.com/rest/api/2/user/101");
-		// Add more author details as needed
 
 		changelogGroup1.put("author", author1);
 
