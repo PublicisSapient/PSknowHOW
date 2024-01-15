@@ -11,7 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraProcessorCacheEvictorTest {
@@ -50,6 +52,33 @@ public class JiraProcessorCacheEvictorTest {
         boolean cleaned = jiraProcessorCacheEvictor.evictCache("cacheEndPoint", "cacheName");
 
         assertFalse(cleaned);
+    }
+
+    @Test
+    public void testEvictCache_FailedEviction() {
+        // Arrange
+        String cacheEndPoint = "yourCacheEndPoint";
+        String cacheName = "yourCacheName";
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+
+        // Mocking the configuration values
+        when(jiraProcessorConfig.getCustomApiBaseUrl()).thenReturn("http://your-custom-api-base-url");
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(jiraProcessorConfig.getCustomApiBaseUrl());
+        uriBuilder.path("/");
+        uriBuilder.path(cacheEndPoint);
+        uriBuilder.path("/");
+        uriBuilder.path(cacheName);
+
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+
+        // Act
+        boolean result = jiraProcessorCacheEvictor.evictCache(cacheEndPoint, cacheName);
+
+        // Assert
+        assertFalse(result);
     }
 }
 
