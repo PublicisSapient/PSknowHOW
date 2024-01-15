@@ -35,7 +35,7 @@
             **com/publicissapient/kpidashboard/**/model/**,
             **com/publicissapient/kpidashboard/**/repository/**,
             **com/publicissapient/kpidashboard/**/config/**,
-            **com/publicissapient/kpidashboard/**/util/**,
+            **com/publicissapient/kpidashboard/**/utils/**,
             **com/publicissapient/kpidashboard/**/enums/*,
             **com/publicissapient/kpidashboard/**/constant/*,
             **com/publicissapient/kpidashboard/**/pojos/*,
@@ -44,9 +44,7 @@
             **com/publicissapient/kpidashboard/**/*Constants.java,
             **com/publicissapient/kpidashboard/**/*Constant.java,
             **com/publicissapient/kpidashboard/**/*Properties.java,
-            **com/publicissapient/kpidashboard/**/factory/**,
-            **com/publicissapient/kpidashboard/**/controller/**,
-            **com/publicissapient/kpidashboard/**/scheduler/**,
+            **com/publicissapient/kpidashboard/**/factory/**
         </sonar.coverage.exclusions>
         <sonar.test.exclusions>
             **/src/test/java/**
