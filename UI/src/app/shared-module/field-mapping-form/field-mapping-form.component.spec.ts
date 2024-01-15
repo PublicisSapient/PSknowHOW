@@ -19,7 +19,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpClientTestingModule,HttpTestingController } from '@angular/common/http/testing';
 import { HttpService } from 'src/app/services/http.service';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MessageService,ConfirmationService } from 'primeng/api';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { environment } from 'src/environments/environment';
@@ -386,6 +386,7 @@ describe('FieldMappingFormComponent', () => {
   let httpMock
   let sharedService: SharedService;
   let httpService: HttpService;
+  let messageService: MessageService;
  
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -403,7 +404,7 @@ describe('FieldMappingFormComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
-
+    messageService = TestBed.inject(MessageService);
 
     localStorage.setItem('completeHierarchyData', JSON.stringify(completeHierarchyData));
    });
@@ -597,4 +598,126 @@ describe('FieldMappingFormComponent', () => {
     expect(component.displayDialog).toBeFalsy();
   });
 
+  xit('should record scroll position', () => {
+    const document = window.document;
+    // Object.defineProperty(window, 'document', {
+    //   value: document.implementation.createHTMLDocument(),
+    // });
+    document.documentElement.scrollTop = 100;
+    component.bodyScrollPosition = 0;
+    component.recordScrollPosition();
+    expect(component.bodyScrollPosition).toBe(100);
+  })
+
+  it('should handle save() when there is no response.data', () => {
+    component.formData = {
+      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
+      jiraDefectCreatedStatusKPI14: "Open",
+      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
+      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
+    }
+    component.selectedConfig = {
+      id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
+    }
+    component.form = new FormGroup({
+      "jiraIterationIssuetypeKPI120": new FormControl([]),
+      "jiraIterationCompletionStatusKPI120": new FormControl([
+          "done"
+      ])
+    });
+    component.selectedToolConfig = [
+      {
+        toolName: 'Jira'
+      }
+    ];
+    const response = {
+      success: true,
+      data: null,
+    }
+    spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
+    const spy = spyOn(component, 'saveFieldMapping')
+    component.save();
+    expect(spy).toHaveBeenCalled();
+  
+  })
+
+  it('should handle save() when there is no response.data', () => {
+    component.formData = {
+      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
+      jiraDefectCreatedStatusKPI14: "Open",
+      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
+      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
+    }
+    component.selectedConfig = {
+      id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
+    }
+    component.form = new FormGroup({
+      "jiraIterationIssuetypeKPI120": new FormControl([]),
+      "jiraIterationCompletionStatusKPI120": new FormControl([
+          "done"
+      ])
+    });
+    component.selectedToolConfig = [
+      {
+        toolName: 'Jira'
+      }
+    ];
+    const response = {
+      success: false,
+      data: null,
+    }
+    spyOn(httpService, 'getMappingTemplateFlag').and.returnValue(of(response));
+    const spy = spyOn(messageService, 'add')
+    component.save();
+    expect(spy).toHaveBeenCalled();
+  
+  })
+
+  it('should handle save() when there is no response.data', () => {
+    component.formData = {
+      basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
+      jiraDefectCreatedStatusKPI14: "Open",
+      jiraDefectDroppedStatusKPI127: ['Dropped', 'Canceled'],
+      jiraDefectInjectionIssueTypeKPI14: ['Story', 'Enabler Story', 'Tech Story', 'Change request']
+    }
+    component.selectedConfig = {
+      id: 'XXXXXXXXXXXXXXXXXXXXXXXX'
+    }
+    component.form = new FormGroup({
+      "jiraIterationIssuetypeKPI120": new FormControl([]),
+      "jiraIterationCompletionStatusKPI120": new FormControl([
+          "done"
+      ])
+    });
+    component.selectedToolConfig = [
+      {
+        toolName: 'Bitbucket'
+      }
+    ];
+    const spy = spyOn(component, 'saveFieldMapping')
+    component.save();
+    expect(spy).toHaveBeenCalled();
+  
+  })
+
+  it('should handle error on save field filed mapping api call', () => {
+    const mappingData = {
+      id: 'xxxxxxxxxxxxx',
+      basicProjectConfigId: 'xxxxxxxxxxxxxxxxxx'
+    };
+    const errResponse = {
+      error: 'Something went wrong',
+      success: false
+    }
+    component.selectedToolConfig = [
+      {
+        toolName: 'Jira',
+        id: 'xxxxxxxxxxxxx'
+      }
+    ];
+    spyOn(httpService, 'setFieldMappings').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add')
+    component.saveFieldMapping(mappingData);
+    expect(spy).toHaveBeenCalled();
+  })
 });
