@@ -1,9 +1,12 @@
 package com.publicissapient.kpidashboard.jira.processor;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -14,16 +17,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.atlassian.jira.rest.client.api.domain.TimeTracking;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,7 +133,7 @@ public class JiraIssueProcessorImplTest {
 		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
-		Assert.assertEquals(JiraIssue.class,
+		assertEquals(JiraIssue.class,
 				(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues.get(0), projectConfFieldMapping, ""))
 						.getClass());
 
@@ -182,7 +187,7 @@ public class JiraIssueProcessorImplTest {
 		map.put("value", "Component");
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
-		IssueField issueField = new IssueField("customfield_19121", "Component", null,value);
+		IssueField issueField = new IssueField("customfield_19121", "Component", null, value);
 		List<IssueField> issueFields = Arrays.asList(issueField);
 
 		Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
@@ -199,9 +204,11 @@ public class JiraIssueProcessorImplTest {
 		BasicComponent basicComponent = new BasicComponent(new URI("self"), 1l, "component1", "abc");
 		List<BasicComponent> component = Collections.singletonList(basicComponent);
 
+		TimeTracking timeTracking=new TimeTracking(8,8,8);
+
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), component, null, issueFieldList, comments, null,
+				DateTime.now(), new ArrayList<>(), new ArrayList<>(), component, timeTracking, issueFieldList, comments, null,
 				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
@@ -431,6 +438,110 @@ public class JiraIssueProcessorImplTest {
 		issueField = new IssueField("parent", "Due_Date", null, jsonObject1);
 		issueFieldList.add(issueField);
 
+	}
+
+	@Test
+	public void testSetEpicIssueData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+			// Arrange
+			FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
+		fieldMapping.setEpicJobSize("8.0");
+		fieldMapping.setEpicRiskReduction("8.0");
+		fieldMapping.setEpicTimeCriticality("8.0");
+		fieldMapping.setEpicUserBusinessValue("8.0");
+		fieldMapping.setEpicWsjf("8.0");
+		fieldMapping.setEpicPlannedValue("8.0");
+		fieldMapping.setEpicAchievedValue("8.0");
+
+			JiraIssue jiraIssue = new JiraIssue(); // Set up your JiraIssue instance
+		jiraIssue.setBusinessValue(8.0);
+		jiraIssue.setRiskReduction(8.0);
+		jiraIssue.setTimeCriticality(8.0);
+			Map<String, IssueField> fields = new HashMap<>();
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+			// Add other fields as needed
+
+			// Use reflection to access the private method
+			Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class, JiraIssue.class, Map.class);
+			method.setAccessible(true);
+
+			// Act
+			method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+
+			// Assert
+//			assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add assertions for other fields
+	}
+
+	@Test
+	public void testSetSubTaskLinkage() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		// Arrange
+		FieldMapping fieldMapping=new FieldMapping();
+		fieldMapping.setJiraSubTaskIdentification(Arrays.asList("Story"));
+
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+
+		// Set up other mocks and required behaviors
+
+		// Use reflection to access the private method
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSubTaskLinkage", JiraIssue.class, FieldMapping.class, Issue.class, Map.class);
+		method.setAccessible(true);
+
+		JiraIssue jiraIssue=new JiraIssue();
+		jiraIssue.setTypeName("Story");
+		// Act
+		method.invoke(transformFetchedIssueToJiraIssue, jiraIssue, fieldMapping, issues.get(0), new HashMap<>());
+
+		// Assert
+		// Add assertions based on the expected behavior of your method
+//		verify(jiraIssueMock).setParentStoryId(anySet());
+	}
+
+	@Test
+	public void testExcludeLinks() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(jiraProcessorConfig.getExcludeLinks()).thenReturn(Arrays.asList("xyz"));
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("excludeLinks", Issue.class, Set.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, issues.get(0), new HashSet<>());
+	}
+
+	@Test
+	public void testSetJiraAssigneeDetailsWhenUserIsNull() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", JiraIssue.class, User.class, ProjectConfFieldMapping.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null,projectConfFieldMapping);
+	}
+
+	@Test
+	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class, Map.class);
+		method.setAccessible(true);
+		FieldMapping fieldMapping=new FieldMapping();
+		fieldMapping.setRootCause("code_issue");
+		Map<String,String> map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "code");
+		map.put("id", "19121");
+		JSONObject jsonObject = new JSONObject(map);
+		List<Object> rcaList = new ArrayList<>();
+		rcaList.add(jsonObject);
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String,IssueField> fields = new HashMap<>();
+		fields.put("code_issue",issueField);
+
+		method.invoke(transformFetchedIssueToJiraIssue,fieldMapping,fields);
+	}
+
+	@Test
+	public void testProcessSprintData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("processSprintData", JiraIssue.class, IssueField.class, ProjectConfFieldMapping.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
 
 }
