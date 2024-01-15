@@ -293,4 +293,14 @@ expect(component.fieldMappingForm.controls['sqdIdentifier']).toBeTruthy();
     expect(component.populateDropdowns).toBeFalsy();
     expect(component.displayDialog).toBeFalsy();
   });
+
+  it('should reset radio button', () => {
+    component.fieldMappingForm = new UntypedFormGroup({
+      'fieldName': new UntypedFormControl('')
+    });
+    const spy = spyOn(component, 'handleAdditionalFilters');
+    component.resetRadioButton('fieldName');
+    expect(spy).toHaveBeenCalled();
+  });
+  
 });
