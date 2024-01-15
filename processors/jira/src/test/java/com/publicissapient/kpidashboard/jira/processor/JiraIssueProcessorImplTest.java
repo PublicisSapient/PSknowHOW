@@ -543,5 +543,4 @@ public class JiraIssueProcessorImplTest {
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
-
 }
