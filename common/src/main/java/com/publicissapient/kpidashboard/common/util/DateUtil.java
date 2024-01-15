@@ -159,14 +159,17 @@ public class DateUtil {
 	public static String dateTimeConverterUsingFromAndTo(DateTime dateTime, final String fromFormat,
 			final String toFormat) {
 		try {
-			org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
-			DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
-			org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
-			return parsedDateTime.toString(targetFormatter);
+			if(dateTime!=null) {
+				org.joda.time.format.DateTimeFormatter sourceFormatter = DateTimeFormat.forPattern(fromFormat);
+				DateTime parsedDateTime = sourceFormatter.parseDateTime(dateTime.toString());
+				org.joda.time.format.DateTimeFormatter targetFormatter = DateTimeFormat.forPattern(toFormat);
+				return parsedDateTime.toString(targetFormatter);
+			}
 		} catch (IllegalArgumentException e) {
 			log.error("error while parse date", e);
 			return null;
 		}
+		return null;
 	}
 
 	public static LocalDateTime stringToLocalDateTime(String time, String format) {
