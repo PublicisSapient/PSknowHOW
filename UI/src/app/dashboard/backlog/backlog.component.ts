@@ -865,23 +865,28 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.ids],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+    // let requestObj = {
+    //   "nodes": [...this.filterApplyData?.ids],
+    //   "level": this.filterApplyData?.level,
+    //   "nodeChildId": "",
+    //   'kpiIds': []
+    // };
+    // if (kpiId) {
+    //   requestObj['kpiIds'] = [kpiId];
+    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
+    //   });
+    // } else {
+    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
+    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+    //     this.kpiCommentsCountObj = res;
+    //   });
+    // }
+    const nodes = [...this.filterApplyData?.ids]
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+  
   }
 
   /** Reload KPI once field mappoing updated */

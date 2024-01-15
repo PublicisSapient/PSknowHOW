@@ -300,23 +300,29 @@ export class DeveloperComponent implements OnInit {
   }
 
   getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+    // let requestObj = {
+    //   "nodes": [...this.filterApplyData?.['selectedMap']['project']],
+    //   "level": this.filterApplyData?.level,
+    //   "nodeChildId": "",
+    //   'kpiIds': []
+    // };
+    // if (kpiId) {
+    //   requestObj['kpiIds'] = [kpiId];
+    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
+    //   });
+    // } else {
+    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+    //     this.kpiCommentsCountObj = res;
+    //   });
+    // }
+
+    const nodes = [...this.filterApplyData?.['selectedMap']['project']];
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+  
   }
 
   // Used for grouping all BitBucket kpi of kanban from master data and calling BitBucket kpi.
