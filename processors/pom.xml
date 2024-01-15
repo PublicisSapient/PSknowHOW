@@ -35,7 +35,7 @@
             **com/publicissapient/kpidashboard/**/model/**,
             **com/publicissapient/kpidashboard/**/repository/**,
             **com/publicissapient/kpidashboard/**/config/**,
-            **com/publicissapient/kpidashboard/**/utils/**,
+            **com/publicissapient/kpidashboard/**/util/**,
             **com/publicissapient/kpidashboard/**/enums/*,
             **com/publicissapient/kpidashboard/**/constant/*,
             **com/publicissapient/kpidashboard/**/pojos/*,
