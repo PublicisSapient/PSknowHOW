@@ -78,7 +78,7 @@ public final class AESEncryption {
 	public static String decrypt(String encryptedData, List<Character> aesKeyValue) throws IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
 		Key key = generateKey(aesKeyValue);
-		Cipher cipher = Cipher.getInstance("ALGO");
+		Cipher cipher = Cipher.getInstance(ALGO);
 		cipher.init(Cipher.DECRYPT_MODE, key);
 		byte[] decordedValue = Base64.decodeBase64(encryptedData);
 		byte[] decValue = cipher.doFinal(decordedValue);

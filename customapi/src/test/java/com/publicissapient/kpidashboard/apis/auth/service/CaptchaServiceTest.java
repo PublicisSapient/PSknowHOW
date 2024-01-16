@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.auth.service;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,6 +31,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.CustomCaptcha;
+
+import java.util.Arrays;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaptchaServiceTest {
@@ -43,8 +46,16 @@ public class CaptchaServiceTest {
 	@InjectMocks
 	private CaptchaValidationServiceImpl captchaValidationService;
 
+
+
+	@Before
+	public void setUp() {
+		Mockito.when(customApiConfig.getAesKeyValue()).thenReturn(
+				Arrays.asList('T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y'));
+	}
 	@Test
 	public void testCaptcha() {
+
 		CustomCaptcha captcha = captchaService.getCaptcha();
 
 		assertNotNull(captcha);
@@ -60,7 +71,7 @@ public class CaptchaServiceTest {
 
 	@Test
 	public void captchaValidationMatch() {
-		boolean result = captchaValidationService.validateCaptcha("h7d4QcNuXqKnjQwGa1euRw==", "ABCD");
+		boolean result = captchaValidationService.validateCaptcha("h/1n6ZXwVUz948xw8y+pmA==", "ABCD");
 		assertTrue(result == true);
 
 	}
