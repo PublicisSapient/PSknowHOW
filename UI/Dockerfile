@@ -34,14 +34,14 @@ COPY nginx/files/certs/* ${CERT_LOC}/
 RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC}${ERRORPAGE_ASSETS_ARCHIVE} -C ${UI2_LOC} \
     && chmod +x ${START_SCRIPT_LOC}/start_nginx.sh && rm -f ${HTML_LOC}${ASSETS_ARCHIVE}
 
-# Expose ports
-EXPOSE 80 443
-
 # granting permission's
 
 RUN chown -R $USER:$USER ${CONF_LOG} \
     && chown -R $USER:$USER /var/ \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
+
+# Expose ports
+EXPOSE 80 443
 
 # Switch to the non-root user
 USER $USER:$GID
