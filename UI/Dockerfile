@@ -40,7 +40,7 @@ EXPOSE 80 443
 # granting permission's
 
 RUN chown -R $USER:$USER ${CONF_LOG} \
-    && chown -R $USER:$USER ${UI2_LOC}/assets/
+    && chown -R $USER:$USER /var/
 
 # Switch to the non-root user
 USER $USER:$GID
