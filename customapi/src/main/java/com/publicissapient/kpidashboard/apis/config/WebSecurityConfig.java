@@ -118,6 +118,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	 * @param http
 	 *            - reference to HttpSecurity
 	 */
+	// CSRF protection is disabled due to token-based authentication Suppress CodeQL warning for CSRF disablement
+	@SuppressWarnings("codeql:DisableCSRFProtection")
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 

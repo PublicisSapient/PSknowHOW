@@ -51,7 +51,7 @@ public class CaptchaValidationServiceImplTest {
 	@Test
 	public void validateCaptcha() throws IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-		String encryptedString = AESEncryption.encrypt(DATA_TO_ENCRYPT);
+		String encryptedString = AESEncryption.encrypt(DATA_TO_ENCRYPT, null);
 		boolean resultDecrypted = captchaValidationServiceImpl.validateCaptcha(encryptedString, DATA_TO_ENCRYPT);
 		assertTrue(resultDecrypted);
 
