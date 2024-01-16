@@ -38,7 +38,7 @@ import javax.xml.bind.DatatypeConverter;
 public final class Encryption {
 
 	private static final String ALGO = "AES";
-	private static final String DEFAULT_MODE_AND_PADDING_SCHEME = "AES/CBC/PKCS5Padding";
+	private static final String DEFAULT_MODE_AND_PADDING_SCHEME = "AES/GCM/PKCS5Padding";
 
 	private Encryption() {
 		// util class.
