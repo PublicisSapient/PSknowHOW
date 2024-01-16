@@ -6,6 +6,8 @@ import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { AppConfig, APP_CONFIG } from 'src/app/services/app.config';
 import { of } from 'rxjs';
+import { SimpleChanges } from '@angular/core';
+import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
 
 
 describe('KpiCardComponent', () => {
@@ -13,6 +15,7 @@ describe('KpiCardComponent', () => {
   let fixture: ComponentFixture<KpiCardComponent>;
   let sharedService: SharedService;
   let httpService: HttpService;
+  let authService: GetAuthorizationService
   const fakeKpiFieldMappingList = require('../../../test/resource/fakeMappingFieldConfig.json');
   const dropDownMetaData = require('../../../test/resource/KPIConfig.json');
   const fakeSelectedFieldMapping = {
@@ -43,7 +46,7 @@ describe('KpiCardComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [ KpiCardComponent ],
-      providers: [SharedService,HttpService,
+      providers: [SharedService,HttpService,GetAuthorizationService,
         { provide: APP_CONFIG, useValue: AppConfig }]
     })
     .compileComponents();
@@ -54,6 +57,7 @@ describe('KpiCardComponent', () => {
     component = fixture.componentInstance;
     sharedService = TestBed.inject(SharedService);
     httpService = TestBed.inject(HttpService);
+    authService = TestBed.inject(GetAuthorizationService);
     fixture.detectChanges();
   });
 
@@ -412,4 +416,149 @@ describe('KpiCardComponent', () => {
     expect(spy).toHaveBeenCalled();
   })
 
+  it('should emit downloadExcel event when exportToExcel is called', () => {
+    spyOn(component.downloadExcel, 'emit');
+    component.exportToExcel();
+    expect(component.downloadExcel.emit).toHaveBeenCalledWith(true);
+  });
+  it('should call getKPIFieldMappingConfig when onOpenFieldMappingDialog is called', () => {
+    spyOn(component, 'getKPIFieldMappingConfig');
+    component.onOpenFieldMappingDialog();
+    expect(component.getKPIFieldMappingConfig).toHaveBeenCalled();
+  });
+
+  it('should set loading to false and noData to true when fieldMappingConfig length is 0', () => {
+    // Arrange
+    const selectedTab = 'release';
+    const selectedType = 'scrum';
+    const selectedTrend = [{ basicProjectConfigId: '123' }];
+    const fieldMappingConfig = [];
+    spyOn(sharedService, 'getSelectedTab').and.returnValue(selectedTab);
+    spyOn(sharedService, 'getSelectedType').and.returnValue(selectedType);
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(selectedTrend);
+    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of({ success: true, data: { fieldConfiguration: fieldMappingConfig } }));
+
+    // Act
+    component.getKPIFieldMappingConfig();
+
+    // Assert
+    expect(component.loading).toBeFalse();
+    expect(component.noData).toBeTrue();
+  });
+
+  it('should handle no data for KPI field mapping config', fakeAsync(() => {
+    // Arrange
+    const selectedTab = 'my dashboard';
+    const selectedType = 'scrum';
+    const selectedTrend = [{ basicProjectConfigId: '123' }];
+    spyOn(sharedService, 'getSelectedTab').and.returnValue(selectedTab);
+    spyOn(sharedService, 'getSelectedType').and.returnValue(selectedType);
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(selectedTrend);
+    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of({ success: true, data: { fieldConfiguration: [], kpiSource: 'jira', projectToolConfigId: '456' } }));
+  
+    // Act
+    component.getKPIFieldMappingConfig();
+    tick();
+  
+    // Assert
+    expect(httpService.getKPIFieldMappingConfig).toHaveBeenCalledWith(`${selectedTrend[0]?.basicProjectConfigId}/${component.kpiData?.kpiId}`);
+    expect(component.loading).toBeFalse();
+    expect(component.noData).toBeTrue();
+    expect(component.displayConfigModel).toBeTrue();
+    expect(component.fieldMappingConfig).toEqual([]);
+    expect(component.selectedToolConfig).toEqual([{ id: '456', toolName: 'jira' }]);
+  }));
+
+  it('should handle no field mapping config data', () => {
+    const selectedTab = 'my dashboard';
+    const selectedType = 'scrum';
+    const selectedTrend = [{ basicProjectConfigId: '123' }];
+    const fakeData = {
+      success: true,
+      data: {
+        fieldConfiguration: [],
+        kpiSource: 'jira',
+        projectToolConfigId: '456'
+      }
+    };
+    component.kpiData = {
+      kpiId: 'kpiId'
+    }
+    component.selectedToolConfig = [];
+    component.selectedConfig = {};
+    spyOn(sharedService, 'getSelectedTab').and.returnValue(selectedTab);
+    spyOn(sharedService, 'getSelectedType').and.returnValue(selectedType);
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(selectedTrend);
+    spyOn(httpService, 'getKPIFieldMappingConfig').and.returnValue(of(fakeData));
+  
+    component.getKPIFieldMappingConfig();
+  
+    expect(sharedService.getSelectedTab).toHaveBeenCalled();
+    expect(sharedService.getSelectedType).toHaveBeenCalled();
+    expect(sharedService.getSelectedTrends).toHaveBeenCalled();
+    expect(httpService.getKPIFieldMappingConfig).toHaveBeenCalledWith('123/kpiId');
+    expect(component.loading).toBeFalse();
+    expect(component.noData).toBeTrue();
+    expect(component.displayConfigModel).toBeTrue();
+    expect(component.fieldMappingConfig).toEqual([]);
+    expect(component.selectedToolConfig).toEqual([{ id: '456', toolName: 'jira' }]);
+    // expect(component.selectedConfig).toBeUndefined();
+    expect(component.fieldMappingMetaData).toEqual([]);
+  });
+
+  it('should handle error on getting field mapping', () => {
+    component.selectedToolConfig = [
+      {
+        id: 'xxxxxxxxxxxxxxx'
+      }
+    ];
+    const errResponse = {
+      success: false,
+      error: 'Something went wrong'
+    }
+    component.loading = true
+    spyOn(httpService, 'getFieldMappings').and.returnValue(of(errResponse));
+    component.getFieldMapping();
+    expect(component.loading).toBeFalse();
+  })
+
+  it('should handle error on getting field mapping meta data', () => {
+    component.selectedToolConfig = [
+      {
+        id: 'xxxxxxxxxxxxxxx'
+      }
+    ];
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    component.fieldMappingMetaData = [];
+    spyOn(httpService, 'getKPIConfigMetadata').and.returnValue(of(errResponse))
+    component.getFieldMappingMetaData('jira');
+    expect(component.fieldMappingMetaData).toEqual([]);
+  })
+  
+  it('should update userRole and checkIfViewer on ngOnChanges', () => {
+    // Arrange
+    const changes: SimpleChanges = {
+      dropdownArr: {
+        currentValue: ['option1', 'option2'],
+        previousValue: ['option1'],
+        firstChange: false,
+        isFirstChange: () => false
+      }
+    };
+    spyOn(authService, 'getRole').and.returnValue('projectAdmin');
+    spyOn(authService, 'checkIfViewer').and.returnValue(true);
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue([{ basicProjectConfigId: '123' }]);
+  
+    // Act
+    component.ngOnChanges(changes);
+  
+    // Assert
+    expect(authService.getRole).toHaveBeenCalled();
+    expect(authService.checkIfViewer).toHaveBeenCalledWith({ id: '123' });
+    expect(component.userRole).toBe('projectAdmin');
+    expect(component.checkIfViewer).toBe(true);
+  });
 });

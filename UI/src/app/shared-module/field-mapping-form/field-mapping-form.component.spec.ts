@@ -598,17 +598,6 @@ describe('FieldMappingFormComponent', () => {
     expect(component.displayDialog).toBeFalsy();
   });
 
-  xit('should record scroll position', () => {
-    const document = window.document;
-    // Object.defineProperty(window, 'document', {
-    //   value: document.implementation.createHTMLDocument(),
-    // });
-    document.documentElement.scrollTop = 100;
-    component.bodyScrollPosition = 0;
-    component.recordScrollPosition();
-    expect(component.bodyScrollPosition).toBe(100);
-  })
-
   it('should handle save() when there is no response.data', () => {
     component.formData = {
       basicProjectConfigId: "XXXXXXXXXXXXXXXXXXXXXXXX",
@@ -719,5 +708,46 @@ describe('FieldMappingFormComponent', () => {
     const spy = spyOn(messageService, 'add')
     component.saveFieldMapping(mappingData);
     expect(spy).toHaveBeenCalled();
+  })
+
+  it('should save dialog when selected value has value', () => {
+    component.singleSelectionDropdown = true;
+    component.selectedValue = ['Open'];
+    component.selectedField = 'jiraIterationIssuetypeKPI120';
+    component.form = new FormGroup({
+      jiraIterationIssuetypeKPI120 : new FormControl([])
+    })
+    component.saveDialog();
+    expect(component.form.controls[component.selectedField].value).toEqual(['Open']);
+  })
+
+  it('should save dialog when selected multi value has value', () => {
+    component.singleSelectionDropdown = false;
+    component.selectedMultiValue = [
+      {
+          "key": "Open",
+          "data": "Open"
+      },
+      {
+          "key": "In Progress",
+          "data": "In Progress"
+      }
+    ];
+    component.selectedField = 'jiraIterationIssuetypeKPI120';
+    component.form = new FormGroup({
+      jiraIterationIssuetypeKPI120 : new FormControl(['Open'])
+    })
+    component.fieldMappingMultiSelectValues = [
+      {
+          "key": "Open",
+          "data": "Open"
+      },
+      {
+          "key": "In Progress",
+          "data": "In Progress"
+      },
+    ]
+    component.saveDialog();
+    expect(component.form.controls[component.selectedField].value.length).toEqual(2);
   })
 });
