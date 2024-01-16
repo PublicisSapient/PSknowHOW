@@ -97,7 +97,7 @@ public class CaptchaServiceImpl implements CaptchaService {
 		String encryptedResult = "";
 
 		try {
-			encryptedResult = AESEncryption.encrypt(result);
+			encryptedResult = AESEncryption.encrypt(result, customApiConfig.getAesKeyValue());
 		} catch (IllegalBlockSizeException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
 				| BadPaddingException exception) {
 

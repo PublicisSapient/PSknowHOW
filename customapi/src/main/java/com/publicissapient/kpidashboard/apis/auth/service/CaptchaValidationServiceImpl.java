@@ -25,6 +25,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.publicissapient.kpidashboard.apis.util.AESEncryption;
@@ -48,6 +50,9 @@ public class CaptchaValidationServiceImpl implements CaptchaValidationService {
 	 * validateCaptcha( java.lang.String, java.lang.String)
 	 */
 
+	@Autowired
+	CustomApiConfig customApiConfig;
+
 	@Override
 	public boolean validateCaptcha(String encryptedString, String result) {
 
@@ -56,7 +61,7 @@ public class CaptchaValidationServiceImpl implements CaptchaValidationService {
 		if (null != encryptedString) {
 
 			try {
-				resultDecrypted = AESEncryption.decrypt(encryptedString);
+				resultDecrypted = AESEncryption.decrypt(encryptedString, customApiConfig.getAesKeyValue());
 			} catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException
 					| IllegalBlockSizeException exception) {
 				log.error("Error while decryption", exception);

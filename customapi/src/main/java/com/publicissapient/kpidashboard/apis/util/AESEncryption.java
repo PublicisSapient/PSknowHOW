@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.util;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -36,8 +37,6 @@ import org.apache.commons.codec.binary.Base64;
 public final class AESEncryption {
 
 	private static final String ALGO = "AES";
-	private static final byte[] KEY_VALUE = { 'T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e',
-			'y' };
 
 	/**
 	 * Class constructor
@@ -56,9 +55,9 @@ public final class AESEncryption {
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 */
-	public static String encrypt(String data) throws IllegalBlockSizeException, BadPaddingException,
+	public static String encrypt(String data, List<Character> aesKeyValue) throws IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
-		Key key = generateKey();
+		Key key = generateKey(aesKeyValue);
 		Cipher cipher = Cipher.getInstance(ALGO);
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		byte[] encVal = cipher.doFinal(data.getBytes());
@@ -76,9 +75,9 @@ public final class AESEncryption {
 	 * @throws NoSuchAlgorithmException
 	 * @throws NoSuchPaddingException
 	 */
-	public static String decrypt(String encryptedData) throws IllegalBlockSizeException, BadPaddingException,
+	public static String decrypt(String encryptedData, List<Character> aesKeyValue) throws IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException {
-		Key key = generateKey();
+		Key key = generateKey(aesKeyValue);
 		Cipher cipher = Cipher.getInstance(ALGO);
 		cipher.init(Cipher.DECRYPT_MODE, key);
 		byte[] decordedValue = Base64.decodeBase64(encryptedData);
@@ -86,7 +85,9 @@ public final class AESEncryption {
 		return new String(decValue);
 	}
 
-	private static Key generateKey() {
-		return new SecretKeySpec(KEY_VALUE, ALGO);
+	private static Key generateKey(List<Character> aesKeyValue) {
+		byte[] byteArray = new byte[aesKeyValue.size()];
+		aesKeyValue.forEach(character -> byteArray[aesKeyValue.indexOf(character)] = (byte) character.charValue());
+		return new SecretKeySpec(byteArray, ALGO);
 	}
 }

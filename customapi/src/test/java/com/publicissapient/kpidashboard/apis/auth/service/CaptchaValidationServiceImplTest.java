@@ -23,14 +23,20 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.publicissapient.kpidashboard.apis.util.AESEncryption;
@@ -48,10 +54,15 @@ public class CaptchaValidationServiceImplTest {
 	@InjectMocks
 	private CaptchaValidationServiceImpl captchaValidationServiceImpl;
 
+	@Mock
+	private CustomApiConfig customApiConfig;
+
 	@Test
 	public void validateCaptcha() throws IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-		String encryptedString = AESEncryption.encrypt(DATA_TO_ENCRYPT);
+		List<Character> aesKeyValue = Arrays.asList('T', 'h', 'e', 'B', 'e', 's', 't', 'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y');
+		String encryptedString = AESEncryption.encrypt(DATA_TO_ENCRYPT, aesKeyValue);
+		Mockito.when(customApiConfig.getAesKeyValue()).thenReturn(aesKeyValue);
 		boolean resultDecrypted = captchaValidationServiceImpl.validateCaptcha(encryptedString, DATA_TO_ENCRYPT);
 		assertTrue(resultDecrypted);
 
