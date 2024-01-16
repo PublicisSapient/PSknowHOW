@@ -37,6 +37,11 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC
 # Expose ports
 EXPOSE 80 443
 
+# granting permission's
+
+RUN chown -R $USER:$USER ${CONF_LOG} \
+    && chown -R $USER:$USER ${UI2_LOC}/assets/
+
 # Switch to the non-root user
 USER $USER:$GID
 
