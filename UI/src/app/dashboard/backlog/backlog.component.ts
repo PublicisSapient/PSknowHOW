@@ -318,12 +318,12 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.selectedtype = sharedobject;
   }
 
-  sortAlphabetically(objArray) {
-    if (objArray && objArray?.length > 1) {
-      objArray?.sort((a, b) =>  a?.data?.localeCompare(b?.data) );
-    }
-    return objArray;
-  }
+  // sortAlphabetically(objArray) {
+  //   if (objArray && objArray?.length > 1) {
+  //     objArray?.sort((a, b) =>  a?.data?.localeCompare(b?.data) );
+  //   }
+  //   return objArray;
+  // }
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
@@ -362,7 +362,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
     else {
       if (trendValueList?.length > 0) {
-        this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
+        this.kpiChartData[kpiId] = [...this.helperService.sortAlphabetically(trendValueList)];
       } else if(trendValueList?.hasOwnProperty('value')){
         this.kpiChartData[kpiId] = [...trendValueList?.value];
       }else{
