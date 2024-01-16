@@ -348,7 +348,7 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 		if(StringUtils.isNotEmpty(azureServer.getTeam())){
 			url.append(AzureConstants.FORWARD_SLASH);
-			url.append(azureServer.getTeam());
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
 		}
 		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
