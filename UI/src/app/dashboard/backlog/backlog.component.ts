@@ -282,9 +282,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
             }
           }
           
-          // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
-          //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
-          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -370,9 +367,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
 
     }
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
+
     this.createTrendData(kpiId);
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
@@ -735,7 +730,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
       for (const key in event) {
         if (typeof event[key] === 'string') {
-          // delete event[key];
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else {
           for (let i = 0; i < event[key]?.length; i++) {
@@ -865,23 +859,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   getKpiCommentsCount(kpiId?) {
-    // let requestObj = {
-    //   "nodes": [...this.filterApplyData?.ids],
-    //   "level": this.filterApplyData?.level,
-    //   "nodeChildId": "",
-    //   'kpiIds': []
-    // };
-    // if (kpiId) {
-    //   requestObj['kpiIds'] = [kpiId];
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
-    //   });
-    // } else {
-    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj = res;
-    //   });
-    // }
     const nodes = [...this.filterApplyData?.ids]
     const level = this.filterApplyData?.level;
     const nodeChildId = '';
