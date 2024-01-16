@@ -18,6 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
+import javax.xml.bind.DatatypeConverter;
+
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -30,8 +32,6 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-
 /**
  * Handles Encryption for the applications.
  */

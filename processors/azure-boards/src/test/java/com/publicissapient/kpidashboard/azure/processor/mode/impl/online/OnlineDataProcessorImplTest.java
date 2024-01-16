@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +46,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -358,7 +358,7 @@ public class OnlineDataProcessorImplTest {
 	}
 
 	@Test
-	public void validateAndCollectIssuesKanban() throws URISyntaxException, JsonParseException, JsonMappingException,
+	public void validateAndCollectIssuesKanban() throws JsonParseException, JsonMappingException,
 			IOException, IllegalAccessException, InvocationTargetException, ParseException {
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
 		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
