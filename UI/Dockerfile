@@ -40,7 +40,8 @@ EXPOSE 80 443
 # granting permission's
 
 RUN chown -R $USER:$USER ${CONF_LOG} \
-    && chown -R $USER:$USER /var/
+    && chown -R $USER:$USER /var/ \
+    && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 # Switch to the non-root user
 USER $USER:$GID
