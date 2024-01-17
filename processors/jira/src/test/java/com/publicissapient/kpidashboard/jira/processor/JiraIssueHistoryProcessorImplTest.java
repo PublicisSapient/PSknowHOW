@@ -117,6 +117,7 @@ public class JiraIssueHistoryProcessorImplTest {
 		Map<String,IssueField> fieldMap=new HashMap<>();
 		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
 		method.invoke(createJiraIssueHistory,new ArrayList<>(),fieldMapping,issue,fieldMap);
+
 	}
 
 	private ProjectConfFieldMapping createProjectConfig() {
