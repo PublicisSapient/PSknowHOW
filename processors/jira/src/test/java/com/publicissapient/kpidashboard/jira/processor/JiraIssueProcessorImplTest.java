@@ -167,7 +167,7 @@ public class JiraIssueProcessorImplTest {
 
 	}
 
-	//@Test
+	@Test
 	public void convertToJiraIssue2() throws URISyntaxException, JSONException, InterruptedException {
 		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
 		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f
@@ -183,7 +183,7 @@ public class JiraIssueProcessorImplTest {
 
 	}
 
-	//@Test
+	@Test
 	public void convertToJiraIssue3() throws URISyntaxException, JSONException, InterruptedException {
 		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
 		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f

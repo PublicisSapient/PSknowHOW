@@ -67,7 +67,7 @@ public class JiraIssueAssigneeProcessorImplTest {
 		createAssigneeDetails.createAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
-	//@Test
+	@Test
 	public void setAssigneeDetails2() {
 
 		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);

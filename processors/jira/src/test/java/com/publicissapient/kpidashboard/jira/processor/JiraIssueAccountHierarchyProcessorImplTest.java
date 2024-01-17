@@ -99,15 +99,6 @@ public class JiraIssueAccountHierarchyProcessorImplTest {
 		return hierarchyLevelFactory.getHierarchyLevels();
 	}
 
-//	private List<AccountHierarchy> getMockAccountHierarchy() {
-//		return accountHierarchiesDataFactory.getAccountHierarchies();
-//	}
-//
-//	private List<AccountHierarchy> getMockAccountHierarchyByLabelNameAndBasicProjectConfigId() {
-//		return accountHierarchiesDataFactory.findByLabelNameAndBasicProjectConfigId(
-//				CommonConstant.HIERARCHY_LEVEL_ID_PROJECT, "63c04dc7b7617e260763ca4e");
-//	}
-
 	private Set<SprintDetails> getSprintDetails() {
 		Set<SprintDetails> set = new HashSet<>();
 		SprintDetails sprintDetails = new SprintDetails();

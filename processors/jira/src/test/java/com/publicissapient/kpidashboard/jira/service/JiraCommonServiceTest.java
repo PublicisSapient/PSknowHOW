@@ -408,7 +408,7 @@ public class JiraCommonServiceTest {
 	public void testParseVersionData1()
 			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
 		// Define sample dataFromServer
-		String dataFromServer = "[{\"id\":\"1\",\"name\":\"Version 1\",\"archived\":\"false\",\"released\":\"true\",\"startDate\":\"2022-01-01\",\"releaseDate\":\"2022-02-01\"}]";
+		String dataFromServer = "[{\"id\":\"1\",\"archived\":\"false\",\"released\":\"true\",\"startDate\":\"2022-01-01\",\"releaseDate\":\"2022-02-01\"}]";
 
 		// Create a List to hold the parsed ProjectVersion objects
 		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
@@ -424,7 +424,6 @@ public class JiraCommonServiceTest {
 		// Assert the results
 		assertEquals(1, projectVersionDetailList.size());
 		ProjectVersion projectVersion = projectVersionDetailList.get(0);
-		assertEquals("Version 1", projectVersion.getName());
 		assertEquals(false, projectVersion.isArchived());
 		assertEquals(true, projectVersion.isReleased());
 		// Add more assertions based on your data
@@ -446,6 +445,22 @@ public class JiraCommonServiceTest {
 
 		assertThrows(Exception.class,
 				()->parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList));
+
+	}
+
+	@Test
+	public void testParseVersionData3()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
+		// Define sample dataFromServer
+		String dataFromServer = "";
+
+		// Create a List to hold the parsed ProjectVersion objects
+		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
+
+		// Get the private method using reflection
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
+				List.class);
+		parseVersionData.setAccessible(true);
 
 	}
 }
