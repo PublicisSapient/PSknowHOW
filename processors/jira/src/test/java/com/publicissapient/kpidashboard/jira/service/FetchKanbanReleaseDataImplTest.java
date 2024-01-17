@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.jira.service;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,6 +87,20 @@ public class FetchKanbanReleaseDataImplTest {
 
 	@Test
 	public void processReleaseInfoNull() throws IOException, ParseException {
+		try {
+			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
+		}
+		catch (Exception ex){
+			Assert.fail(ex.getMessage());
+		}
+	}
+
+	@Test
+	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
+		prepareKanbanAccountHierarchy2();
+		when(kanbanAccountHierarchyRepo.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
+				.thenReturn(kanbanAccountHierarchylist);
+		when(kanbanAccountHierarchyRepo.findAll()).thenReturn(kanbanAccountHierarchylist);
 		try {
 			fetchKanbanReleaseData.processReleaseInfo(kanbanProjectMapping, krb5Client);
 		}

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -167,6 +168,14 @@ public class CreateMetadataImplTest {
 		when(metadataIdentifierRepository.findByTemplateCodeAndToolAndIsKanban(any(), any(), any()))
 				.thenReturn(metadataIdentifier);
 		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
+	}
+
+	@Test
+	public void collectMetadataWithBoardMetadata() throws Exception {
+
+		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
+				.thenReturn(new BoardMetadata());
+		createMetadata.collectMetadata(createProjectConfig(true), client);
 	}
 
 	private MetadataIdentifier createMetaDataIdentifier(boolean flag) {
