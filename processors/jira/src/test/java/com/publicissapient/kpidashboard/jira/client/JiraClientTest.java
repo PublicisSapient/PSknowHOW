@@ -49,6 +49,10 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 @RunWith(MockitoJUnitRunner.class)
 public class JiraClientTest {
 
+	private static String baseUrlValid = "https://tools.publicis.sapient.com/";
+
+	private static String baseUrlNotValid = "https://www.mockdummyurl.com/";
+
 	@Mock
 	private ProjectConfFieldMapping projectConfFieldMapping;
 
@@ -103,7 +107,7 @@ public class JiraClientTest {
 		Connection connection = new Connection();
 		connection.setIsOAuth(false);
 		connection.setVault(true);
-		connection.setBaseUrl("https://www.baseurl.com/");
+		connection.setBaseUrl(baseUrlValid);
 		connection.setUsername("uName");
 		connection.setPassword("pass123");
 		connection.setBearerToken(true);
@@ -120,16 +124,22 @@ public class JiraClientTest {
 
 	@Test
 	public void getJiraClientTest() throws URISyntaxException {
-		JiraInfo jiraInfo = getJiraInfo("uName", "password", "https://www.baseurl.com/", "", "", "", true);
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", baseUrlValid, "", "", "", true);
 		ProcessorAsynchJiraRestClient processorAsynchJiraRestClient = new ProcessorAsynchJiraRestClient(
-				new URI("https://www.baseurl.com/"), disposableHttpClient);
+				new URI(baseUrlValid), disposableHttpClient);
 		assertNotNull(jiraClient.getJiraClient(jiraInfo));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void getJiraClientProxyTest() throws URISyntaxException {
-		JiraInfo jiraInfo = getJiraInfo("uName", "password", "https://www.baseurl.com/", "https://www.proxyurl.com/",
-				"1771", "token", true);
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", baseUrlValid, "https://www.proxyurl.com/", "1771", "token",
+				true);
+		jiraClient.getJiraClient(jiraInfo);
+	}
+
+	@Test
+	public void getJiraClientIExceptionTest() throws URISyntaxException {
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", baseUrlNotValid, "", "", "", true);
 		jiraClient.getJiraClient(jiraInfo);
 	}
 
@@ -144,6 +154,25 @@ public class JiraClientTest {
 		JiraInfo jiraInfo = getJiraInfo("uName", "password", "https://www.baseurl.com/", "https://www.proxyurl.com/",
 				"1771", "token", true);
 		jiraClient.getJiraOAuthClient(jiraInfo);
+	}
+
+	@Test
+	public void getJiraOAuthClientExceptionTest() throws URISyntaxException {
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", baseUrlNotValid, "", "", "", true);
+		jiraClient.getJiraOAuthClient(jiraInfo);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void getJiraOAuthClientNullPointerExceptionTest() throws URISyntaxException {
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", "", "baseUrlValid", "1234", "", true);
+		jiraClient.getJiraOAuthClient(jiraInfo);
+	}
+
+	@Test
+	public void getJiraOAuthClientURIExceptionTest() throws URISyntaxException {
+		JiraInfo jiraInfo = getJiraInfo("uName", "password", "baseUrlNotValid", "baseUrlNotValid", "proxyport", "",
+				true);
+		assertNotNull(jiraClient.getJiraOAuthClient(jiraInfo));
 	}
 
 	@Test
