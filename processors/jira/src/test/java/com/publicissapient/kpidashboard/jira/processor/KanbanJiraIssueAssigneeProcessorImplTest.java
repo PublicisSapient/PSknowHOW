@@ -79,7 +79,7 @@ public class KanbanJiraIssueAssigneeProcessorImplTest {
 		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63c04dc7b7617e260763ca4e"));
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
 		ProjectBasicConfig projectBasicConfig = ProjectBasicConfig.builder().kanban(true).build();
-		projectBasicConfig.setSaveAssigneeDetails(true);
+		projectBasicConfig.setSaveAssigneeDetails(false);
 		projectConfFieldMapping.setProjectBasicConfig(projectBasicConfig);
 		projectConfFieldMapping.setKanban(true);
 

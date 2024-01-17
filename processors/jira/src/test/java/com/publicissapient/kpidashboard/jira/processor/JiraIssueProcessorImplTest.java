@@ -11,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +23,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.atlassian.jira.rest.client.api.domain.TimeTracking;
+import com.atlassian.jira.rest.client.api.domain.Version;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
@@ -110,13 +114,23 @@ public class JiraIssueProcessorImplTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Mock
+	private AssigneeDetails assigneeDetails;
+
+	Set<Assignee> assigneeSetToSave = new HashSet<>();
+
 	@Before
 	public void setup() throws URISyntaxException, JSONException {
-		// fieldMapping=getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
 		projectToolConfigs = getMockProjectToolConfig();
 		connection = getMockConnection();
-		// fieldMappingList=getMockFieldMappingList();
+		Assignee assignee = Assignee.builder().assigneeId("31").assigneeName("User 1").build();
+		Assignee assignee1 = Assignee.builder().assigneeId("32").assigneeName("User 2").build();
+		assigneeSetToSave.add(assignee);
+		assigneeSetToSave.add(assignee1);
+		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e" , ProcessorConstants.JIRA ,assigneeSetToSave , 3 );
+		when(assigneeDetails.getBasicProjectConfigId()).thenReturn("63c04dc7b7617e260763ca4e");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() , any())).thenReturn(assigneeDetailsToBeSave);
 		createIssue();
 		createIssuefieldsList();
 		prepareFiledMapping();
@@ -206,9 +220,13 @@ public class JiraIssueProcessorImplTest {
 
 		TimeTracking timeTracking=new TimeTracking(8,8,8);
 
+		Collection<Version> fixVersions =  new ArrayList<>();
+		Version version = new Version(new URI("https://dummy.com/jira/rest/api/2/version/143417") , 143417L , "" , "KnowHOW v6.8.0" , false , true ,  DateTime.now());
+		fixVersions.add(version);
+
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), component, timeTracking, issueFieldList, comments, null,
+				DateTime.now(), new ArrayList<>(), fixVersions, component, timeTracking, issueFieldList, comments, null,
 				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
@@ -285,6 +303,8 @@ public class JiraIssueProcessorImplTest {
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
+
+		fieldMapping.setJiraIssueEpicType(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -429,6 +449,7 @@ public class JiraIssueProcessorImplTest {
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "40");
 		map.put("id", "Test_Automation");
+		map.put("key", "ABC-123");
 		JSONObject jsonObject1 = new JSONObject(map);
 		jsonArrayList1.add(jsonObject1);
 		IssueField issueField1 = new IssueField("40", "Test_Automation", null, new JSONArray(jsonArrayList1));
@@ -440,13 +461,13 @@ public class JiraIssueProcessorImplTest {
 		IssueField issueField3 = new IssueField("duedate", "Due_Date", null, "");
 		issueFieldList.add(issueField3);
 
-		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 2);
+		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
 		issueFieldList.add(issueField4);
 
-		IssueField issueField5 = new IssueField("aggregatetimeestimate", "aggregatetimeestimate", null, 2);
+		IssueField issueField5 = new IssueField("aggregatetimeestimate", "aggregatetimeestimate", null, 360);
 		issueFieldList.add(issueField5);
 
-		IssueField issueField6 = new IssueField("aggregatetimeoriginalestimate", "aggregatetimeoriginalestimate", null, 3);
+		IssueField issueField6 = new IssueField("aggregatetimeoriginalestimate", "aggregatetimeoriginalestimate", null, 300);
 		issueFieldList.add(issueField6);
 
 		IssueField issueField7 = new IssueField("parent", "Due_Date", null, jsonObject1);
