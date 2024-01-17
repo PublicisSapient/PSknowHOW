@@ -42,7 +42,7 @@ public class IssueKanbanProcessorTest {
 	private IssueKanbanProcessor issueKanbanProcessor;
 
 
-	//@Test
+	@Test
 	public void testProcessWhenSprintFetchIsFalse() throws Exception {
 		// Arrange
 
