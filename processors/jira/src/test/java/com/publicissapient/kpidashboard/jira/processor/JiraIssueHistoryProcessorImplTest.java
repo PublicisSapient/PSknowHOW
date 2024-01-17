@@ -3,6 +3,8 @@ package com.publicissapient.kpidashboard.jira.processor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
+import com.publicissapient.kpidashboard.jira.reader.IssueBoardReader;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -94,6 +97,28 @@ public class JiraIssueHistoryProcessorImplTest {
 				.convertToJiraIssueHistory(issue, createProjectConfig(), jiraIssue).getBasicProjectConfigId());
 	}
 
+	@Test
+	public void getDevDueDateChangeLog() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDevDueDateChangeLog", List.class, FieldMapping.class, Map.class); // Make the private method accessibl
+		method.setAccessible(true);
+		FieldMapping fieldMapping=new FieldMapping();
+		fieldMapping.setJiraDevDueDateCustomField("customfield_20303");
+		Map<String,IssueField> fieldMap=new HashMap<>();
+		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
+		method.invoke(createJiraIssueHistory,changeLogList,fieldMapping,fieldMap);
+	}
+
+	@Test
+	public void createFirstEntryOfDevDueDateChangeLog() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("createFirstEntryOfDevDueDateChangeLog", List.class, FieldMapping.class, Issue.class, Map.class); // Make the private method accessibl
+		method.setAccessible(true);
+		FieldMapping fieldMapping=new FieldMapping();
+		fieldMapping.setJiraDevDueDateCustomField("customfield_20303");
+		Map<String,IssueField> fieldMap=new HashMap<>();
+		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
+		method.invoke(createJiraIssueHistory,new ArrayList<>(),fieldMapping,issue,fieldMap);
+	}
+
 	private ProjectConfFieldMapping createProjectConfig() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63c04dc7b7617e260763ca4e"));
@@ -146,8 +171,8 @@ public class JiraIssueHistoryProcessorImplTest {
 
 		ChangelogGroup changelogGroup;
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "status",
-						"10003", "In Development", "15752", "Code Review")));
+				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "duedate",
+						"", "In Development", "", "Code Review")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
 				new DateTime("2023-02-28T03:57:59.000+0000"),
