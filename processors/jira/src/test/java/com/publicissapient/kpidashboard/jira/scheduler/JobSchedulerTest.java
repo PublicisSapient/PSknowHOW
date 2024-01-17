@@ -160,7 +160,7 @@ public class JobSchedulerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+		//when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		jobScheduler.startKanbanJqlJob();
 	}

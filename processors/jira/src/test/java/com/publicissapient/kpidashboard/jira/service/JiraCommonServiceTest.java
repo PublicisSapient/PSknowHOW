@@ -28,11 +28,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.lang.reflect.Method;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,16 +207,18 @@ public class JiraCommonServiceTest {
 		List<ProjectVersion> versions = jiraCommonService.getVersion(projectConfFieldMapping1, krb5Client);
 		Assert.assertEquals(0, versions.size());
 	}
-//	@Test(expected = RestClientException.class)
-//	public void getVersionTest1() throws IOException, ParseException {
-//		projectToolConfigsBoard = getMockProjectToolConfig("63bfa0d5b7617e260763ca21");
-//		createProjectConfigMap(false);
-//		when(jiraProcessorConfig.getJiraVersionApi()).thenReturn("rest/api/7/project/{projectKey}/versions");
-//		URL mockedUrl = new URL("https://www.testurl.com/");
-//		Connection connection1 = new Connection();
-//		connection1.setBaseUrl("https://www.testurl.com/");
-//		when(projectConfFieldMapping1.getJira()).thenThrow(new RestClientException(new RestClientException(new Exception())));
-//	}
+	// @Test(expected = RestClientException.class)
+	// public void getVersionTest1() throws IOException, ParseException {
+	// projectToolConfigsBoard =
+	// getMockProjectToolConfig("63bfa0d5b7617e260763ca21");
+	// createProjectConfigMap(false);
+	// when(jiraProcessorConfig.getJiraVersionApi()).thenReturn("rest/api/7/project/{projectKey}/versions");
+	// URL mockedUrl = new URL("https://www.testurl.com/");
+	// Connection connection1 = new Connection();
+	// connection1.setBaseUrl("https://www.testurl.com/");
+	// when(projectConfFieldMapping1.getJira()).thenThrow(new
+	// RestClientException(new RestClientException(new Exception())));
+	// }
 
 	@Test
 	public void testGetApiHost() {
@@ -379,45 +378,74 @@ public class JiraCommonServiceTest {
 		assertEquals("Api host not found in properties.", exception.getMessage());
 	}
 
-//	@Test
-//	public void testGetOptionalStringWhenAttributeExists() {
-//		// Arrange
-//		JSONObject jsonObject = new JSONObject();
-//		jsonObject.put("attributeName", "TestValue");
-//
-//		// Act
-//		 yourClassUnderTest = new YourClassUnderTest();
-//		String result = yourClassUnderTest.getOptionalString(jsonObject, "attributeName");
-//
-//		// Assert
-//		assertEquals("TestValue", result);
-//	}
-//
-//	@Test
-//	public void testGetOptionalStringWhenAttributeDoesNotExist() {
-//		// Arrange
-//		JSONObject jsonObject = new JSONObject();
-//
-//		// Act
-//		YourClassUnderTest yourClassUnderTest = new YourClassUnderTest();
-//		String result = yourClassUnderTest.getOptionalString(jsonObject, "nonExistentAttribute");
-//
-//		// Assert
-//		assertNull(result);
-//	}
-//
-//	@Test
-//	public void testGetOptionalStringWhenAttributeIsNull() {
-//		// Arrange
-//		JSONObject jsonObject = new JSONObject();
-//		jsonObject.put("attributeName", null);
-//
-//		// Act
-//		YourClassUnderTest yourClassUnderTest = new YourClassUnderTest();
-//		String result = yourClassUnderTest.getOptionalString(jsonObject, "attributeName");
-//
-//		// Assert
-//		assertNull(result);
-//	}
+	@Test
+	public void testParseVersionData()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
+		// Define sample dataFromServer
+		String dataFromServer = "[{\"id\":\"1\",\"name\":\"Version 1\",\"archived\":\"false\",\"released\":\"true\",\"startDate\":\"2022-01-01\",\"releaseDate\":\"2022-02-01\"}]";
 
+		// Create a List to hold the parsed ProjectVersion objects
+		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
+
+		// Get the private method using reflection
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
+				List.class);
+		parseVersionData.setAccessible(true);
+
+		// Invoke the private method
+		parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList);
+
+		// Assert the results
+		assertEquals(1, projectVersionDetailList.size());
+		ProjectVersion projectVersion = projectVersionDetailList.get(0);
+		assertEquals("Version 1", projectVersion.getName());
+		assertEquals(false, projectVersion.isArchived());
+		assertEquals(true, projectVersion.isReleased());
+		// Add more assertions based on your data
+	}
+
+	@Test
+	public void testParseVersionData1()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
+		// Define sample dataFromServer
+		String dataFromServer = "[{\"id\":\"1\",\"name\":\"Version 1\",\"archived\":\"false\",\"released\":\"true\",\"startDate\":\"2022-01-01\",\"releaseDate\":\"2022-02-01\"}]";
+
+		// Create a List to hold the parsed ProjectVersion objects
+		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
+
+		// Get the private method using reflection
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
+				List.class);
+		parseVersionData.setAccessible(true);
+
+		// Invoke the private method
+		parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList);
+
+		// Assert the results
+		assertEquals(1, projectVersionDetailList.size());
+		ProjectVersion projectVersion = projectVersionDetailList.get(0);
+		assertEquals("Version 1", projectVersion.getName());
+		assertEquals(false, projectVersion.isArchived());
+		assertEquals(true, projectVersion.isReleased());
+		// Add more assertions based on your data
+	}
+
+	@Test
+	public void testParseVersionData2()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, ParseException {
+		// Define sample dataFromServer
+		String dataFromServer = "[{\"id\"jm,ndzmn:\"1\",\"name\":\"Version 1\",\"archived\":\"false\",\"released\":\"true\",\"startDate\":\"2022-01-01\",\"releaseDate\":\"2022-02-01\"}]";
+
+		// Create a List to hold the parsed ProjectVersion objects
+		List<ProjectVersion> projectVersionDetailList = new ArrayList<>();
+
+		// Get the private method using reflection
+		Method parseVersionData = JiraCommonService.class.getDeclaredMethod("parseVersionData", String.class,
+				List.class);
+		parseVersionData.setAccessible(true);
+
+		assertThrows(Exception.class,
+				()->parseVersionData.invoke(jiraCommonService, dataFromServer, projectVersionDetailList));
+
+	}
 }
