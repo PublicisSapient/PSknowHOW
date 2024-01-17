@@ -170,12 +170,12 @@ public class CreateMetadataImplTest {
 		Assert.assertThrows(Exception.class, () -> createMetadata.collectMetadata(createProjectConfig(true), client));
 	}
 
-//	@Test
-//	public void collectMetadataWithBoardMetadata() throws Exception {
-//		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
-//				.thenReturn(new BoardMetadata());
-//		createMetadata.collectMetadata(createProjectConfig(true), client);
-//	}
+	@Test
+	public void collectMetadataWithBoardMetadata() throws Exception {
+		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
+				.thenReturn(new BoardMetadata());
+		createMetadata.collectMetadata(createProjectConfig(true), client);
+	}
 
 	private MetadataIdentifier createMetaDataIdentifier(boolean flag) {
 		String tool = "Jira";

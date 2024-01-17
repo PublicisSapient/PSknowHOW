@@ -149,21 +149,21 @@ public class FetchIssueSprintImplTest {
 		assertEquals(0, result.size());
 	}
 
-//	@Test
-//	public void fetchIssuesSprintBasedOnJqlWithNullClient() throws InterruptedException {
-//		String sprintID = "sprint123";
-//
-//		when(sprintRepository.findBySprintID(sprintID)).thenReturn(sprintDetails);
-//
-//		ProjectBasicConfig projectBasicConfig = ProjectBasicConfig.builder().build();
-//		projectBasicConfig.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
-//		projectBasicConfig.setProjectName("test-project");
-//
-//		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false),null, 50,
-//				sprintID);
-//
-//		assertEquals(0, result.size());
-//	}
+	@Test
+	public void fetchIssuesSprintBasedOnJqlWithNullClient() throws InterruptedException {
+		String sprintID = "sprint123";
+
+		when(sprintRepository.findBySprintID(sprintID)).thenReturn(sprintDetails);
+
+		ProjectBasicConfig projectBasicConfig = ProjectBasicConfig.builder().build();
+		projectBasicConfig.setId(new ObjectId("5ba8e182d3735010e7f1fa45"));
+		projectBasicConfig.setProjectName("test-project");
+
+		List<Issue> result = fetchIssueSprint.fetchIssuesSprintBasedOnJql(createProjectConfig(false),null, 50,
+				sprintID);
+
+		assertEquals(0, result.size());
+	}
 
 	private ProjectConfFieldMapping createProjectConfig(boolean isKanban) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
