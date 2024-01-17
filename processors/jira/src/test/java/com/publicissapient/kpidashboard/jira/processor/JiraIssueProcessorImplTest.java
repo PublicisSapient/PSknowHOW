@@ -86,14 +86,23 @@ public class JiraIssueProcessorImplTest {
 	JiraIssueProcessorImpl transformFetchedIssueToJiraIssue;
 	List<Issue> issues = new ArrayList<>();
 	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+
+	ProjectConfFieldMapping projectConfFieldMapping1 = ProjectConfFieldMapping.builder().build();
+
+	ProjectConfFieldMapping projectConfFieldMapping2 = ProjectConfFieldMapping.builder().build();
 	@Mock
 	JiraProcessor jiraProcessor;
 
 	FieldMapping fieldMapping;
 	List<ProjectBasicConfig> projectConfigsList;
-	List<ProjectToolConfig> projectToolConfigs;
+	List<ProjectToolConfig> projectToolConfigsForJQL;
+	List<ProjectToolConfig> projectToolConfigsForBoard;
 	Optional<Connection> connection;
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
+
+	List<FieldMapping> fieldMappingListForIfCase = new ArrayList<>();
+
+	List<FieldMapping> fieldMappingListForElseIfCase = new ArrayList<>();
 	@Mock
 	Runtime runtime;
 	@Mock
@@ -120,7 +129,8 @@ public class JiraIssueProcessorImplTest {
 	@Before
 	public void setup() throws URISyntaxException, JSONException {
 		projectConfigsList = getMockProjectConfig();
-		projectToolConfigs = getMockProjectToolConfig();
+		projectToolConfigsForJQL = getMockProjectToolConfigForJQL();
+		projectToolConfigsForBoard = getMockProjectToolConfigForBoard();
 		connection = getMockConnection();
 		Assignee assignee = Assignee.builder().assigneeId("31").assigneeName("User 1").build();
 		Assignee assignee1 = Assignee.builder().assigneeId("32").assigneeName("User 2").build();
@@ -133,8 +143,12 @@ public class JiraIssueProcessorImplTest {
 				.thenReturn(assigneeDetailsToBeSave);
 		createIssue();
 		createIssuefieldsList();
-		prepareFiledMapping();
-		createProjectConfigMap();
+		prepareFiledMapping(0);
+		prepareFiledMapping(1);
+		prepareFiledMapping(2);
+		createProjectConfigMapForJQL();
+		createProjectConfigMapForBoard();
+		createProjectConfigMapForElse();
 	}
 
 	@Test
@@ -154,6 +168,38 @@ public class JiraIssueProcessorImplTest {
 	}
 
 	@Test
+	public void convertToJiraIssue2() throws URISyntaxException, JSONException, InterruptedException {
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f
+		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
+		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(JiraIssue.builder().build());
+		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
+				.thenReturn(getMockAdditionalFilterFromJiraIssue());
+		assertEquals(JiraIssue.class,
+				(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues.get(0), projectConfFieldMapping1, ""))
+						.getClass());
+
+	}
+
+	@Test
+	public void convertToJiraIssue3() throws URISyntaxException, JSONException, InterruptedException {
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f
+		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
+		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(JiraIssue.builder().build());
+		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
+				.thenReturn(getMockAdditionalFilterFromJiraIssue());
+		assertEquals(JiraIssue.class,
+				(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues.get(0), projectConfFieldMapping2, ""))
+						.getClass());
+
+	}
+
+	@Test
 	public void updateAssigneeDetailsToggleWise() {
 		transformFetchedIssueToJiraIssue.updateAssigneeDetailsToggleWise(new JiraIssue(), projectConfFieldMapping,
 				Arrays.asList("1234"), Arrays.asList("username"), Arrays.asList("username"));
@@ -165,11 +211,18 @@ public class JiraIssueProcessorImplTest {
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
-	private List<ProjectToolConfig> getMockProjectToolConfig() {
+	private List<ProjectToolConfig> getMockProjectToolConfigForJQL() {
 		ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
 				.newInstance("/json/default/project_tool_configs.json");
 		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
 				"63c04dc7b7617e260763ca4e");
+	}
+
+	private List<ProjectToolConfig> getMockProjectToolConfigForBoard() {
+		ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
+				.newInstance("/json/default/project_tool_configs.json");
+		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
+				"63bfa0d5b7617e260763ca21");
 	}
 
 	private List<AdditionalFilter> getMockAdditionalFilterFromJiraIssue() {
@@ -244,7 +297,7 @@ public class JiraIssueProcessorImplTest {
 		return issueLinkList;
 	}
 
-	private void prepareFiledMapping() {
+	private void prepareFiledMapping(int caseIfElse) {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("63bfa0d5b7617e260763ca21"));
 		fieldMapping.setSprintName("customfield_12700");
@@ -271,12 +324,6 @@ public class JiraIssueProcessorImplTest {
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
 		fieldMapping.setEpicLink("customfield_12121");
 
-		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
-		fieldMapping.setJiraTechDebtCustomField("customfield_14141");
-
-		jiraType = new ArrayList<>();
-		jiraType.add("TECH_DEBT");
-		fieldMapping.setJiraTechDebtValue(jiraType);
 		fieldMapping.setJiraDefectRejectionStatus("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
@@ -340,22 +387,92 @@ public class JiraIssueProcessorImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
 
-		fieldMapping.setProductionDefectIdentifier("Component");
-		fieldMapping.setJiraBugRaisedByQAIdentification("Labels");
-		fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
-		fieldMapping.setProductionDefectComponentValue("component1");
-		fieldMapping.setTestingPhaseDefectsIdentifier("Component");
-		fieldMapping.setTestingPhaseDefectComponentValue("component1");
-		fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
-		fieldMapping.setJiraProdIncidentRaisedByCustomField("customfield_14141");
-		fieldMapping.setJiraProdIncidentRaisedByValue(Arrays.asList("TECH_DEBT"));
+
+
+		if(caseIfElse == 1){
+			jiraType = new ArrayList<>();
+			jiraType.add("label1");
+
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraTechDebtValue(jiraType);
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraBugRaisedByQAValue(jiraType);
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.LABELS);
+			fieldMapping.setProductionDefectValue(jiraType);
+
+			fieldMapping.setJiraDueDateField(CommonConstant.DUE_DATE);
+
+			fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraProdIncidentRaisedByValue(Arrays.asList("label1"));
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.LABELS);
+			fieldMapping.setTestingPhaseDefectValue(jiraType);
+
+		} else if(caseIfElse == 2){
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.ISSUE_TYPE);
+			jiraType = new ArrayList<>();
+			jiraType.add("Defect");
+			jiraType.add("Bug");
+			jiraType.add("Story");
+			fieldMapping.setJiraTechDebtValue(jiraType);
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraBugRaisedByQACustomField("customfield_14141");
+			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.COMPONENT);
+			fieldMapping.setProductionDefectValue(jiraType);
+			fieldMapping.setProductionDefectComponentValue("component1");
+
+			fieldMapping.setJiraDueDateField(CommonConstant.DUE_DATE);
+			fieldMapping.setJiraDueDateCustomField("customfield_56444");
+			fieldMapping.setJiraDevDueDateCustomField("customfield_56444");
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.COMPONENT);
+			fieldMapping.setTestingPhaseDefectComponentValue("component1");
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.COMPONENT);
+		} else {
+			jiraType = new ArrayList<>();
+			jiraType.add("TECH_DEBT");
+			fieldMapping.setJiraTechDebtValue(jiraType);
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraTechDebtCustomField("customfield_14141");
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.ISSUE_TYPE);
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setProductionDefectCustomField("customfield_14141");
+			fieldMapping.setProductionDefectValue(jiraType);
+
+			fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraProdIncidentRaisedByCustomField("customfield_14141");
+			fieldMapping.setJiraProdIncidentRaisedByValue(Arrays.asList("TECH_DEBT"));
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setTestingPhaseDefectValue(Arrays.asList("label1"));
+			fieldMapping.setTestingPhaseDefectCustomField("customfield_14141");
+			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+
+		}
+
 		fieldMapping.setJiraStatusMappingCustomField("customfield_14502");
 		fieldMapping.setEpicName("customfield_14502");
-		fieldMappingList.add(fieldMapping);
+
+		if(caseIfElse == 1){
+			fieldMappingListForIfCase.add(fieldMapping);
+		} else if(caseIfElse == 2) {
+			fieldMappingListForElseIfCase.add(fieldMapping);
+		} else {
+			fieldMappingList.add(fieldMapping);
+		}
+
 
 	}
 
-	private void createProjectConfigMap() {
+	private void createProjectConfigMapForJQL() {
 		ProjectBasicConfig projectConfig = projectConfigsList.get(1);
 		try {
 			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
@@ -364,15 +481,43 @@ public class JiraIssueProcessorImplTest {
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-		projectConfFieldMapping.setJira(getJiraToolConfig());
-		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
+		projectConfFieldMapping.setJira(getJiraToolConfig(projectToolConfigsForJQL.get(0)));
+		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigsForJQL.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 	}
 
-	private JiraToolConfig getJiraToolConfig() {
+	private void createProjectConfigMapForBoard() {
+		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
+		try {
+			BeanUtils.copyProperties(projectConfFieldMapping1, projectConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+		}
+		projectConfFieldMapping1.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping1.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping1.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping1.setJira(getJiraToolConfig(projectToolConfigsForBoard.get(0)));
+		projectConfFieldMapping1.setJiraToolConfigId(projectToolConfigsForBoard.get(0).getId());
+		projectConfFieldMapping1.setFieldMapping(fieldMappingListForIfCase.get(0));
+	}
+
+	private void createProjectConfigMapForElse() {
+		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
+		try {
+			BeanUtils.copyProperties(projectConfFieldMapping2, projectConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+		}
+		projectConfFieldMapping2.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping2.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping2.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping2.setJira(getJiraToolConfig(projectToolConfigsForBoard.get(0)));
+		projectConfFieldMapping2.setJiraToolConfigId(projectToolConfigsForBoard.get(0).getId());
+		projectConfFieldMapping2.setFieldMapping(fieldMappingListForElseIfCase.get(0));
+	}
+
+	private JiraToolConfig getJiraToolConfig(ProjectToolConfig projectToolConfig) {
 		JiraToolConfig toolObj = new JiraToolConfig();
 		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
+			BeanUtils.copyProperties(toolObj, projectToolConfig);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 
 		}
@@ -405,6 +550,9 @@ public class JiraIssueProcessorImplTest {
 		issueFieldList.add(issueField);
 
 		issueField = new IssueField("customfield_56789", "StoryPoints", null, Integer.parseInt("5"));
+		issueFieldList.add(issueField);
+
+		issueField = new IssueField("customfield_56444", "Due Date", null, "2022-12-14'T'03:22:33.012Z");
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
@@ -459,7 +607,7 @@ public class JiraIssueProcessorImplTest {
 		IssueField issueField2 = new IssueField("fivVesion", "Fix Version", null, "KnowHowv6.7");
 		issueFieldList.add(issueField2);
 
-		IssueField issueField3 = new IssueField("duedate", "Due_Date", null, "");
+		IssueField issueField3 = new IssueField("duedate", "Due_Date", null, "2022-12-14'T'03:22:33.012Z");
 		issueFieldList.add(issueField3);
 
 		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
