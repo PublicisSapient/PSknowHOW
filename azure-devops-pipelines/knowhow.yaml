@@ -1,0 +1,59 @@
+trigger:
+- azure-devops
+
+pr:
+- '*'
+
+parameters:
+- name: componentToBuild
+  displayName: 'Component to Build'
+  type: string
+  values:
+  - 'CustomAPI'
+  - 'UI'
+  - 'Processor'
+  default: 'CustomAPI'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+
+- stage: DeployUI
+  displayName: 'Deploy UI'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'UI'))
+  jobs:
+  - job: DeployUIJob
+    displayName: 'Deploy UI Job'
+    steps:
+    - script: |
+        echo "Deploying UI"
+        # Add your deployment commands for UI here
+      displayName: 'Deploy UI'
+
+- stage: DeployCustomAPI
+  displayName: 'Deploy Custom API'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'CustomAPI'))
+  jobs:
+  - job: DeployCustomAPIJob
+    displayName: 'Deploy Custom API Job'
+    steps:
+    - script: |
+        echo "Deploying Custom API"
+        # Add your deployment commands for Custom API here
+      displayName: 'Deploy Custom API'
+
+- stage: DeployProcessor
+  displayName: 'Deploy Processor'
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'Processor'))
+  jobs:
+  - job: DeployProcessorJob
+    displayName: 'Deploy Processor Job'
+    steps:
+    - script: |
+        echo "Deploying Processor"
+        # Add your deployment commands for Processor here
+      displayName: 'Deploy Processor'
