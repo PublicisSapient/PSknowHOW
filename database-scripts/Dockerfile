@@ -1,7 +1,7 @@
 FROM mongo:5.0.18
 
-ENV MONGO_INITDB_ROOT_USERNAME="admin" \
-    MONGO_INITDB_ROOT_PASSWORD="reset@123"
+ENV MONGO_INITDB_ROOT_USERNAME="<your username>" \
+    MONGO_INITDB_ROOT_PASSWORD="<your pass>"
 
 # COPY scripts/* /docker-entrypoint-initdb.d/
 
