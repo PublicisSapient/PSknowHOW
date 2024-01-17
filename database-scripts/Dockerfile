@@ -3,6 +3,15 @@ FROM mongo:5.0.18
 ENV MONGO_INITDB_ROOT_USERNAME="<your username>" \
     MONGO_INITDB_ROOT_PASSWORD="<your pass>"
 
+ARG USER=knowhowuser
+ARG UID=1000
+ARG GID=1000
+
+RUN groupadd -g $GID $USER \
+    && useradd -u $UID -g $GID -m -s /bin/bash $USER
+
+USER $USER:$GID
+
 # COPY scripts/* /docker-entrypoint-initdb.d/
 
 # RUN \
