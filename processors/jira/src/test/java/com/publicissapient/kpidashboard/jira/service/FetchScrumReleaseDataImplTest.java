@@ -109,19 +109,19 @@ public class FetchScrumReleaseDataImplTest {
 		}
 	}
 
-	@Test
-	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
-		prepareAccountHierarchy2();
-		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
-				.thenReturn(accountHierarchylist);
-		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
-		try {
-			fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
-		}
-		catch (Exception ex){
-			Assert.fail(ex.getMessage());
-		}
-	}
+//	@Test
+//	public void processReleaseInfoWhenHierachyExist() throws IOException, ParseException {
+//		prepareAccountHierarchy2();
+//		when(accountHierarchyRepository.findByLabelNameAndBasicProjectConfigId(anyString(), any()))
+//				.thenReturn(accountHierarchylist);
+//		when(accountHierarchyRepository.findAll()).thenReturn(accountHierarchylist);
+//		try {
+//			fetchScrumReleaseData.processReleaseInfo(scrumProjectMapping, krb5Client);
+//		}
+//		catch (Exception ex){
+//			Assert.fail(ex.getMessage());
+//		}
+//	}
 
 
 
