@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,11 +21,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.atlassian.jira.rest.client.api.domain.TimeTracking;
-import com.atlassian.jira.rest.client.api.domain.Version;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -57,7 +51,9 @@ import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -67,6 +63,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -128,9 +126,11 @@ public class JiraIssueProcessorImplTest {
 		Assignee assignee1 = Assignee.builder().assigneeId("32").assigneeName("User 2").build();
 		assigneeSetToSave.add(assignee);
 		assigneeSetToSave.add(assignee1);
-		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e" , ProcessorConstants.JIRA ,assigneeSetToSave , 3 );
+		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e",
+				ProcessorConstants.JIRA, assigneeSetToSave, 3);
 		when(assigneeDetails.getBasicProjectConfigId()).thenReturn("63c04dc7b7617e260763ca4e");
-		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any() , any())).thenReturn(assigneeDetailsToBeSave);
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(assigneeDetailsToBeSave);
 		createIssue();
 		createIssuefieldsList();
 		prepareFiledMapping();
@@ -218,10 +218,11 @@ public class JiraIssueProcessorImplTest {
 		BasicComponent basicComponent = new BasicComponent(new URI("self"), 1l, "component1", "abc");
 		List<BasicComponent> component = Collections.singletonList(basicComponent);
 
-		TimeTracking timeTracking=new TimeTracking(8,8,8);
+		TimeTracking timeTracking = new TimeTracking(8, 8, 8);
 
-		Collection<Version> fixVersions =  new ArrayList<>();
-		Version version = new Version(new URI("https://dummy.com/jira/rest/api/2/version/143417") , 143417L , "" , "KnowHOW v6.8.0" , false , true ,  DateTime.now());
+		Collection<Version> fixVersions = new ArrayList<>();
+		Version version = new Version(new URI("https://dummy.com/jira/rest/api/2/version/143417"), 143417L, "",
+				"KnowHOW v6.8.0", false, true, DateTime.now());
 		fixVersions.add(version);
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
@@ -467,7 +468,8 @@ public class JiraIssueProcessorImplTest {
 		IssueField issueField5 = new IssueField("aggregatetimeestimate", "aggregatetimeestimate", null, 360);
 		issueFieldList.add(issueField5);
 
-		IssueField issueField6 = new IssueField("aggregatetimeoriginalestimate", "aggregatetimeoriginalestimate", null, 300);
+		IssueField issueField6 = new IssueField("aggregatetimeoriginalestimate", "aggregatetimeoriginalestimate", null,
+				300);
 		issueFieldList.add(issueField6);
 
 		IssueField issueField7 = new IssueField("parent", "Due_Date", null, jsonObject1);
@@ -477,8 +479,8 @@ public class JiraIssueProcessorImplTest {
 
 	@Test
 	public void testSetEpicIssueData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-			// Arrange
-			FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
+		// Arrange
+		FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
 		fieldMapping.setEpicJobSize("8.0");
 		fieldMapping.setEpicRiskReduction("8.0");
 		fieldMapping.setEpicTimeCriticality("8.0");
@@ -487,35 +489,38 @@ public class JiraIssueProcessorImplTest {
 		fieldMapping.setEpicPlannedValue("8.0");
 		fieldMapping.setEpicAchievedValue("8.0");
 
-			JiraIssue jiraIssue = new JiraIssue(); // Set up your JiraIssue instance
+		JiraIssue jiraIssue = new JiraIssue(); // Set up your JiraIssue instance
 		jiraIssue.setBusinessValue(8.0);
 		jiraIssue.setRiskReduction(8.0);
 		jiraIssue.setTimeCriticality(8.0);
-			Map<String, IssueField> fields = new HashMap<>();
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			// Add other fields as needed
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		// Add other fields as needed
 
-			// Use reflection to access the private method
-			Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class, JiraIssue.class, Map.class);
-			method.setAccessible(true);
+		// Use reflection to access the private method
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
 
-			// Act
-			method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+		// Act
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
 
-			// Assert
-//			assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add assertions for other fields
+		// Assert
+		// assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add
+		// assertions for other fields
 	}
 
 	@Test
-	public void testSetSubTaskLinkage() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testSetSubTaskLinkage()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		// Arrange
-		FieldMapping fieldMapping=new FieldMapping();
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraSubTaskIdentification(Arrays.asList("Story"));
 
 		Map<String, IssueField> fields = new HashMap<>();
@@ -524,17 +529,18 @@ public class JiraIssueProcessorImplTest {
 		// Set up other mocks and required behaviors
 
 		// Use reflection to access the private method
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSubTaskLinkage", JiraIssue.class, FieldMapping.class, Issue.class, Map.class);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSubTaskLinkage", JiraIssue.class,
+				FieldMapping.class, Issue.class, Map.class);
 		method.setAccessible(true);
 
-		JiraIssue jiraIssue=new JiraIssue();
+		JiraIssue jiraIssue = new JiraIssue();
 		jiraIssue.setTypeName("Story");
 		// Act
 		method.invoke(transformFetchedIssueToJiraIssue, jiraIssue, fieldMapping, issues.get(0), new HashMap<>());
 
 		// Assert
 		// Add assertions based on the expected behavior of your method
-//		verify(jiraIssueMock).setParentStoryId(anySet());
+		// verify(jiraIssueMock).setParentStoryId(anySet());
 	}
 
 	@Test
@@ -546,19 +552,21 @@ public class JiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testSetJiraAssigneeDetailsWhenUserIsNull() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", JiraIssue.class, User.class, ProjectConfFieldMapping.class);
+	public void testSetJiraAssigneeDetailsWhenUserIsNull()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", JiraIssue.class,
+				User.class, ProjectConfFieldMapping.class);
 		method.setAccessible(true);
-		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null,projectConfFieldMapping);
+		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
 
 	@Test
 	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class, Map.class);
 		method.setAccessible(true);
-		FieldMapping fieldMapping=new FieldMapping();
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setRootCause("code_issue");
-		Map<String,String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "code");
 		map.put("id", "19121");
@@ -566,15 +574,17 @@ public class JiraIssueProcessorImplTest {
 		List<Object> rcaList = new ArrayList<>();
 		rcaList.add(jsonObject);
 		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
-		Map<String,IssueField> fields = new HashMap<>();
-		fields.put("code_issue",issueField);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("code_issue", issueField);
 
-		method.invoke(transformFetchedIssueToJiraIssue,fieldMapping,fields);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, fields);
 	}
 
 	@Test
-	public void testProcessSprintData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("processSprintData", JiraIssue.class, IssueField.class, ProjectConfFieldMapping.class);
+	public void testProcessSprintData()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("processSprintData", JiraIssue.class,
+				IssueField.class, ProjectConfFieldMapping.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
