@@ -930,27 +930,32 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	private void setDueDates(JiraIssue jiraIssue, Issue issue, Map<String, IssueField> fields,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
-					&& ObjectUtils.isNotEmpty(issue.getDueDate())) {
-				jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDueDateCustomField()))) {
-				IssueField issueField = fields.get(fieldMapping.getJiraDueDateCustomField());
-				if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-					jiraIssue.setDueDate(JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-				}
-			}
+			jiraIssue.setDueDate(getFormattedDate(issue, fields, fieldMapping.getJiraDueDateField(),
+					fieldMapping.getJiraDueDateCustomField()));
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fields.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			IssueField issueField = fields.get(fieldMapping.getJiraDevDueDateCustomField());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			jiraIssue.setDevDueDate(getFormattedDate(issue, fields, fieldMapping.getJiraDevDueDateField(),
+					fieldMapping.getJiraDevDueDateCustomField()));
+		}
+	}
+
+	private String getFormattedDate(Issue issue, Map<String, IssueField> fields, String jiraDateField,
+			String jiraDateCustomField) {
+		String dateValue = null;
+
+		if (jiraDateField.equalsIgnoreCase(CommonConstant.DUE_DATE) && ObjectUtils.isNotEmpty(issue.getDueDate())) {
+			dateValue = JiraProcessorUtil.deodeUTF8String(issue.getDueDate()).split("T")[0]
+					.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
+		} else if (StringUtils.isNotEmpty(jiraDateCustomField)
+				&& ObjectUtils.isNotEmpty(fields.get(jiraDateCustomField))) {
+			IssueField issueField = fields.get(jiraDateCustomField);
 			if (ObjectUtils.isNotEmpty(issueField.getValue())) {
-				jiraIssue.setDevDueDate((JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				dateValue = JiraProcessorUtil.deodeUTF8String(issueField.getValue()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
 			}
 		}
+		return dateValue;
 	}
 
 	private void setTestingPhaseDefectIdentificationField(Issue issue, FieldMapping fieldMapping, JiraIssue jiraIssue,
