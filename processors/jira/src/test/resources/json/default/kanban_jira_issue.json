@@ -6,7 +6,7 @@
     "number": "TEST-17746",
     "name": "x-axis line is dark on stacked graphs, it should be standard for all graphs",
     "typeId": "1",
-    "typeName": "Defect",
+    "typeName": "Bug",
     "status": "Closed",
     "state": "Closed",
     "estimate": "0",
@@ -14,6 +14,7 @@
     "changeDate": "2022-07-08T15:22:18.0000000",
     "isDeleted": "False",
     "priority": "P4 - Minor",
+    "devicePlatform" : "abc",
     "labels": [
       "UI"
     ],

@@ -160,8 +160,6 @@ public class AdditionalFilterHelperTest {
 	public void getCustomFieldValuesExceptionTest() throws NoSuchMethodException, InvocationTargetException,
 			IllegalAccessException, URISyntaxException, JSONException {
 
-		// AdditionalFilterHelper
-		// additionalFilterHelper=mock(AdditionalFilterHelper.class);
 		AdditionalFilterConfig additionalFilterConfig = spy(AdditionalFilterConfig.class);
 		additionalFilterConfig.setIdentificationField("id1");
 		Method method = AdditionalFilterHelper.class.getDeclaredMethod("getCustomFieldValues", Issue.class,
@@ -187,13 +185,13 @@ public class AdditionalFilterHelperTest {
 			IllegalAccessException, URISyntaxException, JSONException {
 
 		AdditionalFilterConfig additionalFilterConfig = spy(AdditionalFilterConfig.class);
-		// additionalFilterConfig.setIdentificationField("id");
+
 		Method method = AdditionalFilterHelper.class.getDeclaredMethod("getCustomFieldValues", Issue.class,
 				AdditionalFilterConfig.class);
 		method.setAccessible(true);
 		Collection<IssueField> issueFields = Arrays.asList(new IssueField("id1", "name1", "type1", getJSONArray()),
 				new IssueField("id2", "name2", "type2", getJSONArray()));
-		// Issue issue1=spy(issue);
+
 		Issue issue1 = new Issue("summary", new URI(""), "key", 123l, null, null, null, "", null, null, null, null,
 				null, new DateTime(), new DateTime(), new DateTime(), null, null, null, null, issueFields, null, null,
 				null, null, null, null, null, null, null, null, null);

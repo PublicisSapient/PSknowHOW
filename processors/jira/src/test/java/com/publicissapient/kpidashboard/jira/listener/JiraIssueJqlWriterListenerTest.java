@@ -1,7 +1,9 @@
 package com.publicissapient.kpidashboard.jira.listener;
 
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,6 +74,23 @@ public class JiraIssueJqlWriterListenerTest {
 		// Add more sample data as needed
 
 		return compositeResults;
+	}
+
+	@Test
+	public void testAfterWriteWithEmptyValue() {
+		listener.afterWrite(new ArrayList<>());
+	}
+
+	@Test
+	public void testAfterWriteWithTraceLog() {
+		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setBasicProjectConfigId("abc");
+		processorExecutionTraceLog.setBoardId("abc");
+		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+				eq(JiraConstants.JIRA), eq("Project1")))
+				.thenReturn(Optional.of(processorExecutionTraceLog));
+		listener.afterWrite(createSampleCompositeResults());
 	}
 
 }

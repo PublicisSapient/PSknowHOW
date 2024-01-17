@@ -66,6 +66,17 @@ public class IssueScrumWriterTest {
         verify(kanbanJiraIssueRepository, times(1)).saveAll(createMockJiraItems());
     }
 
+    @Test
+    public void testWriteWithEmptyValue() throws Exception {
+        // Mock data
+        CompositeResult compositeResult = new CompositeResult();
+        List<CompositeResult> compositeResults=new ArrayList<>();
+        compositeResults.add(compositeResult);
+        // Invoke the method to be tested
+        issueScrumWriter.write(compositeResults);
+
+    }
+
     // Helper methods to create mock data for testing
     private List<CompositeResult> createMockScrumCompositeResults() {
         CompositeResult compositeResult = new CompositeResult();

@@ -2,7 +2,6 @@ package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import com.atlassian.jira.rest.client.api.domain.TimeTracking;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
@@ -53,7 +51,9 @@ import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -63,6 +63,8 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
@@ -84,14 +86,23 @@ public class JiraIssueProcessorImplTest {
 	JiraIssueProcessorImpl transformFetchedIssueToJiraIssue;
 	List<Issue> issues = new ArrayList<>();
 	ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
+
+	ProjectConfFieldMapping projectConfFieldMapping1 = ProjectConfFieldMapping.builder().build();
+
+	ProjectConfFieldMapping projectConfFieldMapping2 = ProjectConfFieldMapping.builder().build();
 	@Mock
 	JiraProcessor jiraProcessor;
 
 	FieldMapping fieldMapping;
 	List<ProjectBasicConfig> projectConfigsList;
-	List<ProjectToolConfig> projectToolConfigs;
+	List<ProjectToolConfig> projectToolConfigsForJQL;
+	List<ProjectToolConfig> projectToolConfigsForBoard;
 	Optional<Connection> connection;
 	List<FieldMapping> fieldMappingList = new ArrayList<>();
+
+	List<FieldMapping> fieldMappingListForIfCase = new ArrayList<>();
+
+	List<FieldMapping> fieldMappingListForElseIfCase = new ArrayList<>();
 	@Mock
 	Runtime runtime;
 	@Mock
@@ -110,17 +121,34 @@ public class JiraIssueProcessorImplTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 
+	@Mock
+	private AssigneeDetails assigneeDetails;
+
+	Set<Assignee> assigneeSetToSave = new HashSet<>();
+
 	@Before
 	public void setup() throws URISyntaxException, JSONException {
-		// fieldMapping=getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
-		projectToolConfigs = getMockProjectToolConfig();
+		projectToolConfigsForJQL = getMockProjectToolConfigForJQL();
+		projectToolConfigsForBoard = getMockProjectToolConfigForBoard();
 		connection = getMockConnection();
-		// fieldMappingList=getMockFieldMappingList();
+		Assignee assignee = Assignee.builder().assigneeId("31").assigneeName("User 1").build();
+		Assignee assignee1 = Assignee.builder().assigneeId("32").assigneeName("User 2").build();
+		assigneeSetToSave.add(assignee);
+		assigneeSetToSave.add(assignee1);
+		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e",
+				ProcessorConstants.JIRA, assigneeSetToSave, 3);
+		when(assigneeDetails.getBasicProjectConfigId()).thenReturn("63c04dc7b7617e260763ca4e");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(assigneeDetailsToBeSave);
 		createIssue();
 		createIssuefieldsList();
-		prepareFiledMapping();
-		createProjectConfigMap();
+		prepareFiledMapping(0);
+		prepareFiledMapping(1);
+		prepareFiledMapping(2);
+		createProjectConfigMapForJQL();
+		createProjectConfigMapForBoard();
+		createProjectConfigMapForElse();
 	}
 
 	@Test
@@ -139,6 +167,38 @@ public class JiraIssueProcessorImplTest {
 
 	}
 
+	//@Test
+	public void convertToJiraIssue2() throws URISyntaxException, JSONException, InterruptedException {
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f
+		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
+		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(JiraIssue.builder().build());
+		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
+				.thenReturn(getMockAdditionalFilterFromJiraIssue());
+		assertEquals(JiraIssue.class,
+				(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues.get(0), projectConfFieldMapping1, ""))
+						.getClass());
+
+	}
+
+	//@Test
+	public void convertToJiraIssue3() throws URISyntaxException, JSONException, InterruptedException {
+		when(jiraProcessorRepository.findByProcessorName(ProcessorConstants.JIRA)).thenReturn(jiraProcessor);
+		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));// 63b3f50b6d8d7f44def6ec2f
+		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
+		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
+				.thenReturn(JiraIssue.builder().build());
+		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
+				.thenReturn(getMockAdditionalFilterFromJiraIssue());
+		assertEquals(JiraIssue.class,
+				(transformFetchedIssueToJiraIssue.convertToJiraIssue(issues.get(0), projectConfFieldMapping2, ""))
+						.getClass());
+
+	}
+
 	@Test
 	public void updateAssigneeDetailsToggleWise() {
 		transformFetchedIssueToJiraIssue.updateAssigneeDetailsToggleWise(new JiraIssue(), projectConfFieldMapping,
@@ -151,11 +211,18 @@ public class JiraIssueProcessorImplTest {
 		return connectionDataFactory.findConnectionById("5fd99f7bc8b51a7b55aec836");
 	}
 
-	private List<ProjectToolConfig> getMockProjectToolConfig() {
+	private List<ProjectToolConfig> getMockProjectToolConfigForJQL() {
 		ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
 				.newInstance("/json/default/project_tool_configs.json");
 		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
 				"63c04dc7b7617e260763ca4e");
+	}
+
+	private List<ProjectToolConfig> getMockProjectToolConfigForBoard() {
+		ToolConfigDataFactory projectToolConfigDataFactory = ToolConfigDataFactory
+				.newInstance("/json/default/project_tool_configs.json");
+		return projectToolConfigDataFactory.findByToolNameAndBasicProjectConfigId(ProcessorConstants.JIRA,
+				"63bfa0d5b7617e260763ca21");
 	}
 
 	private List<AdditionalFilter> getMockAdditionalFilterFromJiraIssue() {
@@ -179,7 +246,7 @@ public class JiraIssueProcessorImplTest {
 		Resolution resolution = new Resolution(new URI("self"), 1l, "resolution", "resolution");
 		Map<String, URI> avatarMap = new HashMap<>();
 		avatarMap.put("48x48", new URI("value"));
-		URI uri = new URI("self");
+		URI uri = new URI("https://dummy.com/jira/rest/api/2/user?username=user1");
 		User user1 = new User(uri, "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap, null);
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_19121", "Client Testing (UAT)");
@@ -204,11 +271,16 @@ public class JiraIssueProcessorImplTest {
 		BasicComponent basicComponent = new BasicComponent(new URI("self"), 1l, "component1", "abc");
 		List<BasicComponent> component = Collections.singletonList(basicComponent);
 
-		TimeTracking timeTracking=new TimeTracking(8,8,8);
+		TimeTracking timeTracking = new TimeTracking(8, 8, 8);
+
+		Collection<Version> fixVersions = new ArrayList<>();
+		Version version = new Version(new URI("https://dummy.com/jira/rest/api/2/version/143417"), 143417L, "",
+				"KnowHOW v6.8.0", false, true, DateTime.now());
+		fixVersions.add(version);
 
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), component, timeTracking, issueFieldList, comments, null,
+				DateTime.now(), new ArrayList<>(), fixVersions, component, timeTracking, issueFieldList, comments, null,
 				createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		issues.add(issue);
@@ -225,7 +297,7 @@ public class JiraIssueProcessorImplTest {
 		return issueLinkList;
 	}
 
-	private void prepareFiledMapping() {
+	private void prepareFiledMapping(int caseIfElse) {
 		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setBasicProjectConfigId(new ObjectId("63bfa0d5b7617e260763ca21"));
 		fieldMapping.setSprintName("customfield_12700");
@@ -250,13 +322,8 @@ public class JiraIssueProcessorImplTest {
 		fieldMapping.setJiraDefectCountlIssueType(jiraType);
 		fieldMapping.setJiraIntakeToDorIssueType(jiraType);
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_12121");
+		fieldMapping.setEpicLink("customfield_12121");
 
-		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
-		fieldMapping.setJiraTechDebtCustomField("customfield_14141");
-
-		jiraType = new ArrayList<>();
-		jiraType.add("TECH_DEBT");
-		fieldMapping.setJiraTechDebtValue(jiraType);
 		fieldMapping.setJiraDefectRejectionStatus("Dropped");
 		fieldMapping.setJiraBugRaisedByIdentification("CustomField");
 
@@ -284,6 +351,8 @@ public class JiraIssueProcessorImplTest {
 
 		jiraType = new ArrayList<>(Arrays.asList(new String[] { "Story", "Defect", "Pre Story", "Feature" }));
 		fieldMapping.setJiraSprintCapacityIssueType(jiraType);
+
+		fieldMapping.setJiraIssueEpicType(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -318,19 +387,92 @@ public class JiraIssueProcessorImplTest {
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
 
-		fieldMapping.setProductionDefectIdentifier("Component");
-		fieldMapping.setJiraBugRaisedByQAIdentification("Labels");
-		fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
-		fieldMapping.setProductionDefectComponentValue("component1");
-		fieldMapping.setTestingPhaseDefectsIdentifier("Component");
-		fieldMapping.setTestingPhaseDefectComponentValue("component1");
-		fieldMapping.setJiraProductionIncidentIdentification("CustomField");
-		fieldMapping.setJiraProdIncidentRaisedByCustomField("CustomField");
-		fieldMappingList.add(fieldMapping);
+
+
+		if(caseIfElse == 1){
+			jiraType = new ArrayList<>();
+			jiraType.add("label1");
+
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraTechDebtValue(jiraType);
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraBugRaisedByQAValue(jiraType);
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.LABELS);
+			fieldMapping.setProductionDefectValue(jiraType);
+
+			fieldMapping.setJiraDueDateField(CommonConstant.DUE_DATE);
+
+			fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.LABELS);
+			fieldMapping.setJiraProdIncidentRaisedByValue(Arrays.asList("label1"));
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.LABELS);
+			fieldMapping.setTestingPhaseDefectValue(jiraType);
+
+		} else if(caseIfElse == 2){
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.ISSUE_TYPE);
+			jiraType = new ArrayList<>();
+			jiraType.add("Defect");
+			jiraType.add("Bug");
+			jiraType.add("Story");
+			fieldMapping.setJiraTechDebtValue(jiraType);
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraBugRaisedByQACustomField("customfield_14141");
+			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.COMPONENT);
+			fieldMapping.setProductionDefectValue(jiraType);
+			fieldMapping.setProductionDefectComponentValue("component1");
+
+			fieldMapping.setJiraDueDateField(CommonConstant.DUE_DATE);
+			fieldMapping.setJiraDueDateCustomField("customfield_56444");
+			fieldMapping.setJiraDevDueDateCustomField("customfield_56444");
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.COMPONENT);
+			fieldMapping.setTestingPhaseDefectComponentValue("component1");
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.COMPONENT);
+		} else {
+			jiraType = new ArrayList<>();
+			jiraType.add("TECH_DEBT");
+			fieldMapping.setJiraTechDebtValue(jiraType);
+			fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraTechDebtCustomField("customfield_14141");
+
+			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.ISSUE_TYPE);
+
+			fieldMapping.setProductionDefectIdentifier(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setProductionDefectCustomField("customfield_14141");
+			fieldMapping.setProductionDefectValue(jiraType);
+
+			fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setJiraProdIncidentRaisedByCustomField("customfield_14141");
+			fieldMapping.setJiraProdIncidentRaisedByValue(Arrays.asList("TECH_DEBT"));
+
+			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.CUSTOM_FIELD);
+			fieldMapping.setTestingPhaseDefectValue(Arrays.asList("label1"));
+			fieldMapping.setTestingPhaseDefectCustomField("customfield_14141");
+			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+
+		}
+
+		fieldMapping.setJiraStatusMappingCustomField("customfield_14502");
+		fieldMapping.setEpicName("customfield_14502");
+
+		if(caseIfElse == 1){
+			fieldMappingListForIfCase.add(fieldMapping);
+		} else if(caseIfElse == 2) {
+			fieldMappingListForElseIfCase.add(fieldMapping);
+		} else {
+			fieldMappingList.add(fieldMapping);
+		}
+
 
 	}
 
-	private void createProjectConfigMap() {
+	private void createProjectConfigMapForJQL() {
 		ProjectBasicConfig projectConfig = projectConfigsList.get(1);
 		try {
 			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
@@ -339,27 +481,49 @@ public class JiraIssueProcessorImplTest {
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
-		projectConfFieldMapping.setJira(getJiraToolConfig());
-		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigs.get(0).getId());
+		projectConfFieldMapping.setJira(getJiraToolConfig(projectToolConfigsForJQL.get(0)));
+		projectConfFieldMapping.setJiraToolConfigId(projectToolConfigsForJQL.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 	}
 
-	private JiraToolConfig getJiraToolConfig() {
+	private void createProjectConfigMapForBoard() {
+		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
+		try {
+			BeanUtils.copyProperties(projectConfFieldMapping1, projectConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+		}
+		projectConfFieldMapping1.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping1.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping1.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping1.setJira(getJiraToolConfig(projectToolConfigsForBoard.get(0)));
+		projectConfFieldMapping1.setJiraToolConfigId(projectToolConfigsForBoard.get(0).getId());
+		projectConfFieldMapping1.setFieldMapping(fieldMappingListForIfCase.get(0));
+	}
+
+	private void createProjectConfigMapForElse() {
+		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
+		try {
+			BeanUtils.copyProperties(projectConfFieldMapping2, projectConfig);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+		}
+		projectConfFieldMapping2.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping2.setKanban(projectConfig.getIsKanban());
+		projectConfFieldMapping2.setBasicProjectConfigId(projectConfig.getId());
+		projectConfFieldMapping2.setJira(getJiraToolConfig(projectToolConfigsForBoard.get(0)));
+		projectConfFieldMapping2.setJiraToolConfigId(projectToolConfigsForBoard.get(0).getId());
+		projectConfFieldMapping2.setFieldMapping(fieldMappingListForElseIfCase.get(0));
+	}
+
+	private JiraToolConfig getJiraToolConfig(ProjectToolConfig projectToolConfig) {
 		JiraToolConfig toolObj = new JiraToolConfig();
 		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
+			BeanUtils.copyProperties(toolObj, projectToolConfig);
 		} catch (IllegalAccessException | InvocationTargetException e) {
 
 		}
 		toolObj.setConnection(connection);
 		return toolObj;
 	}
-
-	// private List<FieldMapping> getMockFieldMappingList() {
-	// FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
-	// .newInstance("/json/default/field_mapping.json");
-	// return fieldMappingDataFactory.getFieldMappings();
-	// }
 
 	private void createIssuefieldsList() {
 		Map<String, Object> map = new HashMap<>();
@@ -388,6 +552,9 @@ public class JiraIssueProcessorImplTest {
 		issueField = new IssueField("customfield_56789", "StoryPoints", null, Integer.parseInt("5"));
 		issueFieldList.add(issueField);
 
+		issueField = new IssueField("customfield_56444", "Due Date", null, "2022-12-14'T'03:22:33.012Z");
+		issueFieldList.add(issueField);
+
 		map = new HashMap<>();
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "TECH_DEBT");
@@ -400,6 +567,13 @@ public class JiraIssueProcessorImplTest {
 		map.put("value", "Mobile");
 		map.put("id", "18181");
 		issueField = new IssueField("customfield_18181", "Device Platform", null, new JSONObject(map));
+		issueFieldList.add(issueField);
+
+		map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "Epic");
+		map.put("id", "18182");
+		issueField = new IssueField("customfield_14502", "Epic Name", null, new JSONObject(map));
 		issueFieldList.add(issueField);
 
 		map = new HashMap<>();
@@ -424,26 +598,37 @@ public class JiraIssueProcessorImplTest {
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "40");
 		map.put("id", "Test_Automation");
+		map.put("key", "ABC-123");
 		JSONObject jsonObject1 = new JSONObject(map);
 		jsonArrayList1.add(jsonObject1);
-		issueField = new IssueField("40", "Test_Automation", null, new JSONArray(jsonArrayList1));
-		issueFieldList.add(issueField);
+		IssueField issueField1 = new IssueField("40", "Test_Automation", null, new JSONArray(jsonArrayList1));
+		issueFieldList.add(issueField1);
 
-		issueField = new IssueField("", "Fix Version", null, "KnowHowv6.7");
-		issueFieldList.add(issueField);
+		IssueField issueField2 = new IssueField("fivVesion", "Fix Version", null, "KnowHowv6.7");
+		issueFieldList.add(issueField2);
 
-		issueField = new IssueField("", "Due_Date", null, "");
-		issueFieldList.add(issueField);
+		IssueField issueField3 = new IssueField("duedate", "Due_Date", null, "2022-12-14'T'03:22:33.012Z");
+		issueFieldList.add(issueField3);
 
-		issueField = new IssueField("parent", "Due_Date", null, jsonObject1);
-		issueFieldList.add(issueField);
+		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
+		issueFieldList.add(issueField4);
+
+		IssueField issueField5 = new IssueField("aggregatetimeestimate", "aggregatetimeestimate", null, 360);
+		issueFieldList.add(issueField5);
+
+		IssueField issueField6 = new IssueField("aggregatetimeoriginalestimate", "aggregatetimeoriginalestimate", null,
+				300);
+		issueFieldList.add(issueField6);
+
+		IssueField issueField7 = new IssueField("parent", "Due_Date", null, jsonObject1);
+		issueFieldList.add(issueField7);
 
 	}
 
 	@Test
 	public void testSetEpicIssueData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-			// Arrange
-			FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
+		// Arrange
+		FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
 		fieldMapping.setEpicJobSize("8.0");
 		fieldMapping.setEpicRiskReduction("8.0");
 		fieldMapping.setEpicTimeCriticality("8.0");
@@ -452,35 +637,38 @@ public class JiraIssueProcessorImplTest {
 		fieldMapping.setEpicPlannedValue("8.0");
 		fieldMapping.setEpicAchievedValue("8.0");
 
-			JiraIssue jiraIssue = new JiraIssue(); // Set up your JiraIssue instance
+		JiraIssue jiraIssue = new JiraIssue(); // Set up your JiraIssue instance
 		jiraIssue.setBusinessValue(8.0);
 		jiraIssue.setRiskReduction(8.0);
 		jiraIssue.setTimeCriticality(8.0);
-			Map<String, IssueField> fields = new HashMap<>();
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
-			// Add other fields as needed
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		// Add other fields as needed
 
-			// Use reflection to access the private method
-			Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class, JiraIssue.class, Map.class);
-			method.setAccessible(true);
+		// Use reflection to access the private method
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class,
+				JiraIssue.class, Map.class);
+		method.setAccessible(true);
 
-			// Act
-			method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
+		// Act
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, jiraIssue, fields);
 
-			// Assert
-//			assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add assertions for other fields
+		// Assert
+		// assertEquals( /* expected value */, jiraIssue.getJobSize(), 0.001); // Add
+		// assertions for other fields
 	}
 
 	@Test
-	public void testSetSubTaskLinkage() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testSetSubTaskLinkage()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		// Arrange
-		FieldMapping fieldMapping=new FieldMapping();
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setJiraSubTaskIdentification(Arrays.asList("Story"));
 
 		Map<String, IssueField> fields = new HashMap<>();
@@ -489,17 +677,18 @@ public class JiraIssueProcessorImplTest {
 		// Set up other mocks and required behaviors
 
 		// Use reflection to access the private method
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSubTaskLinkage", JiraIssue.class, FieldMapping.class, Issue.class, Map.class);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSubTaskLinkage", JiraIssue.class,
+				FieldMapping.class, Issue.class, Map.class);
 		method.setAccessible(true);
 
-		JiraIssue jiraIssue=new JiraIssue();
+		JiraIssue jiraIssue = new JiraIssue();
 		jiraIssue.setTypeName("Story");
 		// Act
 		method.invoke(transformFetchedIssueToJiraIssue, jiraIssue, fieldMapping, issues.get(0), new HashMap<>());
 
 		// Assert
 		// Add assertions based on the expected behavior of your method
-//		verify(jiraIssueMock).setParentStoryId(anySet());
+		// verify(jiraIssueMock).setParentStoryId(anySet());
 	}
 
 	@Test
@@ -511,19 +700,21 @@ public class JiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testSetJiraAssigneeDetailsWhenUserIsNull() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", JiraIssue.class, User.class, ProjectConfFieldMapping.class);
+	public void testSetJiraAssigneeDetailsWhenUserIsNull()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails", JiraIssue.class,
+				User.class, ProjectConfFieldMapping.class);
 		method.setAccessible(true);
-		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null,projectConfFieldMapping);
+		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
 
 	@Test
 	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class, Map.class);
 		method.setAccessible(true);
-		FieldMapping fieldMapping=new FieldMapping();
+		FieldMapping fieldMapping = new FieldMapping();
 		fieldMapping.setRootCause("code_issue");
-		Map<String,String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "code");
 		map.put("id", "19121");
@@ -531,15 +722,17 @@ public class JiraIssueProcessorImplTest {
 		List<Object> rcaList = new ArrayList<>();
 		rcaList.add(jsonObject);
 		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
-		Map<String,IssueField> fields = new HashMap<>();
-		fields.put("code_issue",issueField);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("code_issue", issueField);
 
-		method.invoke(transformFetchedIssueToJiraIssue,fieldMapping,fields);
+		method.invoke(transformFetchedIssueToJiraIssue, fieldMapping, fields);
 	}
 
 	@Test
-	public void testProcessSprintData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("processSprintData", JiraIssue.class, IssueField.class, ProjectConfFieldMapping.class);
+	public void testProcessSprintData()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("processSprintData", JiraIssue.class,
+				IssueField.class, ProjectConfFieldMapping.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}

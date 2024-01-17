@@ -4,6 +4,7 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.util.DateUtil;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 import org.junit.Before;
@@ -34,17 +35,12 @@ public class KanbanJiraIssueWriterListenerTest {
     @InjectMocks
     private KanbanJiraIssueWriterListener listener;
 
+    List<CompositeResult> compositeResults = new ArrayList<>();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
 
-    @Test
-    public void testAfterWrite() {
-        // Arrange
-        List<CompositeResult> compositeResults = new ArrayList<>();
-
-        // Create a KanbanJiraIssue for testing
         KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
         kanbanJiraIssue.setBasicProjectConfigId("testProjectId");
         kanbanJiraIssue.setBoardId("testBoardId");
@@ -53,6 +49,10 @@ public class KanbanJiraIssueWriterListenerTest {
         CompositeResult compositeResult = new CompositeResult();
         compositeResult.setKanbanJiraIssue(kanbanJiraIssue);
         compositeResults.add(compositeResult);
+    }
+
+    @Test
+    public void testAfterWrite() {
 
         // Mock the repository's behavior
         when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(
@@ -110,6 +110,23 @@ public class KanbanJiraIssueWriterListenerTest {
 
         // Additional assertions based on the requirements of your application
         assertEquals(0, savedLogs.size());
+    }
+
+    @Test
+    public void testAfterWriteWithEmptyValue() {
+        listener.afterWrite(new ArrayList<>());
+    }
+
+    @Test
+    public void testAfterWriteWithTraceLog() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(
+                eq(JiraConstants.JIRA), eq("testProjectId"), eq("testBoardId")))
+                .thenReturn(Optional.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
     }
 
 }

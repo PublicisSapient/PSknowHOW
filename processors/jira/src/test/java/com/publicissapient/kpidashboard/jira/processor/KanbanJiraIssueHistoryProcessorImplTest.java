@@ -336,14 +336,14 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 		Worklog worklog = new Worklog(new URI("self"), new URI("self"), basicUser, basicUser, null, DateTime.now(),
 				DateTime.now(), DateTime.now(), 60, null);
 		List<Worklog> workLogs = Arrays.asList(worklog);
-		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "field1", "from", "fromString", "to",
+		ChangelogItem changelogItem = new ChangelogItem(FieldType.JIRA, "Status", "from", "fromString", "to",
 				"toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 		changeLogList.add(changelogGroup);
 
 		issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType1, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
+				DateTime.now(), new ArrayList<>(),null , new ArrayList<>(), null, issueFields, comments,
 				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
 		// Issue issue1 = new Issue("summary1", new URI("self"), "key1", 1l, basicProj,

@@ -118,9 +118,7 @@ public class FetchIssueSprintImpl implements FetchIssueSprint {
 			int pageStart, List<String> issueKeys) throws InterruptedException {
 		SearchResult searchResult = null;
 
-		if (client == null) {
-			log.warn(MSG_JIRA_CLIENT_SETUP_FAILED);
-		} else if (org.apache.commons.lang3.StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
+		if (org.apache.commons.lang3.StringUtils.isEmpty(projectConfig.getProjectToolConfig().getProjectKey())) {
 			log.info("Project key is empty {}", projectConfig.getProjectToolConfig().getProjectKey());
 		} else {
 			try {
