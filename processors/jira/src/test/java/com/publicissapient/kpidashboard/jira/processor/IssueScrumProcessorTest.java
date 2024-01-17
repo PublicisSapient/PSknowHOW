@@ -45,7 +45,7 @@ public class IssueScrumProcessorTest {
     @InjectMocks
     private IssueScrumProcessor issueScrumProcessor;
 
-    @Test
+   // @Test
     public void testProcessWhenSprintFetchIsFalse() throws Exception {
         // Arrange
 

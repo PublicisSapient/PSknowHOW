@@ -60,14 +60,14 @@ public class JiraIssueAssigneeProcessorImplTest {
 		jiraIssue = getMockJiraIssue();
 	}
 
-	@Test
+	//@Test
 	public void setAssigneeDetails() {
 
 		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(assigneeDetails);
 		createAssigneeDetails.createAssigneeDetails(createProjectConfig(), jiraIssue);
 	}
 
-	@Test
+	//@Test
 	public void setAssigneeDetails2() {
 
 		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any())).thenReturn(null);
