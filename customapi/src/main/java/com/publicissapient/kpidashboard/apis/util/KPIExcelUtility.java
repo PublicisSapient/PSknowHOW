@@ -87,6 +87,7 @@ public class KPIExcelUtility {
 	private static final DecimalFormat df2 = new DecimalFormat(".##");
 	private static final String STATUS = "Status";
 	private static final String WEEK = "Week";
+	private static final String UNDEFINED = "Undefined";
 
 	private KPIExcelUtility() {
 	}
@@ -1561,6 +1562,9 @@ public class KPIExcelUtility {
 			jiraIssues.forEach(jiraIssue -> {
 				KPIExcelData excelData = new KPIExcelData();
 				Map<String, String> issueDetails = new HashMap<>();
+				String testingPhase = CollectionUtils.isNotEmpty(jiraIssue.getEscapedDefectGroup())
+						? jiraIssue.getEscapedDefectGroup().stream().findFirst().orElse(UNDEFINED)
+						: UNDEFINED;
 				issueDetails.put(jiraIssue.getNumber(), checkEmptyURL(jiraIssue));
 				excelData.setIssueID(issueDetails);
 				excelData.setIssueDesc(checkEmptyName(jiraIssue));
@@ -1569,7 +1573,7 @@ public class KPIExcelUtility {
 				excelData.setSprintName(jiraIssue.getSprintName());
 				populateAssignee(jiraIssue, excelData);
 				excelData.setIssueStatus(jiraIssue.getStatus());
-				excelData.setTestingPhase(jiraIssue.getEscapedDefectGroup());
+				excelData.setTestingPhase(testingPhase);
 				kpiExcelData.add(excelData);
 			});
 		}
