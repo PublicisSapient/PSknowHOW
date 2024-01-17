@@ -38,6 +38,7 @@ RUN tar xvf ${HTML_LOC}${UI2_ASSETS_ARCHIVE} -C ${UI2_LOC} && tar xvf ${HTML_LOC
 
 RUN chown -R $USER:$USER ${CONF_LOG} \
     && chown -R $USER:$USER /var/ \
+    && chown -R $USER:$USER /var/run/nginx.pid \
     && apk add --no-cache libcap \
     && setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
