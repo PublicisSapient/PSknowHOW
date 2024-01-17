@@ -460,7 +460,8 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 			Map<String, String> removedIssueDateMap = KpiDataHelper.processSprintIssues(sprintWiseRemovedList,
 					curSprintName, issueWiseHistoryMap, CommonConstant.REMOVED);
 
-			if (CollectionUtils.isNotEmpty(sprintWiseRemovedList)) {
+			if (CollectionUtils.isNotEmpty(sprintWiseRemovedList)
+					|| CollectionUtils.isNotEmpty(sprintWiseAddedList)) {
 				Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
 				sprintWiseAddedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
 				sprintWiseRemovedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));

@@ -400,5 +400,8 @@ public class KPIExcelData {
 	@JsonProperty("Dev Completion Date")
 	private String devCompleteDate;
 
+	@JsonProperty("Testing Phase")
+	private List<String> testingPhase;
+
 
 }

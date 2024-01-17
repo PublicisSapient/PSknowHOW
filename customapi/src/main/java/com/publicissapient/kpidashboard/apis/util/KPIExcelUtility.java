@@ -1569,6 +1569,7 @@ public class KPIExcelUtility {
 				excelData.setSprintName(jiraIssue.getSprintName());
 				populateAssignee(jiraIssue, excelData);
 				excelData.setIssueStatus(jiraIssue.getStatus());
+				excelData.setTestingPhase(jiraIssue.getEscapedDefectGroup());
 				kpiExcelData.add(excelData);
 			});
 		}
