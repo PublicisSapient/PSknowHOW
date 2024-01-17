@@ -172,7 +172,6 @@ public class CreateMetadataImplTest {
 
 	@Test
 	public void collectMetadataWithBoardMetadata() throws Exception {
-
 		when(boardMetadataRepository.findByProjectBasicConfigId(any()))
 				.thenReturn(new BoardMetadata());
 		createMetadata.collectMetadata(createProjectConfig(true), client);
