@@ -45,7 +45,7 @@
             **com/publicissapient/kpidashboard/**/*Constant.java,
             **com/publicissapient/kpidashboard/**/*Properties.java,
             **com/publicissapient/kpidashboard/**/factory/**,
-            **com/publicissapient/kpidashboard/**/scheduler/**,
+            **com/publicissapient/kpidashboard/**/scheduler/**
         </sonar.coverage.exclusions>
         <sonar.test.exclusions>
             **/src/test/java/**
@@ -76,7 +76,7 @@
 				<module>azure-pipeline</module>
 				<module>azure-repo</module>
 				<module>azure-boards</module>
-				
+
 			</modules>
             <build>
                 <plugins>
