@@ -110,15 +110,25 @@ public class JiraIssueBoardWriterListenerTest {
 		// Arrange
 		List<CompositeResult> compositeResults = createSampleCompositeResults();
 
+		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+		processorExecutionTraceLog.setBasicProjectConfigId("abc");
+		processorExecutionTraceLog.setBoardId("abc");
+		processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+
 		// Mock the repository behavior
 		when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigIdAndBoardId(anyString(),
-				anyString(), anyString())).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
+				anyString(), anyString())).thenReturn(Optional.of(processorExecutionTraceLog));
 
 		// Act
 		listener.afterWrite(compositeResults);
 
 		// Assert
 		verify(processorExecutionTraceLogRepo, times(1)).saveAll(anyList());
+	}
+
+	@Test
+	public void testAfterWriteWithEmptyValue() {
+		listener.afterWrite(new ArrayList<>());
 	}
 
 }

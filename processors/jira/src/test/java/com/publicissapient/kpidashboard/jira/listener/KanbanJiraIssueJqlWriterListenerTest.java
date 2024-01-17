@@ -34,16 +34,11 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @InjectMocks
     private KanbanJiraIssueJqlWriterListener listener;
 
+    List<CompositeResult> compositeResults = new ArrayList<>();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testAfterWrite() {
-        // Arrange
-        List<CompositeResult> compositeResults = new ArrayList<>();
-
         // Create a KanbanJiraIssue for testing
         KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
         kanbanJiraIssue.setBasicProjectConfigId("testProjectId");
@@ -51,7 +46,10 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         CompositeResult compositeResult = new CompositeResult();
         compositeResult.setKanbanJiraIssue(kanbanJiraIssue);
         compositeResults.add(compositeResult);
+    }
 
+    @Test
+    public void testAfterWrite() {
         // Mock the repository's behavior
         when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
                 eq(JiraConstants.JIRA), eq("testProjectId")))
@@ -79,5 +77,22 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         // Act
         listener.onWriteError(testException, compositeResults);
         assertTrue("", true);
+    }
+
+    @Test
+    public void testAfterWriteWithEmptyValue() {
+        listener.afterWrite(new ArrayList<>());
+    }
+
+    @Test
+    public void testAfterWriteWithTraceLog() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+                eq(JiraConstants.JIRA), eq("testProjectId")))
+                .thenReturn(Optional.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
     }
 }

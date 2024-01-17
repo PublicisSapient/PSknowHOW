@@ -89,5 +89,24 @@ public class JobListenerScrumTest {
         jobListenerScrum.beforeJob(jobExecution);
     }
 
+    @Test
+    public void testAfterJob_SuccessExecution() throws Exception {
+        // Simulate a failed job
+        jobExecution.setStatus(BatchStatus.STARTED);
+
+        // Act
+        jobListenerScrum.afterJob(jobExecution);
+
+        verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+    }
+
+    @Test
+    public void testAfterJob_WithException() throws Exception {
+        // Act
+        jobListenerScrum.afterJob(null);
+
+        verify(ongoingExecutionsService).markExecutionAsCompleted(null);
+    }
+
 
 }

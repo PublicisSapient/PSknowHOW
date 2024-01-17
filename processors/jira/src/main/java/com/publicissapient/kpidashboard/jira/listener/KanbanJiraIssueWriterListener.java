@@ -90,10 +90,7 @@ public class KanbanJiraIssueWriterListener implements ItemWriteListener<Composit
 				KanbanJiraIssue firstIssue = boardData
 						.getValue().stream().sorted(
 								Comparator
-										.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(
-												jiraIssue.getChangeDate(),
-												DateTimeFormatter
-														.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+										.comparing((KanbanJiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
 										.reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {
