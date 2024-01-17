@@ -22,7 +22,7 @@ ENV PID_LOC="/run/nginx" \
     CERT_LOC="/etc/ssl/certs"
 
 # Create necessary directories
-RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOG}/default.conf ${HTML_LOC}index.html
+RUN mkdir -p ${PID_LOC}  ${UI2_LOC} && rm -f ${CONF_LOG}/default.conf ${HTML_LOC}index.html && touch /var/run/nginx.pid
 
 # Copy files
 COPY nginx/files/ui2.conf ${CONF_LOG}/ui2.conf
