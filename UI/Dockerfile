@@ -6,7 +6,7 @@ ARG USER=knowhowuser
 ARG UID=1000
 ARG GID=1000
 
-RUN apk add openssl \
+RUN apk add openssl --no-cache \
     && addgroup -g $GID $USER \
     && adduser -u $UID -G $USER -s /bin/sh -D $USER
 
