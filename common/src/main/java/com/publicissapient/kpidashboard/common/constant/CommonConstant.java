@@ -325,12 +325,6 @@ public final class CommonConstant {
 	public static final String REPO = "Repo";
 	public static final String JIRADODKPI166="jiraDodKPI166";
 
-	//-- auth-N-auth changes starts here --
-	public static final String ACTION_POLICY_RULES_CACHE = "actionPolicyRules";
-
-	//-- auth-N-auth changes ends here --
-
-
 	private CommonConstant() {
 
 	}
