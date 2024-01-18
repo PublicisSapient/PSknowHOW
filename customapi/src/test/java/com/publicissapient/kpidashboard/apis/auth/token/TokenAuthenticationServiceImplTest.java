@@ -116,7 +116,8 @@ public class TokenAuthenticationServiceImplTest {
 		HttpServletResponse response = mock(HttpServletResponse.class);
 		when(tokenAuthProperties.getExpirationTime()).thenReturn(0l);
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-
+		when(cookieUtil.createAccessTokenCookie(any())).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 		service.addAuthentication(response, AuthenticationFixture.getAuthentication(USERNAME));
 		verify(response).addHeader(eq(AUTH_RESPONSE_HEADER), anyString());
 	}
