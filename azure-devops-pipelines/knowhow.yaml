@@ -1,59 +1,46 @@
 trigger:
 - azure-devops
 
-pr:
-- '*'
-
-parameters:
-- name: componentToBuild
-  displayName: 'Component to Build'
-  type: string
-  values:
-  - 'CustomAPI'
-  - 'UI'
-  - 'Processor'
-  default: 'CustomAPI'
-
 pool:
   vmImage: 'ubuntu-latest'
 
+parameters:
+- name: deploymentType
+  displayName: 'Select Deployment Type'
+  type: string
+  values:
+  - 'ui'
+  - 'api'
+  - 'processor'
+  default: 'ui'
+
 stages:
-
-- stage: DeployUI
-  displayName: 'Deploy UI'
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'UI'))
+- stage: UI
+  displayName: 'UI Deployment'
+  condition: eq(variables['deploymentType'], 'ui')
   jobs:
-  - job: DeployUIJob
-    displayName: 'Deploy UI Job'
+  - job: UI_Deployment
     steps:
     - script: |
-        echo "Deploying UI"
-        # Add your deployment commands for UI here
-      displayName: 'Deploy UI'
+        echo "Deploying UI..."
+        # Add your UI deployment steps here
 
-- stage: DeployCustomAPI
-  displayName: 'Deploy Custom API'
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'CustomAPI'))
+- stage: API
+  displayName: 'API Deployment'
+  condition: eq(variables['deploymentType'], 'api')
   jobs:
-  - job: DeployCustomAPIJob
-    displayName: 'Deploy Custom API Job'
+  - job: API_Deployment
     steps:
     - script: |
-        echo "Deploying Custom API"
-        # Add your deployment commands for Custom API here
-      displayName: 'Deploy Custom API'
+        echo "Deploying API..."
+        # Add your API deployment steps here
 
-- stage: DeployProcessor
-  displayName: 'Deploy Processor'
-  dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(parameters['componentToBuild'], 'Processor'))
+- stage: Processor
+  displayName: 'Processor Deployment'
+  condition: eq(variables['deploymentType'], 'processor')
   jobs:
-  - job: DeployProcessorJob
-    displayName: 'Deploy Processor Job'
+  - job: Processor_Deployment
     steps:
     - script: |
-        echo "Deploying Processor"
-        # Add your deployment commands for Processor here
-      displayName: 'Deploy Processor'
+        echo "Deploying Processor..."
+        # Add your Processor deployment steps here
