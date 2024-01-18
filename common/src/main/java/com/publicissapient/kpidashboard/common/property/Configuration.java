@@ -16,41 +16,20 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.common.model.application;
+package com.publicissapient.kpidashboard.common.property;
 
-import com.google.common.base.Objects;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+/**
+ * This class maps authentication properties to object
+ */
+@Slf4j
+@Component
+public class Configuration {
 
-@Data
-@Builder
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public class AssigneeDetailsDTO {
-	private String name;
-	private String displayName;
-
-	@Override
-	public int hashCode() {
-		return java.util.Objects.hash(name, displayName);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof AssigneeDetailsDTO) {
-			AssigneeDetailsDTO that = (AssigneeDetailsDTO) obj;
-			return Objects.equal(this.name, that.name) && Objects.equal(this.displayName, that.displayName);
-		}
-		return false;
-	}
+    public String getEncryption() {
+        return "RSA/ECB/PKCS1Padding";
+    }
 
 }

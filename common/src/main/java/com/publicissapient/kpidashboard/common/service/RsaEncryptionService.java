@@ -39,7 +39,10 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import com.publicissapient.kpidashboard.common.property.Configuration;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.C;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +55,8 @@ import lombok.extern.slf4j.Slf4j;
 public class RsaEncryptionService implements EncryptionService {
 
 	private static final String ALGORITHM = "RSA";
+	@Autowired
+	private Configuration configuration;
 
 	@Override
 	public String encrypt(String text, String key) {
@@ -66,7 +71,7 @@ public class RsaEncryptionService implements EncryptionService {
 		try {
 			Key pubKey = decodePublicKey(key);
 			byte[] contentBytes = text.getBytes();
-			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			Cipher cipher = Cipher.getInstance(configuration.getEncryption());
 			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 			byte[] cipherContent = cipher.doFinal(contentBytes);
 			return Base64.getEncoder().encodeToString(cipherContent);
@@ -98,7 +103,7 @@ public class RsaEncryptionService implements EncryptionService {
 		}
 		try {
 			Key privKey = decodePrivateKey(key);
-			Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+			Cipher cipher = Cipher.getInstance(configuration.getEncryption());
 			cipher.init(Cipher.DECRYPT_MODE, privKey);
 			byte[] cipherContentBytes = Base64.getDecoder().decode(encryptedText.getBytes());
 			byte[] decryptedContent = cipher.doFinal(cipherContentBytes);

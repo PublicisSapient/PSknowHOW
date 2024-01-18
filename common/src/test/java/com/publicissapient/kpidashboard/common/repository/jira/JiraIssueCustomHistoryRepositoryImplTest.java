@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +40,9 @@ import java.util.regex.Pattern;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -57,8 +59,9 @@ import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Mock
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory1;
@@ -78,7 +81,7 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 	@Mock
 	private JiraIssueCustomHistoryRepository featureCustomHistoryRepo;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		// Helper mock data
@@ -264,7 +267,7 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		jiraIssueCustomHistory.setStoryID(testStoryId);
 		jiraIssueCustomHistory.setBasicProjectConfigId("676987987897");
 		jiraIssueCustomHistoryList.add(jiraIssueCustomHistory);
-		assertEquals("Expected feature ID matches actual feature ID", testStoryId,
+		assertEquals("TestStory1", testStoryId,
 				jiraIssueCustomHistoryList.get(0).getStoryID());
 	}
 

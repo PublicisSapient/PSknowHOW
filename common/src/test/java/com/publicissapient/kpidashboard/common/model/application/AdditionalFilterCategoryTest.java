@@ -19,9 +19,13 @@
 
 package com.publicissapient.kpidashboard.common.model.application;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 
 public class AdditionalFilterCategoryTest {
     @Test
@@ -58,8 +62,8 @@ public class AdditionalFilterCategoryTest {
         AdditionalFilterCategory category2 = new AdditionalFilterCategory(1, "123", "Test Category");
 
         // Verify equals method
-        assertTrue(category1.equals(category2));
-        assertTrue(category2.equals(category1));
+        Assertions.assertTrue(category1.equals(category2));
+        Assertions.assertTrue(category2.equals(category1));
 
         // Verify hashCode method
         assertEquals(category1.hashCode(), category2.hashCode());
@@ -72,8 +76,8 @@ public class AdditionalFilterCategoryTest {
         AdditionalFilterCategory category2 = new AdditionalFilterCategory(2, "456", "New Category");
 
         // Verify equals method
-        assertFalse(category1.equals(category2));
-        assertFalse(category2.equals(category1));
+        Assertions.assertFalse(category1.equals(category2));
+        Assertions.assertFalse(category2.equals(category1));
 
         // Verify hashCode method (optional, but recommended)
         assertNotEquals(category1.hashCode(), category2.hashCode());

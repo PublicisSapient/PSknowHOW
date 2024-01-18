@@ -34,6 +34,18 @@
 		<hamcrest.version>1.3</hamcrest.version>
 		<java.version>1.8</java.version>
 		<guava.version>31.1-jre</guava.version>
+		<sonar.coverage.exclusions>
+			**com/publicissapient/kpidashboard/**/controller/*,
+			<!--**com/publicissapient/kpidashboard/**/client/*,-->
+			**com/publicissapient/kpidashboard/**/model/**/*,
+			**com/publicissapient/kpidashboard/**/activedirectory/modal/*
+		</sonar.coverage.exclusions>
+		<sonar.test.exclusions>
+			**src/test/java/**
+		</sonar.test.exclusions>
+		<sonar.exclusions>
+			**src/test/java/**
+		</sonar.exclusions>
 	</properties>
 
 	<dependencies>
