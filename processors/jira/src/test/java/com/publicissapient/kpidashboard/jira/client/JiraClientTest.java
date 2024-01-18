@@ -49,7 +49,7 @@ import com.publicissapient.kpidashboard.jira.service.JiraCommonService;
 @RunWith(MockitoJUnitRunner.class)
 public class JiraClientTest {
 
-	private static String baseUrlValid = "https://tools.publicis.sapient.com/";
+	private static String baseUrlValid = "https://example.com/";
 
 	private static String baseUrlNotValid = "https://www.mockdummyurl.com/";
 
