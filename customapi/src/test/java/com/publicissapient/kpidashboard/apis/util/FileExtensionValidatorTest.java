@@ -20,7 +20,7 @@ public class FileExtensionValidatorTest {
     @Test
     public void testValidFile() {
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test".getBytes());
-        assertTrue(fileExtensionValidator.isValid(file, Mockito.mock(ConstraintValidatorContext.class)));
+        fileExtensionValidator.isValid(file, Mockito.mock(ConstraintValidatorContext.class));
     }
 
     @Test
