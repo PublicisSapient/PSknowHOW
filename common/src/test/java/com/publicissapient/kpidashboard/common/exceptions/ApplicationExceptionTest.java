@@ -7,14 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ApplicationExceptionTest {
 
-    // @Test
+    @Test
     public void testApplicationExceptionWithMessageAndErrorCode() {
         ApplicationException exception = new ApplicationException("Test message", 123);
         assertEquals("Test message", exception.getMessage());
         assertEquals(123, exception.getErrorCode());
     }
 
-    // @Test
+    @Test
     public void testApplicationExceptionWithMessageCauseAndErrorCode() {
         Throwable cause = new RuntimeException("Cause");
         ApplicationException exception = new ApplicationException("Test message", cause, 456);
@@ -23,14 +23,14 @@ public class ApplicationExceptionTest {
         assertEquals(456, exception.getErrorCode());
     }
 
-    // @Test
+    @Test
     public void testApplicationExceptionWithCause() {
         Throwable cause = new RuntimeException("Cause");
         ApplicationException exception = new ApplicationException(cause);
         assertEquals(cause, exception.getCause());
     }
 
-    // @Test
+    @Test
     public void testApplicationExceptionWithFullConstructor() {
         Throwable cause = new RuntimeException("Cause");
         ApplicationException exception = new ApplicationException("Test message", cause, true, true);
