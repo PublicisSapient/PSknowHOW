@@ -17,7 +17,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.rbac;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,8 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -34,11 +35,12 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
 
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UserInfoCustomRepositoryImplTest {
 
 	@Mock

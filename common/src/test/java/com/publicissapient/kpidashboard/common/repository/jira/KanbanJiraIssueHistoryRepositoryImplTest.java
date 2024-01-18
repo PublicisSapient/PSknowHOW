@@ -33,7 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -47,11 +48,12 @@ import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
  author @shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class KanbanJiraIssueHistoryRepositoryImplTest {
 	@Mock
 	private MongoOperations mongoOperations;
