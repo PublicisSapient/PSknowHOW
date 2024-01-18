@@ -1047,6 +1047,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
 
+    const nodeIdQParam = localStorage.getItem('nodeId');
     if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
@@ -1055,13 +1056,13 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
           const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+          this.filterForm.get('selectedTrendValue').setValue(nodeIdQParam ? nodeIdQParam : selectedTrendValue);
         }
       } else {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
           const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+          this.filterForm.get('selectedTrendValue').setValue(nodeIdQParam ? nodeIdQParam : selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
         }
@@ -1138,17 +1139,19 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
         } else {
           this.checkIfProjectHasData();
-          if (Object.keys(this.selectedSprint).length > 0) {
+          if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
             break;
           }
         }
       }
+      const nodeIdQParam = localStorage.getItem('nodeId');
+      const sprintIdQParam = localStorage.getItem('sprintId');
       if (projectIndex < this.trendLineValueList?.length) {
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm?.get('selectedTrendValue')?.setValue(nodeIdQParam ? nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
+        this.filterForm.get('selectedSprintValue').setValue(sprintIdQParam ? sprintIdQParam : this.selectedSprint['nodeId']);
       } else {
         this.projectIndex = 0;
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+        this.filterForm?.get('selectedTrendValue')?.setValue(sprintIdQParam ? sprintIdQParam : this.trendLineValueList[this.projectIndex]?.nodeId);
       }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
@@ -1164,9 +1167,12 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
       this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
     }
+    const sprintIdQParam = localStorage.getItem('sprintId');   
     activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
     closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-    if (activeSprints?.length > 0) {
+    if(sprintIdQParam){
+      this.selectedSprint = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == sprintIdQParam)[0];
+    }else if (activeSprints?.length > 0) {
       this.selectedSprint = { ...activeSprints[0] };
     } else if (closedSprints?.length > 0) {
       this.selectedSprint = closedSprints[0];
