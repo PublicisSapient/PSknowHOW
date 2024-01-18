@@ -17,7 +17,7 @@ public class FileExtensionValidatorTest {
     @InjectMocks
     private FileExtensionValidator fileExtensionValidator;
 
-    //@Test
+    @Test
     public void testValidFile() {
         MockMultipartFile file = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test".getBytes());
         assertTrue(fileExtensionValidator.isValid(file, Mockito.mock(ConstraintValidatorContext.class)));
