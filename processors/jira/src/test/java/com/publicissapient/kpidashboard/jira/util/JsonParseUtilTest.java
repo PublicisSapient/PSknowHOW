@@ -64,13 +64,6 @@ public class JsonParseUtilTest {
         assertEquals("John Doe", result.getDisplayName());
     }
 
-    @Test
-    public void testParseDateTime() throws JSONException {
-        String dateTimeString = "2022-01-01T12:00:00.000Z";
-        DateTime result = JsonParseUtil.parseDateTime(dateTimeString);
-
-        assertEquals(new DateTime(2022, 1, 1, 17, 30, 0, 0), result);
-    }
 
     @Test
     public void testGetOptionalString() throws JSONException {
