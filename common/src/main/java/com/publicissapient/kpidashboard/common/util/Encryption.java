@@ -37,8 +37,8 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public final class Encryption {
 
-	private static final String ALGO = "DESede";
-	private static final String DEFAULT_MODE_AND_PADDING_SCHEME = "AES/ECB/PKCS5Padding";
+	private static final String ALGO = "AES";
+	private static final String DEFAULT_MODE_AND_PADDING_SCHEME = "AES/GCM/PKCS5Padding";
 
 	private Encryption() {
 		// util class.
@@ -54,11 +54,10 @@ public final class Encryption {
 	public static String getStringKey() throws EncryptionException {
 		SecretKey key = null;
 		try {
-			key = KeyGenerator.getInstance(ALGO).generateKey();
+			 key = KeyGenerator.getInstance(ALGO).generateKey();
 		} catch (NoSuchAlgorithmException e) {
 			throw new EncryptionException("Cannot generate a secret key" + '\n' + e.getMessage(), e);
 		}
-		// return Base64.encodeBase64String(key.getEncoded());
 		return Base64.getEncoder().encodeToString(key.getEncoded());
 	}
 
@@ -74,7 +73,7 @@ public final class Encryption {
 
 		byte[] decodedKey = toByteArray(key);
 		// rebuild key using SecretKeySpec
-		return new SecretKeySpec(decodedKey, "AES");
+		return new SecretKeySpec(decodedKey, ALGO);
 	}
 
 	private static String bytesToHex(byte[] hash) {
@@ -114,9 +113,10 @@ public final class Encryption {
 	public static String aesEncryptString(String plainText, String key) throws NoSuchPaddingException,
 			NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException, InvalidKeyException {
 		SecretKey secKey = getAesEncryptionKey(key);
-		// AES defaults to AES/ECB/PKCS5Padding in Java 7
-		Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
-		aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
+
+		// AES defaults to AES/CBC/PKCS5Padding in Java 7
+		 Cipher aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME); // NOSONAR
+		 aesCipher.init(Cipher.ENCRYPT_MODE, secKey);
 		byte[] byteCipherText = aesCipher.doFinal(plainText.getBytes());
 		return bytesToHex(byteCipherText);
 	}
@@ -144,6 +144,7 @@ public final class Encryption {
 		SecretKey secKey = getAesEncryptionKey(key);
 		Cipher aesCipher;
 		try {
+			// Use AES/CBC/PKCS5Padding instead of the default algorithm and padding scheme
 			aesCipher = Cipher.getInstance(DEFAULT_MODE_AND_PADDING_SCHEME);// NOSONAR
 			aesCipher.init(Cipher.DECRYPT_MODE, secKey);
 			byte[] byteCipherString = toByteArray(byteCipherText);
