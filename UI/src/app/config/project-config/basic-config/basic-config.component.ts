@@ -137,7 +137,9 @@ export class BasicConfigComponent implements OnInit {
       name: formValue['projectName'],
       kanban: formValue['kanban'],
       saveAssigneeDetails: formValue['assigneeDetails'],
-      date: new Date()
+      date: new Date(),
+      user_name: this.sharedService.getCurrentUserDetails('user_name'),
+      user_email: this.sharedService.getCurrentUserDetails('user_email'),
     }
     this.getFieldsResponse.forEach((element, index) => {
       submitData['hierarchy'].push({
