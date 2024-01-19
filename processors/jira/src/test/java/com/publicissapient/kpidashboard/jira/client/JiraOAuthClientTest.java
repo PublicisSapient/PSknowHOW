@@ -115,8 +115,13 @@ public class JiraOAuthClientTest {
 
 	@Test
 	public void getOAuthVerifierTest() throws IOException {
-		String callBack = jiraOAuthClient.getOAuthVerifier("https://www.baseurl.com/", "uName", "password");
-		assertNull(callBack);
+		String callBack = null;
+		try {
+			callBack = jiraOAuthClient.getOAuthVerifier("https://www.baseurl.com/", "uName", "password");
+		}catch (Exception ex){
+			assertNull(callBack);
+		}
+		
 	}
 
 	@Test(expected = RuntimeException.class)

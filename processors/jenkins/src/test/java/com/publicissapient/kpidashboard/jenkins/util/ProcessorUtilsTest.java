@@ -25,6 +25,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.model.application.RepoBranch;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -131,6 +133,49 @@ public class ProcessorUtilsTest {
 		}
 
 		ProcessorUtils.getGitRepoBranch(d);
+
+	}
+
+	@Test
+	public void getGitRepoBranchTest() {
+		List<String> list = new ArrayList<String>();
+		list.add("actions");
+		list.add("remoteUrls");
+		list.add("lastBuiltRevision");
+		list.add("branch");
+
+		JSONArray array = new JSONArray();
+		for (String str : list) {
+			array.add(str);
+		}
+
+		JSONObject build1 = new JSONObject();
+		build1.put("name", "remote/branch");
+
+		JSONArray array2 = new JSONArray();
+		array2.add(build1);
+
+		JSONObject build = new JSONObject();
+		build.put("lastBuiltRevision", array2);
+		build.put("branch", array2);
+
+		JSONObject d = new JSONObject();
+		d.put("actions", array);
+		d.put("remoteUrls", array);
+		d.put("lastBuiltRevision", build);
+		d.put("branch", array);
+
+		JSONArray array1 = new JSONArray();
+		array1.add(d);
+
+		JSONObject objNew = new JSONObject();
+		objNew.put("actions", array1);
+		objNew.put("actions1", array1);
+
+		List<RepoBranch> branchList = ProcessorUtils.getGitRepoBranch(objNew);
+		assertEquals(4, branchList.size());
+		assertEquals("actions", branchList.get(0).getUrl());
+		assertEquals("remote/branch", branchList.get(0).getBranch());
 
 	}
 
