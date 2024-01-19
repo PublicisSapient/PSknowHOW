@@ -1606,11 +1606,13 @@ public class KPIExcelUtility {
 				}
 				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria()) && fieldMapping.getEstimationCriteria()
 						.equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-					Double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
-					excelData.setStoryPoint(roundingOff.toString());
+					double roundingOff = roundingOff(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0));
+					excelData.setStoryPoint(Double.toString(roundingOff));
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
+					double totalOriginalEstimate = Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
 					excelData.setStoryPoint(
-							roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
+							roundingOff(totalOriginalEstimate / fieldMapping.getStoryPointToHourMapping()) + "/"
+									+ roundingOff(totalOriginalEstimate) + " hrs");
 				}
 				return excelData;
 			})).forEach(excelDataList::add);
