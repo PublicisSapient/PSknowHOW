@@ -20,8 +20,12 @@ package com.publicissapient.kpidashboard.jira;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.publicissapient.kpidashboard.jira.config.MongoDBConfig;
+import jdk.nashorn.internal.runtime.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -38,6 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * @author pankumar8
  *
  */
+@Slf4j
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 // @SpringBootApplication - uncomment this line and remove above line when
 // spring job repository implemented for mongodb
@@ -54,6 +59,14 @@ public class JiraProcessorApplication {
 	public static void main(String[] args) {
 		HttpsURLConnection.setDefaultHostnameVerifier((s, sslSession) -> sslHostNameFlag);
 		SpringApplication.run(JiraProcessorApplication.class, args);
+	}
+
+	@Bean
+	public CommandLineRunner commandLineRunner(MongoDBConfig mongoDBConfig) {
+		return args -> {
+			String mongoDBUri = mongoDBConfig.getMongoDBUri();
+			log.info("Using MongoDB URI: " + mongoDBUri);
+		};
 	}
 
 	@Bean

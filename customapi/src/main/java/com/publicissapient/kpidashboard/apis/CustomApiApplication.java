@@ -20,8 +20,10 @@ package com.publicissapient.kpidashboard.apis;
 
 import javax.validation.Validator;
 
+import com.publicissapient.kpidashboard.apis.config.MongoDBConfig;
 import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -130,6 +132,14 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
+	}
+
+	@Bean
+	public CommandLineRunner commandLineRunner(MongoDBConfig mongoDBConfig) {
+		return args -> {
+			String mongoDBUri = mongoDBConfig.getMongoDBUri();
+			logger.info("Using MongoDB URI: " + mongoDBUri);
+		};
 	}
 
 }
