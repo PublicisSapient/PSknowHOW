@@ -134,12 +134,4 @@ public class CustomApiApplication extends SpringBootServletInitializer {
 		return new RestTemplate();
 	}
 
-	@Bean
-	public CommandLineRunner commandLineRunner(MongoDBConfig mongoDBConfig) {
-		return args -> {
-			String mongoDBUri = mongoDBConfig.getMongoDBUri();
-			logger.info("Using MongoDB URI: " + mongoDBUri);
-		};
-	}
-
 }
