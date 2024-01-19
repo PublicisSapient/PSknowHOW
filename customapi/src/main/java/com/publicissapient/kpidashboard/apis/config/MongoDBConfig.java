@@ -16,39 +16,22 @@ import java.util.Collections;
 @PropertySource({"classpath:application.properties"})
 public class MongoDBConfig {
 
-    @Value("${mongodb.connection.local}")
-    private boolean useLocalMongoDB;
+    @Value("${mongodb.connection.atlas}")
+    private boolean useAtlasDB;
 
-    @Value("${spring.data.mongodb.host}")
-    private String host;
+    @Value("${spring.data.mongodb.uri}")
+    private String mongoDBUri;
 
-    @Value("${spring.data.mongodb.atlas.host}")
-    private String atlasHost;
+    @Value("${spring.data.mongodb.atlas.uri}")
+    private String atlasUri;
 
-    @Value("${spring.data.mongodb.port}")
-    private int port;
-
-    @Value("${spring.data.mongodb.database}")
-    private String database;
-
-    @Value("${spring.data.mongodb.username}")
-    private String user;
-
-    @Value("${spring.data.mongodb.password}")
-    private String password;
-
-    public String getDbHOST() {
-        return useLocalMongoDB ? host : atlasHost;
+    public String getMongoDBUri() {
+        return useAtlasDB ? atlasUri : mongoDBUri;
     }
 
+    @Bean
     public MongoClient mongoClient() {
-        MongoCredential credential = MongoCredential.createCredential(user, database, password.toCharArray());
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .applyToClusterSettings(builder ->
-                        builder.hosts(Collections.singletonList(new ServerAddress(getDbHOST(), port))))
-                .credential(credential)
-                .build();
-        return MongoClients.create(settings);
+        return MongoClients.create(getMongoDBUri());
     }
 }
 
