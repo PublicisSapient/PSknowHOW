@@ -32,7 +32,7 @@ public class AzureToolConfigServiceImpl {
 	private static final String NAME = "name";
 	private static final String ID = "id";
 	private static final String BASE_URL_FORMAT_REGEX = "(https?://[^/]+/[^/]+)";
-	private static final String AZURE_GET_TEAMS_API = "/_apis/teams";
+	private static final String AZURE_GET_TEAMS_API = "/_apis/teams?$mine=true";
 
 	@Autowired
 	private RestAPIUtils restAPIUtils;

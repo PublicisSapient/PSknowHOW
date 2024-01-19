@@ -200,10 +200,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						count += issues.size();
 					}
 
-					MDC.put("IssueCount", String.valueOf(issues.size()));
-
-					if (issues == null || issues.size() < pageSize) {
+					if(issues.isEmpty()){
 						break;
+					}else if(issues.size() < pageSize){
+						break;
+					}else {
+						MDC.put("IssueCount", String.valueOf(issues.size()));
 					}
 				}
 
