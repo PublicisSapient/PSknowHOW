@@ -47,7 +47,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams
     .subscribe(params => {
-        let nodeId = params.nodeId;
+        let nodeId = params.projectId;
         let sprintId = params.sprintId;
         if(nodeId){
           localStorage.setItem('nodeId', nodeId);
@@ -55,9 +55,10 @@ export class AppComponent implements OnInit {
         if(sprintId){
           localStorage.setItem('sprintId', sprintId);
         }
+        console.log(nodeId, sprintId);
       }
     );
-
+      
     // load google Analytics script on all instances except local and if customAPI property is true
     this.httpService.getAnalyticsFlag()
       .subscribe(flag => {

@@ -1146,6 +1146,8 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       const nodeIdQParam = localStorage.getItem('nodeId');
       const sprintIdQParam = localStorage.getItem('sprintId');
+      console.log(nodeIdQParam, sprintIdQParam);
+      
       if (projectIndex < this.trendLineValueList?.length) {
         this.filterForm?.get('selectedTrendValue')?.setValue(nodeIdQParam ? nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
         this.filterForm.get('selectedSprintValue').setValue(sprintIdQParam ? sprintIdQParam : this.selectedSprint['nodeId']);
