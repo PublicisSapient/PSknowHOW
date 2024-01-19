@@ -568,7 +568,7 @@ public class KPIExcelUtility {
 					excelData.setStoryPoint(
 							String.valueOf(roundingOff(Optional.ofNullable(issueDetails.getSprintIssue().getStoryPoints()).orElse(0.0))));
 				} else if (null != issueDetails.getSprintIssue().getOriginalEstimate()) {
-					Double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate() / 60;
+					double totalOriginalEstimate = issueDetails.getSprintIssue().getOriginalEstimate();
 					Double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
 					excelData.setStoryPoint(roundingOff(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping())
 							+ "/" + roundingOff(totalOriginalEstimate / 60) + " hrs");
