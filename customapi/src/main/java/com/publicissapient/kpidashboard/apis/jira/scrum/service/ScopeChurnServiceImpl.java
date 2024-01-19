@@ -461,9 +461,9 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
 			if (CollectionUtils.isNotEmpty(sprintWiseRemovedList)
 					|| CollectionUtils.isNotEmpty(sprintWiseAddedList)) {
-				Map<String, JiraIssue> totalSprintStoryMap = new HashMap<>();
-				sprintWiseAddedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
-				sprintWiseRemovedList.forEach(issue -> totalSprintStoryMap.putIfAbsent(issue.getNumber(), issue));
+				Map<String, List<JiraIssue>> totalSprintStoryMap = new HashMap<>();
+				totalSprintStoryMap.put(CommonConstant.ADDED, sprintWiseAddedList);
+				totalSprintStoryMap.put(CommonConstant.REMOVED, sprintWiseRemovedList);
 				KPIExcelUtility.populateScopeChurn(sprintName, totalSprintStoryMap, addedIssueDateMap,
 						removedIssueDateMap, excelData, fieldMapping);
 
@@ -570,7 +570,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 		Map<String, Object> hoverMap = new LinkedHashMap<>();
 		if (STORY_POINTS.equalsIgnoreCase(key)) {
 			valueMap.forEach((s, jiraIssues) -> {
-				double storyPoints = KpiDataHelper.calculateStoryPoints(jiraIssues, fieldMapping);
+				long storyPoints = (long) KpiDataHelper.calculateStoryPoints(jiraIssues, fieldMapping);
 				hoverMap.put(s, storyPoints);
 			});
 		}
