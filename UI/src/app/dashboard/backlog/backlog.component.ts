@@ -165,7 +165,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.navigationTabs[0]['count']++;
     }
 
-    this.navigationTabs.map(tabDetails => {
+    this.navigationTabs.forEach(tabDetails => {
       if (tabDetails['width'] === 'half') {
         let fullWidthKPis = [];
         let halfWithKpis = []
@@ -282,9 +282,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
             }
           }
           
-          // if(this.jiraKpiData && Object.keys(this.jiraKpiData)?.length>0 && this.jiraKpiData?.hasOwnProperty('kpi138')){
-          //   this.jiraKpiData['kpi138'] = require('../../../test/resource/fakeBacklogReadinessKpi.json');
-          // }
           this.jiraKpiData = Object.assign({}, this.jiraKpiData, localVariable);
           this.createAllKpiArray(this.jiraKpiData);
         } else {
@@ -318,12 +315,12 @@ export class BacklogComponent implements OnInit, OnDestroy {
     this.selectedtype = sharedobject;
   }
 
-  sortAlphabetically(objArray) {
-    if (objArray && objArray?.length > 1) {
-      objArray?.sort((a, b) =>  a?.data?.localeCompare(b?.data) );
-    }
-    return objArray;
-  }
+  // sortAlphabetically(objArray) {
+  //   if (objArray && objArray?.length > 1) {
+  //     objArray?.sort((a, b) =>  a?.data?.localeCompare(b?.data) );
+  //   }
+  //   return objArray;
+  // }
 
   getChartData(kpiId, idx, aggregationType) {
     const trendValueList = this.allKpiArray[idx]?.trendValueList;
@@ -362,7 +359,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
     else {
       if (trendValueList?.length > 0) {
-        this.kpiChartData[kpiId] = [...this.sortAlphabetically(trendValueList)];
+        this.kpiChartData[kpiId] = [...this.helperService.sortAlphabetically(trendValueList)];
       } else if(trendValueList?.hasOwnProperty('value')){
         this.kpiChartData[kpiId] = [...trendValueList?.value];
       }else{
@@ -370,9 +367,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       }
 
     }
-    // if (this.kpiChartData && Object.keys(this.kpiChartData).length) {
-    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
-    // }
+
     this.createTrendData(kpiId);
     this.updatedConfigGlobalData.forEach(kpi => {
       if (kpi.kpiId == kpiId) {
@@ -735,7 +730,6 @@ export class BacklogComponent implements OnInit, OnDestroy {
     if (event && Object.keys(event)?.length !== 0 && typeof event === 'object' && !selectedFilterBackup.hasOwnProperty('filter2')) {
       for (const key in event) {
         if (typeof event[key] === 'string') {
-          // delete event[key];
           this.kpiSelectedFilterObj[kpi?.kpiId] = event;
         } else {
           for (let i = 0; i < event[key]?.length; i++) {
@@ -865,23 +859,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
   }
 
   getKpiCommentsCount(kpiId?) {
-    let requestObj = {
-      "nodes": [...this.filterApplyData?.ids],
-      "level": this.filterApplyData?.level,
-      "nodeChildId": "",
-      'kpiIds': []
-    };
-    if (kpiId) {
-      requestObj['kpiIds'] = [kpiId];
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj[kpiId] = res[kpiId];
-      });
-    } else {
-      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item?.kpiId));
-      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-        this.kpiCommentsCountObj = res;
-      });
-    }
+    const nodes = [...this.filterApplyData?.ids]
+    const level = this.filterApplyData?.level;
+    const nodeChildId = '';
+    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
+  
   }
 
   /** Reload KPI once field mappoing updated */

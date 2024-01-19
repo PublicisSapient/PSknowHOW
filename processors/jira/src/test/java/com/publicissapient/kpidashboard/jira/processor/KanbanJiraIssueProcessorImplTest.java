@@ -1,24 +1,44 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
@@ -46,7 +66,9 @@ import com.atlassian.jira.rest.client.api.domain.IssueLinkType;
 import com.atlassian.jira.rest.client.api.domain.IssueType;
 import com.atlassian.jira.rest.client.api.domain.Resolution;
 import com.atlassian.jira.rest.client.api.domain.Status;
+import com.atlassian.jira.rest.client.api.domain.TimeTracking;
 import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -55,7 +77,10 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.Assignee;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.dataFactories.ConnectionsDataFactory;
@@ -97,6 +122,12 @@ public class KanbanJiraIssueProcessorImplTest {
 	private JiraCommonService jiraCommonService;
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
+
+	@Mock
+	private AssigneeDetails assigneeDetails;
+
+	Set<Assignee> assigneeSetToSave = new HashSet<>();
+
 	@Before
 	public void setup() throws URISyntaxException {
 		fieldMapping = getMockFieldMapping();
@@ -104,6 +135,15 @@ public class KanbanJiraIssueProcessorImplTest {
 		projectToolConfigs = getMockProjectToolConfig();
 		connection = getMockConnection();
 		fieldMappingList = getMockFieldMappingList();
+		Assignee assignee = Assignee.builder().assigneeId("2424").assigneeName("User 1").build();
+		Assignee assignee1 = Assignee.builder().assigneeId("24324").assigneeName("User 2").build();
+		assigneeSetToSave.add(assignee);
+		assigneeSetToSave.add(assignee1);
+		AssigneeDetails assigneeDetailsToBeSave = new AssigneeDetails("63c04dc7b7617e260763ca4e",
+				ProcessorConstants.JIRA, assigneeSetToSave, 3);
+		when(assigneeDetails.getBasicProjectConfigId()).thenReturn("63c04dc7b7617e260763ca4e");
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(), any()))
+				.thenReturn(assigneeDetailsToBeSave);
 		createProjectConfigMap();
 		createIssue();
 	}
@@ -124,8 +164,8 @@ public class KanbanJiraIssueProcessorImplTest {
 
 	@Test
 	public void updateAssigneeDetailsToggleWise() {
-		transformFetchedIssueToKanbanJiraIssue.updateAssigneeDetailsToggleWise(new KanbanJiraIssue(), projectConfFieldMapping,
-				Arrays.asList("1234"), Arrays.asList("username"), Arrays.asList("username"));
+		transformFetchedIssueToKanbanJiraIssue.updateAssigneeDetailsToggleWise(new KanbanJiraIssue(),
+				projectConfFieldMapping, Arrays.asList("1234"), Arrays.asList("username"), Arrays.asList("username"));
 	}
 
 	private Optional<Connection> getMockConnection() {
@@ -162,14 +202,20 @@ public class KanbanJiraIssueProcessorImplTest {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));
+		IssueType issueType3 = new IssueType(new URI("self"), 3l, "Epic", false, "desc", new URI("iconURI"));
+
 		Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
 				new StatusCategory(new URI("self"), "name", 1l, "key", "colorname"));
 		BasicPriority basicPriority = new BasicPriority(new URI("self"), 1l, "priority1");
 		Resolution resolution = new Resolution(new URI("self"), 1l, "resolution", "resolution");
 		Map<String, URI> avatarMap = new HashMap<>();
 		avatarMap.put("48x48", new URI("value"));
-		User user1 = new User(new URI("self"), "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
+		URI uri = new URI("https://dummy.com/jira/rest/api/2/user?username=user1");
+		User user1 = new User(uri, "user1", "user1", "userAccount", "user1@xyz.com", true, null, avatarMap,
 				null);
+
+		List<IssueField> issueFields = new ArrayList<>();
+
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_19121", "Client Testing (UAT)");
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
@@ -177,7 +223,30 @@ public class KanbanJiraIssueProcessorImplTest {
 		map.put("id", "20810");
 		JSONObject value = new JSONObject(map);
 		IssueField issueField = new IssueField("customfield_19121", "Component", null, value);
-		List<IssueField> issueFields = Arrays.asList(issueField);
+		issueFields.add(issueField);
+
+		map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "Epic");
+		map.put("id", "18182");
+		IssueField issueField1 = new IssueField("customfield_14502", "Epic Name", null, new JSONObject(map));
+		issueFields.add(issueField1);
+
+		IssueField issueField2 = new IssueField("customfield_20803", "StoryPoints", null, Integer.parseInt("5"));
+		issueFields.add(issueField2);
+
+		map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "Status");
+		map.put("id", "13131");
+		IssueField issueField3 = new IssueField("customfield_13131", "Status", null, new JSONObject(map));
+		issueFields.add(issueField3);
+
+		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
+		issueFields.add(issueField4);
+
+		TimeTracking timeTracking = new TimeTracking(8, 8, 8);
+
 		Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
 				new Visibility(Visibility.Type.ROLE, "abc"), 1l);
 		List<Comment> comments = Arrays.asList(comment);
@@ -190,13 +259,24 @@ public class KanbanJiraIssueProcessorImplTest {
 				"toString");
 		ChangelogGroup changelogGroup = new ChangelogGroup(basicUser, DateTime.now(), Arrays.asList(changelogItem));
 
+		Collection<Version> fixVersions = new ArrayList<>();
+		Version version = new Version(new URI("https://dummy.com/jira/rest/api/2/version/143417"), 143417L, "",
+				"KnowHOW v6.8.0", false, true, DateTime.now());
+		fixVersions.add(version);
+
 		Issue issue = new Issue("summary1", new URI("self"), "key1", 1l, basicProj, issueType2, status1, "story",
 				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
-				DateTime.now(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), null, issueFields, comments,
+				DateTime.now(), new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments,
 				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
 				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label1")));
-		issues.add(issue);
 
+		Issue issue1 = new Issue("summary1", new URI("self"), "key2", 1l, basicProj, issueType3, status1, "epic",
+				basicPriority, resolution, new ArrayList<>(), user1, user1, DateTime.now(), DateTime.now(),
+				DateTime.now(), new ArrayList<>(), fixVersions, new ArrayList<>(), timeTracking, issueFields, comments,
+				null, createIssueLinkData(), basicVotes, workLogs, null, Arrays.asList("expandos"), null,
+				Arrays.asList(changelogGroup), null, new HashSet<>(Arrays.asList("label2")));
+		issues.add(issue);
+		issues.add(issue1);
 	}
 
 	private List<IssueLink> createIssueLinkData() throws URISyntaxException {
@@ -241,4 +321,80 @@ public class KanbanJiraIssueProcessorImplTest {
 		return fieldMappingDataFactory.getFieldMappings();
 	}
 
+	@Test
+	public void testSetEpicIssueData() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		// Arrange
+		FieldMapping fieldMapping = new FieldMapping(); // Set up your FieldMapping instance
+		fieldMapping.setEpicJobSize("8.0");
+		fieldMapping.setEpicRiskReduction("8.0");
+		fieldMapping.setEpicTimeCriticality("8.0");
+		fieldMapping.setEpicUserBusinessValue("8.0");
+		fieldMapping.setEpicWsjf("8.0");
+		fieldMapping.setEpicPlannedValue("8.0");
+		fieldMapping.setEpicAchievedValue("8.0");
+		fieldMapping.setEpicName("customfield_14502");
+
+		KanbanJiraIssue jiraIssue = new KanbanJiraIssue(); // Set up your JiraIssue instance
+		jiraIssue.setBusinessValue(8.0);
+		jiraIssue.setRiskReduction(8.0);
+		jiraIssue.setTimeCriticality(8.0);
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+		fields.put("8.0", new IssueField("", "8.0", null, "8.0"));
+
+		// Use reflection to access the private method
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicIssueData", FieldMapping.class,
+				KanbanJiraIssue.class, Map.class);
+		method.setAccessible(true);
+
+		// Act
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, jiraIssue, fields);
+	}
+
+	@Test
+	public void testSetStoryLinkWithDefect()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(jiraProcessorConfig.getExcludeLinks()).thenReturn(Arrays.asList("Blocks"));
+		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
+		jiraIssue.setTypeName("Bug");
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setStoryLinkWithDefect", Issue.class,
+				KanbanJiraIssue.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, issues.get(0), jiraIssue);
+	}
+
+	@Test
+	public void testSetJiraAssigneeDetailsWhenUserIsNull()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setJiraAssigneeDetails",
+				KanbanJiraIssue.class, User.class, ProjectConfFieldMapping.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, new KanbanJiraIssue(), null, projectConfFieldMapping);
+	}
+
+	@Test
+	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class,
+				Map.class);
+		method.setAccessible(true);
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setRootCause("code_issue");
+		Map<String, String> map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "code");
+		map.put("id", "19121");
+		JSONObject jsonObject = new JSONObject(map);
+		List<Object> rcaList = new ArrayList<>();
+		rcaList.add(jsonObject);
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("code_issue", issueField);
+
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, fields);
+	}
 }

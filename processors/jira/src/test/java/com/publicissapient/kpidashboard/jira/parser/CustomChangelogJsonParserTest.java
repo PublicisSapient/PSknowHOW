@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.jira.parser;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -54,11 +73,6 @@ public class CustomChangelogJsonParserTest {
 		sampleJson.put("author", changelogGroup1.getJSONObject("author"));
 		sampleJson.put("items", changelogGroup1.getJSONArray("items"));
 
-		// Mock behavior for the dependencies
-		Mockito.when(mockJsonObject.getJSONObject("author")).thenReturn(changelogGroup1.getJSONObject("author"));
-		Mockito.when(mockJsonObject.getJSONArray("items")).thenReturn(changelogGroup1.getJSONArray("items"));
-		Mockito.when(mockChangelogItemJsonParser.parse(Mockito.any(JSONObject.class))).thenReturn(changelogItem);
-
 		try {
 			ChangelogGroup changelogGroup = customChangelogJsonParser.parse(sampleJson);
 
@@ -87,7 +101,6 @@ public class CustomChangelogJsonParserTest {
 		author1.put("name", "John Doe");
 		author1.put("key", "johndoe");
 		author1.put("self", "http://example.com/rest/api/2/user/101");
-		// Add more author details as needed
 
 		changelogGroup1.put("author", author1);
 

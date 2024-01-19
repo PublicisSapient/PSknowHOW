@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.common.constant;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public enum Role {
@@ -33,7 +34,8 @@ public enum Role {
 	}
 
 	public static Role getRoleByValue(String value) {
-		return Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny().get();
+		Optional<Role> roleOptional = Arrays.stream(Role.values()).filter(t -> t.getRoleValue().equalsIgnoreCase(value)).findAny();
+		return roleOptional.orElse(null);
 	}
 
 	public static Map<String, String> getAllRoles() {

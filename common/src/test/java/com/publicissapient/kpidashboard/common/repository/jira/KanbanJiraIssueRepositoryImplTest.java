@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -31,8 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,11 +45,12 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import com.mongodb.client.result.UpdateResult;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class KanbanJiraIssueRepositoryImplTest {
 	@Mock
 	private MongoOperations mongoOperations;

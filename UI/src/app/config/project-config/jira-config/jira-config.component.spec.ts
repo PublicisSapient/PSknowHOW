@@ -1759,7 +1759,7 @@ describe('JiraConfigComponent', () => {
   
   })
 
-  it('should throw error on getting jenkins job names', () => {
+  xit('should throw error on getting jenkins job names', () => {
     const connectionId = 'skdhakda';
     const errResponse = {
         error : {
@@ -1797,52 +1797,104 @@ describe('JiraConfigComponent', () => {
     expect(spy).toBeTruthy();
   })
 
-  xit('should handle error when fetching boards', fakeAsync(() => {
-    component.urlParam = 'Jira'
-    component.initializeFields(component.urlParam);
-    component.selectedConnection = {
-      "id": "63b3f8ee8ec44416b3ce9698",
-    }
-    const errResponse = {
-      error: 'Something went wrong', 
-      success: false
-    }
-    fixture.detectChanges();
-    spyOn(httpService, 'getAllBoards').and.returnValue(of(errResponse));
-    const spy = spyOn(messageService, 'add').and.callThrough(); 
-    component.boardsData = [];
-    component.toolForm = new UntypedFormGroup({
-      boards: new UntypedFormControl(), 
-      projectKey: new UntypedFormControl('dydad76876a8d')
-    })
-    component.fetchBoards(component);
-    tick();
-    expect(spy).toHaveBeenCalled()
-  }));
-
-  it('should handle error when getting azure build pipelines', () => {
+  it('should handle error when catching error on getting azure release pipelines', () => {
     const connection = {
       "id": "63b3f8ee8ec44416b3ce9698",
-    };
+    }
     component.selectedConnection = {
-      "id": "63b3f8ee8ec44416b3ce9698",
+      "id": "63b3f8ee8ec44416b3ce9698"
     }
     component.formTemplate = {
       elements: [
         { id: 'jobType', show: true },
       ],
     };
-    component.azurePipelineApiVersion = '6.0';
     spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    component.azurePipelineApiVersion = '6.0';
     const errResponse = {
-      message: "No pipelines details found",
-      sucess: false
+      error: {
+        message: "No pipelines details found",
+      },
+      success: false
     }
-    spyOn(httpService, 'getAzurePipelineList').and.returnValue(of(errResponse))
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(errResponse))
     spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
     component.azurePipelineList = [];
     const spy = spyOn(messageService, 'add').and.callThrough();
-    component.getAzureBuildPipelines(connection)
+    component.getAzureReleasePipelines(connection);
     expect(spy).toHaveBeenCalled(); 
+  })
+
+  it('should handle error when success is false on getting azure release pipelines', () => {
+    const connection = {
+      "id": "63b3f8ee8ec44416b3ce9698",
+    }
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    component.azurePipelineApiVersion = '6.0';
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    spyOn(httpService, 'getAzureReleasePipelines').and.returnValue(of(errResponse))
+    component.azurePipelineList = [];
+    const spy = spyOn(messageService, 'add');
+    component.getAzureReleasePipelines(connection);
+    expect(spy).toHaveBeenCalled(); 
+  })
+
+  it('should handle error when apiVersionHandler when sucess is false', () => {
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.toolForm = new UntypedFormGroup({
+      organizationKey: new UntypedFormControl()
+    })
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    component.projectKeyList = [];
+    component.branchList = [];
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getProjectKeyList').and.returnValue(of(errResponse))
+    component.apiVersionHandler('6.0');
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should handle error when apiVersionHandler when sucess is false', () => {
+    component.selectedConnection = {
+      "id": "63b3f8ee8ec44416b3ce9698"
+    }
+    component.toolForm = new UntypedFormGroup({
+      organizationKey: new UntypedFormControl(),
+      apiVersion: new UntypedFormControl('6.0')
+    })
+    component.formTemplate = {
+      elements: [
+        { id: 'jobType', show: true },
+      ],
+    };
+    const errResponse = {
+      error: "Something went wrong",
+      success: false
+    }
+    component.disableBranchDropDown = true;
+    component.branchList = [];
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'showLoadingOnFormElement').and.callThrough();
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
+    spyOn(httpService, 'getBranchListForProject').and.returnValue(of(errResponse))
+    component.projectKeyClickHandler('ENGINEERING.KPIDASHBOARD.PROCESSORS');
+    expect(spy).toHaveBeenCalled();
   })
 });

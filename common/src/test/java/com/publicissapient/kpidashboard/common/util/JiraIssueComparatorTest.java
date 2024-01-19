@@ -1,13 +1,13 @@
 package com.publicissapient.kpidashboard.common.util;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import static org.junit.Assert.assertEquals;
 
 public class JiraIssueComparatorTest {
 

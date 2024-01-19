@@ -23,7 +23,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -33,11 +34,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * @author shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class KpiCommentHistoryRepositoryImplTest {
 	@Mock
 	private MongoTemplate mongoTemplate;

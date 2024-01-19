@@ -1943,7 +1943,7 @@ describe('BacklogComponent', () => {
             shown: true
         },
         {
-            kpiId: 'kpi742',
+            kpiId: 'kpi3',
             kpiName: 'Release Frequency',
             isEnabled: true,
             order: 1,
@@ -1971,6 +1971,36 @@ describe('BacklogComponent', () => {
                 yaxisLabel: 'Count'
             },
             shown: true
+        },
+        {
+            kpiId: 'kpi89',
+            kpiName: 'Release Frequency',
+            isEnabled: true,
+            order: 1,
+            kpiDetail: {
+                kpiWidth : 100,
+                kpiSubCategory : 'Flow KPIs',
+                id: '63320976b7f239ac93c2686a',
+                kpiId: 'kpi74',
+                kpiName: 'Release Frequency',
+                isDeleted: 'False',
+                defaultOrder: 17,
+                kpiUnit: '',
+                chartType: 'line',
+                showTrend: true,
+                isPositiveTrend: true,
+                calculateMaturity: false,
+                kpiSource: 'Jira',
+                maxValue: '300',
+                kanban: true,
+                groupId: 4,
+                aggregationCriteria: 'sum',
+                trendCalculative: false,
+                squadSupport: false,
+                xaxisLabel: 'Months',
+                yaxisLabel: 'Count'
+            },
+            shown: false
         },
         {
             kpiId: 'kpi741',
@@ -2161,6 +2191,31 @@ describe('BacklogComponent', () => {
         expect(postJiraSpy).toHaveBeenCalled();
     });
 
+    it('should make post call when kpi available for Jira for Scrum when we have kpi list', () => {
+        const kpiListJira = [{
+            id: '6332dd4b82451128f9939a29',
+            kpiId: 'kpi17',
+            kpiName: 'Unit Test Coverage'
+        }];
+        component.masterData = {
+            kpiList: [{
+                kpiId: 'kpi17',
+                kanban: false,
+                kpiSource: 'Jira',
+                kpiCategory: 'Backlog',
+                groupId: 1
+            }]
+        };
+        component.kpiJira = {
+            kpiList : []
+        }
+        const spy = spyOn(helperService, 'groupKpiFromMaster').and.returnValue({ kpiList: kpiListJira });
+        const postJiraSpy = spyOn(component, 'postJiraKpi');
+        component.groupJiraKpi(['kpi17']);
+        expect(postJiraSpy).toHaveBeenCalled();
+    });
+
+
     it('postJiraKpi should call httpServicepost', fakeAsync(() => {
         const jiraKpiData = {
             kpi14: {
@@ -2343,6 +2398,15 @@ describe('BacklogComponent', () => {
         tick();
         expect(spycreateKpiWiseId).toHaveBeenCalled();
         expect(spycreateAllKpiArray).toHaveBeenCalledWith(jiraKpiData);
+    }));
+
+    it('postJiraKpi should call httpServicepost when reponse will give error', fakeAsync(() => {
+        
+        component.jiraKpiData = {};
+        component.loaderJiraArray = ['kpi14'];
+        const spy = spyOn(httpService, 'postKpi').and.returnValue(of(null));
+        component.postJiraKpi(fakeJiraPayload, 'jira');
+        tick();
     }));
 
     it('should call downloadExcel', () => {
@@ -3102,180 +3166,7 @@ describe('BacklogComponent', () => {
         expect(spy).toHaveBeenCalled();
     })
 
-    it('should sort Alphabetically', () => {
-        const objArray = [
-          {
-            "data": "AddingIterationProject",
-            "value": [
-              {
-                "data": "0.0",
-                "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 1
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 2
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 3
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 4
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 5
-              }
-            ],
-            "maturity": "1",
-            "maturityValue": "0.0"
-          }
-        ];
-    
-        const value = [
-          {
-            "data": "AddingIterationProject",
-            "value": [
-              {
-                "data": "0.0",
-                "sSprintID": "43307_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_3_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43307_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_3_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 1
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43308_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_4_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43308_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_4_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 2
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43309_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_5_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43309_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_5_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 3
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "43310_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_13| ITR_6_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "43310_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_13| ITR_6_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 4
-              },
-              {
-                "data": "0.0",
-                "sSprintID": "45160_AddingIterationProject_64a4ff265b5fdd437756f904",
-                "sSprintName": "KnowHOW | PI_14| ITR_1_AddingIterationProject",
-                "value": 0,
-                "hoverValue": {},
-                "sprintIds": [
-                  "45160_AddingIterationProject_64a4ff265b5fdd437756f904"
-                ],
-                "sprintNames": [
-                  "KnowHOW | PI_14| ITR_1_AddingIterationProject"
-                ],
-                "sprojectName": "AddingIterationProject",
-                "xName": 5
-              }
-            ],
-            "maturity": "1",
-            "maturityValue": "0.0"
-          }
-        ]
-        const result = component.sortAlphabetically(objArray);
-        expect(result).toEqual(value);
-    
-    });
+   
 
     it('should apply the aggregation logic correctly when the data is valid', () => {
         // create sample data
@@ -3981,6 +3872,419 @@ describe('BacklogComponent', () => {
         expect(component.kpiChartData).toBeDefined();
       })
 
+      describe('getChartType', () => {
+      
+        beforeEach(() => {
+          component.updatedConfigGlobalData = [
+            {
+              kpiId: 'kpi1',
+              kpiDetail: {
+                chartType: 'line'
+              }
+            },
+            {
+              kpiId: 'kpi2',
+              kpiDetail: {
+                chartType: 'bar'
+              }
+            },
+            {
+              kpiId: 'kpi3',
+              kpiDetail: {
+                chartType: 'pie'
+              }
+            }
+          ];
+        });
+      
+        it('should return the chartType of the specified kpiId', () => {
+          // Arrange
+          const kpiId = 'kpi2';
+      
+          // Act
+          const result = component.getChartType(kpiId);
+      
+          // Assert
+          expect(result).toBe('bar');
+        });
+      
+        it('should return undefined if the specified kpiId is not found', () => {
+          // Arrange
+          const kpiId = 'kpi4';
+      
+          // Act
+          const result = component.getChartType(kpiId);
+      
+          // Assert
+          expect(result).toBeUndefined();
+        });
+      
+        it('should return undefined if the kpiDetail property is undefined', () => {
+          // Arrange
+          const kpiId = 'kpi1';
+          component.updatedConfigGlobalData[0].kpiDetail = undefined;
+      
+          // Act
+          const result = component.getChartType(kpiId);
+      
+          // Assert
+          expect(result).toBeUndefined();
+        });
+
+        it('should return undefined if the kpiDetail property is undefined', () => {
+            // Arrange
+            const kpiId = 'kpi1';
+            component.updatedConfigGlobalData[0] = undefined;
+        
+            // Act
+            const result = component.getChartType(kpiId);
+        
+            // Assert
+            expect(result).toBeUndefined();
+          });
+      });
+
+      describe('checkSprint', () => {
+      
+        beforeEach(() => {
+          component.kpiSelectedFilterObj = {
+            kpi1: {
+              filter1: ['filter1Value'],
+              filter2: ['filter2Value']
+            },
+            kpi2: {
+              filter1: ['overall'],
+              filter2: ['filter2Value']
+            },
+            kpi3: {
+              filter1: ['filter1Value'],
+              filter2: ['overall']
+            },
+            kpi4: {
+              filter1: ['overall'],
+              filter2: ['overall']
+            }
+          };
+        });
+      
+        it('should return "-" if filter1 is not "overall" and has values or filter2 is not "overall" and has values', () => {
+          // Arrange
+          const value = 10;
+          const unit = 'units';
+          const kpiId = 'kpi1';
+      
+          // Act
+          const result = component.checkSprint(value, unit, kpiId);
+      
+          // Assert
+          expect(result).toBe('-');
+        });
+      
+        it('should return formatted value with unit if filter1 is "overall" and filter2 is not "overall"', () => {
+          // Arrange
+          const value = 10.5;
+          const unit = 'units';
+          const kpiId = 'kpi2';
+      
+          // Act
+          const result = component.checkSprint(value, unit, kpiId);
+      
+          // Assert
+          expect(result).toBe('-');
+        });
+      
+        it('should return formatted value with unit if filter1 is not "overall" and filter2 is "overall"', () => {
+          // Arrange
+          const value = 10.2;
+          const unit = 'units';
+          const kpiId = 'kpi3';
+      
+          // Act
+          const result = component.checkSprint(value, unit, kpiId);
+      
+          // Assert
+          expect(result).toBe('-');
+        });
+      
+        it('should return formatted value with unit if both filter1 and filter2 are "overall"', () => {
+          // Arrange
+          const value = 10.8;
+          const unit = 'units';
+          const kpiId = 'kpi4';
+      
+          // Act
+          const result = component.checkSprint(value, unit, kpiId);
+      
+          // Assert
+          expect(result).toBe('11 units');
+        });
+      });
+
+
+describe('typeOf', () => {  
+    it('should return true if the value is an object and not null', () => {
+
+      const value = { prop: 'value' };
+  
+      // Act
+      const result = component.typeOf(value);
+  
+      // Assert
+      expect(result).toBe(true);
+    });
+  
+    it('should return false if the value is not an object', () => {
+
+      const value = 'string';
+  
+      // Act
+      const result = component.typeOf(value);
+  
+      // Assert
+      expect(result).toBe(false);
+    });
+  
+    it('should return false if the value is null', () => {
+
+      const value = null;
+  
+      // Act
+      const result = component.typeOf(value);
+  
+      // Assert
+      expect(result).toBe(false);
+    });
+  });
+
+  it('should update the activeIndex property with the index of the selected tab', () => {
+    const event = { index: 1 };
+
+    // Act
+    component.handleTabChange(event);
+
+    // Assert
+    expect(component.activeIndex).toBe(1);
+  });
+
+  describe('checkLatestAndTrendValue', () => {
+  
+    it('should return latest value and unit for an item with no trend data', () => {
+      const kpiData = {
+        kpiDetail: {
+          kpiUnit: 'Units',
+          showTrend: false,
+          isPositiveTrend: true
+        }
+      };
+      const item = {
+        value: [
+          { value: 10 },
+          { value: 20 },
+          { value: 30 }
+        ]
+      };
+      const result = component.checkLatestAndTrendValue(kpiData, item);
+      expect(result[0]).toBe('30 Units');
+      expect(result[1]).toBe('NA');
+      expect(result[2]).toBe('Units');
+    });
+
+    it('should return latest line value and unit for an item with no trend data', () => {
+        const kpiData = {
+          kpiDetail: {
+            kpiUnit: 'Units',
+            showTrend: false,
+            isPositiveTrend: true
+          }
+        };
+        const item = {
+          value: [
+            { lineValue: 10 },
+            { lineValue: 50 },
+            { lineValue: 30 }
+          ]
+        };
+        const result = component.checkLatestAndTrendValue(kpiData, item);
+        expect(result[0]).toBe('30 Units');
+        expect(result[1]).toBe('NA');
+        expect(result[2]).toBe('Units');
+      });
+  
+    it('should return latest value, trend value, and unit for a valid item with positive trend', () => {
+      const kpiData = {
+        kpiDetail: {
+          kpiUnit: 'Units',
+          showTrend: true,
+          isPositiveTrend: true
+        }
+      };
+      const item = {
+        value: [
+          { value: 10 },
+          { value: 20 },
+          { value: 30 }
+        ]
+      };
+      const result = component.checkLatestAndTrendValue(kpiData, item);
+      expect(result[0]).toBe('30 Units');
+      expect(result[1]).toBe('+ve');
+      expect(result[2]).toBe('Units');
+    });
+  
+    it('should return latest value, trend value, and unit for a valid item with negative trend', () => {
+      const kpiData = {
+        kpiDetail: {
+          kpiUnit: 'Units',
+          showTrend: true,
+          isPositiveTrend: false
+        }
+      };
+      const item = {
+        value: [
+          { value: 30 },
+          { value: 20 },
+          { value: 10 }
+        ]
+      };
+      const result = component.checkLatestAndTrendValue(kpiData, item);
+      expect(result[0]).toBe('10 Units');
+      expect(result[1]).toBe('+ve');
+    });
+
+    it('should return latest value, trend value, and unit for a valid item with negative trend', () => {
+        const kpiData = {
+          kpiDetail: {
+            kpiUnit: 'Units',
+            showTrend: true,
+            isPositiveTrend: false
+          }
+        };
+        const item = {
+          value: [
+            { value: 30 },
+            { value: 20 },
+            { value: 40 }
+          ]
+        };
+        const result = component.checkLatestAndTrendValue(kpiData, item);
+        expect(result[0]).toBe('40 Units');
+        expect(result[1]).toBe('-ve');
+      });
+
+      it('should return latest value, trend value, and unit for a valid item with negative trend', () => {
+        const kpiData = {
+          kpiDetail: {
+            kpiUnit: 'Units',
+            showTrend: true,
+            isPositiveTrend: true
+          }
+        };
+        const item = {
+          value: [
+            { value: 30 },
+            { value: 50 },
+            { value: 40 }
+          ]
+        };
+        const result = component.checkLatestAndTrendValue(kpiData, item);
+        expect(result[0]).toBe('40 Units');
+        expect(result[1]).toBe('-ve');
+      });
+
+      it('should not return when item is undefined', () => {
+        const kpiData = {
+          kpiDetail: {
+            kpiUnit: 'Units',
+            showTrend: true,
+            isPositiveTrend: true
+          }
+        };
+        const item = undefined
+        const result = component.checkLatestAndTrendValue(kpiData, item);
+        expect(result[0]).toBe('');
+        expect(result[1]).toBe('NA');
+      });
+
+
+  
+    it('should return latest value, trend value, and unit for a valid item with no trend', () => {
+      const kpiData = {
+        kpiDetail: {
+          kpiUnit: 'Units',
+          showTrend: true,
+          isPositiveTrend: true
+        }
+      };
+      const item = {
+        value: [
+          { value: 10 }
+        ]
+      };
+      const result = component.checkLatestAndTrendValue(kpiData, item);
+      expect(result[0]).toBe('10 Units');
+  
+    });
+    it('should return latest value, trend value, and unit for a valid item with custom unit', () => {
+      const kpiData = {
+        kpiDetail: {
+          kpiUnit: 'Custom',
+          showTrend: true,
+          isPositiveTrend: true
+        }
+      };
+      const item = {
+        value: [
+          { value: 10 },
+          { value: 20 },
+          { value: 30 }
+        ]
+      };
+      const result = component.checkLatestAndTrendValue(kpiData, item);
+      expect(result[0]).toBe('30 Custom');
+      expect(result[1]).toBe('+ve');
+      expect(result[2]).toBe('Custom');
+    });
+  });
+
+  describe('getDropdownArrayForCard', () => {
+  
+    it('should set dropdown array for an existing kpi with filters', () => {
+      const kpiId = 'kpi-1';
+      component.allKpiArray = [
+        { kpiId: 'kpi-1', filters: { filter1: ['value1', 'value2'], filter2: ['value3'] } }
+      ];
+      component.getDropdownArrayForCard(kpiId);
+      expect(component.kpiDropdowns[kpiId]).toEqual([['value1', 'value2'], ['value3']]);
+    });
+  
+    it('should set empty dropdown array for an existing kpi with empty filters object', () => {
+      const kpiId = 'kpi-1';
+      component.allKpiArray = [
+        { kpiId: 'kpi-1', filters: {} }
+      ];
+      component.getDropdownArrayForCard(kpiId);
+      expect(component.kpiDropdowns[kpiId]).toEqual([]);
+    });
+  
+    it('should set empty dropdown array for an existing kpi with undefined filters', () => {
+      const kpiId = 'kpi-1';
+      component.allKpiArray = [
+        { kpiId: 'kpi-1' }
+      ];
+      component.getDropdownArrayForCard(kpiId);
+      expect(component.kpiDropdowns[kpiId]).toEqual([]);
+    });
+  
+    it('should set dropdown array for an existing kpi with filters and undefined values', () => {
+      // Arrange
+      const kpiId = 'kpi-1';
+      component.allKpiArray = [
+        { kpiId: 'kpi-1', filters: { filter1: undefined, filter2: ['value3'] } }
+      ];
+      component.getDropdownArrayForCard(kpiId);
+      expect(component.kpiDropdowns).toBeDefined();
+    });
+  });
 
 });
 

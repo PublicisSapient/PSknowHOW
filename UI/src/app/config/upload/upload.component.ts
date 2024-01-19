@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -358,7 +358,8 @@ export class UploadComponent implements OnInit {
                     if (data['image']) {
                         this.logoImage = 'data:image/png;base64,' + data['image'];
                         const blob: Blob = new Blob([this.logoImage], { type: 'image/png' });
-                        blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
+                        blob['objectURL'] = this.sanitizer.sanitize(SecurityContext.URL, window.URL.createObjectURL(blob))
+                        //blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
                         this.uploadedFile = new File([blob], 'logo.png', { type: 'image/png' });
                     }
                 });

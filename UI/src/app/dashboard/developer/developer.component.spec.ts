@@ -919,7 +919,7 @@ it('should set the kpiCommentsCountObj for a single kpiId', fakeAsync((done) => 
   };
   component.filterApplyData = filterApplyData;
   const response = { [kpiId]: 10 };
-  spyOn(helperService,'getKpiCommentsHttp').and.resolveTo(response);
+  spyOn(helperService,'getKpiCommentsCount').and.returnValue({})
   component.getKpiCommentsCount(kpiId);
   expect(component.kpiCommentsCountObj).toBeDefined();
 }));
@@ -935,7 +935,7 @@ it('should set the kpiCommentsCountObj for all kpiIds', fakeAsync((done) => {
   component.filterApplyData = filterApplyData;
   const response = { [kpiId]: 10 };
   component.updatedConfigGlobalData = [{kpiId :'123'}]
-  spyOn(helperService,'getKpiCommentsHttp').and.resolveTo(response);
+  spyOn(helperService,'getKpiCommentsCount').and.returnValue({})
   component.getKpiCommentsCount(kpiId);
   expect(component.kpiCommentsCountObj).toBeDefined();
 }));
