@@ -121,7 +121,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		IssueField epic = fields.get(fieldMapping.getEpicName());
 
 		if (issueTypeNames
-				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
+				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 			jiraIssue = getKanbanJiraIssue(projectConfig, issueId);
 
