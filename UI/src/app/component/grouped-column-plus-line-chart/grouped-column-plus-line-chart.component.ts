@@ -290,8 +290,9 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
       .select('#horizontalSVG')
       .append('svg')
       .attr('width', width)
-      .attr('height', height);
-    // .append('g');
+      .attr('height', height + paddingTop)
+      .append('g')
+      .attr('transform', `translate(${0}, ${paddingTop})`);
 
 
     const svgY = d3
