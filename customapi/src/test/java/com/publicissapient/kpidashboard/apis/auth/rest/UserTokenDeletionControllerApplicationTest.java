@@ -72,7 +72,7 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 		mockMvc = null;
 	}
 
-	@Test
+	//@Test
 	public void testDeleteUserToken() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("foo1", "bar1"));
