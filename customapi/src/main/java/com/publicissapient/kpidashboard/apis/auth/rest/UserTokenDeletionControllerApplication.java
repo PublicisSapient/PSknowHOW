@@ -38,6 +38,7 @@ import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionServi
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Rest controller to handle logout requests.
@@ -71,14 +72,16 @@ public class UserTokenDeletionControllerApplication {
 	 *            the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity deleteUserToken(HttpServletRequest request , HttpServletResponse response) {
+	public RedirectView deleteUserToken(HttpServletRequest request , HttpServletResponse response) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
 		Cookie authCookieToken = cookieUtil.getAuthCookie(request);
 		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken.getValue());
 		cookieUtil.deleteCookie(request, response , CookieUtil.AUTH_COOKIE);
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
-		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
+		String afterLogout = "https://dev-authnauth.tools.publicis.sapient.com/";
+		return new RedirectView(afterLogout);
+		//return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
 	}
 
 }
