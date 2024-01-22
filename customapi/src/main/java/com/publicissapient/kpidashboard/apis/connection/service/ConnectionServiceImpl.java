@@ -32,18 +32,18 @@ import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_SONAR
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_TEAMCITY;
 import static com.publicissapient.kpidashboard.apis.constant.Constant.TOOL_ZEPHYR;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -80,7 +80,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private static final String CONNECTION_EMPTY_MSG = "Connection name cannot be empty";
 	private static final String ERROR_MSG = "A connection with same details already exists. Connection name is ";
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 
 	@Autowired
 	private AesEncryptionService aesEncryptionService;
@@ -326,9 +325,12 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private void setBaseUrlForRepoTool(Connection conn) {
 		if (conn.getRepoToolProvider().equalsIgnoreCase(TOOL_GITHUB)) {
 			RepoToolsProvider repoToolsProvider = repoToolsProviderRepository.findByToolName(TOOL_GITHUB.toLowerCase());
-			Matcher matcher = URL_PATTERN.matcher(repoToolsProvider.getTestApiUrl());
-			if (matcher.find())
-				conn.setBaseUrl(matcher.group(1).concat(matcher.group(2)));
+			try {
+				URL url = new URL(repoToolsProvider.getTestApiUrl());
+				conn.setBaseUrl(url.getProtocol().concat("://").concat(url.getHost()));
+			} catch (MalformedURLException e) {
+				log.error("Invalid URL", e);
+			}
 		}
 	}
 
