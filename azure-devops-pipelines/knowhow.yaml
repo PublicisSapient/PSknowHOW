@@ -14,6 +14,15 @@ parameters:
   - 'processor'
   default: 'ui'
 
+- script: |
+    MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
+    echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
+  displayName: 'Set Maven Version'
+
+- script: |
+    echo "Maven Version: $(MAVEN_VERSION)"
+  displayName: 'Display Maven Version'
+
 stages:
 - stage: UI
   displayName: 'UI Deployment'

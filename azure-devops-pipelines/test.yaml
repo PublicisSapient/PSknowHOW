@@ -12,4 +12,4 @@ steps:
   displayName: 'Test - file listing'
 - script: |
     cat ./azure-devops-pipelines/azure-pipelines.yml
-  displayName: 'My custom task (shell)'  
+  displayName: 'My custom task (shell)'
