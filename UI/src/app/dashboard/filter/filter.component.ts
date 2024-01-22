@@ -1062,7 +1062,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
           const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(nodeIdQParam ? nodeIdQParam : selectedTrendValue);
+          this.filterForm.get('selectedTrendValue').setValue(nodeIdQParam ? [nodeIdQParam] : selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
         }
@@ -1195,7 +1195,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level) {
+  handleIterationFilters(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      if(level?.toLowerCase() === 'project'){
+        localStorage.removeItem('nodeId');
+        localStorage.removeItem('sprintId');
+      }else{
+        localStorage.removeItem('sprintId');
+      }
+    }
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {

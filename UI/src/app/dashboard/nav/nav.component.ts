@@ -63,6 +63,9 @@ export class NavComponent implements OnInit {
     if(this.selectedTab.includes('-')){
       this.selectedTab = this.selectedTab.split('-').join(' ');
     }
+    if(this.selectedTab.includes('?')){
+      this.selectedTab = this.selectedTab.split('?')[0];
+    }
     if(this.selectedTab !== 'unauthorized access'){
       this.service.setSelectedTypeOrTabRefresh(this.selectedTab,this.selectedType);
     }
