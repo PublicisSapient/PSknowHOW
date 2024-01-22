@@ -155,7 +155,6 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 				}
 			} catch (Exception ex) {
 				log.error("Error while setting RCA for Azure Issue", ex);
-				rcaList.add(AzureConstants.RCA_CAUSE_NONE);
 			}
 		}
 		if (CollectionUtils.isNotEmpty(rcaList)) {
