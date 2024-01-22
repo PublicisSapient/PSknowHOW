@@ -63,6 +63,9 @@ public class ProcessorAsynchSearchRestClientTest {
 		set.add("field1");
 		set.add("field2");
 		StringBuilder sb = new StringBuilder("dummyString");
+		for (int i = 0; i < 300; i++) {
+			sb.append("dummyString");
+		}
 		processorAsynchSearchRestClient.searchJql(sb.toString(), 12, 1, set);
 	}
 
