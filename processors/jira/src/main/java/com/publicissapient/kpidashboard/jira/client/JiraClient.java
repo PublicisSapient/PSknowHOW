@@ -61,7 +61,9 @@ public class JiraClient {
 
 	public ProcessorJiraRestClient getClient(ProjectConfFieldMapping projectConfFieldMapping,
 			KerberosClient krb5Client) {
-		log.info("Kerberos Client will be used in GS system {}", krb5Client);
+		if(null!=krb5Client) {
+			log.info("Kerberos Client will be used in GS system {}", krb5Client);
+		}
 		Optional<Connection> connectionOptional = projectConfFieldMapping.getJira().getConnection();
 		if (connectionOptional.isPresent()) {
 			Connection connection = connectionOptional.get();
@@ -197,7 +199,7 @@ public class JiraClient {
 
 			InetAddress.getByName(jiraUri.getHost());// NOSONAR
 			client = new ProcessorAsynchJiraRestClientFactory().create(jiraUri, jiraOAuthClient, jiraProcessorConfig);
-
+			
 		} catch (UnknownHostException | URISyntaxException e) {
 			log.error("The Jira host name is invalid. Further jira collection cannot proceed.");
 
@@ -272,7 +274,6 @@ public class JiraClient {
 	 * Generate and save accessToken
 	 *
 	 * @param jiraToolConfig
-	 *            .
 	 */
 	private void generateAndSaveAccessToken(JiraToolConfig jiraToolConfig) {
 
