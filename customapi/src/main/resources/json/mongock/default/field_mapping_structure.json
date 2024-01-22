@@ -1732,14 +1732,45 @@
     }
   } ,
   {
-    "fieldName" : "rootCause" ,
-    "fieldLabel" : "Root Cause" ,
-    "fieldType" : "text" ,
-    "fieldCategory" : "fields" ,
-    "section" : "Custom Fields Mapping" ,
+    "fieldName" : "rootCauseIdentifier",
+    "fieldLabel" : "Root Cause",
+    "fieldType" : "radiobutton",
+    "fieldCategory" : "fields",
+    "section" : "Custom Fields Mapping",
     "tooltip" : {
       "definition" : "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation."
-    }
+    },
+    "nestedFields" : [
+      {
+        "fieldName" : "rootCause",
+        "fieldLabel" : "Root Cause CustomField",
+        "fieldType" : "text",
+        "fieldCategory" : "fields",
+        "filterGroup" : [ "CustomField" ],
+        "tooltip" : {
+          "definition" : " Provide customfield name to identify Root Cause."
+        }
+      },
+      {
+        "fieldName" : "rootCauseValues",
+        "fieldLabel" : "Root Cause Defect Values",
+        "fieldType" : "chips",
+        "filterGroup" : [ "Labels" ],
+        "tooltip" : {
+          "definition" : "Provide label name to identify RootCause."
+        }
+      }
+    ],
+    "options" : [
+      {
+        "label" : "CustomField",
+        "value" : "CustomField"
+      },
+      {
+        "label" : "Labels",
+        "value" : "Labels"
+      }
+    ]
   } ,
   {
     "fieldName" : "storyFirstStatus" ,
