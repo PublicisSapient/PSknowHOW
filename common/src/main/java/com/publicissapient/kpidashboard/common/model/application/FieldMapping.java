@@ -66,6 +66,8 @@ public class FieldMapping extends BasicModel {
 	private String storyFirstStatus;
 	private String storyFirstStatusKPI148;
 	private String rootCause;
+	private List<String> rootCauseValues;
+	private String rootCauseIdentifier;
 	private List<String> jiraStatusForDevelopment;
 	private List<String> jiraStatusForDevelopmentAVR;
 	private List<String> jiraStatusForDevelopmentKPI82;

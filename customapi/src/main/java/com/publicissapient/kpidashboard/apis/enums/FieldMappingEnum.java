@@ -30,7 +30,7 @@ public enum FieldMappingEnum {
 
 	KPI0("Processor", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionStatusCustomField",
-					"rootCause", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
+					"rootCauseIdentifier", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
 					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
 					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
