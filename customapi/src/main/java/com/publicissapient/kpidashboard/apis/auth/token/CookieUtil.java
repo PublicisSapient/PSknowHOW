@@ -1,10 +1,13 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +20,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @Component
 public class CookieUtil {
-	private static final String AUTH_COOKIE = "authCookie";
+	public static final String AUTH_COOKIE = "authCookie";
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
@@ -62,5 +65,25 @@ public class CookieUtil {
 		headers.add(HttpHeaders.COOKIE, AUTH_COOKIE + "=" + token);
 		return headers;
 
+	}
+
+	public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			return Arrays.stream(cookies).filter(cookie -> cookie.getName().equals(name)).findFirst();
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	public void deleteCookie(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
+			@NotNull String name) {
+		getCookie(request, name).ifPresent((foundCookie) -> {
+			foundCookie.setMaxAge(0);
+			foundCookie.setValue("");
+			foundCookie.setPath("/");
+			foundCookie.setDomain("");
+			response.addCookie(foundCookie);
+		});
 	}
 }

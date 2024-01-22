@@ -23,6 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import org.apache.commons.lang.StringUtils;
@@ -70,10 +71,11 @@ public class UserTokenDeletionControllerApplication {
 	 *            the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public ResponseEntity deleteUserToken(HttpServletRequest request) {
+	public ResponseEntity deleteUserToken(HttpServletRequest request , HttpServletResponse response) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
 		Cookie authCookieToken = cookieUtil.getAuthCookie(request);
 		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken.getValue());
+		cookieUtil.deleteCookie(request, response , CookieUtil.AUTH_COOKIE);
 		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
