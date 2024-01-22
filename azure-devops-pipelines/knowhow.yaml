@@ -14,23 +14,43 @@ parameters:
   - 'processor'
   default: 'ui'
 
-jobs:
-- job: Set_Maven_Version
-  displayName: 'Set Maven Version'
-  steps:
-  - script: |
-      MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
-      echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
-    displayName: 'Set Maven Version'
+# jobs:
+# - job: Set_Maven_Version
+#   displayName: 'Set Maven Version'
+#   steps:
+#   - script: |
+#       MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
+#       echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
+#     displayName: 'Set Maven Version'
 
-- job: Display_Maven_Version
-  displayName: 'Display Maven Version'
-  steps:
-  - script: |
-      echo "Maven Version: $(MAVEN_VERSION)"
-    displayName: 'Display Maven Version'
+# - job: Display_Maven_Version
+#   displayName: 'Display Maven Version'
+#   steps:
+#   - script: |
+#       echo "Maven Version: $(MAVEN_VERSION)"
+#     displayName: 'Display Maven Version'
 
 stages:
+
+- stage: Java version
+  displayName: 'UI vjava version Deployment'
+  jobs:
+  - job: Version
+    steps:
+    - script: |
+        MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
+        echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
+      displayName: 'Set Maven Version'
+
+- stage: Chenking version
+  displayName: 'UI version Deployment'
+  jobs:
+  - job: Version
+    steps:
+    - script: |
+        echo "Maven Version: $(MAVEN_VERSION)"
+      displayName: 'Display Maven Version'
+
 - stage: UI
   displayName: 'UI Deployment'
   condition: eq(variables['deploymentType'], 'ui')
