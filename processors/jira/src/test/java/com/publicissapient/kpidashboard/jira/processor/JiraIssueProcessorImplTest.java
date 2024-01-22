@@ -755,4 +755,12 @@ public class JiraIssueProcessorImplTest {
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue, new JiraIssue(), null, projectConfFieldMapping);
 	}
+
+	@Test
+	public void testSetAssigneeName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(),any())).thenReturn(null);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setAssigneeName", String.class, String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue, "assigneeId", "basicProjectConfigId");
+	}
 }

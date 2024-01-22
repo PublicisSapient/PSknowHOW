@@ -245,6 +245,9 @@ public class KanbanJiraIssueProcessorImplTest {
 		IssueField issueField4 = new IssueField("aggregatetimespent", "aggregatetimespent", null, 300);
 		issueFields.add(issueField4);
 
+		IssueField issueField5=new IssueField("epicLick","epicLick",null,"epic");
+		issueFields.add(issueField5);
+
 		TimeTracking timeTracking = new TimeTracking(8, 8, 8);
 
 		Comment comment = new Comment(new URI("self"), "body", null, null, DateTime.now(), DateTime.now(),
@@ -396,5 +399,13 @@ public class KanbanJiraIssueProcessorImplTest {
 		fields.put("code_issue", issueField);
 
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, fieldMapping, fields);
+	}
+
+	@Test
+	public void testSetAssigneeName() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		when(assigneeDetailsRepository.findByBasicProjectConfigIdAndSource(any(),any())).thenReturn(null);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setAssigneeName", String.class, String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue, "assigneeId", "basicProjectConfigId");
 	}
 }
