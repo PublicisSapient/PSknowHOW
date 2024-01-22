@@ -54,6 +54,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
   @Input() viewType :string = 'chart'
   @Input() lowerThresholdBG : string;
   @Input() upperThresholdBG : string;
+  @Input() kpiId: string;
   resizeObserver = new ResizeObserver(entries => {
     const data = this.transform2(this.data);
     this.draw2(data);
@@ -454,7 +455,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
     // Define the div for the tooltip
     const div = d3.select(this.elem).select('#chart').append('div')
       .attr('class', 'tooltip')
-      .style('display', 'none')
+      .style('visibility', 'hidden')
       .style('opacity', 0);
 
     // bar legend
@@ -599,7 +600,7 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
               .style('stroke-width', lineStroke)
               .style('cursor', 'none');
           });
-
+         let tooltipDivCounter = 0;
         /* Add circles (data) on the line */
         lines.selectAll('circle-group')
           .data(newRawData).enter()
@@ -617,28 +618,33 @@ export class GroupedColumnPlusLineChartComponent implements OnInit, OnChanges {
             if (d.hoverValue) {
               div.transition()
                 .duration(200)
-                .style('display', 'block')
+                .style('visibility', 'visible')
                 .style('position', 'fixed')
                 .style('opacity', .9);
 
               const circle = event.target;
               const {
                 top: yPosition,
-                left: xPosition
+                left: xPosition,
+                right : xPositionRight
               } = circle.getBoundingClientRect();
 
-              div.html(`${d.date || d.sSprintName}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.lineValue + ' ' + showUnit}` + '</span>')
-                .style('left', xPosition + 20 + 'px')
+              div.attr('id',`hoverToolTip${this.kpiId}${tooltipDivCounter}`).html(`${d.date || d.sortSprint}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.lineValue + showUnit}` + '</span>')
+              const tooltipDivWidth = document.getElementById(`hoverToolTip${this.kpiId}${tooltipDivCounter}`).getBoundingClientRect().width;
+              let newLeft = xPosition - (tooltipDivWidth/2);
+
+                div.style('left', newLeft + 'px')
                 .style('top', yPosition + 20 + 'px');
               for (const hoverData in d.hoverValue) {
                 div.append('p').html(`${hoverData}` + ' : ' + '<span class=\'toolTipValue\'> ' + `${d.hoverValue[hoverData]}` + ' </span>');
               }
+              tooltipDivCounter++;
             }
           })
           .on('mouseout', (d) => {
             div.transition()
               .duration(500)
-              .style('display', 'none')
+              .style('visibility', 'hidden')
               .style('opacity', 0);
 
           })
