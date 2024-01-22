@@ -173,7 +173,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 		}
 		if (projectToolConfig.getToolName().equalsIgnoreCase(ProcessorConstants.REPO_TOOLS)) {
 			ServiceResponse repoToolServiceResponse = setRepoToolConfig(projectToolConfig);
-			if(Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
+			if (Boolean.FALSE.equals(repoToolServiceResponse.getSuccess()))
 				return repoToolServiceResponse;
 		}
 
@@ -229,7 +229,6 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 				&& !compareTwoListOfObjects(projectTool.getBoards(), projectToolConfig.getBoards())) {
 			cleanData(projectTool);
 		}
-
 
 		projectTool.setToolName(projectToolConfig.getToolName());
 		projectTool.setBasicProjectConfigId(projectToolConfig.getBasicProjectConfigId());
@@ -338,7 +337,7 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 
 	}
 
-	private boolean isRepoTool(ProjectToolConfig tool){
+	private boolean isRepoTool(ProjectToolConfig tool) {
 		return tool.getToolName().equalsIgnoreCase(Constant.REPO_TOOLS);
 	}
 
@@ -463,8 +462,9 @@ public class ProjectToolConfigServiceImpl implements ProjectToolConfigService {
 	private List<ProjectToolConfig> getRepoTool(ObjectId basicProjectConfigId, Connection connection, String type) {
 		List<ProjectToolConfig> tools = toolRepository.findByToolNameAndBasicProjectConfigId(type,
 				basicProjectConfigId);
-		return tools.stream().filter(projectToolConfig -> projectToolConfig.getConnectionId().equals(connection.getId()))
-						.collect(Collectors.toList());
+		return tools.stream()
+				.filter(projectToolConfig -> projectToolConfig.getConnectionId().equals(connection.getId()))
+				.collect(Collectors.toList());
 	}
 
 	private ServiceResponse setRepoToolConfig(ProjectToolConfig projectToolConfig) {

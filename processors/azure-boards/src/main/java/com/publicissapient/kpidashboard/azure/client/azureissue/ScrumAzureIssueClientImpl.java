@@ -200,11 +200,11 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						count += issues.size();
 					}
 
-					if(issues.isEmpty()){
+					if (issues.isEmpty()) {
 						break;
-					}else if(issues.size() < pageSize){
+					} else if (issues.size() < pageSize) {
 						break;
-					}else {
+					} else {
 						MDC.put("IssueCount", String.valueOf(issues.size()));
 					}
 				}
@@ -1233,7 +1233,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * save assignee details from jira issue and if already exist then update
 	 * assignee list

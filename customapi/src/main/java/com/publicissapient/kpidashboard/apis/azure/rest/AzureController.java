@@ -1,10 +1,7 @@
 package com.publicissapient.kpidashboard.apis.azure.rest;
 
-import com.publicissapient.kpidashboard.apis.azure.model.AzurePipelinesResponseDTO;
-import com.publicissapient.kpidashboard.apis.azure.model.AzureTeamsDTO;
-import com.publicissapient.kpidashboard.apis.azure.service.AzureToolConfigServiceImpl;
-import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +11,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.apis.azure.model.AzurePipelinesResponseDTO;
+import com.publicissapient.kpidashboard.apis.azure.model.AzureTeamsDTO;
+import com.publicissapient.kpidashboard.apis.azure.service.AzureToolConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
@@ -63,11 +65,11 @@ public class AzureController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
 	@GetMapping(value = "/azure/teams/{connectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ServiceResponse> getAzureTeams(@PathVariable String connectionId) {
 		ServiceResponse response;
-		List<AzureTeamsDTO> teamsResponseList = azureToolConfigService
-				.getAzureTeamsList(connectionId);
+		List<AzureTeamsDTO> teamsResponseList = azureToolConfigService.getAzureTeamsList(connectionId);
 		if (CollectionUtils.isEmpty(teamsResponseList)) {
 			response = new ServiceResponse(false, "No teams found", null);
 		} else {

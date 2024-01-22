@@ -288,8 +288,8 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 
-		if(projectConfig.getProjectToolConfig() != null){
-			if(StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())){
+		if (projectConfig.getProjectToolConfig() != null) {
+			if (StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
 				url.append(AzureConstants.FORWARD_SLASH);
 				url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
 			}
@@ -346,11 +346,12 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
 
-		if(StringUtils.isNotEmpty(azureServer.getTeam())){
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
 			url.append(AzureConstants.FORWARD_SLASH);
 			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
 		}
-		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
@@ -497,12 +498,13 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 		List<String> sprintWiseItemIdList = new ArrayList<>();
 
 		StringBuilder url = new StringBuilder(azureServer.getUrl());
-		if(StringUtils.isNotEmpty(azureServer.getTeam())){
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
 			url.append(AzureConstants.FORWARD_SLASH);
 			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
 		}
 
-		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
 		url.append(AzureConstants.FORWARD_SLASH).append(sprintId).append("/workitems");
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
