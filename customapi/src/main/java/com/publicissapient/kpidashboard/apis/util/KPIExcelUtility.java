@@ -1342,7 +1342,9 @@ public class KPIExcelUtility {
 		}
 		jiraIssueModalObject.setTimeSpentInMinutes(CommonUtils.convertIntoDays(jiraIssue.getTimeSpentInMinutes()));
 		if (jiraIssue.getDevDueDate() != null)
-			jiraIssueModalObject.setDevDueDate(jiraIssue.getDevDueDate().split("T")[0]);
+			jiraIssueModalObject.setDevDueDate(
+					DateUtil.dateTimeConverter(jiraIssue.getDevDueDate(), DateUtil.TIME_FORMAT_WITH_SEC,
+							DateUtil.DISPLAY_DATE_FORMAT));
 		else
 			jiraIssueModalObject.setDevDueDate(Constant.DASH);
 
