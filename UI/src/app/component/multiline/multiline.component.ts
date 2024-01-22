@@ -337,7 +337,7 @@ export class MultilineComponent implements OnChanges {
         .select('#multiLineChart')
         .append('div')
         .attr('class', 'tooltip')
-        .style('display', 'none')
+        .style('visibility', 'hidden')
         .style('opacity', 0);
   
       /* Add Axis into SVG */
@@ -527,6 +527,7 @@ export class MultilineComponent implements OnChanges {
             .style('stroke-width', lineStroke)
             .style('cursor', 'none');
         });
+        let tooltipDivCounter = 0;
   
       /* Add circles (data) on the line */
       lines
@@ -550,25 +551,32 @@ export class MultilineComponent implements OnChanges {
             div
               .transition()
               .duration(200)
-              .style('display', 'block')
+              .style('visibility', 'visible')
               .style('position', 'fixed')
               .style('opacity', 0.9);
   
             const circle = event.target;
-            const { top: yPosition, left: xPosition } =
+            const { top: yPosition, left: xPosition, right : xPositionRight} =
               circle.getBoundingClientRect();
   
-            div
+           div.attr('id',`hoverToolTip${kpiId}${tooltipDivCounter}`)
               .html(
-                `${d.date || d.sSprintName}` +
+                `${d.date || d.sortSprint}` +
                 ' : ' +
                 "<span class='toolTipValue'> " +
-                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
+                `${Math.round(d.value * 100) / 100 + showUnit}` +
                 '</span>',
               )
-              .style('left', xPosition + 20 + 'px')
-              // .style('top', yScale(d.value) - topValue + 'px');
-              .style('top', yPosition + 20 + 'px');
+              
+             const tooltipDivWidth = document.getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`).getBoundingClientRect().width;
+             let newLeft = xPosition - (tooltipDivWidth/2);
+              
+            //  console.log("point xPosition : ",xPosition, " Div half width : ",(tooltipDivWidth/2), ' new wodth : ',newLeft, ' Full width : ',tooltipDivWidth)
+            //  console.log(circle.getBoundingClientRect())
+            //  console.log(document.getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`).getBoundingClientRect())
+            
+            div.style('left', newLeft + 'px')
+            .style('top', yPosition + 20 + 'px');
             for (const hoverData in d.hoverValue) {
               div
                 .append('p')
@@ -580,13 +588,15 @@ export class MultilineComponent implements OnChanges {
                   ' </span>',
                 );
             }
+            tooltipDivCounter++;
+           
           }
         })
         .on('mouseout', function (d) {
           div
             .transition()
             .duration(500)
-            .style('display', 'none')
+            .style('visibility', 'hidden')
             .style('opacity', 0);
         })
         .append('circle')
