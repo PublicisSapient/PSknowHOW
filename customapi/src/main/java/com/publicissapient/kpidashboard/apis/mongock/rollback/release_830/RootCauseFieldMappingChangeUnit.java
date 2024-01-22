@@ -27,7 +27,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /**
  * @author kunkambl
  */
-@ChangeUnit(id = "root_cause_field_map", order = "8301", author = "kunkambl", systemVersion = "8.3.0")
+@ChangeUnit(id = "r_root_cause_field_map", order = "08301", author = "kunkambl", systemVersion = "8.3.0")
 public class RootCauseFieldMappingChangeUnit {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
