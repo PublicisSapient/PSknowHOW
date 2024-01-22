@@ -109,16 +109,17 @@ export class MultilineComponent implements OnChanges {
       d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
       d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
-      const formatedData = this?.data[0]?.value.map(details=>{
+      const formatedData = this?.data.map((project,i) => {
+        const index = this.service.getSelectedTrends().findIndex(seleceProject=>seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
+        project.value.map(details=>{
         const XValue = details.date || details.sSprintName;
-        const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
+        const projectName = '_'+this.service.getSelectedTrends()[index]?.nodeName;
         const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName,'') : XValue;
-         return {...details,sortSprint:removeProject};
+        details['sortSprint'] = removeProject;
       })
+      return project;
+    })
       const isAllBelowFromThreshold = this.data[0]?.value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
-      if(this.data[0]){
-        this.data[0].value = formatedData;
-      }
       const viewType = this.viewType;
       const selectedProjectCount = this.service.getSelectedTrends().length;
       const data = this.data;
