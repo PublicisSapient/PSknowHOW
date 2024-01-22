@@ -32,7 +32,7 @@ parameters:
 
 stages:
 
-- stage: Java version
+- stage: Java_version
   displayName: 'UI vjava version Deployment'
   jobs:
   - job: Version
@@ -42,7 +42,7 @@ stages:
         echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
       displayName: 'Set Maven Version'
 
-- stage: Chenking version
+- stage: Chenking_version
   displayName: 'UI version Deployment'
   jobs:
   - job: Version
