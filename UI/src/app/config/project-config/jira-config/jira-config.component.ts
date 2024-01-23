@@ -111,7 +111,7 @@ export class JiraConfigComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpService,
+    public http: HttpService,
     private sharedService: SharedService,
     private messenger: MessageService,
     private getAuthorizationService: GetAuthorizationService,
@@ -494,9 +494,6 @@ export class JiraConfigComponent implements OnInit {
   };
 
   checkTeams = () => {
-    // if ( (!this.toolForm.controls['team'].value)) {
-    //   return true;
-    // }
     return false;
   };
 
