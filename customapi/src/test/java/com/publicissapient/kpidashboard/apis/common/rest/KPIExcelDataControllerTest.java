@@ -102,7 +102,7 @@ public class KPIExcelDataControllerTest {
 						.thenReturn((KPIExcelValidationDataResponse) kpiExcelValidationDataResponse);
 
 		mockMvc.perform(post("/v1/kpi/kpi14").header("x-filter-level", 1)
-				.header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM")).contentType(MediaType.APPLICATION_JSON_UTF8)
+				.header("x-filter-id", Arrays.asList("GMA_GMA", "CIM_CIM")).contentType(MediaType.APPLICATION_JSON)
 				.content(request)).andExpect(status().is2xxSuccessful()).andDo(print());
 	}
 
