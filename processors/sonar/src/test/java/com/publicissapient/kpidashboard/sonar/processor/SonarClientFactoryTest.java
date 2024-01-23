@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;

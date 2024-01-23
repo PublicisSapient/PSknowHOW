@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.bamboo.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;

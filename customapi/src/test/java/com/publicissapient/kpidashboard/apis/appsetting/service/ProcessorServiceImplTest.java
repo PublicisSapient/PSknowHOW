@@ -88,7 +88,7 @@ public class ProcessorServiceImplTest {
 	 */
 	@Before
 	public void setup() {
-		closeable = MockitoAnnotations.openMocks(this);
+		MockitoAnnotations.openMocks(this);
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 	}
 

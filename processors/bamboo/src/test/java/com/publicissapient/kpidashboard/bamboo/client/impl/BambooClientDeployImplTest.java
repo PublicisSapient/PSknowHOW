@@ -34,7 +34,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,12 +118,7 @@ public class BambooClientDeployImplTest {
 		PROJECT_TOOL_CONNECTION_2.setUsername(DOES);
 		PROJECT_TOOL_CONNECTION_2.setPassword(MATTER);
 
-		closeable = MockitoAnnotations.openMocks(this);
-	}
-	
-	@After
-	public void releaseMocks() throws Exception {
-		closeable.close();
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
