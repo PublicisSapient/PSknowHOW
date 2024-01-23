@@ -51,7 +51,7 @@ public class JiraIssueCustomHistoryRepositoryTest {
 	private static JiraIssueCustomHistory mockJiraJiraIssueCustomHistory5;
 	@Mock
 	private JiraIssueCustomHistoryRepository featureCustomHistoryRepo;
-
+	
 	public static List<Pattern> convertToPatternList(List<String> stringList) {
 		List<Pattern> regexList = new ArrayList<>();
 		for (String value : stringList) {
@@ -228,7 +228,7 @@ public class JiraIssueCustomHistoryRepositoryTest {
 
 	@Test
 	public void validateConnectivity_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		List<JiraIssueCustomHistory> customHiostoryList = new ArrayList<>();
@@ -241,7 +241,7 @@ public class JiraIssueCustomHistoryRepositoryTest {
 
 	@Test
 	public void testFindByStoryID_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory2);
 

@@ -37,6 +37,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -131,10 +132,10 @@ public class BambooProcessorJobExecuterTests {
 	private BambooProcessorJobExecuter task;
 	private Optional<ProcessorExecutionTraceLog> optionalProcessorExecutionTraceLog;
 	private ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
-
+	
 	@Before
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		BambooProcessor bambooProcessor = new BambooProcessor();
 		Mockito.when(bambooConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 
@@ -291,6 +292,10 @@ public class BambooProcessorJobExecuterTests {
 		processorExecutionTraceLog.setBasicProjectConfigId("5f9014743cb73ce896167659");
 		optionalProcessorExecutionTraceLog = Optional.of(processorExecutionTraceLog);
 
+	}
+	@After
+	public void releaseMocks() throws Exception {
+		closeable.close();
 	}
 
 	@Test

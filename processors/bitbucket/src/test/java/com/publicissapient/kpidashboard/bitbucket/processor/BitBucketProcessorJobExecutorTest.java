@@ -145,7 +145,7 @@ class BitBucketProcessorJobExecutorTest {
 		Mockito.when(bitBucketProcessorRepo.findByProcessorName(Mockito.anyString())).thenReturn(bitBucketProcessor);
 		Mockito.when(bitBucketProcessorRepo.save(bitBucketProcessor)).thenReturn(bitBucketProcessor);
 
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		projectConfigList = new ArrayList<>();
 		ProjectBasicConfig p = new ProjectBasicConfig();
 		p.setId(PROCESSORID);

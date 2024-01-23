@@ -27,11 +27,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,8 +46,14 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * This class contains test cases for ProcessorServiceImpl.class
@@ -80,16 +81,18 @@ public class ProcessorServiceImplTest {
 
 	@Mock
 	private CustomApiConfig customApiConfig;
-
+	
+	
 	/**
 	 * method includes preprocesses for test cases
 	 */
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
+		closeable = MockitoAnnotations.openMocks(this);
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 	}
 
+	
 	/**
 	 * Methods tests insertion of Project configurations with null values.
 	 */

@@ -28,9 +28,9 @@ public class BambooClientFactoryTest {
 	@Test
 	public void testGetBambooClient() throws Exception {
 		BambooClient bambooClient = factory.getBambooClient("build");
-		Assert.assertThat(bambooClient, instanceOf(BambooClientBuildImpl.class));
+		assertThat(bambooClient, instanceOf(BambooClientBuildImpl.class));
 		bambooClient = factory.getBambooClient("deploy");
-		Assert.assertThat(bambooClient, instanceOf(BambooClientDeployImpl.class));
+		assertThat(bambooClient, instanceOf(BambooClientDeployImpl.class));
 	}
 
 	@Test

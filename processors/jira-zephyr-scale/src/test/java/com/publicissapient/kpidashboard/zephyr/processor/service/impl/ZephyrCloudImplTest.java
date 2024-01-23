@@ -231,6 +231,6 @@ public class ZephyrCloudImplTest {
 	}
 
 	private String getServerResponseFromJson(String resource) throws Exception {
-		return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource));
+		return IOUtils.toString(getClass().getClassLoader().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 }

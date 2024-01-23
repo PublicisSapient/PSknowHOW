@@ -170,10 +170,10 @@ public class OnlineDataProcessorImplTest {
 
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-
+	
 	@BeforeEach
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		prepareProjectConfig();
 		prepareFieldMapping();
 		setProjectConfigFieldMap();

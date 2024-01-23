@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,7 +85,7 @@ public class BambooClientDeployImplTest {
 	private ProjectToolConfigRepository toolConfigRepository;
 	@InjectMocks
 	private BambooClientDeployImpl bambooClientDeploy;
-
+	
 	@Before
 	public void init() {
 		List<ProjectToolConfig> toolList = new ArrayList<>();
@@ -118,7 +119,12 @@ public class BambooClientDeployImplTest {
 		PROJECT_TOOL_CONNECTION_2.setUsername(DOES);
 		PROJECT_TOOL_CONNECTION_2.setPassword(MATTER);
 
-		MockitoAnnotations.initMocks(this);
+		closeable = MockitoAnnotations.openMocks(this);
+	}
+	
+	@After
+	public void releaseMocks() throws Exception {
+		closeable.close();
 	}
 
 	@Test

@@ -135,7 +135,7 @@ public class AzurePipelineProcessorTaskTests {
 
 	@BeforeEach
 	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		AzurePipelineProcessor processor = new AzurePipelineProcessor();
 		Mockito.when(azurePipelineProcessorRepository.findByProcessorName(Mockito.anyString())).thenReturn(processor);
 		Mockito.when(azurePipelineProcessorRepository.save(processor)).thenReturn(processor);

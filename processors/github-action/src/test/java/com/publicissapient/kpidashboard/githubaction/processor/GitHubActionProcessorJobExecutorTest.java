@@ -91,7 +91,7 @@ public class GitHubActionProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		GitHubActionProcessor gitHubActionProcessor = new GitHubActionProcessor();
 		gitHubActionProcessor.setId(new ObjectId("62171d0f26dd266803fa87da"));

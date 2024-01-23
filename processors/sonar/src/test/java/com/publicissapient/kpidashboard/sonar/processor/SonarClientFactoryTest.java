@@ -45,15 +45,15 @@ public class SonarClientFactoryTest {
 	@Test
 	public void testGetSonarClient() throws Exception {
 		SonarClient sonarClient = factory.getSonarClient("9.0");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("7.9");
-		Assert.assertThat(sonarClient, instanceOf(Sonar6And7Client.class));
+		assertThat(sonarClient, instanceOf(Sonar6And7Client.class));
 		sonarClient = factory.getSonarClient("8.0");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("8.3");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("5.3");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class SonarClientFactoryTest {
 	@Test
 	public void getSonarClieent_versionInInt() throws Exception {
 		SonarClient sonarClient = factory.getSonarClient("8");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 	}
 
 }
