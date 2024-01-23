@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
@@ -118,6 +119,7 @@ public class ScrumAzureIssueClientImplTest {
 	@Mock
 	private AssigneeDetailsRepository assigneeDetailsRepository;
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
+	private ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 	// AzureUpdatesModel azureUpdatesModel=new AzureUpdatesModel();
 
 	@BeforeEach
@@ -174,6 +176,7 @@ public class ScrumAzureIssueClientImplTest {
 		projectConfFieldMapping.setProjectKey("prkey");
 		projectConfFieldMapping.setProjectName("prName");
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+		projectConfFieldMapping.setProjectToolConfig(projectToolConfig);
 
 		scrumIssueClientImpl.processesAzureIssues(projectConfFieldMapping, "TestKey", azureAdapter);
 		scrumIssueClientImpl.purgeAzureIssues(issues, projectConfFieldMapping);
