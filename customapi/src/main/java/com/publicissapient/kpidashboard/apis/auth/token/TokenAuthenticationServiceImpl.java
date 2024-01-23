@@ -353,4 +353,11 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
+	@Override
+	public String getUserNameFromToken(String jwtToken){
+		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
+				.getBody();
+		return claims.getSubject();
+	}
+
 }

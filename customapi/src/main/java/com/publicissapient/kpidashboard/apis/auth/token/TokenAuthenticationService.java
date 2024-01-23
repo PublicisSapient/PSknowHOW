@@ -68,6 +68,13 @@ public interface TokenAuthenticationService {
 
 	/**
 	 *
+	 * @param jwtToken
+	 * @return
+	 */
+	String getUserNameFromToken(String jwtToken);
+
+	/**
+	 *
 	 * @param userTokenAuthenticationDTO
 	 * @param httpServletRequest
 	 * @return

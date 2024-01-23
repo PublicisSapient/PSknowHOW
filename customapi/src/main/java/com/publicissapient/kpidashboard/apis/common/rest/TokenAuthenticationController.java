@@ -68,15 +68,16 @@ public class TokenAuthenticationController {
 		ServiceResponse serviceResponse;
 		if (null != authToken) {
 			boolean expiredToken = tokenAuthenticationService.isJWTTokenExpired(authToken);
+			String userName = tokenAuthenticationService.getUserNameFromToken(authToken);
 			if (expiredToken) {
 				Map<String, Object> userMap = new HashMap<>();
-				userMap.put("user_name", userData.getUserName());
+				userMap.put("user_name", userName);
 				userMap.put("resourceTokenValid", false);
 				serviceResponse = new ServiceResponse(false, "token is expired", userMap);
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			} else {
-				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(httpServletResponse,
-						userData.getUserName(), authToken);
+				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(httpServletResponse, userName,
+						authToken);
 				userMap.put("resourceTokenValid", true);
 				serviceResponse = new ServiceResponse(true, "success_valid_token", userMap);
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
