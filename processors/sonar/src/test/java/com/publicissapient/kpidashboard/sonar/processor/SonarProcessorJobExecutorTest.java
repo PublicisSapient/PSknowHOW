@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -130,7 +131,7 @@ public class SonarProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		SonarProcessor sonarProcessor = new SonarProcessor();
 		ProcessorToolConnection SONARSAMPLESERVER = new ProcessorToolConnection();
 		SONARSAMPLESERVER.setId(new ObjectId("624fce22b2ee234aa990adfc"));
@@ -369,7 +370,7 @@ public class SonarProcessorJobExecutorTest {
 		String inputData = null;
 		InputStream inputStream = Sonar6And7ClientTest.class.getResourceAsStream(fileName);
 		try {
-			inputData = IOUtils.toString(inputStream);
+			inputData = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 		} catch (IOException ex) {
 			inputData = "";
 		} finally {

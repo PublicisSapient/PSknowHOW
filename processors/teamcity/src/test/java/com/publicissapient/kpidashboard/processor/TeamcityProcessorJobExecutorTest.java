@@ -88,7 +88,7 @@ public class TeamcityProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		ProcessorToolConnection processorToolConnection = new ProcessorToolConnection();
 		processorToolConnection.setUrl("http://test@test.com");
 		processorToolConnection.setId(new ObjectId("6296661b307f0239477f1e9e"));

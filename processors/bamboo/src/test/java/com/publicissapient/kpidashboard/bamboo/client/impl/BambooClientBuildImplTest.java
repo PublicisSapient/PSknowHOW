@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.bamboo.client.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class BambooClientBuildImplTest {
 		BAMBOO_SAMPLE_BRANCH.setUsername(DOES);
 		BAMBOO_SAMPLE_BRANCH.setPassword(MATTER);
 
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
@@ -296,7 +297,7 @@ public class BambooClientBuildImplTest {
 
 	private String getJson(String fileName) throws IOException {
 		InputStream inputStream = getClass().getClassLoader().getResourceAsStream(fileName);
-		return IOUtils.toString(inputStream);
+		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
 
 }
