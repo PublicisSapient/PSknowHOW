@@ -33,9 +33,6 @@ export class CumulativeLineChartComponent implements OnInit, OnChanges {
     let width = window.innerWidth - 340 - margin.left - margin.right;
     const height = 220 - margin.top - margin.bottom;
 
-    if (this.graphData.length > 14) {
-      width += (this.graphData.length - 14) * 79;
-    }
     // append the svg object to the body of the page
     const svg = chart
       .append('svg')

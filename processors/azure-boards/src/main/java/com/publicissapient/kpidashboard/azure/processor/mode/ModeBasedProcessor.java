@@ -83,6 +83,8 @@ public abstract class ModeBasedProcessor { // NOSONAR
 				projectConfFieldMapping.setProjectKey(getAzureProjectKey(projectConfig.getId()));
 				projectConfFieldMapping.setAzureBoardToolConfigId(getToolConfigId(projectConfig.getId()));
 				projectConfFieldMapping.setProjectBasicConfig(projectConfig);
+				projectConfFieldMapping.setProjectToolConfig(getProjectToolConfig(projectConfig.getId(),
+						projectConfFieldMapping.getAzure().getConnection().getId()));
 			} catch (IllegalAccessException e) {
 				log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
 			} catch (InvocationTargetException e) {
@@ -130,6 +132,13 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
 		return Optional.of(azureBoardsDetails.get(0).getProjectKey()).orElse(StringUtils.EMPTY);
+	}
+
+	private ProjectToolConfig getProjectToolConfig(ObjectId configId, ObjectId connectionId) {
+
+		List<ProjectToolConfig> toolConfigRes = toolRepository.findByBasicProjectConfigIdAndConnectionId(configId,
+				connectionId);
+		return Optional.of(toolConfigRes.get(0)).orElse(null);
 	}
 
 	/**
