@@ -51,10 +51,10 @@ export class AppComponent implements OnInit {
         let nodeId = params.projectId;
         let sprintId = params.sprintId;
         if(nodeId){
-          localStorage.setItem('nodeId', nodeId);
+          this.service.setProjectQueryParamInFilters(nodeId)
         }
         if(sprintId){
-          localStorage.setItem('sprintId', sprintId);
+          this.service.setSprintQueryParamInFilters(sprintId)
         }
       }
     );

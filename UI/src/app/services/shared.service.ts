@@ -92,7 +92,10 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
-
+  projectQueryParamSubject = new BehaviorSubject<any>('');
+  projectQueryParamObs = this.projectQueryParamSubject.asObservable();
+  sprintQueryParamSubject = new BehaviorSubject<any>('');
+  sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
 
   private currentIssue = new BehaviorSubject({});
   currentData = this.currentIssue.asObservable();
@@ -384,6 +387,14 @@ export class SharedService {
 
   getGlobalConfigData(){
     return this.globalConfigData;
+  }
+
+  setProjectQueryParamInFilters(value) {
+    this.projectQueryParamSubject.next({value});
+  }
+
+  setSprintQueryParamInFilters(value) {
+    this.sprintQueryParamSubject.next({value});
   }
 }
 
