@@ -28,9 +28,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @JobScope
-public class JobListenerScrum extends JobExecutionListenerSupport {
+public class JobListenerScrum implements JobExecutionListener {
 
 	@Autowired
 	private NotificationHandler handler;

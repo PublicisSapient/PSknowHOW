@@ -480,7 +480,7 @@ public class JiraIssueRepositoryTest {
 
 	@Test
 	public void validateConnectivity_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureRepo.save(mockV1JiraIssue);
 		featureRepo.save(mockJiraJiraIssue);
 		featureRepo.save(mockJiraJiraIssue2);
@@ -494,7 +494,7 @@ public class JiraIssueRepositoryTest {
 
 	@Test
 	public void testGetFeatureIdById_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureRepo.save(mockV1JiraIssue);
 		featureRepo.save(mockJiraJiraIssue);
 		featureRepo.save(mockJiraJiraIssue2);
@@ -512,7 +512,7 @@ public class JiraIssueRepositoryTest {
 
 	@Test
 	public void testFindTopByOrderByChangeDateDesc_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureRepo.save(mockV1JiraIssue);
 		featureRepo.save(mockJiraJiraIssue);
 		featureRepo.save(mockJiraJiraIssue2);
@@ -530,7 +530,7 @@ public class JiraIssueRepositoryTest {
 
 	@Test
 	public void testFindTopByOrderByChangeDateDesc_BVA() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureRepo.save(mockV1JiraIssue);
 		featureRepo.save(mockJiraJiraIssue);
 		featureRepo.save(mockJiraJiraIssue2);
@@ -571,7 +571,7 @@ public class JiraIssueRepositoryTest {
 
 	@Test
 	public void testFindTopByOrderByChangeDateDesc_RealisticDeltaStartDate() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureRepo.save(mockV1JiraIssue);
 		featureRepo.save(mockJiraJiraIssue);
 		featureRepo.save(mockJiraJiraIssue2);

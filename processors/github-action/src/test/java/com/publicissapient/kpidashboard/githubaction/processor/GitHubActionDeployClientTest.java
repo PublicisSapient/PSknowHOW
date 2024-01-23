@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.githubaction.processor;
 
 import static org.mockito.Mockito.doReturn;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,6 +83,6 @@ public class GitHubActionDeployClientTest {
 	}
 
 	private String getServerResponse(String resource) throws Exception {
-		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
+		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 }
