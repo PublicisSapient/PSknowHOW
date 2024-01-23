@@ -79,7 +79,7 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 		ResponseCookie foo11 = ResponseCookie.from("foo1", "bar1").build();
 		when(cookieUtil.deleteAccessTokenCookie()).thenReturn(foo11);
 		request.setAttribute("Authorization", "Bearer abcde");
-		when(userInfoService.getCentralAuthUserDeleteUserToken(anyString() , anyString())).thenReturn("true");
+		when(userInfoService.getCentralAuthUserDeleteUserToken(anyString() , anyString())).thenReturn(true);
 		mockMvc.perform(get("/userlogout").cookie(new Cookie("foo1", "bar1")))
 				.andExpect(status().isOk());
 

@@ -187,6 +187,6 @@ public interface UserInfoService {
 
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 
-	String getCentralAuthUserDeleteUserToken(String token, String apiKey);
+	boolean getCentralAuthUserDeleteUserToken(String token, String apiKey);
 
 }
