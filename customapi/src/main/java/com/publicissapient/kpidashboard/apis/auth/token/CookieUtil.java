@@ -1,6 +1,5 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -10,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @Component
@@ -27,7 +25,7 @@ public class CookieUtil {
 
 	private static final String AUTHORIZATION = "Authorization";
 	@Autowired
-	private CustomApiConfig customApiConfig; //TODO needed to delete
+	private CustomApiConfig customApiConfig; // TODO needed to delete
 
 	@Autowired
 	private AuthProperties authProperties;
@@ -39,7 +37,7 @@ public class CookieUtil {
 		cookie.setSecure(customApiConfig.isAuthCookieSecured());
 		cookie.setHttpOnly(customApiConfig.isAuthCookieHttpOnly());
 		cookie.setPath("/api");
-		if(authProperties.isSubDomainCookie()){
+		if (authProperties.isSubDomainCookie()) {
 			cookie.setDomain(authProperties.getDomain());
 		}
 		return cookie;
@@ -86,7 +84,7 @@ public class CookieUtil {
 			foundCookie.setValue("");
 			foundCookie.setPath("/");
 			foundCookie.setDomain("");
-			if(authProperties.isSubDomainCookie()){
+			if (authProperties.isSubDomainCookie()) {
 				foundCookie.setDomain(authProperties.getDomain());
 			}
 			response.addCookie(foundCookie);

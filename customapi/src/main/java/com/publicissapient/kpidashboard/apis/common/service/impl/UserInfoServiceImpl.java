@@ -557,7 +557,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public UserInfo getCentralAuthUserInfo(String username, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token , true);
+		HttpHeaders headers = cookieUtil.getHeaders(token, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -580,8 +580,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token , true);
+	public CentralUserInfoDTO getCentralAuthUserInfoDetails(String username) {
+		String apiKey = authProperties.getResourceAPIKey();
+		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchUserDetailsEndPoint(), username);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -596,8 +597,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
 				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API
-						+ response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
 				return new CentralUserInfoDTO();
 			}
 		} catch (ParseException e) {
@@ -609,8 +609,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public String getCentralAuthUserDeleteUserToken(String token , String apiKey) {
-		HttpHeaders headers = cookieUtil.getHeaders(apiKey , true);
+	public String getCentralAuthUserDeleteUserToken(String token, String apiKey) {
+		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
 		uriBuilder.path(token);
@@ -636,7 +636,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public List<UserInfoDTO> findAllUnapprovedUsers(String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token , true);
+		HttpHeaders headers = cookieUtil.getHeaders(token, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getFetchPendingUsersApprovalEndPoint(), "");
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -666,7 +666,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public boolean updateUserApprovalStatus(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token , true);
+		HttpHeaders headers = cookieUtil.getHeaders(token, true);
 		String fetchUserUrl = CommonUtils.getAPIEndPointURL(authProperties.getCentralAuthBaseURL(),
 				authProperties.getUpdateUserApprovalStatus(), user);
 		HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -695,7 +695,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
 	@Override
 	public String deleteRejectedUser(String user, String token) {
-		HttpHeaders headers = cookieUtil.getHeaders(token , true);
+		HttpHeaders headers = cookieUtil.getHeaders(token, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/deleteUser/");
 		uriBuilder.path(user);

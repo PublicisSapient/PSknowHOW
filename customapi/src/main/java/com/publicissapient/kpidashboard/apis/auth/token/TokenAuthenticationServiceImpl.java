@@ -119,6 +119,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 	}
 
+	@Override
+	public boolean isJWTTokenExpired(String jwtToken) {
+		Claims decodedJWT = Jwts.parser()
+				.setSigningKey(tokenAuthProperties.getSecret())
+				.parseClaimsJws(jwtToken)
+				.getBody();
+		Date expiresAt = decodedJWT.getExpiration();
+		return new Date().after(expiresAt);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
@@ -138,6 +148,31 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					}
 				}
 				return createAuthentication(token, response);
+			} else {
+				return null;
+			}
+		}
+
+	}
+
+	@Override
+	public String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
+			HttpServletRequest httpServletRequest) {
+
+		if (customApiConfig.isSsoLogin()) {
+			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+		} else {
+			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
+				String token = userTokenAuthenticationDTO.getAuthToken();
+				if (StringUtils.isBlank(token)) {
+					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+					if (Objects.nonNull(authCookieToken)) {
+						token = authCookieToken.getValue();
+					} else {
+						return null;
+					}
+				}
+				return token;
 			} else {
 				return null;
 			}
@@ -310,6 +345,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			return json;
 		}
 		return null;
+	}
+
+	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
+		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
+		response.addCookie(cookie);
+		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
 }

@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -26,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,27 +62,24 @@ public class TokenAuthenticationController {
 
 	@PostMapping(value = "/validateToken")
 	public ResponseEntity<ServiceResponse> validateToken(@Valid @RequestBody UserTokenAuthenticationDTO userData,
-			HttpServletRequest httpServletRequest, HttpServletResponse response) {
-		Authentication authentication = tokenAuthenticationService.getAuthentication(userData, httpServletRequest , response);
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+
+		String authToken = tokenAuthenticationService.getAuthToken(userData, httpServletRequest);
 		ServiceResponse serviceResponse;
-		if (null != authentication) {
-
-			userData = tokenAuthenticationService.addAuthentication(response, authentication);
-
-			Collection<String> authDetails = response.getHeaders(AUTH_DETAILS_UPDATED_FLAG);
-			boolean value = authDetails != null && authDetails.stream().anyMatch("true"::equals);
-			if (value) {
-				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(response, userData.getUserName(),
-						userData.getAuthToken());
+		if (null != authToken) {
+			boolean expiredToken = tokenAuthenticationService.isJWTTokenExpired(authToken);
+			if (expiredToken) {
+				Map<String, Object> userMap = new HashMap<>();
+				userMap.put("user_name", userData.getUserName());
+				userMap.put("resourceTokenValid", false);
+				serviceResponse = new ServiceResponse(false, "token is expired", userMap);
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
+			} else {
+				Map<String, Object> userMap = customAnalyticsService.addAnalyticsData(httpServletResponse,
+						userData.getUserName(), authToken);
 				userMap.put("resourceTokenValid", true);
 				serviceResponse = new ServiceResponse(true, "success_valid_token", userMap);
 				return ResponseEntity.status(HttpStatus.OK).body(serviceResponse);
-			} else {
-				JSONObject json = new JSONObject();
-				json.put("user_name", userData.getUserName());
-				json.put("resourceTokenValid", false);
-				serviceResponse = new ServiceResponse(false, "token is expired", json);
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(serviceResponse);
 			}
 		} else {
 			serviceResponse = new ServiceResponse(false, "Unauthorized", null);
@@ -90,7 +87,7 @@ public class TokenAuthenticationController {
 		}
 	}
 
-	//TODO delete code
+	// TODO delete code
 	@PostMapping(value = "/validateResource")
 	public ResponseEntity<ServiceResponse> validateResource(@Valid @RequestBody UserTokenAuthenticationDTO userData,
 			HttpServletRequest request, HttpServletResponse response) {

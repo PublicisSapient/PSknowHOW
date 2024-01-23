@@ -183,11 +183,10 @@ public interface UserInfoService {
 	 * @param username
 	 * @return
 	 */
-	UserInfo getCentralAuthUserInfo(String username, String token);
+	UserInfo getCentralAuthUserInfo(String username, String apiKey);
 
-	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token);
-	// ----auth-N-auth----------
+	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username);
 
-	String getCentralAuthUserDeleteUserToken(String token , String apiKey);
+	String getCentralAuthUserDeleteUserToken(String token, String apiKey);
 
 }
