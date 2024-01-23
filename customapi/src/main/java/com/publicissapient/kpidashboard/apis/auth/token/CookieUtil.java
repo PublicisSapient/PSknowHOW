@@ -82,8 +82,7 @@ public class CookieUtil {
 		getCookie(request, name).ifPresent(foundCookie -> {
 			foundCookie.setMaxAge(0);
 			foundCookie.setValue("");
-			foundCookie.setPath("/");
-			foundCookie.setDomain("");
+			foundCookie.setPath("/api");
 			if (authProperties.isSubDomainCookie()) {
 				foundCookie.setDomain(authProperties.getDomain());
 			}

@@ -50,6 +50,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @RestController
 public class UserTokenDeletionControllerApplication {
 
+	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
+
 	@Autowired
 	private AuthProperties authProperties;
 
@@ -82,10 +84,17 @@ public class UserTokenDeletionControllerApplication {
 		String authCookieToken = authCookie.getValue();
 		String apiKey = authProperties.getResourceAPIKey();
 		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken , apiKey);
-		cookieUtil.deleteCookie(request, response , CookieUtil.AUTH_COOKIE);
+		Cookie authCookieRemove = new Cookie("authCookie", "");
+		resetHeader(response, "", authCookieRemove);
 		ResponseCookie authCookieRes = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookieRes.toString()).build();
+	}
+
+	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
+		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
+		response.addCookie(cookie);
+		cookieUtil.addSameSiteCookieAttribute(response);
 	}
 
 }

@@ -347,12 +347,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		return null;
 	}
 
-	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
-		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
-		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
-	}
-
 	@Override
 	public String getUserNameFromToken(String jwtToken){
 		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
