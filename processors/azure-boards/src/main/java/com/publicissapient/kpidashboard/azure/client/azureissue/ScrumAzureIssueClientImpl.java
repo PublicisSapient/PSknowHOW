@@ -200,10 +200,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						count += issues.size();
 					}
 
-					MDC.put("IssueCount", String.valueOf(issues.size()));
-
-					if (issues == null || issues.size() < pageSize) {
+					if (issues.isEmpty()) {
 						break;
+					} else if (issues.size() < pageSize) {
+						break;
+					} else {
+						MDC.put("IssueCount", String.valueOf(issues.size()));
 					}
 				}
 
@@ -1205,30 +1207,31 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private void setDueDates(JiraIssue jiraIssue, Fields fields, Map<String, Object> fieldsMap,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
-					&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
-				jiraIssue.setDueDate(
-						AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
-								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& fieldsMap.containsKey(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDueDateCustomField()))) {
-				Object issueField = fieldsMap.get(fieldMapping.getJiraDueDateCustomField());
-				if (ObjectUtils.isNotEmpty(issueField)) {
-					jiraIssue.setDueDate(AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
-							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-				}
-			}
+			jiraIssue.setDueDate(getIssueDate(fieldMapping.getJiraDueDateField(),
+					fieldMapping.getJiraDueDateCustomField(), fields, fieldsMap));
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& fieldsMap.containsKey(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			Object issueField = fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			jiraIssue.setDevDueDate(getIssueDate(fieldMapping.getJiraDevDueDateField(),
+					fieldMapping.getJiraDevDueDateCustomField(), fields, fieldsMap));
+		}
+	}
+
+	private String getIssueDate(String dateField, String customDateField, Fields fields,
+			Map<String, Object> fieldsMap) {
+		if (dateField.equalsIgnoreCase(CommonConstant.DUE_DATE)
+				&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
+			return AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
+					.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
+		} else if (StringUtils.isNotEmpty(customDateField) && fieldsMap.containsKey(customDateField)
+				&& ObjectUtils.isNotEmpty(fieldsMap.get(customDateField))) {
+			Object issueField = fieldsMap.get(customDateField);
 			if (ObjectUtils.isNotEmpty(issueField)) {
-				jiraIssue.setDevDueDate((AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				return AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
 			}
 		}
+		return null;
 	}
 
 	/**
