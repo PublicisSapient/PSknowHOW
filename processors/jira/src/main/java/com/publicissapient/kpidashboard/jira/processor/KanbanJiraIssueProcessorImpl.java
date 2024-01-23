@@ -350,11 +350,21 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			Map<String, IssueField> fields) {
 		List<String> rcaList = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getKanbanRCACountIssueType()) && fieldMapping
-				.getKanbanRCACountIssueType().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-			if (fields.get(fieldMapping.getRootCause()) != null
-					&& fields.get(fieldMapping.getRootCause()).getValue() != null) {
-				rcaList.addAll(getRootCauses(fieldMapping, fields));
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
+				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+			if (null != fieldMapping.getRootCauseIdentifier()) {
+				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+					List<String> commonLabel = issue.getLabels().stream()
+							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(commonLabel)) {
+						rcaList.addAll(commonLabel);
+					}
+				} else if (fieldMapping.getRootCauseIdentifier().trim()
+						.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) && fields.get(
+						fieldMapping.getRootCause().trim()) != null && fields.get(fieldMapping.getRootCause().trim())
+						.getValue() != null) {
+					rcaList.addAll(getRootCauses(fieldMapping, fields));
+				}
 			} else {
 				// when issue type defects but did not set root cause value in
 				// Jira
