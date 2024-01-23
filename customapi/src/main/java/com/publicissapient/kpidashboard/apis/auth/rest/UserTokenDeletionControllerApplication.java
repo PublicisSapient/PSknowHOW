@@ -25,6 +25,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UserTokenDeletionControllerApplication {
 
 	@Autowired
+	private AuthProperties authProperties;
+
+	@Autowired
 	private CookieUtil cookieUtil;
 
 	@Autowired
@@ -72,16 +76,16 @@ public class UserTokenDeletionControllerApplication {
 	 *            the request
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
-	public RedirectView deleteUserToken(HttpServletRequest request , HttpServletResponse response) {
+	public ResponseEntity deleteUserToken(HttpServletRequest request , HttpServletResponse response) {
 		log.info("UserTokenDeletionController::deleteUserToken start");
-		Cookie authCookieToken = cookieUtil.getAuthCookie(request);
-		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken.getValue());
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		String authCookieToken = authCookie.getValue();
+		String apiKey = authProperties.getResourceAPIKey();
+		userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken , apiKey);
 		cookieUtil.deleteCookie(request, response , CookieUtil.AUTH_COOKIE);
-		ResponseCookie authCookie = cookieUtil.deleteAccessTokenCookie();
+		ResponseCookie authCookieRes = cookieUtil.deleteAccessTokenCookie();
 		log.info("UserTokenDeletionController::deleteUserToken end");
-		String afterLogout = "https://dev-authnauth.tools.publicis.sapient.com/";
-		return new RedirectView(afterLogout);
-		//return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookie.toString()).build();
+		return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, authCookieRes.toString()).build();
 	}
 
 }

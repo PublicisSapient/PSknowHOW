@@ -1,5 +1,6 @@
 package com.publicissapient.kpidashboard.apis.auth.token;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,8 +24,13 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 @Component
 public class CookieUtil {
 	public static final String AUTH_COOKIE = "authCookie";
+
+	private static final String AUTHORIZATION = "Authorization";
 	@Autowired
-	private CustomApiConfig customApiConfig;
+	private CustomApiConfig customApiConfig; //TODO needed to delete
+
+	@Autowired
+	private AuthProperties authProperties;
 
 	public Cookie createAccessTokenCookie(String token) {
 		Cookie cookie = new Cookie(AUTH_COOKIE, token);
@@ -31,6 +39,9 @@ public class CookieUtil {
 		cookie.setSecure(customApiConfig.isAuthCookieSecured());
 		cookie.setHttpOnly(customApiConfig.isAuthCookieHttpOnly());
 		cookie.setPath("/api");
+		if(authProperties.isSubDomainCookie()){
+			cookie.setDomain(authProperties.getDomain());
+		}
 		return cookie;
 
 	}
@@ -59,14 +70,6 @@ public class CookieUtil {
 		}
 	}
 
-	public HttpHeaders setCookieIntoHeader(String token) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-		headers.add(HttpHeaders.COOKIE, AUTH_COOKIE + "=" + token);
-		return headers;
-
-	}
-
 	public Optional<Cookie> getCookie(HttpServletRequest request, String name) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -83,7 +86,23 @@ public class CookieUtil {
 			foundCookie.setValue("");
 			foundCookie.setPath("/");
 			foundCookie.setDomain("");
+			if(authProperties.isSubDomainCookie()){
+				foundCookie.setDomain(authProperties.getDomain());
+			}
 			response.addCookie(foundCookie);
 		});
+	}
+
+	public static HttpHeaders getHeaders(String apiKey, boolean usingBasicAuth) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		if (apiKey != null && !apiKey.isEmpty()) {
+			if (usingBasicAuth) {
+				headers.set("x-api-key", apiKey);
+			} else {
+				headers.add("x-api-key", apiKey);
+			}
+		}
+		return headers;
 	}
 }

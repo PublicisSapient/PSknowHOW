@@ -188,6 +188,6 @@ public interface UserInfoService {
 	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token);
 	// ----auth-N-auth----------
 
-	String getCentralAuthUserDeleteUserToken(String token);
+	String getCentralAuthUserDeleteUserToken(String token , String apiKey);
 
 }

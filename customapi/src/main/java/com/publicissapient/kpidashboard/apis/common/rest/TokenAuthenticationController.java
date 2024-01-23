@@ -90,6 +90,7 @@ public class TokenAuthenticationController {
 		}
 	}
 
+	//TODO delete code
 	@PostMapping(value = "/validateResource")
 	public ResponseEntity<ServiceResponse> validateResource(@Valid @RequestBody UserTokenAuthenticationDTO userData,
 			HttpServletRequest request, HttpServletResponse response) {
