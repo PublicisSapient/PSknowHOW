@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    /** Fetch projectId and sprintId from query param and save it to localStorage */
     this.route.queryParams
     .subscribe(params => {
         let nodeId = params.projectId;
@@ -55,7 +56,6 @@ export class AppComponent implements OnInit {
         if(sprintId){
           localStorage.setItem('sprintId', sprintId);
         }
-        console.log(nodeId, sprintId);
       }
     );
       

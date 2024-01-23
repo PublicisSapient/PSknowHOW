@@ -30,7 +30,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { interval, Subject } from 'rxjs';
+import { empty, interval, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-filter',
@@ -588,7 +588,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedTrendValueChange($event) {
+  onSelectedTrendValueChange(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromLocalStorage(level);
+    }
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
@@ -1061,8 +1065,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       } else {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(nodeIdQParam ? [nodeIdQParam] : selectedTrendValue);
+          let selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          if(nodeIdQParam){
+            selectedTrendValue = this.allowMultipleSelection ? [nodeIdQParam] : nodeIdQParam
+          }
+          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
         }
@@ -1146,7 +1153,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
       const nodeIdQParam = localStorage.getItem('nodeId');
       const sprintIdQParam = localStorage.getItem('sprintId');
-      console.log(nodeIdQParam, sprintIdQParam);
       
       if (projectIndex < this.trendLineValueList?.length) {
         this.filterForm?.get('selectedTrendValue')?.setValue(nodeIdQParam ? nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
@@ -1192,18 +1198,22 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  emptyIdsFromLocalStorage(level){
+    if(level?.toLowerCase() === 'project'){
+      localStorage.removeItem('nodeId');
+      localStorage.removeItem('sprintId');
+    }else{
+      localStorage.removeItem('sprintId');
+    }
+  }
+
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
   handleIterationFilters(level, isChangedFromUI?) {
     /** adding the below check to determine dropdown option change event from */
     if(isChangedFromUI){
-      if(level?.toLowerCase() === 'project'){
-        localStorage.removeItem('nodeId');
-        localStorage.removeItem('sprintId');
-      }else{
-        localStorage.removeItem('sprintId');
-      }
+      this.emptyIdsFromLocalStorage(level);
     }
     this.lastSyncData = {};
     this.subject.next(true);
@@ -1494,7 +1504,11 @@ export class FilterComponent implements OnInit, OnDestroy {
       }
     });
   }
-  handleMilestoneFilter(level) {
+  handleMilestoneFilter(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromLocalStorage(level);
+    }
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {
