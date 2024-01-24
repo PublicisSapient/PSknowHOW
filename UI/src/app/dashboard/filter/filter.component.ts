@@ -22,7 +22,7 @@ import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
@@ -149,7 +149,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -1204,11 +1205,12 @@ export class FilterComponent implements OnInit, OnDestroy {
   }
 
   emptyIdsFromQueryParam(){
-      const url = window.location.href;
-      const urlWithoutParams = url.split('?')[0];
-      history.replaceState(null, '', urlWithoutParams);
-      this.service.setProjectQueryParamInFilters('');
-      this.service.setSprintQueryParamInFilters('');
+    // Get the current URL tree
+    const currentUrlTree = this.router.createUrlTree([], { relativeTo: this.route });
+    // Navigate to the updated URL without query parameters
+    this.router.navigateByUrl(currentUrlTree);
+    this.service.setProjectQueryParamInFilters('');
+    this.service.setSprintQueryParamInFilters('');
   }
 
   /*'type' argument: to understand onload or onchange
@@ -1267,7 +1269,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (selectedField) {
       const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
 
-      if (obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+      if (obj && ((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end'))) {
         return dateString;
       }
 
