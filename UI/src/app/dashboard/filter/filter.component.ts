@@ -1411,17 +1411,17 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-    console.log('response of logout:', getData);
-      if (response && response['success']) {
-       console.log('Success on logout:', getData);
+    this.httpService.logout().subscribe((responseData) => {
+    console.log('response of logout:', responseData);
+      if (responseData && responseData['success']) {
+       console.log('Success on logout:', responseData);
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-         console.log('Success clear local storage :', getData);
+         console.log('Success clear local storage :', responseData);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{
