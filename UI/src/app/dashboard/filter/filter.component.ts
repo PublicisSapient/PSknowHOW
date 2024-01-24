@@ -1412,13 +1412,16 @@ export class FilterComponent implements OnInit, OnDestroy {
   // logout is clicked  and removing auth token , username
   logout() {
     this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
+    console.log('response of logout:', getData);
+      if (!(getData !== null)) {
+       console.log('Success on logout:', getData);
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+         console.log('Success clear local storage :', getData);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{
@@ -1428,7 +1431,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
             if (response && response['success']) {
-              console.log("cookie not clear");
+              console.log("cookie not clear on success");
             } else {
               console.log("cookie clear");
               let redirect_uri = window.location.href;
@@ -1436,7 +1439,7 @@ export class FilterComponent implements OnInit, OnDestroy {
             }
           })
           .catch((error) => {
-            console.log("cookie not clear");
+            console.log("cookie not clear on error");
           });
         }
       }
