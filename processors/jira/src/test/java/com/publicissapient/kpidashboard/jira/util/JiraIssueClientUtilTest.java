@@ -263,7 +263,7 @@ public class JiraIssueClientUtilTest {
 		assertNotNull(result, "");
 		assertTrue(result.isEmpty());
 	}
-	private void createIssuefieldsList() {
+	private void createIssuefieldsList() throws JSONException {
 		Map<String, Object> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");

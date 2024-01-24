@@ -427,8 +427,14 @@
 			<artifactId>spring-retry</artifactId>
 			<version>1.2.5.RELEASE</version>
 		</dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito2</artifactId>
+            <version>2.0.9</version>
+            <scope>test</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<finalName>${final.name}</finalName>

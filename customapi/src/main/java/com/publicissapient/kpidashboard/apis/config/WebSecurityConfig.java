@@ -35,6 +35,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -136,11 +137,11 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		setAuthenticationProvider(authenticationManagerBuilder);
         // Get AuthenticationManager
-//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
         http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors((cors)->cors.configurationSource(apiConfigurationSource()))
+        http.cors(cors->cors.configurationSource(apiConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
                         .permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()
@@ -165,25 +166,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .exceptionHandling(Customizer.withDefaults());
         return http.build();
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        final CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//      //  config.addAllowedOrigin("*");
-//        config.addAllowedHeader("*");
-//        config.addAllowedMethod("OPTIONS");
-//        config.addAllowedMethod("HEAD");
-//        config.addAllowedMethod("GET");
-//        config.addAllowedMethod("PUT");
-//        config.addAllowedMethod("POST");
-//        config.addAllowedMethod("DELETE");
-//        config.addAllowedMethod("PATCH");
-//        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter();
-      //  return new CorsFilter(source);
     }
 
     @Bean
@@ -233,7 +215,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		final CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-		//config.addAllowedOrigin("*");
 		config.addAllowedHeader("*");
 		config.addAllowedMethod("OPTIONS");
 		config.addAllowedMethod("HEAD");
@@ -245,19 +226,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
-
-//    @Bean
-//    public CorsFilter corsFilterKnowHOW() {
-////        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-////        CorsConfiguration config = new CorsConfiguration();
-////        source.registerCorsConfiguration("/**", config);
-//        return new CorsFilter();
-//    }
-
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/**").allowedOrigins("*");
-//    }
 
     @Bean
     protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
