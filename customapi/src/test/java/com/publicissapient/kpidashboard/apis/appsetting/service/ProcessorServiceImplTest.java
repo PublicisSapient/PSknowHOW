@@ -58,6 +58,8 @@ import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConf
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * This class contains test cases for ProcessorServiceImpl.class
  */
@@ -90,7 +92,7 @@ public class ProcessorServiceImplTest {
 	 */
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(httpServletRequest));
 	}
 

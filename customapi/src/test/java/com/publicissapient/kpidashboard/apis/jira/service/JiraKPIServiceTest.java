@@ -53,7 +53,7 @@ public class JiraKPIServiceTest {
 
 	@Before
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 
 		aggregationCriteriaMap = new HashMap<>();
 		aggregationCriteriaMap.put("kpi1", Constant.PERCENTILE);

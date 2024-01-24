@@ -43,8 +43,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -97,6 +99,8 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     private AuthProperties authProperties;
 
     private CustomApiConfig customApiConfig;
+    @Autowired
+    private AuthenticationConfiguration authenticationConfiguration;
 
     @Autowired
     private ADServerDetailsService adServerDetailsService;
@@ -132,11 +136,11 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		setAuthenticationProvider(authenticationManagerBuilder);
         // Get AuthenticationManager
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+//        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
         http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(withDefaults())
+        http.cors((cors)->cors.configurationSource(apiConfigurationSource()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
                         .permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()
@@ -157,12 +161,36 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
                 .addFilterBefore(apiTokenRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(corsFilterKnowHOW(), ChannelProcessingFilter.class)
+              //  .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .exceptionHandling(Customizer.withDefaults());
         return http.build();
     }
 
+    @Bean
+    public CorsFilter corsFilter() {
+//        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        final CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowCredentials(true);
+//      //  config.addAllowedOrigin("*");
+//        config.addAllowedHeader("*");
+//        config.addAllowedMethod("OPTIONS");
+//        config.addAllowedMethod("HEAD");
+//        config.addAllowedMethod("GET");
+//        config.addAllowedMethod("PUT");
+//        config.addAllowedMethod("POST");
+//        config.addAllowedMethod("DELETE");
+//        config.addAllowedMethod("PATCH");
+//        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter();
+      //  return new CorsFilter(source);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+
+    }
     protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
         List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
 
@@ -199,10 +227,37 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return new ApiTokenRequestFilter("/**", authenticationManager, authenticationResultHandler);
     }
 
-    @Bean
-    protected CorsFilter corsFilterKnowHOW() throws Exception {// NOSONAR
-        return new CorsFilter();
-    }
+	@Bean
+	CorsConfigurationSource apiConfigurationSource() {
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		final CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+		//config.addAllowedOrigin("*");
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("OPTIONS");
+		config.addAllowedMethod("HEAD");
+		config.addAllowedMethod("GET");
+		config.addAllowedMethod("PUT");
+		config.addAllowedMethod("POST");
+		config.addAllowedMethod("DELETE");
+		config.addAllowedMethod("PATCH");
+		source.registerCorsConfiguration("/**", config);
+		return source;
+	}
+
+//    @Bean
+//    public CorsFilter corsFilterKnowHOW() {
+////        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+////        CorsConfiguration config = new CorsConfiguration();
+////        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter();
+//    }
+
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**").allowedOrigins("*");
+//    }
 
     @Bean
     protected AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {

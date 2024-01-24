@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -127,13 +129,13 @@ public class Sonar8ClientTest {
 		SONAR_SERVER.setUsername(USER_NAME);
 		SONAR_SERVER.setPassword(PASSWORD);
 		List<SonarProcessorItem> projects = sonar8Client.getSonarProjectList(SONAR_SERVER);
-		Assert.assertThat("Projects count: ", projects.size(), is(2));
-		Assert.assertThat("First Project name: ", projects.get(0).getProjectName(),
+		assertThat("Projects count: ", projects.size(), is(2));
+		assertThat("First Project name: ", projects.get(0).getProjectName(),
 				is("testPackage.sonar:TestProject"));
-		Assert.assertThat("Second Project name: ", projects.get(1).getProjectName(),
+		assertThat("Second Project name: ", projects.get(1).getProjectName(),
 				is("testPackage.sonar:AnotherTestProject"));
-		Assert.assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
-		Assert.assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
+		assertThat("First Project id: ", projects.get(0).getProjectId(), is("AVu3b-MAphY78UZXuYHp"));
+		assertThat("Second Project id: ", projects.get(1).getProjectId(), is("BVx3b-MAphY78UZXuYHp"));
 	}
 
 	@Test
@@ -230,7 +232,7 @@ public class Sonar8ClientTest {
 	private String getJson(String fileName) throws IOException {
 		String inputData = null;
 		try (InputStream inputStream = Sonar8ClientTest.class.getResourceAsStream(fileName)) {
-			inputData = IOUtils.toString(inputStream);
+			inputData = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 		} catch (IOException ex) {
 			inputData = "";
 		}

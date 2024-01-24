@@ -27,6 +27,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.publicissapient.kpidashboard.apis.constant.CORSConstants;
@@ -49,7 +52,14 @@ public class CorsFilter extends OncePerRequestFilter {
 	@Autowired
 	private CustomApiConfig apiSettings;
 
-	@Override
+   // final CorsConfigurationSource configSource;
+
+//    public CorsFilter(CorsConfigurationSource configSource) {
+//        Assert.notNull(configSource, "CorsConfigurationSource must not be null");
+//        this.configSource = configSource;
+//    }
+
+    @Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// Added code to handle the CORS security
@@ -69,7 +79,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method checks whether the request is a valid CORS request
 	 * </p>
-	 * 
+	 *
 	 * @param request
 	 * @return Boolean
 	 * @throws MalformedURLException
@@ -97,7 +107,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method validates the origin with whitelist of CORS valid addresses
 	 * </p>
-	 * 
+	 *
 	 * @param originWhiteList
 	 * @param theResult
 	 * @param origin
@@ -122,7 +132,7 @@ public class CorsFilter extends OncePerRequestFilter {
 	 * <p>
 	 * This method sets the headers in reponse to enable CORS
 	 * </p>
-	 * 
+	 *
 	 * @param request
 	 * @param response
 	 */

@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.connection.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
@@ -118,7 +118,7 @@ public class ConnectionServiceImplTest {
 	 */
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		SecurityContext securityContext = mock(SecurityContext.class);
 
 		SecurityContextHolder.setContext(securityContext);

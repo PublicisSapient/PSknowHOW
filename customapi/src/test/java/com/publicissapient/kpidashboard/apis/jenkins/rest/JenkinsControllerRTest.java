@@ -96,7 +96,7 @@ public class JenkinsControllerRTest {
 		kpiElement.setKpiSource("Jenkins");
 		kpiElementList.add(kpiElement);
 		when(jenkinsService.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/jenkins/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkins/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -107,7 +107,7 @@ public class JenkinsControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(post("/jenkins/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkins/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}
@@ -129,7 +129,7 @@ public class JenkinsControllerRTest {
 		kpiElement.setKpiId(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId());
 		kpiElementList.add(kpiElement);
 		when(jenkinsServiceKanban.process(Mockito.any())).thenReturn(kpiElementList);
-		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andExpect(status().is2xxSuccessful());
 
 	}
@@ -140,7 +140,7 @@ public class JenkinsControllerRTest {
 		String request = "{\n" + "  \"level\": 3,\n" + "  \"ids\": [\n" + "    \"OPRO Sprint 71_12138_10304_PR\",\n"
 				+ "    \"OPRO Sprint 72_12139_10304_PR\"\n" + "  ],\n" + "  \"kpiList\": []\n" + "}";
 
-		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON_UTF8).content(request))
+		mockMvc.perform(post("/jenkinskanban/kpi").contentType(MediaType.APPLICATION_JSON).content(request))
 				.andDo(print()).andExpect(status().isBadRequest());
 
 	}

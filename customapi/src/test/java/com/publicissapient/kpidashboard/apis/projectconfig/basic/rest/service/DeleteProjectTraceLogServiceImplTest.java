@@ -65,7 +65,7 @@ public class DeleteProjectTraceLogServiceImplTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		SecurityContextHolder.setContext(securityContext);
 	}
 

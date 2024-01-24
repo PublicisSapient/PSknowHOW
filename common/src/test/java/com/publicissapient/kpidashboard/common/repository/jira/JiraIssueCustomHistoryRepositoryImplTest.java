@@ -251,13 +251,14 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 		List<JiraIssueCustomHistory> customHiostoryList = new ArrayList<>();
 		JiraIssueCustomHistory jiraIssueCustomHistory = new JiraIssueCustomHistory();
 		customHiostoryList.add(jiraIssueCustomHistory);
+		when(featureCustomHistoryRepo.findAll()).thenReturn(customHiostoryList);
 		assertTrue("Happy-path MongoDB connectivity validation for the FeatureCustomHistoryRepository has passed",
 				customHiostoryList.iterator().hasNext());
 	}
 
 	@Test
 	public void testFindByStoryID_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory2);
 

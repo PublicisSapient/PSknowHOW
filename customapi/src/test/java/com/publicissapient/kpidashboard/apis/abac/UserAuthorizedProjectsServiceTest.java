@@ -88,7 +88,7 @@ public class UserAuthorizedProjectsServiceTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		SecurityContext securityContext = mock(SecurityContext.class);
 
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance("/json/default/kanban_kpi_request.json");

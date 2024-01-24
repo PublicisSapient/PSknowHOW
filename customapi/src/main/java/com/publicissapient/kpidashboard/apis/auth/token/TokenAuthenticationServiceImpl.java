@@ -106,6 +106,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		data.setAuthToken(jwt);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 		cookieUtil.addSameSiteCookieAttribute(response);
 		return data;

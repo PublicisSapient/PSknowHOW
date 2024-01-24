@@ -234,6 +234,15 @@ public class CustomApiConfig {// NOPMD
 	private List<String> flowEfficiencyXAxisRange;
 	private List<String> leadTimeRange;
 	private List<String> cycleTimeRange;
+	private List<Character> aesKeyValue;
+
+	public List<Character> getAesKeyValue() {
+		return aesKeyValue;
+	}
+
+	public void setAesKeyValue(List<Character> aesKeyValue) {
+		this.aesKeyValue = aesKeyValue;
+	}
 
 	public List<String> getCycleTimeRange() {
 		return cycleTimeRange;
