@@ -1413,7 +1413,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   logout() {
     this.httpService.logout().subscribe((getData) => {
     console.log('response of logout:', getData);
-      if (!(getData !== null)) {
+      if (response && response['success']) {
        console.log('Success on logout:', getData);
         this.helperService.isKanban = false;
         localStorage.clear();
