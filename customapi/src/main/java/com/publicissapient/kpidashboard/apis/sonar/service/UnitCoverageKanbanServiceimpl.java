@@ -261,9 +261,7 @@ public class UnitCoverageKanbanServiceimpl
 	private Double getCoverageValue(Object coverage) {
 		Double value = -1D;
 		if (coverage != null) {
-			if (coverage instanceof Double) {
-				value = (Double) coverage;
-			} else if (coverage instanceof String) {
+			if (coverage instanceof String) {
 				value = Double.parseDouble(coverage.toString());
 			} else {
 				value = (Double) coverage;
