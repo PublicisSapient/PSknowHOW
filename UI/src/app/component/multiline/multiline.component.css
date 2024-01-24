@@ -43,7 +43,7 @@
 ::ng-deep div.tooltip {
   position: absolute;
   text-align: center;
-  max-width: 220px;
+  max-width: 200px;
   padding: 5px;
   font-size: 10px;
   background: rgba(255, 255, 255, 0.95);
@@ -190,4 +190,9 @@
 
 :host ::ng-deep.tooltip-container{
   position: relative
+}
+
+:host ::ng-deep .thresholdlinetext {
+  background-color: #fff;
+  z-index: 1001;
 }

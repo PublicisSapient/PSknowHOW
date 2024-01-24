@@ -250,3 +250,7 @@
 :host ::ng-deep .fixed_position {
     position: fixed;
 }
+
+.disable-setting-icon {
+    pointer-events: none;
+}
