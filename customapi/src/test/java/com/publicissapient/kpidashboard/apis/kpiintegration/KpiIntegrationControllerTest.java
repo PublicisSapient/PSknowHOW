@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.maturity;
+package com.publicissapient.kpidashboard.apis.kpiintegration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -32,6 +32,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,64 +54,69 @@ import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIServi
  * @author kunkambl
  */
 @RunWith(MockitoJUnitRunner.class)
-public class MaturityControllerTest {
+public class KpiIntegrationControllerTest {
 
     @InjectMocks
-    MaturityController maturityController;
+    KpiIntegrationController kpiIntegrationController;
 
     @Mock
-    MaturityServiceImpl maturityService;
+    KpiIntegrationServiceImpl maturityService;
 
     @Mock
     AuthExposeAPIService authExposeAPIService;
 
+    @Mock
+    RestAPIUtils restAPIUtils;
+
+    @Mock
+    CustomApiConfig customApiConfig;
+
+    @Mock
+    private HttpServletRequest httpServletRequest;
+
     @Before
     public void setUp() {
+        when(customApiConfig.getxApiKey()).thenReturn("testKey");
+        when(restAPIUtils.decryptPassword("testKey")).thenReturn("valid-token");
     }
 
     @Test
     public void getMaturityValuesUnauthorized() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        KpiRequest kpiRequest = new KpiRequest();
-        when(authExposeAPIService.validateToken(request)).thenReturn(null);
 
-        ResponseEntity<List<KpiElement>> responseEntity = maturityController.getMaturityValues(request, kpiRequest);
+        KpiRequest kpiRequest = new KpiRequest();
+        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("invalid-token");
+        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest,
+                kpiRequest);
 
         assertEquals(HttpStatus.UNAUTHORIZED, responseEntity.getStatusCode());
         assertTrue(responseEntity.getBody().isEmpty());
-        verify(authExposeAPIService).validateToken(request);
-        verify(maturityService, never()).getMaturityValues(any());
+        verify(maturityService, never()).getKpiResponses(any());
     }
 
     @Test
     public void testGetMaturityValuesSuccess() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
         KpiRequest kpiRequest = new KpiRequest();
-        ExposeApiToken exposeApiToken = new ExposeApiToken();
-        when(authExposeAPIService.validateToken(request)).thenReturn(exposeApiToken);
-        when(maturityService.getMaturityValues(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
+        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
+        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
 
-        ResponseEntity<List<KpiElement>> responseEntity = maturityController.getMaturityValues(request, kpiRequest);
+        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest, kpiRequest);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertFalse(responseEntity.getBody().isEmpty());
-        verify(authExposeAPIService).validateToken(request);
-        verify(maturityService).getMaturityValues(kpiRequest);
+        verify(maturityService).getKpiResponses(kpiRequest);
     }
 
     @Test
     public void testGetMaturityValuesForbidden() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
         KpiRequest kpiRequest = new KpiRequest();
-        ExposeApiToken exposeApiToken = new ExposeApiToken();
-        when(authExposeAPIService.validateToken(request)).thenReturn(exposeApiToken);
-        when(maturityService.getMaturityValues(kpiRequest)).thenReturn(Collections.emptyList());
+        when(httpServletRequest.getHeader("X-Api-Key")).thenReturn("valid-token");
+        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.singletonList(new KpiElement()));
+        when(maturityService.getKpiResponses(kpiRequest)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<KpiElement>> responseEntity = maturityController.getMaturityValues(request, kpiRequest);
+        ResponseEntity<List<KpiElement>> responseEntity = kpiIntegrationController.getMaturityValues(httpServletRequest, kpiRequest);
 
         assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
         assertTrue(responseEntity.getBody().isEmpty());
-        verify(authExposeAPIService).validateToken(request);
-        verify(maturityService).getMaturityValues(kpiRequest);
+        verify(maturityService).getKpiResponses(kpiRequest);
     }
 }

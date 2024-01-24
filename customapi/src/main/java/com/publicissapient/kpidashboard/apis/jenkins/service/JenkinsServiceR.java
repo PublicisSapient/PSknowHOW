@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -82,9 +83,12 @@ public class JenkinsServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				boolean tokenAuth = cacheService.getFromApplicationCache(
+								kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH)
+						.equalsIgnoreCase(Boolean.TRUE.toString());
+				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList, tokenAuth);
 
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList, tokenAuth);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -132,10 +136,10 @@ public class JenkinsServiceR {
 	 * @return
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
+			List<AccountHierarchyData> filteredAccountDataList, Boolean tokenAuth) {
 
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
@@ -146,9 +150,10 @@ public class JenkinsServiceR {
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
 	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
+			Boolean tokenAuth) {
 		String[] projectKeyCache;
-		if (!authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();

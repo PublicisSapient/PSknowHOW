@@ -149,11 +149,14 @@ public class KPIExcelDataService {
 	 */
 
 	public Object process(String kpiID, int level, List<String> filterIds, List<String> acceptedFilter,
-			KpiRequest kpiRequest, Boolean isKanban) {
+			KpiRequest kpiRequest, Boolean isKanban, Boolean isApiAuth) {
 
 		Map<String, KpiRequest> kpiRequestSourceWiseMap = createKPIRequest(kpiID, level, filterIds, kpiRequest,
 				isKanban);
-
+		if (isApiAuth) {
+			cacheService.setIntoApplicationCache(kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
+					Boolean.TRUE.toString());
+		}
 		if (isSourceKanban(kpiRequestSourceWiseMap)) {
 			return processKanban(kpiID, kpiRequestSourceWiseMap, acceptedFilter);
 		}

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.maturity;
+package com.publicissapient.kpidashboard.apis.kpiintegration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -24,6 +24,10 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,10 +50,10 @@ import com.publicissapient.kpidashboard.common.repository.application.KpiMasterR
  * @author kunkambl
  */
 @RunWith(MockitoJUnitRunner.class)
-public class MaturityServiceImplTest {
+public class KpiIntegrationServiceImplTest {
 
 	@InjectMocks
-	MaturityServiceImpl maturityService;
+	KpiIntegrationServiceImpl maturityService;
 
 	@Mock
 	KpiMasterRepository kpiMasterRepository;
@@ -63,11 +67,18 @@ public class MaturityServiceImplTest {
 	@Mock
 	private ZephyrService zephyrService;
 
+	@Mock
+	private HierarchyLevelService hierarchyLevelService;
+
+	@Mock
+	private CacheService cacheService;
+
 	private KpiRequest kpiRequest;
 	private KpiElement kpiElement1;
 	private KpiElement kpiElement2;
 	private KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
 	private List<String> kpiIdList = Arrays.asList("kpi14", "kpi70", "kpi27");
+	private List<HierarchyLevel> hierarchyLevels = null;
 
 	@Before
 	public void setup() {
@@ -75,6 +86,7 @@ public class MaturityServiceImplTest {
 		kpiRequest.setKpiIdList(kpiIdList);
 		kpiRequest.setHierarchyName("DTS");
 		kpiRequest.setHierarchyId("535");
+		kpiRequest.setLevel(4);
 		DataCount dataCount = new DataCount();
 		dataCount.setMaturity("1");
 		dataCount.setMaturityValue("35");
@@ -86,6 +98,9 @@ public class MaturityServiceImplTest {
 		kpiElement2 = new KpiElement();
 		kpiElement2.setTrendValueList(Arrays.asList(dataCountGroup));
 
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		when(hierarchyLevelService.getFullHierarchyLevels(true)).thenReturn(hierarchyLevels);
 	}
 
 	@Test
@@ -94,7 +109,7 @@ public class MaturityServiceImplTest {
         when(jiraService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement1));
         when(sonarService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
         when(zephyrService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
-        List<KpiElement> kpiElementList = maturityService.getMaturityValues(kpiRequest);
+        List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
         assertEquals(3, kpiElementList.size());
     }
 
@@ -103,7 +118,7 @@ public class MaturityServiceImplTest {
 		kpiIdList = Arrays.asList("kpi84");
 		kpiRequest.setKpiIdList(kpiIdList);
 		when(kpiMasterRepository.findByKpiIdIn(kpiIdList)).thenReturn(kpiMasterDataFactory.getSpecificKpis(kpiIdList));
-		List<KpiElement> kpiElementList = maturityService.getMaturityValues(kpiRequest);
+		List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
 		assertEquals(0, kpiElementList.size());
 	}
 }

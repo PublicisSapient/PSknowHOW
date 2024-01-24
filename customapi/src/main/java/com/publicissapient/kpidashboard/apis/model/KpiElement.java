@@ -78,7 +78,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient Object testExecutionPass;
 	private transient List<DataCountGroup> trendValueKpiFilterList;
 
-	private String maturityValue;
+	private String overAllMaturityValue;
 	private List<String> maturityRange;
 
 	public List<MaturityLevel> getMaturityLevel() {
@@ -129,7 +129,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<Filter> standUpStatusFilter;
 	// used by CycleTime
 	private Boolean isAggregationStacks;
-	private String maturity;
+	private String overallMaturity;
 
 	/**
 	 * Instantiates a new Kpi element.
@@ -218,22 +218,22 @@ public class KpiElement implements Serializable { // NOPMD
 	}
 
 	/**
-	 * Gets maturity value.
+	 * Gets overall maturity value.
 	 *
 	 * @return the maturity value
 	 */
-	public String getMaturityValue() {
-		return maturityValue;
+	public String getOverallMaturityValue() {
+		return overAllMaturityValue;
 	}
 
 	/**
 	 * Sets maturity value.
 	 *
-	 * @param maturityValue
+	 * @param overAllMaturityValue
 	 *            the maturity value
 	 */
-	public void setMaturityValue(String maturityValue) {
-		this.maturityValue = maturityValue;
+	public void setOverAllMaturityValue(String overAllMaturityValue) {
+		this.overAllMaturityValue = overAllMaturityValue;
 	}
 
 	/**
@@ -884,18 +884,18 @@ public class KpiElement implements Serializable { // NOPMD
 	 *
 	 * @return the maturity
 	 */
-	public String getMaturity() {
-		return maturity;
+	public String getOverallMaturity() {
+		return overallMaturity;
 	}
 
 	/**
 	 * Sets maturity.
 	 *
-	 * @param maturity
+	 * @param overallMaturity
 	 *            the maturity value
 	 */
-	public void setMaturity(String maturity) {
-		this.maturity = maturity;
+	public void setOverallMaturity(String overallMaturity) {
+		this.overallMaturity = overallMaturity;
 	}
 
 	public void setAggregationStacks(Boolean aggregationStacks) {

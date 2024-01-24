@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.maturity.MaturityServiceImpl;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 
  * @author prigupta8
- * @implNote {@link MaturityServiceImpl }
+ * @implNote {@link KpiIntegrationServiceImpl }
  */
 @Service
 @Slf4j
@@ -97,8 +98,11 @@ public class SonarServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				boolean tokenAuth = cacheService.getFromApplicationCache(
+								kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH)
+						.equalsIgnoreCase(Boolean.TRUE.toString());
+				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList, tokenAuth);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList, tokenAuth);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -207,9 +211,10 @@ public class SonarServiceR {
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
 	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
+			Boolean tokenAuth) {
 		String[] projectKeyCache;
-		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -223,12 +228,11 @@ public class SonarServiceR {
 	 * @return
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
+			List<AccountHierarchyData> filteredAccountDataList, Boolean tokenAuth) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
-
 		return filteredAccountDataList;
 	}
 }

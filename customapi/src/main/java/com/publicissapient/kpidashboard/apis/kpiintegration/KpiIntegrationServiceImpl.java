@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.maturity;
+package com.publicissapient.kpidashboard.apis.kpiintegration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +26,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
+import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,17 +54,15 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class MaturityServiceImpl {
+public class KpiIntegrationServiceImpl {
 
 	private static final List<String> FILTER_LIST = Arrays.asList("Final Scope (Story Points)", "Average Coverage",
 			"Story Points", "Overall");
 	private static final String KPI_SOURCE_JIRA = "Jira";
 	private static final String KPI_SOURCE_SONAR = "Sonar";
 	private static final String KPI_SOURCE_ZEPHYR = "Zypher";
-	private static final String HIERARCHY_LABEL_PORT = "port";
-	private static final int HIERARCHY_LEVEL_PORT = 4;
+	private static final String KPI_SOURCE_JENKINS = "Jenkins";
 	private static final String SPRINT_CLOSED = "CLOSED";
-
 
 	@Autowired
 	KpiMasterRepository kpiMasterRepository;
@@ -74,34 +76,34 @@ public class MaturityServiceImpl {
 	@Autowired
 	private ZephyrService zephyrService;
 
+	@Autowired
+	private JenkinsServiceR jenkinsServiceR;
+
+	@Autowired
+	private HierarchyLevelService hierarchyLevelService;
+
+	@Autowired
+	CacheService cacheService;
 
 	/**
-	 * get kpi element list with maturity
-	 * assuming req for hierarchy level 4
+	 * get kpi element list with maturity assuming req for hierarchy level 4
+	 *
 	 * @param kpiRequest
- * 				kpiRequest to fetch kpi data
+	 * 		kpiRequest to fetch kpi data
 	 * @return list of KpiElement
 	 */
-	public List<KpiElement> getMaturityValues(KpiRequest kpiRequest) {
+	public List<KpiElement> getKpiResponses(KpiRequest kpiRequest) {
 		List<KpiMaster> kpiMasterList = kpiMasterRepository.findByKpiIdIn(kpiRequest.getKpiIdList());
 		Map<String, List<KpiMaster>> sourceWiseKpiList = kpiMasterList.stream()
 				.collect(Collectors.groupingBy(KpiMaster::getKpiSource));
-
 		List<KpiElement> kpiElements = new ArrayList<>();
-		// it is assumed that request is for heirarchy level 4 i.e. port
-		String[] hierarchyIdList = {
-				kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(HIERARCHY_LABEL_PORT) };
-		Map<String, List<String>> selectedMap = new HashMap<>();
-		selectedMap.put(HIERARCHY_LABEL_PORT, Arrays.stream(hierarchyIdList).collect(Collectors.toList()));
-		kpiRequest.setIds(hierarchyIdList);
-		kpiRequest.setLevel(HIERARCHY_LEVEL_PORT);
-		kpiRequest.setLabel(HIERARCHY_LABEL_PORT);
-		kpiRequest.setSelectedMap(selectedMap);
-		kpiRequest.setSprintIncluded(Arrays.asList(SPRINT_CLOSED));
+		setKpiRequest(kpiRequest);
 		sourceWiseKpiList.forEach((source, kpiList) -> {
 			try {
 				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
 						.collect(Collectors.toList()));
+				cacheService.setIntoApplicationCache(kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
+						Boolean.TRUE.toString());
 				switch (source) {
 				case KPI_SOURCE_JIRA:
 					kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
@@ -111,6 +113,9 @@ public class MaturityServiceImpl {
 					break;
 				case KPI_SOURCE_ZEPHYR:
 					kpiElements.addAll(getZephyrKpiMaturity(kpiRequest));
+					break;
+				case KPI_SOURCE_JENKINS:
+					kpiElements.addAll(getJenkinsKpiMaturity(kpiRequest));
 					break;
 				default:
 					log.error("Invalid Kpi");
@@ -125,21 +130,21 @@ public class MaturityServiceImpl {
 				if (trendValueList.get(0) instanceof DataCountGroup) {
 					List<DataCountGroup> dataCountGroups = (List<DataCountGroup>) trendValueList;
 
-					Optional<DataCount> firstMatchingDataCount = dataCountGroups.stream().filter(trend -> FILTER_LIST
-							.contains(trend.getFilter())
-							|| (FILTER_LIST.contains(trend.getFilter1()) && FILTER_LIST.contains(trend.getFilter2())))
+					Optional<DataCount> firstMatchingDataCount = dataCountGroups.stream()
+							.filter(trend -> FILTER_LIST.contains(trend.getFilter()) || (FILTER_LIST.contains(
+									trend.getFilter1()) && FILTER_LIST.contains(trend.getFilter2())))
 							.map(DataCountGroup::getValue).flatMap(List::stream).findFirst();
 
 					firstMatchingDataCount.ifPresent(dataCount -> {
-						kpiElement.setMaturityValue((String) dataCount.getMaturityValue());
-						kpiElement.setMaturity(dataCount.getMaturity());
+						kpiElement.setOverAllMaturityValue((String) dataCount.getMaturityValue());
+						kpiElement.setOverallMaturity(dataCount.getMaturity());
 					});
 				} else {
 					List<DataCount> dataCounts = (List<DataCount>) trendValueList;
 					DataCount firstDataCount = dataCounts.get(0);
 
-					kpiElement.setMaturityValue((String) firstDataCount.getMaturityValue());
-					kpiElement.setMaturity(firstDataCount.getMaturity());
+					kpiElement.setOverAllMaturityValue((String) firstDataCount.getMaturityValue());
+					kpiElement.setOverallMaturity(firstDataCount.getMaturity());
 				}
 			}
 		});
@@ -147,16 +152,37 @@ public class MaturityServiceImpl {
 		return kpiElements;
 	}
 
+	public void setKpiRequest(KpiRequest kpiRequest) {
+		String[] hierarchyIdList = kpiRequest.getIds();
+		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(true).stream()
+				.filter(hierarchyLevel1 -> hierarchyLevel1.getLevel() == kpiRequest.getLevel()).findFirst();
+		if (optionalHierarchyLevel.isPresent()) {
+			HierarchyLevel hierarchyLevel = optionalHierarchyLevel.get();
+			if (hierarchyIdList  == null) {
+				hierarchyIdList = new String[] { kpiRequest.getHierarchyName().concat(Constant.UNDERSCORE).concat(
+						hierarchyLevel.getHierarchyLevelId()) };
+			}
+			Map<String, List<String>> selectedMap = new HashMap<>();
+			selectedMap.put(hierarchyLevel.getHierarchyLevelId(),
+					Arrays.stream(hierarchyIdList).collect(Collectors.toList()));
+			kpiRequest.setIds(hierarchyIdList);
+			kpiRequest.setLabel(hierarchyLevel.getHierarchyLevelId());
+			kpiRequest.setSelectedMap(selectedMap);
+			kpiRequest.setSprintIncluded(Arrays.asList(SPRINT_CLOSED));
+		}
+
+	}
+
 	/**
 	 * get kpi data for source jira
+	 *
 	 * @param kpiRequest
-	 * 			kpiRequest to fetch kpi data
+	 * 		kpiRequest to fetch kpi data
 	 * @return list of jira KpiElement
 	 * @throws EntityNotFoundException
-	 * 			entity not found exception for jira service method
+	 * 		entity not found exception for jira service method
 	 */
-	private List<KpiElement> getJiraKpiMaturity(KpiRequest kpiRequest)
-			throws EntityNotFoundException {
+	private List<KpiElement> getJiraKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("JiraScrumKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Jira KPI request {}", kpiRequest);
 		long jiraRequestStartTime = System.currentTimeMillis();
@@ -169,8 +195,9 @@ public class MaturityServiceImpl {
 
 	/**
 	 * get kpi data for source sonar
+	 *
 	 * @param kpiRequest
-	 * 			kpiRequest to fetch kpi data
+	 * 		kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 */
 	private List<KpiElement> getSonarKpiMaturity(KpiRequest kpiRequest) {
@@ -185,15 +212,15 @@ public class MaturityServiceImpl {
 	}
 
 	/**
-	 * get kpi data for source sonar
+	 * get kpi data for source zephyr
+	 *
 	 * @param kpiRequest
-	 * 			kpiRequest to fetch kpi data
+	 * 		kpiRequest to fetch kpi data
 	 * @return list of sonar KpiElement
 	 * @throws EntityNotFoundException
-	 * 			entity not found exception for zephyr service method
+	 * 		entity not found exception for zephyr service method
 	 */
-	private List<KpiElement> getZephyrKpiMaturity(KpiRequest kpiRequest)
-			throws EntityNotFoundException {
+	private List<KpiElement> getZephyrKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
 		MDC.put("ZephyrKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long zypherRequestStartTime = System.currentTimeMillis();
@@ -205,9 +232,30 @@ public class MaturityServiceImpl {
 	}
 
 	/**
+	 * get kpi data for source jenkins
+	 *
+	 * @param kpiRequest
+	 * 		kpiRequest to fetch kpi data
+	 * @return list of sonar KpiElement
+	 * @throws EntityNotFoundException
+	 * 		entity not found exception for jenkins service method
+	 */
+	private List<KpiElement> getJenkinsKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
+		MDC.put("ZephyrKpiRequest", kpiRequest.getRequestTrackerId());
+		log.info("Received Zephyr KPI request {}", kpiRequest);
+		long jenkinsRequestStartTime = System.currentTimeMillis();
+		MDC.put("ZephyrRequestStartTime", String.valueOf(jenkinsRequestStartTime));
+		List<KpiElement> responseList = jenkinsServiceR.process(kpiRequest);
+		MDC.put("TotalZephyrRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
+		MDC.clear();
+		return responseList;
+	}
+
+	/**
 	 * Map KpiMaster object to KpiElement
+	 *
 	 * @param kpiMaster
-	 * 			KpiMaster object fetched from db
+	 * 		KpiMaster object fetched from db
 	 * @return KpiElement
 	 */
 	public KpiElement mapKpiMasterToKpiElement(KpiMaster kpiMaster) {

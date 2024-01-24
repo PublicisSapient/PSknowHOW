@@ -16,29 +16,27 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.maturity;
+package com.publicissapient.kpidashboard.apis.kpiintegration;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
-import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,13 +45,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RestController
 @Slf4j
-public class MaturityController {
+public class KpiIntegrationController {
+
+	private static final String TOKEN_KEY = "X-Api-Key";
 
     @Autowired
-    private AuthExposeAPIService authExposeAPIService;
+    private KpiIntegrationServiceImpl kpiIntegrationService;
 
-    @Autowired
-    private MaturityServiceImpl maturityService;
+	@Autowired
+	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private RestAPIUtils restAPIUtils;
 
     /**
      * This method handles Jira Scrum KPIs request.
@@ -62,20 +65,22 @@ public class MaturityController {
      * @return List of KPIs with trend and aggregated data.
      * @throws Exception
      */
-	@PostMapping(value = "/maturityValues", produces = APPLICATION_JSON_VALUE)
+	@PostMapping(value = "/kpiIntegrationValues", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<KpiElement>> getMaturityValues(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest) {
-		log.info("Received {} request for /maturityValues", request.getMethod());
-		ExposeApiToken exposeApiToken = authExposeAPIService.validateToken(request);
-		if (Objects.isNull(exposeApiToken)) {
+		log.info("Received {} request for /kpiIntegrationValues", request.getMethod());
+		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
+				.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
+		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}
-		List<KpiElement> responseList = maturityService.getMaturityValues(kpiRequest);
+		List<KpiElement> responseList = kpiIntegrationService.getKpiResponses(kpiRequest);
 		if (responseList.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseList);
 		} else {
 			return ResponseEntity.ok().body(responseList);
 		}
 	}
+
 
 }

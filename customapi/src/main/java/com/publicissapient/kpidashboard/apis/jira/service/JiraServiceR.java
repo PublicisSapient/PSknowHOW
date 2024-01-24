@@ -26,7 +26,8 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.maturity.MaturityServiceImpl;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.KpiIntegrationServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -74,7 +75,7 @@ import lombok.extern.slf4j.Slf4j;
  * in thread. It is responsible for cache of KPI data at different level.
  *
  * @author tauakram
- * @implNote {@link MaturityServiceImpl }
+ * @implNote {@link KpiIntegrationServiceImpl }
  */
 @Service
 @Slf4j
@@ -151,9 +152,12 @@ public class JiraServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
+				boolean tokenAuth = cacheService.getFromApplicationCache(
+								kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH)
+						.equalsIgnoreCase(Boolean.TRUE.toString());
+				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList, tokenAuth);
 
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList, tokenAuth);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -268,9 +272,9 @@ public class JiraServiceR {
 	 * @return list of AccountHierarchyData
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList) {
+			List<AccountHierarchyData> filteredAccountDataList, Boolean tokenAuth) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
@@ -283,9 +287,10 @@ public class JiraServiceR {
 	 * @param filteredAccountDataList
 	 *            filteredAccountDataList
 	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
+			Boolean tokenAuth) {
 		String[] projectKeyCache;
-		if (CollectionUtils.isEmpty(kpiRequest.getKpiIdList()) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
