@@ -32,9 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -65,11 +64,13 @@ import com.atlassian.jira.rest.client.api.domain.User;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.KanbanJiraIssueDataFactory;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,7 +89,7 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 	private Issue issue;
 
 	@Before
-	public void setUp() throws URISyntaxException {
+	public void setUp() throws URISyntaxException, JSONException {
 
 		jiraIssueCustomHistory = new KanbanIssueCustomHistory();
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -327,7 +328,7 @@ public class KanbanJiraIssueHistoryProcessorImplTest {
 	//
 	// }
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));

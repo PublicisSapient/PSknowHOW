@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.zephyr.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -96,7 +94,7 @@ public class ZephyrServiceTest {
 
 	@Before
 	public void setup() throws ApplicationException {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		List<ZephyrKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		ZephyrKPIServiceFactory zephyrKPIServiceFactory = ZephyrKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTZEPHYR).when(service).getQualifierType();

@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -39,27 +39,23 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.common.model.jira.IssueGroupFields;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 public class JiraIssueCustomHistoryRepositoryImplTest {
@@ -245,7 +241,7 @@ public class JiraIssueCustomHistoryRepositoryImplTest {
 
 	@Test
 	public void validateConnectivity_HappyPath() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		featureCustomHistoryRepo.save(mockJiraJiraIssueCustomHistory1);
 		List<JiraIssueCustomHistory> customHiostoryList = new ArrayList<>();

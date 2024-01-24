@@ -21,7 +21,7 @@ package com.publicissapient.kpidashboard.jira.service;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 import static org.testng.AssertJUnit.assertEquals;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +29,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
 import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
@@ -50,7 +54,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -231,7 +234,7 @@ public class JiraCommonServiceTest {
 
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));

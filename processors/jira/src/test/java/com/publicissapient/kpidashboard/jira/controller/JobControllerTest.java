@@ -19,13 +19,19 @@
 
 package com.publicissapient.kpidashboard.jira.controller;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
-import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.doThrow;
+import static org.testng.AssertJUnit.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,20 +39,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionException;
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.powermock.api.mockito.PowerMockito.*;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
-import static org.testng.AssertJUnit.assertEquals;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfigurationImpl;
+import com.publicissapient.kpidashboard.jira.service.OngoingExecutionsService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JobControllerTest {
@@ -84,7 +90,7 @@ public class JobControllerTest {
 
 	@Before
 	public void init() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
@@ -286,7 +292,7 @@ public class JobControllerTest {
 
 		// Verify that the response is as expected
 		assertEquals("Job started for BasicProjectConfigId: 507f1f77bcf86cd799439011", response.getBody());
-		assertEquals(200, response.getStatusCodeValue());
+		assertEquals(200, response.getStatusCode().value());
 
 	}
 

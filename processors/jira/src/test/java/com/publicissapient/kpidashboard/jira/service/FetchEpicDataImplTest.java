@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -37,13 +36,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.atlassian.jira.rest.client.api.RestClientException;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -87,7 +85,6 @@ import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 import io.atlassian.util.concurrent.Promise;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FetchEpicDataImplTest {
@@ -114,7 +111,7 @@ public class FetchEpicDataImplTest {
 	private FetchEpicDataImpl fetchEpicData;
 
 	@Before
-	public void setUp() throws IOException, URISyntaxException {
+	public void setUp() throws IOException, URISyntaxException, JSONException {
 		FileInputStream fis = new FileInputStream("src/test/resources/json/default/epic_response.txt");
 		epicResponse = IOUtils.toString(fis, "UTF-8");
 
@@ -198,7 +195,7 @@ public class FetchEpicDataImplTest {
 		return fieldMappingDataFactory.getFieldMappings();
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Epic", false, "desc", new URI("iconURI"));

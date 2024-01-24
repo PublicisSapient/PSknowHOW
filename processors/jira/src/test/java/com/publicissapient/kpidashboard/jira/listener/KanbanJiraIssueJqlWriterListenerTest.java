@@ -19,23 +19,6 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
-import com.publicissapient.kpidashboard.jira.model.CompositeResult;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -43,7 +26,25 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.item.Chunk;
+
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KanbanJiraIssueJqlWriterListenerTest {
@@ -53,11 +54,11 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @InjectMocks
     private KanbanJiraIssueJqlWriterListener listener;
 
-    List<CompositeResult> compositeResults = new ArrayList<>();
+    Chunk<CompositeResult> compositeResults = new Chunk<>();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         // Create a KanbanJiraIssue for testing
         KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
         kanbanJiraIssue.setBasicProjectConfigId("testProjectId");
@@ -89,7 +90,7 @@ public class KanbanJiraIssueJqlWriterListenerTest {
 
     @Test
     public void testOnWriteError_LogsError() {
-        List<CompositeResult> compositeResults = new ArrayList<>();
+        Chunk<CompositeResult> compositeResults = new Chunk<>();
 
         // Arrange
         Exception testException = new RuntimeException("Test exception");
@@ -100,7 +101,7 @@ public class KanbanJiraIssueJqlWriterListenerTest {
 
     @Test
     public void testAfterWriteWithEmptyValue() {
-        listener.afterWrite(new ArrayList<>());
+        listener.afterWrite(new Chunk<>());
     }
 
     @Test

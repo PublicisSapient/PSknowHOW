@@ -255,7 +255,7 @@ public class JiraIssueProcessorImplTest {
 		return projectConfigDataFactory.getProjectBasicConfigs();
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", true, "desc", new URI("iconURI"));
@@ -544,7 +544,7 @@ public class JiraIssueProcessorImplTest {
 		return toolObj;
 	}
 
-	private void createIssuefieldsList() {
+	private void createIssuefieldsList() throws JSONException {
 		Map<String, Object> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
@@ -728,7 +728,7 @@ public class JiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class, Map.class);
 		method.setAccessible(true);
 		FieldMapping fieldMapping = new FieldMapping();

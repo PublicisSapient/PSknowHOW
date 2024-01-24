@@ -18,6 +18,10 @@
 
 package com.publicissapient.kpidashboard.jira.aspect;
 
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static org.testng.AssertJUnit.assertEquals;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -28,8 +32,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.powermock.api.mockito.PowerMockito.*;
-import static org.testng.AssertJUnit.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TrackExecutionTimeAspectTest {
@@ -44,7 +46,7 @@ public class TrackExecutionTimeAspectTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

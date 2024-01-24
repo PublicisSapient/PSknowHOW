@@ -18,14 +18,15 @@
 
 package com.publicissapient.kpidashboard.common.processortool.service.impl;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
-import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,13 +37,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.List;
-import java.util.Set;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.processortool.ProcessorToolConnection;
+import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 
 /**
  * @author narsingh9
@@ -116,7 +117,7 @@ public class ProcessorToolConnectionServiceImplTest {
         when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
         when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(connectionList);
         List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool(any());
-        assertThat(projectToolConnectionList.size(), equalTo(2));
+        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(2));
     }
 
     /**
@@ -126,7 +127,7 @@ public class ProcessorToolConnectionServiceImplTest {
     public void findByToolTest_nullProjectTool_success() {
         when(projectToolConfigRepository.findByToolName(any())).thenReturn(null);
         List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool("Jira");
-        assertThat(projectToolConnectionList.size(), equalTo(0));
+        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
     }
 
     /**
@@ -137,7 +138,7 @@ public class ProcessorToolConnectionServiceImplTest {
         when(projectToolConfigRepository.findByToolName(any())).thenReturn(projectToolList);
         when(connectionRepository.findByIdIn(connectionIdSet())).thenReturn(null);
         List<ProcessorToolConnection> projectToolConnectionList = processorToolConnectionServiceImpl.findByTool(any());
-        assertThat(projectToolConnectionList.size(), equalTo(0));
+        MatcherAssert.assertThat(projectToolConnectionList.size(), equalTo(0));
     }
 
     private Set<ObjectId> connectionIdSet() {

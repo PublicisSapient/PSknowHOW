@@ -16,8 +16,14 @@
  */
 package com.publicissapient.kpidashboard.common.service;
 
-import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
-import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +32,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.publicissapient.kpidashboard.common.model.application.AdditionalFilterCategory;
+import com.publicissapient.kpidashboard.common.repository.application.AdditionalFilterCategoryRepository;
 
 @ExtendWith(SpringExtension.class)
 public class AdditionalFilterCategoryServiceImplTest {
@@ -45,7 +46,7 @@ public class AdditionalFilterCategoryServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

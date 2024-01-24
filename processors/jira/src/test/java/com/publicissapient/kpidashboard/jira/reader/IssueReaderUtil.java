@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 
@@ -70,7 +71,7 @@ import com.publicissapient.kpidashboard.jira.model.ReadData;
 public class IssueReaderUtil {
 
 	public static ReadData getMockReadData(String boardId, ProjectConfFieldMapping projectConfFieldMapping)
-			throws URISyntaxException {
+			throws URISyntaxException, JSONException {
 		ReadData readData = new ReadData();
 		readData.setBoardId(boardId);
 		readData.setIssue(createIssue().get(1));
@@ -133,7 +134,7 @@ public class IssueReaderUtil {
 		return fieldMappingDataFactory.findByBasicProjectConfigId(projectId);
 	}
 
-	public static List<Issue> createIssue() throws URISyntaxException {
+	public static List<Issue> createIssue() throws URISyntaxException, JSONException {
 		List<Issue> issues = new ArrayList<>();
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Epic", false, "desc", new URI("iconURI"));

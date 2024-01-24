@@ -19,8 +19,6 @@
 package com.publicissapient.kpidashboard.apis.zephyr.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -35,16 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.zephyr.factory.ZephyrKPIServiceFactory;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,14 +49,20 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
+import com.publicissapient.kpidashboard.apis.zephyr.factory.ZephyrKPIServiceFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -119,7 +114,7 @@ public class ZephyrServiceKanbanTest {
 
 	@Before
 	public void setup() throws ApplicationException {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		List<ZephyrKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		zephyrKPIServiceFactory = ZephyrKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTZEPHYR).when(service).getQualifierType();

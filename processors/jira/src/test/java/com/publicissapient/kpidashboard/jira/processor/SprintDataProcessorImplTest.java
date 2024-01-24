@@ -19,16 +19,18 @@
 
 package com.publicissapient.kpidashboard.jira.processor;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
-import org.apache.commons.beanutils.BeanUtils;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,16 +38,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SprintDataProcessorImplTest {
@@ -59,7 +57,7 @@ public class SprintDataProcessorImplTest {
     ProjectConfFieldMapping projectConfFieldMapping= ProjectConfFieldMapping.builder().build();
 
     @Test
-    public void testProcessSprintDataWithValidSprintField() throws IOException {
+    public void testProcessSprintDataWithValidSprintField() throws IOException, JSONException {
         createProjectConfigMap();
         // Arrange
         Issue issue = createMockIssueWithSprintField();
@@ -72,7 +70,7 @@ public class SprintDataProcessorImplTest {
         assertNotNull(result);
     }
 
-    private Issue createMockIssueWithSprintField() {
+    private Issue createMockIssueWithSprintField() throws JSONException {
         List<IssueField> issueFieldList = new ArrayList<>();
         List<Object> sprintList = new ArrayList<>();
         String sprint = "com.atlassian.greenhopper.service.sprint.Sprint@6fc7072e[id=23356,rapidViewId=11649,state=CLOSED,name=TEST | 06 Jan - 19 Jan,startDate=2020-01-06T11:38:31.937Z,endDate=2020-01-19T11:38:00.000Z,completeDate=2020-01-20T11:15:21.528Z,sequence=22778,goal=]";

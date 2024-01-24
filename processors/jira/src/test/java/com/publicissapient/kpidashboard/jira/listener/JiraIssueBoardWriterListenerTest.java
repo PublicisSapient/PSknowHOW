@@ -40,6 +40,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.item.Chunk;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -58,13 +59,13 @@ public class JiraIssueBoardWriterListenerTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
 	public void testAfterWrite() {
 		// Arrange
-		List<CompositeResult> compositeResults = new ArrayList<>();
+		Chunk<CompositeResult> compositeResults = new Chunk<>();
 
 		// Create a JiraIssue for testing
 		JiraIssue jiraIssue = new JiraIssue();
@@ -99,14 +100,14 @@ public class JiraIssueBoardWriterListenerTest {
 	public void onWriteError_LogsError() {
 		// Arrange
 		Exception testException = new RuntimeException("Test exception");
-		List<CompositeResult> compositeResults = createSampleCompositeResults();
+		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
 		// Act
 		listener.onWriteError(testException, compositeResults);
 	}
 
-	private List<CompositeResult> createSampleCompositeResults() {
-		List<CompositeResult> compositeResults = new ArrayList<>();
+	private Chunk<CompositeResult> createSampleCompositeResults() {
+		Chunk<CompositeResult> compositeResults = new Chunk<>();
 
 		JiraIssue jiraIssue1 = new JiraIssue();
 		jiraIssue1.setBasicProjectConfigId("Project1");
@@ -127,7 +128,7 @@ public class JiraIssueBoardWriterListenerTest {
 	@Test
 	public void afterWrite_ExistingLog_Success() {
 		// Arrange
-		List<CompositeResult> compositeResults = createSampleCompositeResults();
+		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
 		ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setBasicProjectConfigId("abc");
@@ -147,7 +148,7 @@ public class JiraIssueBoardWriterListenerTest {
 
 	@Test
 	public void testAfterWriteWithEmptyValue() {
-		listener.afterWrite(new ArrayList<>());
+		listener.afterWrite(new Chunk<>());
 	}
 
 }

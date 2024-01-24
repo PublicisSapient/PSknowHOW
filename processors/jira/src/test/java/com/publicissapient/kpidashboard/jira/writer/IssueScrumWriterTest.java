@@ -19,6 +19,25 @@
 
 package com.publicissapient.kpidashboard.jira.writer;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bson.types.ObjectId;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.item.Chunk;
+
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -31,23 +50,6 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.model.CompositeResult;
-import org.bson.types.ObjectId;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueScrumWriterTest {
@@ -76,7 +78,7 @@ public class IssueScrumWriterTest {
     @Test
     public void testWrite() throws Exception {
         // Mock data
-        List<CompositeResult> kanbanCompositeResults = createMockScrumCompositeResults();
+        Chunk<CompositeResult> kanbanCompositeResults = createMockScrumCompositeResults();
         //when(jiraProcessorConfig.getPageSize()).thenReturn(50);
         // Invoke the method to be tested
         issueScrumWriter.write(kanbanCompositeResults);
@@ -89,7 +91,7 @@ public class IssueScrumWriterTest {
     public void testWriteWithEmptyValue() throws Exception {
         // Mock data
         CompositeResult compositeResult = new CompositeResult();
-        List<CompositeResult> compositeResults=new ArrayList<>();
+        Chunk<CompositeResult> compositeResults= new Chunk<>();
         compositeResults.add(compositeResult);
         // Invoke the method to be tested
         issueScrumWriter.write(compositeResults);
@@ -97,7 +99,7 @@ public class IssueScrumWriterTest {
     }
 
     // Helper methods to create mock data for testing
-    private List<CompositeResult> createMockScrumCompositeResults() {
+    private Chunk<CompositeResult> createMockScrumCompositeResults() {
         CompositeResult compositeResult = new CompositeResult();
         compositeResult.setJiraIssue(new ArrayList<>(createMockJiraItems()).get(0));
         compositeResult.setAccountHierarchies((createMockAccountHierarchies()));
@@ -106,7 +108,7 @@ public class IssueScrumWriterTest {
         SprintDetails sprintDetails=new SprintDetails();
         sprintDetails.setSprintID("1234");
         compositeResult.setSprintDetailsSet(new HashSet<>(Arrays.asList(sprintDetails)));
-        List<CompositeResult> kanbanCompositeResults = new ArrayList<>();
+        Chunk<CompositeResult> kanbanCompositeResults = new Chunk<>();
         kanbanCompositeResults.add(compositeResult);
         return kanbanCompositeResults;
     }

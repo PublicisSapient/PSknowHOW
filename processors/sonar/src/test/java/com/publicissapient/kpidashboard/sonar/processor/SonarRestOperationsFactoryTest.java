@@ -19,7 +19,7 @@
 package com.publicissapient.kpidashboard.sonar.processor;
 
 
-import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,6 +36,6 @@ public class SonarRestOperationsFactoryTest {
 	@Test
 	public void get() {
 		RestOperations restOperations = sonarRestOperationsFactory.getTypeInstance();
-		Assert.assertTrue(restOperations instanceof RestOperations);
+        Assertions.assertInstanceOf(RestOperations.class, restOperations);
 	}
 }

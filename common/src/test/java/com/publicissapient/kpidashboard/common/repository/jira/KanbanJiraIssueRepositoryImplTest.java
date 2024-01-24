@@ -31,21 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.mongodb.client.result.UpdateResult;
 import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
@@ -60,7 +58,7 @@ public class KanbanJiraIssueRepositoryImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

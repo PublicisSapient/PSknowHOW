@@ -19,7 +19,9 @@
 
 package com.publicissapient.kpidashboard.jira.service;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,14 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.atlassian.jira.rest.client.api.MetadataRestClient;
-import com.atlassian.jira.rest.client.api.StatusCategory;
-import com.atlassian.jira.rest.client.api.domain.Status;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
-import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
-import io.atlassian.util.concurrent.Promise;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +37,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import com.atlassian.jira.rest.client.api.MetadataRestClient;
+import com.atlassian.jira.rest.client.api.StatusCategory;
+import com.atlassian.jira.rest.client.api.domain.Status;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
+import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReleaseStatusRepository;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.helper.JiraHelper;
+
+import io.atlassian.util.concurrent.Promise;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateJiraIssueReleaseStatusImplTest {
@@ -66,7 +70,7 @@ public class CreateJiraIssueReleaseStatusImplTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

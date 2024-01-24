@@ -570,7 +570,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return new UserInfo();
 			}
 		} catch (RuntimeException e) {
@@ -597,7 +597,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API
-						+ response.getStatusCodeValue());
+						+ response.getStatusCode().value());
 				return new CentralUserInfoDTO();
 			}
 		} catch (ParseException e) {
@@ -625,7 +625,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return "";
 			}
 		} catch (RuntimeException e) {
@@ -653,7 +653,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				}.getType());
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return (List<UserInfoDTO>) new UserInfo();
 			}
 		} catch (ParseException e) {
@@ -682,7 +682,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return (boolean) jsonObject.get("data");
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return false;
 			}
 		} catch (ParseException e) {
@@ -710,7 +710,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return "";
 			}
 		} catch (RuntimeException e) {

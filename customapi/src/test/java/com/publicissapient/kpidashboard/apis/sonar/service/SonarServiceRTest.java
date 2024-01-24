@@ -21,14 +21,10 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -38,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -61,6 +56,7 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -71,7 +67,6 @@ import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactor
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
-import org.slf4j.Logger;
 
 /**
  *
@@ -126,7 +121,7 @@ public class SonarServiceRTest {
 
 	@Before
 	public void setup() throws IllegalAccessException, ApplicationException {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		List<SonarKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		sonarKPIServiceFactory = SonarKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTSONAR).when(service).getQualifierType();

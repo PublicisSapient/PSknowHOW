@@ -37,9 +37,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
-import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,12 +44,9 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockedStatic.Verification;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -63,12 +57,14 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyKanbanFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
+import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyDataKanban;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.sonar.factory.SonarKPIServiceFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
@@ -125,7 +121,7 @@ public class SonarServiceKanbanRTest {
 
 	@Before
 	public void setup() throws ApplicationException {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		List<SonarKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		sonarKPIServiceFactory = SonarKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTSONAR).when(service).getQualifierType();

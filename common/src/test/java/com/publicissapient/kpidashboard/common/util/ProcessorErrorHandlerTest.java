@@ -19,13 +19,13 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ProcessorErrorHandlerTest {
 
@@ -34,7 +34,7 @@ public class ProcessorErrorHandlerTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

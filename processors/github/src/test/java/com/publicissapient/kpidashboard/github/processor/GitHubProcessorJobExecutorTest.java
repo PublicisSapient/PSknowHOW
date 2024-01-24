@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -109,7 +108,7 @@ public class GitHubProcessorJobExecutorTest {
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		requests = new MergeRequests();
 		requests.setId(new ObjectId("61f22fbb16e55b7609b0a36b"));
 		requests.setRevisionNumber("revNo");

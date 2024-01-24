@@ -35,6 +35,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.item.Chunk;
 
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
@@ -67,7 +68,7 @@ public class IssueKanbanWriterTest {
 	@Test
 	public void testWrite() throws Exception {
 		// Mock data
-		List<CompositeResult> kanbanCompositeResults = createMockKanbanCompositeResults();
+		Chunk<CompositeResult> kanbanCompositeResults = createMockKanbanCompositeResults();
 
 		// Invoke the method to be tested
 		issueKanbanWriter.write(kanbanCompositeResults);
@@ -80,7 +81,7 @@ public class IssueKanbanWriterTest {
 	public void testWriteWithEmptyValue() throws Exception {
 		// Mock data
 		CompositeResult compositeResult = new CompositeResult();
-		List<CompositeResult> compositeResults=new ArrayList<>();
+		Chunk<CompositeResult> compositeResults=new Chunk<>();
 		compositeResults.add(compositeResult);
 		// Invoke the method to be tested
 		issueKanbanWriter.write(compositeResults);
@@ -88,13 +89,13 @@ public class IssueKanbanWriterTest {
 	}
 
 	// Helper methods to create mock data for testing
-	private List<CompositeResult> createMockKanbanCompositeResults() {
+	private Chunk<CompositeResult> createMockKanbanCompositeResults() {
 		CompositeResult compositeResult = new CompositeResult();
 		compositeResult.setKanbanJiraIssue(createMockJiraItems().get(0));
 		compositeResult.setKanbanAccountHierarchies((createMockAccountHierarchies()));
 		compositeResult.setAssigneeDetails(createMockAssigneesToSave().get("0"));
 		compositeResult.setKanbanIssueCustomHistory(createMockKanbanIssueCustomHistory().get(0));
-		List<CompositeResult> kanbanCompositeResults = new ArrayList<>();
+		Chunk<CompositeResult> kanbanCompositeResults = new Chunk<>();
 		kanbanCompositeResults.add(compositeResult);
 		return kanbanCompositeResults;
 	}

@@ -140,7 +140,7 @@ public class JiraServiceRTest {
 
 	@Before
 	public void setup() throws ApplicationException {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		List<JiraKPIService<?, ?, ?>> mockServices = Arrays.asList(service);
 		JiraKPIServiceFactory serviceFactory = JiraKPIServiceFactory.builder().services(mockServices).build();
 		doReturn(TESTJIRA).when(service).getQualifierType();

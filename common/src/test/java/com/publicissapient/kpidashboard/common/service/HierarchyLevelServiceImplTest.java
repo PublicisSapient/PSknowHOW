@@ -58,7 +58,7 @@ public class HierarchyLevelServiceImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
 		mockHierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
 

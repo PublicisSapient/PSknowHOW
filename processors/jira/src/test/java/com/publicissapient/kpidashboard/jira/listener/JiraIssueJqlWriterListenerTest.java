@@ -19,11 +19,14 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
-import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
-import com.publicissapient.kpidashboard.jira.model.CompositeResult;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,16 +34,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.batch.item.Chunk;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.springframework.test.util.AssertionErrors.assertTrue;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
+import com.publicissapient.kpidashboard.jira.model.CompositeResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraIssueJqlWriterListenerTest {
@@ -52,13 +52,13 @@ public class JiraIssueJqlWriterListenerTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
 	public void testAfterWrite_SuccessfulRun() {
 		// Arrange
-		List<CompositeResult> compositeResults = createSampleCompositeResults();
+		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
 		// Act
 		listener.afterWrite(compositeResults);
@@ -69,15 +69,15 @@ public class JiraIssueJqlWriterListenerTest {
 	public void testOnWriteError_LogsError() {
 		// Arrange
 		Exception testException = new RuntimeException("Test exception");
-		List<CompositeResult> compositeResults = createSampleCompositeResults();
+		Chunk<CompositeResult> compositeResults = createSampleCompositeResults();
 
 		// Act
 		listener.onWriteError(testException, compositeResults);
 		assertTrue("", true);
 	}
 
-	private List<CompositeResult> createSampleCompositeResults() {
-		List<CompositeResult> compositeResults = new ArrayList<>();
+	private Chunk<CompositeResult> createSampleCompositeResults() {
+		Chunk<CompositeResult> compositeResults = new Chunk<>();
 
 		JiraIssue jiraIssue1 = new JiraIssue();
 		jiraIssue1.setBasicProjectConfigId("Project1");
@@ -97,7 +97,7 @@ public class JiraIssueJqlWriterListenerTest {
 
 	@Test
 	public void testAfterWriteWithEmptyValue() {
-		listener.afterWrite(new ArrayList<>());
+		listener.afterWrite(new Chunk<>());
 	}
 
 	@Test

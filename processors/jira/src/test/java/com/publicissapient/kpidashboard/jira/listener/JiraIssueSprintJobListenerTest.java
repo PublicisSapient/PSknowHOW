@@ -19,9 +19,15 @@
 
 package com.publicissapient.kpidashboard.jira.listener;
 
-import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static org.testng.AssertJUnit.assertFalse;
+import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +38,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.testng.AssertJUnit.*;
+import com.publicissapient.kpidashboard.common.model.application.SprintTraceLog;
+import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
+import com.publicissapient.kpidashboard.jira.cache.JiraProcessorCacheEvictor;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JiraIssueSprintJobListenerTest {
@@ -50,7 +55,7 @@ public class JiraIssueSprintJobListenerTest {
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

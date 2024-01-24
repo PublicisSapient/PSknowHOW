@@ -36,6 +36,7 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -94,7 +95,7 @@ public class JiraIssueHistoryProcessorImplTest {
 	private Issue issue;
 
 	@Before
-	public void setUp() throws URISyntaxException {
+	public void setUp() throws URISyntaxException, JSONException {
 
 		jiraIssueCustomHistory = new JiraIssueCustomHistory();
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
@@ -158,7 +159,7 @@ public class JiraIssueHistoryProcessorImplTest {
 		return jiraIssueDataFactory.findTopByBasicProjectConfigId("63bfa0d5b7617e260763ca21");
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		Status status1 = new Status(new URI("self"), 1l, "Ready for Sprint Planning", "desc", new URI("iconURI"),
@@ -252,7 +253,7 @@ public class JiraIssueHistoryProcessorImplTest {
 		return issueLinkList;
 	}
 
-	private void createFieldsMap(boolean sprintStatus) {
+	private void createFieldsMap(boolean sprintStatus) throws JSONException {
 		Map<String, Object> map = new HashMap<>();
 		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
 		map.put("value", "Client Testing (UAT)");

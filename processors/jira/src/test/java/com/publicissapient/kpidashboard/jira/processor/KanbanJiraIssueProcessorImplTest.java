@@ -129,7 +129,7 @@ public class KanbanJiraIssueProcessorImplTest {
 	Set<Assignee> assigneeSetToSave = new HashSet<>();
 
 	@Before
-	public void setup() throws URISyntaxException {
+	public void setup() throws URISyntaxException, JSONException {
 		fieldMapping = getMockFieldMapping();
 		projectConfigsList = getMockProjectConfig();
 		projectToolConfigs = getMockProjectToolConfig();
@@ -198,7 +198,7 @@ public class KanbanJiraIssueProcessorImplTest {
 		return fieldMappingDataFactory.findByBasicProjectConfigId("6335368249794a18e8a4479f");
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));
@@ -381,7 +381,7 @@ public class KanbanJiraIssueProcessorImplTest {
 	}
 
 	@Test
-	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+	public void testGetRootCauses() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
 		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("getRootCauses", FieldMapping.class,
 				Map.class);
 		method.setAccessible(true);

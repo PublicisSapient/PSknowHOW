@@ -33,10 +33,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -124,7 +124,7 @@ public class FetchIssueSprintImplTest {
 
 	@Before
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		projectToolConfigs = getMockProjectToolConfig();
 		fieldMappingList = getMockFieldMapping();
 		connection = getMockConnection();
@@ -242,7 +242,7 @@ public class FetchIssueSprintImplTest {
 		return fieldMappingDataFactory.getFieldMappings();
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 		BasicProject basicProj = new BasicProject(new URI("self"), "proj1", 1l, "project1");
 		IssueType issueType1 = new IssueType(new URI("self"), 1l, "Story", false, "desc", new URI("iconURI"));
 		IssueType issueType2 = new IssueType(new URI("self"), 2l, "Defect", false, "desc", new URI("iconURI"));
