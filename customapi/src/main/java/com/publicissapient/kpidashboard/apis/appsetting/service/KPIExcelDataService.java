@@ -153,7 +153,7 @@ public class KPIExcelDataService {
 
 		Map<String, KpiRequest> kpiRequestSourceWiseMap = createKPIRequest(kpiID, level, filterIds, kpiRequest,
 				isKanban);
-		if (isApiAuth) {
+		if (Boolean.TRUE.equals(isApiAuth)) {
 			cacheService.setIntoApplicationCache(kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
 					Boolean.TRUE.toString());
 		}
