@@ -135,6 +135,7 @@ public class ProjectAccessManagerTest {
 		userInfo.setUsername("user");
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
+		userInfo.setEmailAddress("user@gmail.com");
 		userInfo.setProjectsAccess(Lists.newArrayList());
 		Map<String, String> notificationSubjects = new HashMap<String, String>();
 		notificationSubjects.put("Subject", "subject");
@@ -157,7 +158,6 @@ public class ProjectAccessManagerTest {
 		when(customApiConfig.getNotificationSubject()).thenReturn(notificationSubjects);
 		when(commonService.getApiHost()).thenReturn("serverPath");
 		when(rolesRepository.findByRoleName(Constant.ROLE_PROJECT_ADMIN)).thenReturn(roleDataObj());
-		when(authenticationRepository.findByUsername(userInfo.getUsername())).thenReturn(authentication);
 		projectAccessManager.createAccessRequest(accessRequestObj(Constant.ROLE_PROJECT_ADMIN,
 				Constant.ACCESS_REQUEST_STATUS_PENDING, "hierarchyLevel3Id"), accessRequestListener);
 		assertNotNull(accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING,
@@ -462,6 +462,7 @@ public class ProjectAccessManagerTest {
 		UserInfo userInfo = new UserInfo();
 		userInfo.setUsername("user");
 		userInfo.setId(new ObjectId("61e4f7852747353d4405c762"));
+		userInfo.setEmailAddress("user@gmail.com");
 		userInfo.setAuthorities(Lists.newArrayList(Constant.ROLE_VIEWER));
 		userInfo.setProjectsAccess(Lists.newArrayList());
 		AccessItem item = new AccessItem();
@@ -487,7 +488,6 @@ public class ProjectAccessManagerTest {
 		when(customApiConfig.getNotificationSubject()).thenReturn(notificationSubjects);
 		when(commonService.getApiHost()).thenReturn("serverPath");
 		when(rolesRepository.findByRoleName(Constant.ROLE_PROJECT_ADMIN)).thenReturn(roleDataObj());
-		when(authenticationRepository.findByUsername(userInfo.getUsername())).thenReturn(authentication);
 		projectAccessManager.createAccessRequest(
 				accessRequestObj(Constant.ROLE_PROJECT_ADMIN, Constant.ACCESS_REQUEST_STATUS_PENDING, "Project"),
 				accessRequestListener);

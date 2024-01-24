@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;

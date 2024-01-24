@@ -112,6 +112,8 @@ public class FeedbackServiceImplTest {
 	@Test
 	public void testSubmitFeedbackRequest() throws UnknownHostException {
 		Authentication authentication = new Authentication();
+		authentication.setEmail("abc@gmail.com");
+		authentication.setUsername("testuser");
 		List<String> emailAddresses = new ArrayList<>();
 		List<GlobalConfig> globalConfigs = new ArrayList<>();
 		emailAddresses.add("abc@gmail.com");

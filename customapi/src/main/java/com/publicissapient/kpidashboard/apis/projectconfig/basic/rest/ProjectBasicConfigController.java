@@ -21,10 +21,7 @@ package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest;
 import java.util.List;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +51,8 @@ import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasi
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelSuggestionsService;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**

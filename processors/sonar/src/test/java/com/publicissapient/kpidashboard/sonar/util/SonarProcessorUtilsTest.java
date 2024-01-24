@@ -20,7 +20,7 @@ package com.publicissapient.kpidashboard.sonar.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
+import static org.mockito.Mockito.doReturn;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

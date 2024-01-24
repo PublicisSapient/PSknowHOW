@@ -543,7 +543,7 @@ export class HelperService {
         Object.keys(userLevelKpi).forEach(boards => {
           if (Array.isArray(userLevelKpi[boards])) {
             userLevelKpi[boards].forEach(boardA => {
-              const boardB = projectLevelKpi[boards].find(b => b.boardId === boardA.boardId);
+              const boardB = projectLevelKpi[boards]?.find(b => b.boardId === boardA.boardId);
               if (boardB) {
                 boardA.kpis.forEach(kpiA => {
                   const kpiB = boardB.kpis.find(b => b.kpiId === kpiA.kpiId);

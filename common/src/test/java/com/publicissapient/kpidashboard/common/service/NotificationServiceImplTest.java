@@ -33,7 +33,7 @@ import org.mockito.Mock;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.mail.MailSendException;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;

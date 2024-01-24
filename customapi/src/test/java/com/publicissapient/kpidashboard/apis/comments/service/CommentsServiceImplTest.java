@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
-import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +47,8 @@ import com.publicissapient.kpidashboard.common.model.comments.CommentViewRespons
 import com.publicissapient.kpidashboard.common.model.comments.CommentsInfo;
 import com.publicissapient.kpidashboard.common.model.comments.KPIComments;
 import com.publicissapient.kpidashboard.common.model.comments.KpiCommentsHistory;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentHistoryRepositoryCustom;
+import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentRepositoryCustom;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.comments.KpiCommentsRepository;
 

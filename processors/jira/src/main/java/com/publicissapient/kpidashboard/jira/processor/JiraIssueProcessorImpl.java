@@ -37,8 +37,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
@@ -350,7 +350,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 		if (StringUtils.isNotBlank(fieldMapping.getJiraTechDebtIdentification())) {
 			if (fieldMapping.getJiraTechDebtIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-				if (org.apache.commons.collections.CollectionUtils.containsAny(issue.getLabels(),
+				if (org.apache.commons.collections4.CollectionUtils.containsAny(issue.getLabels(),
 						fieldMapping.getJiraTechDebtValue())) {
 					jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());
 				}
@@ -361,7 +361,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& null != fields.get(fieldMapping.getJiraTechDebtCustomField())
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraTechDebtCustomField().trim()).getValue() != null
-					&& org.apache.commons.collections.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
+					&& org.apache.commons.collections4.CollectionUtils.containsAny(fieldMapping.getJiraTechDebtValue(),
 							JiraIssueClientUtil
 									.getListFromJson(fields.get(fieldMapping.getJiraTechDebtCustomField().trim())))) {
 				jiraIssue.setSpeedyIssueType(NormalizedJira.TECHSTORY.getValue());

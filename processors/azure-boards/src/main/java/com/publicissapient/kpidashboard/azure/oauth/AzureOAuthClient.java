@@ -25,16 +25,16 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
+import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.WebClient;
+import org.htmlunit.html.HtmlForm;
+import org.htmlunit.html.HtmlPage;
+import org.htmlunit.html.HtmlPasswordInput;
+import org.htmlunit.html.HtmlSubmitInput;
+import org.htmlunit.html.HtmlTextInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlPasswordInput;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.google.common.collect.ImmutableList;
 
 import lombok.extern.slf4j.Slf4j;

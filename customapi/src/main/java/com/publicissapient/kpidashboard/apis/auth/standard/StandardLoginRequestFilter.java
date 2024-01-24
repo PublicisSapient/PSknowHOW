@@ -18,9 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.auth.standard;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +32,9 @@ import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class StandardLoginRequestFilter extends UsernamePasswordAuthenticationFilter {
 	CustomApiConfig customApiConfig;

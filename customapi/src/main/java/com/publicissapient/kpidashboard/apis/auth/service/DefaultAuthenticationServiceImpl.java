@@ -22,24 +22,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.exceptions.PendingApprovalException;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
+import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class provides method to perform CRUD and validation operations on user
@@ -48,12 +54,22 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepositor
  * @author prijain3
  *
  */
+@Slf4j
 @Service
 public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 
 	private final AuthenticationRepository authenticationRepository;
 	private final AuthProperties authProperties;
 	private final UserInfoRepository userInfoRepository;
+
+	// ------- auth-N-auth required code starts here -------
+	private static final String RESPONSE = "response {}";
+	private static final String DATA_FOUND = "data found";
+	private static final String FETCHED_RESPONSE = "fetched response {}";
+	private static final String ERROR_CODE = "Error while fetching from {}. with status {}";
+	private static final String ERROR_MESSAGE = "Error while fetching from {}:  {}";
+
+	// ----- auth-N-auth required code end here ----------------
 
 	@Autowired
 	public DefaultAuthenticationServiceImpl(AuthenticationRepository authenticationRepository,
@@ -62,6 +78,9 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 		this.authProperties = authProperties;
 		this.userInfoRepository = userInfoRepository;
 	}
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	/**
 	 * {@inheritDoc}
@@ -356,5 +375,32 @@ public class DefaultAuthenticationServiceImpl implements AuthenticationService {
 	public Iterable<Authentication> getAuthenticationByApproved(boolean approved) {
 		return authenticationRepository.findByApproved(approved);
 	}
+
+	// ---- auth-N-auth required code starts here ----
+
+	/**
+	 *
+	 * @param responseEntity
+	 * @param url
+	 * @return
+	 */
+	public ServiceResponse getAuthNAuthResponse(ResponseEntity<ServiceResponse> responseEntity, String url) {
+		ServiceResponse fetchDataResponse = new ServiceResponse();
+		try {
+			log.info(RESPONSE, responseEntity);
+			if (responseEntity.getStatusCode() == HttpStatus.OK) {
+				log.info(DATA_FOUND);
+				fetchDataResponse = responseEntity.getBody();
+				log.info(FETCHED_RESPONSE, fetchDataResponse);
+			} else {
+				String statusCode = responseEntity.getStatusCode().toString();
+				log.error(ERROR_CODE, url, statusCode);
+			}
+		} catch (Exception exception) {
+			log.error(ERROR_MESSAGE, url, exception.getMessage());
+		}
+		return fetchDataResponse;
+	}
+	// --- auth-N-auth required code end here --------------
 
 }

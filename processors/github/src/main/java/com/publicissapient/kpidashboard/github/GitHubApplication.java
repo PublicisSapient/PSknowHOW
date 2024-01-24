@@ -18,6 +18,7 @@
 
 package com.publicissapient.kpidashboard.github;
 
+import java.net.http.HttpClient;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +28,6 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -78,11 +78,10 @@ public class GitHubApplication {
 
 		SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
 
-		CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
-
+		org.apache.hc.client5.http.classic.HttpClient httpClient = (org.apache.hc.client5.http.classic.HttpClient) HttpClients.custom().setSSLSocketFactory(csf).build();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 
-		requestFactory.setHttpClient(httpClient);
+		requestFactory.setHttpClient((httpClient));
 		return new RestTemplate(requestFactory);
 	}
 

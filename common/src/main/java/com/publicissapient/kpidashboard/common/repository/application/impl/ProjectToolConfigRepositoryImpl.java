@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;

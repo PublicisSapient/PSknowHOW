@@ -19,7 +19,7 @@
 package com.publicissapient.kpidashboard.apis.common.rest;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -87,7 +87,7 @@ public class FileStorageControllerTest {
 				"Hello, World!".getBytes());
 
 		when(fileStorageService.upload(Mockito.any())).thenReturn(new BaseResponse());
-		mockMvc.perform(fileUpload("/file/upload").file(file)).andExpect(status().isOk());
+		mockMvc.perform(multipart("/file/upload").file(file)).andExpect(status().isOk());
 	}
 
 
