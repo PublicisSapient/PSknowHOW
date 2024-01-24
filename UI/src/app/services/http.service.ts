@@ -176,6 +176,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private centralLogout = 'https://dev-authnauth.tools.publicis.sapient.com/api/userlogout';
 
   constructor(
     private router: Router,
@@ -1138,5 +1139,9 @@ export class HttpService {
   }
   getFeatureFlags() {
     return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
+  }
+
+  handleCentralLogout() {
+    return this.http.get<any>(this.centralLogout);
   }
 }
