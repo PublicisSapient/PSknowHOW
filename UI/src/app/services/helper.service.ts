@@ -394,7 +394,7 @@ export class HelperService {
 
     sortAlphabetically(objArray) {
         if (objArray && objArray?.length > 1) {
-            objArray?.sort((a, b) => a.data.localeCompare(b.data));
+            objArray?.sort((a, b) => a?.data?.localeCompare(b?.data));
         }
         return objArray;
     }
@@ -622,6 +622,27 @@ export class HelperService {
           }
         }
         return uniqueArray;
+      }
+
+      getKpiCommentsCount(kpiCommentsCountObj,nodes,level,nodeChildId,updatedConfigGlobalData,kpiId) {
+        let requestObj = {
+          "nodes": nodes,
+          "level": level,
+          "nodeChildId": nodeChildId,
+          'kpiIds': []
+        };
+        if (kpiId) {
+          requestObj['kpiIds'] = [kpiId];
+          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+            kpiCommentsCountObj[kpiId] = res[kpiId];
+          });
+        } else {
+          requestObj['kpiIds'] = (updatedConfigGlobalData?.map((item) => item.kpiId));
+          this.getKpiCommentsHttp(requestObj).then((res: object) => {
+            kpiCommentsCountObj = res;
+          });
+        }
+        return kpiCommentsCountObj
       }
     
 }

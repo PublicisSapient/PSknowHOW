@@ -44,8 +44,6 @@ public class CustomApiConfig {// NOPMD
 	private String aesEncryptionKey;
 	// Number of sprints available on trend charts
 	private int sprintCountForFilters;
-	// Toggle captcha property
-	private boolean captchaRequired;
 	// default image name
 	private String applicationDefaultLogo;
 
@@ -513,25 +511,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setSprintCountForFilters(int sprintCountForFilters) {
 		this.sprintCountForFilters = sprintCountForFilters;
-	}
-
-	/**
-	 * get captchaRequired
-	 *
-	 * @return the captchaRequired
-	 */
-	public boolean isCaptchaRequired() {
-		return captchaRequired;
-	}
-
-	/**
-	 * set captchaRequired
-	 *
-	 * @param captchaRequired
-	 *            the captchaRequired to set
-	 */
-	public void setCaptchaRequired(boolean captchaRequired) {
-		this.captchaRequired = captchaRequired;
 	}
 
 	/**

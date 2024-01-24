@@ -85,10 +85,7 @@ public class JiraIssueBoardWriterListener implements ItemWriteListener<Composite
 				JiraIssue firstIssue = boardData
 						.getValue().stream().sorted(
 								Comparator
-										.comparing(
-												(JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(),
-														DateTimeFormatter.ofPattern(
-																JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
+										.comparing((JiraIssue jiraIssue) -> LocalDateTime.parse(jiraIssue.getChangeDate(), DateTimeFormatter.ofPattern(JiraConstants.JIRA_ISSUE_CHANGE_DATE_FORMAT)))
 										.reversed())
 						.findFirst().orElse(null);
 				if (firstIssue != null) {

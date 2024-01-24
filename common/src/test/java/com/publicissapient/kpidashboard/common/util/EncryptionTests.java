@@ -18,17 +18,17 @@
 
 package com.publicissapient.kpidashboard.common.util;
 
-import static org.junit.Assert.assertNotEquals;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.junit.Assert.assertNotEquals;
 
 public class EncryptionTests {
 
-	@Test
-	public void testGetStringKey() throws EncryptionException {
-		String key = Encryption.getStringKey();
-		assertNotEquals(null, key);
-		assertNotEquals("", key);
-	}
+    @Test
+    public void testGetStringKey() throws EncryptionException {
+        String key = Encryption.getStringKey();
+        assertNotEquals(null, key);
+        assertNotEquals("", key);
+    }
 
 }

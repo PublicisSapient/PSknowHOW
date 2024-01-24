@@ -27,7 +27,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.atlassian.jira.rest.client.api.*;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ProcessorJiraRestClientTest {
 
 	static ProcessorJiraRestClient processorJiraRestClient;

@@ -17,7 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -30,7 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,11 +41,12 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /*
 author @shi6
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SprintRepositoryCustomImplTest {
 
 	@InjectMocks

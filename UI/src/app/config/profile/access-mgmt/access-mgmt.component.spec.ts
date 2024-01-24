@@ -34,7 +34,7 @@ import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccessMgmtComponent } from './access-mgmt.component';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 describe('AccessMgmtComponent', () => {
   let component: AccessMgmtComponent;
   let fixture: ComponentFixture<AccessMgmtComponent>;
@@ -804,4 +804,53 @@ describe('AccessMgmtComponent', () => {
     expect(component.displayDuplicateProject).toBe(true);
     expect(component.submitValidationMessage).toBe(msg);
   })
+
+  it('should handle empty project list for non-SUPERADMIN role', () => {
+    const userData = {
+      projectsAccess: [
+        {
+          role: 'ROLE_ADMIN',
+          accessNodes: []
+        }
+      ]
+    };
+
+    component.saveAccessChange(userData);
+
+    expect(component.submitValidationMessage).toBe('You are submitting a role with empty project list. Please add projects.');
+    expect(component.displayDuplicateProject).toBe(true);
+  });
+
+  it('should display message on role change', () => {
+    const event = {
+      value: 'ROLE_ADMIN'
+    };
+    const index = 0;
+    const access = [
+      {
+        role: 'ROLE_SUPERADMIN',
+        accessNodes: []
+      },
+      {
+        role: 'ROLE_ADMIN',
+        accessNodes: []
+      }
+    ];
+    component.submitValidationMessage = '';
+    component.displayDuplicateProject = false;
+    component.onRoleChange(event, index, access);
+  
+    expect(component.submitValidationMessage).toBe('A row for ROLE_ADMIN already exists, please add accesses there.');
+    expect(component.displayDuplicateProject).toBe(true);
+  });
+
+  it('should handle delete access request', () => {
+    const username = 'testUser';  
+    const isSuperAdmin = true;
+    const deleteAccessError = { message: 'Error deleting access' };
+    spyOn(httpService, 'deleteAccess').and.returnValue(throwError(deleteAccessError));;
+    const spy = spyOn(component, 'accessDeletionStatus')
+    component.deleteAccessReq(username, isSuperAdmin);
+    expect(spy).toHaveBeenCalled()
+  });
 });

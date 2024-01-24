@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.jira.listener;
 
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
@@ -34,16 +53,11 @@ public class KanbanJiraIssueJqlWriterListenerTest {
     @InjectMocks
     private KanbanJiraIssueJqlWriterListener listener;
 
+    List<CompositeResult> compositeResults = new ArrayList<>();
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void testAfterWrite() {
-        // Arrange
-        List<CompositeResult> compositeResults = new ArrayList<>();
-
         // Create a KanbanJiraIssue for testing
         KanbanJiraIssue kanbanJiraIssue = new KanbanJiraIssue();
         kanbanJiraIssue.setBasicProjectConfigId("testProjectId");
@@ -51,7 +65,10 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         CompositeResult compositeResult = new CompositeResult();
         compositeResult.setKanbanJiraIssue(kanbanJiraIssue);
         compositeResults.add(compositeResult);
+    }
 
+    @Test
+    public void testAfterWrite() {
         // Mock the repository's behavior
         when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
                 eq(JiraConstants.JIRA), eq("testProjectId")))
@@ -79,5 +96,22 @@ public class KanbanJiraIssueJqlWriterListenerTest {
         // Act
         listener.onWriteError(testException, compositeResults);
         assertTrue("", true);
+    }
+
+    @Test
+    public void testAfterWriteWithEmptyValue() {
+        listener.afterWrite(new ArrayList<>());
+    }
+
+    @Test
+    public void testAfterWriteWithTraceLog() {
+        ProcessorExecutionTraceLog processorExecutionTraceLog=new ProcessorExecutionTraceLog();
+        processorExecutionTraceLog.setBasicProjectConfigId("abc");
+        processorExecutionTraceLog.setBoardId("abc");
+        processorExecutionTraceLog.setProcessorName(JiraConstants.JIRA);
+        when(processorExecutionTraceLogRepo.findByProcessorNameAndBasicProjectConfigId(
+                eq(JiraConstants.JIRA), eq("testProjectId")))
+                .thenReturn(Optional.of(processorExecutionTraceLog));
+        listener.afterWrite(compositeResults);
     }
 }

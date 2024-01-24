@@ -19,7 +19,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../login/login.component';
 import { RegisterComponent } from '../register/register.component';
@@ -239,4 +239,22 @@ describe('LoginComponent', () => {
     component.performLogin(data, 'dummy_user', 'dummy_password', 'AD')
     expect(isRedirect).toHaveBeenCalled();
   })
+
+  it('should handle AD login', waitForAsync(() => {
+    component.submitted = true;
+    component.error = '';
+    component.adLoginForm = new UntypedFormGroup({
+      username: new UntypedFormControl('testuser'),
+      password: new UntypedFormControl('Testuser@123')
+    })
+    component.loading = true;
+    const response = {
+      success: true,
+      data: {}
+    }
+    spyOn(httpService, 'login').and.returnValue(of(response));
+    const spy = spyOn(component, 'performLogin');
+    component.onSubmit('AD');
+    expect(spy).toHaveBeenCalled();
+  }))
 });

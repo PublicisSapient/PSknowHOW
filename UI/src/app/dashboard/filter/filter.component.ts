@@ -1465,9 +1465,9 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-    if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
-            projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
-          }
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
     this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);

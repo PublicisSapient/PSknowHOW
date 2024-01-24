@@ -934,9 +934,10 @@ public abstract class ToolsKPIService<R, S> {
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
 		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
-			//the maturity has to be gven for <3 Months value
+			// the maturity has to be gven for < 3 Months value
 			List<DataCount> lessThan3Month = value.stream()
-					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID())).collect(Collectors.toList());
+					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID()))
+					.collect(Collectors.toList());
 			if (CollectionUtils.isNotEmpty(lessThan3Month)) {
 				aggValue = (R) lessThan3Month.get(0).getValue();
 			}

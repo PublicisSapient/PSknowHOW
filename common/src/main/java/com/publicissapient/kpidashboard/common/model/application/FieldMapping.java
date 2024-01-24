@@ -505,7 +505,7 @@ public class FieldMapping extends BasicModel {
 		return notificationEnabler;
 	}
 
-	public List<String> getJiraStatusForInProgressKPI154() {
+	public List<String> getInProgress154() {
 		return jiraStatusForInProgressKPI119;
 	}
 

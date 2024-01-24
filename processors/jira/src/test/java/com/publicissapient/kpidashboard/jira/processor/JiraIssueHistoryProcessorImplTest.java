@@ -1,8 +1,29 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.jira.processor;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -13,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
-import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -48,11 +67,13 @@ import com.atlassian.jira.rest.client.api.domain.Version;
 import com.atlassian.jira.rest.client.api.domain.Visibility;
 import com.atlassian.jira.rest.client.api.domain.Worklog;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.jira.dataFactories.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.jira.dataFactories.JiraIssueDataFactory;
+import com.publicissapient.kpidashboard.jira.model.JiraToolConfig;
 import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,24 +111,51 @@ public class JiraIssueHistoryProcessorImplTest {
 	public void createIssueCustomHistory() {
 		when(jiraIssueCustomHistoryRepository.findByStoryIDAndBasicProjectConfigId(any(), any()))
 				.thenReturn(new JiraIssueCustomHistory());
-		Assert.assertEquals("63c04dc7b7617e260763ca4e", createJiraIssueHistory
+		Assert.assertEquals("63bfa0d5b7617e260763ca21", createJiraIssueHistory
 				.convertToJiraIssueHistory(issue, createProjectConfig(), jiraIssue).getBasicProjectConfigId());
+	}
+
+	@Test
+	public void getDevDueDateChangeLog()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDevDueDateChangeLog", List.class,
+				FieldMapping.class, Map.class); // Make the private method accessibl
+		method.setAccessible(true);
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setJiraDevDueDateCustomField("customfield_20303");
+		Map<String, IssueField> fieldMap = new HashMap<>();
+		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
+		method.invoke(createJiraIssueHistory, changeLogList, fieldMapping, fieldMap);
+	}
+
+	@Test
+	public void createFirstEntryOfDevDueDateChangeLog()
+			throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("createFirstEntryOfDevDueDateChangeLog",
+				List.class, FieldMapping.class, Issue.class, Map.class); // Make the private method accessibl
+		method.setAccessible(true);
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setJiraDevDueDateCustomField("customfield_20303");
+		Map<String, IssueField> fieldMap = new HashMap<>();
+		fieldMap.put("customfield_20303", new IssueField("", "Dev_Due_Date", null, "2023-02-28T03:57:59.000+0000"));
+		method.invoke(createJiraIssueHistory, new ArrayList<>(), fieldMapping, issue, fieldMap);
+
 	}
 
 	private ProjectConfFieldMapping createProjectConfig() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63c04dc7b7617e260763ca4e"));
+		projectConfFieldMapping.setBasicProjectConfigId(new ObjectId("63bfa0d5b7617e260763ca21"));
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
-        Connection connection= Connection.builder().cloudEnv(false).build();
-        JiraToolConfig jiraToolConfig=JiraToolConfig.builder().connection(Optional.ofNullable(connection)).build();
-        projectConfFieldMapping.setJira(jiraToolConfig);
+		Connection connection = Connection.builder().cloudEnv(false).build();
+		JiraToolConfig jiraToolConfig = JiraToolConfig.builder().connection(Optional.ofNullable(connection)).build();
+		projectConfFieldMapping.setJira(jiraToolConfig);
 
 		return projectConfFieldMapping;
 	}
 
 	private JiraIssue getMockJiraIssue() {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance("/json/default/jira_issues.json");
-		return jiraIssueDataFactory.findTopByBasicProjectConfigId("63c04dc7b7617e260763ca4e");
+		return jiraIssueDataFactory.findTopByBasicProjectConfigId("63bfa0d5b7617e260763ca21");
 	}
 
 	private void createIssue() throws URISyntaxException {
@@ -146,8 +194,8 @@ public class JiraIssueHistoryProcessorImplTest {
 
 		ChangelogGroup changelogGroup;
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
-				new DateTime("2023-02-28T03:57:59.000+0000"), Arrays.asList(new ChangelogItem(FieldType.JIRA, "status",
-						"10003", "In Development", "15752", "Code Review")));
+				new DateTime("2023-02-28T03:57:59.000+0000"),
+				Arrays.asList(new ChangelogItem(FieldType.JIRA, "duedate", "", "In Development", "", "Code Review")));
 		changeLogList.add(changelogGroup);
 		changelogGroup = new ChangelogGroup(new BasicUser(new URI(""), "", "", ""),
 				new DateTime("2023-02-28T03:57:59.000+0000"),

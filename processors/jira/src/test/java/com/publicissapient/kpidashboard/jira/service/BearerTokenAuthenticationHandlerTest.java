@@ -16,46 +16,33 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.auth.rest;
+package com.publicissapient.kpidashboard.jira.service;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import org.junit.After;
-import org.junit.Before;
+import com.atlassian.httpclient.api.Request;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import com.publicissapient.kpidashboard.apis.auth.service.CaptchaService;
+import static org.apache.kafka.common.security.oauthbearer.secured.HttpAccessTokenRetriever.AUTHORIZATION_HEADER;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CustomCaptchaControllerTest {
-
-	private MockMvc mockMvc;
+public class BearerTokenAuthenticationHandlerTest {
 
 	@Mock
-	private CaptchaService captchaService;
+	private Request.Builder builder;
 
 	@InjectMocks
-	private CustomCaptchaController customCaptchaController;
-
-	@Before
-	public void before() {
-		mockMvc = MockMvcBuilders.standaloneSetup(customCaptchaController).build();
-	}
-
-	@After
-	public void after() {
-		mockMvc = null;
-	}
+	private BearerTokenAuthenticationHandler bearerTokenAuthenticationHandler;
 
 	@Test
-	public void testCaptcha() throws Exception {
-		mockMvc.perform(get("/login/captcha")).andExpect(status().isOk());
+	public void configureTest() {
+		bearerTokenAuthenticationHandler.configure(builder);
+		verify(builder, times(1)).setHeader(eq(AUTHORIZATION_HEADER), anyString());
 	}
 }

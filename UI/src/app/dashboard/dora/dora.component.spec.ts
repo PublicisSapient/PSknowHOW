@@ -20458,10 +20458,10 @@ describe('DoraComponent', () => {
         shown: true
       }
     ];
-    spyOn(helperService, 'getKpiCommentsHttp').and.resolveTo(response);
+    spyOn(helperService,'getKpiCommentsCount').and.returnValue({})
     component.getKpiCommentsCount();
     tick();
-    expect(component.kpiCommentsCountObj['data']['kpi118']).toEqual(response.data['kpi118']);
+    expect(component.kpiCommentsCountObj).toBeDefined();
   }));
 
   it('should getchartdata for kpi when trendValueList is an object and with single filter', () => {

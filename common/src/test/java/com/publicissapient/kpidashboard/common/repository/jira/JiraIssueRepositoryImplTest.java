@@ -18,7 +18,7 @@
 
 package com.publicissapient.kpidashboard.common.repository.jira;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -41,7 +41,9 @@ import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -55,8 +57,9 @@ import com.mongodb.client.result.UpdateResult;
 import com.publicissapient.kpidashboard.common.model.jira.IssueHistoryMappedData;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class JiraIssueRepositoryImplTest {
 	private static final String generalUseDate = "2015-11-01T00:00:00Z";
 	private static final String generalUseDate2 = "2015-12-01T00:00:00Z";
@@ -84,7 +87,7 @@ public class JiraIssueRepositoryImplTest {
 	@InjectMocks
 	private JiraIssueRepositoryImpl jiraIssueRepository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		// Date-time modifications
 		cal.setTime(new Date());
