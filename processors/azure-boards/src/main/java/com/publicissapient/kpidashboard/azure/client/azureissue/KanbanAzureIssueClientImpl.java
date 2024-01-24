@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.jira.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -73,12 +74,6 @@ import com.publicissapient.kpidashboard.common.model.azureboards.Value;
 import com.publicissapient.kpidashboard.common.model.azureboards.updates.AzureUpdatesModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.AzureWiqlModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.wiql.WorkItem;
-import com.publicissapient.kpidashboard.common.model.jira.Assignee;
-import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueCustomHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanIssueHistory;
-import com.publicissapient.kpidashboard.common.model.jira.KanbanJiraIssue;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.KanbanJiraIssueHistoryRepository;
@@ -691,28 +686,37 @@ public class KanbanAzureIssueClientImpl extends AzureIssueClient {// NOPMD
 	 * @param fieldsMap
 	 *            the fields map
 	 */
-	public void setRCA(FieldMapping fieldMapping, Value issue, KanbanJiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
+	public void setRCA(FieldMapping fieldMapping, Value issue, KanbanJiraIssue azureIssue, Map<String, Object> fieldsMap) {
 		Fields fields = issue.getFields();
-		String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
-
+		List<String> rcaList = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
-			String rcaCause = AzureConstants.RCA_CAUSE_NONE;
-			if (fieldsMap.containsKey(rootCauseFieldFromFieldMapping)
-					&& fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
-				// Introduce enum to standarize the values of RCA
-				rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
-
-				if (azureProcessorConfig.getRcaValuesForCodeIssue().stream().anyMatch(rcaCause::equalsIgnoreCase)) {
-					rcaCause = AzureConstants.CODE_ISSUE;
+			try {
+				String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
+				if (fieldMapping.getRootCauseIdentifier().trim()
+						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) && fieldsMap.containsKey(
+						rootCauseFieldFromFieldMapping) && fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
+					// Introduce enum to standarize the values of RCA
+					String rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
+					if (azureProcessorConfig.getRcaValuesForCodeIssue().stream().anyMatch(rcaCause::equalsIgnoreCase)) {
+						rcaCause = AzureConstants.CODE_ISSUE;
+					}
+					rcaList.add(rcaCause);
+				} else if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
+					String[] labelArray = fields.getSystemTags().split(";");
+					List<String> commonLabel = Arrays.asList(labelArray).stream()
+							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
+					rcaList.addAll(commonLabel);
 				}
+			} catch (Exception ex) {
+				log.error("Error while setting RCA for Azure Issue", ex);
 			}
-			azureIssue.setRootCauseList(Lists.newArrayList(rcaCause.toLowerCase()));
+		}
+		if (CollectionUtils.isNotEmpty(rcaList)) {
+			azureIssue.setRootCauseList(rcaList);
 		} else {
 			azureIssue.setRootCauseList(Lists.newArrayList(AzureConstants.RCA_CAUSE_NONE));
 		}
-
 	}
 
 	/**
