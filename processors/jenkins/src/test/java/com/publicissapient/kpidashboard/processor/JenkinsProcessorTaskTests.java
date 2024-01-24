@@ -18,8 +18,8 @@
 
 package com.publicissapient.kpidashboard.processor;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -27,14 +27,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
+import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,6 +74,7 @@ public class JenkinsProcessorTaskTests {
 	private static final String SERVER1 = "server1";
 	private static final String NICENAME1 = "niceName1";
 	private static final ProcessorToolConnection JENKINSSAMPLESERVER = new ProcessorToolConnection();
+	private static final ProcessorToolConnection JENKINSSAMPLESERVER1 = new ProcessorToolConnection();
 	@InjectMocks
 	private JenkinsProcessorJobExecutor task;
 	@Mock
@@ -100,9 +98,11 @@ public class JenkinsProcessorTaskTests {
 	@Mock
 	private ProjectBasicConfigRepository projectConfigRepository;
 	@Mock
+	private DeploymentRepository deploymentRepository;
+	@Mock
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
 	private List<ProcessorToolConnection> connList = new ArrayList<>();
-	private List<ProcessorToolConnection> connList2 = new ArrayList<>();
+	private List<ProcessorToolConnection> connList1 = new ArrayList<>();
 	private List<ProcessorExecutionTraceLog> pl = new ArrayList<>();
 	private ProjectBasicConfig projectConfig = new ProjectBasicConfig();
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
@@ -122,6 +122,15 @@ public class JenkinsProcessorTaskTests {
 		JENKINSSAMPLESERVER.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
 		JENKINSSAMPLESERVER.setId(new ObjectId("62171d0f26dd266803fa87da"));
 		connList.add(JENKINSSAMPLESERVER);
+
+		JENKINSSAMPLESERVER1.setUrl("http://does:matter@jenkins.com");
+		JENKINSSAMPLESERVER1.setUsername("does");
+		JENKINSSAMPLESERVER1.setApiKey("matter");
+		JENKINSSAMPLESERVER1.setJobName("JOB1");
+		JENKINSSAMPLESERVER1.setJobType("nonbuild");
+		JENKINSSAMPLESERVER1.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		JENKINSSAMPLESERVER1.setId(new ObjectId("62171d0f26dd266803fa87da"));
+		connList1.add(JENKINSSAMPLESERVER1);
 
 		projectConfigList.add(projectConfig);
 		projectConfig.setId(new ObjectId("624d5c9ed837fc14d40b3039"));
@@ -170,7 +179,43 @@ public class JenkinsProcessorTaskTests {
 		when(client2.getBuildJobsFromServer(any(), any()))
 				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
 		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
-		task.execute(jenkinsProcessor);
+		Boolean flag=task.execute(jenkinsProcessor);
+		assertTrue(flag);
+
+	}
+
+	@Test
+	public void updateAssigneedetailNonBuild() {
+
+		when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(connList1);
+		JenkinsClient client2 = mock(JenkinsClient.class);
+		when(jenkinsClientFactory.getJenkinsClient("nonbuild")).thenReturn(client2);
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.JENKINS,
+				"624d5c9ed837fc14d40b3039")).thenReturn(optionalProcessorExecutionTraceLog);
+		when(client2.getBuildJobsFromServer(any(), any())).thenReturn(new HashMap<ObjectId, Set<Build>>());
+
+		JenkinsProcessor jenkinsProcessor = new JenkinsProcessor();
+		Build build = new Build();
+		build.setNumber("1");
+		build.setBuildUrl("JOB1_1_URL");
+		build.setBasicProjectConfigId(new ObjectId("624d5c9ed837fc14d40b3039"));
+		build.setStartedBy("TestUser");
+		when(client2.getBuildJobsFromServer(any(), any()))
+				.thenReturn(oneJobWithBuilds(JENKINSSAMPLESERVER.getId(), build));
+		Map<String, Set<Deployment>> deploymentsByJob =new HashMap<>();
+		Deployment deployment=new Deployment();
+		deployment.setProcessorId(new ObjectId());
+		deployment.setBasicProjectConfigId(new ObjectId());
+		deployment.setProjectToolConfigId(new ObjectId());
+		Set<Deployment> deploymentset=new HashSet<>();
+		deploymentset.add(deployment);;
+		deploymentsByJob.put("deploymentset",deploymentset);
+		when(deploymentRepository
+				.findByProjectToolConfigIdAndJobName(JENKINSSAMPLESERVER.getId(), JENKINSSAMPLESERVER.getJobName())).thenReturn(Arrays.asList(deployment));
+		when(jenkinsClient.getDeployJobsFromServer(JENKINSSAMPLESERVER, jenkinsProcessor)).thenReturn(deploymentsByJob);
+		when(buildRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(build);
+		Boolean flag=task.execute(jenkinsProcessor);
+		assertTrue(flag);
 
 	}
 
@@ -327,6 +372,30 @@ public class JenkinsProcessorTaskTests {
 
 		assertSame(clientSelector.getJenkinsClient("build"), jenkinsClientMock);
 		assertSame(clientSelector.getJenkinsClient("deploy"), jenkins2ClientMock);
+	}
+
+	@Test
+	public void getProcessorTest(){
+		JenkinsProcessor jenkinsProcessor=task.getProcessor();
+		assertNotNull(jenkinsProcessor);
+	}
+
+	@Test
+	public void getProcessorRepositoryTest(){
+		ProcessorRepository<JenkinsProcessor> processorProcessorRepository=task.getProcessorRepository();
+		assertNotNull(processorProcessorRepository);
+	}
+
+	@Test
+	public void getCronTest(){
+		String str=task.getCron();
+		assertNull(str);
+	}
+
+	@Test
+	public void executeSprintTest(){
+		boolean executeSprint= task.executeSprint("sprintId");
+		assertFalse(executeSprint);
 	}
 
 	private JenkinsProcessor processorWithOneServer() {
