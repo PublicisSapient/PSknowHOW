@@ -226,7 +226,7 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl
 
 				Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
 				rangeWiseJiraIssuesMap.forEach((range, issueList) -> {
-					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrumForBacklog(issueList,
+					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(issueList,
 							customApiConfig);
 					rangeWisePriorityCountMap.put(range, priorityCountMap);
 				});

@@ -1,12 +1,33 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.azure.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -21,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -125,15 +147,50 @@ public class AzureToolConfigServiceImplTest {
 	}
 
 	@Test
-	public void testAzureReleaseNameAndDefinitionId() throws IOException, ParseException {
+	public void testAzureReleaseNameAndDefinitionId() throws ParseException {
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
 		assertEquals(optConnection, testConnectionOpt1);
 		when(restAPIUtils.decryptPassword(connection2.getPat())).thenReturn("decryptKey");
 		HttpHeaders header = new HttpHeaders();
 		header.add("Authorization", "base64str");
-		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		when(restAPIUtils.getHeaders(anyString(), anyString())).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
+				ArgumentMatchers.<Class<String>>any())).thenReturn(new ResponseEntity<>("",HttpStatus.OK));
+
+		JSONObject innerJsonObject = new JSONObject();
+		innerJsonObject.put("name", "value");
+		innerJsonObject.put("id", "123");
+
+		JSONArray jsonArray1 = createJsonArray(innerJsonObject);
+
+		when(restAPIUtils.convertJSONArrayFromResponse(anyString(),anyString())).thenReturn(jsonArray1);
+
+		Assert.assertEquals(1, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
+	}
+
+
+	@Test
+	public void testAzureReleaseNameAndDefinitionId_fail() throws ParseException {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt1);
+		when(restAPIUtils.decryptPassword(connection2.getPat())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(anyString(), anyString())).thenReturn(header);
+		when(restTemplate.exchange(anyString(), any(HttpMethod.class), any(HttpEntity.class),
+				ArgumentMatchers.<Class<String>>any())).thenReturn(new ResponseEntity<>("",HttpStatus.UNAUTHORIZED));
+
 		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
+	}
+
+	private JSONArray createJsonArray(Object... values) {
+		JSONArray jsonArray = new JSONArray();
+		for (Object value : values) {
+			jsonArray.add(value);
+		}
+		return jsonArray;
 	}
 
 }

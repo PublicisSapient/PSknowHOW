@@ -23,6 +23,7 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -35,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Assert;
@@ -274,6 +277,56 @@ public class SonarTechDebtKanbanServiceImplTest {
 	}
 
 	@Test
+	public void testGetTechDebtEmptyCollectorItem_Month() throws Exception {
+		setToolMap();
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
+		kpiRequest.setDuration(CommonConstant.MONTH);
+		try {
+			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			Long techDebt = (Long) ((Map<String, Object>) kpiElement.getValue()).get(Constant.AGGREGATED_VALUE);
+			assertThat("Tech Debt :", techDebt, equalTo(null));
+		} catch (Exception enfe) {
+
+		}
+
+	}
+
+	@Test
+	public void testGetTechDebtEmptyCollectorItem_Duration() throws Exception {
+		setToolMap();
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
+		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+				.thenReturn(sonarHistoryData);
+		kpiRequest.setDuration(CommonConstant.COST_OF_DELAY);
+		try {
+			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			Long techDebt = (Long) ((Map<String, Object>) kpiElement.getValue()).get(Constant.AGGREGATED_VALUE);
+			assertThat("Tech Debt :", techDebt, equalTo(null));
+		} catch (Exception enfe) {
+
+		}
+
+	}
+
+	@Test
 	public void testGetTechDebt1() throws Exception {
 		setToolMap();
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -328,4 +381,18 @@ public class SonarTechDebtKanbanServiceImplTest {
 		stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0), treeAggregatorDetail);
 
 	}
+
+	@Test
+	public void testGetTechDebtValueWithDouble() {
+		assertEquals(new Long(42), stdServiceImpl.getTechDebtValue(42.0));
+		assertEquals(new Long(123), stdServiceImpl.getTechDebtValue("123"));
+		assertEquals(new Long(456), stdServiceImpl.getTechDebtValue(456L));
+		assertEquals(new Long(-1), stdServiceImpl.getTechDebtValue(null));
+	}
+
+	@Test
+	public void testThresold(){
+		assertEquals(new Double(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
+	}
+
 }

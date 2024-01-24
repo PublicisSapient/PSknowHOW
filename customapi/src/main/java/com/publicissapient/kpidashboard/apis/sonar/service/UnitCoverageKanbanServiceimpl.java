@@ -132,12 +132,6 @@ public class UnitCoverageKanbanServiceimpl
 	}
 
 	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
-	}
-
-	@Override
 	public Double calculateKPIMetrics(Map<String, List<SonarHistory>> stringListMap) {
 		return null;
 	}
@@ -267,9 +261,7 @@ public class UnitCoverageKanbanServiceimpl
 	private Double getCoverageValue(Object coverage) {
 		Double value = -1D;
 		if (coverage != null) {
-			if (coverage instanceof Double) {
-				value = (Double) coverage;
-			} else if (coverage instanceof String) {
+			if (coverage instanceof String) {
 				value = Double.parseDouble(coverage.toString());
 			} else {
 				value = (Double) coverage;

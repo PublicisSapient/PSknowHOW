@@ -61,12 +61,8 @@ public class SprintScrumBoardTasklet implements Tasklet {
 	@Autowired
 	private SprintRepository sprintRepository;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public SprintScrumBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc

@@ -22,6 +22,7 @@ import java.util.Objects;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -45,6 +47,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,6 +73,8 @@ public class UserInfoController {
 	@Autowired
 	private UserInfoRepository userInfoRepository;
 
+	@Autowired
+	private CookieUtil cookieUtil;
 	/**
 	 * Fetch only approved user info data.
 	 *
@@ -153,6 +158,25 @@ public class UserInfoController {
 	@GetMapping("/userData")
 	public ResponseEntity<ServiceResponse> getUserDetails(HttpServletRequest request) {
 		UserDetailsResponseDTO userInfo = userInfoService.getUserInfoByToken(request);
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "invalid Token or user", null));
+
+		}
+	}
+
+	@GetMapping("/auth/{username}")
+	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
+			HttpServletRequest request) {
+
+		Cookie authCookie = cookieUtil.getAuthCookie(request);
+		if (StringUtils.isBlank(authCookie.getValue())) {
+			return null;
+		}
+		String token = authCookie.getValue();
+		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username, token);
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));

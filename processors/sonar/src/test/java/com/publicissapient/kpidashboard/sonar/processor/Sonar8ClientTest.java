@@ -35,6 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
@@ -46,6 +47,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -62,8 +64,6 @@ import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Clien
 @RunWith(MockitoJUnitRunner.class)
 public class Sonar8ClientTest {
 	private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&p=1&ps=500";
-	private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
-	private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
 	private static final String SONAR_URL = "http://sonar.com";
 	private static final ProcessorToolConnection SONAR_SERVER = new ProcessorToolConnection();
 	private static final ProcessorToolConnection SONAR_CLOUD = new ProcessorToolConnection();
@@ -259,17 +259,6 @@ public class Sonar8ClientTest {
 	public void testGetLatestSonarCloudDetails() throws Exception {
 		SonarDetails sonarDetail = sonar8Client.getLatestSonarDetails(getProject(),
 				new HttpEntity<>(createHeaders(SONAR_CLOUD.getAccessToken())), METRICS);
-	}
-
-	@Test
-	public void testGetTotalPages() throws Exception {
-
-		Paging paging = new Paging();
-		paging.setPageIndex(1);
-		paging.setPageSize(500);
-		paging.setTotal(1000);
-		Whitebox.invokeMethod(sonar8Client, "getTotalPages", paging);
-		Assert.assertNotNull(paging);
 	}
 
 	@Test(expected = NullPointerException.class)

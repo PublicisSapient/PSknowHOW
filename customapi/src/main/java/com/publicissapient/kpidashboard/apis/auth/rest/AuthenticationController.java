@@ -146,10 +146,10 @@ public class AuthenticationController {
             }
             if (flag) {
                 Authentication authentication = authenticationService.create(request.getUsername(),
-                        request.getPassword(), request.getEmail());
+                        request.getPassword(), request.getEmail().toLowerCase());
 
                 UserInfo useInfo = userInfoService.save(userInfoService.createDefaultUserInfo(request.getUsername(),
-                        AuthType.STANDARD, request.getEmail()));
+                        AuthType.STANDARD, request.getEmail().toLowerCase()));
 
                 authenticationResponseService.handle(httpServletResponse, authentication);
 

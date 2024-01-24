@@ -40,7 +40,6 @@ import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.model.ForgotPasswordToken;
 import com.publicissapient.kpidashboard.apis.auth.repository.AuthenticationRepository;
 import com.publicissapient.kpidashboard.apis.auth.repository.ForgotPasswordTokenRepository;
-import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.enums.ResetPasswordTokenStatusEnum;
 import com.publicissapient.kpidashboard.common.exceptions.ApplicationException;
@@ -63,7 +62,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	 * validatePath
 	 */
 	private static final String VALIDATE_PATH = "/validateToken?token="; // NOSONAR
-	private static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
+	private static final String REGEX = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$@$!%*?&]).{8,20})";
 	private static final String FORGOT_PASSWORD_NOTIFICATION_KEY = "Forgot_Password";
 	@Autowired
 	private AuthenticationRepository authenticationRepository;
@@ -242,7 +241,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 	private void validatePasswordRules(String username, String password, Authentication authentication)
 			throws ApplicationException {
 
-		Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+		Pattern pattern = Pattern.compile(REGEX);
 		Matcher matcher = pattern.matcher(password);
 		if (matcher.matches()) {
 			if (isPassContainUser(password, username)) {

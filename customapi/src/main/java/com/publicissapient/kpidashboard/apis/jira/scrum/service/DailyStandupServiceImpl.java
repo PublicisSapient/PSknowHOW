@@ -203,10 +203,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			// Calculate Delay
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
-					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
+					sprintDetails, notCompletedJiraIssue, fieldMapping.getInProgress154());
 
 			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
-					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI154());
+					iterationPotentialDelayList, fieldMapping.getInProgress154());
 			calculateAssigneeWiseMaxDelay(issueWiseDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity

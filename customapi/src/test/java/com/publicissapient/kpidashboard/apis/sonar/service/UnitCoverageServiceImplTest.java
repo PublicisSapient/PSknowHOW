@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -81,6 +83,8 @@ public class UnitCoverageServiceImplTest {
 	UnitCoverageServiceimpl ucServiceImpl;
 	@Mock
 	SonarHistoryRepository sonarHistoryRepository;
+	@Mock
+	CacheService cacheService;
 	@Mock
 	private CustomApiConfig customApiConfig;
 	private List<AccountHierarchyData> ahdList = new ArrayList<>();
@@ -285,6 +289,9 @@ public class UnitCoverageServiceImplTest {
 		when(configHelperService.getToolItemMap()).thenReturn(toolMap);
 		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
 				.thenReturn(sonarHistoryData);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
+				.thenReturn(kpiRequestTrackerId);
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put(KPICode.SONAR_VIOLATIONS.name(),
 				Arrays.asList("-390", "390-309", "309-221", "221-140", "140-"));

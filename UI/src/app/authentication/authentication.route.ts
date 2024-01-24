@@ -22,20 +22,23 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { VerifyComponent } from './verify/verify.component';
+import { environment } from 'src/environments/environment';
 
 /* Create nested routing for login and registration. */
 export const LoginRoutes: Routes = [
     {
         path: '',
         children: [
-            { path: '', redirectTo: 'login', pathMatch: 'full' },
-            { path: 'login', component: LoginComponent, pathMatch: 'full' },
-            { path: 'register', component: RegisterComponent, pathMatch: 'full' },
-            { path: 'forgetPasswordEmail', component: ForgotPasswordComponent, pathMatch: 'full' },
-            { path: 'resetPassword', component: ResetPasswordComponent, pathMatch: 'full' }
+            { path: '', redirectTo: 'login', pathMatch: 'full'  },
+            { path: 'login', component: LoginComponent, pathMatch: 'full'},
+            { path: 'register', component: RegisterComponent, pathMatch: 'full'},
+            { path: 'forgetPasswordEmail', component: ForgotPasswordComponent, pathMatch: 'full'},
+            { path: 'resetPassword', component: ResetPasswordComponent, pathMatch: 'full'}
         ]
     }
 ];
+
 
 @NgModule({
     imports: [RouterModule.forChild(LoginRoutes)],

@@ -119,11 +119,13 @@ public class AuthExposeAPIServiceImpl implements AuthExposeAPIService {
 			pushDataTraceLogService.setExceptionTraceLog(
 					"Generate Token Push Data via KnowHow tool configuration screen", HttpStatus.UNAUTHORIZED);
 		}
-		checkProjectAccessPermission(exposeApiToken, instance);
-		checkExpiryToken(exposeApiToken);
-		exposeApiToken
-				.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
-		exposeApiToken.setUpdatedAt(LocalDate.now());
+		else {
+			checkProjectAccessPermission(exposeApiToken, instance);
+			checkExpiryToken(exposeApiToken);
+			exposeApiToken
+					.setExpiryDate(exposeApiToken.getExpiryDate().plusDays(customApiConfig.getExposeAPITokenExpiryDays()));
+			exposeApiToken.setUpdatedAt(LocalDate.now());
+		}
 		return exposeApiToken;
 	}
 

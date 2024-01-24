@@ -48,12 +48,8 @@ public class KanbanReleaseDataTasklet implements Tasklet {
 	@Autowired
 	JiraClient jiraClient;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
-
-	@Autowired
-	public KanbanReleaseDataTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	/**
 	 * @param sc

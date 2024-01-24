@@ -20,6 +20,12 @@ package com.publicissapient.kpidashboard.apis.jenkins.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -28,13 +34,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -60,7 +68,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 @RunWith(MockitoJUnitRunner.class)
 public class JenkinsServiceKanbanRTest {
 
-	private static String GROUP_PROJECT = "PROJECT";
+	private static String GROUP_PROJECT = "project";
 	public Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
@@ -112,8 +120,16 @@ public class JenkinsServiceKanbanRTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 
-		when(filterHelperService.getFilteredBuildsKanban(kpiRequestJenkins, GROUP_PROJECT))
-				.thenReturn(accountHierarchyDataKanbanList);
+		HierachyLevelFactory hierachyLevelFactory = HierachyLevelFactory.newInstance();
+		List<HierarchyLevel> hierarchyLevels = hierachyLevelFactory.getHierarchyLevels();
+		Map<String, Integer> map = new HashMap<>();
+		Map<String, HierarchyLevel> hierarchyMap = hierarchyLevels.stream()
+				.collect(Collectors.toMap(HierarchyLevel::getHierarchyLevelId, x -> x));
+		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
+		when(filterHelperService.getHierarchyIdLevelMap(anyBoolean())).thenReturn(map);
+
+		when(filterHelperService.getHierarachyLevelId(4, "project", true)).thenReturn("project");
+		when(authorizedProjectsService.filterKanbanProjects(accountHierarchyDataKanbanList)).thenReturn(accountHierarchyDataKanbanList);
 
 		buildKpiElement = setKpiElement(KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), "CODE_BUILD_TIME_KANBAN");
 
@@ -147,8 +163,6 @@ public class JenkinsServiceKanbanRTest {
 					.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name())).thenReturn(mcokAbstract);
 		}
 
-		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(buildKpiElement);
-
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 
 		resultList.forEach(k -> {
@@ -172,25 +186,26 @@ public class JenkinsServiceKanbanRTest {
 	@Test
 	public void testProcess1() throws Exception {
 
-		KpiRequest kpiRequest = createKpiRequest(5, "Jenkins");
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
 
 		@SuppressWarnings("rawtypes")
 		JenkinsKPIService mcokAbstract = codeBuildTimeKanbanServiceImpl;
 		jenkinsServiceCache.put(KPICode.CODE_BUILD_TIME_KANBAN.name(), mcokAbstract);
 
-		try (MockedStatic<JenkinsKPIServiceFactory> utilities = Mockito.mockStatic(JenkinsKPIServiceFactory.class)) {
-			utilities.when((MockedStatic.Verification) JenkinsKPIServiceFactory
-					.getJenkinsKPIService(KPICode.CODE_BUILD_TIME_KANBAN.name())).thenReturn(mcokAbstract);
-		}
-
+		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, GROUP_PROJECT))
+				.thenReturn(accountHierarchyDataKanbanList);
 		when(authorizedProjectsService.getKanbanProjectKey(accountHierarchyDataKanbanList, kpiRequest))
 				.thenReturn(projectKey);
-		when(authorizedProjectsService.getKanbanProjectNodesForRequest(accountHierarchyDataKanbanList))
-				.thenReturn(projects);
 
-		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(buildKpiElement);
-
-		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
+		List<KpiElement> resultList;
+		try (MockedStatic<JenkinsKPIServiceFactory> mockedStatic = mockStatic(JenkinsKPIServiceFactory.class)) {
+			CodeBuildTimeKanbanServiceImpl mockService = mock(CodeBuildTimeKanbanServiceImpl.class);
+			when(mockService.getKpiData(any(), any(), any())).thenReturn(buildKpiElement);
+			mockedStatic.when(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())))
+					.thenReturn(mockService);
+			resultList = jenkinsServiceKanbanR.process(kpiRequest);
+			mockedStatic.verify(() -> JenkinsKPIServiceFactory.getJenkinsKPIService(eq(KPICode.CODE_BUILD_TIME_KANBAN.name())));
+		}
 
 		resultList.forEach(k -> {
 
@@ -213,10 +228,11 @@ public class JenkinsServiceKanbanRTest {
 	@Test
 	public void testProcessCachedData() throws Exception {
 
-		KpiRequest kpiRequest = createKpiRequest(2, "Jenkins");
-
+		KpiRequest kpiRequest = createKpiRequest(4, "Jenkins");
+		when(filterHelperService.getFilteredBuildsKanban(kpiRequest, GROUP_PROJECT))
+				.thenReturn(accountHierarchyDataKanbanList);
 		when(cacheService.getFromApplicationCache(Mockito.any(), Mockito.any(), Mockito.any(),
-				ArgumentMatchers.anyList())).thenReturn(new ArrayList<>());
+				any())).thenReturn(new ArrayList<>());
 
 		List<KpiElement> resultList = jenkinsServiceKanbanR.process(kpiRequest);
 		assertThat("Kpi list :", resultList.size(), equalTo(0));
@@ -230,6 +246,7 @@ public class JenkinsServiceKanbanRTest {
 		addKpiElement(kpiList, KPICode.CODE_BUILD_TIME_KANBAN.getKpiId(), KPICode.CODE_BUILD_TIME_KANBAN.name(),
 				"Productivity", "mins", source);
 		kpiRequest.setLevel(level);
+		kpiRequest.setLabel("project");
 		kpiRequest.setIds(new String[] { "Kanban Project_6335368249794a18e8a4479f" });
 		kpiRequest.setKpiList(kpiList);
 		Map<String, List<String>> selectedMap = new HashMap<>();

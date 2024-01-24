@@ -117,7 +117,6 @@ public class KpiHelperService { // NOPMD
 	private static final String FIELD_RCA = "rca";
 	private static final String SPRINT_WISE_SPRINTDETAILS = "sprintWiseSprintDetailMap";
 	private static final String ISSUE_DATA = "issueData";
-	private static final String FIELD_STATUS = "status";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
 
@@ -877,7 +876,8 @@ public class KpiHelperService { // NOPMD
 	 * @return
 	 */
 	public Map<String, Object> fetchJiraCustomHistoryDataFromDbForKanban(List<Node> leafNodeList, String startDate,
-																		 String endDate, KpiRequest kpiRequest, String fieldName, Map<ObjectId, Map<String, Object>> projectWiseMapping) {
+			String endDate, KpiRequest kpiRequest, String fieldName,
+			Map<ObjectId, Map<String, Object>> projectWiseMapping) {
 		Map<String, Object> resultListMap = new HashMap<>();
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
@@ -1369,65 +1369,6 @@ public class KpiHelperService { // NOPMD
 		return null;
 	}
 
-	/**
-	 * prepare data for excel for cumulative kpi of Kanban on the basis of field.
-	 * field can be RCA/priority/status field values as per field of jira
-	 *
-	 * @param jiraHistoryFieldAndDateWiseIssueMap
-	 * @param fieldName
-	 * @param fieldValues
-	 * @return
-	 */
-	public ValidationData prepareExcelForKanbanCumulativeDataMap(
-			Map<String, Map<String, Set<String>>> jiraHistoryFieldAndDateWiseIssueMap, String fieldName,
-			Set<String> fieldValues) {
-
-		Map<String, Set<String>> fieldWiseIssuesLatestMap = filterKanbanDataBasedOnFieldLatestCumulativeData(
-				jiraHistoryFieldAndDateWiseIssueMap, fieldValues);
-
-		ValidationData validationData = new ValidationData();
-		List<String> fieldList = new LinkedList<>();
-		List<String> ticketsList = new LinkedList<>();
-		Map<String, Set<String>> fieldWiseIssues = fieldWiseIssuesLatestMap.entrySet().stream()
-				.sorted((i1, i2) -> i1.getKey().compareTo(i2.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-		fieldWiseIssues.entrySet().forEach(dateSet -> {
-			String field = dateSet.getKey();
-			dateSet.getValue().stream().forEach(values -> {
-				fieldList.add(field);
-				ticketsList.add(values);
-			});
-		});
-		validationData.setTicketKeyList(ticketsList);
-		if (fieldName.equalsIgnoreCase(FIELD_STATUS)) {
-			validationData.setStatus(fieldList);
-		} else if (fieldName.equalsIgnoreCase(FIELD_PRIORITY)) {
-			validationData.setDefectPriorityList(fieldList);
-		} else if (fieldName.equalsIgnoreCase(FIELD_RCA)) {
-			validationData.setDefectRootCauseList(fieldList);
-		}
-		return validationData;
-	}
-
-	/**
-	 * prepare excel data only Today Cumulative data so that only latest data values
-	 * of field(status/rca/priority)
-	 *
-	 * @param jiraHistoryFieldAndDateWiseIssueMap
-	 * @param fieldValues
-	 * @return
-	 */
-	public Map<String, Set<String>> filterKanbanDataBasedOnFieldLatestCumulativeData(
-			Map<String, Map<String, Set<String>>> jiraHistoryFieldAndDateWiseIssueMap, Set<String> fieldValues) {
-		String date = LocalDate.now().toString();
-		Map<String, Set<String>> fieldWiseIssuesLatestMap = new HashMap<>();
-		fieldValues.forEach(field -> {
-			Set<String> ids = jiraHistoryFieldAndDateWiseIssueMap.get(field).getOrDefault(date, new HashSet<>())
-					.stream().filter(Objects::nonNull).collect(Collectors.toSet());
-			fieldWiseIssuesLatestMap.put(field, ids);
-		});
-		return fieldWiseIssuesLatestMap;
-	}
 
 	public FieldMappingStructureResponse fetchFieldMappingStructureByKpiId(String projectBasicConfigId, String kpiId) {
 		FieldMappingStructureResponse fieldMappingStructureResponse = new FieldMappingStructureResponse();
@@ -1618,8 +1559,13 @@ public class KpiHelperService { // NOPMD
 		hours = getTimeInWorkHours(hours);
 		long days = hours / 8;
 		long remainingHours = hours % 8;
-		return (days == 0 && remainingHours == 0) ? "0"
-				: (remainingHours == 0) ? String.format("%dd", days) : String.format("%dd %dhrs", days, remainingHours);
+		if (days == 0 && remainingHours == 0) {
+			return "0";
+		} else if (remainingHours == 0) {
+			return String.format("%dd", days);
+		} else {
+			return String.format("%dd %dhrs", days, remainingHours);
+		}
 	}
 
 	/**

@@ -21,9 +21,13 @@ package com.publicissapient.kpidashboard.apis.projectconfig.projecttoolconfig.se
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -34,6 +38,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -57,6 +64,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /***
  * @author yasbano
@@ -88,6 +96,10 @@ public class ProjectToolConfigServiceImplTest {
 	private ConnectionRepository connectionRepository;
 	@Mock
 	private ProjectBasicConfigRepository projectBasicConfigRepository;
+	@Mock
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+	@Mock
+	private ConfigHelperService configHelperService;
 
 	/**
 	 * method includes preprocesses for test cases
@@ -492,6 +504,156 @@ public class ProjectToolConfigServiceImplTest {
 		});
 	}
 
+
+
+	@Test
+	public void testSaveToolDetails_Jira() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.JIRA);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fc4d61f80b6350f048a93da"));
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
+		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertEquals(null, response.getData());
+	}
+
+	@Test
+	public void testSaveToolDetails_RepoTool() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setBranch("master");
+		listProjectTool2.setDefaultBranch("master");
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
+		when(connectionRepository.findById(any()))
+				.thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(200);
+		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
+		assertNotNull(response);
+	}
+
+
+	@Test
+	public void testSaveToolDetails_RepoTool_404() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setDefaultBranch("master");
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
+		when(connectionRepository.findById(any()))
+				.thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(404);
+		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertEquals(null, response.getData());
+	}
+
+
+	@Test
+	public void testSaveToolDetails_RepoTool_400() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setBranch("master");
+		listProjectTool2.setDefaultBranch("master");
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
+		when(connectionRepository.findById(any()))
+				.thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(400);
+		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertEquals(null, response.getData());
+	}
+
+
+	@Test
+	public void testSaveToolDetails_RepoTool_500() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setBranch("master");
+		listProjectTool2.setDefaultBranch("master");
+		when(toolRepositroy.findByToolNameAndBasicProjectConfigId(anyString(), any())).thenReturn(Arrays.asList(listProjectTool2));
+		when(connectionRepository.findById(any()))
+				.thenReturn(Optional.ofNullable(connection));
+		when(repoToolsConfigService.configureRepoToolProject(any(),any(),anyList())).thenReturn(500);
+		ServiceResponse response = projectToolServiceImpl.saveProjectToolDetails(listProjectTool2);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+		assertEquals(null, response.getData());
+	}
+
+
+	@Test
+	public void testCleanToolData() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.JIRA);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fc4d61f80b6350f048a93da"));
+		when(toolRepositroy.findById(anyString())).thenReturn(listProjectTool2);
+		boolean b = projectToolServiceImpl.cleanToolData("5fc4d61e80b6350f048a9381", "5fa0023dbb5fa781ccd5ac3c");
+		assertTrue(b);
+
+	}
+
+	@Test
+	public void testCleanToolData_Repo() {
+		listProjectTool2.setId(new ObjectId("5fa0023dbb5fa781ccd5ac3c"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fc4d61f80b6350f048a93da"));
+		when(toolRepositroy.findById(anyString())).thenReturn(listProjectTool2);
+		boolean b = projectToolServiceImpl.cleanToolData("5fc4d61e80b6350f048a9381", "5fa0023dbb5fa781ccd5ac3c");
+		assertTrue(b);
+	}
+
+	@Test
+	public void deleteTool_Repo() {
+		String toolId = "5fc4d61f80b6350f048a93e3";
+		String basicProjectId = "5fc4d61e80b6350f048a9381";
+
+		listProjectTool2.setId(new ObjectId("5fc4d61f80b6350f048a93e3"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setBranch("master");
+		listProjectTool2.setDefaultBranch("master");
+
+		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
+				.thenReturn(Arrays.asList(listProjectTool2));
+		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
+		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
+		doNothing().when(sonarDataCleanUpService).clean(toolId);
+		assertFalse(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
+	}
+
+
+	@Test
+	public void deleteTool_Repo_Update() {
+		String toolId = "5fc4d61f80b6350f048a93e3";
+		String basicProjectId = "5fc4d61e80b6350f048a9381";
+
+		listProjectTool2.setId(new ObjectId("5fc4d61f80b6350f048a93e3"));
+		listProjectTool2.setToolName(ProcessorConstants.REPO_TOOLS);
+		listProjectTool2.setBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381"));
+		listProjectTool2.setConnectionId(new ObjectId("5fb3a6412064a35b8069930a"));
+		listProjectTool2.setBranch("master");
+		listProjectTool2.setDefaultBranch("master");
+
+		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
+				.thenReturn(Arrays.asList(listProjectTool2));
+		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
+		when(repoToolsConfigService.updateRepoToolProjectConfiguration(Arrays.asList(listProjectTool2),listProjectTool2,basicProjectId)).thenReturn(false);
+		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
+		doNothing().when(sonarDataCleanUpService).clean(toolId);
+		assertFalse(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
+	}
+
+
 	private ProjectToolConfig findToolById(String id) {
 		Optional<ProjectToolConfig> first = createMockTools().stream()
 				.filter(tool -> tool.getId().toHexString().equals(id)).findFirst();
@@ -531,5 +693,7 @@ public class ProjectToolConfigServiceImplTest {
 
 		return Arrays.asList(jira, azure, sonar1, sonar2);
 	}
+
+
 
 }

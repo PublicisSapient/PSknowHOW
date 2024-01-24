@@ -73,8 +73,8 @@ public class NotificationEventProducer {
 					}
 
 				});
-			} catch(Exception ex) {
-				ex.printStackTrace();
+			}catch(Exception ex) {
+				LOGGER.info("Notification Event"+ ex.getMessage());
 			}
 		} else {
 			LOGGER.info(

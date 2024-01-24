@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SecurityContext, ViewChild } from '@angular/core';
 import { SharedService } from '../../services/shared.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MenuItem } from 'primeng/api';
@@ -29,6 +29,7 @@ import { GetAuthorizationService } from '../../services/get-authorization.servic
 import { FormControl, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ManageAssigneeComponent } from '../manage-assignee/manage-assignee.component';
 declare let $: any;
+import { HelperService } from 'src/app/services/helper.service';
 
 interface TepSubmissionReq {
     projectNodeId: string;
@@ -39,6 +40,10 @@ interface TepSubmissionReq {
     endDate?: string;
     totalTestCases?: string;
     executedTestCase?: string;
+    automatedTestCases?: string;
+    automatableTestCases?: string;
+    automatedRegressionTestCases?: string;
+    totalRegressionTestCases?: string;
     passedTestCase?: string;
     sprintId?: string;
     sprintName?: string;
@@ -158,7 +163,7 @@ export class UploadComponent implements OnInit {
         }
     ]
 
-    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef) {
+    constructor(private http_service: HttpService, private messageService: MessageService, private getAuth: GetAuthService, private sharedService: SharedService, private sanitizer: DomSanitizer, private getAuthorisation: GetAuthorizationService, private cdr: ChangeDetectorRef,private helperService : HelperService) {
     }
 
     ngOnInit() {
@@ -238,7 +243,7 @@ export class UploadComponent implements OnInit {
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: false
+                    expanded: true
                 }
             );
             this.selectedView = 'logo_upload';
@@ -249,19 +254,20 @@ export class UploadComponent implements OnInit {
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
             document.querySelector('.horizontal-tabs .btn-tab.pi-kanban-button')?.classList?.remove('btn-active');
         }
-        this.selectedView = 'cert_upload';
+        // this.selectedView = 'cert_upload';
         if (this.isSuperAdmin) {
-            this.items.unshift(
+            this.items.push(
                 {
                     label: 'Upload certificate',
                     icon: 'pi pi-image',
                     command: (event) => {
                         this.switchView(event);
                     },
-                    expanded: true
+                    expanded: false,
+                    disabled: true
                 }
             );
-            this.selectedView = 'cert_upload';
+            // this.selectedView = 'cert_upload';
         } else {
             this.handleTepSelect('upload_tep');
             document.querySelector('.horizontal-tabs .btn-tab.pi-scrum-button')?.classList?.add('btn-active');
@@ -329,12 +335,12 @@ export class UploadComponent implements OnInit {
                 this.message = '';
             }
                 break;
-            case 'Upload certificate': {
-                this.selectedView = 'cert_upload';
-                this.error = '';
-                this.message = '';
-            }
-                break;
+            // case 'Upload certificate': {
+            //     this.selectedView = 'cert_upload';
+            //     this.error = '';
+            //     this.message = '';
+            // }
+            //     break;
             case 'Test Execution Percentage': {
                 this.handleTepSelect('upload_tep');
                 this.addActiveToTab();
@@ -352,7 +358,8 @@ export class UploadComponent implements OnInit {
                     if (data['image']) {
                         this.logoImage = 'data:image/png;base64,' + data['image'];
                         const blob: Blob = new Blob([this.logoImage], { type: 'image/png' });
-                        blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
+                        blob['objectURL'] = this.sanitizer.sanitize(SecurityContext.URL, window.URL.createObjectURL(blob))
+                        //blob['objectURL'] = this.sanitizer.bypassSecurityTrustUrl((window.URL.createObjectURL(blob)));
                         this.uploadedFile = new File([blob], 'logo.png', { type: 'image/png' });
                     }
                 });
@@ -513,7 +520,7 @@ export class UploadComponent implements OnInit {
                     this.filterData = filterData['data'];
                     if (this.filterData && this.filterData.length > 0) {
                         this.projectListArr = this.sortAlphabetically(this.filterData.filter(x => x.labelName.toLowerCase() == 'project'));
-                        this.projectListArr = this.makeUniqueArrayList(this.projectListArr);
+                        this.projectListArr = this.helperService.makeUniqueArrayList(this.projectListArr);
                         const defaultSelection = this.selectedProjectBaseConfigId ? false : true;
                         this.checkDefaultFilterSelection(defaultSelection);
                         if (Object.keys(filterData).length === 0) {
@@ -546,7 +553,7 @@ export class UploadComponent implements OnInit {
         });
 
         // Remove previous selected elements
-        dataArray.forEach(obj => {
+        dataArray?.forEach(obj => {
             if (obj.nodeId !== data.nodeId) {
                 obj.isSelected = false;
             }
@@ -897,22 +904,23 @@ export class UploadComponent implements OnInit {
         objArray?.sort((a, b) => a.nodeName.localeCompare(b.nodeName));
         return objArray;
     }
-    makeUniqueArrayList(arr) {
-        let uniqueArray = [];
-        for (let i = 0; i < arr?.length; i++) {
-            const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
-            if (idx == -1) {
-                uniqueArray = [...uniqueArray, arr[i]];
-                uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
-                uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
-            } else {
-                uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-                uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-            }
+    /** moved to service layer */ 
+    // makeUniqueArrayList(arr) {
+    //     let uniqueArray = [];
+    //     for (let i = 0; i < arr?.length; i++) {
+    //         const idx = uniqueArray?.findIndex(x => x.nodeId == arr[i]?.nodeId);
+    //         if (idx == -1) {
+    //             uniqueArray = [...uniqueArray, arr[i]];
+    //             uniqueArray[uniqueArray?.length - 1]['path'] = [uniqueArray[uniqueArray?.length - 1]['path']];
+    //             uniqueArray[uniqueArray?.length - 1]['parentId'] = [uniqueArray[uniqueArray?.length - 1]['parentId']];
+    //         } else {
+    //             uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+    //             uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+    //         }
 
-        }
-        return uniqueArray;
-    }
+    //     }
+    //     return uniqueArray;
+    // }
 
     validateInput($event) {
         if ($event.key === 'e' || $event.key === '-') {
@@ -946,7 +954,7 @@ export class UploadComponent implements OnInit {
                 } else {
                     this.testExecutionScrumData = response?.data;
                     this.isAddtionalTestField = this.testExecutionScrumData[0]['uploadEnable'];
-                     if(!this.isAddtionalTestField){
+                    if(!this.isAddtionalTestField){
                         this.cols.testExecutionScrumKeys = this.cols.testExecutionScrumKeys.filter(col=>!this.addtionalTestFieldColumn.some(obj => obj.field === col.field))
                     }else{
                         for (const additionalColumn of this.addtionalTestFieldColumn) {

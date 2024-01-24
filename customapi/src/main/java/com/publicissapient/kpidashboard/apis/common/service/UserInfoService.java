@@ -25,6 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
+import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
@@ -166,4 +167,27 @@ public interface UserInfoService {
 	 * @return user info object
 	 */
 	UserInfo getOrSaveUserInfo(String userName, AuthType authType, List<String> authorities);
+
+	// ----auth-N-auth----------
+	List<UserInfoDTO> findAllUnapprovedUsers(String token);
+
+	boolean updateUserApprovalStatus(String user, String token);
+
+	String deleteRejectedUser(String user, String token);
+
+	// ----auth-N-auth----------
+
+	/**
+	 * getUser info from cental auth
+	 * 
+	 * @param username
+	 * @return
+	 */
+	UserInfo getCentralAuthUserInfo(String username, String token);
+
+	CentralUserInfoDTO getCentralAuthUserInfoDetails(String username, String token);
+	// ----auth-N-auth----------
+
+	String getCentralAuthUserDeleteUserToken(String token);
+
 }
