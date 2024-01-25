@@ -38,6 +38,17 @@ stages:
         ls
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'ls'
+        chartType: 'Name'
+        #chartName: 'zookeeper'
+        # releaseName: '<ReleaseName>'
+        # overrideValues: '<OverrideValues>'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
       displayName: 'Deploy API'
 
 - stage: UI_Deploy
@@ -68,7 +79,7 @@ stages:
         namespace: '${{ parameters.Environment }}-knowhow'
         command: 'ls'
         chartType: 'Name'
-        chartName: 'zookeeper'
+        # chartName: 'zookeeper'
         # releaseName: '<ReleaseName>'
         # overrideValues: '<OverrideValues>'
         valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
@@ -94,6 +105,18 @@ stages:
         ls
         # Add Helm deployment steps for Processor
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'ls'
+        chartType: 'Name'
+        #chartName: 'zookeeper'
+        # releaseName: '<ReleaseName>'
+        # overrideValues: '<OverrideValues>'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
       displayName: 'Deploy Processor'
 
 - stage: Deploy_ALL
