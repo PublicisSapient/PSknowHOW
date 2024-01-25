@@ -74,7 +74,7 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
 		CollectionUtils.emptyIfNull(projectConfigList).forEach(projectConfig -> {
 			ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+			BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 			projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
 			projectConfFieldMapping.setAzure(getAzureToolConfig(projectConfig.getId()));
@@ -137,7 +137,7 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		List<ProjectToolConfig> azureBoardsDetails = toolRepository
 				.findByToolNameAndBasicProjectConfigId(ProcessorConstants.AZURE, basicProjectConfigId);
 		if (CollectionUtils.isNotEmpty(azureBoardsDetails)) {
-			BeanUtils.copyProperties(toolObj, azureBoardsDetails.get(0));
+			BeanUtils.copyProperties(azureBoardsDetails.get(0),toolObj);
 			if (Optional.ofNullable(azureBoardsDetails.get(0).getConnectionId()).isPresent()) {
 				Optional<Connection> conn = connectionRepository.findById(azureBoardsDetails.get(0).getConnectionId());
 				if (conn.isPresent()) {

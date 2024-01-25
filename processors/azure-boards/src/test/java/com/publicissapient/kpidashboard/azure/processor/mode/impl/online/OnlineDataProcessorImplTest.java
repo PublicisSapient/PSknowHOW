@@ -314,11 +314,11 @@ public class OnlineDataProcessorImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
+		BeanUtils.copyProperties(scrumProjectList.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 
-		BeanUtils.copyProperties(projectConfFieldMapping2, kanbanProjectlist.get(0));
+		BeanUtils.copyProperties(kanbanProjectlist.get(0),projectConfFieldMapping2);
 		projectConfFieldMapping2.setKanban(true);
 		projectConfFieldMapping2.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping2.setFieldMapping(fieldMappingList.get(1));

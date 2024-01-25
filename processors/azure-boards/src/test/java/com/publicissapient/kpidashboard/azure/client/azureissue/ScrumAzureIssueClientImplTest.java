@@ -402,7 +402,7 @@ public class ScrumAzureIssueClientImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
+		BeanUtils.copyProperties(scrumProjectList.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
