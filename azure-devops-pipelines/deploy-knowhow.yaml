@@ -35,7 +35,9 @@ stages:
         echo "Deploying API..."
         # Add API deployment steps
         echo "Deploying Helm charts for API..."
-        ls
+        # Extract version from pom.xml
+        export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Version from pom.xml: $VERSION"
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
     - task: HelmDeploy@0
