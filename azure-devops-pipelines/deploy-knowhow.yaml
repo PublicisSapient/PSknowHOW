@@ -45,7 +45,7 @@ stages:
         namespace: '${{ parameters.Environment }}-knowhow'
         command: 'upgrade'
         chartType: 'Name'
-        chartName: 'customapi'
+        chartName: './Kubernetes/knowhow-helm/knowhow-customapi'
         releaseName: 'customapi'
         # overrideValues: '<OverrideValues>'
         valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
