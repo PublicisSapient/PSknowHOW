@@ -86,3 +86,20 @@ stages:
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
       displayName: 'Deploy Helm Charts for UI'
+
+- stage: Processor_Deploy
+  dependsOn: deploy
+  condition: and(succeeded(), eq('${{ parameters.deploymentOptions }}', 'Processor'))
+
+  jobs:
+  - job: Processor_Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+    - script: |
+        echo "Deploying Helm charts for Processor..."
+        # Add Helm deployment steps for Processor
+        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+      displayName: 'Deploy Helm Charts for UI'
