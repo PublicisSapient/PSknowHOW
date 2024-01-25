@@ -152,6 +152,10 @@
               <ng-container>
                 <table class="n-bordered">
                   <caption style="display: none;">Projects Access</caption>
+                  <thead display="none">
+                    <th scope="col">Dummy Header</th>
+                  </thead>
+                  <tbody>
                   <tr *ngFor="let access of rowData.projectsAccess">
                     <td class="nested-td">
                       <div *ngFor="let node of access.accessNodes">
@@ -169,6 +173,7 @@
                       </div>
                     </td>
                   </tr>
+                </tbody>
                 </table>
               </ng-container>
             </td>
