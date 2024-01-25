@@ -1,82 +1,45 @@
 trigger:
 - azure-devops
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 parameters:
-- name: deploymentType
-  displayName: 'Select Deployment Type'
+- name: deploymentOptions
   type: string
+  default: 'ALL'
   values:
-  - 'ui'
-  - 'api'
-  - 'processor'
-  default: 'ui'
+  - 'API'
+  - 'UI'
+  - 'Processor'
+  - 'ALL'
 
-# jobs:
-# - job: Set_Maven_Version
-#   displayName: 'Set Maven Version'
-#   steps:
-#   - script: |
-#       MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
-#       echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
-#     displayName: 'Set Maven Version'
+jobs:
+- job: deploy
+  pool:
+    vmImage: 'ubuntu-latest'
 
-# - job: Display_Maven_Version
-#   displayName: 'Display Maven Version'
-#   steps:
-#   - script: |
-#       echo "Maven Version: $(MAVEN_VERSION)"
-#     displayName: 'Display Maven Version'
+  steps:
+  - checkout: self
 
-stages:
+  - script: |
+      echo "Selected Deployment Options: $(deploymentOptions)"
+      # Add your deployment steps based on the selected options
+      
+      if [ "$(deploymentOptions)" == "API" ]; then
+          echo "Deploying API..."
+          # Add API deployment steps
+      fi
 
-- stage: Java_version
-  displayName: 'UI vjava version Deployment'
-  jobs:
-  - job: Version
-    steps:
-    - script: |
-        MAVEN_VERSION=$(xmlstarlet sel -t -v "/project/version" pom.xml)
-        echo "##vso[task.setvariable variable=MAVEN_VERSION]$MAVEN_VERSION"
-      displayName: 'Set Maven Version'
+      if [ "$(deploymentOptions)" == "UI" ]; then
+          echo "Deploying UI..."
+          # Add UI deployment steps
+      fi
 
-- stage: Chenking_version
-  displayName: 'UI version Deployment'
-  jobs:
-  - job: Version
-    steps:
-    - script: |
-        echo "Maven Version: $(MAVEN_VERSION)"
-      displayName: 'Display Maven Version'
+      if [ "$(deploymentOptions)" == "Processor" ]; then
+          echo "Deploying Processor..."
+          # Add Processor deployment steps
+      fi
 
-- stage: UI
-  displayName: 'UI Deployment'
-  condition: eq(variables['deploymentType'], 'ui')
-  jobs:
-  - job: UI_Deployment
-    steps:
-    - script: |
-        echo "Deploying UI..."
-        # Add your UI deployment steps here
-
-- stage: API
-  displayName: 'API Deployment'
-  condition: eq(variables['deploymentType'], 'api')
-  jobs:
-  - job: API_Deployment
-    steps:
-    - script: |
-        echo "Deploying API..."
-        # Add your API deployment steps here
-
-- stage: Processor
-  displayName: 'Processor Deployment'
-  condition: eq(variables['deploymentType'], 'processor')
-  jobs:
-  - job: Processor_Deployment
-    steps:
-    - script: |
-        echo "Deploying Processor..."
-        # Add your Processor deployment steps here
+      if [ "$(deploymentOptions)" == "ALL" ]; then
+          echo "Deploying ALL..."
+          # Add deployment steps for all options
+      fi
+    displayName: 'Deploy Application'
