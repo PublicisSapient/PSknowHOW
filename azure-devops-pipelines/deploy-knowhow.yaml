@@ -27,7 +27,7 @@ stages:
       vmImage: 'ubuntu-latest'
 
     variables:
-      overrideValues: 'image.tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
+      overrideValues: 'image.tag=$(bash -c "mvn help:evaluate -Dexpression=project.version -q -DforceStdout")'
 
     steps:
     - checkout: self
