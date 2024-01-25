@@ -32,8 +32,6 @@ jobs:
       if [ "${{ parameters.deploymentOptions }}" == "API" ]; then
           echo "Deploying API..."
           echo "${{parameters.Environment}}"
-          ls
-          pwd
           # Add API deployment steps
       fi
 
@@ -52,3 +50,17 @@ jobs:
           # Add deployment steps for all options
       fi
     displayName: 'Deploy Application'
+
+- stage: deployHelmCharts
+  condition: eq('${{ parameters.deploymentOptions }}', 'API')
+  jobs:
+  - job: deployHelmChartsJob
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+    - script: |
+        echo "Deploying Helm charts for API..."
+        # Add Helm deployment steps for API
+        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+      displayName: 'Deploy Helm Charts for API'
