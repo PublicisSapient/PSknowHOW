@@ -12,9 +12,9 @@ parameters:
   - 'ALL'
 - name: Environment
   type: string
-  default: 'PreProd'
+  default: 'uat'
   values:
-  - 'PreProd'
+  - 'uat'
   - 'Prod'
 
 stages:
@@ -64,8 +64,8 @@ stages:
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceConnection: 'uat-knowhow-k8s-sc'
-        namespace: 'uat-knowhow'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
         command: 'ls'
         chartType: 'Name'
         chartName: 'zookeeper'
