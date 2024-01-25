@@ -26,9 +26,9 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
 
-    # variables:
-    #   - name: VERSION
-    #     value: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    variables:
+      $:
+        overrideValues: 'image.tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
 
     steps:
     - checkout: self
@@ -53,7 +53,7 @@ stages:
         chartType: 'FilePath'
         chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
         releaseName: 'customapi'
-        overrideValues: 'image.tag=$VERSION'
+        overrideValues: '$(overrideValues)'
         valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
       displayName: 'Deploy API'
 
