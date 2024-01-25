@@ -63,7 +63,6 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
-    # - checkout: self
     - script: |
         echo "Deploying Helm charts for API..."
         ls
@@ -81,7 +80,6 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
-    # - checkout: self
     - script: |
         echo "Deploying Helm charts for UI..."
         ls
@@ -99,10 +97,9 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
-    # - checkout: self
     - script: |
         echo "Deploying Helm charts for Processor..."
         ls
         # Add Helm deployment steps for Processor
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-      displayName: 'Deploy Helm Charts for UI'
+      displayName: 'Deploy Helm Charts for Processor'
