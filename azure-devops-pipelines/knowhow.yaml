@@ -18,9 +18,11 @@ parameters:
   - 'Prod'
 
 stages:
-- stage: deploy
+- stage: API_Deploy
+  condition: eq('${{ parameters.deploymentOptions }}', 'API')
+
   jobs:
-  - job: deployJob
+  - job: API_Deploy
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -30,49 +32,16 @@ stages:
     - script: |
         echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
         echo "${{ parameters.Environment }}"
-        # Add your deployment steps based on the selected options
-        
-        if [ "${{ parameters.deploymentOptions }}" == "API" ]; then
-            echo "Deploying API..."
-            # Add API deployment steps
-        fi
-
-        if [ "${{ parameters.deploymentOptions }}" == "UI" ]; then
-            echo "Deploying UI..."
-            # Add UI deployment steps
-        fi
-
-        if [ "${{ parameters.deploymentOptions }}" == "Processor" ]; then
-            echo "Deploying Processor..."
-            # Add Processor deployment steps
-        fi
-
-        if [ "${{ parameters.deploymentOptions }}" == "ALL" ]; then
-            echo "Deploying ALL..."
-            # Add deployment steps for all options
-        fi
-      displayName: 'Deploy Application'
-
-- stage: API_Deploy
-  dependsOn: deploy
-  condition: and(succeeded(), eq('${{ parameters.deploymentOptions }}', 'API'))
-
-  jobs:
-  - job: API_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
-
-    steps:
-    - script: |
+        echo "Deploying API..."
+        # Add API deployment steps
         echo "Deploying Helm charts for API..."
         ls
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-      displayName: 'Deploy Helm Charts for API'
+      displayName: 'Deploy API'
 
 - stage: UI_Deploy
-  dependsOn: deploy
-  condition: and(succeeded(), eq('${{ parameters.deploymentOptions }}', 'UI'))
+  condition: eq('${{ parameters.deploymentOptions }}', 'UI')
 
   jobs:
   - job: UI_Deploy
@@ -80,16 +49,21 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
+    - checkout: self
+
     - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying UI..."
+        # Add UI deployment steps
         echo "Deploying Helm charts for UI..."
         ls
-        # Add Helm deployment steps for API
+        # Add Helm deployment steps for UI
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-      displayName: 'Deploy Helm Charts for UI'
+      displayName: 'Deploy UI'
 
 - stage: Processor_Deploy
-  dependsOn: deploy
-  condition: and(succeeded(), eq('${{ parameters.deploymentOptions }}', 'Processor'))
+  condition: eq('${{ parameters.deploymentOptions }}', 'Processor')
 
   jobs:
   - job: Processor_Deploy
@@ -97,9 +71,33 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
+    - checkout: self
+
     - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying Processor..."
+        # Add Processor deployment steps
         echo "Deploying Helm charts for Processor..."
         ls
         # Add Helm deployment steps for Processor
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-      displayName: 'Deploy Helm Charts for Processor'
+      displayName: 'Deploy Processor'
+
+- stage: Deploy_ALL
+  condition: eq('${{ parameters.deploymentOptions }}', 'ALL')
+
+  jobs:
+  - job: Deploy_ALL
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+
+    - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying ALL..."
+        # Add deployment steps for all options
+      displayName: 'Deploy ALL'
