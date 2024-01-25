@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,6 +21,7 @@ import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 
 @Component
+@Slf4j
 public class CookieUtil {
 	public static final String AUTH_COOKIE = "authCookie";
 
@@ -61,6 +63,7 @@ public class CookieUtil {
 				response.setHeader(HttpHeaders.SET_COOKIE,
 						String.format("%s; %s", header, customApiConfig.getAuthCookieSameSite()));
 				firstHeader = false;
+				log.info("addSameSiteCookieAttribute :: {}" , firstHeader);
 				continue;
 			}
 			response.addHeader(HttpHeaders.SET_COOKIE,
