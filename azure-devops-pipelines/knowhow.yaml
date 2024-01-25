@@ -76,7 +76,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
-        namespace: '${{ parameters.Environment }}-knowhow'
+        namespace: '${{ parameters.Environment }}-map'
         command: 'ls'
         chartType: 'Name'
         # chartName: 'zookeeper'
