@@ -51,16 +51,18 @@ jobs:
       fi
     displayName: 'Deploy Application'
 
-- ${{ if eq(parameters.deploymentOptions, 'API') }}:
-  - stage: deployHelmCharts
-    jobs:
-    - job: deployHelmChartsJob
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - checkout: self
-      - script: |
-          echo "Deploying Helm charts for API..."
-          # Add Helm deployment steps for API
-          # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-        displayName: 'Deploy Helm Charts for API'
+- stage: deployHelmCharts
+  dependsOn: deploy
+  condition: and(succeeded(), eq('${{ parameters.deploymentOptions }}', 'API'))
+
+  jobs:
+  - job: deployHelmChartsJob
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+    - script: |
+        echo "Deploying Helm charts for API..."
+        # Add Helm deployment steps for API
+        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+      displayName: 'Deploy Helm Charts for API'
