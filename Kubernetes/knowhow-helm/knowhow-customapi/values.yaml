@@ -4,15 +4,16 @@
 
 replicaCount: 2
 
-namespace: uat-knowhow
 
 configmapname: knowhow-config
 
+env: uat
+
 image:
-  repository: psknowhow/customapi
-  pullPolicy: IfNotPresent
+  repository: speedtools.azurecr.io/knowhow-customapi
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "8.1.1"
+  tag: "10.0.0-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""

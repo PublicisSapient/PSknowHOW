@@ -1,25 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "knowhow-customapi.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  name: customapi
+  namespace: {{ .Values.env}}-knowhow
   labels:
-    {{- include "knowhow-customapi.labels" . | nindent 4 }}
+    app: customapi
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "knowhow-customapi.selectorLabels" . | nindent 6 }}
+      app: customapi
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "knowhow-customapi.selectorLabels" . | nindent 8 }}
+        app: customapi
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -29,7 +25,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: customapi
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -38,9 +34,50 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbconnectionstring
+            # - name: spring.data.mongodb.host
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: knowhow-config-credentials
+            #       key: {{ .Values.env}}knhdbhost
+            - name: repoToolAPIKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}-repo-tool-api-key
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: knowhowaesEncryptionKey
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: knowhow-auth-secret
+
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbpassword
+            - name: mongock.migration-scan-package
+              value: com.publicissapient.kpidashboard.apis.mongock.installation  
+            - name: auth.centralAuthBaseURL
+              value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
           envFrom:
           - configMapRef:
-              name: {{ .Values.configmapname }}
+              name: knowhow-config
           livenessProbe:
             tcpSocket:
               port: {{ .Values.service.port }}
