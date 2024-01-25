@@ -20,25 +20,25 @@ jobs:
   - checkout: self
 
   - script: |
-      echo "Selected Deployment Options: $(deploymentOptions)"
+      echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
       # Add your deployment steps based on the selected options
       
-      if [ "$(deploymentOptions)" == "API" ]; then
+      if [ "${{ parameters.deploymentOptions }}" == "API" ]; then
           echo "Deploying API..."
           # Add API deployment steps
       fi
 
-      if [ "$(deploymentOptions)" == "UI" ]; then
+      if [ "${{ parameters.deploymentOptions }}" == "UI" ]; then
           echo "Deploying UI..."
           # Add UI deployment steps
       fi
 
-      if [ "$(deploymentOptions)" == "Processor" ]; then
+      if [ "${{ parameters.deploymentOptions }}" == "Processor" ]; then
           echo "Deploying Processor..."
           # Add Processor deployment steps
       fi
 
-      if [ "$(deploymentOptions)" == "ALL" ]; then
+      if [ "${{ parameters.deploymentOptions }}" == "ALL" ]; then
           echo "Deploying ALL..."
           # Add deployment steps for all options
       fi
