@@ -60,7 +60,18 @@ stages:
         ls
         # Add Helm deployment steps for UI
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-      displayName: 'Deploy UI'
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: 'uat-knowhow-k8s-sc'
+        command: 'ls'
+        chartType: 'Name'
+        chartName: 'zookeeper'
+        # releaseName: '<ReleaseName>'
+        # overrideValues: '<OverrideValues>'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
+      displayName: 'Deploy Helm Charts for API'
 
 - stage: Processor_Deploy
   condition: eq('${{ parameters.deploymentOptions }}', 'Processor')
