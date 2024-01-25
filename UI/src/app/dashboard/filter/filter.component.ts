@@ -294,6 +294,12 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     this.service.projectQueryParamObs.subscribe((val) => {
       this.nodeIdQParam = val.value;
+      if(this.nodeIdQParam){
+        const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
+        if(ifProjectExist === -1){
+          this.noAccessMsg = true;  
+        }
+      }
     })
     this.service.sprintQueryParamObs.subscribe((val) => {
       this.sprintIdQParam = val.value;
