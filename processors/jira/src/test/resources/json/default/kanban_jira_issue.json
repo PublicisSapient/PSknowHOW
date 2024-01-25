@@ -5,6 +5,7 @@
     "issueId": "15224189",
     "number": "TEST-17746",
     "name": "x-axis line is dark on stacked graphs, it should be standard for all graphs",
+    "epicLick": "epicLick",
     "typeId": "1",
     "typeName": "Bug",
     "status": "Closed",

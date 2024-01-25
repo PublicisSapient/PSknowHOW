@@ -19,10 +19,11 @@
 package com.publicissapient.kpidashboard.apis.connection.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.Base64;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -64,7 +65,6 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 	private static final String VALID_MSG = "Valid Credentials ";
 	private static final String INVALID_MSG = "Invalid Credentials ";
 	private static final String WRONG_JIRA_BEARER = "{\"expand\":\"projects\",\"projects\":[]}";
-	private static final Pattern URL_PATTERN = Pattern.compile("^(https?://)([^/?#]+)([^?#]*)(\\?[^#]*)?(#.*)?$");
 	private static final String APPICATION_JSON = "application/json";
 	private static final String CLOUD_BITBUCKET = "bitbucket.org";
 	@Autowired
@@ -155,24 +155,27 @@ public class TestConnectionServiceImpl implements TestConnectionService {
 		return new ServiceResponse(false, "Password/API token missing", HttpStatus.NOT_FOUND);
 	}
 
-	private String getApiForRepoTool(Connection connection){
+	private String getApiForRepoTool(Connection connection) {
 		RepoToolsProvider repoToolsProvider = repoToolsProviderRepository
 				.findByToolName(connection.getRepoToolProvider());
 		String apiUrl = "";
-			Matcher matcher = URL_PATTERN.matcher(connection.getHttpUrl());
+		try {
+			URL url = new URL(connection.getHttpUrl());
+			String testApiUrl = url.getProtocol().concat("://").concat(url.getHost());
 			if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_GITHUB))
 				apiUrl = repoToolsProvider.getTestApiUrl() + connection.getUsername();
 			else if (connection.getRepoToolProvider().equalsIgnoreCase(Constant.TOOL_BITBUCKET)) {
 				if (connection.getHttpUrl().contains(CLOUD_BITBUCKET)) {
 					apiUrl = repoToolsProvider.getTestApiUrl();
-				} else if (matcher.find()) {
-					apiUrl = matcher.group(1).concat(matcher.group(2)).concat(repoToolsProvider.getTestServerApiUrl());
+				} else {
+					apiUrl = testApiUrl.concat(repoToolsProvider.getTestServerApiUrl());
 				}
 			} else {
-				if (matcher.find()) {
-					apiUrl = createApiUrl(matcher.group(1).concat(matcher.group(2)), Constant.TOOL_GITLAB);
-				}
+				apiUrl = createApiUrl(testApiUrl, Constant.TOOL_GITLAB);
 			}
+		} catch (MalformedURLException ex) {
+			log.error("Invalid URL", ex);
+		}
 		return apiUrl;
 	}
 

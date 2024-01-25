@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.jira.client;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import com.atlassian.httpclient.api.Request.Builder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.atlassian.httpclient.api.HttpClient;
+import com.atlassian.httpclient.api.Request.Builder;
 import com.atlassian.httpclient.api.ResponsePromise;
 import com.atlassian.jira.rest.client.api.IssueRestClient.Expandos;
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -109,6 +108,9 @@ public class CustomAsynchronousIssueRestClientTest {
 		set.add("field1");
 		set.add("field2");
 		StringBuilder sb = new StringBuilder("dummyString");
+		for (int i = 0; i < 300; i++) {
+			sb.append("dummyString");
+		}
 		customAsynchronousIssueRestClient.searchBoardIssue("BoardId", sb.toString(), 12, 1, set);
 	}
 
