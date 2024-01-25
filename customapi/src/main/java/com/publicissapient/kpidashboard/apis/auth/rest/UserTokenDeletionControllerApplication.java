@@ -91,6 +91,7 @@ public class UserTokenDeletionControllerApplication {
 			session.invalidate();
 		}
 		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken, apiKey);
+		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
 		Cookie authCookieRemove = new Cookie("authCookie", "");
 		resetHeader(response, "", authCookieRemove);
 		log.info("UserTokenDeletionController::deleteUserToken end");
