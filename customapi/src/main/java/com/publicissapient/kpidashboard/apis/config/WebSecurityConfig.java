@@ -173,18 +173,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		auth.authenticationProvider(apiTokenAuthenticationProvider);
 	}
 
-	@Bean
+	/*@Bean
 	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
 		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler,
 				customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-	}
+	}*/
 
 	// update authenticatoin result handler
-	@Bean
+	/*@Bean
 	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
 		return new LdapLoginRequestFilter("/ldap", authenticationManager(), authenticationResultHandler,
 				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-	}
+	}*/
 
 	@Bean
 	protected ApiTokenRequestFilter apiTokenRequestFilter() throws Exception {

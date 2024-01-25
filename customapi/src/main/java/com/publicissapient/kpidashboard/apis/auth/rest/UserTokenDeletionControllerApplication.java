@@ -100,8 +100,10 @@ public class UserTokenDeletionControllerApplication {
 
 	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
 		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
+		response.addHeader("CLEAR_VIA_KNOWHOW" , "true");
 		response.addCookie(cookie);
 		cookieUtil.addSameSiteCookieAttribute(response);
+		log.info("UserTokenDeletionController::resetHeader end");
 	}
 
 }

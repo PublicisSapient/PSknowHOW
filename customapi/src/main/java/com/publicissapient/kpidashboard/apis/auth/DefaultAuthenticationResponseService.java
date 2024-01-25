@@ -22,6 +22,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -43,6 +44,7 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
  *
  */
 @Component
+@Slf4j
 public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
 
 	@Autowired
@@ -58,13 +60,14 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String emailAddress = StringUtils.EMPTY;
 		String username;
-
+		log.info("DefaultAuthenticationResponseService::handle start");
 		if (authentication.getPrincipal() instanceof CustomUserDetails) {
 			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress().toLowerCase();
 			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
 
 		} else {
 			username = authentication.getPrincipal().toString();
+			log.info("DefaultAuthenticationResponseService :: {}" , username);
 		}
 
 		AuthType authType = authentication.getDetails() == null ? AuthType.STANDARD
