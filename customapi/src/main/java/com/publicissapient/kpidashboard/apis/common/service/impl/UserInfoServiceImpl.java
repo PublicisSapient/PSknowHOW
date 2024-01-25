@@ -613,7 +613,6 @@ public class UserInfoServiceImpl implements UserInfoService {
 		HttpHeaders headers = cookieUtil.getHeaders(apiKey, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/userlogout/");
-		uriBuilder.path(token);
 		String fetchUserUrl = uriBuilder.toUriString();
 		HttpEntity<?> entity = new HttpEntity<>(headers);
 

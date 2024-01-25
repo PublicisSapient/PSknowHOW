@@ -24,10 +24,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,6 +83,13 @@ public class UserTokenDeletionControllerApplication {
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String authCookieToken = authCookie.getValue();
 		String apiKey = authProperties.getResourceAPIKey();
+		HttpSession session;
+		SecurityContextHolder.clearContext();
+
+		session = request.getSession(false);
+		if(session != null) {
+			session.invalidate();
+		}
 		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken, apiKey);
 		Cookie authCookieRemove = new Cookie("authCookie", "");
 		resetHeader(response, "", authCookieRemove);

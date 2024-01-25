@@ -1411,8 +1411,8 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.handleCentralLogout().subscribe((response) =>{
-      console.log(response);
+    //this.httpService.handleCentralLogout().subscribe((response) =>{
+     // console.log(response);
       this.httpService.logout().subscribe((responseData) => {
     console.log('response of logout:', responseData);
       if (responseData && responseData['success']) {
@@ -1445,8 +1445,8 @@ export class FilterComponent implements OnInit, OnDestroy {
           });
         }
       }
-    });
-      
+   // });
+
     })
     // this.httpService.logout().subscribe((responseData) => {
     // console.log('response of logout:', responseData);
