@@ -15,7 +15,7 @@ parameters:
   default: 'uat'
   values:
   - 'uat'
-  - 'Prod'
+  - 'prod'
 
 stages:
 - stage: API_Deploy
