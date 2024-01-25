@@ -26,9 +26,9 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
 
-    variables:
-      - name: VERSION
-        value: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    # variables:
+    #   - name: VERSION
+    #     value: $(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
     steps:
     - checkout: self
@@ -40,7 +40,7 @@ stages:
         # Add API deployment steps
         echo "Deploying Helm charts for API..."
         # Extract version from pom.xml
-        # export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "Version from pom.xml: $VERSION"
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
@@ -53,7 +53,7 @@ stages:
         chartType: 'FilePath'
         chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
         releaseName: 'customapi'
-        overrideValues: 'image.tag=$(VERSION)'
+        overrideValues: 'image.tag=$VERSION'
         valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
       displayName: 'Deploy API'
 
