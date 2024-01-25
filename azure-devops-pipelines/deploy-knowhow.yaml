@@ -4,7 +4,7 @@ trigger:
 parameters:
 - name: deploymentOptions
   type: string
-  default: 'UI'
+  default: 'API'
   values:
   - 'API'
   - 'UI'
