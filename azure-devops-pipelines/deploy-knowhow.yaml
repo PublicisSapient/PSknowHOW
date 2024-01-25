@@ -43,12 +43,12 @@ stages:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
         namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'ls'
+        command: 'upgrade'
         chartType: 'Name'
-        #chartName: 'zookeeper'
-        # releaseName: '<ReleaseName>'
+        chartName: 'knowhow-customapi'
+        releaseName: 'customapi'
         # overrideValues: '<OverrideValues>'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
       displayName: 'Deploy API'
 
 - stage: UI_Deploy

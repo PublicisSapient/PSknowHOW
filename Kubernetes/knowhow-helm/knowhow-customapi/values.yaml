@@ -13,7 +13,7 @@ image:
   repository: speedtools.azurecr.io/knowhow-customapi
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "10.0.0-SNAPSHOT"
+  tag: "10.0-SNAPSHOT"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -68,7 +68,7 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 1500m
-    memory: 128Mi
+    memory: 2048Mi
   requests:
     cpu: 500m
     memory: 128Mi
