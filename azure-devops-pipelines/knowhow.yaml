@@ -17,39 +17,41 @@ parameters:
   - 'PreProd'
   - 'Prod'
 
-jobs:
-- job: deploy
-  pool:
-    vmImage: 'ubuntu-latest'
+stages:
+- stage: deploy
+  jobs:
+  - job: deployJob
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  steps:
-  - checkout: self
+    steps:
+    - checkout: self
 
-  - script: |
-      echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-      echo "${{ parameters.Environment }}"
-      # Add your deployment steps based on the selected options
-      
-      if [ "${{ parameters.deploymentOptions }}" == "API" ]; then
-          echo "Deploying API..."
-          # Add API deployment steps
-      fi
+    - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        # Add your deployment steps based on the selected options
+        
+        if [ "${{ parameters.deploymentOptions }}" == "API" ]; then
+            echo "Deploying API..."
+            # Add API deployment steps
+        fi
 
-      if [ "${{ parameters.deploymentOptions }}" == "UI" ]; then
-          echo "Deploying UI..."
-          # Add UI deployment steps
-      fi
+        if [ "${{ parameters.deploymentOptions }}" == "UI" ]; then
+            echo "Deploying UI..."
+            # Add UI deployment steps
+        fi
 
-      if [ "${{ parameters.deploymentOptions }}" == "Processor" ]; then
-          echo "Deploying Processor..."
-          # Add Processor deployment steps
-      fi
+        if [ "${{ parameters.deploymentOptions }}" == "Processor" ]; then
+            echo "Deploying Processor..."
+            # Add Processor deployment steps
+        fi
 
-      if [ "${{ parameters.deploymentOptions }}" == "ALL" ]; then
-          echo "Deploying ALL..."
-          # Add deployment steps for all options
-      fi
-    displayName: 'Deploy Application'
+        if [ "${{ parameters.deploymentOptions }}" == "ALL" ]; then
+            echo "Deploying ALL..."
+            # Add deployment steps for all options
+        fi
+      displayName: 'Deploy Application'
 
 - stage: deployHelmCharts
   dependsOn: deploy
@@ -59,6 +61,7 @@ jobs:
   - job: deployHelmChartsJob
     pool:
       vmImage: 'ubuntu-latest'
+
     steps:
     - checkout: self
     - script: |
