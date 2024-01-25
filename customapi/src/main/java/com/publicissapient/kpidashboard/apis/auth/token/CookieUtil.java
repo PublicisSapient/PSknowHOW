@@ -83,7 +83,7 @@ public class CookieUtil {
 	public void deleteCookie(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
 			@NotNull String name) {
 		getCookie(request, name).ifPresent(foundCookie -> {
-			foundCookie.setMaxAge(0);
+			foundCookie.setMaxAge(-100);
 			foundCookie.setValue("");
 			foundCookie.setPath("/api");
 			if (authProperties.isSubDomainCookie()) {
