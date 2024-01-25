@@ -636,7 +636,8 @@
       <ng-template pTemplate="header">
         <tr>
           <th *ngFor="let item of modalDetails['tableHeadings'];let i = index;"
-            [ngStyle]="{'width': i==0 ? '100px' : ''}">{{item}}</th>
+            [ngStyle]="{'width': i==0 ? '100px' : ''}"
+            id="{{item}}">{{item}}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-x>
