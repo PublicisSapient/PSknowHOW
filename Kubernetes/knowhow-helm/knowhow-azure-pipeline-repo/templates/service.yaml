@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: azure-pipeline-repo
+  labels:
+    {{- include "knowhow-azure-pipeline-repo.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    {{- range $servicePort := .Values.servicePorts }}
+    - protocol: TCP
+      port: {{ $servicePort.port }}
+      targetPort: {{ $servicePort.targetPort }}
+      name: {{ $servicePort.name }}
+    {{- end }}
+  selector:
+    {{- include "knowhow-azure-pipeline-repo.selectorLabels" . | nindent 4 }}
