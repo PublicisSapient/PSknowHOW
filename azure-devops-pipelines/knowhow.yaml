@@ -65,6 +65,7 @@ stages:
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: 'uat-knowhow-k8s-sc'
+        namespace: 'uat-knowhow'
         command: 'ls'
         chartType: 'Name'
         chartName: 'zookeeper'
