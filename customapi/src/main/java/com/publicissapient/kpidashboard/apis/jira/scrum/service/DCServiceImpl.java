@@ -67,6 +67,9 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.collections4.IterableUtils.isEmpty;
+
 /**
  * This class fetches the defect count KPI along with trend analysis. Trend
  * analysis for Defect Count KPI has total defect count at y-axis and sprint id
@@ -112,14 +115,19 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
 
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+
+		List<Map<String, List<DataCount>>> trendValueList = (List<Map<String, List<DataCount>>>) kpiElement
+				.getTrendValueListFormCache();
+		Map<String, List<Map<String, List<DataCount>>>> mapForCache = new HashMap<>();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
 
 		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
 			if (Filters.getFilter(k) == Filters.SPRINT) {
-				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
+				addingACheckForDataFromCache(v, projectsFromCache);
+				sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
 			}
 
 		});
@@ -127,6 +135,7 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 		log.debug("[DC-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
 				kpiRequest.getRequestTrackerId(), root);
 
+		kpiElement.setMapForCache(mapForCache);
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_COUNT_BY_PRIORITY);
 		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
@@ -260,7 +269,8 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 	 */
 	@SuppressWarnings(UNCHECKED)
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest) {
+										 List<Map<String, List<DataCount>>> trendValueList, KpiElement kpiElement, KpiRequest kpiRequest,
+										 Map<String, List<Map<String, List<DataCount>>>> mapForCache) {
 
 		String requestTrackerId = getRequestTrackerId();
 
@@ -272,46 +282,49 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 
 		startDate = sprintLeafNodeList.get(0).getSprintFilter().getStartDate();
 		endDate = sprintLeafNodeList.get(sprintLeafNodeList.size() - 1).getSprintFilter().getEndDate();
+		List<Node> sprintLeafNodeListUpdated = sprintLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
 
-		Map<String, Object> storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
-				kpiRequest);
-
-		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
-				.get(SPRINT_WISE_STORY_DATA);
-
-		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
-				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
-
+		Map<String, Object> storyDefectDataListMap;
 		Map<Pair<String, String>, Map<String, Long>> sprintWiseDCPriorityMap = new HashMap<>();
 		Map<Pair<String, String>, Integer> sprintWiseTDCMap = new HashMap<>();
 		Map<Pair<String, String>, List<JiraIssue>> sprintWiseDefectDataListMap = new HashMap<>();
-
 		List<KPIExcelData> excelData = new ArrayList<>();
 
 		Set<String> projectWisePriorityList = new HashSet<>();
-		sprintWiseMap.forEach((sprintFilter, sprintWiseStories) -> {
+		if (isNotEmpty(sprintLeafNodeListUpdated)) {
+			storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
+					kpiRequest);
+			List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) storyDefectDataListMap
+					.get(SPRINT_WISE_STORY_DATA);
 
-			List<String> storyIdList = new ArrayList<>();
-			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
-					.forEach(storyIdList::addAll);
+			Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
+					.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-			List<JiraIssue> sprintWiseDefectDataList = ((List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECT_DATA))
-					.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
-					.collect(Collectors.toList());
-			// Below code is needed if defect->sprint linkage is considered
+			sprintWiseMap.forEach((sprintFilter, sprintWiseStories) -> {
 
-			Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(sprintWiseDefectDataList,
-					customApiConfig);
-			projectWisePriorityList.addAll(priorityCountMap.keySet());
-			sprintWiseDefectDataListMap.put(sprintFilter, sprintWiseDefectDataList);
+				List<String> storyIdList = new ArrayList<>();
+				sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
+						.forEach(storyIdList::addAll);
 
-			setSprintWiseLogger(sprintFilter, storyIdList, sprintWiseDefectDataList, priorityCountMap);
+				List<JiraIssue> sprintWiseDefectDataList = ((List<JiraIssue>) storyDefectDataListMap.get(TOTAL_DEFECT_DATA))
+						.stream().filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), storyIdList))
+						.collect(Collectors.toList());
+				// Below code is needed if defect->sprint linkage is considered
 
-			sprintWiseDCPriorityMap.put(sprintFilter, priorityCountMap);
-			sprintWiseTDCMap.put(sprintFilter, sprintWiseDefectDataList.size());
-		});
+				Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(sprintWiseDefectDataList,
+						customApiConfig);
+				projectWisePriorityList.addAll(priorityCountMap.keySet());
+				sprintWiseDefectDataListMap.put(sprintFilter, sprintWiseDefectDataList);
 
+				setSprintWiseLogger(sprintFilter, storyIdList, sprintWiseDefectDataList, priorityCountMap);
+
+				sprintWiseDCPriorityMap.put(sprintFilter, priorityCountMap);
+				sprintWiseTDCMap.put(sprintFilter, sprintWiseDefectDataList.size());
+			});
+		}
 		sprintLeafNodeList.forEach(node -> {
+			if (!node.isFromCache()) {
 			String trendLineName = node.getProjectFilter().getName();
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
@@ -335,8 +348,9 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 				finalMap.forEach((priority, value) -> {
 					DataCount dataCount = getDataCountObject(node, finalTrendLineName, overAllHoverValueMap, priority,
 							value);
-					trendValueList.add(dataCount);
+					dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
 					dataCountMap.computeIfAbsent(priority, k -> new ArrayList<>()).add(dataCount);
+					trendValueList.add(dataCountMap);
 				});
 
 				populateExcelDataObject(requestTrackerId, node.getSprintFilter().getName(), excelData,
@@ -345,7 +359,25 @@ public class DCServiceImpl extends JiraKPIService<Long, List<Object>, Map<String
 			log.debug("[DC-SPRINT-WISE][{}]. DC for sprint {}  is {} and trend value is {}", requestTrackerId,
 					node.getSprintFilter().getName(), sprintWiseDCPriorityMap.get(currentNodeIdentifier),
 					sprintWiseTDCMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(dataCountMap);
+				mapTmp.get(node.getId()).setValue(dataCountMap);
+				String key = node.getParentId();
+				if (isEmpty(mapForCache.get(key)))
+					mapForCache.put(key, new ArrayList<>(Arrays.asList(dataCountMap)));
+				else {
+					List<Map<String, List<DataCount>>> list = mapForCache.get(key);
+					list.add(dataCountMap);
+					mapForCache.put(key, list);
+				}
+			} else {
+				List<Map<String, List<DataCount>>> dataCountList = trendValueList.stream()
+						.filter(dataCountMap -> dataCountMap.values().stream()
+								.filter(dataCountsList -> (node.getId()).equals(dataCountsList.get(0).getsSprintID()))
+								.count() > 0)
+						.distinct().collect(Collectors.toList());
+
+				if (isNotEmpty(dataCountList))
+					mapTmp.get(node.getId()).setValue(dataCountList.get(0));
+			}
 
 		});
 

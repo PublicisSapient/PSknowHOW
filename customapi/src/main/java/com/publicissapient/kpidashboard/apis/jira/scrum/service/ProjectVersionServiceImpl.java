@@ -52,172 +52,200 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectRel
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 @Service
 @Slf4j
 public class ProjectVersionServiceImpl extends JiraKPIService<Double, List<Object>, Map<String, Object>> {
 
-	private static final String PROJECT_RELEASE_DETAIL = "projectReleaseDetail";
+    private static final String PROJECT_RELEASE_DETAIL = "projectReleaseDetail";
 
-	@Autowired
-	private CustomApiConfig customApiConfig;
-	@Autowired
-	private ProjectReleaseRepo projectReleaseRepo;
+    @Autowired
+    private CustomApiConfig customApiConfig;
+    @Autowired
+    private ProjectReleaseRepo projectReleaseRepo;
 
-	@Override
-	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = Lists.newArrayList();
-		Node root = treeAggregatorDetail.getRoot();
-		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
-		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
-			Filters filters = Filters.getFilter(k);
-			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest);
-			}
+    @Override
+    public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
+                                 TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+        Node root = treeAggregatorDetail.getRoot();
+        Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+        Map<String, List<DataCount>> mapForCache = new HashMap<>();
+        List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+        List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
 
-		});
+        treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
+            Filters filters = Filters.getFilter(k);
+            if (Filters.PROJECT == filters) {
+                /* #deepak starts changes for adding a check for data from cache */
+                v.forEach(node -> {
+                            if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getId()))
+                                    .count() > 0)
+                                node.setFromCache(true);
+                        }
+                        /* #deepak ends changes */
+                );
+                projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
+                        mapForCache);
+            }
+        });
 
-		log.debug("[PROJECT-RELEASE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
-				kpiRequest.getRequestTrackerId(), root);
+        log.debug("[PROJECT-RELEASE-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
+                kpiRequest.getRequestTrackerId(), root);
 
-		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
-		// 3rd change : remove code to set trendValuelist and call
-		// getTrendValues method
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
-		kpiElement.setTrendValueList(trendValues);
-		return kpiElement;
-	}
+        kpiElement.setMapForCache(mapForCache);
 
-	@Override
-	public Double calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
+        Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
+        calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+        // 3rd change : remove code to set trendValuelist and call
+        // getTrendValues method
+        List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.PROJECT_RELEASES);
+        kpiElement.setTrendValueList(trendValues);
+        return kpiElement;
+    }
 
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
-			KpiRequest kpiRequest) {
+    @Override
+    public Double calculateKPIMetrics(Map<String, Object> subCategoryMap) {
+        return null;
+    }
 
-		Map<String, Object> resultListMap = new HashMap<>();
-		List<ObjectId> basicProjectConfigIds = new ArrayList<>();
+    @Override
+    public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+                                                  KpiRequest kpiRequest) {
 
-		leafNodeList.forEach(leaf -> basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
-		resultListMap.put(PROJECT_RELEASE_DETAIL, projectReleaseRepo.findByConfigIdIn(basicProjectConfigIds));
-		return resultListMap;
-	}
+        Map<String, Object> resultListMap = new HashMap<>();
+        List<ObjectId> basicProjectConfigIds = new ArrayList<>();
 
-	@Override
-	public String getQualifierType() {
-		return KPICode.PROJECT_RELEASES.name();
-	}
+        leafNodeList.forEach(leaf -> basicProjectConfigIds.add(leaf.getProjectFilter().getBasicProjectConfigId()));
+        resultListMap.put(PROJECT_RELEASE_DETAIL, projectReleaseRepo.findByConfigIdIn(basicProjectConfigIds));
+        return resultListMap;
+    }
 
-	/**
-	 * Calculate KPI value for selected project nodes.
-	 *
-	 * @param projectLeafNodeList
-	 *            list of sprint leaf nodes
-	 * @param trendValueList
-	 *            list containing data to show on KPI
-	 * @param kpiElement
-	 *            kpiElement
-	 * @param kpiRequest
-	 *            KpiRequest
-	 */
-	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
+    @Override
+    public String getQualifierType() {
+        return KPICode.PROJECT_RELEASES.name();
+    }
 
-		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
-		Map<String, ProjectRelease> filterWiseDataMap = createProjectWiseRelease(
-				(List<ProjectRelease>) resultMap.get(PROJECT_RELEASE_DETAIL));
-		List<KPIExcelData> excelData = new ArrayList<>();
-		projectLeafNodeList.forEach(node -> {
-			String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			String projectName = node.getProjectFilter().getName();
+    /**
+     * Calculate KPI value for selected project nodes.
+     *
+     * @param projectLeafNodeList list of sprint leaf nodes
+     * @param trendValueList      list containing data to show on KPI
+     * @param kpiElement          kpiElement
+     * @param kpiRequest          KpiRequest
+     */
+    @SuppressWarnings("unchecked")
+    private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
+                                          List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest,
+                                          Map<String, List<DataCount>> mapForCache) {
 
-			ProjectRelease releaseDetail = filterWiseDataMap.get(currentProjectId);
-			if (releaseDetail != null) {
-				setProjectNodeValue(mapTmp, node, releaseDetail, trendValueList, projectName, requestTrackerId,
-						excelData);
-			}
+        /* #deepak start changes */
+        List<Node> projectLeafNodeListUpdated = projectLeafNodeList.stream().filter(node -> !node.isFromCache())
+                .collect(Collectors.toList());
+        Map<String, ProjectRelease> filterWiseDataMap = new HashMap<>();
+        if (isNotEmpty(projectLeafNodeListUpdated)) {
+            Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
+            filterWiseDataMap = createProjectWiseRelease(
+                    (List<ProjectRelease>) resultMap.get(PROJECT_RELEASE_DETAIL));
+        }
+        List<KPIExcelData> excelData = new ArrayList<>();
+        Map<String, ProjectRelease> finalFilterWiseDataMap = filterWiseDataMap;
+        projectLeafNodeList.forEach(node -> {
+            String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
+            String projectName = node.getProjectFilter().getName();
 
-		});
-		kpiElement.setExcelData(excelData);
-		kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY.getColumns());
-	}
+            ProjectRelease releaseDetail = finalFilterWiseDataMap.get(currentProjectId);
+            if (releaseDetail != null) {
+                setProjectNodeValue(mapTmp, node, releaseDetail, trendValueList, projectName, requestTrackerId,
+                        excelData, mapForCache);
+            }
 
-	/**
-	 * Gets the KPI value for project node.
-	 *
-	 * @param kpiElement
-	 * @param projectRelease
-	 * @param trendValueList
-	 * @param projectName
-	 * @return
-	 */
-	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, ProjectRelease projectRelease,
-			List<DataCount> trendValueList, String projectName, String requestTrackerId, List<KPIExcelData> excelData) {
-		Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
-		List<ProjectVersion> projectVersionList = Lists.newArrayList();
-		List<String> dateList = Lists.newArrayList();
+        });
+        kpiElement.setExcelData(excelData);
+        kpiElement.setExcelColumns(KPIExcelColumn.RELEASE_FREQUENCY.getColumns());
+    }
 
-		for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
-			if (pv.getReleaseDate() != null) {
-				String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
-				if (dateCount.keySet().contains(yearMonth)) {
-					projectVersionList.add(pv);
-					dateList.add(yearMonth);
-					dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
-				}
-			}
-		}
-		List<DataCount> dcList = new ArrayList<>();
-		dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, k, v));
-		mapTmp.get(node.getId()).setValue(dcList);
+    /**
+     * Gets the KPI value for project node.
+     *
+     * @param kpiElement
+     * @param projectRelease
+     * @param trendValueList
+     * @param projectName
+     * @return
+     */
+    private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, ProjectRelease projectRelease,
+                                     List<DataCount> trendValueList, String projectName, String requestTrackerId, List<KPIExcelData> excelData,
+                                     Map<String, List<DataCount>> mapForCache) {
+        Map<String, Double> dateCount = getLastNMonth(customApiConfig.getSprintCountForFilters());
+        List<ProjectVersion> projectVersionList = Lists.newArrayList();
+        List<String> dateList = Lists.newArrayList();
+        List<DataCount> dcList = new ArrayList<>();
+        if (!node.isFromCache()) {
+            for (ProjectVersion pv : projectRelease.getListProjectVersion()) {
+                if (pv.getReleaseDate() != null) {
+                    String yearMonth = pv.getReleaseDate().getYear() + Constant.DASH + pv.getReleaseDate().getMonthOfYear();
+                    if (dateCount.keySet().contains(yearMonth)) {
+                        projectVersionList.add(pv);
+                        dateList.add(yearMonth);
+                        dateCount.put(yearMonth, dateCount.get(yearMonth) + 1);
+                    }
+                }
+            }
+            dateCount.forEach((k, v) -> setDataCount(trendValueList, projectName, dcList, k, v));
+            mapTmp.get(node.getId()).setValue(dcList);
+            mapForCache.put(node.getId(), dcList);
+        } else {
+            List<DataCount> dataCountList = trendValueList.stream()
+                    .filter(dataCount -> node.getName().equals(dataCount.getSProjectName())).distinct()
+                    .collect(Collectors.toList());
+            if (isNotEmpty(dataCountList))
+                mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(dataCountList));
+        }
 
-		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-			KPIExcelUtility.populateReleaseFreqExcelData(projectVersionList, projectName, excelData);
-		}
+        if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+            KPIExcelUtility.populateReleaseFreqExcelData(projectVersionList, projectName, excelData);
+        }
 
-	}
+    }
 
-	/**
-	 * @param trendValueList
-	 * @param projectName
-	 * @param dcList
-	 * @param k
-	 * @param v
-	 */
-	private void setDataCount(List<DataCount> trendValueList, String projectName, List<DataCount> dcList, String k,
-			Double v) {
-		DataCount dataCount = new DataCount();
-		dataCount.setDate(k);
-		dataCount.setValue(v);
-		dataCount.setData(v.toString());
-		dataCount.setHoverValue(new HashMap<>());
-		dataCount.setSProjectName(projectName);
-		dcList.add(dataCount);
-		trendValueList.add(dataCount);
-	}
+    /**
+     * @param trendValueList
+     * @param projectName
+     * @param dcList
+     * @param k
+     * @param v
+     */
+    private void setDataCount(List<DataCount> trendValueList, String projectName, List<DataCount> dcList, String k,
+                              Double v) {
+        DataCount dataCount = new DataCount();
+        dataCount.setDate(k);
+        dataCount.setValue(v);
+        dataCount.setData(v.toString());
+        dataCount.setHoverValue(new HashMap<>());
+        dataCount.setSProjectName(projectName);
+        dcList.add(dataCount);
+        trendValueList.add(dataCount);
+    }
 
-	/**
-	 * Group list of data by project.
-	 *
-	 * @param resultList
-	 * @return
-	 */
-	private Map<String, ProjectRelease> createProjectWiseRelease(List<ProjectRelease> resultList) {
-		return resultList.stream().collect(Collectors.toMap(pr -> pr.getConfigId().toString(), data -> data));
-	}
+    /**
+     * Group list of data by project.
+     *
+     * @param resultList
+     * @return
+     */
+    private Map<String, ProjectRelease> createProjectWiseRelease(List<ProjectRelease> resultList) {
+        return resultList.stream().collect(Collectors.toMap(pr -> pr.getConfigId().toString(), data -> data));
+    }
 
-	@Override
-	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
-		return calculateKpiValueForDouble(valueList, kpiName);
-	}
+    @Override
+    public Double calculateKpiValue(List<Double> valueList, String kpiName) {
+        return calculateKpiValueForDouble(valueList, kpiName);
+    }
 
-	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping) {
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI73(), KPICode.PROJECT_RELEASES.getKpiId());
-	}
+    @Override
+    public Double calculateThresholdValue(FieldMapping fieldMapping) {
+        return calculateThresholdValue(fieldMapping.getThresholdValueKPI73(), KPICode.PROJECT_RELEASES.getKpiId());
+    }
 
 }

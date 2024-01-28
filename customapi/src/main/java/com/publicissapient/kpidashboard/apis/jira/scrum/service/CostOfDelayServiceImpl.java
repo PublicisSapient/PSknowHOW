@@ -59,6 +59,8 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 @SuppressWarnings("javadoc")
 @Service
 @Slf4j
@@ -78,20 +80,28 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
 			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
-		List<DataCount> trendValueList = new ArrayList<>();
 		Node root = treeAggregatorDetail.getRoot();
 		Map<String, Node> mapTmp = treeAggregatorDetail.getMapTmp();
+		Map<String, List<DataCount>> mapForCache = new HashMap<>();
+		List<Node> projectsFromCache = kpiElement.getProjectsFromCache();
+		List<DataCount> trendValueList = (List<DataCount>) kpiElement.getTrendValueListFormCache();
+
 		treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest);
+				addingACheckForDataFromCache(v, projectsFromCache);
+
+				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
+						mapForCache);
 			}
 
 		});
 
 		log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
 				root);
+
+		kpiElement.setMapForCache(mapForCache);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.COST_OF_DELAY);
@@ -146,18 +156,24 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	 */
 	@SuppressWarnings("unchecked")
 	private void projectWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> projectLeafNodeList,
-			List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest) {
-
-		Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeList, null, null, kpiRequest);
-		Map<String, List<JiraIssue>> filterWiseDataMap = createProjectWiseDelay(
-				(List<JiraIssue>) resultMap.get(COD_DATA));
+										  List<DataCount> trendValueList, KpiElement kpiElement, String requestTrackerId, KpiRequest kpiRequest,
+										  Map<String, List<DataCount>> mapForCache) {
+		List<Node> projectLeafNodeListUpdated = projectLeafNodeList.stream().filter(node -> !node.isFromCache())
+				.collect(Collectors.toList());
+		Map<String, List<JiraIssue>> filterWiseDataMap = new HashMap<>();
+		if (isNotEmpty(projectLeafNodeListUpdated)) {
+			Map<String, Object> resultMap = fetchKPIDataFromDb(projectLeafNodeListUpdated, null, null, kpiRequest);
+			filterWiseDataMap = createProjectWiseDelay((List<JiraIssue>) resultMap.get(COD_DATA));
+		}
 		List<KPIExcelData> excelData = new ArrayList<>();
 
+		Map<String, List<JiraIssue>> finalFilterWiseDataMap = filterWiseDataMap;
 		projectLeafNodeList.forEach(node -> {
 			String currentProjectId = node.getProjectFilter().getBasicProjectConfigId().toString();
-			List<JiraIssue> delayDetail = filterWiseDataMap.get(currentProjectId);
+			List<JiraIssue> delayDetail = finalFilterWiseDataMap.get(currentProjectId);
 			if (CollectionUtils.isNotEmpty(delayDetail)) {
-				setProjectNodeValue(mapTmp, node, delayDetail, trendValueList, requestTrackerId, excelData);
+				setProjectNodeValue(mapTmp, node, delayDetail, trendValueList, requestTrackerId, excelData,
+						mapForCache);
 			}
 
 		});
@@ -168,18 +184,24 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 	/**
 	 * Gets the KPI value for project node.
 	 *
-	 * @param kpiElement
+	 * @param mapTmp
+	 * @param  node
 	 * @param jiraIssues
 	 * @param trendValueList
+	 * @param requestTrackerId
+	 * @param excelData
+	 * @param mapForCache
+	 *
 	 * @return
 	 */
 	private void setProjectNodeValue(Map<String, Node> mapTmp, Node node, List<JiraIssue> jiraIssues,
-			List<DataCount> trendValueList, String requestTrackerId, List<KPIExcelData> excelData) {
+									 List<DataCount> trendValueList, String requestTrackerId, List<KPIExcelData> excelData,
+									 Map<String, List<DataCount>> mapForCache) {
 		Map<String, Double> lastNMonthMap = getLastNMonth(customApiConfig.getJiraXaxisMonthCount());
 		String projectName = node.getProjectFilter().getName();
 		List<JiraIssue> epicList = new ArrayList<>();
 		Map<String, Map<String, Integer>> howerMap = new HashMap<>();
-
+		if (!node.isFromCache()) {
 		for (JiraIssue js : jiraIssues) {
 			String number = js.getNumber();
 			String dateTime = js.getChangeDate() == null ? js.getUpdateDate() : js.getChangeDate();
@@ -219,7 +241,15 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 			trendValueList.add(dataCount);
 
 		});
-		mapTmp.get(node.getId()).setValue(dcList);
+			mapTmp.get(node.getId()).setValue(dcList);
+			mapForCache.put(node.getId(), dcList);
+		} else {
+			List<DataCount> dataCountList = trendValueList.stream()
+					.filter(dataCount -> node.getName().equals(dataCount.getSProjectName())).distinct()
+					.collect(Collectors.toList());
+			if (isNotEmpty(dataCountList))
+				mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(dataCountList));
+		}
 
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
 			KPIExcelUtility.populateCODExcelData(projectName, epicList, excelData);

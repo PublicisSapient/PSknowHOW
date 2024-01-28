@@ -46,6 +46,7 @@ public class Node implements Serializable {
 	private ProjectFilter projectFilter;
 	private SprintFilter sprintFilter;
 	private ReleaseFilter releaseFilter;
+	private boolean isFromCache;
 
 	public Node() {
 		super();
@@ -82,6 +83,14 @@ public class Node implements Serializable {
 		this.children = new ArrayList<>();
 		this.projectFilter = projectFilter;
 		this.sprintFilter = sprintFilter;
+	}
+
+	public boolean isFromCache() {
+		return isFromCache;
+	}
+
+	public void setFromCache(boolean fromCache) {
+		isFromCache = fromCache;
 	}
 
 	public Node(Object object, String childId, String name, String parentId, String groupName,

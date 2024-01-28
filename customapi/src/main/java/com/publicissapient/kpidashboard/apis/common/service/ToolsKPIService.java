@@ -1215,4 +1215,46 @@ public abstract class ToolsKPIService<R, S> {
 		return thresholdValue;
 	}
 
+	/**
+	 * for creating map for storing in cache
+	 *
+	 * @param projectsFromCache
+	 * @param trendValueList
+	 * @return
+	 *
+	 * @auther deepak
+	 */
+	public Map<String, List<DataCount>> mapForCache(List<Node> projectsFromCache, List<DataCount> trendValueList) {
+		Map<String, List<DataCount>> map = new HashMap<>();
+		trendValueList.stream()
+				.filter(dataCount -> projectsFromCache.stream()
+						.filter(projectFromCache -> projectFromCache.getId()
+								.equals(dataCount.getSProjectName() + "_" + dataCount.getBasicProjectConfigId()))
+						.count() == 0)
+				.forEach(dataCount -> {
+					String key = dataCount.getSProjectName() + "_" + dataCount.getBasicProjectConfigId();
+					if (map.get(key) == null) {
+						map.put(key, new ArrayList<>(Arrays.asList(dataCount)));
+					} else {
+						List<DataCount> list = map.get(key);
+						list.add(dataCount);
+						map.put(key, list);
+					}
+				});
+		return map;
+	}
+
+	/**
+	 * Adding A Check For Data Found In Cache
+	 *
+	 * @param v
+	 * @param projectsFromCache
+	 */
+	public void addingACheckForDataFromCache(List<Node> v, List<Node> projectsFromCache) {
+		v.forEach(node -> {
+			if (projectsFromCache.stream().filter(projectNode -> projectNode.getId().equals(node.getParentId()))
+					.count() > 0)
+				node.setFromCache(true);
+		});
+	}
 }
