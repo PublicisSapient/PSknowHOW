@@ -22,7 +22,7 @@ parameters:
 
 stages:
 - stage: API_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'API')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'API'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: API_Deploy
@@ -37,14 +37,13 @@ stages:
 
     - script: |
         echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "Deploying  on: ${{ parameters.Environment }}"
+        echo "Deploying on: ${{ parameters.Environment }}"
         echo "Deploying API..."
         # Add API deployment steps
         echo "Deploying Helm charts for API..."
-        # Extract version from pom.xml
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
     - task: HelmDeploy@0
       inputs:
@@ -60,7 +59,7 @@ stages:
       displayName: 'Deploy API'
 
 - stage: UI_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'UI')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'UI'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: UI_Deploy
@@ -77,7 +76,6 @@ stages:
         # Add UI deployment steps
         echo "Deploying Helm charts for UI..."
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
@@ -95,7 +93,7 @@ stages:
       displayName: 'Deploy Helm Charts for UI'
 
 - stage: Jira_Processor_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'Jira_Processor')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'Jira_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: Jira_Processor_Deploy
@@ -113,7 +111,6 @@ stages:
         # Add Jira_Processor deployment steps
         echo "Deploying Helm charts for Jira_Processor..."
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
@@ -131,7 +128,7 @@ stages:
       displayName: 'Deploy Helm Charts for jira-processor'
 
 - stage: DevOps_Processor_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'DevOps_Processor')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'DevOps_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: DevOps_Processor_Deploy
@@ -148,7 +145,6 @@ stages:
         # Add DevOps_Processor deployment steps
         echo "Deploying Helm charts for DevOps_Processor..."
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
@@ -166,7 +162,7 @@ stages:
       displayName: 'Deploy DevOps_Processor'
 
 - stage: Azure_Board_Processor_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'Azure_Board_Processor')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'Azure_Board_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: Azure_Board_Processor_Deploy
@@ -181,7 +177,7 @@ stages:
         echo "${{ parameters.Environment }}"
         echo "Deploying Azure_Board_Processor..."
         # Add Azure_Board_Processor deployment steps
-        echo "Deploying Helm charts for Azure_Board_Processor..."
+        echo "Deploying Helm charts for Azure_Board_Process"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
@@ -200,8 +196,9 @@ stages:
         valueFile: './Kubernetes/knowhow-helm/knowhow-azure-board-processor/values.yaml'
       displayName: 'Deploy knowhow-azure-board-processor'
 
+
 - stage: Azure_Pipeline_Repo_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'Azure_Pipeline_Repo')
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'Azure_Pipeline_Repo'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
   - job: Azure_Pipeline_Repo_Deploy
@@ -218,7 +215,6 @@ stages:
         # Add Azure_Pipeline_Repo deployment steps
         echo "Deploying Helm charts for Azure_Pipeline_Repo..."
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
@@ -235,20 +231,3 @@ stages:
         valueFile: './Kubernetes/knowhow-helm/knowhow-azure-pipeline-repo/values.yaml'
       displayName: 'Deploy azure-repo'
 
-- stage: Deploy_ALL
-  condition: eq('${{ parameters.deploymentOptions }}', 'ALL')
-
-  jobs:
-  - job: Deploy_ALL
-    pool:
-      vmImage: 'ubuntu-latest'
-
-    steps:
-    - checkout: self
-
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "${{ parameters.Environment }}"
-        echo "Deploying ALL..."
-        # Add deployment steps for all options
-      displayName: 'Deploy ALL'
