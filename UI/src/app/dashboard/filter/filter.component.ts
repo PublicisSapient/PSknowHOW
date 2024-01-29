@@ -141,6 +141,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   kpiListDataProjectLevel: any = {};
   nodeIdQParam: string = '';
   sprintIdQParam: string = '';
+  displayMessage: boolean = false;
 
   constructor(
     private service: SharedService,
@@ -297,7 +298,9 @@ export class FilterComponent implements OnInit, OnDestroy {
       if(this.nodeIdQParam){
         const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
         if(ifProjectExist === -1){
-          this.noAccessMsg = true;  
+          this.noAccessMsg = true; 
+          this.displayMessage = true
+          return; 
         }
       }
     })
@@ -1183,7 +1186,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let activeSprints = [];
     let closedSprints = [];
     this.selectedSprint = {};
-    const selectedProject = this.selectedProjectData['nodeId'];
+    const selectedProject = this.selectedProjectData?.['nodeId'];
     this.filteredAddFilters['sprint'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
       this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
@@ -1236,7 +1239,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint?.['nodeId']);
       }
 
       if (level?.toLowerCase() == 'sprint') {

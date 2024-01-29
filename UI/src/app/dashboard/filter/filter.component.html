@@ -473,3 +473,10 @@
       </div>
   </p-footer>
  </p-dialog>
+
+ <p-dialog header="Access Denied" [(visible)]="displayMessage" [modal]="true">
+   <p>
+      Sorry! You do not have access to this project in KnowHOW. 
+      Click <a class="link" routerLink="/dashboard/Config/Profile/RaiseRequest" (click)="displayMessage = false">here</a> to request for project access.
+   </p>
+</p-dialog>
