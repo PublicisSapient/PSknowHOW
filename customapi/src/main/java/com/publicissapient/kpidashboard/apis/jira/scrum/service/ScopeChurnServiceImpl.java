@@ -111,7 +111,7 @@ public class ScopeChurnServiceImpl extends JiraKPIService<Double, List<Object>, 
 
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
             if (Filters.getFilter(k) == Filters.SPRINT) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest, mapForCache);
             }
         });

@@ -90,7 +90,7 @@ public class CostOfDelayServiceImpl extends JiraKPIService<Double, List<Object>,
 
 			Filters filters = Filters.getFilter(k);
 			if (Filters.PROJECT == filters) {
-				addingACheckForDataFromCache(v, projectsFromCache);
+				addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
 
 				projectWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, getRequestTrackerId(), kpiRequest,
 						mapForCache);

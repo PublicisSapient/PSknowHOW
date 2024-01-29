@@ -78,7 +78,6 @@ import lombok.extern.slf4j.Slf4j;
  * This class calculated KPI value for DRE and its trend analysis.
  *
  * @author pkum34
- *
  */
 @Component
 @Slf4j
@@ -128,8 +127,7 @@ public class DREServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
             if (Filters.getFilter(k) == Filters.SPRINT) {
-                /* for adding a check for data from cache */
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
         });

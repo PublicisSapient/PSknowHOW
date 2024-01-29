@@ -109,7 +109,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
             if (Filters.getFilter(k) == Filters.SPRINT) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
         });

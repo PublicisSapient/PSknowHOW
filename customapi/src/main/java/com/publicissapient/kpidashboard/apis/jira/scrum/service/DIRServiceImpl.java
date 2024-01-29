@@ -93,7 +93,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
             if (Filters.getFilter(k) == Filters.SPRINT) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
 
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
@@ -103,6 +103,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
         log.debug("[DIR-LEAF-NODE-VALUE][{}]. Values of leaf node after KPI calculation {}",
                 kpiRequest.getRequestTrackerId(), root);
 
+        //Creating map for cache
         Map<String, List<DataCount>> mapForCache = mapForCache(kpiElement.getProjectsFromCache(), trendValueList);
         kpiElement.setMapForCache(mapForCache);
 
@@ -171,6 +172,7 @@ public class DIRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
         Map<String, Object> storyDefectDataListMap = new HashMap<>();
         Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = new HashMap<>();
         Map<String, Set<JiraIssue>> projectWiseStories = new HashMap<>();
+        //need to be reviewed
         if (isNotEmpty(sprintLeafNodeListUpdated)) {
             storyDefectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, startDate, endDate,
                     kpiRequest);

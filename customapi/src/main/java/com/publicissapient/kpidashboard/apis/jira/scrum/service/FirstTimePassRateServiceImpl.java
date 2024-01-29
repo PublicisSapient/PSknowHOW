@@ -119,7 +119,7 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
             Filters filters = Filters.getFilter(k);
             if (Filters.SPRINT == filters) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
 

@@ -86,7 +86,7 @@ public class PIPredictabilityServiceImpl extends JiraKPIService<Double, List<Obj
 
         treeAggregatorDetail.getMapOfListOfProjectNodes().forEach((k, v) -> {
             if (Filters.getFilter(k) == Filters.PROJECT) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 projectWiseLeafNodeValue(kpiElement, mapTmp, v, trendValueList, mapForCache);
             }
         });

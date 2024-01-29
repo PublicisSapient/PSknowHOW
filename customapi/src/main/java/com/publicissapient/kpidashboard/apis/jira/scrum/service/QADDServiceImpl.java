@@ -117,7 +117,7 @@ public class QADDServiceImpl extends JiraKPIService<Double, List<Object>, Map<St
         treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
 
             if (Filters.getFilter(k) == Filters.SPRINT) {
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
         });

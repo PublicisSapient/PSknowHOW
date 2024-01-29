@@ -159,7 +159,7 @@ public class DRRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
             if (Filters.getFilter(k) == Filters.SPRINT) {
 
                 /* for adding a check for data from cache */
-                addingACheckForDataFromCache(v, projectsFromCache);
+                addingACheckForDataFromCache(v, projectsFromCache, kpiRequest);
 
                 sprintWiseLeafNodeValue(mapTmp, v, trendValueList, kpiElement, kpiRequest);
             }
