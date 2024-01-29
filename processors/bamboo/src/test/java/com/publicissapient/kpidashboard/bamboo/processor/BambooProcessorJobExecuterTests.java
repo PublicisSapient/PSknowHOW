@@ -25,6 +25,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.reflect.Whitebox;
 import org.springframework.web.client.RestClientException;
 
 import com.google.common.collect.Lists;
@@ -411,8 +412,13 @@ public class BambooProcessorJobExecuterTests {
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			List<Build> activeBuildJobs = new ArrayList<>();
-			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, activeBuildJobs, buildMap,
-					BAMBOOSAMPLESERVER2, processor.getId());
+			Method method = BambooProcessorJobExecuter.class.getDeclaredMethod("addNewBuildsInfoToDb", BambooClient.class,
+					List.class, Map.class, ProcessorToolConnection.class, ObjectId.class);
+			method.setAccessible(true);
+
+			// Invoke the method
+			method.invoke(task, bambooClientBuild, activeBuildJobs, buildMap, BAMBOOSAMPLESERVER2, processor.getId());
+
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
 		}
@@ -423,7 +429,6 @@ public class BambooProcessorJobExecuterTests {
 	 */
 	@Test
 	public void testAddNewBuildsInfoToDb_buildNotNull_success() throws Exception {
-
 		try {
 			BambooProcessor processor = processorWithOneServer();
 			Build build = build("1", JOB1_1_URL);
@@ -432,10 +437,17 @@ public class BambooProcessorJobExecuterTests {
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			List<Build> activeBuildJobs = new ArrayList<>();
 			activeBuildJobs.add(build);
-			Whitebox.invokeMethod(task, "addNewBuildsInfoToDb", bambooClientBuild, activeBuildJobs, buildMap,
-					BAMBOOSAMPLESERVER, processor.getId());
-		} catch (RestClientException exception) {
-			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
+			// Use reflection to get the method
+			Method method = BambooProcessorJobExecuter.class.getDeclaredMethod("addNewBuildsInfoToDb", BambooClient.class,
+					List.class, Map.class, ProcessorToolConnection.class, ObjectId.class);
+			method.setAccessible(true);
+
+			// Invoke the method
+			method.invoke(task, bambooClientBuild, activeBuildJobs, buildMap, BAMBOOSAMPLESERVER, processor.getId());
+		} catch (InvocationTargetException e) {
+			// Unwrap the exception thrown by the method
+			Throwable cause = e.getCause();
+			Assert.assertEquals("Exception is: ", EXCEPTION, cause.getMessage());
 		}
 	}
 
