@@ -21,10 +21,13 @@ package com.publicissapient.kpidashboard.common.kafka.producer;
 
 import com.publicissapient.kpidashboard.common.model.notification.EmailEvent;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.TopicPartition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,8 +38,11 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -57,7 +63,7 @@ public class NotificationEventProducerTest {
     String topic = "testTopic";
     EmailEvent email = new EmailEvent(/* provide necessary data */);
     Map<String, String> headerDetails = new HashMap<>();
-    ListenableFuture<SendResult<String, Object>> listenableFuture = mock(ListenableFuture.class);
+    CompletableFuture<SendResult<String, Object>> listenableFuture = mock(CompletableFuture.class);
     boolean notificationSwitch;
 
     @BeforeEach
@@ -92,11 +98,23 @@ public class NotificationEventProducerTest {
     }
 
     @Test
-    public void testSendNotificationEvent_OnListner() {
+    public void testSendNotificationEvent_OnListnerSuccess() {
+        ArgumentCaptor<BiConsumer> callbackCaptor = initilizeDataForxSendingNotificationEvent();
+        TopicPartition topicPartition =   new TopicPartition(topic,2);
+        SendResult<String, Object> sendResult= new SendResult<>(null,new RecordMetadata(topicPartition,0,0,0,0,0));
+        callbackCaptor.getValue().accept(sendResult, null);
+    }
+    @Test
+    public void testSendNotificationEvent_OnListnerFailure() {
+        ArgumentCaptor<BiConsumer> callbackCaptor = initilizeDataForxSendingNotificationEvent();
+        callbackCaptor.getValue().accept(null, new Throwable("Test failure"));
+    }
+
+    private ArgumentCaptor<BiConsumer> initilizeDataForxSendingNotificationEvent() {
         notificationSwitch = true;
 
-        ListenableFuture<SendResult<String, Object>> listenableFuture = mock(ListenableFuture.class);
-        doReturn(listenableFuture).when(kafkaTemplate).send((ProducerRecord<String, Object>) any());
+        CompletableFuture<SendResult<String, Object>> completableFuture = mock(CompletableFuture.class);
+        doReturn(completableFuture).when(kafkaTemplate).send((ProducerRecord<String, Object>) any());
 
         // Test
         notificationEventProducer.sendNotificationEvent(key, email, headerDetails, topic, notificationSwitch,
@@ -105,18 +123,11 @@ public class NotificationEventProducerTest {
         // Assertions or verifications as needed
         // For example, verify that kafkaTemplate.send is called once
         verify(kafkaTemplate, times(1)).send((ProducerRecord<String, Object>) any());
-        ArgumentCaptor<ListenableFutureCallback> callbackCaptor = ArgumentCaptor
-                .forClass(ListenableFutureCallback.class);
-        verify(listenableFuture).addCallback(callbackCaptor.capture());
+        ArgumentCaptor<BiConsumer> callbackCaptor = ArgumentCaptor.forClass(BiConsumer.class);
 
+        verify(completableFuture).whenComplete(callbackCaptor.capture());
         // Simulate onSuccess
-        SendResult<String, Object> sendResult = mock(SendResult.class);
-        when(sendResult.getRecordMetadata()).thenReturn(mock(org.apache.kafka.clients.producer.RecordMetadata.class));
-        callbackCaptor.getValue().onSuccess(sendResult);
-
-        // Assertions or verifications for onSuccess as needed
-        // Simulate onFailure
-        callbackCaptor.getValue().onFailure(new RuntimeException("Test failure"));
+        return callbackCaptor;
     }
 
     @Test

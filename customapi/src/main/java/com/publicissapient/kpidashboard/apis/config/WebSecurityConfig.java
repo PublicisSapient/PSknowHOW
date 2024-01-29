@@ -18,8 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -44,6 +42,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -136,8 +135,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         // Configure AuthenticationManagerBuilder
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
 		setAuthenticationProvider(authenticationManagerBuilder);
-        // Get AuthenticationManager
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
         http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
         http.csrf(AbstractHttpConfigurer::disable);
@@ -160,7 +157,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers("/cache/clearAllCache").permitAll().requestMatchers(HttpMethod.GET, "/cache/clearCache/**")
                         .permitAll().requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
-                .addFilterBefore(apiTokenRequestFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiTokenRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
               //  .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
@@ -192,20 +189,20 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) {
         return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
                 customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
     }
 
     // update authenticatoin result handler
     @Bean
-    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) {
         return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
                 customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
     }
 
     @Bean
-    protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) throws Exception {
+    protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) {
         return new ApiTokenRequestFilter("/**", authenticationManager, authenticationResultHandler);
     }
 
