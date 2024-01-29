@@ -8,7 +8,7 @@ replicaCount: 1
 
 image:
   repository: speedtools.azurecr.io/knowhow-jira-processor
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"
 

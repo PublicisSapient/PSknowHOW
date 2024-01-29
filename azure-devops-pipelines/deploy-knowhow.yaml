@@ -106,6 +106,7 @@ stages:
     - checkout: self
 
     - script: |
+        cd processors/jira
         echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying Jira_Processor..."
