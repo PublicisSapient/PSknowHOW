@@ -112,6 +112,12 @@ public class TestConnectionServiceImplTest {
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_SONAR);
 		assertThat("status: ", response.getSuccess(), equalTo(false));
 	}
+	
+	@Test
+	public void validateConnectionArgoCD() {
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ARGOCD);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+	}
 
 	@Test
 	public void validateConnectionException() {

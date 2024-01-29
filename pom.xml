@@ -58,6 +58,7 @@
                 <module>processors/azure-pipeline</module>
                 <module>processors/azure-repo</module>
                 <module>processors/azure-boards</module>
+                <module>processors/argocd</module>
                 <module>kafka-consumers/notification-consumer</module>
             </modules>
             <build>

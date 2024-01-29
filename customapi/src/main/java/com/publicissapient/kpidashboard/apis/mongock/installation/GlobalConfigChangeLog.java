@@ -97,7 +97,9 @@ public class GlobalConfigChangeLog {
 					createProcessor("GitHubAction", BUILD,
 							"com.publicissapient.kpidashboard.githubaction.model.GitHubActionProcessor"),
 					createProcessor("RepoTool", "SCM",
-							"com.publicissapient.kpidashboard.repodb.model.RepoDbProcessor"));
+							"com.publicissapient.kpidashboard.repodb.model.RepoDbProcessor"),
+					createProcessor("ArgoCD", BUILD,
+							"com.publicissapient.kpidashboard.argocd.model.ArgoCDProcessor"));
 
 			mongoTemplate.getCollection("processor").insertMany(processorData);
 		}
