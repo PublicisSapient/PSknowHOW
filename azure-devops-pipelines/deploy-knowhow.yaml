@@ -4,11 +4,14 @@ trigger:
 parameters:
 - name: deploymentOptions
   type: string
-  default: 'API'
+  # default: 'API'
   values:
   - 'API'
   - 'UI'
-  - 'Processor'
+  - 'Jira_Processor'
+  - 'DevOps_Processor'
+  - 'Azure_Board_Processor'
+  - 'Azure_Pipeline_Repo'
   - 'ALL'
 - name: Environment
   type: string
@@ -43,9 +46,6 @@ stages:
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-        echo $overrideValues
-        # Add Helm deployment steps for API
-        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
@@ -76,28 +76,29 @@ stages:
         echo "Deploying UI..."
         # Add UI deployment steps
         echo "Deploying Helm charts for UI..."
-        ls
-        # Add Helm deployment steps for UI
-        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        echo "Version from pom.xml: $VERSION"
+        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
         namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'ls'
-        chartType: 'Name'
-        # chartName: 'zookeeper'
-        # releaseName: '<ReleaseName>'
-        # overrideValues: '<OverrideValues>'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
-      displayName: 'Deploy Helm Charts for API'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-ui'
+        releaseName: 'knowhow-ui'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-ui/values.yaml'
+      displayName: 'Deploy Helm Charts for UI'
 
-- stage: Processor_Deploy
-  condition: eq('${{ parameters.deploymentOptions }}', 'Processor')
+- stage: Jira_Processor_Deploy
+  condition: eq('${{ parameters.deploymentOptions }}', 'Jira_Processor')
 
   jobs:
-  - job: Processor_Deploy
+  - job: Jira_Processor_Deploy
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -107,25 +108,131 @@ stages:
     - script: |
         echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
         echo "${{ parameters.Environment }}"
-        echo "Deploying Processor..."
-        # Add Processor deployment steps
-        echo "Deploying Helm charts for Processor..."
-        ls
-        # Add Helm deployment steps for Processor
-        # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
+        echo "Deploying Jira_Processor..."
+        # Add Jira_Processor deployment steps
+        echo "Deploying Helm charts for Jira_Processor..."
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        echo "Version from pom.xml: $VERSION"
+        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
         namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'ls'
-        chartType: 'Name'
-        #chartName: 'zookeeper'
-        # releaseName: '<ReleaseName>'
-        # overrideValues: '<OverrideValues>'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi'
-      displayName: 'Deploy Processor'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-jira-processor'
+        releaseName: 'jira-processor'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-jira-processor/values.yaml'
+      displayName: 'Deploy Helm Charts for jira-processor'
+
+- stage: DevOps_Processor_Deploy
+  condition: eq('${{ parameters.deploymentOptions }}', 'DevOps_Processor')
+
+  jobs:
+  - job: DevOps_Processor_Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+
+    - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying DevOps_Processor..."
+        # Add DevOps_Processor deployment steps
+        echo "Deploying Helm charts for DevOps_Processor..."
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        echo "Version from pom.xml: $VERSION"
+        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/devops-processor'
+        releaseName: 'devops-processor'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/devops-processor/values.yaml'
+      displayName: 'Deploy DevOps_Processor'
+
+- stage: Azure_Board_Processor_Deploy
+  condition: eq('${{ parameters.deploymentOptions }}', 'Azure_Board_Processor')
+
+  jobs:
+  - job: Azure_Board_Processor_Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+
+    - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying Azure_Board_Processor..."
+        # Add Azure_Board_Processor deployment steps
+        echo "Deploying Helm charts for Azure_Board_Processor..."
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        echo "Version from pom.xml: $VERSION"
+        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-azure-board-processor'
+        releaseName: 'azure-board-processor'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-azure-board-processor/values.yaml'
+      displayName: 'Deploy knowhow-azure-board-processor'
+
+- stage: Azure_Pipeline_Repo_Deploy
+  condition: eq('${{ parameters.deploymentOptions }}', 'Azure_Pipeline_Repo')
+
+  jobs:
+  - job: Azure_Pipeline_Repo_Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - checkout: self
+
+    - script: |
+        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "${{ parameters.Environment }}"
+        echo "Deploying Azure_Pipeline_Repo..."
+        # Add Azure_Pipeline_Repo deployment steps
+        echo "Deploying Helm charts for Azure_Pipeline_Repo..."
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        echo "Version from pom.xml: $VERSION"
+        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-azure-pipeline-repo'
+        releaseName: 'azure-pipeline-repo'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-azure-pipeline-repo/values.yaml'
+      displayName: 'Deploy azure-repo'
 
 - stage: Deploy_ALL
   condition: eq('${{ parameters.deploymentOptions }}', 'ALL')
