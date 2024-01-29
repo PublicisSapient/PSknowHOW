@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.powermock.reflect.Whitebox;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -360,9 +360,12 @@ public class SonarProcessorJobExecutorTest {
 	public void testAddNewProjectsSonar6LowerClient() throws Exception {
 		SonarProcessor sonarprocessor = new SonarProcessor();
 		sonarprocessor.setId(OBJ_ID);
+		Method method = SonarProcessorJobExecutor.class.getDeclaredMethod("addNewProjects", List.class, List.class,
+				SonarProcessor.class);
+		method.setAccessible(true);
 
-		Whitebox.invokeMethod(jobExecutor, "addNewProjects", sonarProcessorItemList, sonarProcessorItemList,
-				sonarprocessor);
+		// Invoke the method
+		method.invoke(jobExecutor, sonarProcessorItemList, sonarProcessorItemList, sonarprocessor);
 		Assert.assertNotNull(sonarProcessorItemList);
 	}
 }
