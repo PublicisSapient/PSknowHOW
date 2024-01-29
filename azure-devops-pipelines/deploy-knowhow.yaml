@@ -52,7 +52,7 @@ stages:
         chartType: 'FilePath'
         chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
         releaseName: 'customapi'
-        overrideValues: image.tag=$(VERSION)
+        overrideValues: 'image.tag=$(Build.BuildNumber)'
         valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
       displayName: 'Deploy API'
 
