@@ -1,25 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "knowhow-jira-processor.fullname" . }}
+  name: jira-processor
   namespace: {{ .Values.env}}-knowhow
   labels:
-    {{- include "knowhow-jira-processor.labels" . | nindent 4 }}
+    app: jira-processor
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "knowhow-jira-processor.selectorLabels" . | nindent 6 }}
+      app: jira-processor
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "knowhow-jira-processor.selectorLabels" . | nindent 8 }}
+        app: jira-processor
     spec:
       # initContainers:
       # - name: init-customapi
