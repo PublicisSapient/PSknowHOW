@@ -358,6 +358,7 @@ public class RCAServiceImpl extends JiraKPIService<Long, List<Object>, Map<Strin
                     dataCount.setSSprintName(node.getSprintFilter().getName());
                     dataCount.setValue(value);
                     dataCount.setKpiGroup(key);
+                    dataCount.setBasicProjectConfigId(node.getProjectFilter().getBasicProjectConfigId().toString());
                     Map<String, Object> hoverValueMap = new HashMap<>();
                     if (key.equalsIgnoreCase(CommonConstant.OVERALL)) {
                         dataCount.setHoverValue(overAllHoverValueMap);
