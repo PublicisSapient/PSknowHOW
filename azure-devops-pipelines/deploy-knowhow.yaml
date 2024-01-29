@@ -34,17 +34,15 @@ stages:
 
     - script: |
         echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "${{ parameters.Environment }}"
+        echo "Deploying  on: ${{ parameters.Environment }}"
         echo "Deploying API..."
         # Add API deployment steps
         echo "Deploying Helm charts for API..."
         # Extract version from pom.xml
-        # export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+        # echo "##vso[task.setvariable variable=overrideValues]$VERSION"
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
     - task: HelmDeploy@0
