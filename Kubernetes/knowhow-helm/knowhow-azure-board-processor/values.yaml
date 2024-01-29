@@ -8,7 +8,7 @@ replicaCount: 1
 
 image:
   repository: speedtools.azurecr.io/knowhow-azure-board-processor
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"
 
@@ -44,7 +44,6 @@ service:
   type: ClusterIP
   port: 50017
 
-port: 50017
 
 ingress:
   enabled: false
