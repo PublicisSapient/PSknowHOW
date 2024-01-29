@@ -502,7 +502,6 @@ export class JiraConfigComponent implements OnInit {
     if (self.selectedConnection && self.selectedConnection.id) {
       if (self.toolForm.controls['projectKey'].dirty && self.toolForm.controls['projectKey'].value && self.toolForm.controls['projectKey'].value.length) {
         const postData = {};
-        // self.showLoadingOnFormElement('boards');
         self.isLoading = true;
         postData['connectionId'] = self.selectedConnection.id;
         postData['projectKey'] = self.toolForm.controls['projectKey'].value;
@@ -528,7 +527,6 @@ export class JiraConfigComponent implements OnInit {
             self.boardsData = [];
             self.toolForm.controls['boards'].setValue([]);
           }
-          // self.hideLoadingOnFormElement('boards');
           self.isLoading = false;
         });
       }
@@ -2278,11 +2276,14 @@ export class JiraConfigComponent implements OnInit {
         for (const obj in this.selectedToolConfig[0]) {
           if (obj !== 'queryEnabled' && obj !== "team") {
             if (this.toolForm && this.toolForm.controls[obj]) {
-              this.toolForm.controls[obj].setValue(
-                this.selectedToolConfig[0][obj],
-              );
-              this.toolForm.controls[obj].markAsDirty();
-            }
+             
+                this.toolForm.controls[obj].setValue(
+                  this.selectedToolConfig[0][obj],
+                );
+             
+                this.toolForm.controls[obj].markAsDirty();
+              }
+            
           } else if (obj === 'queryEnabled') {
             if (this.urlParam === 'Jira' || this.urlParam === 'Azure') {
               this.queryEnabled = this.selectedToolConfig[0]['queryEnabled'];
