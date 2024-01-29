@@ -47,18 +47,18 @@ stages:
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-    # - task: HelmDeploy@0
-    #   inputs:
-    #     connectionType: 'Kubernetes Service Connection'
-    #     kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
-    #     namespace: '${{ parameters.Environment }}-knowhow'
-    #     command: 'upgrade'
-    #     chartType: 'FilePath'
-    #     chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
-    #     releaseName: 'customapi'
-    #     overrideValues: 'image.tag=$(Build.BuildNumber)'
-    #     valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
-    #   displayName: 'Deploy API'
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
+        releaseName: 'customapi'
+        overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
+      displayName: 'Deploy API'
 
 - stage: UI_Deploy
   condition: eq('${{ parameters.deploymentOptions }}', 'UI')
