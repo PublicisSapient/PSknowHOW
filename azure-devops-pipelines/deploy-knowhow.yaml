@@ -40,9 +40,10 @@ stages:
         echo "Deploying Helm charts for API..."
         # Extract version from pom.xml
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+        echo $overrideValues
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
     - task: HelmDeploy@0
