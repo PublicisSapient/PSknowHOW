@@ -11,15 +11,11 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      {{- include "devops-processor.selectorLabels" . | nindent 6 }}
+      app: devops-processor
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "devops-processor.selectorLabels" . | nindent 8 }}
+        app: devops-processor
     spec:
       # initContainers:
       # - name: init-customapi
