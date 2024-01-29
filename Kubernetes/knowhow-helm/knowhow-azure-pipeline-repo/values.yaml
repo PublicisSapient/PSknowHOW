@@ -9,8 +9,8 @@ env: uat
 configmapname: knowhow-config
 
 image:
-  repository: knowhow-azure-pipeline-repo
-  pullPolicy: IfNotPresent
+  repository: speedtools.azurecr.io/knowhow-azure-pipeline-repo
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"
 
