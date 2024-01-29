@@ -45,17 +45,52 @@ spec:
             - name: http
               containerPort: {{.Values.service.port}}
               protocol: TCP
+          env:
+            - name: spring.data.mongodb.uri
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbconnectionstring
+            - name: spring.data.mongodb.host
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbhost
+            
+            - name: aesEncryptionKey
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: knowhowaesEncryptionKey
+            - name: auth.secret
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: knowhow-auth-secret
+
+            - name: spring.data.mongodb.username
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbusername
+            - name: spring.data.mongodb.password
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}knhdbpassword
+            - name: mongock.migration-scan-package
+              value: com.publicissapient.kpidashboard.apis.mongock.installation
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}
           livenessProbe:
             tcpSocket:
-              port: {{.Values.port}}
+              port: {{.Values.service.port}}
             initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
             periodSeconds: 5  
           readinessProbe:
             tcpSocket:
-              port: {{.Values.port}}
+              port: {{.Values.service.port}}
             initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
             periodSeconds: 5
           resources:
