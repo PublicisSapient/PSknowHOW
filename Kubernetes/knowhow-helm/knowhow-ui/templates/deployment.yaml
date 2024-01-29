@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "knowhow-ui.fullname" . }}
+  name: knowhow-ui
   namespace: {{ .Values.env}}-knowhow
   labels:
     app: knowhow-ui
@@ -29,7 +29,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: knowhow-ui
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -43,18 +43,18 @@ spec:
           - configMapRef:
               name: {{ .Values.configmapname }}
           env:
-          - name: API_HOST
-            value: customapi
-          - name: API_PORT
-            value: "8080"
-          - name: ENVIRONMENT
-            value: "prod"
-          - name: CENTRAL_LOGIN_URL
-            value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
-          - name: MAP_URL
-            value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
-          - name: RETROS_URL
-            value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com/"
+            - name: API_HOST
+              value: customapi
+            - name: API_PORT
+              value: "8080"
+            - name: ENVIRONMENT
+              value: "prod"
+            - name: CENTRAL_LOGIN_URL
+              value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
+            - name: MAP_URL
+              value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
+            - name: RETROS_URL
+              value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com/"
           readinessProbe:
             httpGet:
               path: /
