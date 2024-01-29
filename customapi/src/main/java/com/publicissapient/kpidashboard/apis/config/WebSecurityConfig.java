@@ -49,9 +49,7 @@ import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHan
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
@@ -122,30 +120,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http.headers().cacheControl();
-		http.csrf().disable().authorizeRequests()
-				.antMatchers("/appinfo").permitAll()
-				.antMatchers("/error").permitAll()
-				.antMatchers("/auth-types-status").permitAll()
-				.antMatchers("/getversionmetadata").permitAll()
+		http.csrf().disable().authorizeRequests().antMatchers("/appinfo").permitAll().antMatchers("/error").permitAll()
+				.antMatchers("/auth-types-status").permitAll().antMatchers("/getversionmetadata").permitAll()
 				// push API calls
 				.antMatchers("/pushData/*").permitAll()
 				// management metrics
-				.antMatchers("/info").permitAll()
-				.antMatchers("/health").permitAll().antMatchers("/env").permitAll()
+				.antMatchers("/info").permitAll().antMatchers("/health").permitAll().antMatchers("/env").permitAll()
 				.antMatchers("/metrics").permitAll()
-				//togglz API calls
-				.antMatchers("/actuator/togglz**").permitAll()
-				.antMatchers("/togglz-console**").permitAll()
+				// togglz API calls
+				.antMatchers("/actuator/togglz**").permitAll().antMatchers("/togglz-console**").permitAll()
 				.antMatchers("/actuator**").permitAll()
 				// auth service
 				.antMatchers("/validateToken**").permitAll()
 				// cache service calls
-				.antMatchers("/cache/clearAllCache").permitAll()
-				.antMatchers(HttpMethod.GET, "/cache/clearCache/**").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.antMatchers("/cache/clearAllCache").permitAll().antMatchers(HttpMethod.GET, "/cache/clearCache/**")
+				.permitAll().antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				// analytics API calls
-				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll()
-				.anyRequest().authenticated().and()
+				.antMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated().and()
 				.httpBasic().and().csrf().disable().headers().and()
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -172,19 +163,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements W
 		}
 		auth.authenticationProvider(apiTokenAuthenticationProvider);
 	}
-
-	/*@Bean
-	protected StandardLoginRequestFilter standardLoginRequestFilter() throws Exception {
-		return new StandardLoginRequestFilter("/login", authenticationManager(), authenticationResultHandler,
-				customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-	}*/
-
-	// update authenticatoin result handler
-	/*@Bean
-	protected LdapLoginRequestFilter ldapLoginRequestFilter() throws Exception {
-		return new LdapLoginRequestFilter("/ldap", authenticationManager(), authenticationResultHandler,
-				customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-	}*/
 
 	@Bean
 	protected ApiTokenRequestFilter apiTokenRequestFilter() throws Exception {

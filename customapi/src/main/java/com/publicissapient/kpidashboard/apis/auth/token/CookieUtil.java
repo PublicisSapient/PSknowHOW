@@ -63,7 +63,6 @@ public class CookieUtil {
 				response.setHeader(HttpHeaders.SET_COOKIE,
 						String.format("%s; %s", header, customApiConfig.getAuthCookieSameSite()));
 				firstHeader = false;
-				log.info("addSameSiteCookieAttribute :: {}" , firstHeader);
 				continue;
 			}
 			response.addHeader(HttpHeaders.SET_COOKIE,

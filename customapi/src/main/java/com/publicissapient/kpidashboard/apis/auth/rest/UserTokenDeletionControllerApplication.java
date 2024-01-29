@@ -49,9 +49,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 public class UserTokenDeletionControllerApplication {
-
-	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
-
 	@Autowired
 	private AuthProperties authProperties;
 
@@ -79,32 +76,19 @@ public class UserTokenDeletionControllerApplication {
 	 */
 	@RequestMapping(value = "/userlogout", method = GET, produces = APPLICATION_JSON_VALUE) // NOSONAR
 	public ResponseEntity<ServiceResponse> deleteUserToken(HttpServletRequest request, HttpServletResponse response) {
-		log.info("UserTokenDeletionController::deleteUserToken start");
 		Cookie authCookie = cookieUtil.getAuthCookie(request);
 		String authCookieToken = authCookie.getValue();
 		authCookie.setMaxAge(0);
 		String apiKey = authProperties.getResourceAPIKey();
 		HttpSession session;
 		SecurityContextHolder.clearContext();
-
 		session = request.getSession(false);
 		if(session != null) {
 			session.invalidate();
 		}
 		boolean cookieClear = userInfoService.getCentralAuthUserDeleteUserToken(authCookieToken, apiKey);
 		cookieUtil.deleteCookie(request, response, CookieUtil.AUTH_COOKIE);
-		//Cookie authCookieRemove = new Cookie("authCookie", "");
-		//resetHeader(response, "", authCookieRemove);
-		log.info("UserTokenDeletionController::deleteUserToken end");
 		return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "Logout Successfully", cookieClear));
-	}
-
-	private void resetHeader(HttpServletResponse response, String authToken, Cookie cookie) {
-		response.addHeader(AUTH_RESPONSE_HEADER, authToken);
-		response.addHeader("CLEAR_VIA_KNOWHOW" , "true");
-		response.addCookie(cookie);
-		cookieUtil.addSameSiteCookieAttribute(response);
-		log.info("UserTokenDeletionController::resetHeader end");
 	}
 
 }

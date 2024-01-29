@@ -60,7 +60,6 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String emailAddress = StringUtils.EMPTY;
 		String username;
-		log.info("DefaultAuthenticationResponseService::handle start");
 		if (authentication.getPrincipal() instanceof CustomUserDetails) {
 			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress().toLowerCase();
 			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();
