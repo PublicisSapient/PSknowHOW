@@ -23,7 +23,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -31,17 +30,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -55,6 +51,7 @@ import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.connection.Connection;
+import com.publicissapient.kpidashboard.common.model.jira.BoardMetadata;
 import com.publicissapient.kpidashboard.common.model.jira.Identifier;
 import com.publicissapient.kpidashboard.common.model.jira.MetadataIdentifier;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
@@ -282,11 +279,7 @@ public class CreateMetadataImplTest {
 	private ProjectConfFieldMapping createProjectConfig(boolean isKanban) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		ProjectBasicConfig projectConfig = projectConfigsList.get(2);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		if (isKanban) {
 			projectConfFieldMapping.setKanban(true);
@@ -309,11 +302,7 @@ public class CreateMetadataImplTest {
 
 	private JiraToolConfig getJiraToolConfig() {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
 		toolObj.setConnection(connection);
 		return toolObj;
 	}

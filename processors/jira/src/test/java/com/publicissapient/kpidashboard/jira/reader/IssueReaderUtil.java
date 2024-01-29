@@ -19,7 +19,6 @@
 
 package com.publicissapient.kpidashboard.jira.reader;
 
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -30,10 +29,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
+import org.springframework.beans.BeanUtils;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
@@ -84,10 +83,8 @@ public class IssueReaderUtil {
 			Optional<Connection> connection, FieldMapping fieldMapping, List<ProjectToolConfig> projectToolConfigs) {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		ProjectBasicConfig projectConfig = projectBasicConfigs.get(1);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-		}
+		//Todo: check the beanUtils func changed to import org.springframework.beans.BeanUtils;
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -101,11 +98,8 @@ public class IssueReaderUtil {
 	public static JiraToolConfig getJiraToolConfig(Optional<Connection> connection,
 			List<ProjectToolConfig> projectToolConfigs) {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		//Todo: check the beanUtils func changed to import org.springframework.beans.BeanUtils;
+		BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
 		toolObj.setConnection(connection);
 		return toolObj;
 	}

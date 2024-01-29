@@ -43,21 +43,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.joda.time.DateTime;
 import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.StatusCategory;
@@ -148,8 +146,8 @@ public class JiraCommonServiceTest {
 
 	List<Issue> issues = new ArrayList<>();
 
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+//	@Rule
+//	public ExpectedException expectedException = ExpectedException.none();
 
 	@Before
 	public void setUp() throws Exception {
@@ -295,10 +293,7 @@ public class JiraCommonServiceTest {
 
 	private void createProjectConfigMap(boolean jql) {
 		ProjectBasicConfig projectConfig = projectConfigsList.get(1);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-		}
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -317,14 +312,10 @@ public class JiraCommonServiceTest {
 
 	private JiraToolConfig getJiraToolConfig(boolean jql) {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			if (jql) {
-				BeanUtils.copyProperties(toolObj, projectToolConfigsJQL.get(0));
-			} else {
-				BeanUtils.copyProperties(toolObj, projectToolConfigsBoard.get(0));
-			}
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
+		if (jql) {
+			BeanUtils.copyProperties(projectToolConfigsJQL.get(0), toolObj);
+		} else {
+			BeanUtils.copyProperties(projectToolConfigsBoard.get(0), toolObj);
 		}
 		toolObj.setConnection(connection);
 		return toolObj;

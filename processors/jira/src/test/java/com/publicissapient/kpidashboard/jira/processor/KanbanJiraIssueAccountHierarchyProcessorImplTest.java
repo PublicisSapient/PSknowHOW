@@ -22,11 +22,9 @@ package com.publicissapient.kpidashboard.jira.processor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
@@ -131,11 +130,7 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 	private ProjectConfFieldMapping createProjectConfig() {
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -148,11 +143,7 @@ public class KanbanJiraIssueAccountHierarchyProcessorImplTest {
 
 	private JiraToolConfig getJiraToolConfig() {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
 		toolObj.setConnection(connection);
 		return toolObj;
 	}

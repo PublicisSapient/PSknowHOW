@@ -374,7 +374,7 @@ public class KanbanAzureIssueClientImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
+		BeanUtils.copyProperties(kanbanProjectlist.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);

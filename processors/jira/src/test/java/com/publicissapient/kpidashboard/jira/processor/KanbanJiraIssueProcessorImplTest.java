@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -49,6 +48,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
 import com.atlassian.jira.rest.client.api.StatusCategory;
 import com.atlassian.jira.rest.client.api.domain.BasicPriority;
@@ -294,11 +294,7 @@ public class KanbanJiraIssueProcessorImplTest {
 
 	private void createProjectConfigMap() {
 		ProjectBasicConfig projectConfig = projectConfigsList.get(0);
-		try {
-			BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -309,11 +305,7 @@ public class KanbanJiraIssueProcessorImplTest {
 
 	private JiraToolConfig getJiraToolConfig() {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
 		toolObj.setConnection(connection);
 		return toolObj;
 	}

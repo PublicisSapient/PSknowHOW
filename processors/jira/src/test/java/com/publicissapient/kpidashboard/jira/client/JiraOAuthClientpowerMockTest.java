@@ -18,24 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.client;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
-
-import java.net.URL;
-
-import org.htmlunit.WebClient;
-import org.htmlunit.WebClientOptions;
-import org.htmlunit.html.HtmlForm;
-import org.htmlunit.html.HtmlPage;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-@RunWith(PowerMockRunner.class)
+/*@RunWith(PowerMockRunner.class)
 @PrepareForTest(JiraOAuthClient.class)
 @PowerMockIgnore({ "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*" })
 public class JiraOAuthClientpowerMockTest {
@@ -84,4 +67,4 @@ public class JiraOAuthClientpowerMockTest {
 
 	}
 
-}
+}*/

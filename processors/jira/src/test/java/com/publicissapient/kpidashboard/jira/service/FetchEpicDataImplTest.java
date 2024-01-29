@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -47,6 +46,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.BeanUtils;
 
 import com.atlassian.jira.rest.client.api.SearchRestClient;
 import com.atlassian.jira.rest.client.api.StatusCategory;
@@ -143,11 +143,7 @@ public class FetchEpicDataImplTest {
 		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
 		ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
 		ProjectBasicConfig projectConfig = projectConfigsList.get(2);
-		try {
-			org.apache.commons.beanutils.BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setProjectBasicConfig(projectConfig);
 		projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -161,11 +157,7 @@ public class FetchEpicDataImplTest {
 
 	private JiraToolConfig getJiraToolConfig() {
 		JiraToolConfig toolObj = new JiraToolConfig();
-		try {
-			org.apache.commons.beanutils.BeanUtils.copyProperties(toolObj, projectToolConfigs.get(0));
-		} catch (IllegalAccessException | InvocationTargetException e) {
-
-		}
+		BeanUtils.copyProperties(projectToolConfigs.get(0), toolObj);
 		toolObj.setConnection(connection);
 		return toolObj;
 	}

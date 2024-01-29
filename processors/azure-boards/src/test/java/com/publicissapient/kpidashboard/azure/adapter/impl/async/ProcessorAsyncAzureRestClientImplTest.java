@@ -177,7 +177,7 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		fieldObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		FieldMapping fieldMapping = fieldObjectMapper.readValue(fieldMapFile, FieldMapping.class);
 
-		BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
 		AzureToolConfig azureToolConfig = new AzureToolConfig();
