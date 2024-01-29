@@ -9,7 +9,7 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
- selector:
+  selector:
     matchLabels:
       app: knowhow-ui
   template:
