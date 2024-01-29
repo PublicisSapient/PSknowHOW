@@ -4,27 +4,23 @@ metadata:
   name: {{ include "knowhow-ui.fullname" . }}
   namespace: {{ .Values.env}}-knowhow
   labels:
-    {{- include "knowhow-ui.labels" . | nindent 4 }}
+    app: knowhow-ui
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-  selector:
+ selector:
     matchLabels:
-      {{- include "knowhow-ui.selectorLabels" . | nindent 6 }}
+      app: knowhow-ui
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "knowhow-ui.selectorLabels" . | nindent 8 }}
+        app: knowhow-ui
     spec:
-      initContainers:
-      - name: init-customapi
-        image: busybox:1.28
-        command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
+      # initContainers:
+      # - name: init-customapi
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -51,18 +47,26 @@ spec:
             value: customapi
           - name: API_PORT
             value: "8080"
+          - name: ENVIRONMENT
+            value: "prod"
+          - name: CENTRAL_LOGIN_URL
+            value: "https://{{ .Values.env}}-authnauth.tools.publicis.sapient.com"
+          - name: MAP_URL
+            value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
+          - name: RETROS_URL
+            value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com/"
           readinessProbe:
             httpGet:
               path: /
-              port: 443
-              scheme: HTTPS
+              port: 80
+              scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: 443
-              scheme: HTTPS
+              port: 80
+              scheme: HTTP
             initialDelaySeconds: 15
             periodSeconds: 10
           resources:

@@ -2,14 +2,14 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-env: uat-knowhow
+env: uat
 
-replicaCount: 1
+replicaCount: 2
 
 configmapname: knowhow-config
 image:
   repository: speedtools.azurecr.io/knowhow-ui
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"
 
@@ -66,22 +66,18 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
     cpu: 500m
-    memory: 3072Mi
+    memory: 1024Mi
   requests:
     cpu: 300m
-    memory: 2048Mi 
+    memory: 512Mi 
 
 ports:
   - 80
-  - 443
 
 servicePorts:
   - name: http
     port: 80
     targetPort: 80
-  - name: https
-    port: 443
-    targetPort: 443
 
 autoscaling:
   enabled: false
