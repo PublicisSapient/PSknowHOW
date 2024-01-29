@@ -21,13 +21,13 @@ spec:
       labels:
         {{- include "knowhow-jira-processor.selectorLabels" . | nindent 8 }}
     spec:
-      initContainers:
-      - name: init-customapi
-        image: busybox:1.28
-        command: ['sh', '-c', "until nslookup knowhow-customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-customapi; sleep 2; done"]
-      - name: init-ui
-        image: busybox:1.28
-        command: ['sh', '-c', "until nslookup knowhow-ui.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
+      # initContainers:
+      # - name: init-customapi
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup knowhow-customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-customapi; sleep 2; done"]
+      # - name: init-ui
+      #   image: busybox:1.28
+      #   command: ['sh', '-c', "until nslookup knowhow-ui.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for knowhow-ui; sleep 2; done"]
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -43,7 +43,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{.Values.port}}
+              containerPort: {{.Values.service.port}}
               protocol: TCP
           envFrom:
           - configMapRef:
