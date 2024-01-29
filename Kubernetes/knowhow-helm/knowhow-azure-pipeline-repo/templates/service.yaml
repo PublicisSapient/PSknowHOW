@@ -4,7 +4,7 @@ metadata:
   name: azure-pipeline-repo
   namespace: {{ .Values.env}}-knowhow
   labels:
-    {{- include "knowhow-azure-pipeline-repo.labels" . | nindent 4 }}
+    app: azure-pipeline-repo
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,4 +15,4 @@ spec:
       name: {{ $servicePort.name }}
     {{- end }}
   selector:
-    {{- include "knowhow-azure-pipeline-repo.selectorLabels" . | nindent 4 }}
+    app: azure-pipeline-repo
