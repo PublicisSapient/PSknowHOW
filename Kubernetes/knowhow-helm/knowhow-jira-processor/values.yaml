@@ -2,12 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: uat-knowhow
+env: uat
 
 replicaCount: 1
 
 image:
-  repository: psknowhow/jira-processor
+  repository: speedtools.azurecr.io/knowhow-jira-processor
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"

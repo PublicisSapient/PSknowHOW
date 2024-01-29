@@ -2,13 +2,13 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: uat-knowhow
+env: uat-knowhow
 
 replicaCount: 1
 
 configmapname: knowhow-config
 image:
-  repository: psknowhow/ui
+  repository: speedtools.azurecr.io/knowhow-ui
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"

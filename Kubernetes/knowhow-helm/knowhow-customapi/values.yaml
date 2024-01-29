@@ -4,7 +4,6 @@
 
 replicaCount: 2
 
-
 configmapname: knowhow-config
 
 env: uat

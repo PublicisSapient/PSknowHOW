@@ -4,7 +4,7 @@ metadata:
   name: {{ include "debbie-rabbitmq.fullname" . }}
   labels:
     {{- include "debbie-rabbitmq.labels" . | nindent 4 }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
 spec:
   type: {{ .Values.service.type }}
   ports:

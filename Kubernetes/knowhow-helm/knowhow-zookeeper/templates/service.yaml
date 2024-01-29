@@ -4,6 +4,7 @@ metadata:
   name: zookeeper
   labels:
     {{- include "knowhow-zookeeper.labels" . | nindent 4 }}
+  namespace: {{ .Values.env}}-knowhow
 spec:
   type: {{ .Values.service.type }}
   ports:

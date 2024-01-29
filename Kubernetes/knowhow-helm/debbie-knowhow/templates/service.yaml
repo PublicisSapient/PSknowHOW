@@ -4,6 +4,7 @@ metadata:
   name: {{ include "debbie-knowhow.fullname" . }}
   labels:
     {{- include "debbie-knowhow.labels" . | nindent 4 }}
+  namespace: {{ .Values.env}}-knowhow
 spec:
   type: {{ .Values.service.type }}
   ports:

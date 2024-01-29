@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: debbie-config
-  namespace: {{.Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
 data:
   # property-like keys; each key maps to a simple value
   POSTGRES_DB: "debbie"

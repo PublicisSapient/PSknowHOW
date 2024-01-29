@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "debbie-django.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "debbie-django.labels" . | nindent 4 }}
 spec:

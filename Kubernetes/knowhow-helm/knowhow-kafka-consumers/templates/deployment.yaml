@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "knowhow-kafka-consumers.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "knowhow-kafka-consumers.labels" . | nindent 4 }}
 spec:

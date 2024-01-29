@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "knowhow-azure-board-processor.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "knowhow-azure-board-processor.labels" . | nindent 4 }}
 spec:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "devops-processor.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "devops-processor.labels" . | nindent 4 }}
 spec:

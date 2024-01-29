@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "knowhow-azure-pipeline-repo.fullname" . }}
-  namespace: {{ .Values.namespace}}
+  namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "knowhow-azure-pipeline-repo.labels" . | nindent 4 }}
 spec:

@@ -4,12 +4,12 @@
 
 replicaCount: 1
 
-namespace: uat-knowhow
+env: uat
 
 configmapname: knowhow-config
 
 image:
-  repository: psknowhow/azure-pipeline-repo
+  repository: knowhow-azure-pipeline-repo
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "8.1.1"
