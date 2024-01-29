@@ -24,6 +24,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class UserInfoController {
 	private UserInfoRepository userInfoRepository;
 	
 	@Autowired
-	private CookieUtil cookieUtil;
+	private AuthProperties authProperties;
 	/**
 	 * Fetch only approved user info data.
 	 *
@@ -171,11 +172,7 @@ public class UserInfoController {
 	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
 			HttpServletRequest request) {
 
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		if (StringUtils.isBlank(authCookie.getValue())) {
-			return null;
-		}
-		String token = authCookie.getValue();
+		String token = authProperties.getResourceAPIKey();
 		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username, token);
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
