@@ -17,31 +17,23 @@ spec:
       labels:
         app: knowhow-ui
     spec:
-      # initContainers:
-      # - name: init-customapi
-      #   image: busybox:1.28
-      #   command: ['sh', '-c', "until nslookup customapi.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for customapi; sleep 2; done"]
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      # serviceAccountName: {{ include "knowhow-ui.serviceAccountName" . }}
+      serviceAccountName: {{ include "knowhow-ui.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: knowhow-ui
-          # securityContext:
-          #   {{- toYaml .Values.securityContext | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            {{- range $port := .Values.ports }}
-            - containerPort: {{ $port }}
-            {{- end }}
-          {{ toYaml .Values.resources | indent 12 }}
-          envFrom:
-          - configMapRef:
-              name: {{ .Values.configmapname }}
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
           env:
             - name: API_HOST
               value: customapi
@@ -54,7 +46,10 @@ spec:
             - name: MAP_URL
               value: "https://preprod-assessmentplatform.tools.publicis.sapient.com"
             - name: RETROS_URL
-              value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com/"
+              value: "https://{{ .Values.env}}-retrospective.tools.publicis.sapient.com"
+          envFrom:
+          - configMapRef:
+              name: knowhow-config
           readinessProbe:
             httpGet:
               path: /
