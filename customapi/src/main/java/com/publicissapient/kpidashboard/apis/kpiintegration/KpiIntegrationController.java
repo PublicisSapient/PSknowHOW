@@ -41,6 +41,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * exposed API for fetching kpi data
  * @author kunkambl
  */
 @RestController
@@ -59,7 +60,7 @@ public class KpiIntegrationController {
 	private RestAPIUtils restAPIUtils;
 
     /**
-     * This method handles Jira Scrum KPIs request.
+     * This method handles Scrum KPIs request.
      *
      * @param kpiRequest
      * @return List of KPIs with trend and aggregated data.

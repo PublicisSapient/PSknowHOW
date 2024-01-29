@@ -102,7 +102,8 @@ public class KpiIntegrationServiceImpl {
 			try {
 				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
 						.collect(Collectors.toList()));
-				cacheService.setIntoApplicationCache(kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
+				cacheService.setIntoApplicationCache(
+						kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
 						Boolean.TRUE.toString());
 				switch (source) {
 				case KPI_SOURCE_JIRA:
@@ -152,6 +153,10 @@ public class KpiIntegrationServiceImpl {
 		return kpiElements;
 	}
 
+	/**
+	 * set kpi request parameters as per the request
+	 * @param kpiRequest recieved kpi request
+	 */
 	public void setKpiRequest(KpiRequest kpiRequest) {
 		String[] hierarchyIdList = kpiRequest.getIds();
 		Optional<HierarchyLevel> optionalHierarchyLevel = hierarchyLevelService.getFullHierarchyLevels(true).stream()
@@ -241,12 +246,12 @@ public class KpiIntegrationServiceImpl {
 	 * 		entity not found exception for jenkins service method
 	 */
 	private List<KpiElement> getJenkinsKpiMaturity(KpiRequest kpiRequest) throws EntityNotFoundException {
-		MDC.put("ZephyrKpiRequest", kpiRequest.getRequestTrackerId());
+		MDC.put("JenkinsKpiRequest", kpiRequest.getRequestTrackerId());
 		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long jenkinsRequestStartTime = System.currentTimeMillis();
-		MDC.put("ZephyrRequestStartTime", String.valueOf(jenkinsRequestStartTime));
+		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
 		List<KpiElement> responseList = jenkinsServiceR.process(kpiRequest);
-		MDC.put("TotalZephyrRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
+		MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
 		MDC.clear();
 		return responseList;
 	}
