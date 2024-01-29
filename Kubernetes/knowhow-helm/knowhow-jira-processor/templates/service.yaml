@@ -4,7 +4,7 @@ metadata:
   name: jira-processor
   namespace: {{ .Values.env}}-knowhow
   labels:
-    {{- include "knowhow-jira-processor.labels" . | nindent 4 }}
+    app: jira-processor
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,4 +13,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "knowhow-jira-processor.selectorLabels" . | nindent 4 }}
+    app: jira-processor
