@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
+import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
 import org.junit.Before;
@@ -68,6 +69,9 @@ public class KpiIntegrationServiceImplTest {
 	private ZephyrService zephyrService;
 
 	@Mock
+	private JenkinsServiceR jenkinsService;
+
+	@Mock
 	private HierarchyLevelService hierarchyLevelService;
 
 	@Mock
@@ -77,7 +81,7 @@ public class KpiIntegrationServiceImplTest {
 	private KpiElement kpiElement1;
 	private KpiElement kpiElement2;
 	private KpiMasterDataFactory kpiMasterDataFactory = KpiMasterDataFactory.newInstance();
-	private List<String> kpiIdList = Arrays.asList("kpi14", "kpi70", "kpi27");
+	private List<String> kpiIdList = Arrays.asList("kpi14", "kpi70", "kpi27", "kpi8");
 	private List<HierarchyLevel> hierarchyLevels = null;
 
 	@Before
@@ -109,8 +113,9 @@ public class KpiIntegrationServiceImplTest {
         when(jiraService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement1));
         when(sonarService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
         when(zephyrService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
+		when(jenkinsService.process(kpiRequest)).thenReturn(Arrays.asList(kpiElement2));
         List<KpiElement> kpiElementList = maturityService.getKpiResponses(kpiRequest);
-        assertEquals(3, kpiElementList.size());
+        assertEquals(4, kpiElementList.size());
     }
 
 	@Test
