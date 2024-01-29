@@ -26,8 +26,8 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
 
-    # variables:
-    #   overrideValues: image.tag=$(env MVN_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout) && echo $MVN_VERSION)
+    variables:
+      overrideValues: 'image.tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)'
 
     steps:
     - checkout: self
@@ -39,22 +39,22 @@ stages:
         # Add API deployment steps
         echo "Deploying Helm charts for API..."
         # Extract version from pom.xml
-        export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
+        # export VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Version from pom.xml: $overrideValues"
         # Add Helm deployment steps for API
         # Example: helm upgrade --install customapi ./Kubernetes/knowhow-helm/knowhow-customapi
-    - task: HelmDeploy@0
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
-        namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'upgrade'
-        chartType: 'FilePath'
-        chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
-        releaseName: 'customapi'
-        overrideValues: 'image.tag=$(Build.BuildNumber)'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
-      displayName: 'Deploy API'
+    # - task: HelmDeploy@0
+    #   inputs:
+    #     connectionType: 'Kubernetes Service Connection'
+    #     kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+    #     namespace: '${{ parameters.Environment }}-knowhow'
+    #     command: 'upgrade'
+    #     chartType: 'FilePath'
+    #     chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
+    #     releaseName: 'customapi'
+    #     overrideValues: 'image.tag=$(Build.BuildNumber)'
+    #     valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
+    #   displayName: 'Deploy API'
 
 - stage: UI_Deploy
   condition: eq('${{ parameters.deploymentOptions }}', 'UI')
