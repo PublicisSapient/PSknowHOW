@@ -14,7 +14,7 @@
 	<groupId>com.publicissapient.kpidashboard</groupId>
 	<artifactId>customapi</artifactId>
 	<description>Rest API Layer</description>
-	<version>8.2.0-SNAPSHOT</version>
+	<version>8.3.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 

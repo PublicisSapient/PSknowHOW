@@ -200,10 +200,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						count += issues.size();
 					}
 
-					MDC.put("IssueCount", String.valueOf(issues.size()));
-
-					if (issues == null || issues.size() < pageSize) {
+					if (issues.isEmpty()) {
 						break;
+					} else if (issues.size() < pageSize) {
+						break;
+					} else {
+						MDC.put("IssueCount", String.valueOf(issues.size()));
 					}
 				}
 
@@ -893,6 +895,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureServer.setUrl(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getAzure().getConnection().getBaseUrl()));
 		azureServer.setApiVersion(projectConfig.getAzure().getApiVersion());
 		azureServer.setUsername(projectConfig.getAzure().getConnection().getUsername());
+		azureServer.setTeam(projectConfig.getProjectToolConfig().getTeam());
 		return azureServer;
 	}
 
@@ -1230,7 +1233,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * save assignee details from jira issue and if already exist then update
 	 * assignee list
