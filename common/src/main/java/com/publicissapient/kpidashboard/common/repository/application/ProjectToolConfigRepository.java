@@ -80,6 +80,9 @@ public interface ProjectToolConfigRepository extends MongoRepository<ProjectTool
 	 */
 	List<ProjectToolConfig> findByBasicProjectConfigId(ObjectId basicProjectConfigId);
 
+	List<ProjectToolConfig> findByBasicProjectConfigIdAndConnectionId(ObjectId basicProjectConfigId,
+			ObjectId connectionId);
+
 	List<ProjectToolConfig> findByToolNameAndQueryEnabledAndBasicProjectConfigIdIn(String toolName,
 			boolean queryEnabled, List<ObjectId> projectConfigsIds);
 }
