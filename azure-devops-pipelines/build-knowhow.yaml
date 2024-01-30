@@ -1,5 +1,5 @@
 trigger:
-- azure-devops
+- master
 
 parameters:
 - name: BUILD
