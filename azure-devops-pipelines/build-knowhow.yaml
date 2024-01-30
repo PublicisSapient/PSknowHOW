@@ -34,9 +34,9 @@ stages:
 
     steps:
     - checkout: self
-    - task: UseJavaVersion@1
-      inputs:
-        versionSpec: '17'
+    # - task: UseJavaVersion@1
+    #   inputs:
+    #     versionSpec: '17'
 
     - script: |
         echo "BUILDING: ${{ parameters.BUILD }}"
