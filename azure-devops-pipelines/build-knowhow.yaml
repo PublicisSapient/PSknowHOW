@@ -62,7 +62,7 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
-    - publish: $(System.DefaultWorkingDirectory)/path/to/dependencies
+    - publish: $(System.DefaultWorkingDirectory)/customapi/target
       artifact: dependencies
 
   - job: Preparing_Sonar_qube_analysis_report  
