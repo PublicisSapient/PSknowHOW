@@ -15,7 +15,7 @@ parameters:
   - 'ALL'
 - name: PUSH_TO_DOCKER_REGISTRY
   type: string
-  default: 'uat'
+  default: 'YES'
   values:
   - 'YES'
   - 'NO'
