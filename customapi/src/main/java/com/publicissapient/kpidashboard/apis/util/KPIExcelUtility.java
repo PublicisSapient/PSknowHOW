@@ -1874,8 +1874,4 @@ public class KPIExcelUtility {
 		}
 
 	}
-
-	public static void populateDefectSeepageRateExcelData(String name, Map<String, JiraIssue> totalBugList,
-			Map<String, List<JiraIssue>> subCategoryWiseUatBugList, List<KPIExcelData> excelData) {
-	}
 }

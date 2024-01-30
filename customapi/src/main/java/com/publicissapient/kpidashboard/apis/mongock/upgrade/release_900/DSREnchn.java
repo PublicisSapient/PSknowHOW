@@ -40,6 +40,13 @@ public class DSREnchn {
 	public static final String FIELD_NAME = "fieldName";
 	public static final String LABEL = "label";
 	public static final String VALUE = "value";
+	public static final String UAT_IDENTIFICATION = "jiraBugRaisedByIdentification";
+	public static final String PROCESSOR_COMMON = "processorCommon";
+	public static final String FIELD_LABEL = "fieldLabel";
+	public static final String FIELD_TYPE = "fieldType";
+	public static final String SECTION = "section";
+	public static final String DEFINITION = "definition";
+	public static final String TOOL_TIP = "tooltip";
 
 	private final MongoTemplate mongoTemplate;
 
@@ -50,21 +57,21 @@ public class DSREnchn {
 	@Execution
 	public void execution() {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
-		Document filter = new Document(FIELD_NAME, "jiraBugRaisedByIdentification");
+		Document filter = new Document(FIELD_NAME, UAT_IDENTIFICATION);
 
 		// Specify the update operation
-		Document update = new Document("$set", new Document("processorCommon", true));
+		Document update = new Document("$set", new Document(PROCESSOR_COMMON, true));
 		fieldMappingStructure.updateOne(filter, update);
 
 		List<Document> documents = Arrays.asList(
-				new Document(FIELD_NAME, "includeRCAForKPI35").append("fieldLabel", "Root cause values to be included")
-						.append("fieldType", "chips").append("section", "Defects Mapping")
-						.append("tooltip", new Document("definition",
+				new Document(FIELD_NAME, "includeRCAForKPI35").append(FIELD_LABEL, "Root cause values to be included")
+						.append(FIELD_TYPE, "chips").append(SECTION, "Defects Mapping")
+						.append(TOOL_TIP, new Document(DEFINITION,
 								"Root cause reasons for defects which are to be included in 'DSR' calculation")),
-				new Document(FIELD_NAME, "defectPriorityKPI35").append("fieldLabel", "Priority to be excluded")
-						.append("fieldType", "multiselect").append("section", "Defects Mapping")
-						.append("tooltip",
-								new Document("definition",
+				new Document(FIELD_NAME, "defectPriorityKPI35").append(FIELD_LABEL, "Priority to be excluded")
+						.append(FIELD_TYPE, "multiselect").append(SECTION, "Defects Mapping")
+						.append(TOOL_TIP,
+								new Document(DEFINITION,
 										"Priority values of defects which are to be excluded in 'DSR' calculation"))
 						.append("options",
 								Arrays.asList(new Document(LABEL, "p1").append(VALUE, "p1"),
@@ -73,18 +80,18 @@ public class DSREnchn {
 										new Document(LABEL, "p4").append(VALUE, "p4"),
 										new Document(LABEL, "p5").append(VALUE, "p5"))),
 
-				new Document().append(FIELD_NAME, "excludeUnlinkedDefects").append("fieldLabel", "Exclude Unlinked Defects")
-						.append("fieldType", "toggle").append("section", "WorkFlow Status Mapping")
-						.append("processorCommon", false).append("tooltip",
-								new Document("definition", "Disable Toggle to see calculations on unlinked defects too."))
+				new Document().append(FIELD_NAME, "excludeUnlinkedDefects").append(FIELD_LABEL, "Exclude Unlinked Defects")
+						.append(FIELD_TYPE, "toggle").append(SECTION, "WorkFlow Status Mapping")
+						.append(PROCESSOR_COMMON, false).append(TOOL_TIP,
+								new Document(DEFINITION, "Disable Toggle to see calculations on unlinked defects too."))
 
 		);
 
 		fieldMappingStructure.insertMany(documents);
 
 		// Update the document in the collection
-		fieldMappingStructure.updateOne(new Document(FIELD_NAME, "jiraBugRaisedByIdentification"),
-				new Document("$set", new Document("fieldLabel", "Escaped defects identification (Processor Run)")));
+		fieldMappingStructure.updateOne(new Document(FIELD_NAME, UAT_IDENTIFICATION),
+				new Document("$set", new Document(FIELD_LABEL, "Escaped defects identification (Processor Run)")));
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
 				new Document("$set", new Document("kpiFilter" , "multiSelectDropDown")));
@@ -95,10 +102,10 @@ public class DSREnchn {
 	@RollbackExecution
 	public void rollback() {
 		MongoCollection<Document> fieldMappingStruture = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
-		Document filter = new Document(FIELD_NAME, "jiraBugRaisedByIdentification");
+		Document filter = new Document(FIELD_NAME, UAT_IDENTIFICATION);
 
 		// Specify the rollback operation
-		Document rollback = new Document("$unset", new Document("processorCommon", ""));
+		Document rollback = new Document("$unset", new Document(PROCESSOR_COMMON, ""));
 
 		// Perform the rollback
 		fieldMappingStruture.updateOne(filter, rollback);
@@ -107,8 +114,8 @@ public class DSREnchn {
 				"useUnLinkedDefect");
 		// Delete documents that match the filter
 		fieldMappingStruture.deleteMany(new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete)));
-		fieldMappingStruture.updateOne(new Document(FIELD_NAME, "jiraBugRaisedByIdentification"),
-				new Document("$set", new Document("fieldLabel", "UAT Defect Identification")));
+		fieldMappingStruture.updateOne(new Document(FIELD_NAME, UAT_IDENTIFICATION),
+				new Document("$set", new Document(FIELD_LABEL, "UAT Defect Identification")));
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
 				new Document("$set", new Document("kpiFilter" , "")));
 
