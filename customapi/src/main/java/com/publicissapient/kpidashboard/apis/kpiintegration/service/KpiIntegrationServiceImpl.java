@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.kpiintegration;
+package com.publicissapient.kpidashboard.apis.kpiintegration.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;

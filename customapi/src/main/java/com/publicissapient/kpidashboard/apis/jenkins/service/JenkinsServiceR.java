@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -47,6 +48,9 @@ import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * @implNote {@link KpiIntegrationServiceImpl }
+ */
 @Service
 @Slf4j
 public class JenkinsServiceR {

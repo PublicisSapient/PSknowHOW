@@ -27,7 +27,7 @@ import java.util.concurrent.RecursiveAction;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.kpiintegration.KpiIntegrationServiceImpl;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;

@@ -16,13 +16,12 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.kpiintegration;
+package com.publicissapient.kpidashboard.apis.kpiintegration.rest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,9 +32,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
-import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +45,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
 import com.publicissapient.kpidashboard.apis.pushdata.service.AuthExposeAPIService;
 
 /**
