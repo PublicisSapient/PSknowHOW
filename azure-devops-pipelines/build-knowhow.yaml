@@ -74,7 +74,7 @@ stages:
     - task: SonarQubePrepare@4
       displayName: 'Prepare Analysis Configuration'
       inputs:
-        SonarQube: 'SonarQubeConnection' # Name of the SonarQube service connection
+        SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
         scannerMode: 'CLI'
         configMode: 'manual'
         cliProjectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI' # SonarQube project key
