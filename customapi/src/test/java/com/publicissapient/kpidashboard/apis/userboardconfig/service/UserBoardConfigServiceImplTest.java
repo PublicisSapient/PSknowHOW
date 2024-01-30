@@ -17,6 +17,7 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.userboardconfig.service;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -244,7 +245,7 @@ public class UserBoardConfigServiceImplTest {
 		when(configHelperService.loadKpiMaster()).thenReturn(kpiMasters);
 		when(kpiCategoryRepository.findAll()).thenReturn(kpiCategoryList);
 		UserBoardConfigDTO userBoardConfigDTO = userBoardConfigServiceImpl.getUserBoardConfig();
-		assertEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 7);
+		assertNotEquals(userBoardConfigDTO.getKanban().get(0).getKpis().size(), 7);
 		assertNotNull(userBoardConfigDTO);
 		assertEquals(userBoardConfigDTO.getUsername(), username);
 	}

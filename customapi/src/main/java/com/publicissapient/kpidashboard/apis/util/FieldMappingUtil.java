@@ -2,6 +2,7 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import com.publicissapient.kpidashboard.common.model.application.dto.FieldMappingDTO;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -95,7 +96,7 @@ public class FieldMappingUtil {
             fieldMappingDTO.setJiraIssueDeliverdStatusAVR(jiraIssueDeliverdStatus);
             fieldMappingDTO.setJiraIssueDeliverdStatusKPI126(jiraIssueDeliverdStatus);
             fieldMappingDTO.setJiraIssueDeliverdStatusKPI82(jiraIssueDeliverdStatus);
-            fieldMappingDTO.setJiraDorKPI3(jiraDor);
+            fieldMappingDTO.setJiraDorKPI3(Arrays.asList(jiraDor));
             fieldMappingDTO.setJiraIssueTypeKPI3(jiraIntakeToDorIssueType);
             fieldMappingDTO.setStoryFirstStatusKPI3(storyFirstStatus);
             fieldMappingDTO.setStoryFirstStatusKPI148(storyFirstStatus);
@@ -104,7 +105,7 @@ public class FieldMappingUtil {
             fieldMappingDTO.setJiraDefectClosedStatusKPI137(jiraDefectClosedStatus);
             fieldMappingDTO.setJiraKPI82StoryIdentification(jiraFTPRStoryIdentification);
             fieldMappingDTO.setJiraKPI135StoryIdentification(jiraFTPRStoryIdentification);
-            fieldMappingDTO.setJiraLiveStatusKPI3(jiraLiveStatus);
+            fieldMappingDTO.setJiraLiveStatusKPI3(Arrays.asList(jiraLiveStatus));
             fieldMappingDTO.setJiraLiveStatusLTK(jiraLiveStatus);
             fieldMappingDTO.setJiraLiveStatusNOPK(jiraLiveStatus);
             fieldMappingDTO.setJiraLiveStatusNOSK(jiraLiveStatus);
@@ -188,7 +189,7 @@ public class FieldMappingUtil {
             fieldMappingDTO.setJiraAcceptedInRefinementKPI139(jiraAcceptedInRefinement);
             fieldMappingDTO.setJiraReadyForRefinementKPI139(jiraReadyForRefinement);
             fieldMappingDTO.setJiraRejectedInRefinementKPI139(jiraRejectedInRefinement);
-            fieldMappingDTO.setReadyForDevelopmentStatusKPI138(readyForDevelopmentStatus);
+            fieldMappingDTO.setReadyForDevelopmentStatusKPI138(Arrays.asList(readyForDevelopmentStatus));
             fieldMappingDTO.setCreatedDate(LocalDateTime.now());
         }
     }

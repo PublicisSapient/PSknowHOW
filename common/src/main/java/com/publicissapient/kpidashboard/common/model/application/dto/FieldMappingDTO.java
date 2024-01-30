@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.types.ObjectId;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -97,6 +98,7 @@ public class FieldMappingDTO extends BasicModel {
     private String jiraDefectRejectionStatusKPI151;
     private String jiraDefectRejectionStatusAVR;
     private String jiraDefectRejectionStatusKPI28;
+    private String jiraDefectRejectionStatusKPI34;
     private String jiraDefectRejectionStatusKPI37;
     private String jiraDefectRejectionStatusKPI35;
     private String jiraDefectRejectionStatusKPI82;
@@ -115,6 +117,7 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraDefectRemovalStatus;
     private List<String> jiraDefectRemovalStatusKPI34;
     private List<String> jiraDefectRemovalIssueType;
+    private List<String> jiraDefectRemovalIssueTypeKPI34;
     // Added for Defect Reopen Rate KPI.
     private List<String> jiraDefectClosedStatus;
     private List<String> jiraDefectClosedStatusKPI137;
@@ -131,6 +134,7 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> jiraSprintCapacityIssueTypeKpi46;
 
     private List<String> jiraDefectRejectionlIssueType;
+    private List<String> jiraIssueTypeKPI37;
 
     private List<String> jiraDefectCountlIssueType;
     private List<String> jiraDefectCountlIssueTypeKPI28;
@@ -207,6 +211,7 @@ public class FieldMappingDTO extends BasicModel {
     private List<String> resolutionTypeForRejection;
     private List<String> resolutionTypeForRejectionAVR;
     private List<String> resolutionTypeForRejectionKPI28;
+    private List<String> resolutionTypeForRejectionKPI34;
     private List<String> resolutionTypeForRejectionKPI37;
     private List<String> resolutionTypeForRejectionKPI35;
     private List<String> resolutionTypeForRejectionKPI82;
@@ -369,6 +374,7 @@ public class FieldMappingDTO extends BasicModel {
     private boolean uploadData;
     private boolean uploadDataKPI42;
     private boolean uploadDataKPI16;
+    private LocalDateTime createdDate;
     @Builder.Default
     private boolean notificationEnabler = true;
     private List<String> jiraIssueEpicTypeKPI153;
