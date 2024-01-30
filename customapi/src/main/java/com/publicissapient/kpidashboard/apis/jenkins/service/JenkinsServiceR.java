@@ -67,7 +67,7 @@ public class JenkinsServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	boolean referFromProjectCache = true;
+	private boolean referFromProjectCache = true;
 
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {

@@ -106,7 +106,7 @@ public class JiraServiceR {
 	@Autowired
 	private CustomApiConfig customApiConfig;
 
-	public boolean referFromProjectCache = true;
+	private boolean referFromProjectCache = true;
 
 	private final ThreadLocal<List<SprintDetails>> threadLocalSprintDetails = ThreadLocal.withInitial(ArrayList::new);
 	private final ThreadLocal<List<JiraIssue>> threadLocalJiraIssues = ThreadLocal.withInitial(ArrayList::new);

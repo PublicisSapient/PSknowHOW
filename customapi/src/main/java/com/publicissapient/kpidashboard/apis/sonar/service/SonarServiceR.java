@@ -72,7 +72,7 @@ public class SonarServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	boolean referFromProjectCache = true;
+	private boolean referFromProjectCache = true;
 
 	/**
 	 * Process Sonar KPI request for Kanban projects

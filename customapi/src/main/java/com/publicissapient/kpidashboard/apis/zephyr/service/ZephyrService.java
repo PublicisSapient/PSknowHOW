@@ -76,7 +76,7 @@ public class ZephyrService {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
-	boolean referFromProjectCache = true;
+	private boolean referFromProjectCache = true;
 
 	/**
 	 * Process the zephyr based KPI requests.
