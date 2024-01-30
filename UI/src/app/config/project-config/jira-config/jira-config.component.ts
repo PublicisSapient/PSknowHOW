@@ -2249,7 +2249,8 @@ export class JiraConfigComponent implements OnInit {
             ],
           };
         }
-        case 'ArgoCD':
+        break;
+      case 'ArgoCD':
         {
           this.formTitle = 'ArgoCD';
           this.connectionTableCols = [
