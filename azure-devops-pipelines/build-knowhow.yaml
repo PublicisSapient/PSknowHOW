@@ -62,11 +62,11 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
-    - publish: $(System.DefaultWorkingDirectory)/common/target
+    - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
 
-    - publish: $(System.DefaultWorkingDirectory)/customapi/target
-      artifact: customapi-artifacts
+    # - publish: $(System.DefaultWorkingDirectory)/customapi/target
+    #   artifact: customapi-artifacts
 
 
   - job: Preparing_Sonar_qube_analysis_report  
@@ -79,14 +79,14 @@ stages:
     - download: current
       artifact: common-artifacts
 
-    - download: current
-      artifact: customapi-artifacts
+    # - download: current
+    #   artifact: customapi-artifacts
 
     - task: Maven@3
       displayName: 'Sonar Maven build'
       inputs:
         mavenPomFile: 'customapi/pom.xml'
-        goals: 'clean install sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
+        goals: 'sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
         publishJUnitResults: true
     # - checkout: none
     # - task: SonarQubePrepare@4
