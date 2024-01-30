@@ -30,7 +30,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
           <!-- TODO - load from property-->
-            <fileNamePattern>logs/ps-azurepipeline-processor-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>logs/ps-argocd-processor-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
 
             <timeBasedFileNamingAndTriggeringPolicy
                     class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
