@@ -80,6 +80,7 @@ spec:
         - containerPort: 50019
         - containerPort: 50020
         - containerPort: 50022
+        - containerPort: 50023
 
 ---
 
@@ -136,3 +137,7 @@ spec:
       port: 50022
       targetPort: 50022
       name: githubaction
+    - protocol: TCP
+      port: 50023
+      targetPort: 50023
+      name: argocd

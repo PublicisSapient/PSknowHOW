@@ -88,6 +88,7 @@ ports:
   - 50019
   - 50020
   - 50022
+  - 50023
 
 servicePorts:
   - name: zephyr
@@ -123,6 +124,9 @@ servicePorts:
   - name: githubaction
     port: 50022
     targetPort: 50022
+  - name: argocd
+    port: 50023
+    targetPort: 50023
 
 probeConfig:
   initialDelaySeconds: 10

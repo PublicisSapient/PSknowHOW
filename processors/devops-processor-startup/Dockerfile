@@ -20,6 +20,7 @@ ARG TEAMCITY_JAR_FILE=processors/teamcity/target/teamcity-processor.jar
 ARG GITLAB_JAR_FILE=processors/gitlab/target/gitlab-processor.jar
 ARG GITHUB_JAR_FILE=processors/github/target/github-processor.jar
 ARG GITHUBACTION_JAR_FILE=processors/github-action/target/githubaction-processor.jar
+ARG ARGOCD_JAR_FILE=processors/argocd/target/argocd-processor.jar
 
 ARG JENKINS_PROPERTIES_FILE_NAME=jenkins.properties
 ARG BAMBOO_PROPERTIES_FILE_NAME=bamboo.properties
@@ -31,6 +32,7 @@ ARG TEAMCITY_PROPERTIES_FILE_NAME=teamcity.properties
 ARG GITLAB_PROPERTIES_FILE_NAME=gitlab.properties
 ARG GITHUB_PROPERTIES_FILE_NAME=github.properties
 ARG GITHUBACTION_PROPERTIES_FILE_NAME=githubaction.properties
+ARG ARGOCD_PROPERTIES_FILE_NAME=argocd.properties
 
 ADD ${ZEPHYR_JAR_FILE} /app/zephyr.jar
 ADD ${JIRA_TEST_JAR_FILE} /app/jiratest.jar
@@ -42,6 +44,7 @@ ADD ${TEAMCITY_JAR_FILE} /app/teamcity.jar
 ADD ${GITLAB_JAR_FILE} /app/gitlab.jar
 ADD ${GITHUB_JAR_FILE} /app/github.jar
 ADD ${GITHUBACTION_JAR_FILE} /app/githubaction.jar
+ADD ${ARGOCD_JAR_FILE} /app/argocd.jar
 
 
 WORKDIR /app
@@ -57,6 +60,7 @@ EXPOSE 50014
 EXPOSE 50019
 EXPOSE 50020
 EXPOSE 50022
+EXPOSE 50023
 
 ADD processors/devops-processor-startup/start_combined_collector.sh start_combined_collector.sh
 RUN ["chmod", "+x", "/app/start_combined_collector.sh"]
