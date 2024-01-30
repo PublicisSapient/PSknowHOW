@@ -79,14 +79,17 @@ stages:
     - download: current
       artifact: common-artifacts
 
+    - script: |
+        mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=master -f customapi/pom.xml -e -X
+
     # - download: current
     #   artifact: customapi-artifacts
 
-    - task: Maven@3
-      displayName: 'Sonar Maven build'
-      inputs:
-        mavenPomFile: 'customapi/pom.xml'
-        goals: 'clean install sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
+    # - task: Maven@3
+    #   displayName: 'Sonar Maven build'
+    #   inputs:
+    #     mavenPomFile: 'customapi/pom.xml'
+    #     goals: 'clean install sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
         # publishJUnitResults: true
     # - checkout: none
     # - task: SonarQubePrepare@4
