@@ -60,7 +60,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     
-    step:
+    steps:
 
     - task: SonarQubePrepare@4
       displayName: Prepare Analysis Configuration task
