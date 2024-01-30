@@ -63,24 +63,28 @@ stages:
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
 
-  # - job: Preparing_Sonar_qube_analysis_report  
-  #   displayName: 'Preparing SonarQube Analysis'
-  #   dependsOn: RUNNING_TEST
-  #   pool:
-  #     vmImage: 'ubuntu-latest'
+  - job: Preparing_Sonar_qube_analysis_report  
+    displayName: 'Preparing SonarQube Analysis'
+    dependsOn: RUNNING_TEST
+    pool:
+      vmImage: 'ubuntu-latest'
     
-  #   steps:
-  #   - checkout: none
-  #   - task: SonarQubePrepare@4
-  #     displayName: Prepare Analysis Configuration task
-  #     inputs:
-  #       SonarQube: 'sonar-qube-sc'
-  #       scannerMode: 'Other'
-  #       projectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
-  #       projectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
-  #       extraProperties: |
-  #         sonar.projectVersion=$(overrideValues)
-  #         sonar.branch.name=$(Build.SourceBranchName)
+    steps:
+    # - checkout: none
+    - task: SonarQubePrepare@4
+      displayName: 'Prepare Analysis Configuration'
+      inputs:
+        SonarQube: 'SonarQubeConnection' # Name of the SonarQube service connection
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI' # SonarQube project key
+        cliProjectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI' # Optional, SonarQube project name
+        cliSources: 'customapi' # Path to your source code. Adjust if your pom.xml is located in a different directory
+        cliProjectVersion: '$(overrideValues)' # Optional, version of your project
+        cliExtraProperties: |
+          sonar.branch.name=$(Build.SourceBranchName) # Optional, additional properties
+        cliTimeoutSec: '600' # Optional, maximum duration of the analysis in seconds
+
       # enabled: true
         
   
