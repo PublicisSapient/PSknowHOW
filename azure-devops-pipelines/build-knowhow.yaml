@@ -54,7 +54,7 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
-    - checkout: none
+    # - checkout: none
 
     - task: Maven@3
       displayName: 'Run Maven build'
