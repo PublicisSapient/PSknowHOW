@@ -87,7 +87,7 @@ stages:
       inputs:
         mavenPomFile: 'customapi/pom.xml'
         goals: 'sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
-        publishJUnitResults: true
+        # publishJUnitResults: true
     # - checkout: none
     # - task: SonarQubePrepare@4
     #   displayName: 'Prepare Analysis Configuration'
