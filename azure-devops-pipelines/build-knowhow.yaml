@@ -86,7 +86,7 @@ stages:
       displayName: 'Sonar Maven build'
       inputs:
         mavenPomFile: 'customapi/pom.xml'
-        goals: 'sonar:sonar'
+        goals: 'clean verify sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
         publishJUnitResults: true
     # - checkout: none
     # - task: SonarQubePrepare@4
