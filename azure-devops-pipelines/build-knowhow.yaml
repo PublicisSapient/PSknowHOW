@@ -22,7 +22,7 @@ parameters:
 
 stages:
 - stage: API_BUILD
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'API'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'API'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: Capturing Version
@@ -78,7 +78,7 @@ stages:
 
 
 - stage: UI_Deploy
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'UI'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: UI_Deploy
@@ -89,7 +89,7 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying UI..."
         # Add UI deployment steps
@@ -100,7 +100,7 @@ stages:
 
 
 - stage: Jira_Processor_Deploy
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'Jira_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'Jira_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: Jira_Processor_Deploy
@@ -112,7 +112,7 @@ stages:
 
     - script: |
         cd processors/jira
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying Jira_Processor..."
         # Add Jira_Processor deployment steps
@@ -135,7 +135,7 @@ stages:
       displayName: 'Deploy Helm Charts for jira-processor'
 
 - stage: DevOps_Processor_Deploy
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'DevOps_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'DevOps_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: DevOps_Processor_Deploy
@@ -146,7 +146,7 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying DevOps_Processor..."
         # Add DevOps_Processor deployment steps
@@ -169,7 +169,7 @@ stages:
       displayName: 'Deploy DevOps_Processor'
 
 - stage: Azure_Board_Processor_Deploy
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'Azure_Board_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'Azure_Board_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: Azure_Board_Processor_Deploy
@@ -180,7 +180,7 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying Azure_Board_Processor..."
         # Add Azure_Board_Processor deployment steps
@@ -205,7 +205,7 @@ stages:
 
 
 - stage: Azure_Pipeline_Repo_Deploy
-  condition: or(eq('${{ parameters.deploymentOptions }}', 'Azure_Pipeline_Repo'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+  condition: or(eq('${{ parameters.BUILD }}', 'Azure_Pipeline_Repo'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: Azure_Pipeline_Repo_Deploy
@@ -216,7 +216,7 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
         echo "${{ parameters.Environment }}"
         echo "Deploying Azure_Pipeline_Repo..."
         # Add Azure_Pipeline_Repo deployment steps
