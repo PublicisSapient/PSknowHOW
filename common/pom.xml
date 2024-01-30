@@ -229,10 +229,10 @@
             <version>3.1.2</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+        </dependency> -->
 
 
         <!-- Togglz Spring Security (optional) -->
@@ -270,6 +270,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.11</version>
 				<executions>
 					<execution>
 						<goals>
