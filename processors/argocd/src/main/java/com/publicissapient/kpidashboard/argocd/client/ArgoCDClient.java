@@ -58,7 +58,9 @@ public class ArgoCDClient {
 	 * Get the list of Applications associated to the account
 	 * 
 	 * @param baseUrl
+	 * 				ArgoCD base url
 	 * @param accessToken
+	 * 				user access token
 	 * @return ApplicationList
 	 */
 	public ApplicationsList getApplications(String baseUrl, String accessToken) {
@@ -81,8 +83,11 @@ public class ArgoCDClient {
 	 * Get the Application details by name for the account
 	 * 
 	 * @param baseUrl
+	 * 				ArgoCD base url
 	 * @param applicationName
+	 * 				name of ArgoCD Application
 	 * @param accessToken
+	 * 				user access token
 	 * @return Application
 	 */
 	public Application getApplicationByName(String baseUrl, String applicationName, String accessToken) {
@@ -105,8 +110,10 @@ public class ArgoCDClient {
 	 * Create a new JWT for authentication
 	 * 
 	 * @param baseUrl
+	 * 				ArgoCD base url
 	 * @param userCredentialsDTO
-	 * @return String - session token
+	 * 				UserCredentialsDTO
+	 * @return String - user access token
 	 */
 	public String getAuthToken(String baseUrl, UserCredentialsDTO userCredentialsDTO) {
 		String url = baseUrl + AUTHTOKEN_ENDPOINT;

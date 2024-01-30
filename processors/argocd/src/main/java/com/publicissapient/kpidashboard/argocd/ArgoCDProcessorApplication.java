@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * ArgoCDProcessorApplication configuration and bootstrap.
+ * 
  */
 @SpringBootApplication
 @EnableCaching
@@ -35,10 +36,21 @@ import org.springframework.web.client.RestTemplate;
 @EnableMongoRepositories(basePackages = "com.publicissapient.**.repository")
 public class ArgoCDProcessorApplication {
 
+	/**
+	 * Main thread from where ArgoCDProcessorApplication starts.
+	 * 
+	 * @param args
+	 * 			the command line argument
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ArgoCDProcessorApplication.class, args);
 	}
 
+	/**
+	 * Bean for RestTemplate
+	 * 
+	 * @return RestTemplate
+	 */
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();

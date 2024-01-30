@@ -32,11 +32,30 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorError;
 
 /**
  * Extension of Processor that stores current build server configuration.
+ * 
+ * @see Processor
  */
-
 @NoArgsConstructor
 public class ArgoCDProcessor extends Processor {
 	
+	/**
+	 * @param processorName
+	 * 				processor name
+	 * @param processorType
+	 * 				processor type
+	 * @param active
+	 * 				active
+	 * @param online
+	 * 				online
+	 * @param errors
+	 * 				list if Processor Errors
+	 * @param lastExecuted
+	 * 				last executed time
+	 * @param objectId
+	 * 				processor Object Id
+	 * @param lastJobSuccess
+	 * 				is last Job was successful
+	 */
 	@Builder(builderMethodName = "processorBuilder")
 	public ArgoCDProcessor(String processorName, ProcessorType processorType, boolean active, boolean online,
 			List<ProcessorError> errors, long lastExecuted, ObjectId objectId, boolean lastJobSuccess) {

@@ -20,6 +20,10 @@ package com.publicissapient.kpidashboard.argocd.dto;
 
 import lombok.Data;
 
+/**
+ * Application represents the information for ArgoCD Application
+ *
+ */
 @Data
 public class Application {
 	private ApplicationMetadata metadata;

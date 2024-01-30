@@ -21,6 +21,10 @@ package com.publicissapient.kpidashboard.argocd.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * UserCredentialsDTO represents the ArgoCD user information
+ *
+ */
 @Data
 @AllArgsConstructor
 public class UserCredentialsDTO {

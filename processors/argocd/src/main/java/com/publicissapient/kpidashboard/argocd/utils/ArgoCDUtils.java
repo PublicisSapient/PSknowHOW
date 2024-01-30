@@ -35,7 +35,9 @@ public class ArgoCDUtils {
 
 	/**
 	 * @param startTime
+	 * 					start time
 	 * @param endTime
+	 * 					end time
 	 * @return long - time difference in milliseconds
 	 */
 	public static long calculateDuration(String startTime, String endTime) {
@@ -47,6 +49,7 @@ public class ArgoCDUtils {
 
 	/**
 	 * @param date
+	 * 				String format of date
 	 * @return String - formatted Date
 	 */
 	public static String formatDate(String date) {

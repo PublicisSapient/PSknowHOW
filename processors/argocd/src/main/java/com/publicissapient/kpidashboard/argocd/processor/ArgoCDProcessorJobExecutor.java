@@ -80,8 +80,11 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 
 import lombok.extern.slf4j.Slf4j;
 
-/*
+/**
  * ProcessorJobExecutor that fetches Deployment details from ArgoCD
+ * 
+ * @see ProcessorJobExecutor
+ * @see ArgoCDProcessor
  */
 
 @Component
@@ -143,8 +146,8 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * Executable method for processing the Deployment details from ArgoCD to
 	 * PSKnowHow Database for the projects respectively
 	 *
-	 * @param ArgoCDProcessor
-	 *
+	 * @param processor
+	 * 					ArgoCD Processor
 	 * @return boolean
 	 */
 	@Override
@@ -214,6 +217,11 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 		return executionStatus;
 	}
 
+	/**
+	 * @param sprintId
+	 * 				sprint Id
+	 * @return boolean
+	 */
 	@Override
 	public boolean executeSprint(String sprintId) {
 		return false;
@@ -223,6 +231,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * Returns the Decrypted value of String
 	 * 
 	 * @param encryptedValue
+	 * 					encrypted value of String
 	 * @return String
 	 */
 	private String decryptPassword(String encryptedValue) {
@@ -256,7 +265,7 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * create Processor Trace log
 	 * 
 	 * @param basicProjectConfigId
-	 * 
+	 * 						basic Project Configuration Id
 	 * @return ProcessorExecutionTraceLog
 	 */
 	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
@@ -276,10 +285,13 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * nodes
 	 * 
 	 * @param application
+	 * 					ArgoCD Application
 	 * @param exisitingEntries
+	 * 					Existing entries in Database
 	 * @param argoCDJob
+	 * 					argoCD process tool connection
 	 * @param processorId
-	 * 
+	 * 					processor Id
 	 * @return int
 	 */
 	private int saveRevisionsInDbAndGetCount(Application application, List<Deployment> exisitingEntries,
@@ -304,9 +316,11 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	 * Model
 	 * 
 	 * @param application
+	 * 					ArgoCD Application
 	 * @param argoCDJob
+	 * 					argoCD process tool connection
 	 * @param processorId
-	 *
+	 *					processor Id
 	 * @return Map<Pair<String, String>, Deployment>
 	 */
 	private Map<Pair<String, String>, Deployment> mapRevisionsToDeployment(Application application,
@@ -337,8 +351,10 @@ public class ArgoCDProcessorJobExecutor extends ProcessorJobExecutor<ArgoCDProce
 	/**
 	 * Cleans the cache in the Custom API
 	 * 
-	 * @param cacheEndPoint the cache endpoint
-	 * @param cacheName     the cache name
+	 * @param cacheEndPoint 
+	 * 					the cache endpoint
+	 * @param cacheName     
+	 * 					the cache name
 	 */
 	private void cacheRestClient(String cacheEndPoint, String cacheName) {
 		HttpHeaders headers = new HttpHeaders();
