@@ -56,6 +56,7 @@ public class FieldMapping extends BasicModel {
 	// defectPriority
 	private List<String> defectPriority;
 	private List<String> defectPriorityKPI135;
+	private List<String> defectPriorityKPI35;
 	private List<String> defectPriorityKPI14;
 	private List<String> defectPriorityQAKPI111;
 	private List<String> defectPriorityKPI82;
@@ -203,6 +204,7 @@ public class FieldMapping extends BasicModel {
 	private List<String> includeRCAForKPI14;
 	private List<String> includeRCAForQAKPI111;
 	private List<String> includeRCAForKPI133;
+	private List<String> includeRCAForKPI35;
 
 	// For Lloyds KPIs
 	private List<String> jiraDorToLiveIssueType;
@@ -226,9 +228,6 @@ public class FieldMapping extends BasicModel {
 	private List<String> jiraQAKPI111IssueType;
 	private List<String> jiraItrQSIssueTypeKPI133;
 
-	private String jiraBugRaisedByQACustomField;
-	private String jiraBugRaisedByQAIdentification;
-	private List<String> jiraBugRaisedByQAValue;
 	private List<String> jiraDefectDroppedStatus;
 	private List<String> jiraDefectDroppedStatusKPI127;
 
@@ -374,6 +373,9 @@ public class FieldMapping extends BasicModel {
 
 	@Builder.Default
 	private boolean notificationEnabler=true;
+	@Builder.Default
+	private boolean excludeUnlinkedDefects=true;
+
 
 	private List<String> jiraIssueEpicTypeKPI153;
 
