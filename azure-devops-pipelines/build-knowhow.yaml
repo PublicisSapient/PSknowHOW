@@ -1,5 +1,5 @@
 trigger:
-- master
+- azure-devops
 
 parameters:
 - name: BUILD
@@ -34,12 +34,16 @@ stages:
 
     steps:
     - checkout: self
+    - task: UseJavaVersion@1
+      inputs:
+        versionSpec: '17'
 
     - script: |
         echo "BUILDING: ${{ parameters.BUILD }}"
         echo "Capturing Version"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "Version from pom.xml: $VERSION"
+        java -version
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
   
@@ -50,6 +54,7 @@ stages:
       vmImage: 'ubuntu-latest'
 
     steps:
+    - checkout: none
 
     - task: Maven@3
       displayName: 'Run Maven build'
@@ -58,24 +63,24 @@ stages:
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
 
-  - job: Preparing_Sonar_qube_analysis_report  
-    displayName: 'Preparing SonarQube Analysis'
-    dependsOn: RUNNING_TEST
-    pool:
-      vmImage: 'ubuntu-latest'
+  # - job: Preparing_Sonar_qube_analysis_report  
+  #   displayName: 'Preparing SonarQube Analysis'
+  #   dependsOn: RUNNING_TEST
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
     
-    steps:
-
-    - task: SonarQubePrepare@4
-      displayName: Prepare Analysis Configuration task
-      inputs:
-        SonarQube: 'sonar-qube-sc'
-        scannerMode: 'Other'
-        projectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
-        projectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
-        extraProperties: |
-          sonar.projectVersion=$(overrideValues)
-          sonar.branch.name=$(Build.SourceBranchName)
+  #   steps:
+  #   - checkout: none
+  #   - task: SonarQubePrepare@4
+  #     displayName: Prepare Analysis Configuration task
+  #     inputs:
+  #       SonarQube: 'sonar-qube-sc'
+  #       scannerMode: 'Other'
+  #       projectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
+  #       projectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
+  #       extraProperties: |
+  #         sonar.projectVersion=$(overrideValues)
+  #         sonar.branch.name=$(Build.SourceBranchName)
       # enabled: true
         
   
