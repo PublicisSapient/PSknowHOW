@@ -107,6 +107,7 @@
                 <module>processors/jenkins</module>
                 <module>processors/bamboo</module>
                 <module>processors/teamcity</module>
+                <module>processors/argocd</module>
             </modules>
             <build>
                 <plugins>
