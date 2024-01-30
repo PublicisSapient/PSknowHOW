@@ -390,9 +390,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				// Links stories/Defects with other Stories defect
 				setStoryLinkWithDefect(issue, azureIssue, projectConfig);
 
-				// ADD QA identification field to feature
-				setQADefectIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
-
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
 
@@ -585,41 +582,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	/**
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param issue
-	 *            issue
-	 * @param azureIssue
-	 *            jiraIssue
-	 * @param fieldsMap
-	 *            fieldsMap
-	 */
-
-	private void setQADefectIdentificationField(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
-		try {
-			Fields fields = issue.getFields();
-
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype()
-					.stream().anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
-
-				String jiraBugRaisedByQACustomField = fieldMapping.getJiraBugRaisedByQACustomField();
-				azureIssue.setDefectRaisedByQA(false);
-				if (null != fieldMapping.getJiraBugRaisedByQAIdentification() && fieldMapping
-						.getJiraBugRaisedByQAIdentification().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
-					getJiraBugRaisedByQAForLabels(fieldMapping, azureIssue, fields);
-				} else if (isBugRaisedConditionForCustomField(fieldMapping, fieldsMap, jiraBugRaisedByQACustomField)) {
-					azureIssue.setDefectRaisedByQA(true);
-				}
-			}
-
-		} catch (Exception e) {
-			log.error("Error while parsing QA field", e);
-		}
-
-	}
-
-	/**
 	 * ADD Production Incident field to feature
 	 * 
 	 * @param fieldMapping
@@ -656,17 +618,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	}
 
-	private boolean isBugRaisedConditionForCustomField(FieldMapping fieldMapping, Map<String, Object> fieldsMap,
-			String jiraBugRaisedByQACustomField) {
-		return null != fieldMapping.getJiraBugRaisedByQAIdentification()
-				&& fieldMapping.getJiraBugRaisedByQAIdentification().trim()
-						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
-				&& fieldsMap.containsKey(jiraBugRaisedByQACustomField.trim())
-				&& fieldsMap.get(jiraBugRaisedByQACustomField.trim()) != null
-				&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByQAValue(),
-						fieldsMap.get(jiraBugRaisedByQACustomField.trim()));
-	}
-
 	private boolean isProdIncidentConditionForCustomField(FieldMapping fieldMapping, Map<String, Object> fieldsMap,
 			String jiraProductionIncidentCustomField) {
 		return null != fieldMapping.getJiraProductionIncidentIdentification()
@@ -676,16 +627,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				&& fieldsMap.get(jiraProductionIncidentCustomField.trim()) != null
 				&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraProdIncidentRaisedByValue(),
 						fieldsMap.get(jiraProductionIncidentCustomField.trim()));
-	}
-
-	private void getJiraBugRaisedByQAForLabels(FieldMapping fieldMapping, JiraIssue azureIssue, Fields fields) {
-		if (StringUtils.isNotEmpty(fields.getSystemTags())) {
-			String[] labelArray = fields.getSystemTags().split(";");
-			Set<String> labels = new HashSet<>(Arrays.asList(labelArray));
-			if (isBugRaisedByValueMatchesRaisedByLabels(fieldMapping.getJiraBugRaisedByQAValue(), labels)) {
-				azureIssue.setDefectRaisedByQA(true);
-			}
-		}
 	}
 
 	private void getJiraProdIncidentForLabels(FieldMapping fieldMapping, JiraIssue azureIssue, Fields fields) {
