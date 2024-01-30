@@ -1,10 +1,10 @@
 trigger:
-- master
+- azure-devops
 
 parameters:
-- name: deploymentOptions
+- name: BUILD
   type: string
-  # default: 'UI'
+  default: 'API'
   values:
   - 'API'
   - 'UI'
@@ -13,19 +13,19 @@ parameters:
   - 'Azure_Board_Processor'
   - 'Azure_Pipeline_Repo'
   - 'ALL'
-- name: Environment
+- name: PUSH_TO_DOCKER_REGISTRY
   type: string
   default: 'uat'
   values:
-  - 'uat'
-  - 'prod'
+  - 'YES'
+  - 'NO'
 
 stages:
-- stage: API_Deploy
+- stage: API_BUILD
   condition: or(eq('${{ parameters.deploymentOptions }}', 'API'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
 
   jobs:
-  - job: API_Deploy
+  - job: Capturing Version
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -36,27 +36,46 @@ stages:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "Deploying on: ${{ parameters.Environment }}"
-        echo "Deploying API..."
-        # Add API deployment steps
-        echo "Deploying Helm charts for API..."
+        echo "BUILDING: ${{ parameters.BUILD }}"
+        echo "Capturing Version"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "Version from pom.xml: $VERSION"
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-    - task: HelmDeploy@0
+  
+  - job: RUNNING TEST 
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+
+    - task: Maven@3
+      displayName: 'Run Maven build'
       inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
-        namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'upgrade'
-        chartType: 'FilePath'
-        chartPath: './Kubernetes/knowhow-helm/knowhow-customapi'
-        releaseName: 'customapi'
-        overrideValues: 'image.tag=$(overrideValues)'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-customapi/values.yaml'
-      displayName: 'Deploy API'
+        mavenPomFile: 'pom.xml'
+        goals: 'clean install -Pcustomapi'
+        publishJUnitResults: true
+
+  - job: Preparing Sonar qube analysis report  
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    step:
+
+    - task: SonarQubePrepare@4
+      displayName: Prepare Analysis Configuration task
+      inputs:
+        SonarQube: 'sonar-qube-sc'
+        scannerMode: 'Other'
+        projectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
+        projectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI'
+        extraProperties: |
+          sonar.projectVersion=$(overrideValues)
+          sonar.branch.name=$(Build.SourceBranchName)
+      # enabled: true
+        
+  
+
 
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.deploymentOptions }}', 'UI'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
@@ -79,18 +98,6 @@ stages:
         echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
-    - task: HelmDeploy@0
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
-        namespace: '${{ parameters.Environment }}-knowhow'
-        command: 'upgrade'
-        chartType: 'FilePath'
-        chartPath: './Kubernetes/knowhow-helm/knowhow-ui'
-        releaseName: 'knowhow-ui'
-        overrideValues: 'image.tag=$(overrideValues)'
-        valueFile: './Kubernetes/knowhow-helm/knowhow-ui/values.yaml'
-      displayName: 'Deploy Helm Charts for UI'
 
 - stage: Jira_Processor_Deploy
   condition: or(eq('${{ parameters.deploymentOptions }}', 'Jira_Processor'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
