@@ -62,8 +62,12 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
+    - publish: $(System.DefaultWorkingDirectory)/common/target
+      artifact: common-artifacts
+
     - publish: $(System.DefaultWorkingDirectory)/customapi/target
-      artifact: dependencies
+      artifact: customapi-artifacts
+
 
   - job: Preparing_Sonar_qube_analysis_report  
     displayName: 'Preparing SonarQube Analysis'
@@ -73,7 +77,11 @@ stages:
     
     steps:
     - download: current
-      artifact: dependencies
+      artifact: common-artifacts
+
+    - download: current
+      artifact: customapi-artifacts
+
     - task: Maven@3
       displayName: 'Sonar Maven build'
       inputs:
