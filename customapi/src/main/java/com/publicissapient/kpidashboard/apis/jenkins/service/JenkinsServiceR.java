@@ -67,6 +67,8 @@ public class JenkinsServiceR {
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
 
+	boolean referFromProjectCache = true;
+
 	@SuppressWarnings({ "unchecked" })
 	public List<KpiElement> process(KpiRequest kpiRequest) throws EntityNotFoundException {
 
@@ -87,12 +89,9 @@ public class JenkinsServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-				boolean tokenAuth = cacheService.getFromApplicationCache(
-								kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH)
-						.equalsIgnoreCase(Boolean.TRUE.toString());
-				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList, tokenAuth);
+				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 
-				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList, tokenAuth);
+				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
 					return responseList;
 				}
@@ -140,10 +139,10 @@ public class JenkinsServiceR {
 	 * @return
 	 */
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
-			List<AccountHierarchyData> filteredAccountDataList, Boolean tokenAuth) {
+			List<AccountHierarchyData> filteredAccountDataList) {
 
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
 
@@ -154,10 +153,9 @@ public class JenkinsServiceR {
 	 * @param kpiRequest
 	 * @param filteredAccountDataList
 	 */
-	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList,
-			Boolean tokenAuth) {
+	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (Boolean.FALSE.equals(tokenAuth) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -212,4 +210,20 @@ public class JenkinsServiceR {
 		}
 	}
 
+	/**
+	 * This method is called when the request for kpi is done from exposed API
+	 *
+	 * @param kpiRequest
+	 *            Jenkins KPI request true if flow for precalculated, false for direct
+	 *            flow.
+	 * @return List of KPI data
+	 * @throws EntityNotFoundException
+	 *             EntityNotFoundException
+	 */
+	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) throws EntityNotFoundException {
+		referFromProjectCache = false;
+		List<KpiElement> kpiElementList = process(kpiRequest);
+		referFromProjectCache = true;
+		return kpiElementList;
+	}
 }

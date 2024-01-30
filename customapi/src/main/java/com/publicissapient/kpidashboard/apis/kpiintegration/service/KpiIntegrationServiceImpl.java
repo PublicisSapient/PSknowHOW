@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.jenkins.service.JenkinsServiceR;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.service.HierarchyLevelService;
@@ -82,9 +81,6 @@ public class KpiIntegrationServiceImpl {
 	@Autowired
 	private HierarchyLevelService hierarchyLevelService;
 
-	@Autowired
-	CacheService cacheService;
-
 	/**
 	 * get kpi element list with maturity assuming req for hierarchy level 4
 	 *
@@ -102,9 +98,6 @@ public class KpiIntegrationServiceImpl {
 			try {
 				kpiRequest.setKpiList(sourceWiseKpiList.get(source).stream().map(this::mapKpiMasterToKpiElement)
 						.collect(Collectors.toList()));
-				cacheService.setIntoApplicationCache(
-						kpiRequest.getRequestTrackerId().toLowerCase() + Constant.API_TOKEN_AUTH,
-						Boolean.TRUE.toString());
 				switch (source) {
 				case KPI_SOURCE_JIRA:
 					kpiElements.addAll(getJiraKpiMaturity(kpiRequest));
@@ -192,7 +185,7 @@ public class KpiIntegrationServiceImpl {
 		log.info("Received Jira KPI request {}", kpiRequest);
 		long jiraRequestStartTime = System.currentTimeMillis();
 		MDC.put("JiraRequestStartTime", String.valueOf(jiraRequestStartTime));
-		List<KpiElement> responseList = jiraService.process(kpiRequest);
+		List<KpiElement> responseList = jiraService.processWithExposedApiToken(kpiRequest);
 		MDC.put("TotalJiraRequestTime", String.valueOf(System.currentTimeMillis() - jiraRequestStartTime));
 		MDC.clear();
 		return responseList;
@@ -210,7 +203,7 @@ public class KpiIntegrationServiceImpl {
 		log.info("Received Sonar KPI request {}", kpiRequest);
 		long sonarRequestStartTime = System.currentTimeMillis();
 		MDC.put("SonarRequestStartTime", String.valueOf(sonarRequestStartTime));
-		List<KpiElement> responseList = sonarService.process(kpiRequest);
+		List<KpiElement> responseList = sonarService.processWithExposedApiToken(kpiRequest);
 		MDC.put("TotalSonarRequestTime", String.valueOf(System.currentTimeMillis() - sonarRequestStartTime));
 		MDC.clear();
 		return responseList;
@@ -230,7 +223,7 @@ public class KpiIntegrationServiceImpl {
 		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long zypherRequestStartTime = System.currentTimeMillis();
 		MDC.put("ZephyrRequestStartTime", String.valueOf(zypherRequestStartTime));
-		List<KpiElement> responseList = zephyrService.process(kpiRequest);
+		List<KpiElement> responseList = zephyrService.processWithExposedApiToken(kpiRequest);
 		MDC.put("TotalZephyrRequestTime", String.valueOf(System.currentTimeMillis() - zypherRequestStartTime));
 		MDC.clear();
 		return responseList;
@@ -250,7 +243,7 @@ public class KpiIntegrationServiceImpl {
 		log.info("Received Zephyr KPI request {}", kpiRequest);
 		long jenkinsRequestStartTime = System.currentTimeMillis();
 		MDC.put("JenkinsRequestStartTime", String.valueOf(jenkinsRequestStartTime));
-		List<KpiElement> responseList = jenkinsServiceR.process(kpiRequest);
+		List<KpiElement> responseList = jenkinsServiceR.processWithExposedApiToken(kpiRequest);
 		MDC.put("TotalJenkinsRequestTime", String.valueOf(System.currentTimeMillis() - jenkinsRequestStartTime));
 		MDC.clear();
 		return responseList;
