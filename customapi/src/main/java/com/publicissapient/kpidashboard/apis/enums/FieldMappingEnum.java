@@ -31,8 +31,6 @@ public enum FieldMappingEnum {
 	KPI0("Processor", KPISource.JIRA.name(),
 			Arrays.asList("jiradefecttype", "jiraIssueTypeNames", "jiraIterationCompletionStatusCustomField",
 					"rootCauseIdentifier", "sprintName", "estimationCriteria", "jiraStoryPointsCustomField",
-					"jiraBugRaisedByQACustomField", "jiraBugRaisedByQAIdentification", "jiraBugRaisedByQAValue",
-					"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification",
 					"epicCostOfDelay", "epicRiskReduction", "epicUserBusinessValue", "epicWsjf", "epicTimeCriticality",
 					"epicJobSize", "additionalFilterConfig", "jiraDueDateField", "jiraDueDateCustomField",
 					"jiraDevDueDateField", "jiraIssueEpicType", "storyFirstStatus", "jiraTestAutomationIssueType",
@@ -107,7 +105,8 @@ public enum FieldMappingEnum {
 			Arrays.asList("jiraDodKPI127", "jiraLiveStatusKPI127", "jiraDefectDroppedStatusKPI127","thresholdValueKPI127")),
 
 	KPI35("Defect Seepage Rate", KPISource.JIRA.name(), Arrays.asList("jiraIssueTypeKPI35",
-			"resolutionTypeForRejectionKPI35", "jiraDefectRejectionStatusKPI35", "thresholdValueKPI35")),
+			"resolutionTypeForRejectionKPI35", "jiraDefectRejectionStatusKPI35", "thresholdValueKPI35", "defectPriorityKPI35","includeRCAForKPI35","excludeUnlinkedDefects",
+			"jiraBugRaisedByCustomField", "jiraBugRaisedByValue", "jiraBugRaisedByIdentification")),
 
 	KPI133("Quality Status", KPISource.JIRA.name(),
 			Arrays.asList("resolutionTypeForRejectionKPI133", "jiraDefectRejectionStatusKPI133", "defectPriorityKPI133",
