@@ -93,11 +93,10 @@ stages:
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
     
-    - task: SonarQubePublish@4
+    - task: SonarQubePublish@5
       displayName: Publish Quality Gate Result
       inputs:
         pollingTimeoutSec: '300'
-      enabled: false
 
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
