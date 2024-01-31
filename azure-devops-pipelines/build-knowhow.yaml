@@ -66,7 +66,7 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
 
-    - publish: $(Pipeline.Workspace)/.m2
+    - publish: $(Pipeline.Workspace)/
       artifact: pipeline-artifacts
 
 
