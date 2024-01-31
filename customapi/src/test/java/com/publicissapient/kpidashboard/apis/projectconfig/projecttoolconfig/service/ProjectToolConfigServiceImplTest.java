@@ -37,9 +37,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -49,11 +46,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.cleanup.SonarDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.errors.ToolNotFoundException;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfigDTO;
@@ -63,7 +62,6 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectBas
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.SubProjectRepository;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /***
  * @author yasbano
@@ -624,9 +622,9 @@ public class ProjectToolConfigServiceImplTest {
 
 		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
 				.thenReturn(Arrays.asList(listProjectTool2));
-		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
-		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
-		doNothing().when(sonarDataCleanUpService).clean(toolId);
+//		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
+//		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
+//		doNothing().when(sonarDataCleanUpService).clean(toolId);
 		assertFalse(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
 	}
 
@@ -645,10 +643,10 @@ public class ProjectToolConfigServiceImplTest {
 
 		when(toolRepositroy.findByBasicProjectConfigId(new ObjectId("5fc4d61e80b6350f048a9381")))
 				.thenReturn(Arrays.asList(listProjectTool2));
-		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
+//		when(dataCleanUpServiceFactory.getService(anyString())).thenReturn(sonarDataCleanUpService);
 		when(repoToolsConfigService.updateRepoToolProjectConfiguration(Arrays.asList(listProjectTool2),listProjectTool2,basicProjectId)).thenReturn(false);
-		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
-		doNothing().when(sonarDataCleanUpService).clean(toolId);
+//		doNothing().when(toolRepositroy).deleteById(new ObjectId(toolId));
+//		doNothing().when(sonarDataCleanUpService).clean(toolId);
 		assertFalse(projectToolServiceImpl.deleteTool(basicProjectId, toolId));
 	}
 

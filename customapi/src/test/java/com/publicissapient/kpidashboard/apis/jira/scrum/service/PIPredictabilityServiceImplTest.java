@@ -137,7 +137,7 @@ public class PIPredictabilityServiceImplTest {
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
-		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
+//		when(configHelperService.getFieldMapping(projectConfig.getId())).thenReturn(fieldMapping);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put("PI_PREDICTABILITY", "sum");
 		prepareReleaseWisePIList(releaseWisePIList);

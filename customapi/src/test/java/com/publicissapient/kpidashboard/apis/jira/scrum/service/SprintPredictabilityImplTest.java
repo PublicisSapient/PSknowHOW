@@ -204,7 +204,7 @@ public class SprintPredictabilityImplTest {
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
-        when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
+//        when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
 		Map<ObjectId, List<SprintDetails>> expectedDuplicateIssues = new HashMap<>();
@@ -254,11 +254,11 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-				sprintStatusList)).thenReturn(sprintDetailsList);
+//		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+//				sprintStatusList)).thenReturn(sprintDetailsList);
 
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
-				.thenReturn(sprintWiseStoryList);
+//		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
+//				.thenReturn(sprintWiseStoryList);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 
@@ -287,11 +287,11 @@ public class SprintPredictabilityImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 
-		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
-				sprintStatusList)).thenReturn(sprintDetailsList);
+//		when(sprintRepository.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds,
+//				sprintStatusList)).thenReturn(sprintDetailsList);
 
-		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
-				.thenReturn(sprintWiseStoryList);
+//		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
+//				.thenReturn(sprintWiseStoryList);
 
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMapForActualEstimation);
 
@@ -322,7 +322,7 @@ public class SprintPredictabilityImplTest {
 
 		when(jiraIssueRepository.findIssuesBySprintAndType(Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
-		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
+//		when(sprintRepositoryCustom.findByBasicProjectConfigIdInAndStateInOrderByStartDateDesc(basicProjectConfigObjectIds, sprintStatusList,5)).thenReturn(sprintDetailsList);
 		Map<String, Object> resultListMap = new HashMap<>();
 		resultListMap.put(SPRINT_WISE_PREDICTABILITY, sprintWiseStoryList);
 //		Map<ObjectId, List<SprintDetails>> expectedDuplicateIssues = new HashMap<>();

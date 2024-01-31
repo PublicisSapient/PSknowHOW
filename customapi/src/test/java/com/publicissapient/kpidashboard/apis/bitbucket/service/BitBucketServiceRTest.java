@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.bitbucket.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -36,20 +34,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
-import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 
 import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
@@ -59,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.common.service.impl.KpiHelperServic
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
+import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
@@ -69,6 +64,7 @@ import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
+import com.publicissapient.kpidashboard.common.model.application.HierarchyLevel;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -144,9 +140,9 @@ public class BitBucketServiceRTest {
 
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
 
-		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
+//		when(filterHelperService.getHierarachyLevelId(5, "project", false)).thenReturn("project");
 
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
+//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 
 		commitKpiElement = kpiRequest.getKpiList().get(0);
 
@@ -160,8 +156,8 @@ public class BitBucketServiceRTest {
 	@Test
 	public void TestProcess_emptyFilteredACH() throws EntityNotFoundException {
 
-		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
-				.thenThrow(HttpMessageNotWritableException.class);
+//		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT))
+//				.thenThrow(HttpMessageNotWritableException.class);
 
 		bitbucketServiceR.process(kpiRequest);
 
@@ -183,9 +179,9 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.getProjectKey(accountHierarchyDataList, kpiRequest)).thenReturn(projectKey);
-		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
+//		when(authorizedProjectsService.getProjectNodesForRequest(accountHierarchyDataList)).thenReturn(projects);
 
-		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
+//		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
@@ -226,7 +222,7 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 
-		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
+//		when(mcokAbstract.getKpiData(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(commitKpiElement);
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {
@@ -266,8 +262,8 @@ public class BitBucketServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(Mockito.any(), Mockito.any())).thenReturn(accountHierarchyDataList);
 
-		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
-				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
+//		when(cacheService.getFromApplicationCache(Mockito.any(String[].class), anyString(), anyInt(),
+//				ArgumentMatchers.anyList())).thenReturn(new ArrayList<KpiElement>());
 
 		List<KpiElement> resultList = null;
 		try (MockedStatic<BitBucketKPIServiceFactory> mockedStatic = mockStatic(BitBucketKPIServiceFactory.class)) {

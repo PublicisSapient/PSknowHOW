@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.sonar.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -146,8 +144,8 @@ public class SonarServiceKanbanRTest {
 		Map<String, Integer> map = new HashMap<>();
 		hierarchyMap.entrySet().stream().forEach(k -> map.put(k.getKey(), k.getValue().getLevel()));
 		when(filterHelperService.getHierarchyIdLevelMap(true)).thenReturn(map);
-		when(cacheService.getFromApplicationCache(any(), anyString(), anyInt(),
-				anyList())).thenReturn(new ArrayList<KpiElement>());
+//		when(cacheService.getFromApplicationCache(any(), anyString(), anyInt(),
+//				anyList())).thenReturn(new ArrayList<KpiElement>());
 
 
 	}
