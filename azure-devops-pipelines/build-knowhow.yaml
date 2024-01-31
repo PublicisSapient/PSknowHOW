@@ -81,7 +81,7 @@ stages:
         codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
         summaryFileLocation: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/jacoco.xml'
         reportDirectory: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/'
-        
+
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
       inputs:
@@ -108,7 +108,14 @@ stages:
       displayName: Publish Quality Gate Result
       inputs:
         pollingTimeoutSec: '300'
-
+    - script: |
+        $result = sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar/ -Dsonar.qualitygate.show=true
+        if ($result -match 'QUALITY_GATE_STATUS=ERROR') {
+          Write-Host "Quality Gate check failed."
+          exit 1
+        }
+  displayName: 'Check Quality Gate Status'
+  continueOnError: true
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
