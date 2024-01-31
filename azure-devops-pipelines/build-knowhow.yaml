@@ -85,6 +85,7 @@ stages:
           sonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
           sonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
           sonar.branch.name=$(Build.SourceBranchName)
+          sonar.java.binaries=/home/vsts/work/1/common-artifacts/customapi/target/classes
           # sonar.sources=customapi/pom.xml
           # sonar.language=java
           # sonar.sourceEncoding=UTF-8
