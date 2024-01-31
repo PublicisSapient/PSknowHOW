@@ -45,6 +45,15 @@ stages:
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
         echo "Version from pom.xml: $VERSION"
         java -version
+        mvn clean install -Pcustomapi
+        echo "ls of pipeline workspace"
+        echo $(Pipeline.Workspace)
+        ls -a $(Pipeline.Workspace)/
+        echo "finding for .m2"
+        cd /
+        find -name .m2
+        echo "end of find .m2
+        
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
   
