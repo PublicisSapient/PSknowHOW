@@ -27,8 +27,8 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -69,7 +69,7 @@ public class GitLabClientTest {
 	@Mock
 	private AesEncryptionService aesEncryptionService;
 
-	@BeforeEach
+	@Before
 	public void init() throws Exception {
 		MockitoAnnotations.openMocks(this);
 		when(gitLabRestOperations.getTypeInstance()).thenReturn(restTemplate);
