@@ -80,6 +80,7 @@ stages:
       artifact: common-artifacts
 
     - script: |
+        mvn clean install -Pcustomapi
         mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
 
     # - download: current
