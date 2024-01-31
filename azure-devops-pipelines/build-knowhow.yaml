@@ -59,10 +59,10 @@ stages:
         # sonarQubeRunAnalysis: true
 
     - publish: $(System.DefaultWorkingDirectory)/
-      artifact: common-artifacts
+      artifact: customapi-artifacts
 
     - publish: /home/vsts/.m2
-      artifact: pipeline-artifacts
+      artifact: customapi-pipeline-artifacts
 
   - job: SONAR_ANALYSIS
     displayName: 'Running Sonar'
@@ -70,10 +70,10 @@ stages:
 
     steps:
     - download: current
-      artifact: common-artifacts
+      artifact: customapi-artifacts
 
     - download: current
-      artifact: pipeline-artifacts
+      artifact: customapi-pipeline-artifacts
 
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
@@ -85,12 +85,12 @@ stages:
           sonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
           sonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
           sonar.branch.name=$(Build.SourceBranchName)
-          sonar.java.binaries=/home/vsts/work/1/common-artifacts/customapi/target/classes
+          sonar.java.binaries=$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/classes
           # sonar.sources=customapi/pom.xml
           # sonar.language=java
           # sonar.sourceEncoding=UTF-8
       enabled: true
-    - script: 'mvn sonar:sonar -Dmaven.repo.local=/home/vsts/work/1/pipeline-artifacts/repository -f customapi/pom.xml'
+    - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
     
     - task: SonarQubePublish@4
