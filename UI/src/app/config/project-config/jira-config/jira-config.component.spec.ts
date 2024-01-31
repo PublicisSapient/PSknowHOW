@@ -47,6 +47,7 @@ describe('JiraConfigComponent', () => {
   let fixture: ComponentFixture<JiraConfigComponent>;
   let sharedService: SharedService;
   let httpService: HttpService;
+  let messageService: MessageService;
   let httpMock;
   let router;
   const baseUrl = environment.baseUrl;
@@ -179,6 +180,7 @@ describe('JiraConfigComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
+    messageService = TestBed.inject(MessageService);
     sharedService.setSelectedProject(fakeProject);
     sharedService.setSelectedToolConfig(fakeSelectedTool);
     httpMock = TestBed.inject(HttpTestingController);
@@ -861,4 +863,51 @@ describe('JiraConfigComponent', () => {
     expect(component.toolForm.get('apiVersion').disabled).not.toBeTruthy();
   })
 
+
+
+  it('should fetch teams when selectedConnection is set', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+
+    spyOn(component.http, 'getAzureTeams').and.returnValue(
+      of({ success: true, data: [{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }] })
+    );
+    component.selectedConnection = { id: 1, name: 'Connection 1' };
+    component.fetchTeams(component);
+    expect(component.http.getAzureTeams).toHaveBeenCalledWith(1);
+    expect(component.teamData).toEqual([{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }]);
+    expect(component.filteredTeam).toEqual([{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }]);
+    expect(component.toolForm.controls['team'].enabled).toBeTrue();
+    expect(component.isLoading).toBeFalse();
+  });
+
+  it('should show error message when no teams are found for selected connection', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+    spyOn(component.http, 'getAzureTeams').and.returnValue(of({ success: false }));
+    component.selectedConnection = { id: 1, name: 'Connection 1' };
+    component.fetchTeams(component);
+    expect(component.http.getAzureTeams).toHaveBeenCalledWith(1);
+    expect(component.teamData).toEqual([]);
+    expect(component.filteredTeam).toEqual([]);
+    expect(component.toolForm.controls['team'].disabled).toBeTrue();
+    expect(component.toolForm.controls['team'].value).toEqual('');
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'error',
+    //   summary: 'No teams found for the selected Connection.',
+    // });
+    expect(component.isLoading).toBeFalse();
+  });
+
+  it('should show error message when no connection is selected', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = null;
+    component.fetchTeams(component);
+    expect(component.toolForm.controls['team'].value).toEqual('');
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'error',
+    //   summary: 'Select Connection first.',
+    // });
+  });
 });

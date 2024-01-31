@@ -400,5 +400,11 @@ public class KPIExcelData {
 	@JsonProperty("Dev Completion Date")
 	private String devCompleteDate;
 
+	@JsonProperty("Testing Phase")
+	private String testingPhase;
+
+	@JsonProperty("Escaped defect identifier")
+	private String escapedIdentifier;
+
 
 }
