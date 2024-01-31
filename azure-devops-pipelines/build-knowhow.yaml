@@ -109,13 +109,13 @@ stages:
       inputs:
         pollingTimeoutSec: '300'
     - script: |
-        $result = sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar/ -Dsonar.qualitygate.show=true
-        if ($result -match 'QUALITY_GATE_STATUS=ERROR') {
-          Write-Host "Quality Gate check failed."
+        result=$(sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar -Dsonar.qualitygate.show=true)
+        if [[ "$result" =~ QUALITY_GATE_STATUS=ERROR ]]; then
+          echo "Quality Gate check failed."
           exit 1
-        }
+        fi
       displayName: 'Check Quality Gate Status'
-      continueOnError: true
+      continueOnError: false
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
