@@ -93,9 +93,9 @@ stages:
       artifact: pipeline-artifacts
 
     - script: |
-        ls $(System.DefaultWorkingDirectory)
+        ls -a /home/vsts/
         echo "this is output of ls -a"
-        ls -a $(Pipeline.Workspace)
+        ls -a $(Pipeline.Workspace)/pipeline-artifacts
         echo "end of ls"
         echo "start of find .m2 command"
         find -name .m2
@@ -105,7 +105,7 @@ stages:
         find -name target
         # mvn clean install -Pcustomapi
         find -name .m2
-        mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
+        mvn sonar:sonar -Dmaven.repo.local=$(Pipeline.Workspace)/pipeline-artifacts/.m2/repository -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
 
     # - download: current
     #   artifact: customapi-artifacts
