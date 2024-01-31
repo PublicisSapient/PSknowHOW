@@ -58,12 +58,6 @@ stages:
         publishJUnitResults: true
         # sonarQubeRunAnalysis: true
     
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publising Code coverage'
-      inputs:
-        codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
-        summaryFileLocation: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/jacoco.xml'
-
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: customapi-artifacts
 
@@ -80,6 +74,12 @@ stages:
 
     - download: current
       artifact: customapi-pipeline-artifacts
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publising Code Coverage'
+      inputs:
+        codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
+        summaryFileLocation: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/jacoco.xml'
 
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
