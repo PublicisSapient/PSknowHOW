@@ -64,6 +64,8 @@ stages:
           sonar.language=java
           sonar.sourceEncoding=UTF-8
       enabled: true
+    - script: 'mvn sonar:sonar'
+      displayName: 'Run SonarQube analysis'
 
     - task: Maven@3
       displayName: 'Run Maven build'
@@ -90,20 +92,22 @@ stages:
     - download: current
       artifact: pipeline-artifacts
     
-    # - task: SonarQubePrepare@4
-    #   displayName: 'Prepare Analysis Configuration'
-    #   inputs:
-    #     SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
-    #     scannerMode: 'Other'
-    #     extraProperties: |
-    #       sonar.projectVersion=$(overrideValues)
-    #       sonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
-    #       sonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
-    #       sonar.branch.name=$(Build.SourceBranchName)
-    #       sonar.sources=customapi/pom.xml
-    #       sonar.language=java
-    #       sonar.sourceEncoding=UTF-8
-    #   enabled: true
+    - task: SonarQubePrepare@4
+      displayName: 'Prepare Analysis Configuration'
+      inputs:
+        SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
+        scannerMode: 'Other'
+        extraProperties: |
+          sonar.projectVersion=$(overrideValues)
+          sonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
+          sonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
+          sonar.branch.name=$(Build.SourceBranchName)
+          sonar.sources=customapi/pom.xml
+          sonar.language=java
+          sonar.sourceEncoding=UTF-8
+      enabled: true
+    - script: 'mvn sonar:sonar'
+      displayName: 'Run SonarQube analysis'
 
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
