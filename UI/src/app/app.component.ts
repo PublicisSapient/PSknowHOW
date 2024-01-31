@@ -45,19 +45,21 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    /** Fetch projectId and sprintId from query param and save it to localStorage */
-    this.route.queryParams
-    .subscribe(params => {
-        let nodeId = params.projectId;
-        let sprintId = params.sprintId;
-        if(nodeId){
-          this.service.setProjectQueryParamInFilters(nodeId)
-        }
-        if(sprintId){
-          this.service.setSprintQueryParamInFilters(sprintId)
-        }
-      }
-    );
+    // /** Fetch projectId and sprintId from query param and save it to localStorage */
+    // this.route.queryParams
+    // .subscribe(params => {
+    //     let nodeId = params.projectId;
+    //     let sprintId = params.sprintId;
+    //     window.alert(nodeId + " " + sprintId);
+        
+    //     if(nodeId){
+    //       this.service.setProjectQueryParamInFilters(nodeId)
+    //     }
+    //     if(sprintId){
+    //       this.service.setSprintQueryParamInFilters(sprintId)
+    //     }
+    //   }
+    // );
 
     // load google Analytics script on all instances except local and if customAPI property is true
     this.httpService.getAnalyticsFlag()

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
@@ -12,7 +12,7 @@ import { tap } from 'rxjs/operators';
 })
 export class AppInitializerService {
 
-  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient ) { this.checkFeatureFlag(); this.validateToken();}
+  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute ) { this.checkFeatureFlag(); this.validateToken();}
 
   validateToken(): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -29,11 +29,10 @@ export class AppInitializerService {
         // Make API call or initialization logic here...
         this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
-            if (response && response['success']) {
+            if (response?.['success']) {
               this.sharedService.setCurrentUserDetails(response?.['data'])
               localStorage.setItem("user_name", response?.['data']?.user_name);
               localStorage.setItem("user_email", response?.['data']?.user_email);
-              resolve(true);
               const redirect_uri = localStorage.getItem('redirect_uri');
               if(redirect_uri){
                 if(redirect_uri.startsWith('#')){
@@ -43,8 +42,9 @@ export class AppInitializerService {
                 }
                 localStorage.removeItem('redirect_uri');
               }else{
-                this.router.navigate(['/dashboard/iteration']);
+                this.router.navigate(['/dashboard/iteration'], {queryParamsHandling: 'preserve'});
               }
+              resolve(true);
             }
           })
           .catch((error) => {
@@ -54,6 +54,28 @@ export class AppInitializerService {
     });
 
   }
+
+  // saveQueryParams(): Promise<any>{
+  //   return new Promise((resolve, reject) => {
+  //     /** Fetch projectId and sprintId from query param and save it to localStorage */
+  //     window.alert("hi")
+  //     this.route.queryParams
+  //     .subscribe(params => {
+  //         let nodeId = params.projectId;
+  //         let sprintId = params.sprintId;
+  //         window.alert(nodeId + " " + sprintId);
+          
+  //         if(nodeId){
+  //           this.sharedService.setProjectQueryParamInFilters(nodeId)
+  //         }
+  //         if(sprintId){
+  //           this.sharedService.setSprintQueryParamInFilters(sprintId)
+  //         }
+  //       }
+  //     );
+  //     resolve(true);
+  //   }
+  // )};
 
   checkFeatureFlag(): Promise<any> {
     return new Promise((resolve, reject) => {

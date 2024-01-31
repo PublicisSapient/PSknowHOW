@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
         const currentUserDetails = this.sharedService.currentUserDetails;
 
-        if (currentUserDetails) {
+        if (currentUserDetails && Object.keys(currentUserDetails).length > 0) {
             if (currentUserDetails['authorities']) {
                 return true;
             } else {
@@ -49,12 +49,10 @@ export class AuthGuard implements CanActivate {
             return this.httpService.getCurrentUserDetails().pipe(map(details => {
                 if (details['success']) {
                     this.sharedService.setCurrentUserDetails(details['data']);
-                    if (details['data']['authorities']) {
+                    if (details?.['data']?.['authorities']) {
                         return true;
                     }
-                    if(environment['AUTHENTICATION_SERVICE']){
-                        this.router.navigate(['./authentication']);
-                    }else{
+                    if(!environment['AUTHENTICATION_SERVICE']){
                         this.router.navigate(['./authentication/register']);
                     }
                     return false;
