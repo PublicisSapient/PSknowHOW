@@ -65,8 +65,8 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
 
-    # - publish: $(System.DefaultWorkingDirectory)/customapi/target
-    #   artifact: customapi-artifacts
+    - publish: $(Pipeline.Workspace)
+      artifact: pipeline-artifacts
 
 
   - job: Preparing_Sonar_qube_analysis_report  
@@ -79,12 +79,18 @@ stages:
     - download: current
       artifact: common-artifacts
 
+    - download: pipelineworkspace
+      artifact: pipeline-artifacts
+
     - script: |
         ls $(System.DefaultWorkingDirectory)
+        echo "this is output of ls -a"
+        ls -a $(Pipeline.Workspace)
+        echo "end of ls"
         find -name .m2
         pwd
         find -name target
-        mvn clean install -Pcustomapi
+        # mvn clean install -Pcustomapi
         find -name .m2
         mvn sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
 
