@@ -25,11 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +42,11 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuild;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushDeploy;
 import com.publicissapient.kpidashboard.common.model.application.Build;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PushDataValidationServiceImplTest {
