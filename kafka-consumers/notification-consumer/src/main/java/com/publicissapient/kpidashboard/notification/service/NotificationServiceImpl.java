@@ -1,5 +1,23 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 package com.publicissapient.kpidashboard.notification.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
 import com.publicissapient.kpidashboard.notification.config.SendGridEmailConsumerConfig;
@@ -19,8 +37,11 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.exceptions.TemplateInputException;
+import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.validation.constraints.NotNull;
 import java.nio.charset.StandardCharsets;
@@ -50,30 +71,43 @@ public class NotificationServiceImpl implements NotificationService {
         return headers;
     }
 
+    /**
+     * @param key        key
+     * @param emailEvent emailEvent
+     */
     public void sendMail(String key, EmailEvent emailEvent) {
         try {
             Context context = createContext(emailEvent.getCustomData());
             String html = processTemplate(key, context);
             sendEmailViaJMS(emailEvent, html);
-        } catch (Exception e) {
-            handleEmailException(key, e);
+        } catch (MessagingException me) {
+            log.error("Email not sent for the key : {}", key);
+        } catch (TemplateInputException tie) {
+            log.error("Template not found for the key : {}", key);
+            throw new RecoverableDataAccessException("Template not found for the key :" + key);
+        } catch (TemplateProcessingException tpe) {
+            throw new RecoverableDataAccessException("Template not parsed for the key :" + key);
         }
     }
 
+    /**
+     * @param key        key
+     * @param emailEvent emailEvent
+     */
     public void sendMailUsingSendGrid(String key, EmailEvent emailEvent) {
         try {
             Context context = createContext(emailEvent.getCustomData());
             String html = processTemplate(key, context);
             EmailTemplate emailTemplate = EmailTemplate.fromEmailEvent(emailEvent, html);
             sendEmailViaSendGrid(emailTemplate);
-        } catch (Exception e) {
-            handleEmailException(emailEvent, e);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (TemplateInputException tie) {
+            log.error("Template not found for the key : {}", key);
+            throw new RecoverableDataAccessException("Template not found for the key :" + key);
+        } catch (TemplateProcessingException tpe) {
+            throw new RecoverableDataAccessException("Template not parsed for the key :" + key);
         }
-    }
-
-    private void handleEmailException(Object source, Exception e) {
-        log.error("Error while sending email: {}", e.getMessage(), e);
-        throw new RecoverableDataAccessException("Error while sending email from source: " + source, e);
     }
 
     private Context createContext(Map<String, String> customData) {
@@ -91,34 +125,26 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private void sendEmailViaJMS(EmailEvent emailEvent, String htmlContent) {
+    private void sendEmailViaJMS(EmailEvent emailEvent, String htmlContent) throws MessagingException {
         JavaMailSenderImpl mailSender = getJavaMailSender(emailEvent);
         MimeMessage message = mailSender.createMimeMessage();
-        try {
-            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                    StandardCharsets.UTF_8.name());
-            helper.setTo(emailEvent.getTo().toArray(new String[0]));
-            helper.setText(htmlContent, true);
-            helper.setSubject(emailEvent.getSubject());
-            helper.setFrom(emailEvent.getFrom());
-            mailSender.send(message);
-            log.info("Email successfully sent for the key: {}", emailEvent);
-        } catch (Exception e) {
-            handleEmailException(emailEvent, e);
-        }
+        MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        helper.setTo(emailEvent.getTo().toArray(new String[0]));
+        helper.setText(htmlContent, true);
+        helper.setSubject(emailEvent.getSubject());
+        helper.setFrom(emailEvent.getFrom());
+        mailSender.send(message);
+        log.info("Email successfully sent for the key: {}", emailEvent);
     }
 
-    private void sendEmailViaSendGrid(EmailTemplate emailTemplate) {
-        try {
-            String jsonPayload = new ObjectMapper().writeValueAsString(emailTemplate);
-            HttpEntity<?> httpEntity = new HttpEntity<>(jsonPayload,
-                    buildHttpHeader(sendGridEmailConsumerConfig.getSendGridApiKey()));
-            restTemplate.exchange(sendGridEmailConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
-                    httpEntity, String.class);
-            log.info("Email successfully sent via SendGrid");
-        } catch (Exception e) {
-            handleEmailException(emailTemplate, e);
-        }
+    private void sendEmailViaSendGrid(EmailTemplate emailTemplate) throws JsonProcessingException {
+        String jsonPayload = new ObjectMapper().writeValueAsString(emailTemplate);
+        HttpEntity<?> httpEntity = new HttpEntity<>(jsonPayload,
+                buildHttpHeader(sendGridEmailConsumerConfig.getSendGridApiKey()));
+        restTemplate.exchange(sendGridEmailConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
+                httpEntity, String.class);
+        log.info("Email successfully sent via SendGrid");
     }
 
 
