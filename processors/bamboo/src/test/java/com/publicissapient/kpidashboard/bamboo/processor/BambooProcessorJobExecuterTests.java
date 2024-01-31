@@ -45,7 +45,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
@@ -137,7 +136,7 @@ public class BambooProcessorJobExecuterTests {
 	public void init() {
 		MockitoAnnotations.openMocks(this);
 		BambooProcessor bambooProcessor = new BambooProcessor();
-		Mockito.when(bambooConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
+//		Mockito.when(bambooConfig.getCustomApiBaseUrl()).thenReturn("http://customapi:8080/");
 
 		BAMBOOSAMPLESERVER.setId(new ObjectId("6296661b307f0239477f1e9e"));
 		BAMBOOSAMPLESERVER.setBasicProjectConfigId(new ObjectId("5f9014743cb73ce896167659"));
@@ -311,11 +310,11 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
-			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
-					.thenReturn(twoBambooJob());
-			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
+//			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
+//			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+//			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
+//					.thenReturn(twoBambooJob());
+//			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -328,7 +327,7 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			Map<ObjectId, Set<Build>> jobs = new HashMap<>();
 			jobs.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
+//			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(jobs);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
@@ -338,7 +337,7 @@ public class BambooProcessorJobExecuterTests {
 			when(processorExecutionTraceLogRepository
 					.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.BAMBOO, "5f9014743cb73ce896167659"))
 							.thenReturn(optionalProcessorExecutionTraceLog);
-			when(deploymentRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(deployment);
+//			when(deploymentRepository.findByProjectToolConfigIdAndNumber(any(), any())).thenReturn(deployment);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -353,12 +352,12 @@ public class BambooProcessorJobExecuterTests {
 			Build build = build("1", JOB1_1_URL);
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
-			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
-			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
+//			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
+//			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
+//			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(deploymentRepository.findAll()).thenReturn(deploymentList);
-			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
-			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
+//			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any())).thenReturn(pt);
+//			when(bambooClientFactory.getBambooClient(anyString())).thenReturn(bambooClientBuild);
 			task.execute(processor);
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
@@ -393,7 +392,7 @@ public class BambooProcessorJobExecuterTests {
 
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
-			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
+//			when(bambooClient.getJobsFromServer(any(), any())).thenReturn(buildMap);
 			when(projectConfigRepository.findAll()).thenReturn(projectConfigList);
 			when(processorToolConnectionService.findByToolAndBasicProjectConfigId(any(), any()))
 					.thenReturn(twoBambooJob());
@@ -432,7 +431,7 @@ public class BambooProcessorJobExecuterTests {
 		try {
 			BambooProcessor processor = processorWithOneServer();
 			Build build = build("1", JOB1_1_URL);
-			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
+//			when(bambooClient.getBuildDetailsFromServer(any(), any(), any())).thenReturn(build);
 			Map<ObjectId, Set<Build>> buildMap = new HashMap<>();
 			buildMap.put(new ObjectId("6296661b307f0239477f1e9e"), buildSet);
 			List<Build> activeBuildJobs = new ArrayList<>();
@@ -457,7 +456,7 @@ public class BambooProcessorJobExecuterTests {
 	@Test
 	public void testProcessorToolConnectionisNull_success() {
 		try {
-			when(processorToolConnectionService.findByTool(any())).thenReturn(null);
+//			when(processorToolConnectionService.findByTool(any())).thenReturn(null);
 			task.execute(processorWithOneServer());
 		} catch (RestClientException exception) {
 			Assert.assertEquals("Exception is: ", EXCEPTION, exception.getMessage());
