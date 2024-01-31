@@ -87,6 +87,8 @@ stages:
           sonar.branch.name=$(Build.SourceBranchName)
           sonar.java.binaries=$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/classes
           sonar.coverage.jacoco.xmlReportPaths=$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/jacoco.exec
+          sonar.qualitygate.wait=true
+          sonar.qualitygate.timeout=300
           # sonar.sources=customapi/pom.xml
           # sonar.language=java
           # sonar.sourceEncoding=UTF-8
