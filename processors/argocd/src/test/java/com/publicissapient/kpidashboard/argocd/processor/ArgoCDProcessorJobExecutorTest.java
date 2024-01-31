@@ -120,6 +120,7 @@ class ArgoCDProcessorJobExecutorTest {
 	@MockBean
 	private RestTemplate restClient;
 
+	@SuppressWarnings("deprecation")
 	@BeforeEach
 	public void init() {
 		MockitoAnnotations.initMocks(this);

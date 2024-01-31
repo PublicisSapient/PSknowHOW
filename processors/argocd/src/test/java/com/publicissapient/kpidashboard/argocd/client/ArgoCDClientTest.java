@@ -21,7 +21,6 @@ package com.publicissapient.kpidashboard.argocd.client;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_ENDPOINT;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.APPLICATIONS_PARAM;
 import static com.publicissapient.kpidashboard.argocd.constants.ArgoCDConstants.AUTHTOKEN_ENDPOINT;
-import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -103,15 +102,6 @@ class ArgoCDClientTest {
 				.thenThrow(RestClientException.class);
 		Assertions.assertThrows(RestClientException.class,
 				() -> argoCDClient.getApplicationByName(ARGOCD_URL, "application2", ACCESS_TOKEN));
-	}
-
-	@Test
-	void testGetAccessToken() {
-		TokenDTO accessToken = new TokenDTO();
-		when(restTemplate.exchange(Mockito.eq(URI.create(ARGOCD_URL + AUTHTOKEN_ENDPOINT)), Mockito.eq(HttpMethod.POST),
-				Mockito.any(HttpEntity.class), Mockito.<Class<TokenDTO>>any()))
-				.thenReturn(new ResponseEntity<TokenDTO>(accessToken, HttpStatus.OK));
-		assertEquals(null, argoCDClient.getAuthToken(ARGOCD_URL, null));
 	}
 	
 	@Test

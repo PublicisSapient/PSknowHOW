@@ -19,7 +19,7 @@
 package com.publicissapient.kpidashboard.argocd.client;
 
 import java.net.URI;
-import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -122,11 +122,9 @@ public class ArgoCDClient {
 		try {
 			ResponseEntity<TokenDTO> response = restTemplate.exchange(URI.create(url), HttpMethod.POST,
 					new HttpEntity<>(userCredentialsDTO, requestHeaders), TokenDTO.class);
-			if (Objects.isNull(response.getBody())) {
-				throw new RestClientException("Unable to fetch token for the user");
-			} else {
-				return response.getBody().getToken();
-			}
+			return Optional.ofNullable(response.getBody())
+		            .map(TokenDTO::getToken)
+		            .orElseThrow(() -> new RestClientException("Unable to fetch token for the user"));
 		} catch (RestClientException ex) {
 			log.error("ArgoCDClient :: getAuthToken Exception occured :: {}", ex.getMessage());
 			throw ex;
