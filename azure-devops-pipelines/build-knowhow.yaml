@@ -50,7 +50,7 @@ stages:
 
     steps:
 
-    - task: SonarQubePrepare@4
+    - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
       inputs:
         SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
