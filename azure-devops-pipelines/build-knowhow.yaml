@@ -79,7 +79,7 @@ stages:
     - download: current
       artifact: common-artifacts
 
-    - download: pipelineworkspace
+    - download: current
       artifact: pipeline-artifacts
 
     - script: |
