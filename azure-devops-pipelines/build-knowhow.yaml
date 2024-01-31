@@ -89,7 +89,7 @@ stages:
           sonar.language=java
           sonar.sourceEncoding=UTF-8
       enabled: true
-    - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Pipeline.Workspace)/pipeline-artifacts/.m2/repository -f customapi/pom.xml'
+    - script: 'mvn sonar:sonar -Dmaven.repo.local=/home/vsts/work/1/pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
 
 - stage: UI_Deploy
