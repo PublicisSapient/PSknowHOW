@@ -35,36 +35,20 @@ stages:
 
     steps:
     - checkout: self
-    # - task: UseJavaVersion@1
-    #   inputs:
-    #     versionSpec: '17'
 
     - script: |
         echo "BUILDING: ${{ parameters.BUILD }}"
         echo "Capturing Version"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        # java -version
-        # mvn clean install -Pcustomapi
-        # echo "ls of pipeline workspace"
-        # echo $(Pipeline.Workspace)
-        # ls -a $(Pipeline.Workspace)/
-        # echo "finding for .m2"
-        # cd /
-        # find -name .m2
-        # echo "end of find .m2"
-        
+        echo "Version from pom.xml: $VERSION"        
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
   
   - job: RUNNING_TEST
     displayName: 'Running Tests'
     dependsOn: Capturing_Version
-    # pool:
-    #   vmImage: 'ubuntu-latest'
 
     steps:
-    # - checkout: none
 
     - task: Maven@3
       displayName: 'Run Maven build'
@@ -82,52 +66,27 @@ stages:
   - job: Preparing_Sonar_qube_analysis_report  
     displayName: 'Preparing SonarQube Analysis'
     dependsOn: RUNNING_TEST
-    # pool:
-    #   vmImage: 'ubuntu-latest'
     
     steps:
     - download: current
       artifact: common-artifacts
-
     - download: current
       artifact: pipeline-artifacts
-
-    # - script: |
-    #     ls -a /home/vsts/
-    #     echo "this is output of ls -a"
-    #     ls -R $(Pipeline.Workspace)/pipeline-artifacts
-    #     echo "end of ls"
-    #     # mvn clean install -Pcustomapi
-    #     mvn sonar:sonar -Dmaven.repo.local=/home/vsts/work/1/pipeline-artifacts/repository -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
-
-    # - download: current
-    #   artifact: customapi-artifacts
-
-    # - task: Maven@3
-    #   displayName: 'Sonar Maven build'
-    #   inputs:
-    #     mavenPomFile: 'customapi/pom.xml'
-    #     goals: 'clean install sonar:sonar -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName)'
-        # publishJUnitResults: true
-    # - checkout: none
+    
     - task: SonarQubePrepare@4
       displayName: 'Prepare Analysis Configuration'
       inputs:
         SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI' # SonarQube project key
-        cliProjectName: 'ENGINEERING.KPIDASHBOARD.CUSTOMAPI' # Optional, SonarQube project name
-        cliSources: 'customapi' # Path to your source code. Adjust if your pom.xml is located in a different directory
-        cliProjectVersion: '$(overrideValues)' # Optional, version of your project
-        cliExtraProperties: |
-          maven.repo.local=/home/vsts/work/1/pipeline-artifacts/repository sonar.branch.name=$(Build.SourceBranchName) # Optional, additional properties
-        cliTimeoutSec: '600' # Optional, maximum duration of the analysis in seconds
-
-      # enabled: true
-        
-  
-
+        scannerMode: 'Other'
+        extraProperties: |
+          sonar.projectVersion=$(overrideValues)
+          sonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
+          sonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI
+          sonar.branch.name=$(Build.SourceBranchName)
+          sonar.sources=customapi/pom.xml
+          sonar.language=java
+          sonar.sourceEncoding=UTF-8
+      enabled: true
 
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
