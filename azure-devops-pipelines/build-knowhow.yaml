@@ -20,14 +20,15 @@ parameters:
   - 'YES'
   - 'NO'
 
+pool:
+      vmImage: 'ubuntu-latest'
+
 stages:
 - stage: API_BUILD
   condition: or(eq('${{ parameters.BUILD }}', 'API'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: Capturing_Version
-    pool:
-      vmImage: 'ubuntu-latest'
 
     variables:
       overrideValues: ''
@@ -50,8 +51,8 @@ stages:
   - job: RUNNING_TEST
     displayName: 'Running Tests'
     dependsOn: Capturing_Version
-    pool:
-      vmImage: 'ubuntu-latest'
+    # pool:
+    #   vmImage: 'ubuntu-latest'
 
     steps:
     # - checkout: none
@@ -72,8 +73,8 @@ stages:
   - job: Preparing_Sonar_qube_analysis_report  
     displayName: 'Preparing SonarQube Analysis'
     dependsOn: RUNNING_TEST
-    pool:
-      vmImage: 'ubuntu-latest'
+    # pool:
+    #   vmImage: 'ubuntu-latest'
     
     steps:
     - download: current
@@ -131,8 +132,8 @@ stages:
 
   jobs:
   - job: UI_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
+    # pool:
+    #   vmImage: 'ubuntu-latest'
 
     steps:
     - checkout: self
@@ -152,8 +153,8 @@ stages:
 
   jobs:
   - job: Jira_Processor_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
+    # pool:
+    #   vmImage: 'ubuntu-latest'
 
     steps:
     - checkout: self
