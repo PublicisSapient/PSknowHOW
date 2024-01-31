@@ -30,6 +30,7 @@ import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -79,7 +80,10 @@ export class DashboardComponent implements OnInit, AfterContentInit {
         this.modalDetails.header =`Project Created`;
         this.modalDetails.content =`The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
       }
-      this.displayModal =data;
+      
+      if(!environment['AUTHENTICATION_SERVICE']){
+        this.displayModal =data;
+      }
     });
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;

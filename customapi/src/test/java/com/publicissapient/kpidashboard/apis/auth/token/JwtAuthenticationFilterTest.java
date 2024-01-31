@@ -68,14 +68,14 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+		when(authService.validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
 				.thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
 
-		verify(authService).getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
+		verify(authService).validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
 		verify(filterChain).doFilter(request, response);
 	}
 

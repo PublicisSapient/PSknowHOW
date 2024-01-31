@@ -20,9 +20,12 @@ package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
 import java.util.Objects;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -69,7 +73,9 @@ public class UserInfoController {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-
+	
+	@Autowired
+	private AuthProperties authProperties;
 	/**
 	 * Fetch only approved user info data.
 	 *
@@ -153,6 +159,21 @@ public class UserInfoController {
 	@GetMapping("/userData")
 	public ResponseEntity<ServiceResponse> getUserDetails(HttpServletRequest request) {
 		UserDetailsResponseDTO userInfo = userInfoService.getUserInfoByToken(request);
+		if (Objects.nonNull(userInfo)) {
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));
+		} else {
+			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(false, "invalid Token or user", null));
+
+		}
+	}
+
+	@GetMapping("/auth/{username}")
+	public ResponseEntity<ServiceResponse> getCentralAuthUserInfo(@PathVariable("username") String username,
+			HttpServletRequest request) {
+
+		String token = authProperties.getResourceAPIKey();
+		UserInfo userInfo = userInfoService.getCentralAuthUserInfo(username, token);
 		if (Objects.nonNull(userInfo)) {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "get successfully user info details ", userInfo));

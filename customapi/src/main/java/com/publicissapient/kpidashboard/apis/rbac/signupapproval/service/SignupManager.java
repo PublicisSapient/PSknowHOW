@@ -66,9 +66,9 @@ public class SignupManager {
 		String superAdminEmail;
 		String loggedInUser = authenticationService.getLoggedInUser();
 		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress().toLowerCase();
 		} else {
-			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
+			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
 		}
 		Authentication authentication = getAuthenticationByUserName(username);
 		if (authentication.isApproved()) {
@@ -82,7 +82,7 @@ public class SignupManager {
 				grantApprovalListener.onSuccess(updateAuthenticationApprovalStatus);
 				tokenAuthenticationService.updateExpiryDate(username, LocalDateTime.now().toString());
 				List<String> emailAddresses = new ArrayList<>();
-				emailAddresses.add(updateAuthenticationApprovalStatus.getEmail());
+				emailAddresses.add(updateAuthenticationApprovalStatus.getEmail().toLowerCase());
 				String serverPath = getServerPath();
 				Map<String, String> customData = createCustomData("", "", serverPath, superAdminEmail);
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_SUCCESS);
@@ -163,9 +163,9 @@ public class SignupManager {
 		String superAdminEmail;
 		String loggedInUser = authenticationService.getLoggedInUser();
 		if (checkForLdapUser(loggedInUser)) {
-			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress();
+			superAdminEmail = userInfoRepository.findByUsername(loggedInUser).getEmailAddress().toLowerCase();
 		} else {
-			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail();
+			superAdminEmail = authenticationRepository.findByUsername(loggedInUser).getEmail().toLowerCase();
 		}
 		Authentication authentication = getAuthenticationByUserName(username);
 		Authentication updatedAuthenticationRequest = updateAuthenticationApprovalStatus(authentication);
@@ -176,7 +176,7 @@ public class SignupManager {
 		} else {
 			if (listener != null) {
 				List<String> emailAddresses = new ArrayList<>();
-				emailAddresses.add(authentication.getEmail());
+				emailAddresses.add(authentication.getEmail().toLowerCase());
 				String serverPath = getServerPath();
 				Map<String, String> customData = createCustomData("", "", serverPath, superAdminEmail);
 				sendEmailNotification(emailAddresses, customData, APPROVAL_SUBJECT_KEY, NOTIFICATION_KEY_REJECT);
