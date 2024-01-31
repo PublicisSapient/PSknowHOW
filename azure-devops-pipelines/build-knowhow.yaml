@@ -57,6 +57,12 @@ stages:
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
         # sonarQubeRunAnalysis: true
+    
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publising Code coverage'
+      inputs:
+        codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
+        summaryFileLocation: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/jacoco.xml'
 
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: customapi-artifacts
