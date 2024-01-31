@@ -114,8 +114,8 @@ stages:
           Write-Host "Quality Gate check failed."
           exit 1
         }
-  displayName: 'Check Quality Gate Status'
-  continueOnError: true
+      displayName: 'Check Quality Gate Status'
+      continueOnError: true
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
