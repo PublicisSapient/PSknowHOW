@@ -80,7 +80,8 @@ stages:
       inputs:
         codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
         summaryFileLocation: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/jacoco.xml'
-
+        reportDirectory: '$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/site/jacoco/'
+        
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
       inputs:
