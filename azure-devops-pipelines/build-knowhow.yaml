@@ -75,7 +75,7 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
 
-    - publish: ./home/vsts/.m2
+    - publish: /home/vsts/.m2
       artifact: pipeline-artifacts
 
 
