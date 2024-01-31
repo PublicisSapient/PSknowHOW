@@ -65,7 +65,7 @@ stages:
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
 
-    - publish: $(Pipeline.Workspace)
+    - publish: $(Pipeline.Workspace)/.m2
       artifact: pipeline-artifacts
 
 
@@ -87,8 +87,11 @@ stages:
         echo "this is output of ls -a"
         ls -a $(Pipeline.Workspace)
         echo "end of ls"
+        echo "start of find .m2 command"
         find -name .m2
+        echo "end of find command"
         pwd
+        echo "start of find target"
         find -name target
         # mvn clean install -Pcustomapi
         find -name .m2
