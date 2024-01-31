@@ -91,7 +91,7 @@ stages:
           # sonar.qualitygate.timeout=300
           # sonar.sources=customapi/pom.xml
           # sonar.language=java
-          # sonar.sourceEncoding=UTF-8
+          sonar.sourceEncoding=UTF-8
       enabled: true
     - script: 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=$(Agent.BuildDirectory)/customapi-artifacts/customapi/target/jacoco.exec -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
