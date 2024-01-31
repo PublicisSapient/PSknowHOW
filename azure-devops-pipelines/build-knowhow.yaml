@@ -64,7 +64,7 @@ stages:
           sonar.language=java
           sonar.sourceEncoding=UTF-8
       enabled: true
-    - script: 'mvn sonar:sonar'
+    - script: 'mvn sonar:sonar -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
 
     - task: Maven@3
