@@ -56,7 +56,7 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
-        sonarQubeRunAnalysis: true
+        # sonarQubeRunAnalysis: true
 
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: common-artifacts
