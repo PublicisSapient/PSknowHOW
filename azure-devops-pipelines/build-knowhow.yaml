@@ -98,7 +98,7 @@ stages:
         ls -R $(Pipeline.Workspace)/pipeline-artifacts
         echo "end of ls"
         # mvn clean install -Pcustomapi
-        mvn sonar:sonar -Dmaven.repo.local=$(Pipeline.Workspace)/pipeline-artifacts/.m2/repository -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
+        mvn sonar:sonar -Dmaven.repo.local=/home/vsts/work/1/pipeline-artifacts/repository -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.projectName=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.branch.name=$(Build.SourceBranchName) -f customapi/pom.xml -e -X
 
     # - download: current
     #   artifact: customapi-artifacts
