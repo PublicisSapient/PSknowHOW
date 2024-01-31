@@ -64,7 +64,16 @@ stages:
     - publish: /home/vsts/.m2
       artifact: pipeline-artifacts
 
+  - job: SONAR_ANALYSIS
+    displayName: 'Running Sonar'
+    dependsOn: RUNNING_TEST
 
+    steps:
+    - download: current
+      artifact: common-artifacts
+
+    - download: current
+      artifact: pipeline-artifacts
 
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
