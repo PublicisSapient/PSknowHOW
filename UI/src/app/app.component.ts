@@ -50,8 +50,6 @@ export class AppComponent implements OnInit {
     .subscribe(params => {
         let nodeId = params.projectId;
         let sprintId = params.sprintId;
-        window.alert(nodeId + " " + sprintId);
-        
         if(nodeId){
           this.service.setProjectQueryParamInFilters(nodeId)
         }
