@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ElementRef, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
@@ -30,7 +30,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { NotificationResponseDTO } from 'src/app/model/NotificationDTO.model';
 import { first, switchMap, takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { empty, interval, Subject } from 'rxjs';
+import { interval, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-filter',
@@ -321,17 +321,6 @@ export class FilterComponent implements OnInit, OnDestroy {
       this.getLogoImage();
     });
 
-    this.service.projectQueryParamObs.subscribe((val) => {
-      this.nodeIdQParam = val.value;
-      if(this.nodeIdQParam){
-        const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
-        if(ifProjectExist === -1){
-          this.noAccessMsg = true; 
-          this.displayMessage = true
-          return; 
-        }
-      }
-    })
     this.service.sprintQueryParamObs.subscribe((val) => {
       this.sprintIdQParam = val.value;
     })
@@ -511,6 +500,19 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.initializeFilterForm();
         this.noProjects = true;
       } else {
+        /** subscribe to query params */
+        this.service.projectQueryParamObs.subscribe((val) => {
+          this.nodeIdQParam = val.value;
+          if(this.nodeIdQParam){
+            const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
+            if(ifProjectExist === -1){
+              this.noAccessMsg = true; 
+              this.displayMessage = true
+              return; 
+            }
+          }
+        })
+
         this.service.setNoProjects(false);
         this.noProjects = false;
       }
@@ -1033,7 +1035,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setDashConfigData(null);
     this.service.selectedtype = '';
     this.initializeFilterForm();
-
+    this.displayMessage = false;
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
