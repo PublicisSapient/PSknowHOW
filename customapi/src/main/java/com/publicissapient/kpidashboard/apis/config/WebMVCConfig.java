@@ -22,6 +22,7 @@ import java.util.List;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -33,6 +34,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.publicissapient.kpidashboard.apis.converter.DateToJodaDateTimeConverter;
 import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 
 /**
@@ -80,5 +82,11 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
 		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
+	//TODO:: check date working in overall app
+	@Override
+	public void addFormatters(FormatterRegistry registry) {
+		registry.addConverter(new DateToJodaDateTimeConverter());
+	}
+
 
 }

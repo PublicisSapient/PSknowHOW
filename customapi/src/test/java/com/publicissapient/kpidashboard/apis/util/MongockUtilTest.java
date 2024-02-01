@@ -20,23 +20,17 @@ package com.publicissapient.kpidashboard.apis.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
@@ -93,7 +87,9 @@ public class MongockUtilTest {
 	@Test
 	public void testSaveListToDB_WhenCollectionIsEmpty_ShouldInsertData() {
 		String collectionName = "testCollection";
-		List<String> dataList = Arrays.asList("test1", "test2");
+		List<Object> dataList = new ArrayList<>();
+		dataList.add(new TestObject("test1"));
+		dataList.add(new TestObject("test2"));
 
 		MongoCollection<Document> collection = mock(MongoCollection.class);
 		when(collection.countDocuments()).thenReturn(0L);
@@ -103,6 +99,18 @@ public class MongockUtilTest {
 
 		verify(collection, times(1)).countDocuments();
 		verify(mongoTemplate, times(1)).insert(anyList(), eq(collectionName));
+	}
+	//for JPMS InaccessibleObjectException Error Fix
+	class TestObject {
+		private String value;
+
+		public TestObject(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 
 	@Test

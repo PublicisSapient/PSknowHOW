@@ -221,7 +221,7 @@ public class DREServiceImplTest {
 		Map<String, List<String>> maturityRangeMap = new HashMap<>();
 		maturityRangeMap.put("defectRemovalEfficiency", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
 
-		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+//		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
 		when(customApiSetting.getApplicationDetailedLogger()).thenReturn("on");
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 

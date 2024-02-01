@@ -380,13 +380,13 @@ public class KPIExcelUtilityTest {
 		// Create a mock of KanbanJiraIssue
 		KanbanJiraIssue openIssue = mock(KanbanJiraIssue.class);
 		when(openIssue.getNumber()).thenReturn("OPEN-1");
-		when(openIssue.getTypeName()).thenReturn("Bug");
-		when(openIssue.getPriority()).thenReturn("High");
+//		when(openIssue.getTypeName()).thenReturn("Bug");
+//		when(openIssue.getPriority()).thenReturn("High");
 
 		KanbanIssueCustomHistory closedIssue = mock(KanbanIssueCustomHistory.class);
 		when(closedIssue.getStoryID()).thenReturn("CLOSED-1");
-		when(closedIssue.getStoryType()).thenReturn("Story");
-		when(closedIssue.getPriority()).thenReturn("Low");
+//		when(closedIssue.getStoryType()).thenReturn("Story");
+//		when(closedIssue.getPriority()).thenReturn("Low");
 
 		// Mock data
 		List<KanbanJiraIssue> openIssues = Arrays.asList(openIssue);

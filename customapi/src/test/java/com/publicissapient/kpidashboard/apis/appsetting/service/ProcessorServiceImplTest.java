@@ -26,11 +26,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
-import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
-import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +50,7 @@ import com.publicissapient.kpidashboard.apis.data.ProcessorDataFactory;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
+import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
@@ -71,7 +67,7 @@ public class ProcessorServiceImplTest {
 	@InjectMocks
 	private ProcessorServiceImpl processorService;
 	@Mock
-	private ProcessorRepository processorRepository;
+	private ProcessorRepository<Processor> processorRepository;
 	@Mock
 	private ProcessorUrlConfig processorUrlConfig;
 	@Mock

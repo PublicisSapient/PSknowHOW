@@ -37,23 +37,23 @@
         </ng-template>
         <ng-template pTemplate="header" let-columns>
             <tr *ngIf="columns.length>0">
-                <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize">
+                <th [pSortableColumn]="col.id" *ngFor="let col of columns" class="p-text-capitalize" scope="col">
                     <div class="p-d-flex col-head">
 
                         {{col.heading}}
                         <p-sortIcon [field]="col.id"></p-sortIcon>
                     </div>
                 </th>
-                <th class="p-text-right p-pr-5">Actions</th>
+                <th class="p-text-right p-pr-5" scope="col">Actions</th>
             </tr>
             <tr class="w-100" *ngIf="columns.length>0">
-                <th *ngFor="let col of columns">
+                <th *ngFor="let col of columns" scope="col">
                     <input pInputText [id]="col.id" type="text"
                         (input)="dt.filter($event.target.value, col.id, 'startsWith')" class="p-column-filter"
                         [style]="{'width':'100%'}" placeholder="Search" />
                     <label [for]="col.id"></label>
                 </th>
-                <th></th>
+                <th id="empty-header"></th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-project let-columns="columns">

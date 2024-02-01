@@ -242,7 +242,7 @@ public class BambooClientBuildImplTest {
 				eq(URI.create("http://does:matter@xyz/rest/api/latest/plan/HDEP-AST/branch.json?max-result=2000")),
 				eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
-		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
+//		when(settings.getDockerLocalHostIP()).thenReturn("someIp");
 		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsTestReturnsMap", jobs.size(), is(0));
 	}

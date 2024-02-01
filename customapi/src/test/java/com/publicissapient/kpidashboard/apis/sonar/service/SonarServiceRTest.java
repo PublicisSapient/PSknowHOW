@@ -22,8 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +54,6 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.HierachyLevelFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
-import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.AccountHierarchyServiceImpl;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -218,8 +215,8 @@ public class SonarServiceRTest {
 		when(filterHelperService.getFilteredBuilds(ArgumentMatchers.any(), Mockito.anyString()))
 				.thenReturn(accountHierarchyDataList);
 		when(authorizedProjectsService.filterProjects(accountHierarchyDataList)).thenReturn(accountHierarchyDataList);
-		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
-				.thenReturn(new ArrayList<KpiElement>());
+//		when(cacheService.getFromApplicationCache(eq(exampleStringList), eq(KPISource.ZEPHYRKANBAN.name()), eq(1), isNull()))
+//				.thenReturn(new ArrayList<KpiElement>());
 		try {
 			List<KpiElement> resultList = sonarService.process(kpiRequest);
 		} catch (Exception e) {

@@ -281,8 +281,8 @@ public class JiraServiceRTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(anyString(), anyList()))
 				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
-				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
+//		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
+//				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
 
 		when(jiraIssueRepository.findByBasicProjectConfigIdAndDefectStoryIDInAndOriginalTypeIn(anyString(), anySet(),
 				anyList())).thenReturn(new HashSet<>());
@@ -311,10 +311,10 @@ public class JiraServiceRTest {
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
-		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), anyString()))
-				.thenReturn(jiraIssueDataFactory.getJiraIssues());
-		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
-				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
+//		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), anyString()))
+//				.thenReturn(jiraIssueDataFactory.getJiraIssues());
+//		when(jiraIssueCustomHistoryRepository.findByStoryIDInAndBasicProjectConfigIdIn(anyList(), anyList()))
+//				.thenReturn(jiraIssueHistoryDataFactory.getUniqueJiraIssueCustomHistory());
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 	}
 
@@ -366,7 +366,7 @@ public class JiraServiceRTest {
 		}
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 
-		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
+//		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 
@@ -405,7 +405,7 @@ public class JiraServiceRTest {
 
 		when(filterHelperService.getFilteredBuilds(kpiRequest, GROUP_PROJECT)).thenReturn(accountHierarchyDataList);
 
-		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
+//		when(mcokAbstract.getKpiData(any(), any(), any())).thenReturn(rcaKpiElement);
 
 		List<KpiElement> resultList = jiraServiceR.process(kpiRequest);
 

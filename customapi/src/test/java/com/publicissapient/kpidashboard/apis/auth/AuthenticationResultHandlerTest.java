@@ -79,7 +79,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("projectsAccess", null);
 		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName" , "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
-		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
+//		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);
@@ -97,7 +97,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("projectsAccess", null);
 		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName", "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
-		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
+//		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);

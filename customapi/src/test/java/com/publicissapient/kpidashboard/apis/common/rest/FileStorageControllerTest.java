@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.common.rest;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.MediaType;
@@ -39,7 +37,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.FileStorageService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.model.BaseResponse;
 import com.publicissapient.kpidashboard.apis.model.Logo;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,13 +68,13 @@ public class FileStorageControllerTest {
 	public void testFileStorageService() throws Exception {
 		Logo logo = new Logo();
 
-		when(fileStorageService.getLogo()).thenReturn(logo);
+//		when(fileStorageService.getLogo()).thenReturn(logo);
 		mockMvc.perform(get("/file/logo")).andExpect(status().isOk());
 	}
 
 	@Test
 	public void testDeleteLogo() throws Exception {
-		when(fileStorageService.deleteLogo()).thenReturn(true);
+//		when(fileStorageService.deleteLogo()).thenReturn(true);
 		mockMvc.perform(get("/file/delete")).andExpect(status().isOk());
 	}
 
@@ -86,7 +83,7 @@ public class FileStorageControllerTest {
 		MockMultipartFile file = new MockMultipartFile("file", "PsKnowHowLogo.png", MediaType.TEXT_PLAIN_VALUE,
 				"Hello, World!".getBytes());
 
-		when(fileStorageService.upload(Mockito.any())).thenReturn(new BaseResponse());
+//		when(fileStorageService.upload(Mockito.any())).thenReturn(new BaseResponse());
 		mockMvc.perform(multipart("/file/upload").file(file)).andExpect(status().isOk());
 	}
 

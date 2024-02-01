@@ -33,7 +33,6 @@
   </parent>
 
   <properties>
-    <sonar.skip>true</sonar.skip>
     <java.version>17</java.version>
     <lombok.version>1.18.30</lombok.version>
     <final.name>githubaction-processor</final.name>

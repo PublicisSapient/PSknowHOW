@@ -223,12 +223,12 @@ public class UnitCoverageServiceKanbanImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-				.thenReturn(sonarHistoryData);
+//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+//				.thenReturn(kpiRequestTrackerId);
+//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+//				.thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
@@ -247,12 +247,12 @@ public class UnitCoverageServiceKanbanImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				new ArrayList<>(), accountHierarchyDataKanbanList, "hierarchyLevelOne", 4);
 		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
-		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
+//		when(customApiConfig.getSonarWeekCount()).thenReturn(5);
 		when(commonService.sortTrendValueMap(anyMap())).thenReturn(trendValueMap);
-		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
-				.thenReturn(kpiRequestTrackerId);
-		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
-				.thenReturn(sonarHistoryData);
+//		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONARKANBAN.name()))
+//				.thenReturn(kpiRequestTrackerId);
+//		when(sonarHistoryRepository.findByProcessorItemIdInAndTimestampGreaterThan(anyList(), anyLong()))
+//				.thenReturn(sonarHistoryData);
 
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),

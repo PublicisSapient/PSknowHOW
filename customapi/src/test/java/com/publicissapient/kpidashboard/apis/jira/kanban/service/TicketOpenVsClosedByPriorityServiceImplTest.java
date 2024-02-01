@@ -159,7 +159,7 @@ public class TicketOpenVsClosedByPriorityServiceImplTest {
 				.thenReturn(kanbanJiraIssueList);
 		when(kanbanJiraIssueHistoryRepository.findIssuesByStatusAndDate(any(), any(), any(), any(), any()))
 				.thenReturn(historyClosedList);
-		when(customApiConfig.getpriorityP1()).thenReturn(P1);
+//		when(customApiConfig.getpriorityP1()).thenReturn(P1);
 
 
 

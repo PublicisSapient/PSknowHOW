@@ -30,8 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +43,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
@@ -92,7 +92,7 @@ public class RepoToolsConfigServiceImplTest {
     private ConfigHelperService configHelperService;
 
     @Mock
-    private ProcessorRepository processorRepository;
+    private ProcessorRepository<Processor> processorRepository;
 
     @Mock
     private ProcessorItemRepository processorItemRepository;
