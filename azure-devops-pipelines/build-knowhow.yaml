@@ -100,10 +100,10 @@ stages:
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
     
-    # - task: SonarQubePublish@5
-    #   displayName: Publish Quality Gate Result
-    #   inputs:
-    #     pollingTimeoutSec: '300'
+    - task: SonarQubePublish@5
+      displayName: Publish Quality Gate Result
+      inputs:
+        pollingTimeoutSec: '300'
     # - script: |
     #     result=$(sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar -Dsonar.qualitygate.show=true)
     #     if [[ "$result" =~ QUALITY_GATE_STATUS=ERROR ]]; then
@@ -208,8 +208,8 @@ stages:
       displayName: 'Publising Code Coverage'
       inputs:
         codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
-        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/jacoco.xml'
-        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/'
+        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/**/target/site/jacoco/jacoco.xml'
+        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/**/target/site/jacoco/'
 
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
@@ -232,4 +232,9 @@ stages:
       enabled: true
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/processor-pipeline-artifacts/repository -f processors/pom.xml'
       displayName: 'Run SonarQube analysis'
+    
+    - task: SonarQubePublish@5
+      displayName: Publish Quality Gate Result
+      inputs:
+        pollingTimeoutSec: '300'
     
