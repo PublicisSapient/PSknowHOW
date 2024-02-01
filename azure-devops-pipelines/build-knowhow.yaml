@@ -221,9 +221,9 @@ stages:
           sonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS
           sonar.projectKey=ENGINEERING.KPIDASHBOARD.PROCESSORS
           sonar.branch.name=$(Build.SourceBranchName)
-          sonar.java.binaries=$(Agent.BuildDirectory)/processor-artifacts/processors/target/classes
+          sonar.java.binaries=$(Agent.BuildDirectory)/processor-artifacts/**/target/classes
           # sonar.jacoco.reportPath=$(Agent.BuildDirectory)/processor-artifacts/processors/target/jacoco.exec
-          sonar.coverage.jacoco.xmlReportPaths=$(Agent.BuildDirectory)/processor-artifacts/processors/target/site/jacoco/jacoco.xml
+          sonar.coverage.jacoco.xmlReportPaths=$(Agent.BuildDirectory)/processor-artifacts/processors/**/target/site/jacoco/jacoco.xml
           # sonar.qualitygate.wait=true
           # sonar.qualitygate.timeout=300
           # sonar.sources=processors/pom.xml
