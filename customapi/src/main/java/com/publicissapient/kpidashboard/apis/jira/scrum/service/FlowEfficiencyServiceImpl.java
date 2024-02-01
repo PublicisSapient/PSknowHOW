@@ -170,7 +170,14 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
         List<String> xAxisRange = new ArrayList<>(rangeList);
         Collections.reverse(xAxisRange);
 
-        IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions("Select Filter", filters);
+        Set<String> newfilters = new LinkedHashSet<>();
+
+        if(filters.contains(OVERALL)) {
+            filters.remove(OVERALL);
+            newfilters.add(OVERALL);
+            newfilters.addAll(filters);
+        }
+        IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions("Select Filter", newfilters);
         IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 
         kpiElement.setFilters(iterationKpiFilters);

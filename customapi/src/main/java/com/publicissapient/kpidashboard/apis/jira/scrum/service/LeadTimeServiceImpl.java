@@ -19,25 +19,14 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.*;
-import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
-import org.hamcrest.collection.IsEmptyCollection;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,6 +56,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
+
 /**
  * lead time kpi is a line graph to depict the lead time of issues in past 6
  * months with trends
@@ -75,9 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<String, Object>> {
-
     private static final String STORY_HISTORY_DATA = "storyHistoryData";
-
     public static final String ISSUES = "issues";
     private static final String ISSUE_COUNT = "Issue Count";
     private static final String LEAD_TIME = "LEAD TIME";
@@ -157,7 +146,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
         Map<String, List<JiraIssueCustomHistory>> projectWiseJiraIssue = ticketList.stream()
                 .collect(Collectors.groupingBy(JiraIssueCustomHistory::getBasicProjectConfigId));
-        Set<String> filters = new HashSet<>();
+        Set<String> filters = new LinkedHashSet<>();
         for (Node node : leafNodeList) {
             List<JiraIssueCustomHistory> issueCustomHistoryList = projectWiseJiraIssue
                     .get(node.getProjectFilter().getBasicProjectConfigId().toString());
@@ -170,13 +159,22 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
             if (filters.isEmpty())
                 filters.addAll(leadTime.keySet());
             populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
+            populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
             mapTmp.get(node.getId()).setValue(leadTime);
         }
         List<String> xAxisRange = new ArrayList<>(rangeList);
         Collections.reverse(xAxisRange);
 
+        Set<String> newfilters = new LinkedHashSet<>();
+
+        if(filters.contains(OVERALL)) {
+            filters.remove(OVERALL);
+            newfilters.add(OVERALL);
+            newfilters.addAll(filters);
+        }
+
         // Create kpi level filters
-        IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions("Select Filter", filters);
+        IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions("Select Filter", newfilters);
         IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 
         kpiElement.setFilters(iterationKpiFilters);
@@ -227,11 +225,16 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
     /**
      * prepareLeadtime list
      *
-     * @param jiraIssueCustomHistoriesList historylist
-     * @param fieldMapping                 fieldMapping
-     * @param leadTimeList                 leadTimeList
-     * @param node                         projectNode
-     * @param rangeList                    rangeList
+     * @param jiraIssueCustomHistoriesList
+     *            historylist
+     * @param fieldMapping
+     *            fieldMapping
+     * @param leadTimeList
+     *            leadTimeList
+     * @param node
+     *            projectNode
+     * @param rangeList
+     * 			rangeList
      * @return dataCountMap
      */
     private LinkedHashMap<String, List<DataCount>> getLeadTime(
@@ -241,7 +244,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
         Map<Long, String> monthRangeMap = new HashMap<>();
         Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
         BacklogKpiHelper.initializeRangeMapForProjects(rangeWiseJiraIssuesMap, rangeList, monthRangeMap);
-        Set<String> issueTypes = new HashSet<>();
+        Set<String> issueTypes= new HashSet<>();
 
         if (CollectionUtils.isNotEmpty(jiraIssueCustomHistoriesList)) {
             for (JiraIssueCustomHistory jiraIssueCustomHistory : jiraIssueCustomHistoriesList) {
@@ -261,8 +264,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
                                 statusUpdateLog, DateTime.parse(statusUpdateLog.getUpdatedOn().toString()),
                                 liveStatus));
 
-                if (BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
-                        cycleTime.getLiveLocalDateTime(), monthRangeMap)) {
+                if(BacklogKpiHelper.setRangeWiseJiraIssuesMap(rangeWiseJiraIssuesMap, jiraIssueCustomHistory,
+                        cycleTime.getLiveLocalDateTime(), monthRangeMap)){
                     BacklogKpiHelper.setValueInCycleTime(jiraIssueCustomHistory.getCreatedDate(), cycleTime.getLiveTime(),
                             LEAD_TIME, cycleTimeValidationData, issueTypes);
                     leadTimeList.add(cycleTimeValidationData);
@@ -276,9 +279,12 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
     /**
      * create trendValueMap of DataCounts
      *
-     * @param rangeAndStatusWiseJiraIssueMap map of jira issue by range
-     * @param leadTimeFullList               map of flow efficiency by issue
-     * @param leafNode                       project node
+     * @param rangeAndStatusWiseJiraIssueMap
+     *            map of jira issue by range
+     * @param leadTimeFullList
+     *            map of flow efficiency by issue
+     * @param leafNode
+     *            project node
      * @param totalIssueTypeString
      * @return data count map by filter
      */
@@ -286,7 +292,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
             Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeAndStatusWiseJiraIssueMap,
             List<CycleTimeValidationData> leadTimeFullList, Node leafNode, Set<String> totalIssueTypeString) {
         Map<String, Long> map = leadTimeFullList.stream().collect(
-                Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime, (existing, replacement) -> existing));
+                Collectors.toMap(CycleTimeValidationData::getIssueNumber, CycleTimeValidationData::getLeadTime,  (existing, replacement) -> existing));
         LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 
         rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
@@ -313,12 +319,18 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
     /**
      * create DataCount by Filter
      *
-     * @param projectName  project name
-     * @param filter       filter
-     * @param dateRange    date range
-     * @param value        average flow efficiency
-     * @param dataCountMap data count by filter
-     * @param count        no of issues for range
+     * @param projectName
+     *            project name
+     * @param filter
+     *            filter
+     * @param dateRange
+     *            date range
+     * @param value
+     *            average flow efficiency
+     * @param dataCountMap
+     *            data count by filter
+     * @param count
+     *            no of issues for range
      */
     public void setDataCount(String projectName, String filter, String dateRange, Long value,
                              Map<String, List<DataCount>> dataCountMap, int count) {
@@ -338,9 +350,13 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
     }
 
     /**
-     * @param requestTrackerId requestTrackerId
-     * @param leadTimeList     leadTimeList
-     * @param excelData        excelData
+     *
+     * @param requestTrackerId
+     *            requestTrackerId
+     * @param leadTimeList
+     *            leadTimeList
+     * @param excelData
+     *            excelData
      */
     private void populateExcelDataObject(String requestTrackerId, List<CycleTimeValidationData> leadTimeList,
                                          List<KPIExcelData> excelData) {
@@ -351,8 +367,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
     }
 
     @Override
-    public Double calculateThresholdValue(FieldMapping fieldMapping) {
-        return calculateThresholdValue(fieldMapping.getThresholdValueKPI3(), KPICode.LEAD_TIME.getKpiId());
+    public Double calculateThresholdValue(FieldMapping fieldMapping){
+        return calculateThresholdValue(fieldMapping.getThresholdValueKPI3(),KPICode.LEAD_TIME.getKpiId());
     }
 
 }
