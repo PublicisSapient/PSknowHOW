@@ -453,7 +453,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				testCaseList.stream()
 						.filter(jIssue -> CollectionUtils.isNotEmpty(jIssue.getLabels())
 								&& jIssue.getLabels().stream().anyMatch(jiraBugRaisedByValue::contains))
-						.forEach(jIssue -> jIssue.getLabels()
+						.forEach(jIssue -> jiraBugRaisedByValue // itr over labels in fieldMapping
 								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(jIssue)));
 
 			} else {
