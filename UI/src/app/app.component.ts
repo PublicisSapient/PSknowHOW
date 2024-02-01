@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    /** Fetch projectId and sprintId from query param and save it to localStorage */
+    /** Fetch projectId and sprintId from query param and save it to global object */
     this.route.queryParams
     .subscribe(params => {
         let nodeId = params.projectId;
