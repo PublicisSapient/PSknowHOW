@@ -89,6 +89,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class JiraIssueProcessorImpl implements JiraIssueProcessor {
+	private static final String TEST_PHASE= "TestPhase";
+	private static final String UAT_PHASE= "UAT";
 
 	AssigneeDetails assigneeDetails;
 	@Autowired
@@ -198,7 +200,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			setProjectSpecificDetails(projectConfig, jiraIssue, issue);
 			setAdditionalFilters(jiraIssue, issue, projectConfig);
 			setStoryLinkWithDefect(issue, jiraIssue, fields);
-			setQADefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setProductionDefectIdentificationField(fieldMapping, issue, jiraIssue, fields);
 			setTestingPhaseDefectIdentificationField(issue, fieldMapping, jiraIssue, fields);
 			// ADD Production Incident field to feature
@@ -622,38 +623,6 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		return rcaCauseResult.toLowerCase();
 	}
 
-	private void setQADefectIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
-			Map<String, IssueField> fields) {
-		try {
-			if (CollectionUtils.isNotEmpty(featureConfig.getJiradefecttype()) && featureConfig.getJiradefecttype()
-					.stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-				if (null != featureConfig.getJiraBugRaisedByQAIdentification() && featureConfig
-						.getJiraBugRaisedByQAIdentification().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
-					List<String> commonLabel = issue.getLabels().stream()
-							.filter(x -> featureConfig.getJiraBugRaisedByQAValue().contains(x))
-							.collect(Collectors.toList());
-					if (CollectionUtils.isNotEmpty(commonLabel)) {
-						feature.setDefectRaisedByQA(true);
-					}
-				} else if (null != featureConfig.getJiraBugRaisedByQAIdentification()
-						&& featureConfig.getJiraBugRaisedByQAIdentification().trim()
-								.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
-						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()) != null
-						&& fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue() != null
-						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getJiraBugRaisedByQAValue(),
-								fields.get(featureConfig.getJiraBugRaisedByQACustomField().trim()).getValue(), null)) {
-					feature.setDefectRaisedByQA(true);
-				} else {
-					feature.setDefectRaisedByQA(false);
-				}
-			}
-
-		} catch (Exception e) {
-			log.error("Error while parsing QA field {}", e);
-		}
-
-	}
-
 	private void setProductionDefectIdentificationField(FieldMapping featureConfig, Issue issue, JiraIssue feature,
 			Map<String, IssueField> fields) {
 		try {
@@ -673,7 +642,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()) != null
 						&& fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue() != null
 						&& isBugRaisedByValueMatchesRaisedByCustomField(featureConfig.getProductionDefectValue(),
-								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue(), null)) {
+								fields.get(featureConfig.getProductionDefectCustomField().trim()).getValue(), null, "")) {
 					feature.setProductionDefect(true);
 				} else if (null != featureConfig.getProductionDefectIdentifier()
 						&& featureConfig.getProductionDefectIdentifier().trim()
@@ -741,7 +710,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()) != null
 					&& fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue() != null
 					&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByValue(),
-							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue(), null)) {
+							fields.get(fieldMapping.getJiraBugRaisedByCustomField().trim()).getValue(), jiraIssue, UAT_PHASE )) {
 				jiraIssue.setDefectRaisedBy(NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue());
 			} else {
 				jiraIssue.setDefectRaisedBy("");
@@ -751,7 +720,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	}
 
 	private boolean isBugRaisedByValueMatchesRaisedByCustomField(List<String> bugRaisedValue, Object issueFieldValue,
-			JiraIssue jiraIssue) {
+			JiraIssue jiraIssue, String feature) {
 		List<String> lowerCaseBugRaisedValue = bugRaisedValue.stream().map(String::toLowerCase)
 				.collect(Collectors.toList());
 		JSONParser parser = new JSONParser();
@@ -774,7 +743,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 				}
 				if (Objects.nonNull(jiraIssue)) {
-					jiraIssue.setEscapedDefectGroup(testPhasesList);
+					setSpecificField(jiraIssue, feature, testPhasesList);
+
 				}
 			} else if (issueFieldValue instanceof org.codehaus.jettison.json.JSONObject
 					&& lowerCaseBugRaisedValue.contains(((org.codehaus.jettison.json.JSONObject) issueFieldValue)
@@ -782,8 +752,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString().toLowerCase();
-				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue)) {
-					jiraIssue.setEscapedDefectGroup(Collections.singletonList(testPhase));
+				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue) && feature.equalsIgnoreCase(TEST_PHASE)) {
+					setSpecificField(jiraIssue,feature, Collections.singletonList(testPhase));
 				}
 			}
 
@@ -791,6 +761,14 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 			log.error("JIRA Processor | Error while parsing third party field {}", e);
 		}
 		return isRaisedByThirdParty;
+	}
+
+	private void setSpecificField(JiraIssue jiraIssue, String feature, List<String> testPhasesList) {
+		if (feature.equalsIgnoreCase(TEST_PHASE)) {
+			jiraIssue.setEscapedDefectGroup(testPhasesList);
+		} else if (feature.equalsIgnoreCase(UAT_PHASE)) {
+			jiraIssue.setUatDefectGroup(testPhasesList);
+		}
 	}
 
 	private void processSprintData(JiraIssue jiraIssue, IssueField sprintField, ProjectConfFieldMapping projectConfig) {
@@ -977,7 +955,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
 					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
 				isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
-						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue);
+						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue, TEST_PHASE);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
 					.getTestingPhaseDefectsIdentifier().trim().equalsIgnoreCase(JiraConstants.COMPONENT)) {
 				setTestPhaseDefectsListForComponent(issue, fieldMapping, jiraIssue);
@@ -1009,7 +987,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 									featureConfig.getJiraProdIncidentRaisedByValue(),
 									fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
 											.getValue(),
-									null));
+									null, ""));
 			}
 
 		} catch (Exception e) {
