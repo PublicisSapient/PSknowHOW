@@ -205,18 +205,18 @@ stages:
       artifact: processor-pipeline-artifacts
 
     - task: PublishCodeCoverageResults@1
-      displayName: 'Publising Code Coverage Azure pipeline'
+      displayName: 'Publising Code Coverage jira pipeline'
       inputs:
         codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
-        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-pipeline/target/site/jacoco/jacoco.xml'
-        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-pipeline/target/site/jacoco/'
+        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/jacoco.xml'
+        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/'
 
-    - task: PublishCodeCoverageResults@1
-      displayName: 'Publising Code Coverage Azure board'
-      inputs:
-        codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
-        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-boards/target/site/jacoco/jacoco.xml'
-        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-boards/target/site/jacoco/'
+    # - task: PublishCodeCoverageResults@1
+    #   displayName: 'Publising Code Coverage Azure board'
+    #   inputs:
+    #     codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
+    #     summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-boards/target/site/jacoco/jacoco.xml'
+    #     reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/azure-boards/target/site/jacoco/'
 
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
