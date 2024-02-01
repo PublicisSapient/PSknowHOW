@@ -21,10 +21,118 @@
     <div *ngIf="selectedtype.toLowerCase() === 'scrum'">
       <div class="clearfix">
         <div class="right-container col">
-          <div class="p-grid justify-content-start p-pt-3">
+          <div class="p-grid p-justify-center p-ai-center p-pt-3 p-px-2">
+            <div class="kpi-summary p-mr-2 position-relative" *ngIf="kpiConfigData['kpi116']">
+              <h4 class="p-m-0 p-text-center">Change Failure Rate</h4>
+              <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
+                <div class="p-mt-3 summary-circle p-text-center"
+                  [ngStyle]="{'background-color': kpiChartData['kpi116']?.[0]?.maturityColor}"
+                  (mouseover)="showTooltip($event, true, 'kpi116')"
+                  (mouseleave)="showTooltip($event, false, 'kpi116')">
+                  {{kpiChartData['kpi116']?.[0]?.aggregationValue + " " +
+                  updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}
+
+                  <app-tooltip *ngIf="isTooltip === 'kpi116'" [data]="maturityObj['kpi116']" [toolTipTop]="toolTipTop"
+                    [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi116')"
+                    [kpiName]="kpiData?.kpiName"></app-tooltip>
+                </div>
+              </div>
+              <ng-template #noData1>
+                <div class="overlay"
+                  *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
+                  <div class="err">No Data Available</div>
+                </div>
+              </ng-template>
+            </div>
+
+
+            <div class="kpi-summary p-mr-2 position-relative" *ngIf="kpiConfigData['kpi118']">
+              <h4 class="p-m-0 p-text-center">Deployment Frequency </h4>
+              <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
+                <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi118')"
+                  (mouseleave)="showTooltip($event, false, 'kpi118')"
+                  [ngStyle]="{'background-color': kpiChartData['kpi118']?.[0]?.maturityColor}">
+                  {{kpiChartData['kpi118']?.[0]?.aggregationValue}}
+
+                  <app-tooltip *ngIf="isTooltip === 'kpi118'" [data]="maturityObj['kpi118']"
+                    [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi118')"
+                    [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
+                </div>
+              </div>
+              <ng-template #noData2>
+                <div class="overlay"
+                  *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
+                  <div class="err">No Data Available</div>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="kpi-summary p-mr-2 position-relative" *ngIf="kpiConfigData['kpi156']">
+              <h4 class="p-m-0 p-text-center">Lead Time For Change</h4>
+              <div *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
+                <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi156')"
+                  (mouseleave)="showTooltip($event, false, 'kpi156')"
+                  [ngStyle]="{'background-color': kpiChartData['kpi156']?.[0]?.maturityColor}">
+                  {{kpiChartData['kpi156']?.[0]?.aggregationValue + " " +
+                  updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}
+
+                  <app-tooltip *ngIf="isTooltip === 'kpi156'" [data]="maturityObj['kpi156']"
+                    [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi156')"
+                    [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
+                </div>
+              </div>
+              <ng-template #noData5>
+                <div class="overlay"
+                  *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length > 0) || kpiLoader">
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length === 0 && kpiLoader === false)">
+                  <div class="err">No Data Available</div>
+                </div>
+              </ng-template>
+            </div>
+
+
+            <div class="kpi-summary p-mr-2 position-relative" *ngIf="kpiConfigData['kpi166']">
+              <h4 class="p-m-0 p-text-center">Mean Time to Recover </h4>
+              <div *ngIf="(kpiChartData['kpi166']?.length > 0 && chartColorList['kpi166']?.length>0); else noData6">
+                <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi166')"
+                  (mouseleave)="showTooltip($event, false, 'kpi166')"
+                  [ngStyle]="{'background-color': kpiChartData['kpi166']?.[0]?.maturityColor}">
+                  {{kpiChartData['kpi166']?.[0]?.aggregationValue + " " +
+                  updatedConfigDataObj['kpi166']?.kpiDetail?.kpiUnit}}
+
+                  <app-tooltip *ngIf="isTooltip === 'kpi166'" [data]="maturityObj['kpi166']"
+                    [showingMaturityRange]="true" [kpiName]="kpiData?.kpiName"
+                    [toolTipTop]="toolTipTop"></app-tooltip>
+                </div>
+
+              </div>
+              <ng-template #noData6>
+                <div class="overlay"
+                  *ngIf="(kpiChartData['kpi166'] && kpiChartData['kpi166']?.length > 0) || kpiLoader">
+                  <div class="loading-img"></div>
+                </div>
+                <div class="min-ht"
+                  *ngIf="(kpiChartData['kpi166'] && kpiChartData['kpi166']?.length === 0 && kpiLoader === false)">
+                  <div class="err">No Data Available</div>
+                </div>
+              </ng-template>
+            </div>
+
+          </div>
+          <div class="p-grid p-justify-center p-pt-3 p-px-2">
             <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-              <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
-              <div class="p-sm-5 p-pl-4">
+              <div class="p-sm-6" *ngIf="kpiConfigData['kpi116']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi116']"
                   [trendData]="kpiTrendsObj['kpi116']" [dropdownArr]="kpiDropdowns['kpi116']"
                   (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi116']?.kpiId, updatedConfigDataObj['kpi116']?.kpiName, updatedConfigDataObj['kpi116']?.kpiDetail.kanban,updatedConfigDataObj['kpi116']?.kpiDetail?.additionalFilterSupport)"
@@ -71,59 +179,7 @@
                   </ng-container>
                 </app-kpi-card>
               </div>
-              <div class="p-sm-2">
-                <div class="kpi-summary p-p-3 p-mb-3 position-relative">
-                  <h4 class="p-m-0 p-text-center">Change Failure Rate</h4>
-                  <div *ngIf="(kpiChartData['kpi116']?.length > 0 && chartColorList['kpi116']?.length>0); else noData1">
-                    <div class="p-mt-3 summary-circle p-text-center"
-                      [ngStyle]="{'background-color': kpiChartData['kpi116']?.[0]?.maturityColor}"
-                      (mouseover)="showTooltip($event, true, 'kpi116')"
-                      (mouseleave)="showTooltip($event, false, 'kpi116')">
-                      {{kpiChartData['kpi116']?.[0]?.aggregationValue + " " +
-                      updatedConfigDataObj['kpi116']?.kpiDetail?.kpiUnit}}
-
-                      <app-tooltip *ngIf="isTooltip === 'kpi116'" [data]="maturityObj['kpi116']" [toolTipTop]="toolTipTop"
-                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi116')"
-                        [kpiName]="kpiData?.kpiName"></app-tooltip>
-                    </div>
-                  </div>
-                  <ng-template #noData1>
-                    <div class="overlay"
-                      *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length) || kpiLoader">
-                      <div class="loading-img"></div>
-                    </div>
-                    <div class="min-ht"
-                      *ngIf="(kpiChartData['kpi116'] && kpiChartData['kpi116']?.length === 0 && kpiLoader === false)">
-                      <div class="err">No Data Available</div>
-                    </div>
-                  </ng-template>
-                </div>
-                <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0 p-text-center">Deployment Frequency </h4>
-                  <div *ngIf="(kpiChartData['kpi118']?.length > 0 && chartColorList['kpi118']?.length>0); else noData2">
-                    <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi118')"
-                      (mouseleave)="showTooltip($event, false, 'kpi118')"
-                      [ngStyle]="{'background-color': kpiChartData['kpi118']?.[0]?.maturityColor}">
-                      {{kpiChartData['kpi118']?.[0]?.aggregationValue}}
-
-                      <app-tooltip *ngIf="isTooltip === 'kpi118'" [data]="maturityObj['kpi118']"
-                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi118')"
-                        [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
-                    </div>
-                  </div>
-                  <ng-template #noData2>
-                    <div class="overlay"
-                      *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length > 0) || kpiLoader">
-                      <div class="loading-img"></div>
-                    </div>
-                    <div class="min-ht"
-                      *ngIf="(kpiChartData['kpi118'] && kpiChartData['kpi118']?.length === 0 && kpiLoader === false)">
-                      <div class="err">No Data Available</div>
-                    </div>
-                  </ng-template>
-                </div>
-              </div>
-              <div class="p-sm-5 p-pr-4">
+              <div class="p-sm-6" *ngIf="kpiConfigData['kpi118']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi118']"
                   [trendData]="kpiTrendsObj['kpi118']" [dropdownArr]="kpiDropdowns['kpi118']"
                   (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi118'])"
@@ -170,18 +226,14 @@
                   </ng-container>
                 </app-kpi-card>
               </div>
-              <!-- </ng-container> -->
               <ng-template #noDataAccess>
                 <div class="min-ht">
                   <div class="err"> No Data Available</div>
                 </div>
               </ng-template>
             </ng-container>
-          </div>
-          <div class="p-grid justify-content-start p-pt-3">
-            <ng-container *ngIf="(updatedConfigGlobalData | json) != '{}' && updatedConfigGlobalData != undefined">
-              <!-- <ng-container *ngFor="let kpi of updatedConfigGlobalData; let i = index;"> -->
-              <div class="p-sm-5 p-pl-4">
+         
+              <div class="p-sm-6" *ngIf="kpiConfigData['kpi156']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi156']"
                   [trendData]="kpiTrendsObj['kpi156']" [dropdownArr]="kpiDropdowns['kpi156']"
                   (downloadExcel)="downloadExcel(updatedConfigDataObj['kpi156']?.kpiId, updatedConfigDataObj['kpi156']?.kpiName, updatedConfigDataObj['kpi156']?.kpiDetail.kanban,updatedConfigDataObj['kpi156']?.kpiDetail?.additionalFilterSupport)"
@@ -228,60 +280,8 @@
                   </ng-container>
                 </app-kpi-card>
               </div>
-              <div class="p-sm-2">
-                <div class="kpi-summary p-p-3 p-mb-3 position-relative">
-                  <h4 class="p-m-0 p-text-center">Lead Time For Change</h4>
-                  <div *ngIf="(kpiChartData['kpi156']?.length > 0 && chartColorList['kpi156']?.length>0); else noData5">
-                    <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi156')"
-                      (mouseleave)="showTooltip($event, false, 'kpi156')"
-                      [ngStyle]="{'background-color': kpiChartData['kpi156']?.[0]?.maturityColor}">
-                      {{kpiChartData['kpi156']?.[0]?.aggregationValue + " " +
-                      updatedConfigDataObj['kpi156']?.kpiDetail?.kpiUnit}}
 
-                      <app-tooltip *ngIf="isTooltip === 'kpi156'" [data]="maturityObj['kpi156']"
-                        [showingMaturityRange]="true" (mouseleave)="showTooltip(null, false, 'kpi156')"
-                        [kpiName]="kpiData?.kpiName" [toolTipTop]="toolTipTop"></app-tooltip>
-                    </div>
-                  </div>
-                  <ng-template #noData5>
-                    <div class="overlay"
-                      *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length > 0) || kpiLoader">
-                      <div class="loading-img"></div>
-                    </div>
-                    <div class="min-ht"
-                      *ngIf="(kpiChartData['kpi156'] && kpiChartData['kpi156']?.length === 0 && kpiLoader === false)">
-                      <div class="err">No Data Available</div>
-                    </div>
-                  </ng-template>
-                </div>
-                <div class="kpi-summary p-p-3 position-relative">
-                  <h4 class="p-m-0 p-text-center">Mean Time to Recover </h4>
-                  <div *ngIf="(kpiChartData['kpi166']?.length > 0 && chartColorList['kpi166']?.length>0); else noData6">
-                    <div class="p-mt-3 summary-circle p-text-center" (mouseover)="showTooltip($event, true, 'kpi166')"
-                      (mouseleave)="showTooltip($event, false, 'kpi166')"
-                      [ngStyle]="{'background-color': kpiChartData['kpi166']?.[0]?.maturityColor}">
-                      {{kpiChartData['kpi166']?.[0]?.aggregationValue + " " +
-                      updatedConfigDataObj['kpi166']?.kpiDetail?.kpiUnit}}
-
-                      <app-tooltip *ngIf="isTooltip === 'kpi166'" [data]="maturityObj['kpi166']"
-                        [showingMaturityRange]="true" [kpiName]="kpiData?.kpiName"
-                        [toolTipTop]="toolTipTop"></app-tooltip>
-                    </div>
-
-                  </div>
-                  <ng-template #noData6>
-                    <div class="overlay"
-                      *ngIf="(kpiChartData['kpi166'] && kpiChartData['kpi166']?.length > 0) || kpiLoader">
-                      <div class="loading-img"></div>
-                    </div>
-                    <div class="min-ht"
-                      *ngIf="(kpiChartData['kpi166'] && kpiChartData['kpi166']?.length === 0 && kpiLoader === false)">
-                      <div class="err">No Data Available</div>
-                    </div>
-                  </ng-template>
-                </div>
-              </div>
-              <div class="p-sm-5 p-pr-4">
+              <div class="p-sm-6" *ngIf="kpiConfigData['kpi166']">
                 <app-kpi-card [trendBoxColorObj]="trendBoxColorObj" [kpiData]="updatedConfigDataObj['kpi166']"
                   [trendData]="kpiTrendsObj['kpi166']" [dropdownArr]="kpiDropdowns['kpi166']"
                   (optionSelected)="handleSelectedOption($event, updatedConfigDataObj['kpi166'])"
@@ -328,13 +328,11 @@
                   </ng-container>
                 </app-kpi-card>
               </div>
-              <!-- </ng-container> -->
               <ng-template #noDataAccess>
                 <div class="min-ht">
                   <div class="err"> No Data Available</div>
                 </div>
               </ng-template>
-            </ng-container>
           </div>
         </div>
       </div>

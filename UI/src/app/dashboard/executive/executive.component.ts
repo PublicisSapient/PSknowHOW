@@ -974,7 +974,11 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
             }
             let filtersApplied = Object.keys(this.colorObj);
 
-            filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+            //filtersApplied = filtersApplied.map((x) => x.split('_')[0]);
+            filtersApplied = filtersApplied.map((x) => {
+              let parts = x.split('_');
+              return parts.slice(0, parts.length - 1).join('_');
+            });
 
             filtersApplied.forEach((hierarchyName) => {
                 let obj = {

@@ -284,9 +284,15 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	@Override
 	public AzureWiqlModel getWiqlResponse(AzureServer azureServer, Map<String, LocalDateTime> startTimesByIssueType,
 			ProjectConfFieldMapping projectConfig, boolean dataExist) {
+
 		AzureWiqlModel azureWiqlModel = new AzureWiqlModel();
-		StringBuilder url = new StringBuilder(
-				AzureProcessorUtil.joinURL(azureServer.getUrl(), azureProcessorConfig.getApiEndpointWiql()));
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+
+		if (projectConfig.getProjectToolConfig() != null && StringUtils.isNotEmpty(projectConfig.getProjectToolConfig().getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getProjectToolConfig().getTeam()));
+		}
+		url = new StringBuilder(AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointWiql()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		if (null != projectConfig.getFieldMapping().getJiraIssueTypeNames()
@@ -336,8 +342,14 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	public AzureIterationsModel getIterationsResponse(AzureServer azureServer) {
 		AzureIterationsModel azureIterationsModel = new AzureIterationsModel();
 
-		StringBuilder url = new StringBuilder(
-				AzureProcessorUtil.joinURL(azureServer.getUrl(), azureProcessorConfig.getApiEndpointIterations()));
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
+		}
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
@@ -482,8 +494,16 @@ public class ProcessorAsyncAzureRestClientImpl implements ProcessorAzureRestClie
 	@Override
 	public List<String> getIssuesBySprintResponse(AzureServer azureServer, String sprintId) {
 		List<String> sprintWiseItemIdList = new ArrayList<>();
-		StringBuilder url = new StringBuilder(AzureProcessorUtil.joinURL(azureServer.getUrl(),
-				azureProcessorConfig.getApiEndpointIterations(), "/" + sprintId + "/workitems"));
+
+		StringBuilder url = new StringBuilder(azureServer.getUrl());
+		if (StringUtils.isNotEmpty(azureServer.getTeam())) {
+			url.append(AzureConstants.FORWARD_SLASH);
+			url.append(AzureProcessorUtil.encodeSpaceInUrl(azureServer.getTeam()));
+		}
+
+		url = new StringBuilder(
+				AzureProcessorUtil.joinURL(url.toString(), azureProcessorConfig.getApiEndpointIterations()));
+		url.append(AzureConstants.FORWARD_SLASH).append(sprintId).append("/workitems");
 		url = AzureProcessorUtil.addParam(url, API_VERSION, azureServer.getApiVersion());
 
 		ResponseEntity<String> responseEntity = doRestCall(url.toString(), azureServer);
