@@ -8,10 +8,7 @@ parameters:
   values:
   - 'API'
   - 'UI'
-  - 'Jira_Processor'
-  - 'DevOps_Processor'
-  - 'Azure_Board_Processor'
-  - 'Azure_Pipeline_Repo'
+  - 'Processor'
   - 'ALL'
 - name: PUSH_TO_DOCKER_REGISTRY
   type: string
@@ -104,25 +101,24 @@ stages:
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
     
-    - task: SonarQubePublish@5
-      displayName: Publish Quality Gate Result
-      inputs:
-        pollingTimeoutSec: '300'
-    - script: |
-        result=$(sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar -Dsonar.qualitygate.show=true)
-        if [[ "$result" =~ QUALITY_GATE_STATUS=ERROR ]]; then
-          echo "Quality Gate check failed."
-          exit 1
-        fi
-      displayName: 'Check Quality Gate Status'
-      continueOnError: false
+    # - task: SonarQubePublish@5
+    #   displayName: Publish Quality Gate Result
+    #   inputs:
+    #     pollingTimeoutSec: '300'
+    # - script: |
+    #     result=$(sonar-scanner -Dsonar.login=$(SonarQubeToken) -Dsonar.projectKey=ENGINEERING.KPIDASHBOARD.CUSTOMAPI -Dsonar.host.url=https://tools.publicis.sapient.com/sonar -Dsonar.qualitygate.show=true)
+    #     if [[ "$result" =~ QUALITY_GATE_STATUS=ERROR ]]; then
+    #       echo "Quality Gate check failed."
+    #       exit 1
+    #     fi
+    #   displayName: 'Check Quality Gate Status'
+    #   continueOnError: false
+
 - stage: UI_Deploy
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
   - job: UI_Deploy
-    # pool:
-    #   vmImage: 'ubuntu-latest'
 
     steps:
     - checkout: self
@@ -137,87 +133,104 @@ stages:
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
 
 
-- stage: Jira_Processor_Deploy
-  condition: or(eq('${{ parameters.BUILD }}', 'Jira_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
+- stage: Processor_Build
+  condition: or(eq('${{ parameters.BUILD }}', 'Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
-  - job: Jira_Processor_Deploy
-    # pool:
-    #   vmImage: 'ubuntu-latest'
+  - job: Capturing_Version
+
+    variables:
+      overrideValues: ''
 
     steps:
     - checkout: self
 
     - script: |
-        cd processors/jira
-        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
-        echo "Deploying Jira_Processor..."
-        # Add Jira_Processor deployment steps
-        echo "Deploying Helm charts for Jira_Processor..."
+        echo "BUILDING: ${{ parameters.BUILD }}"
+        echo "Capturing Version"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-
-- stage: DevOps_Processor_Deploy
-  condition: or(eq('${{ parameters.BUILD }}', 'DevOps_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
-
-  jobs:
-  - job: DevOps_Processor_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
-
-    steps:
-    - checkout: self
-
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
-        echo "Deploying DevOps_Processor..."
-        # Add DevOps_Processor deployment steps
-        echo "Deploying Helm charts for DevOps_Processor..."
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-
-- stage: Azure_Board_Processor_Deploy
-  condition: or(eq('${{ parameters.BUILD }}', 'Azure_Board_Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
-
-  jobs:
-  - job: Azure_Board_Processor_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
-
-    steps:
-    - checkout: self
-
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
-        echo "Deploying Azure_Board_Processor..."
-        # Add Azure_Board_Processor deployment steps
-        echo "Deploying Helm charts for Azure_Board_Process"
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "Version from pom.xml: $VERSION"        
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
-        echo "Version from pom.xml: $VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-
-
-- stage: Azure_Pipeline_Repo_Deploy
-  condition: or(eq('${{ parameters.BUILD }}', 'Azure_Pipeline_Repo'), eq('${{ parameters.BUILD }}', 'ALL'))
-
-  jobs:
-  - job: Azure_Pipeline_Repo_Deploy
-    pool:
-      vmImage: 'ubuntu-latest'
+  
+  - job: RUNNING_TEST
+    displayName: 'Running Tests'
+    dependsOn: Capturing_Version
 
     steps:
-    - checkout: self
 
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
-        echo "Deploying Azure_Pipeline_Repo..."
-        # Add Azure_Pipeline_Repo deployment steps
-        echo "Deploying Helm charts for Azure_Pipeline_Repo..."
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+    - task: Maven@3
+      displayName: 'Run Jira build'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean install -Pjira-processor'
+        publishJUnitResults: true
+        # sonarQubeRunAnalysis: true
+    
+    - task: Maven@3
+      displayName: 'Run devops build'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean install -Pdevops-processor'
+        publishJUnitResults: true
 
+    - task: Maven@3
+      displayName: 'Run az board build'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean install -Pazure-board-processor'
+        publishJUnitResults: true
 
+    - task: Maven@3
+      displayName: 'Run az pipeline build'
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'clean install -Pazure-pipeline-repo'
+        publishJUnitResults: true    
+    
+    - publish: $(System.DefaultWorkingDirectory)/
+      artifact: processor-artifacts
+
+    - publish: /home/vsts/.m2
+      artifact: processor-pipeline-artifacts
+
+  - job: SONAR_ANALYSIS
+    displayName: 'Running Sonar'
+    dependsOn: RUNNING_TEST
+
+    steps:
+    - download: current
+      artifact: processor-artifacts
+
+    - download: current
+      artifact: processor-pipeline-artifacts
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publising Code Coverage'
+      inputs:
+        codeCoverageTool: 'JaCoCo'  # Specify JaCoCo as the code coverage tool.
+        summaryFileLocation: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/jacoco.xml'
+        reportDirectory: '$(Agent.BuildDirectory)/processor-artifacts/processors/jira/target/site/jacoco/'
+
+    - task: SonarQubePrepare@5
+      displayName: 'Prepare Analysis Configuration'
+      inputs:
+        SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
+        scannerMode: 'Other'
+        extraProperties: |
+          sonar.projectVersion=$(overrideValues)
+          sonar.projectName=ENGINEERING.KPIDASHBOARD.PROCESSORS
+          sonar.projectKey=ENGINEERING.KPIDASHBOARD.PROCESSORS
+          sonar.branch.name=$(Build.SourceBranchName)
+          sonar.java.binaries=$(Agent.BuildDirectory)/processor-artifacts/processors/target/classes
+          # sonar.jacoco.reportPath=$(Agent.BuildDirectory)/processor-artifacts/processors/target/jacoco.exec
+          sonar.coverage.jacoco.xmlReportPaths=$(Agent.BuildDirectory)/processor-artifacts/processors/target/site/jacoco/jacoco.xml
+          # sonar.qualitygate.wait=true
+          # sonar.qualitygate.timeout=300
+          # sonar.sources=processors/pom.xml
+          # sonar.language=java
+          sonar.sourceEncoding=UTF-8
+      enabled: true
+    - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/processor-pipeline-artifacts/repository -f processors/pom.xml'
+      displayName: 'Run SonarQube analysis'
+    
