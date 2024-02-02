@@ -149,15 +149,14 @@ public class KPIExcelDataService {
 	 */
 
 	public Object process(String kpiID, int level, List<String> filterIds, List<String> acceptedFilter,
-			KpiRequest kpiRequest, Boolean isKanban) {
+			KpiRequest kpiRequest, Boolean isKanban, Boolean isApiAuth) {
 
 		Map<String, KpiRequest> kpiRequestSourceWiseMap = createKPIRequest(kpiID, level, filterIds, kpiRequest,
 				isKanban);
-
 		if (isSourceKanban(kpiRequestSourceWiseMap)) {
 			return processKanban(kpiID, kpiRequestSourceWiseMap, acceptedFilter);
 		}
-		return processScrum(kpiID, kpiRequestSourceWiseMap, acceptedFilter);
+		return processScrum(kpiID, kpiRequestSourceWiseMap, acceptedFilter, isApiAuth);
 
 	}
 
@@ -188,7 +187,7 @@ public class KPIExcelDataService {
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	private Object processScrum(String kpiID, Map<String, KpiRequest> kpiRequestSourceWiseMap,
-			List<String> acceptedFilter) {
+			List<String> acceptedFilter, Boolean apiAuth) {
 
 		List<KpiElement> totalKpiElementList = new ArrayList<>();
 		ExecutorService executor = Executors.newFixedThreadPool(10);
@@ -209,16 +208,16 @@ public class KPIExcelDataService {
 
 				switch (pair.getKey()) {
 				case EXCEL_JIRA:
-					jiraKpiDataFuture = excelJiraKpiDataFuture(executor, pair);
+					jiraKpiDataFuture = excelJiraKpiDataFuture(executor, pair, apiAuth);
 					break;
 				case EXCEL_JENKINS:
-					jenkinsKpiDataFuture = excelJenkinsKpiDataFuture(executor, pair);
+					jenkinsKpiDataFuture = excelJenkinsKpiDataFuture(executor, pair, apiAuth);
 					break;
 				case EXCEL_SONAR:
-					sonarKpiDataFuture = excelSonarKpiDataFuture(executor, pair);
+					sonarKpiDataFuture = excelSonarKpiDataFuture(executor, pair, apiAuth);
 					break;
 				case EXCEL_ZEPHYR:
-					zephyrKpiDataFuture = excelZephyrKpiDataFuture(executor, pair);
+					zephyrKpiDataFuture = excelZephyrKpiDataFuture(executor, pair, apiAuth);
 					break;
 				case EXCEL_BITBUCKET:
 					bitbucketKpiDataFuture = excelbitBucketKpiDataFuture(executor, pair);
@@ -483,12 +482,18 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelZephyrKpiDataFuture(ExecutorService executor,
-			Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> zephyrKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.ZEPHYR.name(),
 				pair.getValue().getRequestTrackerId());
 
-		Callable<List<KpiElement>> zephyrKpiDataTask = () -> zephyrService.process(pair.getValue());
+		Callable<List<KpiElement>> zephyrKpiDataTask = () -> {
+			if (Boolean.TRUE.equals(apiAuth)) {
+				return zephyrService.processWithExposedApiToken(pair.getValue());
+			} else {
+				return zephyrService.process(pair.getValue());
+			}
+		};
 
 		zephyrKpiDataFuture = executor.submit(zephyrKpiDataTask);
 		return zephyrKpiDataFuture;
@@ -502,12 +507,18 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelSonarKpiDataFuture(ExecutorService executor,
-			Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> sonarKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name(),
 				pair.getValue().getRequestTrackerId());
 
-		Callable<List<KpiElement>> sonarKpiDataTask = () -> sonarServiceR.process(pair.getValue());
+		Callable<List<KpiElement>> sonarKpiDataTask = () -> {
+			if (Boolean.TRUE.equals(apiAuth)) {
+				return sonarServiceR.processWithExposedApiToken(pair.getValue());
+			} else {
+				return sonarServiceR.process(pair.getValue());
+			}
+		};
 
 		sonarKpiDataFuture = executor.submit(sonarKpiDataTask);
 		return sonarKpiDataFuture;
@@ -521,12 +532,18 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJenkinsKpiDataFuture(ExecutorService executor,
-			Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> jenkinsKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JENKINS.name(),
 				pair.getValue().getRequestTrackerId());
 
-		Callable<List<KpiElement>> jenkinsKpiDataTask = () -> jenkinsServiceR.process(pair.getValue());
+		Callable<List<KpiElement>> jenkinsKpiDataTask = () -> {
+			if (Boolean.TRUE.equals(apiAuth)) {
+				return jenkinsServiceR.processWithExposedApiToken(pair.getValue());
+			} else {
+				return jenkinsServiceR.process(pair.getValue());
+			}
+		};
 
 		jenkinsKpiDataFuture = executor.submit(jenkinsKpiDataTask);
 		return jenkinsKpiDataFuture;
@@ -540,12 +557,18 @@ public class KPIExcelDataService {
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJiraKpiDataFuture(ExecutorService executor,
-			Map.Entry<String, KpiRequest> pair) {
+			Map.Entry<String, KpiRequest> pair, Boolean apiAuth) {
 		Future<List<KpiElement>> jiraKpiDataFuture;
 		cacheService.setIntoApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name(),
 				pair.getValue().getRequestTrackerId());
 
-		Callable<List<KpiElement>> jiraKpiDataTask = () -> jiraServiceR.process(pair.getValue());
+		Callable<List<KpiElement>> jiraKpiDataTask = () -> {
+			if (Boolean.TRUE.equals(apiAuth)) {
+				return jiraServiceR.processWithExposedApiToken(pair.getValue());
+			} else {
+				return jiraServiceR.process(pair.getValue());
+			}
+		};
 
 		jiraKpiDataFuture = executor.submit(jiraKpiDataTask);
 		return jiraKpiDataFuture;
