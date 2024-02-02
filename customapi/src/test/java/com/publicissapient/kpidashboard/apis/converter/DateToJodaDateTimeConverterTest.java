@@ -17,7 +17,7 @@ public class DateToJodaDateTimeConverterTest {
     DateToJodaDateTimeConverter dateToJodaDateTimeConverter;
     @Test
     public void testConvert() {
-        DateTime expected = new DateTime(2022, 2, 2, 0, 0);
+        DateTime expected = new DateTime(2022, 2, 2, 40, 0);
         DateTime actual = dateToJodaDateTimeConverter.convert(new Date(1643769600000L));
         assertEquals(expected, actual);
     }
