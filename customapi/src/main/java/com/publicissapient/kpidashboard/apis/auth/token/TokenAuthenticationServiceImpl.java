@@ -37,6 +37,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -72,6 +73,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
  * Implementation of {@link TokenAuthenticationService}
  */
 @Component
+@Slf4j
 public class TokenAuthenticationServiceImpl implements TokenAuthenticationService {
 
 	public static final String AUTH_DETAILS_UPDATED_FLAG = "auth-details-updated";
@@ -119,6 +121,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 				.signWith(SignatureAlgorithm.HS512, tokenAuthProperties.getSecret()).compact();
 	}
 
+	@Override
+	public boolean isJWTTokenExpired(String jwtToken) {
+		Claims decodedJWT = Jwts.parser()
+				.setSigningKey(tokenAuthProperties.getSecret())
+				.parseClaimsJws(jwtToken)
+				.getBody();
+		Date expiresAt = decodedJWT.getExpiration();
+		return new Date().after(expiresAt);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Authentication getAuthentication(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
@@ -138,6 +150,31 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 					}
 				}
 				return createAuthentication(token, response);
+			} else {
+				return null;
+			}
+		}
+
+	}
+
+	@Override
+	public String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO,
+			HttpServletRequest httpServletRequest) {
+
+		if (customApiConfig.isSsoLogin()) {
+			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
+		} else {
+			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
+				String token = userTokenAuthenticationDTO.getAuthToken();
+				if (StringUtils.isBlank(token)) {
+					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+					if (Objects.nonNull(authCookieToken)) {
+						token = authCookieToken.getValue();
+					} else {
+						return null;
+					}
+				}
+				return token;
 			} else {
 				return null;
 			}
@@ -310,6 +347,13 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			return json;
 		}
 		return null;
+	}
+
+	@Override
+	public String getUserNameFromToken(String jwtToken){
+		Claims claims = Jwts.parser().setSigningKey(tokenAuthProperties.getSecret()).parseClaimsJws(jwtToken)
+				.getBody();
+		return claims.getSubject();
 	}
 
 }

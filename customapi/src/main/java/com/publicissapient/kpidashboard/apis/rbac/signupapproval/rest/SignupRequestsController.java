@@ -24,6 +24,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,10 +70,11 @@ public class SignupRequestsController {
 	private SignupManager signupManager;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private AuthProperties authProperties;
 	@Autowired
 	UserInfoServiceImpl userInfoService;
-	@Autowired
-	CookieUtil cookieUtil;
 
 	/**
 	 * Gets all unapproved requests data.
@@ -84,10 +86,9 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests(HttpServletRequest request) {
 		log.info("Getting all unapproved requests");
 		if (customApiConfig.isCentralAuthSwitch()) {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			String token = authCookie.getValue();
+			String centralAuthToken = authProperties.getResourceAPIKey();
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
-					userInfoService.findAllUnapprovedUsers(token)));
+					userInfoService.findAllUnapprovedUsers(centralAuthToken)));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details",
@@ -121,8 +122,7 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision, HttpServletRequest request) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String token = authCookie.getValue();
+		String token = authProperties.getResourceAPIKey();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
 			if (customApiConfig.isCentralAuthSwitch()) {

@@ -1411,22 +1411,37 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
+      this.httpService.logout().subscribe((responseData) => {
+      if (responseData && responseData['success']) {
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+         console.log('Success clear local storage :', responseData);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
-        }else{
-          let redirect_uri = window.location.href;
-          window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+        } else{
+          let obj = {
+            'resource': environment.RESOURCE
+          };
+          this.httpService.getUserValidation(obj).toPromise()
+          .then((response) => {
+            if (response && response['success']) {
+              console.log("cookie not clear due to some reason");
+            } else {
+              console.log("cookie clear");
+              let redirect_uri = window.location.href;
+              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+            }
+          })
+          .catch((error) => {
+            console.log("cookie not clear on error");
+          });
         }
       }
-    });
+    })
   }
 
   // when user would want to give access on project from notification list
