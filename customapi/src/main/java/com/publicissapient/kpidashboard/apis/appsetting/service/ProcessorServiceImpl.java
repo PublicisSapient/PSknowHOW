@@ -20,16 +20,15 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
-import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -206,9 +205,9 @@ public class ProcessorServiceImpl implements ProcessorService {
 		return new ServiceResponse(isSuccess, "Got HTTP response: " + statuscode + " on url: " + url, null);
 	}
 
-		public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
+	public void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse) {
 		repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
-		if(Boolean.TRUE.toString().equalsIgnoreCase(repoToolsStatusResponse.getStatus())) {
+		if (Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus())) {
 			cacheService.clearCache(CommonConstant.CACHE_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.CACHE_PROJECT_TOOL_CONFIG_MAP);
 			cacheService.clearCache(CommonConstant.BITBUCKET_KPI_CACHE);

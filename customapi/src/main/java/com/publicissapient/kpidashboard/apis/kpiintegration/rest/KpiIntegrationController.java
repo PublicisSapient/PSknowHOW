@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KpiIntegrationController {
 
-	private static final String TOKEN_KEY = "X-Api-Key";
-
     @Autowired
     private KpiIntegrationServiceImpl kpiIntegrationService;
 
@@ -72,7 +71,7 @@ public class KpiIntegrationController {
 			@NotNull @RequestBody KpiRequest kpiRequest) {
 		log.info("Received {} request for /kpiIntegrationValues", request.getMethod());
 		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
-				.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
+				.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		if (Boolean.FALSE.equals(isApiAuth)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
 		}

@@ -161,7 +161,7 @@ public class RepoToolsConfigServiceImplTest {
     @Test
     public void testSaveRepoToolsProjectTraceLogs() {
         RepoToolsStatusResponse repoToolsStatusResponse = new RepoToolsStatusResponse(
-                "testProject_5fb364612064a31c9ccd517a", "repository", "source", "success", "2022-07-31 11:43:42.521");
+                "testProject_5fb364612064a31c9ccd517a", "repository", "source", "SUCCESS", "2022-07-31 11:43:42.521");
         when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
                 ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(
                 Optional.of(new ProcessorExecutionTraceLog()));

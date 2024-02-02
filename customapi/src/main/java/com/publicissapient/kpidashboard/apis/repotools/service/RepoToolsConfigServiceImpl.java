@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.model.*;
 import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
@@ -96,7 +97,6 @@ public class RepoToolsConfigServiceImpl {
 	public static final String REPO_NAME = "repoName";
 	public static final String REPO_BRANCH = "defaultBranch";
 	public static final String VALID_REPO = ".git";
-	public static final String SUCCESS = "SUCCESS";
 
 	private RepoToolsClient repoToolsClient;
 
@@ -342,7 +342,7 @@ public class RepoToolsConfigServiceImpl {
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(
-				SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()) ? true : false);
+				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()) ? true : false);
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 	}
