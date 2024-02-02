@@ -1,0 +1,12 @@
+[
+  {
+    "environmentStatuses": [
+      {
+        "environment": {
+          "id": 2,
+          "name": "test"
+        }
+      }
+    ]
+  }
+]

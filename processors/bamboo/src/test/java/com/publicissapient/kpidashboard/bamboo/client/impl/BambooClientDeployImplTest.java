@@ -20,22 +20,29 @@ package com.publicissapient.kpidashboard.bamboo.client.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.List;
 
+import com.publicissapient.kpidashboard.bamboo.data.ProcessorToolConnectionFactory;
+import com.publicissapient.kpidashboard.bamboo.data.ProjectBasicConfigDataFactory;
+import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
+import org.json.simple.parser.ParseException;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
@@ -48,6 +55,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
@@ -60,7 +69,7 @@ import com.publicissapient.kpidashboard.common.repository.application.ProjectToo
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class BambooClientDeployImplTest {
 
 	private static final String DOES = "test";
@@ -85,7 +94,7 @@ public class BambooClientDeployImplTest {
 	@InjectMocks
 	private BambooClientDeployImpl bambooClientDeploy;
 	
-	@Before
+	@BeforeEach
 	public void init() {
 		List<ProjectToolConfig> toolList = new ArrayList<>();
 		ProjectToolConfig t1 = new ProjectToolConfig();
@@ -141,8 +150,7 @@ public class BambooClientDeployImplTest {
 			HttpEntity<String> headers = generateHeader("test:decryptPassword");
 			when(restClient.exchange(
 					eq(URI.create("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761")),
-					eq(HttpMethod.GET), eq(headers), eq(String.class))).thenReturn(
-							new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
+					eq(HttpMethod.GET), eq(headers), eq(String.class))).thenReturn(new ResponseEntity<>(getServerResponseFromJson("project_details.json"), HttpStatus.OK));
 			bambooClientDeploy.connectBamboo("https://xyz.com/bamboo/rest/api/latest/deploy/dashboard/190709761",
 					PROJECT_TOOL_CONNECTION_1, headers);
 			verify(restClient).exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), eq(headers),
@@ -152,6 +160,21 @@ public class BambooClientDeployImplTest {
 		}
 	}
 
+	@Test()
+	public void deployJobsFromServer() throws IOException, ParseException {
+		try {
+			ProcessorToolConnectionFactory processorToolConnectionFactory = ProcessorToolConnectionFactory.newInstance();
+			ProcessorToolConnection bambooServer = processorToolConnectionFactory.getProcessorToolConnectionList().get(1);
+			ProjectBasicConfigDataFactory projectBasicConfigDataFactory = ProjectBasicConfigDataFactory.newInstance();
+			ProjectBasicConfig projectBasicConfig = projectBasicConfigDataFactory.findById("624d5c9ed837fc14d40b3039");
+			when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET),
+					ArgumentMatchers.any(HttpEntity.class), eq(String.class))).thenReturn(new ResponseEntity<>(getServerResponseFromJson("environments.json"), HttpStatus.OK));
+			bambooClientDeploy.getDeployJobsFromServer(bambooServer, projectBasicConfig);
+		}catch(Exception e)
+		{
+
+		}
+	}
 	private HttpEntity<String> generateHeader(String userName) {
 
 		HttpEntity<String> respEntity = null;

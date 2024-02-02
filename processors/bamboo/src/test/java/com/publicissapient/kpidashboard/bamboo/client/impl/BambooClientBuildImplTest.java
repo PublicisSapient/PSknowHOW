@@ -37,9 +37,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.publicissapient.kpidashboard.bamboo.data.ProcessorToolConnectionFactory;
 import org.apache.commons.io.IOUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,6 +55,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.publicissapient.kpidashboard.bamboo.client.BambooClient;
@@ -234,6 +237,20 @@ public class BambooClientBuildImplTest {
 						.thenReturn(new ResponseEntity<>("{\"plans\":{\"plan\":[]}}", HttpStatus.OK));
 		Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(BAMBOO_SAMPLE_BRANCH, proBasicConfig);
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
+	}
+	@Test
+	public void instanceJobsEmptyResponseWhenBranchKeyIsNull() throws MalformedURLException, ParseException {
+		try {
+			when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
+					.thenReturn(new ResponseEntity<>("", HttpStatus.GATEWAY_TIMEOUT));
+			ProcessorToolConnectionFactory processorToolConnectionFactory = ProcessorToolConnectionFactory.newInstance();
+			ProcessorToolConnection bambooServer = processorToolConnectionFactory.getProcessorToolConnectionList().get(0);
+			Map<ObjectId, Set<Build>> jobs = bambooClientBuild.getJobsFromServer(bambooServer, proBasicConfig);
+			assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
+		}catch (RestClientException e)
+		{
+			//Assertions.assertEquals();
+		}
 	}
 
 	@Test
