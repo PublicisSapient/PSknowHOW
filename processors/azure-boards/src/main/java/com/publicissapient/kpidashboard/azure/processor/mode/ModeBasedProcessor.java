@@ -18,13 +18,11 @@
 
 package com.publicissapient.kpidashboard.azure.processor.mode;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -76,7 +74,6 @@ public abstract class ModeBasedProcessor { // NOSONAR
 		Map<String, ProjectConfFieldMapping> projectConfigMap = new HashMap<>();
 		CollectionUtils.emptyIfNull(projectConfigList).forEach(projectConfig -> {
 			ProjectConfFieldMapping projectConfFieldMapping = ProjectConfFieldMapping.builder().build();
-                    try {
 			BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 			projectConfFieldMapping.setKanban(projectConfig.getIsKanban());
 			projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
@@ -85,12 +82,6 @@ public abstract class ModeBasedProcessor { // NOSONAR
 			projectConfFieldMapping.setAzureBoardToolConfigId(getToolConfigId(projectConfig.getId()));
 			projectConfFieldMapping.setProjectBasicConfig(projectConfig);
             projectConfFieldMapping.setProjectToolConfig(getProjectToolConfig(projectConfig.getId(), projectConfFieldMapping.getAzure().getConnection().getId()));
-                    } catch (IllegalAccessException e) {
-                        log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-                    } catch (InvocationTargetException e) {
-                        log.error("Error while copying Project Config to ProjectConfFieldMapping invocation error", e);
-                        log.error("Error while copying Project Config to ProjectConfFieldMapping", e);
-                    }
             CollectionUtils.emptyIfNull(fieldMappingList).stream()
 					.filter(fieldMapping -> projectConfig.getId().equals(fieldMapping.getBasicProjectConfigId()))
 					.forEach(projectConfFieldMapping::setFieldMapping);

@@ -415,8 +415,8 @@ public class JiraIssueProcessorImplTest {
 			fieldMapping.setJiraTechDebtIdentification(CommonConstant.LABELS);
 			fieldMapping.setJiraTechDebtValue(jiraType);
 
-			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.LABELS);
-			fieldMapping.setJiraBugRaisedByQAValue(jiraType);
+//			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.LABELS);
+//			fieldMapping.setJiraBugRaisedByQAValue(jiraType);
 
 			fieldMapping.setProductionDefectIdentifier(CommonConstant.LABELS);
 			fieldMapping.setProductionDefectValue(jiraType);
@@ -437,9 +437,9 @@ public class JiraIssueProcessorImplTest {
 			jiraType.add("Story");
 			fieldMapping.setJiraTechDebtValue(jiraType);
 
-			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
-			fieldMapping.setJiraBugRaisedByQACustomField("customfield_14141");
-			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+//			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
+//			fieldMapping.setJiraBugRaisedByQACustomField("customfield_14141");
+//			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
 
 			fieldMapping.setProductionDefectIdentifier(CommonConstant.COMPONENT);
 			fieldMapping.setProductionDefectValue(jiraType);
@@ -460,7 +460,7 @@ public class JiraIssueProcessorImplTest {
 			fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
 			fieldMapping.setJiraTechDebtCustomField("customfield_14141");
 
-			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.ISSUE_TYPE);
+//			fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.ISSUE_TYPE);
 
 			fieldMapping.setProductionDefectIdentifier(CommonConstant.CUSTOM_FIELD);
 			fieldMapping.setProductionDefectCustomField("customfield_14141");
@@ -473,7 +473,7 @@ public class JiraIssueProcessorImplTest {
 			fieldMapping.setTestingPhaseDefectsIdentifier(CommonConstant.CUSTOM_FIELD);
 			fieldMapping.setTestingPhaseDefectValue(Arrays.asList("label1"));
 			fieldMapping.setTestingPhaseDefectCustomField("customfield_14141");
-			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
+//			fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList("label1"));
 
 		}
 

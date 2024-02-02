@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueBoardWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.JiraIssueSprintJobListener;
+import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import com.publicissapient.kpidashboard.jira.listener.JobListenerScrum;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueJqlWriterListener;
 import com.publicissapient.kpidashboard.jira.listener.KanbanJiraIssueWriterListener;
@@ -121,7 +122,7 @@ public class JiraProcessorJobTest {
 	private JobListenerScrum jobListenerScrum;
 
 	@Mock
-	private JobListenerScrum jobListenerKanban;
+	private JobListenerKanban jobListenerKanban;
 
 	@Mock
 	private JiraIssueSprintJobListener jiraIssueSprintJobListener;
