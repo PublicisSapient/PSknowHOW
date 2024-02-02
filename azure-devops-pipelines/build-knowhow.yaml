@@ -3,7 +3,7 @@ trigger:
 
 parameters:
 - name: BUILD
-  type: string
+  type: object
   default: 'Processor'
   values:
   - 'API'
