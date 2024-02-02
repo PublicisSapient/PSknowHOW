@@ -177,7 +177,7 @@ public class JiraIssueProcessorImplTest {
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
 		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
 				.thenReturn(JiraIssue.builder().build());
-		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
 		assertEquals(JiraIssue.class,
@@ -193,7 +193,7 @@ public class JiraIssueProcessorImplTest {
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
 		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
 				.thenReturn(JiraIssue.builder().build());
-		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
 		assertEquals(JiraIssue.class,
@@ -209,7 +209,7 @@ public class JiraIssueProcessorImplTest {
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
 		when(jiraIssueRepository.findByIssueIdAndBasicProjectConfigId(any(), any()))
 				.thenReturn(JiraIssue.builder().build());
-		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
 		assertEquals(JiraIssue.class,

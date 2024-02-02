@@ -154,7 +154,7 @@ public class KanbanJiraIssueProcessorImplTest {
 		when(jiraProcessor.getId()).thenReturn(new ObjectId("5e16c126e4b098db673cc372"));
 		when(jiraProcessorConfig.getJiraDirectTicketLinkKey()).thenReturn("browse/");
 		when(kanbanJiraRepo.findByIssueIdAndBasicProjectConfigId(any(), any())).thenReturn(new KanbanJiraIssue());
-		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
+//		when(jiraProcessorConfig.getRcaValuesForCodeIssue()).thenReturn(Arrays.asList("code", "coding"));
 		when(additionalFilterHelper.getAdditionalFilter(any(), any()))
 				.thenReturn(getMockAdditionalFilterFromJiraIssue());
 		Assert.assertEquals(KanbanJiraIssue.class, (transformFetchedIssueToKanbanJiraIssue
