@@ -3,7 +3,7 @@ trigger:
 
 parameters:
 - name: BUILD
-  type: object
+  type: string
   default: 'Processor'
   values:
   - 'API'
@@ -113,23 +113,32 @@ stages:
     #   displayName: 'Check Quality Gate Status'
     #   continueOnError: false
 
-- stage: UI_Deploy
+- stage: UI_Build
   condition: or(eq('${{ parameters.BUILD }}', 'UI'), eq('${{ parameters.BUILD }}', 'ALL'))
 
   jobs:
-  - job: UI_Deploy
+  - job: Capturing_Version
+
+    variables:
+      overrideValues: ''
 
     steps:
     - checkout: self
 
     - script: |
-        echo "Selected Deployment Options: ${{ parameters.BUILD }}"
-        echo "Deploying UI..."
-        # Add UI deployment steps
-        echo "Deploying Helm charts for UI..."
+        echo "BUILDING: ${{ parameters.BUILD }}"
+        echo "Capturing Version"
         VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
+        echo "Version from pom.xml: $VERSION"        
+        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+  
+  - job: RUNNING_TEST
+    displayName: 'Running Tests'
+    dependsOn: Capturing_Version
+
+    steps:
+
 
 
 - stage: Processor_Build
