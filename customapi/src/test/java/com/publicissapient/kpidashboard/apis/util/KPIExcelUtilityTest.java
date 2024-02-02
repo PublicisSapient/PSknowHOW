@@ -18,6 +18,7 @@
 package com.publicissapient.kpidashboard.apis.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
@@ -507,6 +509,75 @@ public class KPIExcelUtilityTest {
 
 		// Assert
 		assertEquals(44, excelDataList.size());
+	}
+
+	@Test
+	public void populateIterationKPI_ValidData() {
+
+		IterationKpiModalValue jiraIssueModalObject = new IterationKpiModalValue();
+		IterationKpiModalValue modelValue = new IterationKpiModalValue();
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
+		overAllModalValues.add(iterationKpiModalValue);
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		modalValues.add(modelValue);
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		Map<String, IterationKpiModalValue> modalObjectMap = mock(Map.class);
+		when( modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
+
+
+		// Act
+		KPIExcelUtility.populateIterationKPI(overAllModalValues,modalValues,jiraIssues.get(0), fieldMapping, modalObjectMap);
+		assertNotNull(modalValues);
+		assertEquals(2,modalValues.size());
+		assertNotNull(overAllModalValues);
+		assertEquals(2,overAllModalValues.size());
+	}
+
+	@Test
+	public void populateIterationKPI_When_Actual_Estimation_ValidData() {
+
+		IterationKpiModalValue jiraIssueModalObject = new IterationKpiModalValue();
+		IterationKpiModalValue modelValue = new IterationKpiModalValue();
+		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+		List<IterationKpiModalValue> overAllModalValues = new ArrayList<>();
+		overAllModalValues.add(iterationKpiModalValue);
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		modalValues.add(modelValue);
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+		Map modalObjectMap = mock(Map.class);
+		when( modalObjectMap.get(jiraIssues.get(0).getNumber())).thenReturn(jiraIssueModalObject);
+
+
+		// Act
+		KPIExcelUtility.populateIterationKPI(overAllModalValues,modalValues,jiraIssues.get(0), fieldMapping, modalObjectMap);
+		assertNotNull(modalValues);
+		assertEquals(2,modalValues.size());
+		assertNotNull(overAllModalValues);
+		assertEquals(2,overAllModalValues.size());
+	}
+
+
+	@Test
+	public void populateFlowKPI_ValidData_PopulatesExcelDataList() {
+		Map<String, Integer> typeCountMap = new HashMap<>();
+		typeCountMap.put("A",1);
+		Map<String, Map<String, Integer>> dateTypeCountMap = new HashMap<>();
+		dateTypeCountMap.put("2022-01-01",typeCountMap);
+		// Arrange
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+
+		// Act
+		KPIExcelUtility.populateFlowKPI(dateTypeCountMap, excelDataList);
+
+		// Assert
+		assertNotNull(excelDataList);
+		assertEquals(1, excelDataList.size());
+		assertEquals(1,excelDataList.get(0).getCount().size());
 	}
 
 }
