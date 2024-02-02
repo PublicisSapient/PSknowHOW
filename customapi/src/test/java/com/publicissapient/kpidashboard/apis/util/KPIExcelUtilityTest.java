@@ -580,4 +580,108 @@ public class KPIExcelUtilityTest {
 		assertEquals(1,excelDataList.get(0).getCount().size());
 	}
 
+
+	@Test
+	public void populateDirExcelData_ValidData_PopulatesKPIExcelData() {
+		List<JiraIssue> defects = new ArrayList<>();
+		Set<String> set = new HashSet<String>();
+		set.add("STORY1");
+		jiraIssues.get(0).setDefectStoryID(set);
+		jiraIssues.get(0).setNumber("STORY1");
+		defects.add(jiraIssues.get(0));
+		// Arrange
+		String sprint = "Sprint1";
+		List<String> storyIds = Arrays.asList("STORY1", "STORY2");
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
+
+		// Act
+		KPIExcelUtility.populateDirExcelData(sprint, storyIds, defects, kpiExcelData, issueData);
+
+		// Assert
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
+		assertEquals("Sprint1", kpiExcelData.get(1).getSprintName());
+	}
+
+	@Test
+	public void populateDefectDensityExcelData_ValidData_Actual_Estimation() {
+		List<JiraIssue> defects = new ArrayList<>();
+		Set<String> set = new HashSet<String>();
+		set.add("STORY1");
+		jiraIssues.get(0).setDefectStoryID(set);
+		jiraIssues.get(0).setNumber("STORY1");
+		defects.add(jiraIssues.get(0));
+		// Arrange
+		String sprint = "Sprint1";
+		List<String> storyIds = Arrays.asList("STORY1", "STORY2");
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+
+		// Act
+		KPIExcelUtility.populateDefectDensityExcelData(sprint, storyIds, defects, kpiExcelData, issueData,fieldMapping);
+
+		// Assert
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
+		assertEquals("Sprint1", kpiExcelData.get(1).getSprintName());
+	}
+	@Test
+	public void populateDefectDensityExcelData_ValidData() {
+		List<JiraIssue> defects = new ArrayList<>();
+		Set<String> set = new HashSet<String>();
+		set.add("STORY1");
+		jiraIssues.get(0).setDefectStoryID(set);
+		jiraIssues.get(0).setNumber("STORY1");
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(5);
+		defects.add(jiraIssues.get(0));
+		// Arrange
+		String sprint = "Sprint1";
+		List<String> storyIds = Arrays.asList("STORY1", "STORY2");
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
+
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.ACTUAL_ESTIMATION);
+
+		// Act
+		KPIExcelUtility.populateDefectDensityExcelData(sprint, storyIds, defects, kpiExcelData, issueData,fieldMapping);
+
+		// Assert
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
+		assertEquals("Sprint1", kpiExcelData.get(1).getSprintName());
+	}
+
+	@Test
+	public void populateFTPRExcelData_NonNullJiraIssue() {
+		List<JiraIssue> defects = new ArrayList<>();
+		Set<String> set = new HashSet<>();
+		set.add("STORY1");
+		jiraIssues.get(0).setDefectStoryID(set);
+		jiraIssues.get(0).setNumber("STORY1");
+		defects.add(jiraIssues.get(0));
+		// Arrange
+		String sprint = "Sprint1";
+		List<String> storyIds = Arrays.asList("STORY1", "STORY2");
+		List<KPIExcelData> kpiExcelData = new ArrayList<>();
+
+		Map<String, JiraIssue> issueData = defects.stream().collect(Collectors.toMap(JiraIssue::getNumber, x -> x));
+		// Act
+		KPIExcelUtility.populateFTPRExcelData(sprint, storyIds, jiraIssues, kpiExcelData, issueData);
+
+		// Assert
+		assertEquals(2, kpiExcelData.size());
+		assertEquals("Sprint1", kpiExcelData.get(0).getSprintName());
+		assertEquals("Sprint1", kpiExcelData.get(1).getSprintName());
+	}
+
+
+
 }
