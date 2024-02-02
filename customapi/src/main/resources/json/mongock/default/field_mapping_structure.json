@@ -1353,9 +1353,10 @@
   } ,
   {
     "fieldName" : "jiraBugRaisedByIdentification" ,
-    "fieldLabel" : "UAT Defect Identification" ,
+    "fieldLabel" : "Escaped defects identification (Processor Run)" ,
     "fieldType" : "radiobutton" ,
     "section" : "Defects Mapping" ,
+    "processorCommon" : true ,
     "tooltip" : {
       "definition" : "This field is used to identify if a defect is raised by third party or client:<br>1. CustomField : If a separate custom field is used<br>2. Labels : If a label is used to identify. Example: TECH_DEBT (This has to be one value).<hr>"
     } ,
@@ -1732,14 +1733,45 @@
     }
   } ,
   {
-    "fieldName" : "rootCause" ,
-    "fieldLabel" : "Root Cause" ,
-    "fieldType" : "text" ,
-    "fieldCategory" : "fields" ,
-    "section" : "Custom Fields Mapping" ,
+    "fieldName" : "rootCauseIdentifier",
+    "fieldLabel" : "Root Cause",
+    "fieldType" : "radiobutton",
+    "fieldCategory" : "fields",
+    "section" : "Custom Fields Mapping",
     "tooltip" : {
       "definition" : "JIRA/AZURE applications let you add custom fields in addition to the built-in fields. Root Cause is a custom field in JIRA. So User need to provide that custom field which is associated with Root Cause in Users JIRA Installation."
-    }
+    },
+    "nestedFields" : [
+      {
+        "fieldName" : "rootCause",
+        "fieldLabel" : "Root Cause CustomField",
+        "fieldType" : "text",
+        "fieldCategory" : "fields",
+        "filterGroup" : [ "CustomField" ],
+        "tooltip" : {
+          "definition" : " Provide customfield name to identify Root Cause."
+        }
+      },
+      {
+        "fieldName" : "rootCauseValues",
+        "fieldLabel" : "Root Cause Defect Values",
+        "fieldType" : "chips",
+        "filterGroup" : [ "Labels" ],
+        "tooltip" : {
+          "definition" : "Provide label name to identify RootCause."
+        }
+      }
+    ],
+    "options" : [
+      {
+        "label" : "CustomField",
+        "value" : "CustomField"
+      },
+      {
+        "label" : "Labels",
+        "value" : "Labels"
+      }
+    ]
   } ,
   {
     "fieldName" : "storyFirstStatus" ,
@@ -2933,6 +2965,56 @@
     "section": "Custom Fields Mapping",
     "tooltip": {
       "definition": "Target KPI value denotes the bare minimum a project should maintain for a KPI. User should just input the number and the unit like percentage, hours will automatically be considered. If the threshold is empty, then a common target KPI line will be shown"
+    }
+  },
+  {
+    "fieldName" : "includeRCAForKPI35" ,
+    "fieldLabel" : "Root cause values to be included" ,
+    "fieldType" : "chips" ,
+    "section" : "Defects Mapping" ,
+    "tooltip" : {
+      "definition" : "Root cause reasons for defects which are to be included in 'DSR' calculation"
+    }
+  },
+  {
+    "fieldName" : "defectPriorityKPI35" ,
+    "fieldLabel" : "Priority to be excluded" ,
+    "fieldType" : "multiselect" ,
+    "section" : "Defects Mapping" ,
+    "tooltip" : {
+      "definition" : "Priority values of defects which are to be excluded in 'DSR' calculation"
+    } ,
+    "options" : [
+      {
+        "label" : "p1" ,
+        "value" : "p1"
+      } ,
+      {
+        "label" : "p2" ,
+        "value" : "p2"
+      } ,
+      {
+        "label" : "p3" ,
+        "value" : "p3"
+      } ,
+      {
+        "label" : "p4" ,
+        "value" : "p4"
+      } ,
+      {
+        "label" : "p5" ,
+        "value" : "p5"
+      }
+    ]
+  },
+  {
+    "fieldName": "excludeUnlinkedDefects",
+    "fieldLabel": "Exclude Unlinked Defects",
+    "fieldType": "toggle",
+    "section": "WorkFlow Status Mapping",
+    "processorCommon": false,
+    "tooltip": {
+      "definition": "Disable Toggle to see calculations on unlinked defects too."
     }
   }
 ]

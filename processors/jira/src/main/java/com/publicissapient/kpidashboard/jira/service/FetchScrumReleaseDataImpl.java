@@ -187,8 +187,7 @@ public class FetchScrumReleaseDataImpl implements FetchScrumReleaseData {
 						accountHierarchy.setIsDeleted(JiraConstants.FALSE);
 						accountHierarchy.setLabelName(hierarchyLevel.getHierarchyLevelId());
 						String versionName = projectVersion.getName() + JiraConstants.COMBINE_IDS_SYMBOL
-								+ projectRelease.getProjectName()
-										.split(JiraConstants.COMBINE_IDS_SYMBOL + projectRelease.getConfigId())[0];
+						+ projectBasicConfig.getProjectName();
 						String versionId = projectVersion.getId() + JiraConstants.COMBINE_IDS_SYMBOL
 								+ projectRelease.getProjectId();
 						accountHierarchy.setNodeId(versionId);

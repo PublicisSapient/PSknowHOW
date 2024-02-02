@@ -71,7 +71,7 @@ public enum KPIExcelColumn {
 	DEFECT_DENSITY("kpi111", Arrays.asList("Sprint Name", "Story ID", "Issue Description", "Linked Defects to Story",
 			"Size(story point/hours)")),
 
-	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Escaped Defect")),
+	DEFECT_SEEPAGE_RATE("kpi35", Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Escaped Defect", "Escaped defect identifier")),
 
 	DEFECT_REMOVAL_EFFICIENCY("kpi34",
 			Arrays.asList("Sprint Name", "Defect ID", "Issue Description", "Defect Removed")),
@@ -279,7 +279,7 @@ public enum KPIExcelColumn {
 			"Completion Date", "Merge Date", "Release Date", "Merge Request Id", "Branch")),
 
 	RELEASE_DEFECT_BY_TEST_PHASE("kpi163", Arrays.asList("Issue ID", "Issue Description", "Issue Type", "Priority",
-			"Sprint Name", "Assignee", "Issue Status")),
+			"Sprint Name", "Assignee", "Issue Status", "Testing Phase")),
 
 	PICKUP_TIME("kpi160",
 			Arrays.asList("Project", "Repository Url", "Branch", "Days/Weeks",

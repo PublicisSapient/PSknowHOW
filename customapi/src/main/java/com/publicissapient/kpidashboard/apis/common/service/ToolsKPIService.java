@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -928,14 +929,19 @@ public abstract class ToolsKPIService<R, S> {
 	 * @return aggregated value
 	 */
 	private R calculateAggValue(String kpiName, List<DataCount> value, List<R> values, String kpiId) {
-		R aggValue;
+		R aggValue = null;
 		if (kpiName.equals(KPICode.REGRESSION_AUTOMATION_COVERAGE.name())) {
 			aggValue = (R) value.get(value.size() - 1).getValue();
 		} else if (cumulativeTrend.contains(kpiName)) {
 			aggValue = (R) value.get(0).getValue();
 		} else if (kpiName.equals(KPICode.LEAD_TIME.name())) {
-			aggValue = (R) value.stream().filter(dataCount -> dataCount.getsSprintID().equalsIgnoreCase("< 3 Months"))
-					.findFirst().get().getValue();
+			// the maturity has to be gven for < 3 Months value
+			List<DataCount> lessThan3Month = value.stream()
+					.filter(dataCount -> "< 3 Months".equalsIgnoreCase(dataCount.getsSprintID()))
+					.collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(lessThan3Month)) {
+				aggValue = (R) lessThan3Month.get(0).getValue();
+			}
 		} else {
 			aggValue = calculateKpiValue(values, kpiId);
 			if (kpiName.equals(KPICode.DEPLOYMENT_FREQUENCY.name()) && CollectionUtils.isNotEmpty(values)) {
@@ -1171,15 +1177,23 @@ public abstract class ToolsKPIService<R, S> {
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
 		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
-			String basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(new ObjectId(basicProjectConfigId));
-			if (fieldMapping != null) {
-				kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
-			}
+
+			Optional<String> projectId = extractProjectId(selectIds.iterator().next());
+			projectId.ifPresent(id -> {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(new ObjectId(id));
+				if (fieldMapping != null) {
+					kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
+				}
+			});
 		}
 	}
-
+	private Optional<String> extractProjectId(String input) {
+		int lastUnderscoreIndex = input.lastIndexOf("_");
+		return lastUnderscoreIndex != -1
+				? Optional.of(input.substring(lastUnderscoreIndex + 1))
+				: Optional.empty();
+	}
 	/**
 	 *
 	 * @param fieldMapping
