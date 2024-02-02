@@ -69,17 +69,27 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
 
-  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
-        this.allKpiArray = [];
-        this.kpiChartData = {};
-        this.kpiSelectedFilterObj = {};
-        this.kpiDropdowns = {};
-        this.sharedObject = sharedobject;
-        if (this.globalConfig || this.service.getDashConfigData()) {
-          this.receiveSharedData(sharedobject);
+  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        this.trendBoxColorObj = { ...x };
+        let tempObj = {};
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          tempObj[nodeName] = [];
         }
+      }
+      this.kpiLoader = true;
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -93,19 +103,6 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
-        }
-      }
-    }));
 
     this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
@@ -171,29 +168,23 @@ export class DoraComponent implements OnInit {
 
 
   getKpiCommentsCount(kpiId?) {
-    // let requestObj = {
-    //   "nodes": [...this.filterApplyData?.['selectedMap']['project']],
-    //   "level": this.filterApplyData?.level,
-    //   "nodeChildId": "",
-    //   'kpiIds': []
-    // };
-    // if (kpiId) {
-    //   requestObj['kpiIds'] = [kpiId];
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj[kpiId] = res[kpiId];
-    //   });
-    // } else {
-    //   requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
-    //   this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
-    //     this.kpiCommentsCountObj = res;
-    //   });
-    // }
-
-    const nodes = [...this.filterApplyData?.['selectedMap']['project']];
-    const level = this.filterApplyData?.level;
-    const nodeChildId = '';
-    this.kpiCommentsCountObj = this.helperService.getKpiCommentsCount(this.kpiCommentsCountObj,nodes,level,nodeChildId,this.updatedConfigGlobalData,kpiId)
-  
+    let requestObj = {
+      "nodes": [...this.filterApplyData?.['selectedMap']['project']],
+      "level": this.filterApplyData?.level,
+      "nodeChildId": "",
+      'kpiIds': []
+    };
+    if (kpiId) {
+      requestObj['kpiIds'] = [kpiId];
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj[kpiId] = res[kpiId];
+      });
+    } else {
+      requestObj['kpiIds'] = (this.updatedConfigGlobalData?.map((item) => item.kpiId));
+      this.helperService.getKpiCommentsHttp(requestObj).then((res: object) => {
+        this.kpiCommentsCountObj = res;
+      });
+    }
   }
 
   receiveSharedData($event) {
@@ -304,6 +295,7 @@ export class DoraComponent implements OnInit {
 
   // post request of Jira(scrum)
   postJiraKpi(postData, source): void {
+
     postData.kpiList.forEach(element => {
       this.loaderJiraArray.push(element.kpiId);
     });
@@ -397,6 +389,10 @@ export class DoraComponent implements OnInit {
       this.kpiChartData[kpiId] = this.generateColorObj(kpiId, this.kpiChartData[kpiId]);
     }
 
+    // if (this.kpiChartData && Object.keys(this.kpiChartData) && Object.keys(this.kpiChartData).length === this.updatedConfigGlobalData.length) {
+    // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
+    //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
+    // }
     this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
@@ -412,9 +408,16 @@ export class DoraComponent implements OnInit {
         this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
-
-        this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-
+        if (formType?.toLowerCase() == 'radiobutton') {
+          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+        } else if (formType?.toLowerCase() == 'dropdown') {
+          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
+          let initialC = trendValueList[0].filter1;
+          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter': ['Overall'] };
+        } else {
+          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
+        }
         this.kpiSelectedFilterObj['action'] = 'new';
         this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
       }

@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1176,15 +1177,23 @@ public abstract class ToolsKPIService<R, S> {
 	public void calculateThresholdValue(Set<String> selectIds, KpiElement kpiElement, String labelName) {
 		if (selectIds.size() == 1 && (labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_PROJECT)
 				|| labelName.equalsIgnoreCase(CommonConstant.HIERARCHY_LEVEL_ID_SPRINT))) {
-			String basicProjectConfigId = selectIds.iterator().next().split(Constant.UNDERSCORE)[1];
-			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
-					.get(new ObjectId(basicProjectConfigId));
-			if (fieldMapping != null) {
-				kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
-			}
+
+			Optional<String> projectId = extractProjectId(selectIds.iterator().next());
+			projectId.ifPresent(id -> {
+				FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
+						.get(new ObjectId(id));
+				if (fieldMapping != null) {
+					kpiElement.setThresholdValue(calculateThresholdValue(fieldMapping));
+				}
+			});
 		}
 	}
-
+	private Optional<String> extractProjectId(String input) {
+		int lastUnderscoreIndex = input.lastIndexOf("_");
+		return lastUnderscoreIndex != -1
+				? Optional.of(input.substring(lastUnderscoreIndex + 1))
+				: Optional.empty();
+	}
 	/**
 	 *
 	 * @param fieldMapping

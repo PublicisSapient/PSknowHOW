@@ -228,11 +228,6 @@ public class FieldMappingServiceImpl implements FieldMappingService {
 			isUpdated = checkFieldsForUpdation(unsaved, saved, uatFieldList);
 		}
 
-		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraBugRaisedByQAIdentification())) {
-			List<String> qaFieldList = Arrays.asList("jiraBugRaisedByQACustomField", "jiraBugRaisedByQAValue");
-			isUpdated = checkFieldsForUpdation(unsaved, saved, qaFieldList);
-		}
-
 		if (!isUpdated && CommonConstant.CUSTOM_FIELD.equalsIgnoreCase(unsaved.getJiraTechDebtIdentification())) {
 			List<String> tachDebtFieldList = Arrays.asList(JIRA_TECH_DEBT_CUSTOMFIELD, JIRA_TECH_DEBT_VALUE);
 			isUpdated = checkFieldsForUpdation(unsaved, saved, tachDebtFieldList);

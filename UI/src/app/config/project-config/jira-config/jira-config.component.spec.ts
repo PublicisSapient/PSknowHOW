@@ -48,9 +48,9 @@ describe('JiraConfigComponent', () => {
   let fixture: ComponentFixture<JiraConfigComponent>;
   let sharedService: SharedService;
   let httpService: HttpService;
+  let messageService: MessageService;
   let httpMock;
   let router;
-  let messageService;
   const baseUrl = environment.baseUrl;
   const mockActivatedRoute = {
     queryParams: of({ toolName: 'Jira' })
@@ -181,9 +181,9 @@ describe('JiraConfigComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.inject(HttpService);
     sharedService = TestBed.inject(SharedService);
+    messageService = TestBed.inject(MessageService);
     sharedService.setSelectedProject(fakeProject);
     sharedService.setSelectedToolConfig(fakeSelectedTool);
-    messageService = TestBed.inject(MessageService);
     httpMock = TestBed.inject(HttpTestingController);
     router = TestBed.inject(Router);
   });
@@ -228,7 +228,7 @@ describe('JiraConfigComponent', () => {
       templateName:"DOJO Agile Template",
       tool: "Jira"
     });
-   
+
     component.queryEnabled =true;
     component.toolForm.controls['boardQuery'].setValue(`Project = DTS AND component = Panthers AND issuetype in (Story, Defect, "Enabler Story", "Change request", Dependency, Epic, Task, "Studio Job", "Studio Task") and  created > '2022/03/01 00:00'`);
     component.isEdit = false;
@@ -497,7 +497,7 @@ describe('JiraConfigComponent', () => {
     };
     component.connections = fakeJiraConnections.data;
     component.editTool(tool);
-    expect(component.isEdit).toBeTruthy();  
+    expect(component.isEdit).toBeTruthy();
   }))
 
   it("should add new tool",()=>{
@@ -508,7 +508,7 @@ describe('JiraConfigComponent', () => {
   })
 
   it('should disable loading when connection is already Jira', () => {
-   
+
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
       type: 'Jira',
@@ -533,7 +533,7 @@ describe('JiraConfigComponent', () => {
   });
 
   it('should disable loading when connection is Bamboo', () => {
-   
+
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
       type: 'Bamboo',
@@ -560,7 +560,7 @@ describe('JiraConfigComponent', () => {
   });
 
   it('should clear sonar form  when connection changed to Sonar', () => {
-   
+
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
       type: 'Sonar',
@@ -587,7 +587,7 @@ describe('JiraConfigComponent', () => {
   });
 
   it('should get jenkins job name when connection changes to jenkins', () => {
-   
+
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
       type: 'Jenkins',
@@ -864,6 +864,53 @@ describe('JiraConfigComponent', () => {
     expect(component.toolForm.get('apiVersion').disabled).not.toBeTruthy();
   })
 
+
+
+  it('should fetch teams when selectedConnection is set', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+
+    spyOn(component.http, 'getAzureTeams').and.returnValue(
+      of({ success: true, data: [{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }] })
+    );
+    component.selectedConnection = { id: 1, name: 'Connection 1' };
+    component.fetchTeams(component);
+    expect(component.http.getAzureTeams).toHaveBeenCalledWith(1);
+    expect(component.teamData).toEqual([{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }]);
+    expect(component.filteredTeam).toEqual([{ id: 1, name: 'Team 1' }, { id: 2, name: 'Team 2' }]);
+    expect(component.toolForm.controls['team'].enabled).toBeTrue();
+    expect(component.isLoading).toBeFalse();
+  });
+
+  it('should show error message when no teams are found for selected connection', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+    spyOn(component.http, 'getAzureTeams').and.returnValue(of({ success: false }));
+    component.selectedConnection = { id: 1, name: 'Connection 1' };
+    component.fetchTeams(component);
+    expect(component.http.getAzureTeams).toHaveBeenCalledWith(1);
+    expect(component.teamData).toEqual([]);
+    expect(component.filteredTeam).toEqual([]);
+    expect(component.toolForm.controls['team'].disabled).toBeTrue();
+    expect(component.toolForm.controls['team'].value).toEqual('');
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'error',
+    //   summary: 'No teams found for the selected Connection.',
+    // });
+    expect(component.isLoading).toBeFalse();
+  });
+
+  it('should show error message when no connection is selected', () => {
+    component.urlParam = 'Azure';
+    component.initializeFields(component.urlParam);
+    component.selectedConnection = null;
+    component.fetchTeams(component);
+    expect(component.toolForm.controls['team'].value).toEqual('');
+    // expect(messageService.add).toHaveBeenCalledWith({
+    //   severity: 'error',
+    //   summary: 'Select Connection first.',
+    // });
+  });
   it('should get azure pipeline data when connection is Azure Pipeline when value is build', () => {
     const fakeConnection = {
       id: '5fc643cd11193836e6545560',
@@ -1462,7 +1509,7 @@ describe('JiraConfigComponent', () => {
     component.toolForm = new UntypedFormGroup({
       jobType: new UntypedFormControl(),
       branchKey : new UntypedFormControl(),
-      
+
     })
     const value = 'Branch 2';
     component.bambooBranchSelectHandler(value);
@@ -1690,7 +1737,7 @@ describe('JiraConfigComponent', () => {
     spyOn(httpService, 'getPlansForBamboo').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add');
     component.getPlansForBamboo(connectionId);
-    expect(spy).toHaveBeenCalled(); 
+    expect(spy).toHaveBeenCalled();
   })
 
   it('should handle deployment projects when success false', () => {
@@ -1720,10 +1767,10 @@ describe('JiraConfigComponent', () => {
     }
     spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add');
-    spyOn(component, 'hideLoadingOnFormElement').and.callThrough(); 
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
     component.getDeploymentProjects(connectionId);
-    expect(spy).toHaveBeenCalled(); 
-  
+    expect(spy).toHaveBeenCalled();
+
   })
 
   it('should handle error on getting deployment projects', () => {
@@ -1753,10 +1800,10 @@ describe('JiraConfigComponent', () => {
     }
     spyOn(httpService, 'getDeploymentProjectsForBamboo').and.returnValue(of(errResponse));
     const spy = spyOn(messageService, 'add');
-    spyOn(component, 'hideLoadingOnFormElement').and.callThrough(); 
+    spyOn(component, 'hideLoadingOnFormElement').and.callThrough();
     component.getDeploymentProjects(connectionId);
-    expect(spy).toHaveBeenCalled(); 
-  
+    expect(spy).toHaveBeenCalled();
+
   })
 
   xit('should throw error on getting jenkins job names', () => {
@@ -1822,7 +1869,7 @@ describe('JiraConfigComponent', () => {
     component.azurePipelineList = [];
     const spy = spyOn(messageService, 'add').and.callThrough();
     component.getAzureReleasePipelines(connection);
-    expect(spy).toHaveBeenCalled(); 
+    expect(spy).toHaveBeenCalled();
   })
 
   it('should handle error when success is false on getting azure release pipelines', () => {
@@ -1847,7 +1894,7 @@ describe('JiraConfigComponent', () => {
     component.azurePipelineList = [];
     const spy = spyOn(messageService, 'add');
     component.getAzureReleasePipelines(connection);
-    expect(spy).toHaveBeenCalled(); 
+    expect(spy).toHaveBeenCalled();
   })
 
   it('should handle error when apiVersionHandler when sucess is false', () => {

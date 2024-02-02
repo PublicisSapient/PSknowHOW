@@ -20,6 +20,9 @@ package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -62,8 +65,8 @@ import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.KPIHelperUtil;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
-import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
@@ -106,6 +109,8 @@ public class DSRServiceImplTest {
 	@Mock
 	private FilterHelperService filterHelperService;
 
+	private FieldMapping fieldMapping;
+
 	@Before
 	public void setup() {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
@@ -138,12 +143,15 @@ public class DSRServiceImplTest {
 
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
-		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setProjectConfigMap(projectConfigMap);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 
 		kpiWiseAggregation.put("defectSeepageRate", "percentile");
+		Map<String, List<String>> priority = new HashMap<>();
+		priority.put("P3", Arrays.asList("P3 - Major"));
+		when(customApiSetting.getPriority()).thenReturn(priority);
 	}
 
 	@After
@@ -173,18 +181,56 @@ public class DSRServiceImplTest {
 		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
 
-		when(jiraIssueRepository.findIssueByStoryNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalBugList);
-
+		when(jiraIssueRepository.findIssuesByType(anyMap())).thenReturn(totalBugList);
+		fieldMappingMap.forEach((k, v) -> {
+			FieldMapping v1 = v;
+			v1.setIncludeRCAForKPI35(Arrays.asList("code issue"));
+			v1.setDefectPriorityKPI35(Arrays.asList("P3"));
+		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		Map<String, Object> defectDataListMap = dsrServiceImpl.fetchKPIDataFromDb(leafNodeList, startDate, endDate,
 				kpiRequest);
 		assertThat("Total Defects value :", ((List<JiraIssue>) (defectDataListMap.get(TOTALBUGKEY))).size(),
-				equalTo(19));
+				equalTo(8));
 	}
 
 	@Test
-	public void testGetDSR() throws ApplicationException {
+	public void testGetDSR_UATLabels() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("defectSeepageRate", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
+
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+
+		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(sprintWiseStoryList);
+
+		when(jiraIssueRepository.findIssuesByType(anyMap())).thenReturn(totalBugList);
+
+		fieldMappingMap.forEach((k, v) -> {
+			FieldMapping v1 = v;
+			v1.setJiraBugRaisedByIdentification(CommonConstant.LABELS);
+			v1.setJiraBugRaisedByValue(Arrays.asList("JAVA", "UI"));
+			v1.setExcludeUnlinkedDefects(false);
+		});
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(dsrServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = dsrServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertEquals("DSR Value :", 9, kpiElement.getExcelData().size());
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+
+	@Test
+	public void testGetDSR_CustomField() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -197,21 +243,60 @@ public class DSRServiceImplTest {
 		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
 				.thenReturn(sprintWiseStoryList);
 
-		when(jiraIssueRepository.findIssueByStoryNumber(Mockito.any(), Mockito.any(), Mockito.any()))
-				.thenReturn(totalBugList);
-
+		totalBugList.forEach(issue -> {
+			issue.setDefectRaisedBy("UAT");
+			issue.setUatDefectGroup(Arrays.asList("JAVA"));
+		});
+		when(jiraIssueRepository.findIssuesByType(anyMap())).thenReturn(totalBugList);
+		fieldMappingMap.forEach((k, v) -> {
+			FieldMapping v1 = v;
+			v1.setJiraBugRaisedByIdentification(CommonConstant.CUSTOM_FIELD);
+			v1.setJiraBugRaisedByValue(Arrays.asList("JAVA", "UI"));
+			v1.setExcludeUnlinkedDefects(false);
+		});
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
 				.thenReturn(kpiRequestTrackerId);
 		when(dsrServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
-
 		try {
 			KpiElement kpiElement = dsrServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
-			assertThat("DSR Value :",
-					((ArrayList) ((List<DataCount>) kpiElement.getTrendValueList()).get(0).getValue()).size(),
-					equalTo(5));
+			assertEquals("DSR Value :", 9, kpiElement.getExcelData().size());
+		} catch (ApplicationException enfe) {
+
+		}
+	}
+
+	@Test
+	public void testGetDSR_NOLabels() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+
+		Map<String, List<String>> maturityRangeMap = new HashMap<>();
+		maturityRangeMap.put("defectSeepageRate", Arrays.asList("-30", "30-10", "10-5", "5-2", "2-"));
+
+		when(configHelperService.calculateMaturity()).thenReturn(maturityRangeMap);
+
+		when(jiraIssueRepository.findIssuesGroupBySprint(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
+				.thenReturn(sprintWiseStoryList);
+
+		when(jiraIssueRepository.findIssuesByType(anyMap())).thenReturn(totalBugList);
+
+		fieldMappingMap.forEach((k, v) -> {
+			FieldMapping v1 = v;
+			v1.setJiraBugRaisedByIdentification(CommonConstant.LABELS);
+			v1.setExcludeUnlinkedDefects(false);
+		});
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(dsrServiceImpl.getRequestTrackerId()).thenReturn(kpiRequestTrackerId);
+		try {
+			KpiElement kpiElement = dsrServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertEquals("DSR Value :", 9, kpiElement.getExcelData().size());
 		} catch (ApplicationException enfe) {
 
 		}

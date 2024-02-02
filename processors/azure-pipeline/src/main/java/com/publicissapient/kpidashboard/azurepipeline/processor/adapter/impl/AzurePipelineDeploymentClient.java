@@ -94,7 +94,8 @@ public class AzurePipelineDeploymentClient implements AzurePipelineClient {
 					azurePipelineServer.getApiVersion(), azurePipelineServer.getJobName());
 
 			if (!minTime.equals("1970-01-01T00:00:00.000Z")) {
-				resultUrl = String.format(String.valueOf(urlBuilder.append(RELEASE_PARAM_MINTIME)), minTime);
+				resultUrl = String.format(urlBuilder.append(RELEASE_PARAM_MINTIME).toString(),
+						azurePipelineServer.getApiVersion(), azurePipelineServer.getDeploymentProjectName(), minTime);
 			}
 
 			ResponseEntity<String> responseEntity = doRestCall(resultUrl, azurePipelineServer);

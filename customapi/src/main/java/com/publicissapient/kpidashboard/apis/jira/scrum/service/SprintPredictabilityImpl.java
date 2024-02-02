@@ -92,6 +92,7 @@ public class SprintPredictabilityImpl extends JiraKPIService<Double, List<Object
 			effectSumDouble.addAndGet(Optional.ofNullable(sprintIssue.getStoryPoints()).orElse(0.0d));
 		} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 			Double totalOriginalEstimateInHours = (double) (jiraIssue.getAggregateTimeOriginalEstimateMinutes()) / 60;
+			sprintIssue.setOriginalEstimate(Double.valueOf(jiraIssue.getAggregateTimeOriginalEstimateMinutes()));
 			effectSumDouble.addAndGet(totalOriginalEstimateInHours / fieldMapping.getStoryPointToHourMapping());
 		}
 	}

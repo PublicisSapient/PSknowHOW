@@ -66,6 +66,7 @@ public class ProjectToolConfig extends BasicModel {
 	private boolean queryEnabled;
 	private String boardQuery;
 	private List<BoardDetails> boards;
+	private String team;
 	// TestCase Fields For zephyr tool
 	private List<String> regressionAutomationLabels;
 	private String testAutomationStatusLabel;
