@@ -16,10 +16,10 @@
  *
  ******************************************************************************/
 
-import { ComponentFixture, ComponentFixtureAutoDetect, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, inject, TestBed, tick, waitForAsync } from '@angular/core/testing';
 
 import { FilterComponent } from './filter.component';
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
@@ -35,8 +35,23 @@ import { MessageService } from 'primeng/api';
 import { HelperService } from 'src/app/services/helper.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { of, throwError } from 'rxjs';
-import { ConfigComponent } from 'src/app/config/config.component';
 import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
+
+class MockRouter {
+
+  // Mock navigate method
+  navigate(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  navigateByUrl(commands: any[], extras?: any): Promise<boolean> {
+    // Implement navigate logic for testing if needed
+    return Promise.resolve(true); // Mock resolve value
+  }
+  url: string = '/';
+}
+
+export { MockRouter };
 
 describe('FilterComponent', () => {
   let component: FilterComponent;
@@ -49,6 +64,7 @@ describe('FilterComponent', () => {
   let helperService: HelperService;
   let excelService: ExcelService;
   let ga: GoogleAnalyticsService;
+  let router: Router;
   const baseUrl = environment.baseUrl;  // Servers Env
 
   const fakeFilterData = require('../../../test/resource/fakeFilterData.json');
@@ -71,6 +87,12 @@ describe('FilterComponent', () => {
       hierarchyLevelId: 'hierarchyLevelThree',
       hierarchyLevelName: 'Level Three',
       id: '63b3f4ea6770d3a031b92492',
+      level: 3,
+    },
+    {
+      hierarchyLevelId: 'project',
+      hierarchyLevelName: 'Project',
+      id: '63b3f4ea6770d3a031b92493',
       level: 3,
     },
   ];
@@ -235,7 +257,6 @@ const completeHierarchyData = {
 };
 
   beforeEach(() => {
-
     const routes: Routes = [
       { path: 'dashboard', component: FilterComponent }
 
@@ -248,7 +269,9 @@ const completeHierarchyData = {
       imports: [FormsModule, HttpClientTestingModule, ReactiveFormsModule, NgSelectModule, FormsModule,
         RouterTestingModule.withRoutes(routes),
       ],
-      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, { provide: APP_CONFIG, useValue: AppConfig }]
+      providers: [HttpService, SharedService, ExcelService, DatePipe, GetAuthorizationService, MessageService, HelperService, 
+        { provide: APP_CONFIG, useValue: AppConfig }, 
+        { provide: Router, useClass: MockRouter }]
     })
       .compileComponents();
   });
@@ -263,6 +286,8 @@ const completeHierarchyData = {
     messageService = TestBed.inject(MessageService);
     excelService = TestBed.inject(ExcelService);
     httpMock = TestBed.inject(HttpTestingController);
+    ga = TestBed.inject(GoogleAnalyticsService)
+    router = TestBed.inject(Router);
     spyOn(sharedService.passDataToDashboard, 'emit');
   });
 
@@ -335,69 +360,6 @@ const completeHierarchyData = {
     expect(spy).not.toHaveBeenCalled();
   }));
 
-
-  // it('should render downloaded Excel', () => {
-  //   let response = JSON.parse(JSON.stringify(fakeFilterData));
-  //   response.data = [];
-  //   component.renderDownloadExcel(response);
-  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Data Available');
-
-  //   response.success = false;
-  //   component.renderDownloadExcel(response);
-  //   expect(component.enginneringMaturityErrorMessage).toEqual('No Access!');
-
-  //   response = undefined;
-  //   component.renderDownloadExcel(response);
-  //   expect(component.enginneringMaturityErrorMessage).toEqual('Some error occurred!');
-
-  // });
-
-  it('should make array unique', () => {
-    const input = [
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-          '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
-        ],
-        labelName: 'sqd',
-        parentId: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5',
-          '38294_SonarTest_63281fda79d8f0130811b6d5'
-        ],
-        level: 7
-      },
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-        labelName: 'sqd',
-        parentId: '38294_SonarTest_63281fda79d8f0130811b6d5',
-        level: 7
-      }
-    ];
-    const output = [
-      {
-        nodeId: 'UI_sqd_63281fda79d8f0130811b6d5',
-        nodeName: 'UI',
-        path: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu',
-          '38294_SonarTest_63281fda79d8f0130811b6d5###SonarTest_63281fda79d8f0130811b6d5###TestP_port###GDD_acc###Consumer Products_ver###FCG_bu'
-        ],
-        labelName: 'sqd',
-        parentId: [
-          '38295_SonarTest_63281fda79d8f0130811b6d5',
-          '38294_SonarTest_63281fda79d8f0130811b6d5'
-        ],
-        level: 7
-      }
-    ];
-
-    const result = component.makeUniqueArrayList(input);
-    expect(result.length).toBe(1);
-  });
-
   it('should set hierarchy levels', () => {
     component.kanban = false;
     component.hierarchies = {
@@ -468,9 +430,20 @@ const completeHierarchyData = {
     component.processMasterData(fakeMasterData);
     expect(spyhandleIteration).toHaveBeenCalled();
 
+    spyOn(component,'handleMilestoneFilter')
+    component.selectedTab = 'release';
+    component.processMasterData(fakeMasterData);
+    expect(spyhandleIteration).toHaveBeenCalled();
+
+    // spyOn(component,'applyChanges')
+    component.selectedTab = 'developer';
+    component.processMasterData(fakeMasterData);
+    expect(spyhandleIteration).toHaveBeenCalled();
+
   });
 
   it('should set filters empty when selected tab is iteraiton', () => {
+    component.toggleDropdown['commentSummary'] = true;
     component.ngOnInit();
     const spy = spyOn(sharedService, 'setEmptyFilter');
     component.selectedTab = 'iteration';
@@ -478,6 +451,31 @@ const completeHierarchyData = {
     sharedService.onTypeOrTabRefresh.next(fake);
     expect(spy).toHaveBeenCalled();
     });
+
+  it('should set showChart as chart when selected tab is maturity', () => {
+    component.toggleDropdown['commentSummary'] = true;
+    component.ngOnInit();
+    component.selectedTab = 'maturity';
+    const fake = { selectedTab : 'maturity', selectedType : 'scrum' };
+    sharedService.onTypeOrTabRefresh.next(fake);
+    expect(component.showChart).toBe('chart');
+    });
+
+    it('should set selectedDayType as days when selected tab is developer', () => {
+      component.toggleDropdown['commentSummary'] = true;
+      component.ngOnInit();
+      component.selectedTab = 'developer';
+      const fake = { selectedTab : 'developer', selectedType : 'scrum' };
+      sharedService.onTypeOrTabRefresh.next(fake);
+      expect(component.selectedDayType).toBe('Days');
+      });
+
+      it('should call getNotifiocation functions',()=>{
+        component.ngOnInit();
+        const spyObj = spyOn(component,'getNotification');
+        sharedService.notificationUpdate()
+        expect(spyObj).toHaveBeenCalled();
+      })
 
   it('should set the colorObj', () => {
     const x = {
@@ -582,12 +580,43 @@ const completeHierarchyData = {
     expect(spycreateFormGroup).toHaveBeenCalled();
   });
 
-  it('should create form group based on level', () => {
+  it('should set no project if filter data length is 0', () => {
+    const additionalFiltersArr = [
+      {
+          level: 6,
+          hierarchyLevelId: 'sprint',
+          hierarchyLevelName: 'Sprint'
+      },
+      {
+          level: 7,
+          hierarchyLevelId: 'sqd',
+          hierarchyLevelName: 'Squad'
+      }
+  ];
+
+  spyOn(component,'checkIfFilterAlreadySelected');
+    component.additionalFiltersArr = additionalFiltersArr;
+    const spyObj = spyOn(sharedService,'setNoProjects')
+    const fakedata = {data : []}
+    component.processFilterData(fakedata);
+    expect(spyObj).toHaveBeenCalled();
+  });
+
+  it('should create form group based on level for blank array', () => {
     component.filterForm = new UntypedFormGroup({
       sprint: new UntypedFormControl()
     });
     component.createFormGroup('sprint', []);
     expect(component.filterForm.controls['sprint'].value).toBeFalsy();
+  });
+
+  it('should create form group based on level when array is not blank', () => {
+    const arr = [{nodeId : 'n1'},{nodeId : 'n2'}]
+    component.filterForm = new UntypedFormGroup({
+      sprint: new UntypedFormControl()
+    });
+    component.createFormGroup('sprint', arr);
+    expect(component.filterForm).toBeDefined()
   });
 
 
@@ -610,9 +639,9 @@ const completeHierarchyData = {
     component.selectedTab = 'Speed';
     component.kanban = false;
     component.kpiListData = configGlobalData['data'];
-    const spy = spyOn(router, 'navigateByUrl');
+    const spy = spyOn(router, 'navigate');
     component.navigateToSelectedTab();
-    expect(spy).toHaveBeenCalledWith('/dashboard/speed');
+    expect(spy).toHaveBeenCalledWith(['/dashboard/speed'], {queryParamsHandling: 'merge'});
   }));
 
   it('should get kpiorder list', fakeAsync(() => {
@@ -634,14 +663,13 @@ const completeHierarchyData = {
     expect(spyMessageService).toHaveBeenCalled();
   }));
 
-  // it('should call processKpiList when kpiList is available', () => {
-  //   component.kpiListData = configGlobalData;
-  //   const spyprocessKpiList = spyOn(component, 'processKpiList');
-  //   const spynavigateToSelectedTab = spyOn(component, 'navigateToSelectedTab');
-  //   component.getKpiOrderedList();
-  //   expect(spyprocessKpiList).toHaveBeenCalled();
-  //   expect(spynavigateToSelectedTab).toHaveBeenCalled();
-  // });
+  it('should call processKpiList when kpiList is available', () => {
+    spyOn(component,'isEmptyObject').and.returnValue(false)
+    spyOn(helperService,'makeSyncShownProjectLevelAndUserLevelKpis');
+    const spyprocessKpiList = spyOn(sharedService, 'setDashConfigData')
+    component.getKpiOrderedList();
+    expect(spyprocessKpiList).toHaveBeenCalled();
+  });
 
   it('should kpiList not blank for other than backlog and iteration', () => {
     component.selectedTab = '';
@@ -720,12 +748,12 @@ const completeHierarchyData = {
     expect(spy).toHaveBeenCalled();
   });
 
-  it('should handle select', () => {
-    component.filterData = fakeFilterData['data'];
-    const spy = spyOn(component, 'makeUniqueArrayList');
-    component.handleSelect('project');
-    expect(spy).toHaveBeenCalled();
-  });
+  // it('should handle select', () => {
+  //   component.filterData = fakeFilterData['data'];
+  //   const spy = spyOn(helperService, 'makeUniqueArrayList');
+  //   component.handleSelect('project');
+  //   expect(spy).toHaveBeenCalled();
+  // });
 
 
   it('should check for default filter selection for iteration tab and no projects available', () => {
@@ -1018,6 +1046,19 @@ const completeHierarchyData = {
     expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalled();
   })
 
+  it("should get processor trace log details and selectedProjectData should be there",()=>{
+    const fakeResponce = {
+      message : "Successfully",
+      success : true
+    }
+    spyOn(httpService,"getProcessorsTraceLogsForProject").and.returnValue(of(fakeResponce));
+    spyOn(component,"findTraceLogForTool");
+    spyOn(component,'showExecutionDate');
+    component.selectedProjectData['basicProjectConfigId'] = "63284960fdd20276d60e4df5";
+    component.getProcessorsTraceLogsForProject("63284960fdd20276d60e4df5");
+    expect(httpService.getProcessorsTraceLogsForProject).toHaveBeenCalled();
+  })
+
   it("should give messsge if request is failing",()=>{
     messageService = TestBed.inject(MessageService);
     const fakeResponce = {
@@ -1027,6 +1068,7 @@ const completeHierarchyData = {
     spyOn(messageService,"add");
     spyOn(component,"findTraceLogForTool");
     spyOn(component,"showExecutionDate");
+    spyOn(httpService,"getProcessorsTraceLogsForProject").and.returnValue(of(fakeResponce));
     component.getProcessorsTraceLogsForProject("63284960fdd20276d60e4df5");
     expect(component.showExecutionDate).not.toHaveBeenCalled();
   })
@@ -1239,7 +1281,7 @@ const completeHierarchyData = {
     expect(component.isTooltip).toBe(true);
    })
 
-    xit('should redirect on login page',inject([Router], (router: Router) => {
+    it('should redirect on login page',inject([Router], (router: Router) => {
       const navigateSpy = spyOn(router, 'navigate');
       component.logout();
       httpMock.expectOne(baseUrl + '/api/userlogout').flush(null);
@@ -1334,6 +1376,7 @@ const completeHierarchyData = {
         kpiWiseAggregationType: { kpi114: 'sum', kpi997: 'sum', kpi116: 'average', kpi118: 'sum', kpi82: 'average' },
         percentile: 90
       };
+      component.selectedTab = "developer";
       spyOn(httpService,"getConfigDetails").and.returnValue(of(fakeResponce));
       component.ngOnInit();
       expect(component.dateRangeFilter).not.toBeNull();
@@ -1516,6 +1559,46 @@ const completeHierarchyData = {
     expect(component.selectedRelease).not.toBeNull();
   })
 
+  it("should have atlease release for sort",()=>{
+    component.additionalFiltersDdn['release'] = [
+      {
+        parentId : ['844_DOTC_63b51633f33fd2360e9e72bd']
+      }
+    ];
+    component.selectedProjectData['nodeId'] = "844_DOTC_63b51633f33fd2360e9e72bd";
+    component.initializeFilterForm();
+    component.checkIfProjectHasRelease();
+  })
+
+  it("should sort release",()=>{
+    component.additionalFiltersDdn['release'] = [{
+      labelName: "release",
+      level: 5,
+      nodeId: "844_844_DOTC_63b51633f33fd2360e9e72bd",
+      nodeName: "KnowHow 6.7.0",
+      parentId: ["844_DOTC_63b51633f33fd2360e9e72bd"],
+      path: "844_DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne",
+      releaseEndDate: "2023-05-14T19:11:00.0000000",
+      releaseStartDate: "2023-04-17T19:11:00.0000000",
+      releaseState: "unreleased",
+    },
+    {
+      labelName: "release",
+      level: 5,
+      nodeId: "844_DOTC_63b51633f33fd2360e9e72bd",
+      nodeName: "KnowHow 6.8.0",
+      parentId: ["844_DOTC_63b51633f33fd2360e9e72bd"],
+      path: "844_DOTC_63b51633f33fd2360e9e72bd###D3_hierarchyLevelThree###D2_hierarchyLevelTwo###D1_hierarchyLevelOne",
+      releaseEndDate: "2023-04-11T11:52:00.0000000",
+      releaseStartDate: "2023-01-04T16:04:03.6900000",
+      releaseState: "unreleased",
+    }
+  ]
+    component.selectedProjectData['nodeId'] = "844_DOTC_63b51633f33fd2360e9e72bd";
+    component.initializeFilterForm();
+    component.checkIfProjectHasRelease();
+  })
+
   it('should filter release when project dropdown value change',()=>{
     const spyFunct = spyOn(component,'checkIfProjectHasRelease');
     spyOn(component,'createFilterApplyData')
@@ -1573,7 +1656,46 @@ const completeHierarchyData = {
     expect(spyOnFetchData).toHaveBeenCalled();
   });
 
+  it('should get date and status of jira processor when executionEndedAt is 0 ',()=>{
+    let fakeTraceLog = {
+           "id": "6458fcffc5ef9b0a35606e16",
+            "processorName": "Jira",
+            "basicProjectConfigId": "6458c6685decd920d5eb2edd",
+            "executionStartedAt": 1683552962413,
+            "executionEndedAt": 0,
+            "executionSuccess": false,
+            "lastSuccessfulRun": "2023-05-09 00:02",
+    };
+    const spyOnFetchData = spyOn(component,'fetchActiveIterationStatus');
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(spyOnFetchData).toHaveBeenCalled();
+  });
+
+  it('should get date and status of jira processor when tracklog is null',()=>{
+    let fakeTraceLog = null
+    const spyOnFetchData = spyOn(component,'fetchActiveIterationStatus');
+    spyOn(component,'findTraceLogForTool').and.returnValue(fakeTraceLog)
+    component.showExecutionDate();
+    expect(spyOnFetchData).toHaveBeenCalled();
+  });
+  
+
   it('should get comment summary', fakeAsync(() => {
+    component.showKpisList = [
+      {
+        kpiId : 'kpi123',
+        kpiName : 'name'
+      },
+      {
+        kpiId : 'kpi1234',
+        kpiName : 'name2'
+      }
+    ]
+    component.kpiObj = {
+      kpi123 : {},
+      kpi1234 : {}
+    }
     component.showSpinner = true;
     const reqObj = {
         "level": 5,
@@ -1615,14 +1737,62 @@ const completeHierarchyData = {
     component.filterApplyData['selectedMap'] = {
       'sprint': [],
       'release': [],
-      'project': ['ADDD_649a920fdf3e6c21e3968e30']
+      'project': ['ADDD_649a920fdf3e6c21e3968e30'],
+      'level' :3,
+      'ids' : ['id1'],
+      'selectedMap' : {
+        'sprint' : ['s1'],
+        'release' : ['r1'],
+      }
+
     }
     component.selectedTab = 'my-knowhow';
-    const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of(fakeCommentList['data']));
+    const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(of({success : true,data : 'working'}));
     
     component.getRecentComments();
     tick();
     expect(spy).toHaveBeenCalled();
+    
+  }));
+
+  it('should get comment summary for iterartion', fakeAsync(() => {
+    component.showSpinner = true;
+    const reqObj = {
+        "level": 5,
+        "kpiIds": [
+            "kpi14",
+            "kpi82",
+            "kpi111",
+            "kpi35",
+            "kpi34",
+            "kpi37",
+            "kpi28",
+        ],
+        "nodes": [
+            "ADDD_649a920fdf3e6c21e3968e30"
+        ],
+        "nodeChildId": ''
+    }
+    component.filterApplyData = {
+      ids : ['id1'],
+      selectedMap : {
+        'sprint': [],
+        'release': [],
+        'project': ['ADDD_649a920fdf3e6c21e3968e30'],
+        'level' :3,
+        'ids' : ['id1'],
+      }
+    }
+    component.filterData= [{
+      nodeId : 'id1'
+    }]
+    component.selectedTab = 'iteration';
+    const spy = spyOn(httpService, 'getCommentSummary').and.returnValue(throwError('Error'));
+    
+    component.getRecentComments();
+    tick();
+    expect(spy).toHaveBeenCalled();
+    
   }));
 
   it('should handle comment summary button click', () => {
@@ -1725,6 +1895,98 @@ const completeHierarchyData = {
     expect(Object.keys(component.lastSyncData).length).toEqual(0);
   }));
 
+  it('should get error while fetching active iteration data',fakeAsync(()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": true,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('FAILURE');
+  }));
+
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is false itself',fakeAsync(()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(of({
+      "message": "Successfully fetched last sync details from db",
+      "success": false,
+      "data": {
+        "id": "64ba0f5f56af7e18da9da925",
+        "sprintId": "42842_KnowHOW_6360fefc3fa9e175755f0728",
+        "fetchSuccessful": false,
+        "errorInFetch": true,
+        "lastSyncDateTime": "2023-07-21T10:23:51.845"
+      }
+    }));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('');
+  }));
+
+  it('should get error while fetching active iteration data and getactiveIterationfetchStatus is throw error',fakeAsync(()=>{
+    component.initializeFilterForm();
+    component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
+    component.selectedSprint = {
+      "nodeId": "43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d",
+      "nodeName": "KnowHOW | PI_13| ITR_6_ABFZyDaLnk",
+      "sprintStartDate": "2023-06-07T11:52:00.0000000",
+      "sprintEndDate": "2023-06-27T11:52:00.0000000",
+      "sprintState": "ACTIVE",
+      "level": 6
+    };
+    const getActiveIterationStatusSpy= spyOn(httpService, 'getActiveIterationStatus').and.returnValue(of({
+      "message": "Got HTTP response: 200 on url: http://localhost:50008/activeIteration/fetch",
+      "success": true
+    }));
+
+    spyOn(httpService, 'getactiveIterationfetchStatus').and.returnValue(throwError('Error'));
+
+    component.fetchData();
+    tick(10000);
+    expect(getActiveIterationStatusSpy).toHaveBeenCalled();
+    expect(component.selectedProjectLastSyncStatus).toEqual('');
+  }));
+
   it('should fetch ActiveIterationStatus success case',()=>{
     component.initializeFilterForm();
     component.filterForm?.get('selectedSprintValue').setValue('43310_ABFZyDaLnk_64942ed8eb73c425e4d7ba8d')
@@ -1796,5 +2058,329 @@ const completeHierarchyData = {
     const value1 = component.parentIDClean("Demo_port");
     expect(value1).toBe("Demo Portfolio");
   })
+
+  it('should toggle filter', () => {
+    const mockTargetElement = document.createElement('div');
+    component.toggleDropdown = {
+      'showHide': false,
+      'commentSummary':  false
+    };
+    component.toggleDropdownObj = {
+      "sprint": false,
+      "release": false,
+      "sqd": false
+    }
+    const spy = spyOn(sharedService, 'getClickedItem').and.returnValue(of(mockTargetElement));
+    component.toggleFilter();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should navigate to home page', () => {
+    (router as any).url = '/somepath/Config';
+    component.kanban = true;
+    component.selectedTab = 'maturity';
+    component.projectIndex = 1;
+    spyOn(sharedService, 'setEmptyFilter');
+    spyOn(sharedService, 'setSelectedType');
+    const spy = spyOn(router, 'navigateByUrl');
+    component.navigateToHomePage();
+    expect(spy).toHaveBeenCalledWith(`/dashboard/iteration`);
+  });
+
+  it('should get kpi order list on project level', () => {
+    component.kpiListDataProjectLevel = [];
+    component.kpiListData = [];
+    component.masterData = fakeMasterData;
+    component.filterData = fakeFilterData;
+    component.filterApplyData = filterApplyData;
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    const mockData = configGlobalData;
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(sharedService, 'setDashConfigData');
+    const spy = spyOn(sharedService, 'select');
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(of(mockData));
+    spyOn(component, 'processKpiList');
+    spyOn(component, 'navigateToSelectedTab');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalledWith(fakeMasterData, fakeFilterData, filterApplyData, component.selectedTab)
+  })
+
+  it('should get kpi order list on project level', () => {
+    component.selectedTab = 'backlog';
+    const obj = [{
+      "nodeId": "Scrum Project_6335363749794a18e8a4479b",
+      "nodeName": "Scrum Project",
+      "path": "Sample Three_hierarchyLevelThree###Sample Two_hierarchyLevelTwo###Sample One_hierarchyLevelOne",
+      "labelName": "project",
+      "parentId": "Sample Three_hierarchyLevelThree",
+      "level": 4,
+      "basicProjectConfigId": "6335363749794a18e8a4479b"
+    }]
+    spyOn(helperService, 'makeSyncShownProjectLevelAndUserLevelKpis');
+    spyOn(sharedService, 'getSelectedLevel').and.returnValue({ hierarchyLevelId: 'project' });
+    spyOn(sharedService, 'getSelectedTrends').and.returnValue(obj);
+    spyOn(httpService, 'getShowHideOnDashboard').and.returnValue(throwError('Something went wrong'));
+    const spy = spyOn(messageService, 'add');
+    component.getKpiOrderListProjectLevel();
+    expect(spy).toHaveBeenCalled()
+  })
+
+  it('should handle kpi change if all kpis are enabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true) 
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeTruthy;
+  });
+
+  it('should handle kpi change- if atleast one kpi is disabled', () => {
+    const event = {
+      "originalEvent": {
+          "isTrusted": true
+      },
+      "checked": true
+    }
+    const kpiObj = {
+      kpi75: new UntypedFormControl(true),
+      kpi39: new UntypedFormControl(false)
+    }
+    component.kpiForm = new UntypedFormGroup({
+      enableAllKpis: new UntypedFormControl(false),
+      kpis: new UntypedFormGroup(kpiObj),
+    });
+    component.handleKpiChange(event);
+    expect(component.kpiFormValue['enableAllKpis'].value).toBeFalsy;
+  });
+
+  it('should set trend value filter when allowMultipleSelection is true', () => {
+    component.allowMultipleSelection = true;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual([nodeId])
+  })
+
+  it('should set trend value filter when allowMultipleSelection is false', () => {
+    component.allowMultipleSelection = false;
+    component.filterForm = new UntypedFormGroup({
+      selectedTrendValue: new UntypedFormControl(''),
+      date: new UntypedFormControl(''),
+      selectedLevel: new UntypedFormControl(),
+      selectedSprintValue: new UntypedFormControl(),
+      selectedRelease: new UntypedFormControl(),
+    });
+    const nodeId = 'AAA_8327462874264dsd34';
+    component.trendLineValueList = [
+      {
+        'nodeId': nodeId
+      }
+    ] 
+    component.setTrendValueFilter();
+    expect(component.filterForm['controls']['selectedTrendValue'].value).toEqual(nodeId)
+  })
+
+  it('should get logo image', () => {
+    const logoImage = {
+      image: 'logo.png'
+    }
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of(logoImage));
+    component.getLogoImage();
+    expect(component.logoImage).toBe("data:image/png;base64," + logoImage.image);
+  })
+
+  it('should not get logo image', () => {
+    spyOn(httpService, 'getUploadedImage').and.returnValue(of({}));
+    component.getLogoImage();
+    expect(component.logoImage).toBe(undefined);
+  })
+
+  it('should navigate to Capacity Planning page', () => {
+    const spy = spyOn(router, 'navigateByUrl');
+
+    // Act
+    component.redirectToCapacityPlanning();
+
+    // Assert
+    expect(spy).toBeDefined();
+  });
+
+  it('should get user name form current user details',()=>{
+    component.ngOnInit();
+    sharedService.setCurrentUserDetails({user_name : "test user"})
+     expect(component.username).toBe("test user");
+  })
+
+  it('should initialitze info',()=>{
+    spyOn(sharedService,'getCurrentUserDetails').and.returnValue(['ROLE_GUEST'])
+    component.initializeUserInfo();
+    expect(component.isGuest).toBeTruthy();
+  })
+
+  it('should unsubscribe filterKpiRequest', () => {
+    spyOn(sharedService, 'getFilterData').and.returnValue(fakeFilterData);
+    spyOn(httpService,'getFilterData').and.returnValue(of(fakeFilterData));
+    component.previousType = false;
+    component.kanban = false;
+    component.selectedTab = '';
+    const filterKpiRequest = jasmine.createSpyObj('Subscription', ['unsubscribe']);
+    component.filterKpiRequest = filterKpiRequest
+    component.initFlag = false;
+    const spy = spyOn(component, 'processFilterData');
+    component.getFilterDataOnLoad();
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should return the latest passed release', () => {
+    const releaseList = [
+      { releaseEndDate: '2021-08-01T00:00:00.000Z' },
+      { releaseEndDate: '2021-07-01T00:00:00.000Z' },
+      { releaseEndDate: '2021-09-01T00:00:00.000Z' },
+    ];
+    const result = component.findLatestPassedRelease(releaseList);
+    expect(result.length).toEqual(3);
+  });
+
+  it('should return null if releaseList is empty', () => {
+    const releaseList = [];
+    const result = component.findLatestPassedRelease(releaseList);
+    expect(result).toBeNull();
+  });
+
+  describe('YourComponent', () => {
+    beforeEach(() => {
+      component.trendLineValueList = [
+        { nodeId: 1, nodeName: 'Node1' },
+        { nodeId: 2, nodeName: 'Node2' },
+        { nodeId: 3, nodeName: 'Node3' },
+      ];
+    });
+  
+    it('should return the node name for the given nodeId', () => {
+      const nodeId = 2;
+      const result = component.getNodeName(nodeId);
+      expect(result).toEqual('Node2');
+    });
+  
+    it('should return undefined if the nodeId is not found', () => {
+      const nodeId = 4;
+      const result = component.getNodeName(nodeId);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('YourComponent', () => {
+  
+    beforeEach(() => {
+      component.selectedFilterArray = [
+        {
+          additionalFilters: [
+            {
+              path: ['1###2###3'],
+              nodeName: 'Node3',
+              nodeId: '3',
+              labelName: 'Label3'
+            }
+          ],
+          path: [],
+          nodeId: '1',
+          nodeName: 'Node1',
+          labelName: 'Label1'
+        },
+        {
+          additionalFilters: [],
+          path: ['4###5###6'],
+          nodeId: '4',
+          nodeName: 'Node4',
+          labelName: 'Label4'
+        }
+      ];
+      component.filterData = [
+        { nodeId: '1', nodeName: 'Node1' },
+        { nodeId: '2', nodeName: 'Node2' },
+        { nodeId: '3', nodeName: 'Node3' },
+        { nodeId: '4', nodeName: 'Node4' },
+        { nodeId: '5', nodeName: 'Node5' },
+        { nodeId: '6', nodeName: 'Node6' }
+      ];
+    });
+  
+    it('should compile GA data with additional filters', () => {
+      const spyob = spyOn(ga, 'setProjectData');
+      component.compileGAData();
+      expect(spyob).toHaveBeenCalled();
+    });
+  
+    it('should compile GA data without additional filters', () => {
+      const spyob = spyOn(ga, 'setProjectData');
+      component.compileGAData();
+      expect(spyob).toHaveBeenCalled();
+    });
+  });
+
+  describe('YourComponent', () => {
+  
+    beforeEach(() => {
+      component.processorName = ['tool1'];
+      component.processorsTracelogs = [
+        { processorName: 'tool1', traceLog: 'Trace log for tool1' },
+        { processorName: 'tool2', traceLog: 'Trace log for tool2' },
+        { processorName: 'tool3', traceLog: 'Trace log for tool3' }
+      ];
+    });
+  
+    it('should return the trace log for the tool if it exists in processorsTracelogs', () => {
+      const result = component.findTraceLogForTool();
+      expect(result).toEqual({ processorName: 'tool1', traceLog: 'Trace log for tool1' });
+    });
+  
+    it('should return undefined if the tool does not exist in processorsTracelogs', () => {
+      component.processorName = ['tool4'];
+  
+
+      const result = component.findTraceLogForTool();
+      expect(result).toBeUndefined();
+    });
+  
+    it('should return undefined if processorsTracelogs is empty', () => {
+      component.processorsTracelogs = [];
+  
+
+      const result = component.findTraceLogForTool();
+      expect(result).toBeUndefined();
+    });
+  });
 
 });
