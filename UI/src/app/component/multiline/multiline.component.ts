@@ -109,17 +109,16 @@ export class MultilineComponent implements OnChanges {
       d3.select(this.elem).select('#horizontalSVG').select('svg').remove();
       d3.select(this.elem).select('#xCaptionContainer').select('text').remove();
       d3.select(this.elem).select('#horizontalSVG').select('tooltip-container').remove();
-      const formatedData = this?.data.map((project,i) => {
-        const index = this.service.getSelectedTrends().findIndex(seleceProject=>seleceProject.nodeName.toLowerCase() === project.data.toLowerCase())
-        project.value.map(details=>{
+      const formatedData = this?.data[0]?.value.map(details=>{
         const XValue = details.date || details.sSprintName;
-        const projectName = '_'+this.service.getSelectedTrends()[index]?.nodeName;
+        const projectName = '_'+this.service.getSelectedTrends()[0]?.nodeName;
         const removeProject = XValue?.includes(projectName) ? XValue?.replace(projectName,'') : XValue;
-        details['sortSprint'] = removeProject;
+         return {...details,sortSprint:removeProject};
       })
-      return project;
-    })
       const isAllBelowFromThreshold = this.data[0]?.value.every(details => ((Math.round(details.value * 100) / 100 )< this.thresholdValue))
+      if(this.data[0]){
+        this.data[0].value = formatedData;
+      }
       const viewType = this.viewType;
       const selectedProjectCount = this.service.getSelectedTrends().length;
       const data = this.data;
@@ -338,7 +337,7 @@ export class MultilineComponent implements OnChanges {
         .select('#multiLineChart')
         .append('div')
         .attr('class', 'tooltip')
-        .style('visibility', 'hidden')
+        .style('display', 'none')
         .style('opacity', 0);
   
       /* Add Axis into SVG */
@@ -528,7 +527,6 @@ export class MultilineComponent implements OnChanges {
             .style('stroke-width', lineStroke)
             .style('cursor', 'none');
         });
-        let tooltipDivCounter = 0;
   
       /* Add circles (data) on the line */
       lines
@@ -552,32 +550,25 @@ export class MultilineComponent implements OnChanges {
             div
               .transition()
               .duration(200)
-              .style('visibility', 'visible')
+              .style('display', 'block')
               .style('position', 'fixed')
               .style('opacity', 0.9);
   
             const circle = event.target;
-            const { top: yPosition, left: xPosition, right : xPositionRight} =
+            const { top: yPosition, left: xPosition } =
               circle.getBoundingClientRect();
   
-           div.attr('id',`hoverToolTip${kpiId}${tooltipDivCounter}`)
+            div
               .html(
-                `${d.date || d.sortSprint}` +
+                `${d.date || d.sSprintName}` +
                 ' : ' +
                 "<span class='toolTipValue'> " +
-                `${Math.round(d.value * 100) / 100 + showUnit}` +
+                `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
                 '</span>',
               )
-              
-             const tooltipDivWidth = document.getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`).getBoundingClientRect().width;
-             let newLeft = xPosition - (tooltipDivWidth/2);
-              
-            //  console.log("point xPosition : ",xPosition, " Div half width : ",(tooltipDivWidth/2), ' new wodth : ',newLeft, ' Full width : ',tooltipDivWidth)
-            //  console.log(circle.getBoundingClientRect())
-            //  console.log(document.getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`).getBoundingClientRect())
-            
-            div.style('left', newLeft + 'px')
-            .style('top', yPosition + 20 + 'px');
+              .style('left', xPosition + 20 + 'px')
+              // .style('top', yScale(d.value) - topValue + 'px');
+              .style('top', yPosition + 20 + 'px');
             for (const hoverData in d.hoverValue) {
               div
                 .append('p')
@@ -589,15 +580,13 @@ export class MultilineComponent implements OnChanges {
                   ' </span>',
                 );
             }
-            tooltipDivCounter++;
-           
           }
         })
         .on('mouseout', function (d) {
           div
             .transition()
             .duration(500)
-            .style('visibility', 'hidden')
+            .style('display', 'none')
             .style('opacity', 0);
         })
         .append('circle')

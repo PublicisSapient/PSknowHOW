@@ -133,35 +133,25 @@ public abstract class AzureIssueClient {// NOPMD //NOSONAR
 	public void setRCA(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue, Map<String, Object> fieldsMap,
 			List<String> rcaValuesForCodeIssue) {
 		Fields fields = issue.getFields();
-		List<String> rcaList = new ArrayList<>();
+		String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
+
 		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
 				.anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
-			try {
-				String rootCauseFieldFromFieldMapping = fieldMapping.getRootCause();
-				if (fieldMapping.getRootCauseIdentifier().trim()
-						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD) && fieldsMap.containsKey(
-						rootCauseFieldFromFieldMapping) && fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
-					// Introduce enum to standarize the values of RCA
-					String rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
-					if (rcaValuesForCodeIssue.stream().anyMatch(rcaCause::equalsIgnoreCase)) {
-						rcaCause = AzureConstants.CODE_ISSUE;
-					}
-					rcaList.add(rcaCause);
-				} else if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
-					String[] labelArray = fields.getSystemTags().split(";");
-					List<String> commonLabel = Arrays.asList(labelArray).stream()
-							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
-					rcaList.addAll(commonLabel);
+			String rcaCause = AzureConstants.RCA_CAUSE_NONE;
+			if (fieldsMap.containsKey(rootCauseFieldFromFieldMapping)
+					&& fieldsMap.get(rootCauseFieldFromFieldMapping) != null) {
+				// Introduce enum to standarize the values of RCA
+				rcaCause = fieldsMap.get(rootCauseFieldFromFieldMapping).toString().toLowerCase();
+
+				if (rcaValuesForCodeIssue.stream().anyMatch(rcaCause::equalsIgnoreCase)) {
+					rcaCause = AzureConstants.CODE_ISSUE;
 				}
-			} catch (Exception ex) {
-				log.error("Error while setting RCA for Azure Issue", ex);
 			}
-		}
-		if (CollectionUtils.isNotEmpty(rcaList)) {
-			azureIssue.setRootCauseList(rcaList);
+			azureIssue.setRootCauseList(Lists.newArrayList(rcaCause.toLowerCase()));
 		} else {
 			azureIssue.setRootCauseList(Lists.newArrayList(AzureConstants.RCA_CAUSE_NONE));
 		}
+
 	}
 
 	/**

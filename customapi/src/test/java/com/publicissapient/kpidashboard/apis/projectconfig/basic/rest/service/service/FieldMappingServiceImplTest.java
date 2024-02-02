@@ -362,6 +362,7 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setRootCause("customfield_19121");
 
 		fieldMapping.setJiraBugRaisedByIdentification(CommonConstant.CUSTOM_FIELD);
+		fieldMapping.setJiraBugRaisedByQAIdentification(CommonConstant.CUSTOM_FIELD);
 		fieldMapping.setJiraProductionIncidentIdentification(CommonConstant.CUSTOM_FIELD);
 		// techDebt
 		fieldMapping.setJiraTechDebtIdentification(CommonConstant.CUSTOM_FIELD);
@@ -402,6 +403,8 @@ public class FieldMappingServiceImplTest {
 		fieldMapping.setJiradefecttype(Arrays.asList("Defect"));
 		fieldMapping.setJiraBugRaisedByCustomField("customfield_15001");
 		fieldMapping.setJiraBugRaisedByValue(Arrays.asList("UAT_Defect"));
+		fieldMapping.setJiraBugRaisedByQACustomField("");
+		fieldMapping.setJiraBugRaisedByQAValue(Arrays.asList(""));
 
 		return fieldMapping;
 	}

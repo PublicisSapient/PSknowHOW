@@ -313,7 +313,6 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 
 		removeStoriesWithDefect(defectListWoDrop, projectWisePriority, projectWiseRCA,
 				statusConfigsOfRejectedStoriesByProject);
-
 		List<String> storyIds = getIssueIds(defectListWoDrop);
 		List<JiraIssueCustomHistory> storiesHistory = jiraIssueCustomHistoryRepository.findByStoryIDIn(storyIds);
 		defectListWoDrop.removeIf(issue -> {

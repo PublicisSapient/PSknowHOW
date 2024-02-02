@@ -17,7 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.jobs;
 
-import com.publicissapient.kpidashboard.jira.listener.JobListenerKanban;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -78,7 +77,6 @@ public class JiraProcessorJob {
 
 	@Autowired
 	IssueScrumWriter issueScrumWriter;
-
 	@Autowired
 	IssueKanbanWriter issueKanbanWriter;
 
@@ -110,7 +108,7 @@ public class JiraProcessorJob {
 	JobListenerScrum jobListenerScrum;
 
 	@Autowired
-	JobListenerKanban jobListenerKanban;
+	JobListenerScrum jobListenerKanban;
 
 	@Autowired
 	JiraIssueSprintJobListener jiraIssueSprintJobListener;

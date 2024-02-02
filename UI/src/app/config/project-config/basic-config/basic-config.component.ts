@@ -22,7 +22,6 @@ import { MessageService } from 'primeng/api';
 import { HttpService } from '../../../services/http.service';
 import { SharedService } from '../../../services/shared.service';
 import { GetAuthorizationService } from '../../../services/get-authorization.service';
-import { GoogleAnalyticsService } from '../../../services/google-analytics.service';
 declare const require: any;
 
 @Component({
@@ -50,7 +49,7 @@ export class BasicConfigComponent implements OnInit {
   assigneeSwitchInfo = "Enable Individual KPIs will fetch People related information (e.g. Assignees from Jira) from all source tools that are connected to your project";
   isProjectAdmin = false;
 
-  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService, private ga: GoogleAnalyticsService) {
+  constructor(private formBuilder: UntypedFormBuilder, private sharedService: SharedService, private http: HttpService, private messenger: MessageService, private getAuthorizationService: GetAuthorizationService) {
     this.projectTypeOptions = [
       { name: 'Scrum', value: false },
       { name: 'Kanban', value: true }
@@ -133,15 +132,8 @@ export class BasicConfigComponent implements OnInit {
     submitData['kanban'] = formValue['kanban'];
     submitData['hierarchy'] = [];
     submitData['saveAssigneeDetails'] = formValue['assigneeDetails'];
-    let gaObj = {
-      name: formValue['projectName'],
-      kanban: formValue['kanban'],
-      saveAssigneeDetails: formValue['assigneeDetails'],
-      date: new Date(),
-      user_name: this.sharedService.getCurrentUserDetails('user_name'),
-      user_email: this.sharedService.getCurrentUserDetails('user_email'),
-    }
-    this.getFieldsResponse.forEach((element, index) => {
+
+    this.getFieldsResponse.forEach(element => {
       submitData['hierarchy'].push({
         hierarchyLevel: {
           level: element.level,
@@ -150,8 +142,8 @@ export class BasicConfigComponent implements OnInit {
         },
         value: formValue[element.hierarchyLevelId].name ? formValue[element.hierarchyLevelId].name : formValue[element.hierarchyLevelId]
       });
-      gaObj['category'+ (index+1)] = element.hierarchyLevelName;
-    }); 
+    });
+
     this.blocked = true;
     this.http.addBasicConfig(submitData).subscribe(response => {
       if (response && response.serviceResponse && response.serviceResponse.success) {
@@ -177,9 +169,6 @@ export class BasicConfigComponent implements OnInit {
           summary: 'Basic config submitted!!',
           detail: ''
         });
-
-        // Google Analytics
-        this.ga.createProjectData(gaObj);
       } else {
         this.messenger.add({
           severity: 'error',
@@ -194,7 +183,7 @@ export class BasicConfigComponent implements OnInit {
 
   stringValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const inputValue: string = control.value as string;
-    if ((typeof control.value === 'string' || control.value instanceof String) &&  control.value && control.value !== null && !/^[a-zA-Z0-9\s_-]+$/.test(inputValue)) {
+    if ((typeof control.value === 'string' || control.value instanceof String) &&  control.value && control.value !== null && !/^[a-zA-Z0-9\s]+$/.test(inputValue)) {
       return { stringValidator: true };
     }
     return null;

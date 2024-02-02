@@ -15,6 +15,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package com.publicissapient.kpidashboard.notification.config;
 
 import java.util.HashMap;

@@ -35,5 +35,4 @@ public class AzureServer {
 	private String pat;
 	private String username;
 	private String projectKey;
-	private String team;
 }

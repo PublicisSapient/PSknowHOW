@@ -171,9 +171,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 		build.setBuildUrl(AzurePipelineUtils.getString(buildJson, "url"));
 		build.setNumber(String.valueOf(buildJson.get("id")));
 		build.setStartTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "startTime")).toEpochMilli());
-		if (StringUtils.isNotEmpty(AzurePipelineUtils.getString(buildJson, "finishTime"))) {
-			build.setEndTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "finishTime")).toEpochMilli());
-		}
+		build.setEndTime(Instant.parse(AzurePipelineUtils.getString(buildJson, "finishTime")).toEpochMilli());
 		build.setBuildStatus(getBuildStatus(buildJson));
 		build.setDuration(build.getEndTime() - build.getStartTime());
 		build.setTimestamp(System.currentTimeMillis());
@@ -188,14 +186,7 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 	 * @return the build status
 	 */
 	private BuildStatus getBuildStatus(JSONObject buildJson) {
-		String status;
-		if (AzurePipelineUtils.getString(buildJson, "result") != null) {
-			status = AzurePipelineUtils.getString(buildJson, "result");
-		} else if (AzurePipelineUtils.getString(buildJson, "status") != null) {
-			status = AzurePipelineUtils.getString(buildJson, "status");
-		} else {
-			return BuildStatus.UNKNOWN;
-		}
+		String status = AzurePipelineUtils.getString(buildJson, "result");
 		switch (status) {
 		case "succeeded":
 			return BuildStatus.SUCCESS;
@@ -205,8 +196,6 @@ public class DefaultAzurePipelineClient implements AzurePipelineClient {
 			return BuildStatus.FAILURE;
 		case "canceled":
 			return BuildStatus.ABORTED;
-		case "inProgress":
-			return BuildStatus.IN_PROGRESS;
 		default:
 			return BuildStatus.UNKNOWN;
 		}

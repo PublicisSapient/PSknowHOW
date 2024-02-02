@@ -104,12 +104,4 @@ export class GoogleAnalyticsService {
       ...data
     });
   }
-
-  createProjectData(data){
-    const dataLayer = this.window && typeof this.window['dataLayer'] !== undefined ? this.window['dataLayer'] : [];
-    dataLayer?.push({
-      event: 'projectCreated',
-      ...data
-    });
-  }
 }

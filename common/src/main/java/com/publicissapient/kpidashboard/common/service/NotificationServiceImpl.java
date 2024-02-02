@@ -63,11 +63,7 @@ public class NotificationServiceImpl implements NotificationService  {
                 log.error("Notification Event not sent : notification subject for {} not found in properties file",
                         notSubject);
             }
-        }
-//        else if (isSendGridEnabled) {
-//            this else if can be used to send email via SendGrid when kafka if off but for now we only use sendgrid with kafka
-//        }
-        else {
+        }else {
             sendEmailWithoutKafka(emailAddresses, customData, notSubject, notKey, topic, templateKey);
         }
 

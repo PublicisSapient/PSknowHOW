@@ -196,7 +196,6 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorConfig.getPageSize()).thenReturn(4);
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(prepareProjectToolConfig());
-		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any())).thenReturn(prepareProjectToolConfig());
 		when(connectionRepository.findById(any())).thenReturn(returnConnectionObject());
 
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
@@ -375,7 +374,6 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorConfig.getPageSize()).thenReturn(4);
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(prepareProjectToolConfig());
-		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any())).thenReturn(prepareProjectToolConfig());
 		when(connectionRepository.findById(any())).thenReturn(returnConnectionObject());
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(kanbanJiraRepo.findByIssueId(any())).thenReturn(new ArrayList<KanbanJiraIssue>());

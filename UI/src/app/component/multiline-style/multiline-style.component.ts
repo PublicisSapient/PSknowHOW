@@ -301,7 +301,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
       .select('#multiLine')
       .append('div')
       .attr('class', 'tooltip')
-      .style('visibility', 'hidden')
+      .style('display', 'none')
       .style('opacity', 0);
 
     /* Add Axis into SVG */
@@ -484,7 +484,7 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
           .style('stroke-width', lineStroke)
           .style('cursor', 'none');
       });
-    let tooltipDivCounter = 0;
+
     /* Add circles (data) on the line */
     lines
       .selectAll('circle-group')
@@ -507,27 +507,24 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
           div
             .transition()
             .duration(200)
-            .style('visibility', 'visible')
+            .style('display', 'block')
             .style('position', 'fixed')
             .style('opacity', 0.9);
 
           const circle = event.target;
-          const { top: yPosition, left: xPosition,right : xPositionRight } =
+          const { top: yPosition, left: xPosition } =
             circle.getBoundingClientRect();
 
-          div.attr('id',`hoverToolTip${kpiId}${tooltipDivCounter}`)
+          div
             .html(
               `${d.date || d.sSprintName}` +
               ' : ' +
               "<span class='toolTipValue'> " +
-              `${Math.round(d.value * 100) / 100 + showUnit}` +
+              `${Math.round(d.value * 100) / 100 + ' ' + showUnit}` +
               '</span>',
             )
-
-            const tooltipDivWidth = document.getElementById(`hoverToolTip${kpiId}${tooltipDivCounter}`).getBoundingClientRect().width;
-             let newLeft = xPosition - (tooltipDivWidth/2);
-
-            div.style('left', newLeft + 'px')
+            .style('left', xPosition + 20 + 'px')
+            // .style('top', yScale(d.value) - topValue + 'px');
             .style('top', yPosition + 20 + 'px');
           for (const hoverData in d.hoverValue) {
             div
@@ -540,14 +537,13 @@ export class MultilineStyleComponent implements OnChanges, OnDestroy, OnInit {
                 ' </span>',
               );
           }
-          tooltipDivCounter++;
         }
       })
       .on('mouseout', function (d) {
         div
           .transition()
           .duration(500)
-          .style('visibility', 'hidden')
+          .style('display', 'none')
           .style('opacity', 0);
       })
       .append('circle')
