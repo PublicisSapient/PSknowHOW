@@ -72,8 +72,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAuthenticationServiceImplTest {
 
-	private static final String validJwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VybmFtZSIsImRldGFpbHMiOiJTVEFOREFSRCIsInJvbGVzIjpbIlJPTEVfVklFV0VSIiwiUk9MRV9TVVBFUkFETUlOIl0sImV4cCI6MTcwNjg3MjQ1Nn0.5n8xFZX_AHlPx9kg6QG6IfkDMXJglLv-KCqrSUIucDKASxklzFNZZ1_vU8-1fQ4BNfcnV65ef_QGQEbF8M4r8Q";
-
 	private static final String USERNAME = "username";
 
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
@@ -118,6 +116,15 @@ public class TokenAuthenticationServiceImplTest {
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 
+	}
+
+	@Test
+	public void testValidateAuthentication() {
+		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		service.validateAuthentication(request, response);
+		Assert.assertNotNull(authentication);
 	}
 
 	@Test
