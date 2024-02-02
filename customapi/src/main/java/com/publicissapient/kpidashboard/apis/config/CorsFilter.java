@@ -27,9 +27,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.publicissapient.kpidashboard.apis.constant.CORSConstants;
@@ -51,13 +48,6 @@ public class CorsFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private CustomApiConfig apiSettings;
-
-   // final CorsConfigurationSource configSource;
-
-//    public CorsFilter(CorsConfigurationSource configSource) {
-//        Assert.notNull(configSource, "CorsConfigurationSource must not be null");
-//        this.configSource = configSource;
-//    }
 
     @Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
