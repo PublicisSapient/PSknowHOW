@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -318,7 +317,7 @@ public class KPIExcelUtility {
 						&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 					excelData.setStoryPoint(
-							(roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
+							(roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
 				}
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
@@ -761,7 +760,7 @@ public class KPIExcelUtility {
 					excelData.setStoryPoint(roundingOff.toString());
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 					excelData.setStoryPoint(
-							roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
+							roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
 				}
 
 				kpiExcelData.add(excelData);
