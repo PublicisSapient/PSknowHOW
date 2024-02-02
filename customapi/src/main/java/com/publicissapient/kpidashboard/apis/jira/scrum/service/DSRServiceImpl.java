@@ -453,7 +453,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				testCaseList.stream()
 						.filter(jIssue -> CollectionUtils.isNotEmpty(jIssue.getLabels())
 								&& jIssue.getLabels().stream().anyMatch(jiraBugRaisedByValue::contains))
-						.forEach(jIssue -> jiraBugRaisedByValue // itr over labels in fieldMapping
+						.forEach(jIssue -> jIssue.getLabels()
 								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(jIssue)));
 
 			} else {
@@ -466,7 +466,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(issue)));
 			}
 		}
-
+		// removing for overall filter
+		uatMap.keySet().removeIf(key -> !labels.contains(key));
 		return uatMap;
 	}
 

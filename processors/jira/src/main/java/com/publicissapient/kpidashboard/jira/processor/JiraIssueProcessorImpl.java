@@ -736,7 +736,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					jsonObject = (org.json.simple.JSONObject) parser.parse(array.get(i).toString());
 					if (lowerCaseBugRaisedValue
 							.contains(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase())) {
-						testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString().toLowerCase());
+						testPhasesList.add(jsonObject.get(JiraConstants.VALUE).toString());
 						isRaisedByThirdParty = true;
 						break;
 					}
@@ -751,8 +751,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 							.get(JiraConstants.VALUE).toString().toLowerCase())) {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
-						.toString().toLowerCase();
-				if (lowerCaseBugRaisedValue.contains(testPhase) && Objects.nonNull(jiraIssue) && feature.equalsIgnoreCase(TEST_PHASE)) {
+						.toString();
+				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue) && feature.equalsIgnoreCase(TEST_PHASE)) {
 					setSpecificField(jiraIssue,feature, Collections.singletonList(testPhase));
 				}
 			}
@@ -765,7 +765,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setSpecificField(JiraIssue jiraIssue, String feature, List<String> testPhasesList) {
 		if (feature.equalsIgnoreCase(TEST_PHASE)) {
-			jiraIssue.setEscapedDefectGroup(testPhasesList);
+			jiraIssue.setEscapedDefectGroup(testPhasesList.stream().map(String::toLowerCase).collect(Collectors.toList()));
 		} else if (feature.equalsIgnoreCase(UAT_PHASE)) {
 			jiraIssue.setUatDefectGroup(testPhasesList);
 		}
