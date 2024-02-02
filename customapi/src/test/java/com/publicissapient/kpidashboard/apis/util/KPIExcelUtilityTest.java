@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -462,6 +463,50 @@ public class KPIExcelUtilityTest {
 		leadTimeChangeData.setMergeID("123");
 		leadTimeChangeData.setUrl("www.fhewjdh.com");
 		return leadTimeChangeData;
+	}
+
+	@Test
+	public void populateReleaseDefectRelatedExcelData_ValidData_PopulatesExcelDataList() {
+		// Arrange
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.STORY_POINT);
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(10);
+
+		// Act
+		KPIExcelUtility.populateReleaseDefectRelatedExcelData( jiraIssues,excelDataList, fieldMapping );
+
+		// Assert
+		assertEquals(44, excelDataList.size());
+	}
+	@Test
+	public void populateReleaseDefectRelatedExcelData_WhenEstimationCriteriaIsNotStoryPoint_PopulatesExcelDataList() {
+		// Arrange
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getEstimationCriteria()).thenReturn(CommonConstant.JIRA_IN_PROGRESS_STATUS);
+		jiraIssues.get(0).setAggregateTimeOriginalEstimateMinutes(10);
+
+		// Act
+		KPIExcelUtility.populateReleaseDefectRelatedExcelData( jiraIssues,excelDataList, fieldMapping );
+
+		// Assert
+		assertEquals(44, excelDataList.size());
+	}
+
+	@Test
+	public void populateBacklogCountExcelData_ValidData_PopulatesExcelDataList() {
+		// Arrange
+		List<KPIExcelData> excelDataList = new ArrayList<>();
+
+		jiraIssues.get(0).setCreatedDate("2022-01-01");
+		jiraIssues.get(0).setUpdateDate("2022-04-01");
+
+		// Act
+		KPIExcelUtility.populateBacklogCountExcelData(jiraIssues, excelDataList);
+
+		// Assert
+		assertEquals(44, excelDataList.size());
 	}
 
 }
