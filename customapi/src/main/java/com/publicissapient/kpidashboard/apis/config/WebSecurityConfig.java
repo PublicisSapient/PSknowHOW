@@ -138,8 +138,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         http.headers(headers -> headers.cacheControl(HeadersConfigurer.CacheControlConfig::disable));
         http.httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(cors->cors.configurationSource(apiConfigurationSource()))
-                .authorizeHttpRequests(authz -> authz
+        http.authorizeHttpRequests(authz -> authz
                         .requestMatchers("/appinfo").permitAll().requestMatchers("/registerUser")
                         .permitAll().requestMatchers("/changePassword").permitAll().requestMatchers("/login/captcha").permitAll()
                         .requestMatchers("/login/captchavalidate").permitAll().requestMatchers("/login**").permitAll()
@@ -159,7 +158,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                         .requestMatchers(HttpMethod.GET, "/analytics/switch").permitAll().anyRequest().authenticated())
                 .addFilterBefore(apiTokenRequestFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-              //  .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
+                .addFilterAfter(corsFilter(), ChannelProcessingFilter.class)
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .exceptionHandling(Customizer.withDefaults());
         return http.build();
@@ -170,6 +169,12 @@ public class WebSecurityConfig implements WebMvcConfigurer {
         return authenticationConfiguration.getAuthenticationManager();
 
     }
+
+	@Bean
+	protected CorsFilter corsFilter() {
+		return new CorsFilter();
+	}
+
     protected void setAuthenticationProvider(AuthenticationManagerBuilder auth) throws Exception {
         List<AuthType> authenticationProviders = authProperties.getAuthenticationProviders();
 
