@@ -239,7 +239,8 @@ public class BambooClientBuildImplTest {
 		assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 	}
 	@Test
-	public void instanceJobsEmptyResponseWhenBranchKeyIsNull() throws MalformedURLException, ParseException {
+	public void instanceJobsEmptyResponseWhenBranchKeyIsNull() throws ParseException {
+		String exceptionMsg = "Got response<504 GATEWAY_TIMEOUT Gateway Timeout,,[]> from URL :http://does:matter@xyz/rest/api/latest/result/HDEP-AST";
 		try {
 			when(restClient.exchange(ArgumentMatchers.any(URI.class), eq(HttpMethod.GET), ArgumentMatchers.any(HttpEntity.class), eq(String.class)))
 					.thenReturn(new ResponseEntity<>("", HttpStatus.GATEWAY_TIMEOUT));
@@ -249,7 +250,7 @@ public class BambooClientBuildImplTest {
 			assertThat("instanceJobsEmptyResponseReturnsEmptyMap", jobs.size(), is(0));
 		}catch (RestClientException e)
 		{
-			//Assertions.assertEquals();
+			Assertions.assertEquals(exceptionMsg,e.getMessage());
 		}
 	}
 

@@ -39,7 +39,7 @@ import com.publicissapient.kpidashboard.common.model.application.ProjectBasicCon
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.json.simple.parser.ParseException;
-import org.junit.Before;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -172,7 +172,7 @@ public class BambooClientDeployImplTest {
 			bambooClientDeploy.getDeployJobsFromServer(bambooServer, projectBasicConfig);
 		}catch(Exception e)
 		{
-
+			Assertions.assertEquals(ClassCastException.class,e.getClass());
 		}
 	}
 	private HttpEntity<String> generateHeader(String userName) {

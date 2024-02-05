@@ -83,6 +83,7 @@ public class BambooProcessorJobExecuterTests {
 	private static final String HTTP_URL = "http://does:matter@bamboo.com";
 	private static final String SERVER1 = "server1";
 	private static final List<ProcessorToolConnection> pt = new ArrayList<>();
+	private static final List<ProcessorToolConnection> processorToolConfigWithWrongJobType = new ArrayList<>();
 	private static final List<ProcessorExecutionTraceLog> petl = new ArrayList<>();
 	private static final List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private static final List<Deployment> deploymentList = new ArrayList<>();
@@ -96,6 +97,7 @@ public class BambooProcessorJobExecuterTests {
 	// "matter");
 	private static final ProcessorToolConnection BAMBOOSAMPLESERVER1 = new ProcessorToolConnection();// new
 	private static final ProcessorToolConnection BAMBOOSAMPLESERVER2 = new ProcessorToolConnection();// new
+	private static final ProcessorToolConnection BAMBOOSAMPLESERVER3 = new ProcessorToolConnection();// new
 	Deployment deployment3 = new Deployment();
 	Deployment deployment1 = new Deployment();
 	Deployment deployment2 = new Deployment();
@@ -176,9 +178,24 @@ public class BambooProcessorJobExecuterTests {
 		BAMBOOSAMPLESERVER2.setDeploymentProjectName("TestDep");
 		BAMBOOSAMPLESERVER2.setDeploymentProjectId("190709761");
 
+		BAMBOOSAMPLESERVER3.setId(new ObjectId("6296661b307f0239977f1e9e"));// toolId
+		BAMBOOSAMPLESERVER3.setBasicProjectConfigId(new ObjectId("5f9014743cb83ce896167659"));
+		BAMBOOSAMPLESERVER3.setJobName("IN");
+		BAMBOOSAMPLESERVER3.setBranch("branch");
+		BAMBOOSAMPLESERVER3.setToolName("Bamboo");
+		BAMBOOSAMPLESERVER3.setConnectionId(new ObjectId("5fa69f5d220938d6a365fec6"));
+		BAMBOOSAMPLESERVER3.setConnectionName("Bamboo connection");
+		BAMBOOSAMPLESERVER3.setUrl(HTTP_URL);
+		BAMBOOSAMPLESERVER3.setUsername("does");
+		BAMBOOSAMPLESERVER3.setPassword(null);
+		BAMBOOSAMPLESERVER3.setJobType("invalid");
+		BAMBOOSAMPLESERVER3.setDeploymentProjectName("TestDep");
+		BAMBOOSAMPLESERVER3.setDeploymentProjectId("190709761");
+
 		pt.add(BAMBOOSAMPLESERVER);
 		pt.add(BAMBOOSAMPLESERVER1);
 		pt.add(BAMBOOSAMPLESERVER2);
+		processorToolConfigWithWrongJobType.add(BAMBOOSAMPLESERVER3);
 
 		ProjectBasicConfig basicConfig = new ProjectBasicConfig();
 		basicConfig.setId(new ObjectId("60b7dbb489c5974a407e923b"));
@@ -571,7 +588,7 @@ public class BambooProcessorJobExecuterTests {
 
 	private BambooProcessor processorWithOneServer() {
 		BambooProcessor processor = BambooProcessor.prototype();
-		processor.setId(new ObjectId());
+		processor.setId(new ObjectId("62285e83171b4d183e9bdb0c"));
 		return processor;
 	}
 
