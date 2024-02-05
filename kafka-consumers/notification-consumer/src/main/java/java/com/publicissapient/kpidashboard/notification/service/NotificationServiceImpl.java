@@ -77,6 +77,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     public void sendMail(String key, EmailEvent emailEvent) {
         try {
+            log.info("Send mail using SMTP");
             Context context = createContext(emailEvent.getCustomData());
             String html = processTemplate(key, context);
             sendEmailViaJMS(emailEvent, html);
@@ -96,6 +97,7 @@ public class NotificationServiceImpl implements NotificationService {
      */
     public void sendMailUsingSendGrid(String key, EmailEvent emailEvent) {
         try {
+            log.info("Send mail using SendGrid");
             Context context = createContext(emailEvent.getCustomData());
             String html = processTemplate(key, context);
             EmailTemplate emailTemplate = EmailTemplate.fromEmailEvent(emailEvent, html);
