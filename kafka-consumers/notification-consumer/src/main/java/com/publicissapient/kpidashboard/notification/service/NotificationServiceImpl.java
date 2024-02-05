@@ -101,6 +101,7 @@ public class NotificationServiceImpl implements NotificationService {
             String html = processTemplate(key, context);
             EmailTemplate emailTemplate = EmailTemplate.fromEmailEvent(emailEvent, html);
             sendEmailViaSendGrid(emailTemplate);
+            log.info("Email successfully sent via SendGrid to user {}",emailEvent.getTo().toString());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         } catch (TemplateInputException tie) {
@@ -145,7 +146,6 @@ public class NotificationServiceImpl implements NotificationService {
                 buildHttpHeader(notificationConsumerConfig.getSendGridApiKey()));
         restTemplate.exchange(notificationConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
                 httpEntity, String.class);
-        log.info("Email successfully sent via SendGrid");
     }
 
 
