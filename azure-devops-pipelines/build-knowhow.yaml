@@ -4,7 +4,7 @@ trigger:
 parameters:
 - name: BUILD
   type: string
-  default: 'Processor'
+  default: 'UI'
   values:
   - 'API'
   - 'UI'
