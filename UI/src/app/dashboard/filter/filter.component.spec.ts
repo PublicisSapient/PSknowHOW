@@ -2462,7 +2462,7 @@ const completeHierarchyData = {
   it('should compile GA data without additional filters', () => {
     spyOn(httpService,'getCurrentUserDetails').and.returnValue(of({success : true,data : {}}))
     spyOn(sharedService,'setCurrentUserDetails');
-    component.getCurrentUserDetails();
+    component.service.getCurrentUserDetails('authorities');
   });
 
   describe('YourComponent', () => {

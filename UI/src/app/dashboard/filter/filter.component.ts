@@ -143,7 +143,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   kpiListDataProjectLevel : any = {};
 
   constructor(
-    private service: SharedService,
+    public service: SharedService,
     private httpService: HttpService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
