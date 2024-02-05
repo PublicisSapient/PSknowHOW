@@ -56,16 +56,19 @@
     "events": "^3.0.0",
     "exceljs": "^4.3.0",
     "file-saver": "^2.0.0-rc.3",
+    "glob-parent": "^6.0.2",
+    "go": "^3.0.1",
+    "jszip": "^3.8.0",
+    "minimist": "^1.2.8",
     "primeflex": "^2.0.0",
     "primeicons": "^6.0.1",
     "primeng": "14.1.2",
     "rxjs": "^6.6.3",
+    "unset-value": "^2.0.1",
     "uuid": "^9.0.0",
-    "xlsx": "^0.18.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.1/xlsx-0.20.1.tgz",
     "xlsx-style": "0.8.13",
-    "zone.js": "^0.11.2",
-    "go": "^3.0.1",
-    "jszip": "^3.8.0"
+    "zone.js": "^0.11.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.6",
