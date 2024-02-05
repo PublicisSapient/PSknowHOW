@@ -138,8 +138,23 @@ stages:
     dependsOn: Capturing_Version
 
     steps:
-
-
+    - script: |
+        cd UI/
+        echo "npm version "
+        npm -v
+        echo "node -v"
+        node -v
+        npm cache clean --force
+        npm install
+        npm install --save-dev @angular-devkit/build-angular@14.2.11
+        npm run build
+        mkdir -p build
+        cp -r dist/dashboard/* build/
+        chmod -R 775 build
+        cd build
+        tar -czvf ui2.tar *
+        mv ui2.tar ../nginx/files
+        rm -rf build
 
 - stage: Processor_Build
   condition: or(eq('${{ parameters.BUILD }}', 'Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
