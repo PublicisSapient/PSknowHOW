@@ -26,12 +26,16 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +78,8 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	private static final String ISSUE_COUNT = "Issue Count";
 	private static final String HISTORY = "history";
 	private static final String OVERALL = "Overall";
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
+	private final Set<String> issueTypesSet = new HashSet<>();
 
 	@Autowired
 	ConfigHelperService configHelperService;
@@ -179,9 +185,14 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
 			mapTmp.get(leafNode.getId()).setValue(dataCountMap);
-		
+
+		// Create kpi level filters
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypesSet);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+
 		List<String> xAxisRange = new ArrayList<>(rangeList);
 		Collections.reverse(xAxisRange);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setxAxisValues(xAxisRange);
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.FLOW_EFFICIENCY.getColumns());
@@ -362,6 +373,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 				.map(JiraIssueCustomHistory::getStoryType).distinct().collect(Collectors.toList());
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {
+				issueTypesSet.add(issueType);
 				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType,
 						new ArrayList<>());
 				double average = calculateAverage(typeWiseIssues, flowEfficiencyMap);

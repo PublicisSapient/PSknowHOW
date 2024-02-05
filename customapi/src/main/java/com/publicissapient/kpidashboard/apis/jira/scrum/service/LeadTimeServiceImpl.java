@@ -31,6 +31,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
+import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -90,6 +92,8 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 	@Autowired
 	private CustomApiConfig customApiConfig;
+	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
+	private final Set<String> issueTypesSet = new HashSet<>();
 
 	@Override
 	public Long calculateKPIMetrics(Map<String, Object> stringObjectMap) {
@@ -170,8 +174,14 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 			populateExcelDataObject(getRequestTrackerId(), cycleTimeList, excelData);
 			mapTmp.get(node.getId()).setValue(leadTime);
 		}
+
+		// Create kpi level filters
+		IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypesSet);
+		IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
+
 		List<String> xAxisRange = new ArrayList<>(rangeList);
 		Collections.reverse(xAxisRange);
+		kpiElement.setFilters(iterationKpiFilters);
 		kpiElement.setxAxisValues(xAxisRange);
 		kpiElement.setExcelColumns(KPIExcelColumn.LEAD_TIME.getColumns());
 		kpiElement.setExcelData(excelData);
@@ -291,6 +301,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 		rangeAndStatusWiseJiraIssueMap.forEach((dateRange, statusWiseJiraIssues) -> {
 			totalIssueTypeString.forEach(issueType -> {
+				issueTypesSet.add(issueType);
 				List<JiraIssueCustomHistory> typeWiseIssues = statusWiseJiraIssues.getOrDefault(issueType,
 						new ArrayList<>());
 				List<Long> leadTimeList = typeWiseIssues.stream().map(JiraIssueCustomHistory::getStoryID)
