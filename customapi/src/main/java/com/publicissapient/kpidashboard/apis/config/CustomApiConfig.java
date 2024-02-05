@@ -204,6 +204,9 @@ public class CustomApiConfig {// NOPMD
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
 
+	@Value("${sendGridEnabled}")
+	private boolean sendGridEnabled;
+
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
 
@@ -1112,6 +1115,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setMailWithoutKafka(boolean mailWithoutKafka) {
 		this.mailWithoutKafka = mailWithoutKafka;
+	}
+
+	public boolean isSendGridEnabled() {
+		return sendGridEnabled;
+	}
+
+	public void setSendGridEnabled(boolean sendGridEnabled) {
+		this.sendGridEnabled = sendGridEnabled;
 	}
 
 	public String getHostPath() {
