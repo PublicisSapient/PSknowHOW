@@ -1399,6 +1399,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+        this.service.setAddtionalFilterBackup({});
         this.router.navigate(['./authentication/login']);
       }
     });
