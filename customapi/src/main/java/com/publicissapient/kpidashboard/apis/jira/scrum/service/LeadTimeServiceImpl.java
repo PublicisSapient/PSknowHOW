@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -168,6 +169,7 @@ public class LeadTimeServiceImpl extends JiraKPIService<Long, List<Object>, Map<
 
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(node.getProjectFilter().getBasicProjectConfigId());
+			issueTypesSet.add(CommonConstant.OVERALL);
 			List<CycleTimeValidationData> cycleTimeList = new ArrayList<>();
 			LinkedHashMap<String, List<DataCount>> leadTime = getLeadTime(issueCustomHistoryList, fieldMapping,
 					cycleTimeList, node, rangeList);

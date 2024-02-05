@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFilters;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiFiltersOptions;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,7 +168,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		FieldMapping fieldMapping = leafNode != null
 				? configHelperService.getFieldMappingMap().get(leafNode.getProjectFilter().getBasicProjectConfigId())
 				: new FieldMapping();
-
+		issueTypesSet.add(CommonConstant.OVERALL);
 		String startDate = LocalDate.now().minusMonths(6).toString();
 		String endDate = LocalDate.now().toString();
 
