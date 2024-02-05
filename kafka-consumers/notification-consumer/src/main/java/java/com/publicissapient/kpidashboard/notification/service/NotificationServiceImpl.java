@@ -45,7 +45,6 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
-import com.publicissapient.kpidashboard.notification.config.SendGridEmailConsumerConfig;
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
 import com.publicissapient.kpidashboard.notification.model.EmailTemplate;
 import com.publicissapient.kpidashboard.notification.service.NotificationService;
@@ -61,9 +60,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private NotificationConsumerConfig notificationConsumerConfig;
-
-    @Autowired
-    private SendGridEmailConsumerConfig sendGridEmailConsumerConfig;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -145,8 +141,8 @@ public class NotificationServiceImpl implements NotificationService {
     private void sendEmailViaSendGrid(EmailTemplate emailTemplate) throws JsonProcessingException {
         String jsonPayload = new ObjectMapper().writeValueAsString(emailTemplate);
         HttpEntity<?> httpEntity = new HttpEntity<>(jsonPayload,
-                buildHttpHeader(sendGridEmailConsumerConfig.getSendGridApiKey()));
-        restTemplate.exchange(sendGridEmailConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
+                buildHttpHeader(notificationConsumerConfig.getSendGridApiKey()));
+        restTemplate.exchange(notificationConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
                 httpEntity, String.class);
         log.info("Email successfully sent via SendGrid");
     }
