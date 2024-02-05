@@ -346,7 +346,7 @@ public class RepoToolsConfigServiceImpl {
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
 		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
 		processorExecutionTraceLog.setExecutionSuccess(
-				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()) ? true : false);
+				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
 		processorExecutionTraceLogService.save(processorExecutionTraceLog);
 
 	}
