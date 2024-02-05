@@ -26,8 +26,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -162,7 +162,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
-		Set<String> issueTypesSet = new HashSet<>();
+		Set<String> issueTypesSet = new LinkedHashSet<>();
 		List<String> rangeList = customApiConfig.getFlowEfficiencyXAxisRange();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		FieldMapping fieldMapping = leafNode != null
