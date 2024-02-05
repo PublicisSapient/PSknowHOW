@@ -42,4 +42,10 @@ public class NotificationConsumerConfig {
     private Map<String, String> mailTemplate;
 
     private boolean sendGridEnabled;
+
+    @Value("${mail.sendgrid.api-key}")
+    private String sendGridApiKey;
+
+    @Value("${mail.sendgrid.api-end-point}")
+    private String sendGridApiEndPoint;
 }
