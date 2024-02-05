@@ -80,7 +80,6 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	private static final String HISTORY = "history";
 	private static final String OVERALL = "Overall";
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
-	private final Set<String> issueTypesSet = new HashSet<>();
 
 	@Autowired
 	ConfigHelperService configHelperService;
@@ -163,6 +162,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 			KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
+		Set<String> issueTypesSet = new HashSet<>();
 		List<String> rangeList = customApiConfig.getFlowEfficiencyXAxisRange();
 		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		FieldMapping fieldMapping = leafNode != null
@@ -182,7 +182,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 		filterDataBasedOnXAxisRangeWise(rangeList, allIssueHistory, rangeAndStatusWiseJiraIssueMap, flowEfficiencyMap,
 				waitTimeList, totalTimeList, fieldMapping);
 		LinkedHashMap<String, List<DataCount>> dataCountMap = setDataCountMap(rangeAndStatusWiseJiraIssueMap,
-				flowEfficiencyMap, leafNode);
+				flowEfficiencyMap, leafNode, issueTypesSet);
 		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
 			mapTmp.get(leafNode.getId()).setValue(dataCountMap);
@@ -367,7 +367,7 @@ public class FlowEfficiencyServiceImpl extends JiraKPIService<Integer, List<Obje
 	 */
 	private LinkedHashMap<String, List<DataCount>> setDataCountMap(
 			Map<String, Map<String, List<JiraIssueCustomHistory>>> rangeAndStatusWiseJiraIssueMap,
-			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Node leafNode) {
+			LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiencyMap, Node leafNode, Set<String> issueTypesSet) {
 		LinkedHashMap<String, List<DataCount>> dataCountMap = new LinkedHashMap<>();
 		List<String> totalIssueTypeString = rangeAndStatusWiseJiraIssueMap.values().stream()
 				.flatMap(innerMap -> innerMap.values().stream().flatMap(List::stream))
