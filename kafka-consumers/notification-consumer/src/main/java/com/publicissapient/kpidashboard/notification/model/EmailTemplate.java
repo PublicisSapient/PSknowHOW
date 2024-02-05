@@ -15,14 +15,12 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package java.com.publicissapient.kpidashboard.notification.model;
+package com.publicissapient.kpidashboard.notification.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.publicissapient.kpidashboard.notification.model.EmailEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
