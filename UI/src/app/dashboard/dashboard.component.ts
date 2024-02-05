@@ -80,10 +80,7 @@ export class DashboardComponent implements OnInit, AfterContentInit {
         this.modalDetails.header =`Project Created`;
         this.modalDetails.content =`The project "${this.httpService.createdProjectName}" has been created successfully and you have gained admin rights for it.`;
       }
-      
-      if(!environment['AUTHENTICATION_SERVICE']){
-        this.displayModal =data;
-      }
+      this.displayModal =data;
     });
     this.service.isSideNav.subscribe((flag) => {
       this.isApply = flag;
