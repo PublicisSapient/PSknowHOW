@@ -58,10 +58,9 @@ public class AuthenticationUtilTest {
 	}
 
 	@Test
-	public void getUsernameFromContext() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		AuthenticationUtil.getUsernameFromContext();
-
+	public void getUsernameFromContextForNonNullAuthentication() {
+		String userName = AuthenticationUtil.getUsernameFromContext();
+		assertEquals("user", userName);
 	}
 
 	@Test
@@ -70,8 +69,8 @@ public class AuthenticationUtilTest {
 				"password");
 		authentication.setDetails(AuthType.STANDARD);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		AuthenticationUtil.getAuthTypeFromContext();
-
+		AuthType  authType = AuthenticationUtil.getAuthTypeFromContext();
+		assertEquals(AuthType.STANDARD, authType);
 	}
 
 }
