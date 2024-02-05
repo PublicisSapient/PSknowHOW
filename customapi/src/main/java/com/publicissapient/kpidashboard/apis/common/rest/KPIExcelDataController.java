@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +53,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class KPIExcelDataController {
 
-	private static final String TOKEN_KEY = "X-Api-Key";
-
 	@Autowired
 	private KPIExcelDataService kpiExcelDataService;
 	@Autowired
@@ -76,7 +75,7 @@ public class KPIExcelDataController {
 			@NotNull @RequestBody KpiRequest kpiRequest, @NotNull @PathVariable("kpiID") String kpiID) {
 
 		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
-				.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
+				.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
 		String kpiRequestStr = kpiRequest.toString();
 		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
 		kpiRequestStr = CommonUtils.handleCrossScriptingTaintedValue(kpiRequestStr);

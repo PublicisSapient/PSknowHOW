@@ -20,6 +20,12 @@ package com.publicissapient.kpidashboard.apis.appsetting.rest;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
+import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
+import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,6 +48,8 @@ import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLo
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Controller for CRUD operations related to all processors details running on
  * the instance
@@ -57,7 +65,16 @@ public class ProcessorController {
 	private ProcessorService processorService;
 
 	@Autowired
+	private RepoToolsConfigServiceImpl repoToolsConfigService;
+
+	@Autowired
 	private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
+
+	@Autowired
+	private RestAPIUtils restAPIUtils;
+
+	@Autowired
+	private CustomApiConfig customApiConfig;
 
 	/**
 	 * Gets details of all processors on the running instance including: Last
@@ -132,6 +149,18 @@ public class ProcessorController {
 		}
 		return ResponseEntity.status(responseStatus).body(response);
 
+	}
+
+	@PostMapping(path="/saveRepoToolsStatus", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity saveRepoToolsStatus(HttpServletRequest request, @NonNull @RequestBody RepoToolsStatusResponse repoToolsStatusResponse) {
+		log.info("Received {} request for /kpiIntegrationValues", request.getMethod());
+		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
+				.equalsIgnoreCase(request.getHeader(Constant.TOKEN_KEY));
+		if (Boolean.FALSE.equals(isApiAuth)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
+		processorService.saveRepoToolTraceLogs(repoToolsStatusResponse);
+		return ResponseEntity.status(HttpStatus.OK).body(null);
 	}
 
 }

@@ -141,7 +141,8 @@ public final class Constant {
 	public static final String COUNT = "count";
 	public static final String DURATION = "duration";
 	public static final String REPO_TOOLS = "RepoTool";
-	public static final String API_TOKEN_AUTH = "apiTokenAuthentication";
+	public static final String SUCCESS = "SUCCESS";
+	public static final String TOKEN_KEY = "X-Api-Key";
 
 	private Constant() {
 	}
