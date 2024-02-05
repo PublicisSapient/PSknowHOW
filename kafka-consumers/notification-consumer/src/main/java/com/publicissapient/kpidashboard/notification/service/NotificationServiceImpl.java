@@ -32,7 +32,9 @@ import org.springframework.dao.RecoverableDataAccessException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -144,8 +146,13 @@ public class NotificationServiceImpl implements NotificationService {
         String jsonPayload = new ObjectMapper().writeValueAsString(emailTemplate);
         HttpEntity<?> httpEntity = new HttpEntity<>(jsonPayload,
                 buildHttpHeader(notificationConsumerConfig.getSendGridApiKey()));
-        restTemplate.exchange(notificationConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
+        ResponseEntity<String> resp=restTemplate.exchange(notificationConsumerConfig.getSendGridApiEndPoint(), HttpMethod.POST,
                 httpEntity, String.class);
+        if(resp.getStatusCode()== HttpStatus.ACCEPTED){
+            log.info("Email successfully sent via SendGrid to user");
+        } else {
+            log.info("failed");
+        }
     }
 
 

@@ -27,6 +27,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class is responsible for creating email template to be send as json payload
@@ -38,6 +39,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
+@Slf4j
 public class EmailTemplate implements Serializable {
 
     private List<Personalization> personalizations;
@@ -69,6 +71,7 @@ public class EmailTemplate implements Serializable {
         emailTemplate.setFrom(sender);
         emailTemplate.setSubject(emailEvent.getSubject());
         emailTemplate.setContent(Collections.singletonList(content));
+        log.info("EmailTemplate: " + emailTemplate.getPersonalizations().toString());
 
         return emailTemplate;
     }
