@@ -140,6 +140,20 @@ public class AzureToolConfigServiceImplTest {
 				azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0").size());
 	}
 
+	@Test
+	public void getAzurePipelineNameAndDefinitionIdListWithNoRestCall(){
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt);
+		when(restAPIUtils.decryptPassword(connection1.getPat())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(connection1.getUsername(), "decryptKey")).thenReturn(header);
+		HttpEntity<?> httpEntity = new HttpEntity<>(header);
+		Assert.assertEquals(0,
+				azureToolConfigService.getAzurePipelineNameAndDefinitionIdList(connectionId, "6.0").size());
+	}
+
 	private String getServerResponseFromJson(String fileName) throws IOException {
 		String filePath = "src/test/resources/json/toolConfig/" + fileName;
 		return new String(Files.readAllBytes(Paths.get(filePath)));
@@ -184,6 +198,27 @@ public class AzureToolConfigServiceImplTest {
 		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
 	}
 
+	@Test
+	public void testAzureReleaseNameAndDefinitionId_StatusCodeException() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt1);
+		when(restAPIUtils.decryptPassword(connection2.getPat())).thenReturn("decryptKey");
+		HttpHeaders header = new HttpHeaders();
+		header.add("Authorization", "base64str");
+		when(restAPIUtils.getHeaders(anyString(), anyString())).thenReturn(header);
+		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
+	}
+	@Test
+	public void testAzureReleaseNameAndDefinitionId_WhenBaseURLIsNull() {
+		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt1);
+		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
+		assertEquals(optConnection, testConnectionOpt1);
+		optConnection.ifPresent(connection -> connection.setBaseUrl(null));
+		when(restAPIUtils.decryptPassword(connection2.getPat())).thenReturn("decryptKey");
+		Assert.assertEquals(0, azureToolConfigService.getAzureReleaseNameAndDefinitionIdList(connectionId).size());
+	}
+
 	private JSONArray createJsonArray(Object... values) {
 		JSONArray jsonArray = new JSONArray();
 		for (Object value : values) {
@@ -208,7 +243,6 @@ public class AzureToolConfigServiceImplTest {
 		when(restAPIUtils.convertToString(jsonObject, "id")).thenReturn("1");
 		Assert.assertEquals(1,azureToolConfigService.getAzureTeamsList(connectionId).size());
 	}
-
 	public void extractedInputsFormGettingAzureList(){
 		when(connectionRepository.findById(new ObjectId(connectionId))).thenReturn(testConnectionOpt);
 		Optional<Connection> optConnection = connectionRepository.findById(new ObjectId(connectionId));
