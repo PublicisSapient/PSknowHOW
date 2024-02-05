@@ -192,7 +192,7 @@
 
             <!-- SHow/Hide start for iteration and backlog -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release')"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release'|| selectedTab?.toLowerCase() === 'dora')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"

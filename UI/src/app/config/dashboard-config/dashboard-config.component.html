@@ -51,7 +51,7 @@
             <form [formGroup]="kpiForm" autocomplete="off" *ngIf="(item === selectedTab) && (this.userProjects.length > 0)">
                 <div *ngFor="let boardData of tabListContent[item]; let i=index" class="kpi-category-header-block">
                     <div class="kpi-category-header p-mb-3"
-                        *ngIf="((boardData?.boardName && boardData?.boardName?.toLowerCase() != 'dora' && boardData?.kpis.length > 0) 
+                        *ngIf="((boardData?.boardName && boardData?.kpis.length > 0) 
                         && ((item.toLowerCase() === 'scrum' && i==0 && tabListContent[item].length < 3) || (item.toLowerCase() === 'kanban' && i==0 && tabListContent[item].length < 2) || (i==0 && item.toLowerCase() === 'others') || i!==0))">
                         <div class="p-grid board-name-block p-py-2 p-d-flex p-jc-between">
                             <div class="p-xl-6 p-md-12 p-pl-3 p-pr-3 p-text-left board-name">

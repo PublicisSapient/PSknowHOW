@@ -70,16 +70,26 @@ export class DoraComponent implements OnInit {
   toolTipTop: number = 0;
 
   constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
-        this.allKpiArray = [];
-        this.kpiChartData = {};
-        this.kpiSelectedFilterObj = {};
-        this.kpiDropdowns = {};
-        this.sharedObject = sharedobject;
-        if (this.globalConfig || this.service.getDashConfigData()) {
-          this.receiveSharedData(sharedobject);
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        this.trendBoxColorObj = { ...x };
+        let tempObj = {};
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          tempObj[nodeName] = [];
         }
+      }
+      this.kpiLoader = true;
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -93,19 +103,6 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
-        }
-      }
-    }));
 
     this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
@@ -579,11 +576,11 @@ export class DoraComponent implements OnInit {
       };
 
       let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
-      
+
       let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
       let displayRange = maturityLevel.map((item) => item.displayRange);
       let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
-    
+
       if (findIncrementalOrDecrementalRange === 'decremental') {
         maturityRange = maturityRange.reverse();
       } else {
