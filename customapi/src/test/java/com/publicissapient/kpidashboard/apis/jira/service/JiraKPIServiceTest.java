@@ -23,8 +23,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.publicissapient.kpidashboard.apis.model.IterationKpiModalValue;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -34,11 +36,13 @@ import com.publicissapient.kpidashboard.common.model.jira.IterationStatus;
 import com.publicissapient.kpidashboard.common.model.jira.JiraHistoryChangeLog;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -51,6 +55,7 @@ import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertNotNull;
@@ -235,9 +240,7 @@ public class JiraKPIServiceTest {
 	}
 	@Test
 	public void testGetJiraIssuesFromBaseClass() {
-		JiraIssue jiraIssue = new JiraIssue();
-		jiraIssue.setNumber("123");
-		List<JiraIssue> jiraIssues = new ArrayList<>();
+		List<JiraIssue> jiraIssues = getJiraIssues();
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
 		assertNotNull(jiraKPIService.getJiraIssuesFromBaseClass(List.of("123")));
 	}
@@ -260,6 +263,102 @@ public class JiraKPIServiceTest {
 		List<JiraIssueCustomHistory> jiraIssueCustomHistories = new ArrayList<>();
 		jiraIssueCustomHistories.add(issueCustomHistory);
 		return jiraIssueCustomHistories;
+	}
+
+	@Test
+	public void testGetBaseReleaseJiraIssues() {
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getBaseReleaseJiraIssues());
+	}
+
+	@Test
+	public void testGetBaseReleaseSubTask() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		Set<JiraIssue> jiraIssues = new HashSet<>();
+		jiraIssues.add(jiraIssue);
+		when(jiraService.getSubTaskDefects()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getBaseReleaseSubTask());
+	}
+	@Test
+	public void testGetFilteredReleaseJiraIssuesFromBaseClass_EmptyDefectList() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getJiradefecttype()).thenReturn(List.of("BUG"));
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping));
+	}
+
+	@Test
+	public void testGetFilteredReleaseJiraIssuesFromBaseClass_WithDefectList() {
+		FieldMapping fieldMapping = mock(FieldMapping.class);
+		when(fieldMapping.getJiradefecttype()).thenReturn(List.of("BUG"));
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		JiraIssue defectIssue = new JiraIssue();
+		defectIssue.setNumber("123");
+		Set<JiraIssue> defectIssues = new HashSet<>();
+		defectIssues.add(defectIssue);
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+		when(jiraService.getSubTaskDefects()).thenReturn(defectIssues);
+		assertNotNull(jiraKPIService.getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping));
+	}
+
+	@Test
+	public void testGetBackLogJiraIssuesFromBaseClass() {
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getBackLogJiraIssuesFromBaseClass());
+	}
+	@Test
+	public void testGetJiraIssueReleaseStatus() {
+		JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatus);
+		assertNotNull(jiraKPIService.getJiraIssueReleaseStatus());
+	}
+
+	@Test
+	public void testPopulateBackLogData() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setTypeName("bug");
+		jiraIssue.setUrl("abc");
+		jiraIssue.setNumber("1");
+		jiraIssue.setPriority("5");
+		jiraIssue.setName("Testing");
+		List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
+		List<IterationKpiModalValue> modalValues = new ArrayList<>();
+		jiraKPIService.populateBackLogData(overAllmodalValues, modalValues, jiraIssue);
+		assertNotNull(modalValues);
+		assertNotNull(overAllmodalValues);
+	}
+
+	@Test
+	public void testGetReleaseList() {
+		List<String> releaseList = List.of("release8.1");
+		when(jiraService.getReleaseList()).thenReturn(releaseList);
+		assertNotNull(jiraKPIService.getReleaseList());
+	}
+
+	@Test
+	public void testGetJiraIssuesFromBaseClass_WithNoParam() {
+		List<JiraIssue> jiraIssues = getJiraIssues();
+		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
+		assertNotNull(jiraKPIService.getReleaseList());
+	}
+
+	@Test
+	public void testCalcWeekDays() {
+		assertNotNull(jiraKPIService.getLastNMonth(10));
+	}
+
+
+
+	private static List<JiraIssue> getJiraIssues() {
+		JiraIssue jiraIssue = new JiraIssue();
+		jiraIssue.setNumber("123");
+		List<JiraIssue> jiraIssues = new ArrayList<>();
+		jiraIssues.add(jiraIssue);
+		return jiraIssues;
 	}
 
 
