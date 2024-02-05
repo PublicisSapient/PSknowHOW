@@ -18,27 +18,16 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.repotools.model.*;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
+import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -51,11 +40,26 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
