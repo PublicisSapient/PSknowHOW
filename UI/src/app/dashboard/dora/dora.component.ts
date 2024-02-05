@@ -69,7 +69,7 @@ export class DoraComponent implements OnInit {
   maturityObj = {};
   toolTipTop: number = 0;
 
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
 
     this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
       if (Object.keys(x).length > 0) {
