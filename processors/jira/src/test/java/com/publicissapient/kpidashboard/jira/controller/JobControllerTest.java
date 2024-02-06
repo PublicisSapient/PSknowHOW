@@ -102,7 +102,7 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-//		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumBoardJob();
@@ -119,8 +119,8 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-//		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-//				.run(eq(fetchIssueScrumBoardJob), any(JobParameters.class));
+	    doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
+				.run(eq(fetchIssueScrumBoardJob), any(JobParameters.class));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumBoardJob();
@@ -137,7 +137,7 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-//		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+        when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumJqlJob();
@@ -154,8 +154,8 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to throw an exception
-//		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
-//				.run(eq(fetchIssueScrumJqlJob), any(JobParameters.class));
+		doThrow(new RuntimeException("Simulated job execution exception")).when(jobLauncher)
+				.run(eq(fetchIssueScrumJqlJob), any(JobParameters.class));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startScrumJqlJob();
@@ -207,7 +207,7 @@ public class JobControllerTest {
 		when(fetchProjectConfiguration.fetchBasicProjConfId(any(), anyBoolean(), anyBoolean())).thenReturn(projectIds);
 
 		// Mocking jobLauncher.run() to return a JobExecution instance
-//		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
+		when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(new JobExecution(1L));
 
 		// Calling the method
 		ResponseEntity<String> response = jobController.startKanbanJqlJob();
