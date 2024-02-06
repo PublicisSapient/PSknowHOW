@@ -42,7 +42,7 @@ spec:
           - name: ALLOW_PLAINTEXT_LISTENER
             value: "yes"
           - name: KAFKA_CFG_ZOOKEEPER_CONNECT
-            value: "zookeeper"
+            value: uat-knowhow.crs-zookeeper-0.zookeeper-cluster.default.svc.cluster.local:2181,uat-knowhow.crs-zookeeper-1.zookeeper-cluster.default.svc.cluster.local:2181,uat-knowhow.crs-zookeeper-2.zookeeper-cluster.default.svc.cluster.local:2181
           # livenessProbe:
           #   tcpSocket:
           #     port: {{ .Values.service.port }}
