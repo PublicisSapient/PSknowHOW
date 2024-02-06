@@ -29,6 +29,7 @@ import com.publicissapient.kpidashboard.common.model.application.KpiMaster;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.userboardconfig.UserBoardConfig;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingRepository;
 import com.publicissapient.kpidashboard.common.repository.application.FieldMappingStructureRepository;
@@ -52,6 +53,8 @@ import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.repository.application.impl.ProjectToolConfigRepositoryCustom;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfigHelperServiceTest {
@@ -146,6 +149,9 @@ public class ConfigHelperServiceTest {
 
 	@Test
 	public void loadProjectBasicTree() {
+		ProjectBasicConfigNode projectBasicConfigNode = new ProjectBasicConfigNode();
+		projectBasicConfigNode.setValue("Test");
+		when(projectBasicConfigService.getBasicConfigTree()).thenReturn(projectBasicConfigNode);
 		Assertions.assertNotNull(configHelperService.loadProjectBasicTree());
 	}
 
