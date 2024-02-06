@@ -124,7 +124,7 @@ public class SignupRequestsControllerTest {
 				+ "    \"message\": \"\"\n" + "}";
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
-		when(userInfoService.deleteRejectedUser(any(), any())).thenReturn("true");
+		when(userInfoService.deleteRejectedUser(any(), any())).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
