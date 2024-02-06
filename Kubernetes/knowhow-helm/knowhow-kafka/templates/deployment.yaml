@@ -43,6 +43,10 @@ spec:
             value: "yes"
           - name: KAFKA_CFG_ZOOKEEPER_CONNECT
             value: "zookeeper.uat-knowhow.svc.cluster.local:2181"
+          - name: listeners
+            value: "PLAINTEXT://0.0.0.0:9092"
+          - name: advertised.listeners
+            value: "PLAINTEXT://10.75.1.247:9092"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{ .Values.service.port }}
