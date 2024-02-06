@@ -36,7 +36,9 @@ export class AppInitializerService {
             localStorage.setItem("user_name", response?.['data']?.user_name);
             localStorage.setItem("user_email", response?.['data']?.user_email);
             const redirect_uri = localStorage.getItem('redirect_uri');
-            this.ga.setLoginMethod(response?.['data']?.user_id, response?.['data']?.authType);
+            if(authToken){
+              this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+            }
             if(redirect_uri){
               if(redirect_uri.startsWith('#')){
                 this.router.navigate([redirect_uri.split('#')[1]])
