@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "knowhow-zookeeper.fullname" . }}
+  name: zookeeper
   namespace: {{ .Values.env}}-knowhow
   labels:
     {{- include "knowhow-zookeeper.labels" . | nindent 4 }}
@@ -38,16 +38,16 @@ spec:
             - name: http
               containerPort: {{.Values.service.port}}
               protocol: TCP
-          livenessProbe:
-            tcpSocket:
-              port: {{.Values.service.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 10
-          readinessProbe:
-            tcpSocket:
-              port: {{.Values.service.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 10
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: {{.Values.service.port}}
+          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          #   periodSeconds: 10
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: {{.Values.service.port}}
+          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          #   periodSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
