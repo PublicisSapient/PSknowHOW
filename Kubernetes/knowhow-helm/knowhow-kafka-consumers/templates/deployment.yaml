@@ -54,6 +54,10 @@ spec:
                 secretKeyRef:
                   name: knowhow-config-credentials
                   key: {{ .Values.env}}-sendgrid-apikey
+            - name: spring.kafka.consumer.bootstrap-servers
+              value: "kafka"
+            - name: spring.kafka.producer.bootstrap-servers
+              value: "kafka"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.port}}

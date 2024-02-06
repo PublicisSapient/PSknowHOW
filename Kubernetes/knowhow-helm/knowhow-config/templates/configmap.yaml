@@ -12,3 +12,4 @@ data:
   flag.mailWithoutKafka: "false"
   sendGridEnabled: "true"
   
+  
