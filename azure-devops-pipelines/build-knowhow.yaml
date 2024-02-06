@@ -118,7 +118,7 @@ stages:
 
   jobs:
   - job: Capturing_Version
-
+    displayName: 'Checking Version'
     variables:
       overrideValues: ''
 
@@ -155,6 +155,45 @@ stages:
         tar -czvf ui2.tar *
         mv ui2.tar ../nginx/files
         rm -rf build
+
+  - job: CHECKING_COVERAGE
+    displayName: 'Generating Coverage report'
+    dependsOn: RUNNING_TEST
+
+    steps:
+    - script: |
+        cd UI
+        npm install --save-dev @angular-devkit/build-angular@14.2.10
+        sudo npm test 
+        sudo sed -i 's|SF:$(Agent.BuildDirectory)/UI|SF:|g' coverage/report-lcov/lcov.info
+  
+  - job: SONARQUBE_ANALYSIS
+    displayName: 'SonarQube Code Analysis'
+    dependsOn: CHECKING_COVERAGE
+
+    steps:
+    - task: SonarQubePrepare@5
+      displayName: 'Prepare Analysis Configuration'
+      inputs:
+        SonarQube: 'sonar-qube-sc' # Name of the SonarQube service connection
+        scannerMode: 'Other'
+        extraProperties: |
+          sonar.projectKey=ENGINEERING.KPIDASHBOARD.UI
+          sonar.projectName=ENGINEERING.KPIDASHBOARD.UI
+          sonar.branch.name=$(Build.SourceBranchName)
+          sonar.projectVersion=1.0
+          sonar.sources=src
+          sonar.sourceEncoding=UTF-8
+          sonar.exclusions=**/node_modules/**,**/*.spec.ts,**/src/app/component/**/*.ts,**/src/test.ts
+          sonar.tests=src
+          sonar.test.inclusions=**/*.spec.ts
+          sonar.ts.tslintconfigpath=tslint.json
+          sonar.typescript.lcov.reportPaths=coverage/report-lcov/lcov.info
+          sonar.coverage.exclusions=**/app/config/project-config/project-config.component.ts,**/app/config/project-config/project-config.route.ts,**/main.ts,**/karma.conf.js,**/app/external-url.directive.ts,**/environments/*,**/app/dashboard/maturity/*,**/app/services/*,**/app/component/**/*,**/app/model/*,**/app/config/engg-maturity-config/*.ts,**/app/config/shared/**/*,**/app/module/*,**/app/utils/*
+          sonar.cpd.exclusions=**/app/dashboard/quality/*.html,**/app/dashboard/productivity/*.html,**/app/dashboard/executive/*.html
+      enabled: true
+    - script: 'npm install -D sonarqube-scanner && npm run sonar'
+      displayName: 'Run SonarQube analysis'
 
 - stage: Processor_Build
   condition: or(eq('${{ parameters.BUILD }}', 'Processor'), eq('${{ parameters.BUILD }}', 'ALL'))
