@@ -42,7 +42,7 @@ spec:
           - name: ALLOW_PLAINTEXT_LISTENER
             value: "yes"
           - name: KAFKA_CFG_ZOOKEEPER_CONNECT
-            value: "zookeeper:2181"
+            value: "zookeeper"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{ .Values.service.port }}
