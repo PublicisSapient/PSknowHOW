@@ -116,77 +116,76 @@ public class ConfigHelperServiceTest {
 	}
 
 	@Test
-	public void loadUserBoardConfig()
-	{
+	public void loadUserBoardConfig() {
 		List<UserBoardConfig> userBoardConfigs = new ArrayList<>();
 		UserBoardConfig userBoardConfig = new UserBoardConfig();
 		userBoardConfig.setId(new ObjectId("5fd9ab0995fe13000165d0ba"));
 		userBoardConfig.setUsername("PSK");
 		userBoardConfigs.add(userBoardConfig);
 		Mockito.when(userBoardConfigRepository.findAll()).thenReturn(userBoardConfigs);
-		Assertions.assertTrue(configHelperService.loadUserBoardConfig().get(0).getUsername().equals("PSK"));
+		Assertions.assertEquals("PSK", configHelperService.loadUserBoardConfig().get(0).getUsername());
 	}
+
 	@Test
-	public void loadFieldMappingStructure()
-	{
+	public void loadFieldMappingStructure() {
 		Mockito.when(fieldMappingStructureRepository.findAll()).thenReturn(new ArrayList<>());
-		Assertions.assertTrue(configHelperService.loadFieldMappingStructure().getClass()!=null);
+		Assertions.assertNotNull(configHelperService.loadFieldMappingStructure().getClass());
 	}
+
 	@Test
-	public void loadAllProjectToolConfig()
-	{
+	public void loadAllProjectToolConfig() {
 		Mockito.when(projectToolConfigRepository.findAll()).thenReturn(new ArrayList<>());
-		Assertions.assertTrue(configHelperService.loadAllProjectToolConfig().getClass()!=null);
+		Assertions.assertNotNull(configHelperService.loadAllProjectToolConfig().getClass());
 	}
+
 	@Test
-	public void loadHierarchyLevelSuggestion()
-	{
+	public void loadHierarchyLevelSuggestion() {
 		Mockito.when(hierarchyLevelSuggestionRepository.findAll()).thenReturn(new ArrayList<>());
-		Assertions.assertTrue(configHelperService.loadHierarchyLevelSuggestion().getClass()!=null);
+		Assertions.assertNotNull(configHelperService.loadHierarchyLevelSuggestion().getClass());
 	}
+
 	@Test
-	public void loadProjectBasicTree()
-	{
-		configHelperService.loadProjectBasicTree();
+	public void loadProjectBasicTree() {
+		Assertions.assertNotNull(configHelperService.loadProjectBasicTree());
 	}
+
 	@Test
-	public void calculateCriteriaForCircleKPI()
-	{
+	public void calculateCriteriaForCircleKPI() {
 		List<KpiMaster> kpiMasters = new ArrayList<>();
 		KpiMaster kpiMaster = new KpiMaster();
 		kpiMaster.setKpiId("5fd9ab0995fe13000165d0ba");
 		kpiMaster.setAggregationCircleCriteria("criteriaX");
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertTrue(configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba").equals("criteriaX"));
+		Assertions.assertEquals("criteriaX", configHelperService.calculateCriteriaForCircleKPI().get("5fd9ab0995fe13000165d0ba"));
 	}
+
 	@Test
-	public void calculateCriteria()
-	{
+	public void calculateCriteria() {
 		List<KpiMaster> kpiMasters = new ArrayList<>();
 		KpiMaster kpiMaster = new KpiMaster();
 		kpiMaster.setKpiId("5fd9ab0995fe13000165d0ba");
 		kpiMaster.setAggregationCriteria("criteriaX");
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertTrue(configHelperService.calculateCriteria().get("5fd9ab0995fe13000165d0ba").equals("criteriaX"));
+		Assertions.assertEquals("criteriaX", configHelperService.calculateCriteria().get("5fd9ab0995fe13000165d0ba"));
 	}
+
 	@Test
-	public void calculateMaturity()
-	{
+	public void calculateMaturity() {
 		List<KpiMaster> kpiMasters = new ArrayList<>();
 		KpiMaster kpiMaster = new KpiMaster();
 		kpiMaster.setKpiId("5fd9ab0995fe13000165d0ba");
 		List<String> maturityRange = new ArrayList<>();
-				maturityRange.add("criteriaX");
+		maturityRange.add("criteriaX");
 		kpiMaster.setMaturityRange(maturityRange);
 		kpiMasters.add(kpiMaster);
 		Mockito.when(kpiMasterRepository.findAll()).thenReturn(kpiMasters);
-		Assertions.assertTrue(configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0).equals("criteriaX"));
+		Assertions.assertEquals("criteriaX", configHelperService.calculateMaturity().get("5fd9ab0995fe13000165d0ba").get(0));
 	}
+
 	@Test
-	public void loadProjectToolConfigTest()
-	{
+	public void loadProjectToolConfigTest() {
 		List<ProjectToolConfig> projectToolConfigs = new ArrayList<>();
 		ProjectToolConfig projectToolConfig = new ProjectToolConfig();
 		projectToolConfig.setBasicProjectConfigId(new ObjectId("5fd9ab0995fe13000165d0ba"));
@@ -195,5 +194,6 @@ public class ConfigHelperServiceTest {
 		projectToolConfigs.add(projectToolConfig);
 		Mockito.when(projectToolConfigRepository.findAll()).thenReturn(projectToolConfigs);
 		configHelperService.loadProjectToolConfig();
+		Assertions.assertNotNull(projectToolConfigs);
 	}
 }
