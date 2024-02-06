@@ -48,6 +48,12 @@ spec:
           envFrom:
           - configMapRef:
               name: {{ .Values.configmapname }}
+          env:
+            - name: mail.sendgrid.api-key
+              valueFrom:
+                secretKeyRef:
+                  name: knowhow-config-credentials
+                  key: {{ .Values.env}}-sendgrid-apikey
           livenessProbe:
             tcpSocket:
               port: {{.Values.port}}
