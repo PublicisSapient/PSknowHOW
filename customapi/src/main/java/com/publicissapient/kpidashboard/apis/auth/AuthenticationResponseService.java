@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.auth;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.security.core.Authentication;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Interface to handle authentication service response.

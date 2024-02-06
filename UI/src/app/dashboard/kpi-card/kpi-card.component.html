@@ -1,4 +1,4 @@
-<div class="kpi-card-container">
+<div class="kpi-card-container" (click)="handleKpiClick()">
     <div class="kpi-card-header">
         <div class="kpi-card-name-placeholder" (mouseleave)="showTooltip(false)" #kpiHeader>
             <div class="kpi-card-title-container">
@@ -14,8 +14,9 @@
                         (click)="prepareData(); (trendValueList?.length) > 0 ? op.toggle($event,kpiHeader) : '' ;"
                         class="cursor-pointer p-ml-1 sprint-hover-icon" pTooltip='<div class="inner-content">
                         Please click on icon for all sprint details.
-                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper"><i
-                            class="custom-pi pi-bars"></i></span>
+                    </div>' [escape]="false" tooltipPosition="bottom" tooltipStyleClass="inner-wraper">
+                    <i class="fas fa-bars custom-pi"></i>
+                    </span>
                     <app-comments *ngIf="showCommentIcon" [kpiId]="kpiData?.kpiId" [kpiName]="kpiData?.kpiName"
                         [selectedTab]="selectedTab" (closeSpringOverlay)="op.hide($event);"
                         [commentCount]="commentCount" (getCommentsCountByKpiId)="handleGetCount($event)"></app-comments>
@@ -104,14 +105,6 @@
                 </app-trend-indicator>
             </div>
         </div>
-        <!-- <div class="kpi-card-indicator p-jc-evenly p-flex-wrap" *ngIf="(showChartView === 'table') && (kpiData?.kpiId == 'kpi53') && !(kpiData?.kpiDetail?.additionalFilterSupport === false && iSAdditionalFilterSelected)">
-            <div class="trend-box" *ngFor="let item of trendData; let i = index;">
-                <app-trend-indicator
-                    [dataTrend]="item" [cols]="cols" [color]="trendBoxColorObj[item?.hierarchyName]?.color"
-                    [kpiData]="kpiData" [noOfBox]="trendData?.length">
-                </app-trend-indicator>
-            </div>
-        </div> -->
         <!--place for chart to be rendered-->
         <ng-content></ng-content>
     </div>
@@ -126,7 +119,6 @@
             <img src="../../../assets/img/download.svg" alt="Download" class="ico-active p-mr-1 kpi-download-icon"
                 (click)="exportToExcel()" pTooltip="Explore" tooltipPosition="top" tooltipEvent="hover"
                 [escape]="false" />
-            <!-- <i class="fas fa-expand mr-10"></i> -->
         </div>
     </div>
 </div>

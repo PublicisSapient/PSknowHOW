@@ -45,7 +45,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   @ViewChild('commentSummaryDdn') commentSummaryDdn: ElementRef;
   @ViewChild('dateToggleButton') dateToggleButton: ElementRef;
   @ViewChild('dateDrpmenu') dateDrpmenu: ElementRef;
-
+  appList: MenuItem[] | undefined;
   subject = new Subject();
   isSuperAdmin = false;
   masterData: any = {};
@@ -128,6 +128,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
+  auth_service = environment.AUTHENTICATION_SERVICE;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -136,12 +137,13 @@ export class FilterComponent implements OnInit, OnDestroy {
   totalProjectSelected: number = 1;
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
+  showSwitchDropdown: boolean = false;
 
   showHideLoader: boolean = false;
   kpiListDataProjectLevel : any = {};
-  
+
   constructor(
-    private service: SharedService,
+    public service: SharedService,
     private httpService: HttpService,
     private getAuthorizationService: GetAuthorizationService,
     public router: Router,
@@ -159,6 +161,33 @@ export class FilterComponent implements OnInit, OnDestroy {
           this.logout();
         },
       });
+
+      this.appList = [
+          {
+              label: 'KnowHOW',
+              icon: ''
+          },
+          {
+              label: 'Assessments',
+              icon: '',
+              command: () => {
+                 window.open(
+                  environment['MAP_URL'],
+                  '_blank'
+                );
+              }
+          },
+          {
+            label: 'Retros',
+            icon: '',
+            command: () => {
+               window.open(
+                  environment['RETROS_URL'],
+                  '_blank'
+                );
+            }
+          }
+      ];
     }
 
     this.service.currentUserDetailsObs.subscribe(details => {
@@ -421,21 +450,22 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.navigateToSelectedTab();
   }
 
-  makeUniqueArrayList(arr) {
-    let uniqueArray = [];
-    for (let i = 0; i < arr?.length; i++) {
-      const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
-      if (idx == -1) {
-        uniqueArray = [...uniqueArray, arr[i]];
-        uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
-        uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
-      } else {
-        uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
-        uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
-      }
-    }
-    return uniqueArray;
-  }
+  /** moved to service layer */ 
+  // makeUniqueArrayList(arr) {
+  //   let uniqueArray = [];
+  //   for (let i = 0; i < arr?.length; i++) {
+  //     const idx = uniqueArray?.findIndex((x) => x.nodeId == arr[i]?.nodeId);
+  //     if (idx == -1) {
+  //       uniqueArray = [...uniqueArray, arr[i]];
+  //       uniqueArray[uniqueArray?.length - 1]['path'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['path']) ? [...uniqueArray[uniqueArray?.length - 1]['path']] : [uniqueArray[uniqueArray?.length - 1]['path']];
+  //       uniqueArray[uniqueArray?.length - 1]['parentId'] = Array.isArray(uniqueArray[uniqueArray?.length - 1]['parentId']) ? [...uniqueArray[uniqueArray?.length - 1]['parentId']] : [uniqueArray[uniqueArray?.length - 1]['parentId']]
+  //     } else {
+  //       uniqueArray[idx].path = [...uniqueArray[idx]?.path, arr[i]?.path];
+  //       uniqueArray[idx].parentId = [...uniqueArray[idx]?.parentId, arr[i]?.parentId];
+  //     }
+  //   }
+  //   return uniqueArray;
+  // }
 
   getFilterDataOnLoad() {
     if (this.filterKpiRequest && this.filterKpiRequest !== '') {
@@ -474,7 +504,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         let arr = this.filterData.filter((x) => x.labelName.toLowerCase() === this.additionalFiltersArr[i]['hierarchyLevelId']?.toLowerCase());
         if (arr?.length > 0) {
           arr = this.sortAlphabetically(arr);
-          arr = this.makeUniqueArrayList(arr);
+          arr = this.helperService.makeUniqueArrayList(arr);
           this.additionalFiltersDdn[this.additionalFiltersArr[i]['hierarchyLevelId']] = arr;
           this.toggleDropdownObj[this.additionalFiltersArr[i]['hierarchyLevelId']] = false;
           if (this.additionalFiltersArr[i]['hierarchyLevelId'] == 'sprint') {
@@ -557,7 +587,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       delete this.kpiListData['id'];
     }
     this.kpiListData['username'] = this.service.getCurrentUserDetails('user_name');
-      }
+  }
 
   closeAllDropdowns() {
     for (const key in this.toggleDropdownObj) {
@@ -598,7 +628,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // this method would be called on click of apply button of filter
   applyChanges(applySource?, filterApplied = true): void {
-        let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
+    let selectedLevelId = this.filterForm?.get('selectedLevel')?.value;
     let selectedTrendIds = this.filterForm?.get('selectedTrendValue')?.value;
     let selectedLevel = this.hierarchyLevels?.filter((x) => x.hierarchyLevelId === selectedLevelId)[0];
     if (selectedTrendIds !== '' || selectedTrendIds?.length > 0) {
@@ -761,7 +791,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   getKpiOrderedList() {
     if (this.isEmptyObject(this.kpiListData)) {
-      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : []}).subscribe(
+      this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: [] }).subscribe(
         (response) => {
           if (response.success === true) {
             this.kpiListData = response.data;
@@ -775,35 +805,35 @@ export class FilterComponent implements OnInit, OnDestroy {
           });
         },
       );
-    }else{
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData);
+    } else {
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData);
       this.service.setDashConfigData(this.kpiListData);
     }
   }
 
-  getKpiOrderListProjectLevel(){
+  getKpiOrderListProjectLevel() {
     let projectList = [];
-      if(this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project'){
-        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
-      }
-      this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(
-        (response) => {
-          if (response.success === true) {
-            this.kpiListDataProjectLevel = response.data;
-            this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.kpiListData)
-            this.service.setDashConfigData(this.kpiListData);
-            this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
-            this.processKpiList();
-            this.navigateToSelectedTab();
-          }
-        },
-        (error) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error in fetching roles. Please try after some time.',
-          });
-        },
-      );
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(
+      (response) => {
+        if (response.success === true) {
+          this.kpiListDataProjectLevel = response.data;
+          this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.kpiListData)
+          this.service.setDashConfigData(this.kpiListData);
+          this.service.select(this.masterData, this.filterData, this.filterApplyData, this.selectedTab);
+          this.processKpiList();
+          this.navigateToSelectedTab();
+        }
+      },
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error in fetching roles. Please try after some time.',
+        });
+      },
+    );
   }
 
   processKpiList() {
@@ -831,7 +861,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       const kpiObj = {};
       let count = 0;
       this.showKpisList = [];
-            for (let i = 0; i < this.kpiList?.length; i++) {
+      for (let i = 0; i < this.kpiList?.length; i++) {
         let showKpi = false;
         if (this.kpiList[i]['shown']) {
           if (this.kpiList[i]['isEnabled']) {
@@ -844,7 +874,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(showKpi);
           this.showKpisList.push(this.kpiList[i]);
-        }else{
+        } else {
           kpiObj[this.kpiList[i]['kpiId']] = new UntypedFormControl(this.kpiList[i]['isEnabled']);
         }
       }
@@ -865,7 +895,7 @@ export class FilterComponent implements OnInit, OnDestroy {
       kpiObj[this.showKpisList[i]['kpiId']] = event.checked;
     }
     for (let i = 0; i < this.kpiList?.length; i++) {
-      if(!this.kpiList[i]['shown']){
+      if (!this.kpiList[i]['shown']) {
         kpiObj[this.kpiList[i]['kpiId']] = this.kpiList[i]['isEnabled'];
       }
     }
@@ -992,7 +1022,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   handleSelect(event) {
     this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() == event?.toLowerCase());
     this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-    this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+    this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
     this.filterForm?.get('selectedTrendValue').setValue('');
     this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId?.toLowerCase() === event?.toLowerCase()));
     this.selectedLevelValue = this.service.getSelectedLevel()['hierarchyLevelName']?.toLowerCase();
@@ -1082,7 +1112,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
       this.setTrendValueFilter();
       this.service.setSelectedLevel(this.hierarchyLevels[this.hierarchyLevels.length - 1]);
       this.service.setSelectedTrends([this.trendLineValueList[0]]);
@@ -1126,7 +1156,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     let projectIndex = 0;
     if (this.trendLineValueList?.length > 0) {
       this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-      this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+      this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
 
       for (let i = 0; i < this.trendLineValueList.length; i++) {
         projectIndex = i;
@@ -1216,7 +1246,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.createFilterApplyData();
         this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
         this.getKpiOrderListProjectLevel()
-       }
+      }
     }
   }
 
@@ -1304,16 +1334,21 @@ export class FilterComponent implements OnInit, OnDestroy {
   showExecutionDate() {
     this.selectedProjectLastSyncDetails = this.findTraceLogForTool();
     if (this.selectedProjectLastSyncDetails != undefined && this.selectedProjectLastSyncDetails != null) {
-      if (this.selectedProjectLastSyncDetails.executionSuccess) {
+      if (this.selectedProjectLastSyncDetails.executionSuccess && this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
         this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
         this.selectedProjectLastSyncStatus = "SUCCESS";
       } else {
-        this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
-        this.selectedProjectLastSyncStatus = "FAILURE";
+        if (this.selectedProjectLastSyncDetails.executionEndedAt !== 0) {
+          this.selectedProjectLastSyncDate = this.selectedProjectLastSyncDetails.executionEndedAt;
+          this.selectedProjectLastSyncStatus = "FAILURE";
+        } else {
+          this.selectedProjectLastSyncStatus = "NA";
+          this.selectedProjectLastSyncDate = "";
+        }
       }
     } else {
-      this.selectedProjectLastSyncStatus = "";
       this.selectedProjectLastSyncDate = "NA";
+      this.selectedProjectLastSyncDate = "";
     }
     this.fetchActiveIterationStatus();
   }
@@ -1385,7 +1420,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-        this.router.navigate(['./authentication/login']);
+        if(!environment['AUTHENTICATION_SERVICE']){
+          this.router.navigate(['./authentication/login']);
+        }else{
+          let redirect_uri = window.location.href;
+          window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+        }
       }
     });
   }
@@ -1425,14 +1465,14 @@ export class FilterComponent implements OnInit, OnDestroy {
   /** when user clicks on Back to dashboard or logo*/
   navigateToDashboard() {
     let projectList = [];
-      if(this.service.getSelectedLevel()['hierarchyLevelId'].toLowerCase() === 'project'){
-        projectList = this.service.getSelectedTrends().map(data=>data.nodeId);
-      }
-    this.httpService.getShowHideOnDashboard({basicProjectConfigIds : projectList}).subscribe(response => {
+    if (this.service.getSelectedLevel()['hierarchyLevelId']?.toLowerCase() === 'project') {
+      projectList = this.service.getSelectedTrends().map(data => data.nodeId);
+    }
+    this.httpService.getShowHideOnDashboard({ basicProjectConfigIds: projectList }).subscribe(response => {
       this.service.setSideNav(false);
       this.service.setVisibleSideBar(false);
       this.kpiListDataProjectLevel = response.data;
-      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel,this.service.getDashConfigData())
+      this.kpiListData = this.helperService.makeSyncShownProjectLevelAndUserLevelKpis(this.kpiListDataProjectLevel, this.service.getDashConfigData())
       this.service.setDashConfigData(this.kpiListData);
       this.getNotification();
       this.selectedFilterData.kanban = this.kanban;
@@ -1444,7 +1484,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (Object.keys(selectedLevel).length > 0) {
           this.trendLineValueList = this.filterData?.filter((x) => x.labelName?.toLowerCase() === selectedLevel['hierarchyLevelId'].toLowerCase());
           this.trendLineValueList = this.sortAlphabetically(this.trendLineValueList);
-          this.trendLineValueList = this.makeUniqueArrayList(this.trendLineValueList);
+          this.trendLineValueList = this.helperService.makeUniqueArrayList(this.trendLineValueList);
         }
         this.service.setFilterData(JSON.parse(JSON.stringify(filterApiData)));
         const selectedTrends = this.service.getSelectedTrends();
@@ -1465,13 +1505,6 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCurrentUserDetails() {
-    this.httpService.getCurrentUserDetails().subscribe(details => {
-      if (details['success']) {
-        this.service.setCurrentUserDetails(details['data']);
-      }
-    });
-  }
   handleMilestoneFilter(level) {
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
@@ -1511,10 +1544,10 @@ export class FilterComponent implements OnInit, OnDestroy {
       if (unreleasedReleases?.length > 0) {
         /** If there are unreleased releases, find the nearest one in the future */
         unreleasedReleases.sort((a, b) => new Date(a.releaseEndDate).getTime() - new Date(b.releaseEndDate).getTime());
-        const todayEOD = new Date(new Date().setHours(0,0,0,0));
+        const todayEOD = new Date(new Date().setHours(0, 0, 0, 0));
         const nearestUnreleasedFuture = unreleasedReleases.find((release) => new Date(release.releaseEndDate) > todayEOD);
         this.selectedRelease = nearestUnreleasedFuture ? nearestUnreleasedFuture : unreleasedReleases[unreleasedReleases?.length - 1];
-       } else {
+      } else {
         /** First alphabetically release */
         this.selectedRelease = this.filteredAddFilters['release'][0];
       }

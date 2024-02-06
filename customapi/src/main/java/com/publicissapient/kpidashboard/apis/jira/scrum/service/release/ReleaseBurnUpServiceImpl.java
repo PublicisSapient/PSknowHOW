@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -29,8 +30,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -72,27 +73,18 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * This service for managing Release BurnUp Kpi on Release Board. Gives analysis
  * of release scope vs progress for released version & release prediction based
- * on closure rate for unreleased version. {@link JiraKPIService}
+ * on closure rate (dev or qa) for unreleased version. {@link JiraReleaseKPIService}
  */
 @Slf4j
 @Component
 public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
-	public static final String RELEASE_PREDICTION = "Release Prediction";
-	public static final String ISSUE_COUNT_PREDICTION = "issueCountPrediction";
-	public static final String ISSUE_SIZE_PREDICTION = "issueSizePrediction";
-	public static final String SHOW_PREDICTION = "showPrediction";
-	public static final String OVERALL_COMPLETED = "OVERALL COMPLETED";
-	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
-	public static final String IS_ISSUE_COUNT_ACHIEVED = "isIssueCountAchieved";
-	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
-	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
 	private static final String TOTAL_ISSUES = "totalIssues";
 	private static final String ADDED_TO_RELEASE = "addedToRelease";
 	private static final String FULL_RELEASE = "fullRelease";
 	private static final String REMOVED_FROM_RELEASE = "removedFromRelease";
 	private static final String ISSUE_COUNT = "Issue Count";
-	private static final String STORY_POINT = "Story Point";
+	private static final String STORY_POINT = "Story Points";
 	private static final String SCOPE_REMOVED = "Scope Removed";
 	private static final String SCOPE_ADDED = "Scope Added";
 	private static final String RELEASE_SCOPE = "Release Scope";
@@ -102,14 +94,22 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
 	private static final String AVG_STORY_POINT = "avgStoryPoint";
-	private final List<JiraIssue> allReleaseTaggedIssue = new ArrayList<>();
+	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
+	public static final String IS_ISSUE_COUNT_ACHIEVED = "isIssueCountAchieved";
+	public static final String IS_STORY_POINT_ACHIEVED = "isStoryPointAchieved";
+	public static final String OVERALL_ISSUE = "OVERALL ISSUE";
+	public static final String DEV_COMPLETE_DATE_MAP = "devCompleteDateMap";
 	@Autowired
 	private JiraIssueRepository jiraIssueRepository;
+
 	@Autowired
 	private ConfigHelperService configHelperService;
+
 	@Autowired
 	private CommonServiceImpl commonService;
+
 	private LocalDate tempStartDate = null;
+	private final List<JiraIssue> allReleaseTaggedIssue = new ArrayList<>();
 
 	private static Map<String, LocalDate> getMapOfCloseStatus(List<JiraHistoryChangeLog> statusUpdateLog,
 			JiraIssueReleaseStatus jiraIssueReleaseStatus, FieldMapping fieldMapping) {
@@ -168,13 +168,16 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				Map<LocalDate, List<JiraIssue>> removeIssueMap = new HashMap<>();
 				Map<LocalDate, List<JiraIssue>> fullReleaseMap = new HashMap<>();
 				Map<LocalDate, List<JiraIssue>> completedReleaseMap = new HashMap<>();
+				Map<LocalDate, List<JiraIssue>> devCompletedReleaseMap = new HashMap<>();
 				dateWiseLogs(allIssuesHistory, releaseList.stream().findFirst().orElse(null), releaseIssues,
-						addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap, basicProjConfigId);
+						addedIssuesMap, removeIssueMap, fullReleaseMap, completedReleaseMap, devCompletedReleaseMap,
+						basicProjConfigId);
 				resultListMap.put(FULL_RELEASE, fullReleaseMap);
 				resultListMap.put(ADDED_TO_RELEASE, addedIssuesMap);
 				resultListMap.put(REMOVED_FROM_RELEASE, removeIssueMap);
 				resultListMap.put(TOTAL_ISSUES, releaseIssues);
 				resultListMap.put(RELEASE_PROGRESS, completedReleaseMap);
+				resultListMap.put(DEV_COMPLETE_DATE_MAP, devCompletedReleaseMap);
 			}
 
 		}
@@ -202,7 +205,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	private void dateWiseLogs(List<JiraIssueCustomHistory> allIssuesHistory, String releaseName, // NOSONAR
 			List<JiraIssue> releaseIssue, Map<LocalDate, List<JiraIssue>> addedIssuesMap,
 			Map<LocalDate, List<JiraIssue>> removeIssueMap, Map<LocalDate, List<JiraIssue>> fullReleaseMap,
-			Map<LocalDate, List<JiraIssue>> completedReleaseMap, String basicProjConfigId) {
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, Map<LocalDate, List<JiraIssue>> devCompletedReleaseMap,
+			String basicProjConfigId) {
 
 		releaseName = releaseName != null ? releaseName : "";
 		String finalReleaseName = releaseName.toLowerCase();
@@ -245,7 +249,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 						}
 
 					});
-			createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, releaseIssue, basicProjConfigId);
+			createCompletedIssuesDateWiseMap(issueHistory, completedReleaseMap, devCompletedReleaseMap, releaseIssue,
+					basicProjConfigId);
 
 		});
 	}
@@ -261,24 +266,30 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            List<JiraIssue>
 	 */
 	private void createCompletedIssuesDateWiseMap(JiraIssueCustomHistory issueHistory,
-			Map<LocalDate, List<JiraIssue>> completedIssues, List<JiraIssue> totalIssueList, String basicProjConfigId) {
+			Map<LocalDate, List<JiraIssue>> completedIssues, Map<LocalDate, List<JiraIssue>> devCompletedReleaseMap,
+			List<JiraIssue> totalIssueList, String basicProjConfigId) {
 		FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(new ObjectId(basicProjConfigId));
 		List<JiraHistoryChangeLog> statusUpdateLog = issueHistory.getStatusUpdationLog();
 		JiraIssueReleaseStatus jiraIssueReleaseStatus = getJiraIssueReleaseStatus();
-		statusUpdateLog = statusUpdateLog.stream()
-				.filter(log -> jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedTo())
-						|| jiraIssueReleaseStatus.getClosedList().containsValue(log.getChangedFrom()))
+
+		List<String> jiraReleaseDoneStatus = jiraIssueReleaseStatus.getClosedList().values().stream()
+				.map(String::toLowerCase).collect(Collectors.toList());
+		List<String> devDoneStatus = Optional.ofNullable(fieldMapping.getJiraDevDoneStatusKPI150())
+				.orElse(new ArrayList<>()).stream().map(String::toLowerCase).collect(Collectors.toList());
+
+		List<JiraHistoryChangeLog> qaCompletionStatusLog = statusUpdateLog.stream()
+				.filter(statusLog -> jiraReleaseDoneStatus.contains(statusLog.getChangedTo().toLowerCase())
+						|| jiraReleaseDoneStatus.contains(statusLog.getChangedFrom().toLowerCase()))
 				.collect(Collectors.toList());
-		if (CollectionUtils.isNotEmpty(statusUpdateLog)) {
-			final Map<String, LocalDate> closedStatusDateMap = getMapOfCloseStatus(statusUpdateLog,
-					jiraIssueReleaseStatus, fieldMapping);
-			// Getting the min date of closed status.
-			LocalDate updatedLog = closedStatusDateMap.values().stream().filter(Objects::nonNull)
-					.min(LocalDate::compareTo).orElse(null);
+		List<JiraHistoryChangeLog> devCompletionStatusLog = statusUpdateLog.stream()
+				.filter(statusLog -> devDoneStatus.contains(statusLog.getChangedTo().toLowerCase())
+						|| devDoneStatus.contains(statusLog.getChangedFrom().toLowerCase()))
+				.collect(Collectors.toList());
+		// making QA completion date map
+		if (CollectionUtils.isNotEmpty(qaCompletionStatusLog)) {
+			final LocalDate updatedLog = getDoneDateBasedOnStatus(qaCompletionStatusLog, jiraReleaseDoneStatus,
+					fieldMapping);
 			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
-			jiraIssueList.forEach(issue -> issue.setUpdateDate(ObjectUtils.isEmpty(updatedLog)
-					? LocalDate.parse(issue.getUpdateDate().split("T")[0], DATE_TIME_FORMATTER).toString()
-					: updatedLog.toString()));
 			completedIssues.computeIfPresent(updatedLog, (k, v) -> {
 				v.addAll(jiraIssueList);
 				return v;
@@ -286,6 +297,51 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			completedIssues.putIfAbsent(updatedLog, jiraIssueList);
 			completedIssues.remove(null);
 		}
+		// making dev completion date map
+		if (CollectionUtils.isNotEmpty(devCompletionStatusLog)) {
+			final LocalDate updatedLog = getDoneDateBasedOnStatus(devCompletionStatusLog, devDoneStatus, fieldMapping);
+			List<JiraIssue> jiraIssueList = new ArrayList<>(getRespectiveJiraIssue(totalIssueList, issueHistory));
+			devCompletedReleaseMap.computeIfPresent(updatedLog, (k, v) -> {
+				v.addAll(jiraIssueList);
+				return v;
+			});
+			devCompletedReleaseMap.putIfAbsent(updatedLog, jiraIssueList);
+			devCompletedReleaseMap.remove(null);
+		}
+	}
+
+	/**
+	 * Method to find first close date of last close cycle
+	 *
+	 * @param statusUpdateLog
+	 *            statusUpdateLog
+	 * @param devOrQaDoneStatus
+	 *            Dev or Qa Done Status
+	 * @param fieldMapping
+	 *            fieldMapping
+	 * @return Map<String,LocalDate>
+	 */
+	private static LocalDate getDoneDateBasedOnStatus(List<JiraHistoryChangeLog> statusUpdateLog,
+			List<String> devOrQaDoneStatus, FieldMapping fieldMapping) {
+		Map<String, LocalDate> closedStatusDateMap = new HashMap<>();
+		for (JiraHistoryChangeLog jiraHistoryChangeLog : statusUpdateLog) {
+			LocalDate activityDate = LocalDate.parse(jiraHistoryChangeLog.getUpdatedOn().toString().split("T")[0],
+					DATE_TIME_FORMATTER);
+			// reopened scenario
+			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedFrom().toLowerCase())
+					&& jiraHistoryChangeLog.getChangedTo().equalsIgnoreCase(fieldMapping.getStoryFirstStatus())) {
+				closedStatusDateMap.clear();
+			}
+			// first close date of last close cycle
+			if (devOrQaDoneStatus.contains(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
+				if (closedStatusDateMap.containsKey(jiraHistoryChangeLog.getChangedTo().toLowerCase())) {
+					closedStatusDateMap.clear();
+				}
+				closedStatusDateMap.put(jiraHistoryChangeLog.getChangedTo().toLowerCase(), activityDate);
+			}
+		}
+		// Getting the min date of closed status.
+		return closedStatusDateMap.values().stream().filter(Objects::nonNull).min(LocalDate::compareTo).orElse(null);
 	}
 
 	/**
@@ -318,6 +374,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 
 		Map<LocalDate, List<JiraIssue>> removeIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
 				.get(REMOVED_FROM_RELEASE);
+		Map<LocalDate, List<JiraIssue>> devCompletedIssueMap = (Map<LocalDate, List<JiraIssue>>) resultMap
+				.get(DEV_COMPLETE_DATE_MAP);
 
 		List<IterationKpiValue> iterationKpiValueList = new ArrayList<>();
 		long range = 0;
@@ -336,13 +394,29 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					: LocalDate.parse(startDate.split("T")[0], DATE_TIME_FORMATTER);
 			LocalDate endLocalDate = StringUtils.isEmpty(endDate) ? LocalDate.now()
 					: LocalDate.parse(endDate.split("T")[0], DATE_TIME_FORMATTER);
-
+			// increment the startDate w.r.t Count of days field for plotting to start from
+			// updated start date
+			startLocalDate = Objects.requireNonNull(startLocalDate)
+					.plusDays(Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0));
 			Map<String, Long> durationRangeMap = getDurationRangeMap(startLocalDate, endLocalDate);
 			duration = durationRangeMap.keySet().stream().findFirst().orElse("");
 			range = durationRangeMap.values().stream().findFirst().orElse(0L);
-			Map<LocalDate, List<JiraIssue>> completedIssueMap = completedReleaseMap;
+			Boolean isPopulateByDevDone = ObjectUtils.defaultIfNull(fieldMapping.isPopulateByDevDoneKPI150(), false);
+			Map<LocalDate, List<JiraIssue>> originalCompletedIssueMap = deepCopyMap(completedReleaseMap);
+			Map<LocalDate, List<JiraIssue>> originalDevCompletedIssueMap = deepCopyMap(devCompletedIssueMap);
+			Map<LocalDate, List<JiraIssue>> originalFullReleaseMap = deepCopyMap(fullReleaseIssueMap);
 			completedReleaseMap = prepareIssueBeforeStartDate(completedReleaseMap, startLocalDate);
 			fullReleaseIssueMap = prepareIssueBeforeStartDate(fullReleaseIssueMap, startLocalDate);
+			devCompletedIssueMap = prepareIssueBeforeStartDate(devCompletedIssueMap, startLocalDate);
+			// if populateByDev is enabled then burnUp Release Progress line will be
+			// populated by
+			// devCompletionDate (dev complete) else releaseCompletionMap (qa complete)
+			Map<LocalDate, List<JiraIssue>> startDateAdjustedDoneMap = Boolean.TRUE.equals(isPopulateByDevDone)
+					? devCompletedIssueMap
+					: completedReleaseMap;
+			Map<LocalDate, List<JiraIssue>> originalIssueDoneMap = Boolean.TRUE.equals(isPopulateByDevDone)
+					? originalDevCompletedIssueMap
+					: originalCompletedIssueMap;
 
 			tempStartDate = LocalDate.parse(startLocalDate.toString());
 			allReleaseTaggedIssue.clear();
@@ -354,7 +428,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			Map<String, Object> predictionDataMap = new HashMap<>();
 			// if no issue is closed & status is "Released" in a release prediction will not
 			// be shown
-			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(completedReleaseMap)) {
+			if (releaseState.equalsIgnoreCase(CommonConstant.RELEASED) || MapUtils.isEmpty(startDateAdjustedDoneMap)) {
 				// populating only release scope vs progress
 				for (int i = 0; i < range && !startLocalDate.isAfter(endLocalDate); i++) {
 					DataCountGroup issueCount = new DataCountGroup();
@@ -362,8 +436,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
 							duration);
 					Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
-							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues, completedReleaseMap,
-							overallCompletedIssues);
+							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues,
+							startDateAdjustedDoneMap, overallCompletedIssues);
 					overallCompletedIssues = filterWiseGroupedMap.getOrDefault(OVERALL_COMPLETED, new ArrayList<>());
 					overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
 					String date = getRange(dateRange, duration);
@@ -376,7 +450,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 			} else {
 				// populating release scope vs release progress followed by its prediction on
 				// avg completion rate
-				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, completedIssueMap);
+				Map<String, Object> averageDataMap = getAverageData(fieldMapping, startLocalDate, originalIssueDoneMap);
 				double avgIssueCount = (double) averageDataMap.getOrDefault(AVG_ISSUE_COUNT, 0d);
 				double avgStoryPoint = (double) averageDataMap.getOrDefault(AVG_STORY_POINT, 0d);
 
@@ -388,7 +462,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 				List<JiraIssue> overallCompletedIssue = new ArrayList<>();
 				Map<String, List<JiraIssue>> filterWiseGroupedMapTillNow = createFilterWiseGroupedMap(
 						dateRangeTillToday, addedIssuesMap, removeIssueMap, fullReleaseIssueMap, allReleaseTaggedIssue,
-						completedReleaseMap, overallCompletedIssue);
+						startDateAdjustedDoneMap, overallCompletedIssue);
 				List<JiraIssue> releaseScopeToReach = filterWiseGroupedMapTillNow.getOrDefault(RELEASE_SCOPE,
 						new ArrayList<>());
 				List<JiraIssue> releaseProgressTillNow = filterWiseGroupedMapTillNow.getOrDefault(RELEASE_PROGRESS,
@@ -418,8 +492,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					CustomDateRange dateRange = KpiDataHelper.getStartAndEndDateForDataFiltering(startLocalDate,
 							duration);
 					Map<String, List<JiraIssue>> filterWiseGroupedMap = createFilterWiseGroupedMap(dateRange,
-							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues, completedReleaseMap,
-							overallCompletedIssues);
+							addedIssuesMap, removeIssueMap, fullReleaseIssueMap, overallIssues,
+							startDateAdjustedDoneMap, overallCompletedIssues);
 					overallCompletedIssues = filterWiseGroupedMap.getOrDefault(OVERALL_COMPLETED, new ArrayList<>());
 					overallIssues = filterWiseGroupedMap.getOrDefault(OVERALL_ISSUE, new ArrayList<>());
 					String date = getRange(dateRange, duration);
@@ -437,7 +511,8 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 					}
 				}
 			}
-			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, fieldMapping);
+			populateExcelDataObject(requestTrackerId, excelData, releaseIssues, originalFullReleaseMap,
+					originalCompletedIssueMap, originalDevCompletedIssueMap, fieldMapping);
 			createExcelDataAndTrendValueList(kpiElement, excelData, iterationKpiValueList, issueCountDataGroup,
 					issueSizeCountDataGroup);
 
@@ -553,14 +628,10 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		double avgStoryPoint;
 		int countOfDaysTillToday = 0;
 
-		// count of days from where user want to cal avg
-		Integer startDateCount = Optional.ofNullable(fieldMapping.getStartDateCountKPI150()).orElse(0);
-		LocalDate predictionStartDate = startLocalDate.plusDays(startDateCount);
-
-		LocalDate currentDate = predictionStartDate;
+		LocalDate currentDate = startLocalDate;
 		List<JiraIssue> completedIssuesTillTodayList = new ArrayList<>();
 		// completed issue between prediction start date and today both inclusive
-		while (DateUtil.isWithinDateRange(currentDate, predictionStartDate, LocalDate.now())) {
+		while (DateUtil.isWithinDateRange(currentDate, startLocalDate, LocalDate.now())) {
 			completedIssuesTillTodayList.addAll(completedReleaseMap.getOrDefault(currentDate, new ArrayList<>()));
 			if (currentDate.getDayOfWeek() != DayOfWeek.SATURDAY && currentDate.getDayOfWeek() != DayOfWeek.SUNDAY) {
 				countOfDaysTillToday++;
@@ -640,6 +711,18 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 		return rangedCompletedMap;
 	}
 
+	/**
+	 * DeepClone the map
+	 * @param originalMap
+	 * @return
+	 */
+	public static Map<LocalDate, List<JiraIssue>> deepCopyMap(Map<LocalDate, List<JiraIssue>> originalMap) {
+		return originalMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						entry -> new ArrayList<>(entry.getValue())
+				));
+	}
 	/**
 	 * Method for calculation x-axis duration & range
 	 *
@@ -771,7 +854,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
 				double totalOriginalEstimate = jiraIssueList.stream()
-						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getOriginalEstimateMinutes()).orElse(0))
+						.mapToDouble(jiraIssue -> Optional.ofNullable(jiraIssue.getAggregateTimeOriginalEstimateMinutes()).orElse(0))
 						.sum();
 				double inHours = totalOriginalEstimate / 60;
 				ticketEstimate = inHours / fieldMapping.getStoryPointToHourMapping();
@@ -823,7 +906,7 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 *            Map<LocalDate, List<JiraIssue>>
 	 * @param overallCompletedIssues
 	 *            List<JiraIssue>
-	 * @return Map<String, List < JiraIssue>>
+	 * @return Map<String, List<JiraIssue>>
 	 */
 	@SuppressWarnings("unchecked")
 	private Map<String, List<JiraIssue>> createFilterWiseGroupedMap(CustomDateRange dateRange,
@@ -917,21 +1000,48 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	 * Method to Populate Excel Data Object
 	 *
 	 * @param requestTrackerId
-	 *            request Tracker id
+	 *            requestTrackerId
 	 * @param excelData
-	 *            List<KPIExcelData>
+	 *            excelData
 	 * @param jiraIssueList
-	 *            List<JiraIssue>
+	 *            jiraIssueList
+	 * @param issueReleaseTagMap
+	 *            issueReleaseTagMap
+	 * @param completedReleaseMap
+	 *            completedReleaseMap
+	 * @param devCompletedIssueMap
+	 *            devCompletedIssueMap
 	 * @param fieldMapping
 	 *            fieldMapping
 	 */
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
-			List<JiraIssue> jiraIssueList, FieldMapping fieldMapping) {
+			List<JiraIssue> jiraIssueList, Map<LocalDate, List<JiraIssue>> issueReleaseTagMap,
+			Map<LocalDate, List<JiraIssue>> completedReleaseMap, Map<LocalDate, List<JiraIssue>> devCompletedIssueMap,
+			FieldMapping fieldMapping) {
 		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
 				&& CollectionUtils.isNotEmpty(jiraIssueList)) {
 			jiraIssueList.retainAll(allReleaseTaggedIssue);
-			KPIExcelUtility.populateReleaseDefectRelatedExcelData(jiraIssueList, excelData, fieldMapping);
+			final Map<String, LocalDate> issueWiseReleaseTagDateMap = getJiraIssueWiseDateMap(issueReleaseTagMap);
+			final Map<String, LocalDate> issueWiseCompleteDateMap = getJiraIssueWiseDateMap(completedReleaseMap);
+			final Map<String, LocalDate> issueWiseDevCompleteDateMap = getJiraIssueWiseDateMap(devCompletedIssueMap);
+
+			KPIExcelUtility.populateReleaseBurnUpExcelData(jiraIssueList, issueWiseReleaseTagDateMap,
+					issueWiseCompleteDateMap, issueWiseDevCompleteDateMap, excelData, fieldMapping);
 		}
+	}
+
+	/**
+	 * Convert to JiraIssueWiseDateMap
+	 *
+	 * @param dateWiseJiraIssueMap
+	 *            dateWiseJiraIssueMap
+	 * @return Map<String, LocalDate>
+	 */
+	private Map<String, LocalDate> getJiraIssueWiseDateMap(Map<LocalDate, List<JiraIssue>> dateWiseJiraIssueMap) {
+		return dateWiseJiraIssueMap.entrySet().stream()
+				.flatMap(entry -> entry.getValue().stream()
+						.map(issue -> new AbstractMap.SimpleEntry<>(issue.getNumber(), entry.getKey())))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> existing));
 	}
 
 	/**
@@ -980,6 +1090,14 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public String getQualifierType() {
 		return KPICode.RELEASE_BURNUP.name();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
+		return null;
 	}
 
 }

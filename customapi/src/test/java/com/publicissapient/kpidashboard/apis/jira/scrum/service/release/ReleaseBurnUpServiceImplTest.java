@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service.release;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -81,9 +81,11 @@ public class ReleaseBurnUpServiceImplTest {
 	private KpiRequest kpiRequest;
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private List<JiraIssue> jiraIssues = new ArrayList<>();
+	private List<JiraIssue> jiraIssues2 = new ArrayList<>();
 	private List<JiraIssueCustomHistory> jiraIssuesCustomHistory = new ArrayList<>();
 	private List<JiraIssueReleaseStatus> jiraIssueReleaseStatusList;
 	private final Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
+	private final Map<ObjectId, FieldMapping> fieldMappingMap2 = new HashMap<>();
 
 	@Before
 	public void setUp() {
@@ -96,6 +98,7 @@ public class ReleaseBurnUpServiceImplTest {
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory
 				.newInstance("/json/default/iteration/jira_issues_new_structure.json");
 		jiraIssues = jiraIssueDataFactory.getJiraIssues();
+		jiraIssues2 = jiraIssueDataFactory.getJiraIssues();
 		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
 				.newInstance("/json/default/iteration/jira_issue_custom_history_new_structure.json");
 		jiraIssuesCustomHistory = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory();
@@ -106,9 +109,12 @@ public class ReleaseBurnUpServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		FieldMapping fieldMapping2 = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping2.setEstimationCriteria("");
 		JiraIssueCustomHistory history = jiraIssuesCustomHistory.stream().findFirst()
 				.orElse(new JiraIssueCustomHistory());
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
+		fieldMappingMap2.put(fieldMapping.getBasicProjectConfigId(), fieldMapping2);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
 
@@ -131,6 +137,26 @@ public class ReleaseBurnUpServiceImplTest {
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
+		assertNotNull(kpiElement.getTrendValueList());
+	}
+
+
+	@Test
+	public void getKpiData2() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-ADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssuesCustomHistory);
+
+		jiraIssues2.forEach(a->a.setAggregateTimeOriginalEstimateMinutes(0));
+		when(jiraIssueRepository.findByNumberInAndBasicProjectConfigId(any(), any())).thenReturn(jiraIssues2);
+		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap2);
+		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

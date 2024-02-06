@@ -1,7 +1,27 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -25,14 +45,15 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperServ
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.CommonService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.AccountHierarchyFilterDataFactory;
 import com.publicissapient.kpidashboard.apis.data.FieldMappingDataFactory;
 import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
 import com.publicissapient.kpidashboard.apis.data.KpiRequestFactory;
 import com.publicissapient.kpidashboard.apis.enums.Filters;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
-import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
 import com.publicissapient.kpidashboard.apis.model.Node;
@@ -50,6 +71,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHi
 public class LeadTimeServiceImplTest {
 
 	private static final String STORY_HISTORY_DATA = "storyHistoryData";
+	private static List<String> xAxisRange = Arrays.asList("< 16 Months", "< 3 Months", "< 1 Months", "< 2 Weeks",
+			"< 1 Week");
 	private static final String LEAD_TIME = "Lead Time";
 	private static final String INTAKE_TO_DOR = "Intake - DoR";
 	private static final String DOR_TO_DOD = "DoR - DoD";
@@ -58,7 +81,8 @@ public class LeadTimeServiceImplTest {
 	public Map<ObjectId, FieldMapping> fieldMappingMap = new HashMap<>();
 	@Mock
 	private JiraIssueCustomHistoryRepository jiraIssueCustomHistoryRepository;
-
+	@Mock
+	CustomApiConfig customApiConfig;
 	@Mock
 	CacheService cacheService;
 	@Mock
@@ -119,13 +143,9 @@ public class LeadTimeServiceImplTest {
 		kpiWiseAggregation.put("kpi3", "percentile");
 
 		setTreadValuesDataCount();
-
-		maturityRangeMap.put("LeadTime", new ArrayList<>(Arrays.asList("-60,60-45,45-30,30-10,10-")));
-		maturityRangeMap.put("Intake-DoR", new ArrayList<>(Arrays.asList("-30,30-20,20-10,10-5,5-")));
-		maturityRangeMap.put("DoR-DoD", new ArrayList<>(Arrays.asList("-20,20-10,10-7,7-3,3-")));
-		maturityRangeMap.put("DoD-Live", new ArrayList<>(Arrays.asList("-30,30-15,15-5,5-2,2-")));
-
 		kpiWiseAggregation.put(LEAD_TIME, "average");
+
+		when(customApiConfig.getLeadTimeRange()).thenReturn(xAxisRange);
 
 	}
 
@@ -163,6 +183,11 @@ public class LeadTimeServiceImplTest {
 	}
 
 	@Test
+	public void testCalculateKPIMetrics() {
+		assertThat(leadTimeService.calculateKPIMetrics(null), equalTo(0L));
+	}
+
+	@Test
 	public void testFetchKPIDataFromDBData() throws ApplicationException {
 
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
@@ -173,8 +198,7 @@ public class LeadTimeServiceImplTest {
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 
-		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList.get(0), null, null,
-				kpiRequest);
+		Map<String, Object> resultListMap = leadTimeService.fetchKPIDataFromDb(leafNodeList, null, null, kpiRequest);
 		List<JiraIssueCustomHistory> dataMap = (List<JiraIssueCustomHistory>) resultListMap.get(STORY_HISTORY_DATA);
 		assertThat("Lead Time Data :", dataMap.size(), equalTo(92));
 	}
@@ -184,34 +208,19 @@ public class LeadTimeServiceImplTest {
 		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
 				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+
 		when(jiraIssueCustomHistoryRepository.findByFilterAndFromStatusMapWithDateFilter(any(), any(), any(), any()))
 				.thenReturn(jiraIssueCustomHistories);
 		String kpiRequestTrackerId = "Jira-Excel-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
 
 		try {
-			KpiElement kpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 
-			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) kpiElement.getTrendValueList();
-			iterationKpiValues.stream().forEach(iteration -> {
-				String cycleFilter = iteration.getFilter1();
-				switch (cycleFilter) {
-				case LEAD_TIME:
-					assertThat("LeadTime :", iteration.getData().size(), equalTo(2));
-					break;
-				case INTAKE_TO_DOR:
-					assertThat("Intake to DoR Value :", iteration.getData().size(), equalTo(2));
-					break;
-				case DOR_TO_DOD:
-					assertThat("DoR to DoD Value :", iteration.getData().size(), equalTo(2));
-					break;
-				case DOD_TO_LIVE:
-					assertThat("DoD to Live Value :", iteration.getData().size(), equalTo(2));
-					break;
-				default:
-					break;
-				}
-			});
+			KpiElement responseKpiElement = leadTimeService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+					treeAggregatorDetail);
+			assertNotNull(responseKpiElement);
+			assertEquals(responseKpiElement.getKpiId(), kpiRequest.getKpiList().get(0).getKpiId());
 		} catch (ApplicationException enfe) {
 
 		}

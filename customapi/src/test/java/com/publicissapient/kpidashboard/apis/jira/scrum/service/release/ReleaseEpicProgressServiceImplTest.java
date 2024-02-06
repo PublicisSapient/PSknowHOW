@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -186,8 +187,9 @@ public class ReleaseEpicProgressServiceImplTest {
 
 	@Test
 	public void testGetStatusWiseCountListPositive() {
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueArrayList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("44");
 		assertThat(dataCount.getSize()).isEqualTo("60.0");
 		DataCount toDoCount = ((List<DataCount>) dataCount.getValue()).get(0);
@@ -211,8 +213,9 @@ public class ReleaseEpicProgressServiceImplTest {
 	@Test
 	public void testGetStatusWiseCountListNegative() {
 		List<JiraIssue> jiraIssueList = null;
+		Map.Entry<String, String> epicUrl = new AbstractMap.SimpleEntry<>("EPIC", "url");
 		DataCount dataCount = epicProgressService.getStatusWiseCountList(jiraIssueList,
-				jiraIssueReleaseStatusList.get(0), "Epic", fieldMapping);
+				jiraIssueReleaseStatusList.get(0), epicUrl, fieldMapping);
 		assertThat(dataCount.getData()).isEqualTo("0");
 	}
 
@@ -257,6 +260,31 @@ public class ReleaseEpicProgressServiceImplTest {
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
+		assertNotNull(kpiElement.getTrendValueList());
+	}
+
+	/*
+	 * testing complete epic progress kpi
+	 */
+	@Test
+	public void getKpiDataWithLinkDefect() throws ApplicationException {
+		TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
+				accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
+		String kpiRequestTrackerId = "Jira-Excel-QADD-track001";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))
+				.thenReturn(kpiRequestTrackerId);
+		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap);
+		Set<JiraIssue> epic = jiraIssueArrayList.stream()
+				.filter(jiraIssue -> jiraIssue.getTypeName().equalsIgnoreCase("Epic")).collect(Collectors.toSet());
+		when(jiraIssueRepository.findNumberInAndBasicProjectConfigIdAndTypeName(anyList(), anyString(), anyString()))
+				.thenReturn(epic);
+		when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatusList.get(0));
+		jiraIssueArrayList.stream().filter(jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase("Epic"))
+				.forEach(jiraIssue -> jiraIssue.setEpicLinked("EPIC-1"));
+		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
+		when(jiraService.getSubTaskDefects()).thenReturn(jiraIssueArrayList.stream().filter(defect->defect.getTypeName().equalsIgnoreCase("bug")).collect(Collectors.toSet()));
+		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
+				treeAggregatorDetail);
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

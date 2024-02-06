@@ -115,12 +115,4 @@ public class ProcessorToolConnection {
 	private boolean bearerToken;
 	private boolean azureIterationStatusFieldUpdate;
 	private String projectComponent;
-
-	public boolean getbearerToken() {
-		return bearerToken;
-	}
-
-	public void setbearerToken(boolean bearerToken) {
-		bearerToken = bearerToken;
-	}
 }

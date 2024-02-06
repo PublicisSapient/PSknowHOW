@@ -31,9 +31,9 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     if (changes['data']) {
       this.isDrilledDown = false;
       this.elem = this.viewContainerRef.element.nativeElement;
-      if (this.data[0]['value']) {
+      if (this.data) {
         if (!this.isDrilledDown) {
-          this.data = this.data[0]['value'];
+          this.data = this.data;
           this.unmodifiedDataCopy = JSON.parse(JSON.stringify(this.data));
         }
         this.draw(this.data);
@@ -142,6 +142,19 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
           .attr('class', 'yAxis')
           .call(d3.axisLeft(y).tickSize(0));
 
+        // Creating y-axis text as hyperlink
+        yAxis.selectAll("text")
+        .classed("link", (d)=>{
+          const url = data.find(de=>de.kpiGroup === d)?.url;
+          return (url ? true : false) 
+        })
+        .on("click", function(event,d){
+          const url = data.find(de=>de.kpiGroup === d)?.url;
+          if(url){
+            window.open(url, "_blank");
+          }
+        });
+
         yAxis.selectAll('text')
           .style('font-size', '10px')
           .call(this.wrap, this.kpiWidth);
@@ -241,7 +254,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             }
           })
           .on('mouseout', (event, d) => {
-            {
+            if(this.data.length >1){
               d3.select(elem).select('#legendContainer').selectAll('div').remove();
               this.showLegend(subgroups, width, margin, color, elem, data, height);
             }
@@ -265,10 +278,13 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
             .style('cursor', this.isDrilledDown ? 'default' : 'pointer')
         }
 
-
-
-        this.showLegend(subgroups, width, margin, color, elem, data, height);
-        this.loader = false;
+       this.loader = false;
+        if(this.data.length > 1 || this.isDrilledDown){
+          this.showLegend(subgroups, width, margin, color, elem, data, height);
+        }
+        if(this.data.length == 1 && !this.isDrilledDown){
+          this.showTooltip(subgroups, width, margin, color, data[0], elem, height);
+        }
       }
     }
   }
@@ -327,7 +343,7 @@ export class HorizontalPercentBarChartComponent implements OnChanges {
     });
     htmlString += '</div>'
     legendDiv.html(htmlString)
-      .style('bottom', 30 + 'px');
+      .style('bottom','0');
   }
 
   // Required for dynamic component only; not in use right now

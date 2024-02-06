@@ -10,6 +10,7 @@
     "business": [],
     "account": [],
     "subaccount": [],
+    "date": ["DAYS"],
     "project": [
       "Scrum Project_6335363749794a18e8a4479b"
     ],

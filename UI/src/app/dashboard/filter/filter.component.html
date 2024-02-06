@@ -1,9 +1,14 @@
 <div [ngClass]="(!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help') ? 'header' : 'header-config' " class="p-p-2">
-   <div class="logo cursor-pointer">
-      <img *ngIf="logoImage" src={{logoImage}}
-         (click)="navigateToHomePage()" alt="Logo" />
-      <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG"
-         (click)="navigateToHomePage()" alt="Logo" />
+   <div class="p-d-flex p-align-center">
+      <div class="position-relative p-mr-2 die-container" *ngIf="auth_service">
+         <img src="assets/img/icon-dice.png" class="icon-dice" (click)="appItems.toggle($event)" alt="Switch" width="50"/>
+         <div class="down-arrow cursor-pointer" (click)="appItems.toggle($event)"></div>
+         <p-menu [model]="appList" [popup]="true" #appItems></p-menu>
+      </div>
+      <div class="logo cursor-pointer">
+         <img *ngIf="logoImage" src={{logoImage}} (click)="navigateToHomePage()" alt="Logo" />
+         <img *ngIf="!logoImage" src="assets/img/sapientLogo.PNG" (click)="navigateToHomePage()" alt="Logo" />
+      </div>
    </div>
    <div class="f"
    *ngIf="!router.url.split('/').includes('Config') && router.url !== '/dashboard/Error' && router.url !== '/dashboard/Help'">
@@ -23,7 +28,7 @@
                         </ng-select>
                      </div>
                      <!-- Trend line value -->
-                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="min-width: 289px;">
+                     <div *ngIf="allowMultipleSelection" class="form-check filter-box p-col-lg trend-line-container" style="max-width: 250px;">
                         <ng-select formControlName="selectedTrendValue" [dropdownPosition]="'bottom'" #selector
                            [multiple]="true"
                            [items]="trendLineValueList"
@@ -44,7 +49,7 @@
                               </div>
                            </ng-template>
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}} 
+                              {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                            <ng-template ng-footer-tmp>
@@ -68,7 +73,7 @@
                            [closeOnSelect]="true" (change)="selectedTab?.toLowerCase() === 'iteration' ? handleIterationFilters('project') : (selectedTab?.toLowerCase() === 'release') ? handleMilestoneFilter('project') : onSelectedTrendValueChange()"
                            class="trend-line-value p-pb-0">
                            <ng-template ng-option-tmp let-item="item" let-index="index">
-                              {{item.nodeName}} 
+                              {{item.nodeName}}
                               <span *ngIf="item.parentId[0]" class="active-state">({{parentIDClean(item.parentId[0])}})</span>
                           </ng-template>
                         </ng-select>
@@ -178,7 +183,7 @@
             <div class="last-sync-date-block" *ngIf="selectedTab?.toLowerCase() === 'iteration'">
                <div class="p-d-flex p-align-center p-jc-end">
                   <img *ngIf="selectedProjectLastSyncStatus === 'SUCCESS'" src="../../../assets/img/icon-success.svg" alt="Success" class="p-mr-1"/>
-                  <img *ngIf="!((lastSyncData | json) == '{}') && !lastSyncData?.fetchSuccessful && !lastSyncData?.errorInFetch" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
+                  <img *ngIf="selectedProjectLastSyncStatus === 'NA' && !lastSyncData?.fetchSuccessful" src="../../../assets/img/icon-time.svg" alt="Time" class="p-mr-1" />
                   <img *ngIf="selectedProjectLastSyncStatus === 'FAILURE'" src="../../../assets/img/icon-failure.svg" alt="Failure" class="p-mr-1" />
                   <h4 class="label-text p-text-right p-mt-0 p-mb-0 p-mr-2">
                      Last Sync
@@ -186,13 +191,13 @@
 
                </div>
                <p class="last-sync-date p-m-0 p-text-right">
-                  {{selectedProjectLastSyncDate != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
+                  {{selectedProjectLastSyncStatus != 'NA' ? (selectedProjectLastSyncDate | date :'dd-MMM-yyyy (EEE) h:mm:ss a') : 'NA' }}
                </p>
             </div>
 
             <!-- SHow/Hide start for iteration and backlog -->
 
-            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release')"
+            <div class="position-relative p-ml-2" *ngIf="selectedTab?.toLowerCase() !== 'maturity' && (selectedTab?.toLowerCase() == 'backlog' || selectedTab?.toLowerCase() == 'iteration' || selectedTab?.toLowerCase() === 'release'|| selectedTab?.toLowerCase() === 'dora')"
                [ngClass]="noAccessMsg ? 'hide-filter':'show-filter'">
                <div
                   class="btn-custom p-d-flex p-align-center p-text-uppercase p-p-2 rounded filter-dropdown filter-btn"
@@ -308,7 +313,6 @@
    <div class="filter-nav">
       <div class="selected-filter-row p-d-flex p-jc-between" *ngIf="selectedTab?.toLowerCase() !== 'iteration' && selectedTab?.toLowerCase() !== 'backlog' && selectedTab?.toLowerCase() !== 'release' && selectedTab?.toLowerCase() !== 'dora'">
          <ul class="p-m-0 p-pl-0 p-d-flex p-flex-wrap">
-            <!-- *ngIf="!kanban"-->
             <ng-container *ngFor="let item of selectedFilterArray; let i = index;">
                <li class="selectedfilter p-mr-3">
                   <div class="selected-node">
@@ -395,7 +399,6 @@
             </div>
 
             <!-- Download button start -->
-            <!--*ngIf="isSuperAdmin && ( selectedTab == 'mydashboard' || selectedTab == 'EngineeringMaturity')"-->
             <div class="btn-custom p-p-2 rounded p-mr-3 filter-btn"
                *ngIf="selectedTab?.toLowerCase() != 'maturity' && selectedTab?.toLowerCase() != 'iteration' && selectedTab?.toLowerCase() != 'backlog'"
                id="Filter-Download-Btn" (click)="exportToExcel($event)" [ngClass]="{'disabled': showChart || noProjects}"
@@ -441,7 +444,7 @@
             </span>
          </div>
          <div class="p-d-flex p-align-center">
-            <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState'] === 'ACTIVE' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
+            <div class="p-mr-2" *ngIf="this.selectedSprint['sprintState']?.toLowerCase() === 'active' && !isGuest && selectedTab?.toLowerCase() === 'iteration'">
                <span class="refresh-state p-p-2" (click)="displayModal = true"
                *ngIf=" (lastSyncData | json) == '{}' || lastSyncData.errorInFetch">
                   <img src="../../../assets/img/icon-refresh.svg" class="p-mr-1" alt="Refresh"/>REFRESH

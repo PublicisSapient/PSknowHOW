@@ -3,6 +3,7 @@ import { faShareSquare } from '@fortawesome/free-solid-svg-icons';
 import { SharedService } from 'src/app/services/shared.service';
 import { HttpService } from 'src/app/services/http.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
+import { GoogleAnalyticsService } from 'src/app/services/google-analytics.service';
 @Component({
   selector: 'app-kpi-card',
   templateUrl: './kpi-card.component.html',
@@ -63,7 +64,8 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
 
   constructor(public service: SharedService,
     private http : HttpService,
-    private authService : GetAuthorizationService) {
+    private authService : GetAuthorizationService,
+    private ga: GoogleAnalyticsService) {
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -112,9 +114,6 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
               if (!this.filterOption) {
                 this.filterOption = this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'] ? this.kpiSelectedFilterObj[this.kpiData?.kpiId]['filter1'][0] : this.kpiSelectedFilterObj[this.kpiData?.kpiId][0];
               }
-              if (this.kpiData.kpiId === 'kpi3') {
-                this.filterOptions = { ...this.filterOptions, [key]: this.kpiSelectedFilterObj[this.kpiData?.kpiId][key] };
-              }
             }
           }
         }
@@ -152,8 +151,14 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
       } else {
         this.optionSelected.emit(this.filterOptions);
       }
-      // this.showFilterTooltip(true);
     }
+    const gaObj = {
+      "kpiName": this.kpiData?.kpiName,
+      "filter1": this.filterOptions?.['filter1'] || [value],
+      "filter2": this.filterOptions?.['filter2'] || null,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource
+    }
+    this.triggerGaEvent(gaObj);
   }
   getColor(nodeName) {
     let color = '';
@@ -199,7 +204,7 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.projectList.forEach((project,index)=>{
       const selectedProjectTrend = this.trendValueList.find(obj=>obj.data === project);
       const tempColorObjArray = Object.values(this.colors).find(obj=>obj['nodeName'] === project)['color'];
-      if(selectedProjectTrend && selectedProjectTrend.value){
+      if(selectedProjectTrend?.value){
         let hoverObjectListTemp = [];
 
         if(selectedProjectTrend.value[0]?.dataValue?.length > 0){
@@ -339,6 +344,19 @@ export class KpiCardComponent implements OnInit, OnDestroy,OnChanges {
     this.getCommentCountByKpi.emit(event);
   }
 
+  handleKpiClick(){
+    const obj = {
+      'kpiName': this.kpiData?.kpiName,
+      'kpiSource': this.kpiData?.kpiDetail?.kpiSource,
+      'filter1':null,
+      'filter2':null
+    }
+    this.triggerGaEvent(obj)
+  }
+
+  triggerGaEvent(gaObj){
+    this.ga.setKpiData(gaObj);
+  }
 
   ngOnDestroy() {
     this.kpiData = {};

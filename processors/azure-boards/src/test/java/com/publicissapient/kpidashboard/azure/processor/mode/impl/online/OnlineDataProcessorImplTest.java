@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,6 +46,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.atlassian.jira.rest.client.api.MetadataRestClient;
@@ -170,10 +170,10 @@ public class OnlineDataProcessorImplTest {
 
 	@Mock
 	private AesEncryptionService aesEncryptionService;
-
+	
 	@BeforeEach
 	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		prepareProjectConfig();
 		prepareFieldMapping();
 		setProjectConfigFieldMap();
@@ -196,6 +196,7 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorConfig.getPageSize()).thenReturn(4);
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(prepareProjectToolConfig());
+		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any())).thenReturn(prepareProjectToolConfig());
 		when(connectionRepository.findById(any())).thenReturn(returnConnectionObject());
 
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
@@ -314,11 +315,11 @@ public class OnlineDataProcessorImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
+		BeanUtils.copyProperties(scrumProjectList.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 
-		BeanUtils.copyProperties(projectConfFieldMapping2, kanbanProjectlist.get(0));
+		BeanUtils.copyProperties(kanbanProjectlist.get(0),projectConfFieldMapping2);
 		projectConfFieldMapping2.setKanban(true);
 		projectConfFieldMapping2.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping2.setFieldMapping(fieldMappingList.get(1));
@@ -358,7 +359,7 @@ public class OnlineDataProcessorImplTest {
 	}
 
 	@Test
-	public void validateAndCollectIssuesKanban() throws URISyntaxException, JsonParseException, JsonMappingException,
+	public void validateAndCollectIssuesKanban() throws JsonParseException, JsonMappingException,
 			IOException, IllegalAccessException, InvocationTargetException, ParseException {
 		when(azureProcessorConfig.getStartDate()).thenReturn("2019-01-07T00:00:00.0000000");
 		LocalDateTime configuredStartDate = LocalDateTime.parse(azureProcessorConfig.getStartDate(),
@@ -374,6 +375,7 @@ public class OnlineDataProcessorImplTest {
 		when(azureProcessorConfig.getPageSize()).thenReturn(4);
 		when(azureProcessorConfig.getEstimationCriteria()).thenReturn("StoryPoints");
 		when(toolRepository.findByToolNameAndBasicProjectConfigId(any(), any())).thenReturn(prepareProjectToolConfig());
+		when(toolRepository.findByBasicProjectConfigIdAndConnectionId(any(), any())).thenReturn(prepareProjectToolConfig());
 		when(connectionRepository.findById(any())).thenReturn(returnConnectionObject());
 		when(azureProcessorRepository.findByProcessorName(ProcessorConstants.AZURE)).thenReturn(azureProcessor);
 		when(kanbanJiraRepo.findByIssueId(any())).thenReturn(new ArrayList<KanbanJiraIssue>());

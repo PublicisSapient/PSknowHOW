@@ -18,10 +18,10 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -34,7 +34,6 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 import org.hamcrest.core.StringContains;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -173,7 +172,7 @@ public class RefinementRejectionRateServiceImplTest {
 		List<DataCount> dataCounts = (List<DataCount>) responseKpiElement.getTrendValueList();
 		for (DataCount dataCount : dataCounts) {
 			for (DataCount values : new ArrayList<DataCount>((Collection<? extends DataCount>) dataCount.getValue())) {
-				Assert.assertThat(values.getsSprintName(), StringContains.containsString("Week"));
+				assertThat(values.getsSprintName(), StringContains.containsString("Week"));
 			}
 
 		}

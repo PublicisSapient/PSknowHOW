@@ -24,7 +24,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
@@ -34,7 +34,6 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { AccordionModule } from 'primeng/accordion';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { DatePipe } from '@angular/common';
 import { MenuModule } from 'primeng/menu';
 /******************************************************/
 
@@ -97,13 +96,10 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
-
 import { environment } from 'src/environments/environment';
-import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
-
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
@@ -118,34 +114,19 @@ import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-
 import { AssigneeBoardComponent } from './dashboard/assignee-board/assignee-board.component';
 import { IssueCardComponent } from './dashboard/issue-card/issue-card.component';
 import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
-import { DailyScrumGraphComponent } from './dashboard/daily-scrum-graph/daily-scrum-graph.component';
+import { DailyScrumGraphComponent } from './component/daily-scrum-graph/daily-scrum-graph.component';
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
 import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';
 import { BarWithYAxisGroupComponent } from './component/bar-with-y-axis-group/bar-with-y-axis-group.component';
 import { FeatureFlagsService } from './services/feature-toggle.service';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { AppInitializerService } from './services/app-initializer.service';
+
 /******************************************************/
-
-export function initializeAppFactory(http: HttpClient, featureToggleService: FeatureFlagsService) {
-    if (!environment.production) {
-        return async () => {
-            return featureToggleService.loadConfig();
-        }
-    } else {
-        return async () => {
-            const env$ = http.get('assets/env.json').pipe(
-                tap(env => {
-                    environment['baseUrl'] = env['baseUrl'] || '';
-                    environment['SSO_LOGIN'] = env['SSO_LOGIN'] || false;
-                }));
-
-            await env$.toPromise().then(res => {
-                featureToggleService.loadConfig();
-            });
-        };
-    }
-};
-
+export function initializeApp(initializeService: AppInitializerService) {
+    return () => initializeService.validateToken() && initializeService.checkFeatureFlag();
+}
 
 @NgModule({
     declarations: [
@@ -202,7 +183,9 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         DoraComponent,
         FeedbackComponent,
         DeveloperComponent,
-        BarWithYAxisGroupComponent
+        BarWithYAxisGroupComponent,
+        DeveloperComponent,
+        PageNotFoundComponent
     ],
     imports: [
         DropdownModule,
@@ -249,9 +232,8 @@ export function initializeAppFactory(http: HttpClient, featureToggleService: Fea
         { provide: APP_CONFIG, useValue: AppConfig },
         {
             provide: APP_INITIALIZER,
-            useFactory: initializeAppFactory,
-            deps: [HttpClient, FeatureFlagsService],
-            multi: true
+            useFactory: initializeApp,
+            deps: [AppInitializerService]
         }
     ],
     bootstrap: [AppComponent]

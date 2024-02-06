@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +43,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -177,7 +177,7 @@ public class ProcessorAsyncAzureRestClientImplTest {
 		fieldObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		FieldMapping fieldMapping = fieldObjectMapper.readValue(fieldMapFile, FieldMapping.class);
 
-		BeanUtils.copyProperties(projectConfFieldMapping, projectConfig);
+		BeanUtils.copyProperties(projectConfig, projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(projectConfig.getId());
 		projectConfFieldMapping.setFieldMapping(fieldMapping);
 		AzureToolConfig azureToolConfig = new AzureToolConfig();

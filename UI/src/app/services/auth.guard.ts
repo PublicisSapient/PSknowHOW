@@ -24,6 +24,7 @@ import { SharedService } from './shared.service';
 import { HttpService } from './http.service';
 import { Observable, pipe } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -37,17 +38,25 @@ export class AuthGuard implements CanActivate {
             if (currentUserDetails['authorities']) {
                 return true;
             } else {
-                this.router.navigate(['./authentication/register']);
+                if(!environment['AUTHENTICATION_SERVICE']){
+                    this.router.navigate(['./authentication/register']);
+                }
                 return false;
             }
-        } else {
+        } 
+      
+        else {
             return this.httpService.getCurrentUserDetails().pipe(map(details => {
                 if (details['success']) {
                     this.sharedService.setCurrentUserDetails(details['data']);
                     if (details['data']['authorities']) {
                         return true;
                     }
-                    this.router.navigate(['./authentication/register']);
+                    if(environment['AUTHENTICATION_SERVICE']){
+                        this.router.navigate(['./authentication']);
+                    }else{
+                        this.router.navigate(['./authentication/register']);
+                    }
                     return false;
                 }
             }));

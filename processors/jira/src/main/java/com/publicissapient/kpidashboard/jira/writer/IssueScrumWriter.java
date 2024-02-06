@@ -25,8 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -74,8 +75,8 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 	 * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
 	 */
 	@Override
-	public void write(List<? extends CompositeResult> compositeResults) throws Exception {
-		List<JiraIssue> jiraIssues = new ArrayList<>();
+	public void write(Chunk<? extends CompositeResult> compositeResults) throws Exception {
+		Set<JiraIssue> jiraIssues = new HashSet<>();
 		List<JiraIssueCustomHistory> jiraHistoryItems = new ArrayList<>();
 		Set<AccountHierarchy> accountHierarchies = new HashSet<>();
 		Map<String, AssigneeDetails> assigneesToSave = new HashMap<>();
@@ -117,7 +118,7 @@ public class IssueScrumWriter implements ItemWriter<CompositeResult> {
 		}
 	}
 
-	private void writeJiraItem(List<JiraIssue> jiraItems) {
+	private void writeJiraItem(Set<JiraIssue> jiraItems) {
 		log.info("Writing issues to Jira_Issue Collection");
 		jiraIssueRepository.saveAll(jiraItems);
 	}

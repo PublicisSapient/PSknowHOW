@@ -23,13 +23,12 @@ import static com.publicissapient.kpidashboard.common.constant.CommonConstant.HI
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -52,6 +51,7 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarDetails;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarHistory;
 import com.publicissapient.kpidashboard.common.model.sonar.SonarMetric;
@@ -333,6 +333,11 @@ public class CodeQualityServiceImpl extends SonarKPIService<Long, List<Object>, 
 	public Map<String, Object> getSonarJobWiseKpiData(final List<Node> pList, Map<String, Node> tempMap,
 			final KpiElement kpiElement) {
 		return new HashMap<>();
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI168(), KPICode.SONAR_CODE_QUALITY.getKpiId());
 	}
 
 }

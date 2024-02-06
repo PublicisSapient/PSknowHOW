@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,12 +129,6 @@ public class UnitCoverageKanbanServiceimpl
 		log.debug("[SONAR-UNIT-COVERAGE-KANBAN-AGGREGATED-VALUE][{}]. Aggregated Value at each level in the tree {}",
 				kpiRequest.getRequestTrackerId(), root);
 		return kpiElement;
-	}
-
-	@Override
-	public Map<String, Object> getSonarJobWiseKpiData(List<Node> projectList, Map<String, Node> tempMap,
-			KpiElement kpiElement) {
-		return new HashMap<>();
 	}
 
 	@Override
@@ -267,9 +261,7 @@ public class UnitCoverageKanbanServiceimpl
 	private Double getCoverageValue(Object coverage) {
 		Double value = -1D;
 		if (coverage != null) {
-			if (coverage instanceof Double) {
-				value = (Double) coverage;
-			} else if (coverage instanceof String) {
+			if (coverage instanceof String) {
 				value = Double.parseDouble(coverage.toString());
 			} else {
 				value = (Double) coverage;

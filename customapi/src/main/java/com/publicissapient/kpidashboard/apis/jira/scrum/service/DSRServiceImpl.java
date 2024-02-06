@@ -16,21 +16,21 @@
  *
  ******************************************************************************/
 
-/**
- * 
- */
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -49,6 +49,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
 import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+import com.publicissapient.kpidashboard.apis.model.DSRValidationData;
 import com.publicissapient.kpidashboard.apis.model.KPIExcelData;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
@@ -57,8 +58,10 @@ import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
 import com.publicissapient.kpidashboard.apis.util.KPIExcelUtility;
 import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
+import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.constant.NormalizedJira;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
+import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.SprintWiseStory;
@@ -115,10 +118,28 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				kpiRequest.getRequestTrackerId(), root);
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
-		calculateAggregatedValue(root, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
-		List<DataCount> trendValues = getTrendValues(kpiRequest, kpiElement, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
-		kpiElement.setTrendValueList(trendValues);
+		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEFECT_SEEPAGE_RATE);
+		Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
+				KPICode.DEFECT_SEEPAGE_RATE);
 
+		Map<String, Map<String, List<DataCount>>> issueTypeProjectWiseDc = new LinkedHashMap<>();
+		trendValuesMap.forEach((issueType, dataCounts) -> {
+			Map<String, List<DataCount>> projectWiseDc = dataCounts.stream()
+					.collect(Collectors.groupingBy(DataCount::getData));
+			issueTypeProjectWiseDc.put(issueType, projectWiseDc);
+		});
+
+		List<DataCountGroup> dataCountGroups = new ArrayList<>();
+		issueTypeProjectWiseDc.forEach((issueType, projectWiseDc) -> {
+			DataCountGroup dataCountGroup = new DataCountGroup();
+			List<DataCount> dataList = new ArrayList<>();
+			projectWiseDc.entrySet().stream().forEach(trend -> dataList.addAll(trend.getValue()));
+			dataCountGroup.setFilter(issueType);
+			dataCountGroup.setValue(dataList);
+			dataCountGroups.add(dataCountGroup);
+		});
+
+		kpiElement.setTrendValueList(dataCountGroups);
 		return kpiElement;
 	}
 
@@ -133,14 +154,20 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 		Map<String, FieldMapping> projFieldMapping = new HashMap<>();
 		Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
+		Map<String, List<String>> projectWisePriority = new HashMap<>();
+		Map<String, List<String>> configPriority = customApiConfig.getPriority();
+		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		leafNodeList.forEach(leaf -> {
 			ObjectId basicProjectConfigId = leaf.getProjectFilter().getBasicProjectConfigId();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap().get(basicProjectConfigId);
 			projFieldMapping.put(leaf.getProjectFilter().getBasicProjectConfigId().toString(), fieldMapping);
-
 			sprintList.add(leaf.getSprintFilter().getId());
 			basicProjectConfigIds.add(basicProjectConfigId.toString());
+
+			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, leaf,
+					fieldMapping.getDefectPriorityKPI35());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, leaf, fieldMapping.getIncludeRCAForKPI35());
 
 			mapOfProjectFilters.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 					CommonUtils.convertToPatternList(fieldMapping.getJiraIssueTypeKPI35()));
@@ -174,17 +201,65 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		mapOfFiltersWithStoryIds.put(JiraFeature.ISSUE_TYPE.getFieldValueInFeature(),
 				Arrays.asList(NormalizedJira.DEFECT_TYPE.getValue()));
 
-		List<JiraIssue> totalDefectList = jiraIssueRepository.findIssueByStoryNumber(mapOfFiltersWithStoryIds,
-				storyNumberList, null);
+		List<JiraIssue> totalDefectList = jiraIssueRepository.findIssuesByType(mapOfFiltersWithStoryIds);
+
 		List<JiraIssue> defectListWoDrop = new ArrayList<>();
+		List<JiraIssue> remainingDefect = new ArrayList<>();
 
 		KpiHelperService.getDefectsWithoutDrop(droppedDefects, totalDefectList, defectListWoDrop);
+		exludePriorityDefect(projectWisePriority, projectWiseRCA, new HashSet<>(defectListWoDrop), remainingDefect);
 
 		resultListMap.put(SPRINTSTORIES, sprintWiseStoryList);
-		resultListMap.put(TOTALBUGKEY, defectListWoDrop);
+		resultListMap.put(TOTALBUGKEY, remainingDefect);
 		resultListMap.put(PROJFMAPPING, projFieldMapping);
 		return resultListMap;
 
+	}
+
+	private static void exludePriorityDefect(Map<String, List<String>> projectWisePriority,
+			Map<String, Set<String>> projectWiseRCA, Set<JiraIssue> defects, List<JiraIssue> remainingDefect) {
+		List<JiraIssue> remainingDefects = new ArrayList<>();
+		List<JiraIssue> rcaDefects = new ArrayList<>();
+
+		for (JiraIssue jiraIssue : defects) {
+			excludeSelectedPriorities(projectWisePriority, remainingDefects, jiraIssue);
+
+			// Filter priorityRemaining based on configured Root Causes (RCA) for the
+			// project, or include if no RCA is configured.
+			excludeSelectRCAJiraIssue(projectWiseRCA, rcaDefects, jiraIssue);
+		}
+
+		remainingDefects.stream().forEach(pi -> rcaDefects.stream().forEach(ri -> {
+			if (pi.getNumber().equalsIgnoreCase(ri.getNumber())) {
+				remainingDefect.add(pi);
+			}
+		}));
+
+	}
+
+	private static void excludeSelectedPriorities(Map<String, List<String>> projectWisePriority,
+			List<JiraIssue> remainingDefects, JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(projectWisePriority.get(jiraIssue.getBasicProjectConfigId()))) {
+			if (!(projectWisePriority.get(jiraIssue.getBasicProjectConfigId())
+					.contains(jiraIssue.getPriority().toLowerCase()))) {
+				remainingDefects.add(jiraIssue);
+			}
+		} else {
+			remainingDefects.add(jiraIssue);
+		}
+	}
+
+	private static void excludeSelectRCAJiraIssue(Map<String, Set<String>> projectWiseRCA, List<JiraIssue> rcaDefects,
+			JiraIssue jiraIssue) {
+		if (CollectionUtils.isNotEmpty(projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()))) {
+			for (String toFindRca : jiraIssue.getRootCauseList()) {
+				if ((projectWiseRCA.get(jiraIssue.getBasicProjectConfigId()).contains(toFindRca.toLowerCase()))) {
+					rcaDefects.add(jiraIssue);
+				}
+			}
+		} else {
+			rcaDefects.add(jiraIssue);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,9 +285,13 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	 * analysis at sprint wise.
 	 * 
 	 * @param mapTmp
+	 *            mapTmp
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param sprintLeafNodeList
+	 *            sprintLeafNodeList
 	 * @param trendValueList
+	 *            trendValueList
 	 */
 	@SuppressWarnings("unchecked")
 	private void sprintWiseLeafNodeValue(Map<String, Node> mapTmp, List<Node> sprintLeafNodeList,
@@ -224,7 +303,7 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 				.compareTo(o2.getSprintFilter().getStartDate()));
 		long time = System.currentTimeMillis();
 		Map<String, Object> defectDataListMap = fetchKPIDataFromDb(sprintLeafNodeList, null, null, kpiRequest);
-		log.info("DSR taking fetchKPIDataFromDb {}", String.valueOf(System.currentTimeMillis() - time));
+		log.info("DSR taking fetchKPIDataFromDb {}", System.currentTimeMillis() - time);
 
 		List<SprintWiseStory> sprintWiseStoryList = (List<SprintWiseStory>) defectDataListMap.get(SPRINTSTORIES);
 		Map<String, FieldMapping> projFieldMapping = (Map<String, FieldMapping>) defectDataListMap.get(PROJFMAPPING);
@@ -232,136 +311,164 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 		Map<Pair<String, String>, List<SprintWiseStory>> sprintWiseMap = sprintWiseStoryList.stream().collect(Collectors
 				.groupingBy(sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprint()), Collectors.toList()));
 
-		Map<String, String> sprintIdSprintNameMap = sprintWiseStoryList.stream().collect(
-				Collectors.toMap(SprintWiseStory::getSprint, SprintWiseStory::getSprintName, (name1, name2) -> name1));
 		List<JiraIssue> totalDefects = (List<JiraIssue>) defectDataListMap.get(TOTALBUGKEY);
-		Map<Pair<String, String>, Double> sprintWiseDsrMap = new HashMap<>();
-		Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseTotalBugListMap = new HashMap<>();
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseSubCategoryWiseUATBugListMap = new HashMap<>();
+		Map<Pair<String, String>, List<JiraIssue>> unlinkedDefect = totalDefects.stream()
+				.filter(issue -> CollectionUtils.isEmpty(issue.getDefectStoryID())).collect(Collectors.groupingBy(
+						sws -> Pair.of(sws.getBasicProjectConfigId(), sws.getSprintID()), Collectors.toList()));
+
 		List<KPIExcelData> excelData = new ArrayList<>();
-
-		sprintWiseMap.forEach((sprint, sprintWiseStories) -> {
-
-			List<JiraIssue> sprintWiseUatDefectList = new ArrayList<>();
-			List<JiraIssue> sprintWiseTotaldDefectList = new ArrayList<>();
-			List<Double> subCategoryWiseDSRList = new ArrayList<>();
-			List<String> totalStoryIdList = new ArrayList<>();
-
-			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
-					.forEach(totalStoryIdList::addAll);
-
-			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
-					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
-					.collect(Collectors.toList());
-			List<JiraIssue> subCategoryWiseUatBugList = new ArrayList<>();
-
-			if (CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
-				sprintWiseSubCategoryWiseTotalBugListMap.put(sprint, subCategoryWiseTotalBugList);
-				subCategoryWiseUatBugList = checkUATDefect(subCategoryWiseTotalBugList, projFieldMapping);
-				sprintWiseSubCategoryWiseUATBugListMap.put(sprint, subCategoryWiseUatBugList);
-			}
-
-			Map<String, Object> currentSprintLeafNodeDefectDataMap = new HashMap<>();
-			currentSprintLeafNodeDefectDataMap.put(UATBUGKEY, subCategoryWiseUatBugList);
-			currentSprintLeafNodeDefectDataMap.put(TOTALBUGKEY, subCategoryWiseTotalBugList);
-			double dSRForCurrentLeaf = calculateKPIMetrics(currentSprintLeafNodeDefectDataMap);
-			subCategoryWiseDSRList.add(dSRForCurrentLeaf);
-			sprintWiseUatDefectList.addAll(subCategoryWiseUatBugList);
-			sprintWiseTotaldDefectList.addAll(subCategoryWiseTotalBugList);
-			sprintWiseDsrMap.put(sprint, dSRForCurrentLeaf);
-			setHowerMap(sprintWiseHowerMap, sprint, sprintWiseUatDefectList, sprintWiseTotaldDefectList);
-		});
 
 		sprintLeafNodeList.forEach(node -> {
 			// Leaf node wise data
+			Set<String> uatLabels = new HashSet<>();
+			Map<String, List<DataCount>> dataCountMap = new HashMap<>();
 			String trendLineName = node.getProjectFilter().getName();
 			String currentSprintComponentId = node.getSprintFilter().getId();
 			Pair<String, String> currentNodeIdentifier = Pair
 					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), currentSprintComponentId);
-			double dSRForCurrentLeaf;
+			FieldMapping fieldMapping = projFieldMapping
+					.get(node.getProjectFilter().getBasicProjectConfigId().toString());
 
-			if (sprintWiseDsrMap.containsKey(currentNodeIdentifier)) {
-				dSRForCurrentLeaf = sprintWiseDsrMap.get(currentNodeIdentifier);
-				// if for populating excel data
-				if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
-					Map<String, JiraIssue> totalBugList = new HashMap<>();
-					sprintWiseSubCategoryWiseTotalBugListMap.getOrDefault(currentNodeIdentifier, new ArrayList<>())
-							.stream().forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
-					List<JiraIssue> subCategoryWiseUatBugList = sprintWiseSubCategoryWiseUATBugListMap
-							.getOrDefault(currentNodeIdentifier, new ArrayList<>());
-					KPIExcelUtility.populateDefectRelatedExcelData(node.getSprintFilter().getName(), totalBugList,
-							subCategoryWiseUatBugList, excelData, KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+			List<SprintWiseStory> sprintWiseStories = sprintWiseMap.getOrDefault(currentNodeIdentifier,
+					new ArrayList<>());
+			List<String> totalStoryIdList = new ArrayList<>();// totalstories
+			sprintWiseStories.stream().map(SprintWiseStory::getStoryList).collect(Collectors.toList())
+					.forEach(totalStoryIdList::addAll);
+			List<JiraIssue> subCategoryWiseTotalBugList = totalDefects.stream()
+					.filter(f -> CollectionUtils.containsAny(f.getDefectStoryID(), totalStoryIdList))
+					.collect(Collectors.toList());
+
+			if (fieldMapping != null && !fieldMapping.isExcludeUnlinkedDefects()) {
+				subCategoryWiseTotalBugList
+						.addAll(unlinkedDefect.getOrDefault(currentNodeIdentifier, new ArrayList<>()));
+			}
+			Map<String, List<JiraIssue>> uatDefect = checkUATDefect(subCategoryWiseTotalBugList, fieldMapping,
+					uatLabels);
+
+			Map<String, Double> finalMap = new HashMap<>();
+			Map<String, Object> overallHowerMap = new HashMap<>();
+			List<DSRValidationData> validationDataList = new ArrayList<>();
+			if (CollectionUtils.isNotEmpty(uatLabels)) {
+				for (String label : uatLabels) {
+					List<JiraIssue> issueList = uatDefect.getOrDefault(label, new ArrayList<>());
+					int totalDefectCount = subCategoryWiseTotalBugList.size();
+					Map<String, Object> howerMap = new HashMap<>();
+					Double dsrPercentage = 0d;
+					if (CollectionUtils.isNotEmpty(issueList)
+							&& CollectionUtils.isNotEmpty(subCategoryWiseTotalBugList)) {
+						createDSRValidation(issueList, label, validationDataList);
+						int uatDefectCount = issueList.size();
+						howerMap.put(UAT, uatDefectCount);
+						dsrPercentage = (double) Math.round((100.0 * uatDefectCount) / (totalDefectCount));
+					} else {
+						howerMap.put(UAT, 0);
+					}
+					howerMap.put(TOTAL, totalDefectCount);
+					finalMap.put(StringUtils.capitalize(label), dsrPercentage);
+					overallHowerMap.put(StringUtils.capitalize(label), howerMap);
 				}
-			} else {
-				dSRForCurrentLeaf = 0.0d;
+
+				uatLabels.forEach(label -> finalMap.computeIfAbsent(label, val -> 0D));
+				Double overAllCount = finalMap.values().stream().mapToDouble(val -> val).sum();
+				finalMap.put(CommonConstant.OVERALL, overAllCount);
+
+				Map<String, Object> overHowerMap = new HashMap<>();
+				overHowerMap.put(UAT, uatDefect.values().stream().mapToInt(List::size).sum());
+				overHowerMap.put(TOTAL, subCategoryWiseTotalBugList.size());
+				overallHowerMap.put(CommonConstant.OVERALL, overHowerMap);
 			}
 
-			log.debug("[DSR-SPRINT-WISE][{}]. DSR for sprint {}  is {}", requestTrackerId,
-					node.getSprintFilter().getName(), dSRForCurrentLeaf);
+			createDataCount(trendValueList, node, dataCountMap, trendLineName, finalMap, overallHowerMap,
+					subCategoryWiseTotalBugList.size());
 
-			DataCount dataCount = new DataCount();
-			dataCount.setData(String.valueOf(Math.round(dSRForCurrentLeaf)));
-			dataCount.setSProjectName(trendLineName);
-			dataCount.setSSprintID(node.getSprintFilter().getId());
-			dataCount.setSSprintName(node.getSprintFilter().getName());
-			dataCount.setSprintIds(new ArrayList<>(Arrays.asList(node.getSprintFilter().getId())));
-			dataCount.setSprintNames(new ArrayList<>(Arrays.asList(node.getSprintFilter().getName())));
-			dataCount.setValue(dSRForCurrentLeaf);
-			dataCount.setHoverValue(sprintWiseHowerMap.get(currentNodeIdentifier));
-			mapTmp.get(node.getId()).setValue(new ArrayList<DataCount>(Arrays.asList(dataCount)));
-			trendValueList.add(dataCount);
-
+			populateExcel(requestTrackerId, subCategoryWiseTotalBugList, validationDataList, excelData, node);
+			mapTmp.get(node.getId()).setValue(dataCountMap);
 		});
 		kpiElement.setExcelData(excelData);
 		kpiElement.setExcelColumns(KPIExcelColumn.DEFECT_SEEPAGE_RATE.getColumns());
+
 	}
 
-	private List<JiraIssue> checkUATDefect(List<JiraIssue> testCaseList, Map<String, FieldMapping> projFieldMapping) {
-		List<JiraIssue> subCategoryWiseUatBugList = new ArrayList<>();
-		String basicProjectId = testCaseList.get(0).getBasicProjectConfigId();
-		FieldMapping fieldMapping = projFieldMapping.get(basicProjectId);
-		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByIdentification())) {
+	private void createDSRValidation(List<JiraIssue> issueList, String label,
+			List<DSRValidationData> validationDataList) {
+		issueList.forEach(issue -> validationDataList.add(new DSRValidationData(issue.getNumber(), label)));
+	}
+
+	private void populateExcel(String requestTrackerId, List<JiraIssue> sprintWiseSubCategoryWiseTotalBugListMap,
+			List<DSRValidationData> subCategoryWiseUatBugList, List<KPIExcelData> excelData, Node node) {
+
+		if (requestTrackerId.toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
+			Map<String, JiraIssue> totalBugList = new HashMap<>();
+			sprintWiseSubCategoryWiseTotalBugListMap.stream()
+					.forEach(bugs -> totalBugList.putIfAbsent(bugs.getNumber(), bugs));
+
+			KPIExcelUtility.populateDefectSeepageRateExcelData(node.getSprintFilter().getName(), totalBugList,
+					subCategoryWiseUatBugList, excelData);
+		}
+	}
+
+	private void createDataCount(List<DataCount> trendValueList, Node node, Map<String, List<DataCount>> dataCountMap,
+			String trendLineName, Map<String, Double> finalMap, Map<String, Object> overallHowerMap, int totalBug) {
+		if (MapUtils.isNotEmpty(finalMap)) {
+			finalMap.forEach((label, value) -> {
+				DataCount dataCount = getDataCountObject(node, trendLineName, overallHowerMap, label, value);
+				trendValueList.add(dataCount);
+				dataCountMap.computeIfAbsent(label, k -> new ArrayList<>()).add(dataCount);
+			});
+		} else {
+			Map<String, Object> overHowerMap = new HashMap<>();
+			overHowerMap.put(UAT, 0);
+			overHowerMap.put(TOTAL, totalBug);
+			Map<String, Object> defaultMap = new HashMap<>();
+			defaultMap.put(CommonConstant.OVERALL, overHowerMap);
+
+			DataCount dataCount = getDataCountObject(node, trendLineName, defaultMap, CommonConstant.OVERALL, 0D);
+			trendValueList.add(dataCount);
+			dataCountMap.computeIfAbsent(CommonConstant.OVERALL, k -> new ArrayList<>()).add(dataCount);
+		}
+	}
+
+	private DataCount getDataCountObject(Node node, String trendLineName, Map<String, Object> overAllHoverValueMap,
+			String key, Double value) {
+		DataCount dataCount = new DataCount();
+		dataCount.setData(String.valueOf(value));
+		dataCount.setSProjectName(trendLineName);
+		dataCount.setSSprintID(node.getSprintFilter().getId());
+		dataCount.setSSprintName(node.getSprintFilter().getName());
+		dataCount.setValue(value);
+		dataCount.setKpiGroup(key);
+		dataCount.setHoverValue((Map<String, Object>) overAllHoverValueMap.get(key));
+
+		return dataCount;
+	}
+
+	private Map<String, List<JiraIssue>> checkUATDefect(List<JiraIssue> testCaseList, FieldMapping fieldMapping,
+			Set<String> labels) {
+		Map<String, List<JiraIssue>> uatMap = new HashMap<>();
+		if (null != fieldMapping && StringUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByIdentification())
+				&& CollectionUtils.isNotEmpty(fieldMapping.getJiraBugRaisedByValue())) {
+			List<String> jiraBugRaisedByValue = fieldMapping.getJiraBugRaisedByValue();
+			labels.addAll(new HashSet<>(jiraBugRaisedByValue));
 			if (fieldMapping.getJiraBugRaisedByIdentification().trim().equalsIgnoreCase(Constant.LABELS)) {
-				for (JiraIssue jIssue : testCaseList) {
-					List<String> commonLabel = jIssue.getLabels().stream()
-							.filter(x -> fieldMapping.getJiraBugRaisedByValue().contains(x))
-							.collect(Collectors.toList());
-					if (CollectionUtils.isNotEmpty(commonLabel)) {
-						subCategoryWiseUatBugList.add(jIssue);
-					}
-				}
+				testCaseList.stream()
+						.filter(jIssue -> CollectionUtils.isNotEmpty(jIssue.getLabels())
+								&& jIssue.getLabels().stream().anyMatch(jiraBugRaisedByValue::contains))
+						.forEach(jIssue -> jIssue.getLabels()
+								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(jIssue)));
+
 			} else {
-				subCategoryWiseUatBugList = testCaseList.stream().filter(
-						f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue().equalsIgnoreCase(f.getDefectRaisedBy()))
-						.collect(Collectors.toList());
+				testCaseList.stream()
+						.filter(f -> NormalizedJira.THIRD_PARTY_DEFECT_VALUE.getValue()
+								.equalsIgnoreCase(f.getDefectRaisedBy()))
+						.collect(Collectors.toList()).stream()
+						.filter(issue -> CollectionUtils.isNotEmpty(issue.getUatDefectGroup()))
+						.forEach(issue -> issue.getUatDefectGroup()
+								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(issue)));
 			}
 		}
-		return subCategoryWiseUatBugList;
-	}
-
-	/**
-	 * Sets map to show on hover of sprint node.
-	 * 
-	 * @param sprintWiseHowerMap
-	 * @param sprint
-	 * @param uat
-	 * @param total
-	 */
-	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
-			Pair<String, String> sprint, List<JiraIssue> uat, List<JiraIssue> total) {
-		Map<String, Object> howerMap = new LinkedHashMap<>();
-		if (CollectionUtils.isNotEmpty(uat)) {
-			howerMap.put(UAT, uat.size());
-		} else {
-			howerMap.put(UAT, 0);
-		}
-		if (CollectionUtils.isNotEmpty(total)) {
-			howerMap.put(TOTAL, total.size());
-		} else {
-			howerMap.put(TOTAL, 0);
-		}
-		sprintWiseHowerMap.put(sprint, howerMap);
+		// removing for overall filter
+		uatMap.keySet().removeIf(key -> !labels.contains(key));
+		return uatMap;
 	}
 
 	@Override
@@ -370,8 +477,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 	}
 
 	@Override
-	public Double calculateThresholdValue(FieldMapping fieldMapping){
-		return calculateThresholdValue(fieldMapping.getThresholdValueKPI35(),KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI35(), KPICode.DEFECT_SEEPAGE_RATE.getKpiId());
 	}
 
 }

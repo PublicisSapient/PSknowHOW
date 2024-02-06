@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -345,7 +345,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping
 				.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPEKPI3, new ArrayList<>()));
 		fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-		fieldMapping.setStoryFirstStatusKPI3(
+		fieldMapping.setStoryFirstStatusKPI171(
 				CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI3))
 						? workflowMap.get(CommonConstant.STORYFIRSTSTATUSKPI3).get(0)
 						: CommonConstant.OPEN);
@@ -372,7 +372,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 		fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.JIRADODKPI152));
 		fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.JIRADODKPI166));
 		fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.JIRADODQAKPI111));
-		fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.JIRADODKPI3));
+		fieldMapping.setJiraDodKPI171(workflowMap.get(CommonConstant.JIRADODKPI3));
 		fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.JIRADODKPI37));
 		fieldMapping.setJiraStatusStartDevelopmentKPI154(workflowMap.get(CommonConstant.JIRASTARTDEVKPI54));
 		fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.JIRADODKPI155));
@@ -395,7 +395,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 						? workflowMap.get(CommonConstant.JIRALIVESTATUSKPI127).get(0)
 						: null);
 		fieldMapping.setJiraDefectRemovalStatusKPI34(workflowMap.get(CommonConstant.JIRADEFECTREMOVALSTATUSKPI34));
-		fieldMapping.setJiraDorKPI3(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADORKPI3))
+		fieldMapping.setJiraDorKPI171(CollectionUtils.isNotEmpty(workflowMap.get(CommonConstant.JIRADORKPI3))
 				? workflowMap.get(CommonConstant.JIRADORKPI3)
 				: null);
 		fieldMapping.setResolutionTypeForRejectionKPI28(
@@ -549,13 +549,13 @@ public class CreateMetadataImpl implements CreateMetadata {
 
 			if (CollectionUtils.isNotEmpty(firstStatusList)) {
 				fieldMapping.setStoryFirstStatus(firstStatusList.get(0));
-				fieldMapping.setStoryFirstStatusKPI3(firstStatusList.get(0));
+				fieldMapping.setStoryFirstStatusKPI171(firstStatusList.get(0));
 				fieldMapping.setStoryFirstStatusKPI148(firstStatusList.get(0));
 				fieldMapping.setStoryFirstStatusKPI154(firstStatusList);
 				fieldMapping.setJiraDefectCreatedStatusKPI14(firstStatusList.get(0));
 			} else {
 				fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-				fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
+				fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
 				fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 				fieldMapping.setStoryFirstStatusKPI154(Arrays.asList(CommonConstant.OPEN));
 				fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
@@ -569,13 +569,13 @@ public class CreateMetadataImpl implements CreateMetadata {
 			fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
 			fieldMapping.setJiraDefectInjectionIssueTypeKPI14(issueTypeMap.get(CommonConstant.STORY));
-			fieldMapping.setJiraDorKPI3(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
+			fieldMapping.setJiraDorKPI171(workflowMap.getOrDefault(CommonConstant.DOR, new ArrayList<>()));
 			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
+			fieldMapping.setJiraDodKPI171(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
 			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
@@ -674,151 +674,6 @@ public class CreateMetadataImpl implements CreateMetadata {
 			ProjectConfFieldMapping projectConfig, String templateName, FieldMapping fieldMapping) {
 		if (projectConfig.isKanban()) {
 			populateKanbanFieldMappingData(fieldMapping, workflowMap, issueTypeMap, templateName);
-		} else {
-			fieldMapping
-					.setJiraIssueTypeNames(issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping.setJiraIssueTypeNamesAVR(
-					issueTypeMap.get(CommonConstant.ISSUE_TYPE).stream().toArray(String[]::new));
-			fieldMapping.setJiraSprintCapacityIssueTypeKpi46(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraDefectCountlIssueTypeKPI28(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraDefectCountlIssueTypeKPI36(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraDefectInjectionIssueTypeKPI14(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeKPI35(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraTestAutomationIssueType(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping
-					.setJiraQAKPI111IssueType(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentification(issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI129(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI166(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraSprintVelocityIssueTypeKPI138(
-					issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKpi40(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraStoryIdentificationKPI164(
-					issueTypeMap.getOrDefault(CommonConstant.STORY, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI161(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI151(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI152(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI146(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping.setJiraIssueTypeNamesKPI148(
-					issueTypeMap.getOrDefault(CommonConstant.JIRAISSUETYPENAMES, new ArrayList<>()));
-			fieldMapping
-					.setJiraIssueEpicType(issueTypeMap.get(CommonConstant.EPIC).stream().collect(Collectors.toList()));
-			if (templateName.equalsIgnoreCase(DOJO_AGILE_TEMPLATE)) {
-				fieldMapping.setJiraTechDebtIssueType(
-						issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			} else {
-				fieldMapping.setJiraTechDebtIssueType(null);
-			}
-			fieldMapping.setJiraIssueTypeKPI3(issueTypeMap.getOrDefault(CommonConstant.ISSUE_TYPE, new ArrayList<>()));
-			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
-			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
-			fieldMapping.setJiraIssueDeliverdStatusKPI138(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusAVR(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusKPI126(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraIssueDeliverdStatusKPI82(
-					workflowMap.getOrDefault(CommonConstant.DELIVERED, new ArrayList<>()));
-			fieldMapping.setJiraDefectCreatedStatusKPI14(CommonConstant.OPEN);
-			fieldMapping.setJiraDodKPI14(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI151(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI152(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI166(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodQAKPI111(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI3(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI127(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI37(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI155(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraDodKPI163(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusCustomField(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI120(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI119(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI128(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI134(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI123(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI131(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI133(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI135(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI122(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI75(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI145(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI140(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI132(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI136(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKpi72(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKpi39(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKpi5(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI124(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI125(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI138(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraIterationCompletionStatusKPI154(workflowMap.get(CommonConstant.DOD));
-			fieldMapping.setJiraLiveStatusKPI152(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusKPI151(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusKPI3(workflowMap.getOrDefault(CommonConstant.CLOSED, new ArrayList<>()));
-			fieldMapping.setJiraLiveStatusLTK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNOPK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNORK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusNOSK(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusOTA(CommonConstant.CLOSED);
-			fieldMapping.setJiraLiveStatusKPI127(CommonConstant.CLOSED);
-			fieldMapping.setJiraDefectRemovalStatusKPI34(null);
-			fieldMapping.setJiraDorKPI3(workflowMap.getOrDefault(CommonConstant.OPEN, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionAVR(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI28(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI37(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionRCAKPI36(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI14(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionQAKPI111(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI133(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI82(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI135(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setResolutionTypeForRejectionKPI35(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setJiraDefectDroppedStatusKPI127(
-					workflowMap.getOrDefault(CommonConstant.REJECTION_RESOLUTION, new ArrayList<>()));
-			fieldMapping.setJiraStatusForDevelopmentAVR(workflowMap.get(CommonConstant.DEVELOPMENT));
-			fieldMapping.setJiraStatusForDevelopmentKPI82(workflowMap.get(CommonConstant.DEVELOPMENT));
-			fieldMapping.setJiraStatusForDevelopmentKPI135(workflowMap.get(CommonConstant.DEVELOPMENT));
-			fieldMapping.setJiraStatusForQaKPI148(workflowMap.get(CommonConstant.QA));
-			fieldMapping.setJiraStatusForQaKPI82(workflowMap.get(CommonConstant.QA));
-			fieldMapping.setJiraStatusForQaKPI135(workflowMap.get(CommonConstant.QA));
-			fieldMapping.setJiraDefectRejectionStatusAVR(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI151(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI152(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI28(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI37(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI35(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI82(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI135(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI133(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusRCAKPI36(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusKPI14(CommonConstant.REJECTED);
-			fieldMapping.setJiraDefectRejectionStatusQAKPI111(CommonConstant.REJECTED);
-			fieldMapping.setJiradefecttype(issueTypeMap.get(CommonConstant.BUG));
 		}
 	}
 
@@ -830,7 +685,7 @@ public class CreateMetadataImpl implements CreateMetadata {
 				|| templateName.equalsIgnoreCase(DOJO_STUDIO_TEMPLATE)) {
 
 			fieldMapping.setStoryFirstStatus(CommonConstant.OPEN);
-			fieldMapping.setStoryFirstStatusKPI3(CommonConstant.OPEN);
+			fieldMapping.setStoryFirstStatusKPI171(CommonConstant.OPEN);
 			fieldMapping.setStoryFirstStatusKPI148(CommonConstant.OPEN);
 			fieldMapping.setJiraTicketResolvedStatus(
 					workflowMap.getOrDefault(CommonConstant.TICKET_RESOLVED_STATUS, new ArrayList<>()));

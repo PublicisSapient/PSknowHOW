@@ -341,48 +341,48 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
         return Double.valueOf(storyPoint.get() / sprintCountForBackLogStrength);
     }
 
-    public double calculateSprintVelocityValue(
-            Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
-            Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintIssues,
-            FieldMapping fieldMapping) {
-        double sprintVelocityForCurrentLeaf = 0.0d;
-        if (CollectionUtils.isNotEmpty(sprintIssues.get(currentNodeIdentifier))) {
-            log.debug("Current Node identifier is present in sprintjirsissues map {} ", currentNodeIdentifier);
-            List<JiraIssue> issueBacklogList = sprintIssues.get(currentNodeIdentifier);
-            if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-                    && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-                sprintVelocityForCurrentLeaf = issueBacklogList.stream()
-                        .mapToDouble(ji -> Double.valueOf(ji.getEstimate())).sum();
-            } else {
-                double totalOriginalEstimate = issueBacklogList.stream()
-                        .filter(issueBacklog -> Objects.nonNull(issueBacklog.getOriginalEstimateMinutes()))
-                        .mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
-                double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-                sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
-            }
-        } else {
-            if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
-                log.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
-                        currentNodeIdentifier);
-                Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
-                if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
-                        && fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
-                    sprintVelocityForCurrentLeaf = issueDetailsSet.stream()
-                            .filter(issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
-                            .mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
-                } else {
-                    double totalOriginalEstimate = issueDetailsSet.stream().filter(
-                                    issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
-                            .mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
-                    double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
-                    sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
-                }
-            }
-        }
-        log.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
-                sprintVelocityForCurrentLeaf);
-        return sprintVelocityForCurrentLeaf;
-    }
+	public double calculateSprintVelocityValue(
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap,
+			Pair<String, String> currentNodeIdentifier, Map<Pair<String, String>, List<JiraIssue>> sprintIssues,
+			FieldMapping fieldMapping) {
+		double sprintVelocityForCurrentLeaf = 0.0d;
+		if (CollectionUtils.isNotEmpty(sprintIssues.get(currentNodeIdentifier))) {
+			log.debug("Current Node identifier is present in sprintjirsissues map {} ", currentNodeIdentifier);
+			List<JiraIssue> issueBacklogList = sprintIssues.get(currentNodeIdentifier);
+			if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+					&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+				sprintVelocityForCurrentLeaf = issueBacklogList.stream()
+						.mapToDouble(ji -> Double.valueOf(ji.getEstimate())).sum();
+			} else {
+				double totalOriginalEstimate = issueBacklogList.stream()
+						.filter(issueBacklog -> Objects.nonNull(issueBacklog.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
+				double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+				sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
+			}
+		} else {
+			if (Objects.nonNull(currentSprintLeafVelocityMap.get(currentNodeIdentifier))) {
+				log.debug("Current Node identifier is present in currentSprintLeafVelocityMap map {} ",
+						currentNodeIdentifier);
+				Set<IssueDetails> issueDetailsSet = currentSprintLeafVelocityMap.get(currentNodeIdentifier);
+				if (StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
+						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.STORY_POINT)) {
+					sprintVelocityForCurrentLeaf = issueDetailsSet.stream()
+							.filter(issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getStoryPoints()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getStoryPoints()).sum();
+				} else {
+					double totalOriginalEstimate = issueDetailsSet.stream().filter(
+							issueDetails -> Objects.nonNull(issueDetails.getSprintIssue().getOriginalEstimate()))
+							.mapToDouble(issueDetails -> issueDetails.getSprintIssue().getOriginalEstimate()).sum();
+					double totalOriginalEstimateInHours = totalOriginalEstimate / 60;
+					sprintVelocityForCurrentLeaf = totalOriginalEstimateInHours / 60;
+				}
+			}
+		}
+		log.debug("Sprint velocity for the sprint {} is {}", currentNodeIdentifier.getValue(),
+				sprintVelocityForCurrentLeaf);
+		return sprintVelocityForCurrentLeaf;
+	}
 
     public void getSprintForProject(List<JiraIssue> allJiraIssue, List<SprintDetails> sprintDetails,
                                     Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap) {

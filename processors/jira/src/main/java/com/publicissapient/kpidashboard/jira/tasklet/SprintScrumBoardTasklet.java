@@ -17,16 +17,8 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
-import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
-import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -36,7 +28,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.common.model.jira.BoardDetails;
+import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
+import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.jira.aspect.TrackExecutionTime;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.FetchSprintReport;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author pankumar8
@@ -46,45 +49,47 @@ import java.util.List;
 @StepScope
 public class SprintScrumBoardTasklet implements Tasklet {
 
-    @Autowired
-    FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Autowired
-    JiraClient jiraClient;
+	@Autowired
+	JiraClient jiraClient;
 
-    @Autowired
-    private FetchSprintReport fetchSprintReport;
+	@Autowired
+	private FetchSprintReport fetchSprintReport;
 
-    @Autowired
-    private SprintRepository sprintRepository;
+	@Autowired
+	private SprintRepository sprintRepository;
 
-    private String projectId;
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
-    @Autowired
-    public SprintScrumBoardTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-        this.projectId = projectId;
-    }
-
-    /**
-     * @param sc StepContribution
-     * @param cc ChunkContext
-     * @return RepeatStatus
-     * @throws Exception Exception
-     */
-    @TrackExecutionTime
-    @Override
-    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-        log.info("**** Sprint report for Scrum Board started * * *");
-        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
-        KerberosClient krb5Client = null;
-        try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
-            List<SprintDetails> sprintDetailsList = fetchSprintReport
-                    .createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client);
-            sprintRepository.saveAll(sprintDetailsList);
-        }
-        log.info("**** Sprint report for Scrum Board ended * * *");
-        return RepeatStatus.FINISHED;
-    }
+	/**
+	 * @param sc
+	 *            StepContribution
+	 * @param cc
+	 *            ChunkContext
+	 * @return RepeatStatus
+	 * @throws Exception
+	 *             Exception
+	 */
+	@TrackExecutionTime
+	@Override
+	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+		log.info("**** Sprint report for Scrum Board started * * *");
+		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		log.info("Fetching spring reports for the project : {}", projConfFieldMapping.getProjectName());
+		KerberosClient krb5Client = null;
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+			List<BoardDetails> boardDetailsList = projConfFieldMapping.getProjectToolConfig().getBoards();
+			for (BoardDetails boardDetails : boardDetailsList) {
+				List<SprintDetails> sprintDetailsList = fetchSprintReport
+						.createSprintDetailBasedOnBoard(projConfFieldMapping, krb5Client, boardDetails);
+				sprintRepository.saveAll(sprintDetailsList);
+			}
+		}
+		log.info("**** Sprint report for Scrum Board ended * * *");
+		return RepeatStatus.FINISHED;
+	}
 
 }

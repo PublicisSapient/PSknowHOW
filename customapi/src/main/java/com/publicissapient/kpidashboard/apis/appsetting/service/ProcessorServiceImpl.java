@@ -21,10 +21,9 @@ package com.publicissapient.kpidashboard.apis.appsetting.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +38,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.publicissapient.kpidashboard.apis.appsetting.config.ProcessorUrlConfig;
+import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.repotools.service.RepoToolsConfigServiceImpl;
 import com.publicissapient.kpidashboard.apis.util.CommonUtils;
@@ -49,9 +49,8 @@ import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.repository.application.SprintTraceLogRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-
 /**
  * This class provides various methods related to operations on Processor Data
  *
@@ -149,7 +148,7 @@ public class ProcessorServiceImpl implements ProcessorService {
 
 		if (msg != null) {
 			String[] parts = msg.split(":");
-			return (parts.length > 1) ? parts[1].trim().replaceAll("\"", "") : "";
+			return (parts.length > 1) ? parts[1].trim().replace("\"", "") : "";
 		} else {
 			return "";
 		}

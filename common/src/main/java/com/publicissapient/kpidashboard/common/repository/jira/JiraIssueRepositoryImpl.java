@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -296,6 +296,9 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(JIRA_ISSUE_STATUS);
 		query.fields().include(URL);
 		query.fields().include(NAME);
+		query.fields().include("labels");
+		query.fields().include("uatDefectGroup");
+		query.fields().include(SPRINT_ID);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -560,6 +563,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(URL);
 		query.fields().include(RESOLUTION);
 		query.fields().include(JIRA_ISSUE_STATUS);
+		query.fields().include(AGGREGATE_TIME_ORIGINAL_ESTIMATE_MINUTES);
 		return operations.find(query, JiraIssue.class);
 
 	}
@@ -587,7 +591,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 		query.fields().include(NUMBER);
 		query.fields().include(STORY_POINTS);
 		query.fields().include("name");
-		query.fields().include("state");
+		query.fields().include(STATE);
 		query.fields().include("status");
 		query.fields().include(SPRINT_NAME);
 		query.fields().include(SPRINT_ID);
@@ -881,7 +885,7 @@ public class JiraIssueRepositoryImpl implements JiraIssueRepositoryCustom {// NO
 
 		MatchOperation matchStage = Aggregation.match(criteria);
 
-		GroupOperation groupOperation = Aggregation.group("typeName", "basicProjectConfigId",
+		GroupOperation groupOperation = Aggregation.group(TYPE_NAME, "basicProjectConfigId",
 				"releaseVersions.releaseName");
 
 		ProjectionOperation projectionOperation = Aggregation.project().andExpression("_id.typeName")

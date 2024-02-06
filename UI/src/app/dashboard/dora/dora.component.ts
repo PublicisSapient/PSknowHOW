@@ -65,18 +65,31 @@ export class DoraComponent implements OnInit {
   loaderJiraArray = [];
   updatedConfigDataObj: object = {};
   kpiThresholdObj = {};
+  isTooltip = '';
+  maturityObj = {};
+  toolTipTop: number = 0;
 
-  constructor(private service: SharedService, private httpService: HttpService, private helperService: HelperService) {
-    this.subscriptions.push(this.service.passDataToDashboard.pipe(distinctUntilChanged()).subscribe((sharedobject) => {
-      if (sharedobject?.filterData?.length && sharedobject.selectedTab.toLowerCase() === 'dora') {
-        this.allKpiArray = [];
-        this.kpiChartData = {};
-        this.kpiSelectedFilterObj = {};
-        this.kpiDropdowns = {};
-        this.sharedObject = sharedobject;
-        if (this.globalConfig || this.service.getDashConfigData()) {
-          this.receiveSharedData(sharedobject);
+  constructor(public service: SharedService, private httpService: HttpService, private helperService: HelperService) {
+
+    this.subscriptions.push(this.service.mapColorToProject.pipe(mergeMap(x => {
+      if (Object.keys(x).length > 0) {
+        this.colorObj = x;
+        this.trendBoxColorObj = { ...x };
+        let tempObj = {};
+        for (const key in this.trendBoxColorObj) {
+          const idx = key.lastIndexOf('_');
+          const nodeName = key.slice(0, idx);
+          this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
+          tempObj[nodeName] = [];
         }
+      }
+      this.kpiLoader = true;
+      return this.service.passDataToDashboard;
+    }), distinctUntilChanged()).subscribe((sharedobject: any) => {
+      // used to get all filter data when user click on apply button in filter
+      if (sharedobject?.filterData?.length) {
+        this.serviceObject = JSON.parse(JSON.stringify(sharedobject));
+        this.receiveSharedData(sharedobject);
         this.noTabAccess = false;
       } else {
         this.noTabAccess = true;
@@ -90,19 +103,6 @@ export class DoraComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(this.service.mapColorToProjectObs.subscribe((x) => {
-      if (Object.keys(x).length > 0) {
-        this.colorObj = x;
-        if (this.kpiChartData && Object.keys(this.kpiChartData)?.length > 0) {
-          this.trendBoxColorObj = { ...x };
-          for (const key in this.trendBoxColorObj) {
-            const idx = key.lastIndexOf('_');
-            const nodeName = key.slice(0, idx);
-            this.trendBoxColorObj[nodeName] = this.trendBoxColorObj[key];
-          }
-        }
-      }
-    }));
 
     this.httpService.getConfigDetails().subscribe(filterData => {
       if (filterData[0] !== 'error') {
@@ -188,6 +188,7 @@ export class DoraComponent implements OnInit {
   }
 
   receiveSharedData($event) {
+    this.isTooltip = '';
     this.sprintsOverlayVisible = this.service.getSelectedLevel()['hierarchyLevelId'] === 'project' ? true : false;
     if (localStorage?.getItem('completeHierarchyData')) {
       const hierarchyData = JSON.parse(localStorage.getItem('completeHierarchyData'));
@@ -392,6 +393,7 @@ export class DoraComponent implements OnInit {
     // if (this.kpiChartData && Object.keys(this.kpiChartData).length && this.updatedConfigGlobalData) {
     //   this.helperService.calculateGrossMaturity(this.kpiChartData, this.updatedConfigGlobalData);
     // }
+    this.setMaturityColor(kpiId, this.kpiSelectedFilterObj[kpiId]);
   }
 
   createAllKpiArray(data, inputIsChartData = false) {
@@ -458,22 +460,142 @@ export class DoraComponent implements OnInit {
     this.globalConfig = null;
   }
 
-   reloadKPI(event) {
-          const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
-          if(idx !== -1){
-              this.allKpiArray.splice(idx,1);
-          }
-          const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
-          if (currentKPIGroup?.kpiList?.length > 0) {
-              const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
-                  switch (kpiSource) {
-                      case 'jenkins':
-                          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
-                          break;
-                      default:
-                          this.postJiraKpi(currentKPIGroup, 'jira');
-              }
-          }
+  reloadKPI(event) {
+    const idx = this.ifKpiExist(event?.kpiDetail?.kpiId)
+    if (idx !== -1) {
+      this.allKpiArray.splice(idx, 1);
+    }
+    const currentKPIGroup = this.helperService.groupKpiFromMaster(event?.kpiDetail?.kpiSource, event?.kpiDetail?.kanban, this.masterData, this.filterApplyData, this.filterData, {}, event.kpiDetail?.groupId, 'Dora');
+    if (currentKPIGroup?.kpiList?.length > 0) {
+      const kpiSource = event.kpiDetail?.kpiSource?.toLowerCase();
+      switch (kpiSource) {
+        case 'jenkins':
+          this.postJenkinsKpi(currentKPIGroup, 'jenkins');
+          break;
+        default:
+          this.postJiraKpi(currentKPIGroup, 'jira');
       }
+    }
+  }
+
+  setMaturityColor(kpiId, selectedFilter = null) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+    let maturity = '';
+    if (this.kpiChartData[kpiId] && this.kpiChartData[kpiId].length && selectedKPI) {
+      if (!selectedFilter) {
+        maturity = 'M' + this.kpiChartData[kpiId][0].maturity;
+      } else {
+        maturity = this.calculateMaturity(kpiId, selectedKPI.maturityRange);
+      }
+      let maturityColor = selectedKPI.maturityLevel.filter((level) => level.level === maturity)[0]?.bgColor;
+      this.kpiChartData[kpiId][0].maturityColor = maturityColor;
+      this.getMaturityData(kpiId);
+    }
+  }
+
+  calculateMaturity(kpiId, maturityRange) {
+    if (maturityRange && maturityRange.length) {
+      let aggregatedValue = this.kpiChartData[kpiId][0]?.['aggregationValue'];
+      let maturity = '';
+
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+
+      switch (findIncrementalOrDecrementalRange) {
+        case 'incremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const lowerBound = parseInt(range[0]);
+            const upperBound = range[1] === '' ? Infinity : parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+
+        case 'decremental':
+          for (let i = 0; i < maturityRange.length; i++) {
+            const range = maturityRange[i].split('-');
+            const upperBound = range[0] === '' ? Infinity : parseInt(range[0]);
+            const lowerBound = parseInt(range[1]);
+            if (upperBound === Infinity) {
+              if (aggregatedValue >= lowerBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            } else {
+              if (aggregatedValue >= lowerBound && aggregatedValue < upperBound) {
+                maturity = `M${i + 1}`;
+                break;
+              }
+            }
+          }
+          break;
+      }
+
+      return maturity;
+    }
+  }
+
+  findIncrementalOrDecrementalRange(range) {
+    if (parseInt(range[1].split('-')[1] + 1) > parseInt(range[2].split('-')[1] + 1)) {
+      return 'decremental';
+    } else {
+      return 'incremental';
+    }
+  }
+
+  showTooltip(event, val, kpiId) {
+    if (event) {
+      const { top, left, width, height } = event.target.getBoundingClientRect();
+      this.toolTipTop = top;
+    } else {
+      this.toolTipTop = 0;
+    }
+    if (val) {
+      this.isTooltip = kpiId;
+    } else {
+      this.isTooltip = '';
+    }
+  }
+
+  getMaturityData(kpiId) {
+    let selectedKPI = this.allKpiArray.filter(kpi => kpi.kpiId === kpiId)[0];
+
+    if (!this.maturityObj[kpiId]) {
+
+      this.maturityObj[kpiId] = {
+        maturityLevels: [],
+      };
+
+      let maturityRange = JSON.parse(JSON.stringify(selectedKPI.maturityRange));
+
+      let maturityLevel = JSON.parse(JSON.stringify(selectedKPI.maturityLevel));
+      let displayRange = maturityLevel.map((item) => item.displayRange);
+      let findIncrementalOrDecrementalRange = this.findIncrementalOrDecrementalRange(maturityRange);
+
+      if (findIncrementalOrDecrementalRange === 'decremental') {
+        maturityRange = maturityRange.reverse();
+      } else {
+        maturityLevel = maturityLevel.reverse();
+        displayRange = displayRange.reverse();
+      }
+
+      maturityLevel.forEach((element, index) => {
+        this.maturityObj[kpiId]['maturityLevels'].push({
+          level: element.level,
+          range: displayRange[index],
+          color: element.bgColor
+        });
+      });
+    }
+  }
 
 }

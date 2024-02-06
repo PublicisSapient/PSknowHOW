@@ -18,18 +18,22 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.data.JiraIssueHistoryDataFactory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -95,6 +99,7 @@ public class WorkRemainingServiceImplTest {
 	private SprintDetails sprintDetails = new SprintDetails();
 	private List<AccountHierarchyData> accountHierarchyDataList = new ArrayList<>();
 	private KpiRequest kpiRequest;
+	private List<JiraIssueCustomHistory> historyList = new ArrayList<>();
 
 	@Before
 	public void setup() {
@@ -114,6 +119,12 @@ public class WorkRemainingServiceImplTest {
 				.map(SprintIssue::getNumber).distinct().collect(Collectors.toList());
 		JiraIssueDataFactory jiraIssueDataFactory = JiraIssueDataFactory.newInstance();
 		storyList = jiraIssueDataFactory.findIssueByNumberList(jiraIssueList);
+
+		Set<String> stories = storyList.stream().map(JiraIssue::getNumber).collect(Collectors.toSet());
+		JiraIssueHistoryDataFactory jiraIssueHistoryDataFactory = JiraIssueHistoryDataFactory
+				.newInstance("/json/default/iteration/jira_issue_custom_history.json");
+		historyList = jiraIssueHistoryDataFactory.getJiraIssueCustomHistory().stream()
+				.filter(history -> stories.contains(history.getStoryID())).collect(Collectors.toList());
 	}
 
 	private void setMockProjectConfig() {
@@ -127,6 +138,7 @@ public class WorkRemainingServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
+		fieldMapping.setJiraIterationCompletionStatusKPI119(Arrays.asList("Closed", "Live", "Dropped"));
 		fieldMappingMap.put(fieldMapping.getBasicProjectConfigId(), fieldMapping);
 		configHelperService.setFieldMappingMap(fieldMappingMap);
 	}
@@ -139,6 +151,7 @@ public class WorkRemainingServiceImplTest {
 
 		when(jiraService.getCurrentSprintDetails()).thenReturn(sprintDetails);
 		when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(storyList);
+		when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(historyList);
 
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name()))

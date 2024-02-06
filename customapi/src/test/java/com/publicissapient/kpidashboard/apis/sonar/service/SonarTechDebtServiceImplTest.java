@@ -21,10 +21,10 @@
  */
 package com.publicissapient.kpidashboard.apis.sonar.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.publicissapient.kpidashboard.apis.common.service.CacheService;
+import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -83,6 +85,8 @@ public class SonarTechDebtServiceImplTest {
 	SonarHistoryRepository sonarHistoryRepository;
 	@Mock
 	private CustomApiConfig customApiConfig;
+	@Mock
+	CacheService cacheService;
 	private List<ProjectBasicConfig> projectConfigList = new ArrayList<>();
 	private List<FieldMapping> fieldMappingList = new ArrayList<>();
 	private Map<ObjectId, Map<String, List<Tool>>> toolMap = new HashMap<>();
@@ -98,6 +102,10 @@ public class SonarTechDebtServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi27");
 		kpiRequest.setLabel("PROJECT");
+
+		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+		when(cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.SONAR.name()))
+				.thenReturn(kpiRequestTrackerId);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -355,7 +363,7 @@ public class SonarTechDebtServiceImplTest {
 				.thenReturn(sonarHistoryData);
 		// set aggregation criteria kpi wise
 		kpiWiseAggregation.put(KPICode.SONAR_TECH_DEBT.name(), "average");
-		String kpiRequestTrackerId = "Excel-Sonar-5be544de025de212549176a9";
+
 		try {
 			KpiElement kpiElement = stdServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
 					treeAggregatorDetail);
@@ -378,5 +386,19 @@ public class SonarTechDebtServiceImplTest {
 	public void testCalculateKPIMetrics() {
 		assertEquals(null, stdServiceImpl.calculateKPIMetrics(new HashMap<>()));
 	}
+
+	@Test
+	public void testGetTechDebtValueWithDouble() {
+		assertEquals(new Long(42), stdServiceImpl.getTechDebtValue(42.0));
+		assertEquals(new Long(123), stdServiceImpl.getTechDebtValue("123"));
+		assertEquals(new Long(456), stdServiceImpl.getTechDebtValue(456L));
+		assertEquals(new Long(-1), stdServiceImpl.getTechDebtValue(null));
+	}
+
+	@Test
+	public void testThresold(){
+		assertEquals(new Double(0), stdServiceImpl.calculateThresholdValue(new FieldMapping()));
+	}
+
 
 }

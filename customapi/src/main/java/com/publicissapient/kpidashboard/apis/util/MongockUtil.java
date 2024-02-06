@@ -21,11 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.mongodb.client.MongoCollection;
 
 public final class MongockUtil {
+	private static final Logger LOGGER = LoggerFactory.getLogger(MongockUtil.class);
 
 	private MongockUtil() {
 	}
@@ -48,7 +51,7 @@ public final class MongockUtil {
 						Object value = field.get(data);
 						document.append(field.getName(), value);
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+						LOGGER.info(e.getMessage());
 					}
 				}
 				documentList.add(document);
@@ -56,4 +59,29 @@ public final class MongockUtil {
 			mongoTemplate.insert(documentList, collectionName);
 		}
 	}
+
+	/**
+	 * Method to create a fieldMappingStructure
+	 * 
+	 * @param fieldName
+	 *            fieldName
+	 * @param fieldLabel
+	 *            fieldLabel
+	 * @param section
+	 *            section
+	 * @param fieldCategory
+	 *            fieldCategory
+	 * @param fieldType
+	 *            fieldType
+	 * @param tooltipDefinition
+	 *            tooltipDefinition
+	 * @return Document
+	 */
+	public static Document createFieldMapping(String fieldName, String fieldLabel, String section, String fieldCategory,
+			String fieldType, String tooltipDefinition) {
+		return new Document().append("fieldName", fieldName).append("fieldLabel", fieldLabel).append("section", section)
+				.append("fieldType", fieldType).append("fieldCategory", fieldCategory)
+				.append("tooltip", new Document("definition", tooltipDefinition));
+	}
+
 }

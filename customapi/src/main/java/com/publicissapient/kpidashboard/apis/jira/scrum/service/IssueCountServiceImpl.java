@@ -29,7 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -399,6 +399,11 @@ public class IssueCountServiceImpl extends JiraKPIService<Double, List<Object>, 
 	@Override
 	public Double calculateKpiValue(List<Double> valueList, String kpiName) {
 		return calculateKpiValueForDouble(valueList, kpiName);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI40(), KPICode.ISSUE_COUNT.getKpiId());
 	}
 
 }

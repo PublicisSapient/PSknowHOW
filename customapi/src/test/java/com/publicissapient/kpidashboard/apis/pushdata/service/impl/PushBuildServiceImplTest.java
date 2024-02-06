@@ -27,11 +27,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +43,11 @@ import com.publicissapient.kpidashboard.apis.pushdata.model.PushBuildDeploy;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.PushBuildDeployDTO;
 import com.publicissapient.kpidashboard.apis.pushdata.service.PushDataTraceLogService;
 import com.publicissapient.kpidashboard.apis.pushdata.util.PushDataException;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PushBuildServiceImplTest {

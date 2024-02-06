@@ -11,16 +11,14 @@ export class FeatureFlagsService {
 
   constructor(private roleService: GetAuthorizationService, private http: HttpService) { }
 
-  loadConfig() {
-    this.http.getFeatureFlags().subscribe(response => {
-      this.config = features.concat(response);
-      return this.config;
-    });
+  async loadConfig() {
+    return await this.http.getFeatureFlags();
   }
 
-  isFeatureEnabled(key: string) {
-    if (this.config.length) {
-      let requiredConfig = this.config.filter(feature => feature['name'].toLowerCase() === key.toLowerCase())[0];
+  async isFeatureEnabled(key: string) {
+    if (this.config?.length) {
+      this.config = features.concat(this.config);
+      let requiredConfig = this.config.filter(feature => feature['name']?.toLowerCase() === key?.toLowerCase())[0];
       if (requiredConfig) {
         if (requiredConfig.enabled) {
           return true;
@@ -30,7 +28,10 @@ export class FeatureFlagsService {
       } else {
         return true;
       }
+    } else {
+      this.config = this.loadConfig();
+      this.config = features.concat(this.config);
+      return this.isFeatureEnabled(key);
     }
-    return true;
   }
 }

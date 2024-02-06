@@ -24,12 +24,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -68,14 +68,14 @@ public class JwtAuthenticationFilterTest {
 
 	@Test
 	public void testDoFilter() throws Exception {
-		when(authService.getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
+		when(authService.validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class)))
 				.thenReturn(authentication);
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(cookie);
 		filter.doFilter(request, response, filterChain);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertEquals(authentication, SecurityContextHolder.getContext().getAuthentication());
 
-		verify(authService).getAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
+		verify(authService).validateAuthentication(any(HttpServletRequest.class), any(HttpServletResponse.class));
 		verify(filterChain).doFilter(request, response);
 	}
 

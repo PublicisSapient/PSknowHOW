@@ -32,6 +32,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 public class PushDataValidation {
 
 	private static final String COMMA= " ,";
+	private static final String SHOULD_BE_AMONG= " should be among ";
 
 	private PushDataValidation(){}
 
@@ -76,8 +77,8 @@ public class PushDataValidation {
 				.filter(buildStatus -> buildStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!buildStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(COMMA + parameter + " should be among " + getAllBuildValues()));
-			errors.putIfAbsent(parameter, parameter + " should be among " + getAllBuildValues());
+					(param, error) -> error.concat(COMMA + parameter + SHOULD_BE_AMONG + getAllBuildValues()));
+			errors.putIfAbsent(parameter, parameter + SHOULD_BE_AMONG + getAllBuildValues());
 		}
 
 	}
@@ -94,8 +95,8 @@ public class PushDataValidation {
 				.filter(deploymentStatus -> deploymentStatus.toString().equalsIgnoreCase(status)).findFirst();
 		if (!deploymentStatusOptional.isPresent()) {
 			errors.computeIfPresent(parameter,
-					(param, error) -> error.concat(COMMA + parameter + " should be among " + getAllDeploymentValues()));
-			errors.putIfAbsent(parameter, parameter + " should be among " + getAllDeploymentValues());
+					(param, error) -> error.concat(COMMA + parameter + SHOULD_BE_AMONG + getAllDeploymentValues()));
+			errors.putIfAbsent(parameter, parameter + SHOULD_BE_AMONG + getAllDeploymentValues());
 		}
 	}
 

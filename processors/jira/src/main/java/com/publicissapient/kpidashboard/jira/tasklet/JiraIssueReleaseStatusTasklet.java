@@ -17,14 +17,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.jira.tasklet;
 
-import com.publicissapient.kpidashboard.common.client.KerberosClient;
-import com.publicissapient.kpidashboard.jira.client.JiraClient;
-import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
-import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
-import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
-import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -34,6 +26,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.publicissapient.kpidashboard.common.client.KerberosClient;
+import com.publicissapient.kpidashboard.jira.client.JiraClient;
+import com.publicissapient.kpidashboard.jira.client.ProcessorJiraRestClient;
+import com.publicissapient.kpidashboard.jira.config.FetchProjectConfiguration;
+import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
+import com.publicissapient.kpidashboard.jira.model.ProjectConfFieldMapping;
+import com.publicissapient.kpidashboard.jira.service.CreateJiraIssueReleaseStatus;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author pankumar8
  */
@@ -42,40 +44,39 @@ import org.springframework.stereotype.Component;
 @StepScope
 public class JiraIssueReleaseStatusTasklet implements Tasklet {
 
-    @Autowired
-    FetchProjectConfiguration fetchProjectConfiguration;
+	@Autowired
+	FetchProjectConfiguration fetchProjectConfiguration;
 
-    @Autowired
-    JiraClient jiraClient;
+	@Autowired
+	JiraClient jiraClient;
 
-    @Autowired
-    CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
+	@Autowired
+	CreateJiraIssueReleaseStatus createJiraIssueReleaseStatus;
 
-    @Autowired
-    JiraProcessorConfig jiraProcessorConfig;
+	@Autowired
+	JiraProcessorConfig jiraProcessorConfig;
 
-    private String projectId;
+	@Value("#{jobParameters['projectId']}")
+	private String projectId;
 
-    @Autowired
-    public JiraIssueReleaseStatusTasklet(@Value("#{jobParameters['projectId']}") String projectId) {
-        this.projectId = projectId;
-    }
-
-    /**
-     * @param sc StepContribution
-     * @param cc ChunkContext
-     * @return RepeatStatus
-     * @throws Exception Exception
-     */
-    @Override
-    public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
-        ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
-        KerberosClient krb5Client = null;
-        try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
-            log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
-            createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
-        }
-        return RepeatStatus.FINISHED;
-    }
+	/**
+	 * @param sc
+	 *            StepContribution
+	 * @param cc
+	 *            ChunkContext
+	 * @return RepeatStatus
+	 * @throws Exception
+	 *             Exception
+	 */
+	@Override
+	public RepeatStatus execute(StepContribution sc, ChunkContext cc) throws Exception {
+		ProjectConfFieldMapping projConfFieldMapping = fetchProjectConfiguration.fetchConfiguration(projectId);
+		KerberosClient krb5Client = null;
+		try (ProcessorJiraRestClient client = jiraClient.getClient(projConfFieldMapping, krb5Client)) {
+			log.info("Fetching release statuses for the project : {}", projConfFieldMapping.getProjectName());
+			createJiraIssueReleaseStatus.processAndSaveProjectStatusCategory(client, projectId);
+		}
+		return RepeatStatus.FINISHED;
+	}
 
 }

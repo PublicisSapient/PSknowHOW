@@ -121,7 +121,7 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 		IssueField epic = fields.get(fieldMapping.getEpicName());
 
 		if (issueTypeNames
-				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault()))) {
+				.contains(JiraProcessorUtil.deodeUTF8String(issueType.getName()).toLowerCase(Locale.getDefault())) || StringUtils.isNotEmpty(boardId)) {
 			String issueId = JiraProcessorUtil.deodeUTF8String(issue.getId());
 			jiraIssue = getKanbanJiraIssue(projectConfig, issueId);
 
@@ -219,8 +219,8 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 
 	}
 
-	private void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
-			List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
+	void updateAssigneeDetailsToggleWise(KanbanJiraIssue jiraIssue, ProjectConfFieldMapping projectConfig,
+										 List<String> assigneeKey, List<String> assigneeName, List<String> assigneeDisplayName) {
 		if (!projectConfig.getProjectBasicConfig().isSaveAssigneeDetails()) {
 
 			List<String> ownerName = assigneeName.stream().map(JiraHelper::hash).collect(Collectors.toList());
@@ -350,11 +350,21 @@ public class KanbanJiraIssueProcessorImpl implements KanbanJiraIssueProcessor {
 			Map<String, IssueField> fields) {
 		List<String> rcaList = new ArrayList<>();
 
-		if (CollectionUtils.isNotEmpty(fieldMapping.getKanbanRCACountIssueType()) && fieldMapping
-				.getKanbanRCACountIssueType().stream().anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
-			if (fields.get(fieldMapping.getRootCause()) != null
-					&& fields.get(fieldMapping.getRootCause()).getValue() != null) {
-				rcaList.addAll(getRootCauses(fieldMapping, fields));
+		if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype().stream()
+				.anyMatch(issue.getIssueType().getName()::equalsIgnoreCase)) {
+			if (null != fieldMapping.getRootCauseIdentifier()) {
+				if (fieldMapping.getRootCauseIdentifier().trim().equalsIgnoreCase(JiraConstants.LABELS)) {
+					List<String> commonLabel = issue.getLabels().stream()
+							.filter(x -> fieldMapping.getRootCauseValues().contains(x)).collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(commonLabel)) {
+						rcaList.addAll(commonLabel);
+					}
+				} else if (fieldMapping.getRootCauseIdentifier().trim()
+						.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD) && fields.get(
+						fieldMapping.getRootCause().trim()) != null && fields.get(fieldMapping.getRootCause().trim())
+						.getValue() != null) {
+					rcaList.addAll(getRootCauses(fieldMapping, fields));
+				}
 			} else {
 				// when issue type defects but did not set root cause value in
 				// Jira

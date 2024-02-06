@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
@@ -75,8 +75,8 @@ public class SprintVelocityServiceHelper {
 						.mapToDouble(ji -> Optional.ofNullable(ji.getStoryPoints()).orElse(0.0d)).sum();
 			} else {
 				double totalOriginalEstimate = issueDetailsSet.stream()
-						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getOriginalEstimateMinutes()))
-						.mapToDouble(JiraIssue::getOriginalEstimateMinutes).sum();
+						.filter(jiraIssue -> Objects.nonNull(jiraIssue.getAggregateTimeOriginalEstimateMinutes()))
+						.mapToDouble(JiraIssue::getAggregateTimeOriginalEstimateMinutes).sum();
 				double inHours = totalOriginalEstimate / 60;
 				sprintVelocityForCurrentLeaf = inHours / fieldMapping.getStoryPointToHourMapping();
 

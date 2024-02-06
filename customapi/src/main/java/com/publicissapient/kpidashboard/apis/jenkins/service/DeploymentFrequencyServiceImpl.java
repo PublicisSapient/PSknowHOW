@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -61,6 +61,7 @@ import com.publicissapient.kpidashboard.common.constant.DeploymentStatus;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
 import com.publicissapient.kpidashboard.common.model.application.Deployment;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.repository.application.DeploymentRepository;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
 
@@ -108,7 +109,7 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 		calculateAggregatedValueMap(root, nodeWiseKPIValue, KPICode.DEPLOYMENT_FREQUENCY);
 		kpiElement.setNodeWiseKPIValue(nodeWiseKPIValue);
-		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, nodeWiseKPIValue,
+		Map<String, List<DataCount>> trendValuesMap = getAggregateTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
 				KPICode.DEPLOYMENT_FREQUENCY);
 		Map<String, Map<String, List<DataCount>>> envNameProjectWiseDc = new LinkedHashMap<>();
 		trendValuesMap.forEach((envName, dataCounts) -> {
@@ -388,6 +389,11 @@ public class DeploymentFrequencyServiceImpl extends JenkinsKPIService<Long, Long
 	@Override
 	public Long calculateKpiValue(List<Long> valueList, String kpiId) {
 		return calculateKpiValueForLong(valueList, kpiId);
+	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI118(), KPICode.DEPLOYMENT_FREQUENCY.getKpiId());
 	}
 
 }

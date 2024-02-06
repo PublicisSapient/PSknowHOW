@@ -206,12 +206,12 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 			Map<String, List<JiraIssue>> rangeWiseJiraIssuesMap = new LinkedHashMap<>();
 			filterDataBasedOnXAxisRangeWise(xAxisRange, projectWiseJiraIssueList, rangeWiseJiraIssuesMap);
 
-			Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
-			rangeWiseJiraIssuesMap.forEach((range, issueList) -> {
-				Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrumForBacklog(issueList,
-						customApiConfig);
-				rangeWisePriorityCountMap.put(range, priorityCountMap);
-			});
+				Map<String, Map<String, Long>> rangeWisePriorityCountMap = new LinkedHashMap<>();
+				rangeWiseJiraIssuesMap.forEach((range, issueList) -> {
+					Map<String, Long> priorityCountMap = KPIHelperUtil.setpriorityScrum(issueList,
+							customApiConfig);
+					rangeWisePriorityCountMap.put(range, priorityCountMap);
+				});
 
 			rangeWisePriorityCountMap
 					.forEach((rangeMonth, priorityCountMap) -> populateProjectFilterWiseDataMap(priorityCountMap,
@@ -389,4 +389,11 @@ public class ProductionIssuesByPriorityAndAgingServiceImpl extends JiraBacklogKP
 			return Arrays.asList(Constant.P1, Constant.P2, Constant.P3, Constant.P4, Constant.MISC);
 		}
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI127(),
+				KPICode.PRODUCTION_ISSUES_BY_PRIORITY_AND_AGING.getKpiId());
+	}
+
 }

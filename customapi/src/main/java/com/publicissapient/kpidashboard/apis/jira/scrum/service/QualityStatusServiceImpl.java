@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -262,7 +262,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			Map<String, Map<String, List<String>>> droppedDefects = new HashMap<>();
 			KpiHelperService.addPriorityProjectWise(projectWisePriority, configPriority, latestSprint,
 					fieldMapping.getDefectPriorityKPI133());
-			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getExcludeRCAFromKPI133());
+			KpiHelperService.addRCAProjectWise(projectWiseRCA, latestSprint, fieldMapping.getIncludeRCAForKPI133());
 			KpiHelperService.getDroppedDefectsFilters(droppedDefects,
 					latestSprint.getProjectFilter().getBasicProjectConfigId(),
 					fieldMapping.getResolutionTypeForRejectionKPI133(),
@@ -274,7 +274,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 			defectTypes.add(NormalizedJira.DEFECT_TYPE.getValue());
 			List<JiraIssue> allDefects = totalJiraIssues.stream()
 					.filter(issue -> defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
-			allDefects = KpiHelperService.excludePriorityAndRCA(allDefects, projectWisePriority, projectWiseRCA);
+			allDefects = KpiHelperService.excludePriorityAndIncludeRCA(allDefects, projectWisePriority, projectWiseRCA);
 			List<JiraIssue> allStory = totalJiraIssues.stream()
 					.filter(issue -> !defectTypes.contains(issue.getTypeName())).collect(Collectors.toList());
 			List<JiraIssue> allClosedStory = completedIssueList.stream()

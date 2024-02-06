@@ -27,7 +27,6 @@ public class ReaderRetryHelper {
 	public static final int MAX_RETRY_ATTEMPT = 3;
 	public static final long TIME_INTERVAL_BETWEEN_RETRY = 5000;
 
-
 	@Retryable
 	public <T> T executeWithRetry(RetryableOperation<T> operation) throws Exception {
 		RetryTemplate retryTemplate = new RetryTemplate(); // Creating a new RetryTemplate for each retry

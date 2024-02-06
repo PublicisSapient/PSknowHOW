@@ -44,8 +44,6 @@ public class CustomApiConfig {// NOPMD
 	private String aesEncryptionKey;
 	// Number of sprints available on trend charts
 	private int sprintCountForFilters;
-	// Toggle captcha property
-	private boolean captchaRequired;
 	// default image name
 	private String applicationDefaultLogo;
 
@@ -144,6 +142,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
+	@Value("${centralAuth.switch}")
+	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -232,6 +232,35 @@ public class CustomApiConfig {// NOPMD
 	private String repoToolPickupTimeUrl;
 	private String repoToolMeanTimeToMergeUrl;
 	private List<String> flowEfficiencyXAxisRange;
+	private List<String> leadTimeRange;
+	private List<String> cycleTimeRange;
+	private List<Character> aesKeyValue;
+
+	public List<Character> getAesKeyValue() {
+		return aesKeyValue;
+	}
+
+	public void setAesKeyValue(List<Character> aesKeyValue) {
+		this.aesKeyValue = aesKeyValue;
+	}
+
+	public List<String> getCycleTimeRange() {
+		return cycleTimeRange;
+	}
+
+	public void setCycleTimeRange(List<String> cycleTimeRange) {
+		this.cycleTimeRange = cycleTimeRange;
+	}
+
+
+
+	public List<String> getLeadTimeRange() {
+		return leadTimeRange;
+	}
+
+	public void setLeadTimeRange(List<String> leadTimeRange) {
+		this.leadTimeRange = leadTimeRange;
+	}
 
 	public void setFlowEfficiencyXAxisRange(List<String> flowEfficiencyXAxisRange) {
 		this.flowEfficiencyXAxisRange = flowEfficiencyXAxisRange;
@@ -313,7 +342,6 @@ public class CustomApiConfig {// NOPMD
 		return repoToolDeleteRepoUrl;
 	}
 
-
 	public Boolean getIsRepoToolEnable() {
 		return isRepoToolEnable;
 	}
@@ -329,6 +357,7 @@ public class CustomApiConfig {// NOPMD
 	public String getRepoToolURL() {
 		return repoToolURL;
 	}
+
 	private Integer sonarMonthCount;
 
 	public int getSprintVelocityLimit() {
@@ -491,25 +520,6 @@ public class CustomApiConfig {// NOPMD
 	 */
 	public void setSprintCountForFilters(int sprintCountForFilters) {
 		this.sprintCountForFilters = sprintCountForFilters;
-	}
-
-	/**
-	 * get captchaRequired
-	 *
-	 * @return the captchaRequired
-	 */
-	public boolean isCaptchaRequired() {
-		return captchaRequired;
-	}
-
-	/**
-	 * set captchaRequired
-	 *
-	 * @param captchaRequired
-	 *            the captchaRequired to set
-	 */
-	public void setCaptchaRequired(boolean captchaRequired) {
-		this.captchaRequired = captchaRequired;
 	}
 
 	/**
@@ -931,6 +941,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setNotificationSwitch(boolean notificationSwitch) {
 		this.notificationSwitch = notificationSwitch;
+	}
+
+	public boolean isCentralAuthSwitch() {
+		return centralAuthSwitch;
+	}
+
+	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
+		this.centralAuthSwitch = centralAuthSwitch;
 	}
 
 	public boolean isAnalyticsSwitch() {

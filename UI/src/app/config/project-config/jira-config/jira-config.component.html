@@ -51,8 +51,8 @@
             </ng-template>
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th style="width: 80px;"></th>
-                    <th *ngFor="let col of columns" [ngClass]="col.class">
+                    <th style="width: 80px;" scope="col"></th>
+                    <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
                         {{col.header}}
                     </th>
                 </tr>
@@ -87,10 +87,10 @@
             </ng-template>
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th *ngFor="let col of columns" [ngClass]="col.class">
+                    <th *ngFor="let col of columns" [ngClass]="col.class" scope="col">
                         {{col.header}}
                     </th>
-                    <th class="p-text-center" style="width: 180px;">Delete</th>
+                    <th class="p-text-center" style="width: 180px;" scope="col">Delete</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-tool let-columns="columns">
@@ -160,19 +160,32 @@
                                 </ng-container>
                             </div>
                             <div *ngSwitchCase="'autoComplete'" class="p-mb-3 p-autoComplete-custom">
-                                <div class="p-d-flex p-flex-column">
+                                <div class="p-d-flex p-flex-column" *ngIf="form_elem.multiple">
                                     <label for="{{form_elem.id}}">{{form_elem.label}}</label>
                                     <p-autoComplete inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
                                         [suggestions]="this[form_elem.suggestions]"
                                         (completeMethod)="form_elem.filterEventHandler($event)"
                                         [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
-                                        field="boardName" [multiple]="true" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
+                                        field="{{form_elem.field}}" [multiple]="true" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
                                         {{form_elem.tooltip}}
                                       </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
                                         (onUnselect)="form_elem.unselectEventHandler($event)"
                                         (onSelect)="form_elem.selectEventHandler($event)"
-                                        (onDropdownClick)="form_elem.dropdownClickHandler($event, this)"
-                                        [type]="'search'" [disabled]="form_elem.disabled() || this.isLoading">
+                                        [disabled]="form_elem.disabled() || this.isLoading">
+                                    </p-autoComplete>
+                                </div>
+                                <div class="p-d-flex p-flex-column" *ngIf="!form_elem.multiple">
+                                    <label for="{{form_elem.id}}">{{form_elem.label}}</label>
+                                    <p-autoComplete inputId="{{form_elem.id}}" formControlName="{{form_elem.id}}"
+                                        [suggestions]="this[form_elem.suggestions]"
+                                        (completeMethod)="form_elem.filterEventHandler($event)"
+                                        [ngClass]="{ 'p-invalid': submitted && tool[form_elem.id].errors }"
+                                        field="{{form_elem.field}}" [multiple]="false" dropdown="true" [unique]="true" pTooltip="<span class='tooltiptext'>
+                                        {{form_elem.tooltip}}
+                                      </span>" tooltipPosition="bottom" tooltipEvent="hover" [escape]="false"
+                                        (onUnselect)="form_elem.unselectEventHandler($event)"
+                                        (onSelect)="form_elem.selectEventHandler($event)"
+                                        [disabled]="form_elem.disabled() || this.isLoading">
                                     </p-autoComplete>
                                 </div>
                             </div>
@@ -269,9 +282,9 @@
                     </ng-template>
                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="p-text-left w-25">Identification Type</th>
-                            <th class="p-text-left w-25">Indentification Value</th>
-                            <th class="p-text-left w-50">Depend On</th>
+                            <th class="p-text-left w-25" id="identification-type">Identification Type</th>
+                            <th id="identification-value" class="p-text-left w-25">Indentification Value</th>
+                            <th class="p-text-left w-50" id="depend-on">Depend On</th>
                         </tr>
 
                     </ng-template>
@@ -288,9 +301,9 @@
                                     styleClass="p-datatable-striped" loadingIcon="loading-img">
                                     <ng-template pTemplate="header">
                         <tr>
-                            <th class="p-text-left">Depend On</th>
-                            <th class="p-text-left">Depend On Values</th>
-                            <th class="p-text-left">Depend On CustomField</th>
+                            <th class="p-text-left" id="depend-on">Depend On</th>
+                            <th class="p-text-left" id="depend-on-values">Depend On Values</th>
+                            <th class="p-text-left" id="depend-on-custom-field">Depend On CustomField</th>
                         </tr>
 
                     </ng-template>

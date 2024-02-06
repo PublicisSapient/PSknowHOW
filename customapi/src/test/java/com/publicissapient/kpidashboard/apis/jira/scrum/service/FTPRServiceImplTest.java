@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright 2014 CapitalOne, LLC.
+ * Further development Copyright 2022 Sapient Corporation.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import static com.publicissapient.kpidashboard.apis.constant.Constant.P1;
@@ -120,7 +139,7 @@ public class FTPRServiceImplTest {
 		FieldMappingDataFactory fieldMappingDataFactory = FieldMappingDataFactory
 				.newInstance("/json/default/scrum_project_field_mappings.json");
 		FieldMapping fieldMapping = fieldMappingDataFactory.getFieldMappings().get(0);
-		fieldMapping.setExcludeRCAFromKPI135(Arrays.asList("coding"));
+		fieldMapping.setIncludeRCAForKPI135(Arrays.asList("coding"));
 		fieldMapping.setJiraKPI82StoryIdentification(Arrays.asList("Story"));
 		fieldMapping.setJiraDefectRejectionStatusKPI135("");
 		fieldMapping.setResolutionTypeForRejectionKPI135(Arrays.asList("Invalid", "Duplicate", "Unrequired"));

@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -200,10 +200,12 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 						count += issues.size();
 					}
 
-					MDC.put("IssueCount", String.valueOf(issues.size()));
-
-					if (issues == null || issues.size() < pageSize) {
+					if (issues.isEmpty()) {
 						break;
+					} else if (issues.size() < pageSize) {
+						break;
+					} else {
+						MDC.put("IssueCount", String.valueOf(issues.size()));
 					}
 				}
 
@@ -387,9 +389,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 				// Links stories/Defects with other Stories defect
 				setStoryLinkWithDefect(issue, azureIssue, projectConfig);
-
-				// ADD QA identification field to feature
-				setQADefectIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
 
 				// ADD Production Incident field to feature
 				setProdIncidentIdentificationField(fieldMapping, issue, azureIssue, fieldsMap);
@@ -583,41 +582,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	}
 
 	/**
-	 * @param fieldMapping
-	 *            fieldMapping
-	 * @param issue
-	 *            issue
-	 * @param azureIssue
-	 *            jiraIssue
-	 * @param fieldsMap
-	 *            fieldsMap
-	 */
-
-	private void setQADefectIdentificationField(FieldMapping fieldMapping, Value issue, JiraIssue azureIssue,
-			Map<String, Object> fieldsMap) {
-		try {
-			Fields fields = issue.getFields();
-
-			if (CollectionUtils.isNotEmpty(fieldMapping.getJiradefecttype()) && fieldMapping.getJiradefecttype()
-					.stream().anyMatch(fields.getSystemWorkItemType()::equalsIgnoreCase)) {
-
-				String jiraBugRaisedByQACustomField = fieldMapping.getJiraBugRaisedByQACustomField();
-				azureIssue.setDefectRaisedByQA(false);
-				if (null != fieldMapping.getJiraBugRaisedByQAIdentification() && fieldMapping
-						.getJiraBugRaisedByQAIdentification().trim().equalsIgnoreCase(AzureConstants.LABELS)) {
-					getJiraBugRaisedByQAForLabels(fieldMapping, azureIssue, fields);
-				} else if (isBugRaisedConditionForCustomField(fieldMapping, fieldsMap, jiraBugRaisedByQACustomField)) {
-					azureIssue.setDefectRaisedByQA(true);
-				}
-			}
-
-		} catch (Exception e) {
-			log.error("Error while parsing QA field", e);
-		}
-
-	}
-
-	/**
 	 * ADD Production Incident field to feature
 	 * 
 	 * @param fieldMapping
@@ -654,17 +618,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 
 	}
 
-	private boolean isBugRaisedConditionForCustomField(FieldMapping fieldMapping, Map<String, Object> fieldsMap,
-			String jiraBugRaisedByQACustomField) {
-		return null != fieldMapping.getJiraBugRaisedByQAIdentification()
-				&& fieldMapping.getJiraBugRaisedByQAIdentification().trim()
-						.equalsIgnoreCase(AzureConstants.CUSTOM_FIELD)
-				&& fieldsMap.containsKey(jiraBugRaisedByQACustomField.trim())
-				&& fieldsMap.get(jiraBugRaisedByQACustomField.trim()) != null
-				&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraBugRaisedByQAValue(),
-						fieldsMap.get(jiraBugRaisedByQACustomField.trim()));
-	}
-
 	private boolean isProdIncidentConditionForCustomField(FieldMapping fieldMapping, Map<String, Object> fieldsMap,
 			String jiraProductionIncidentCustomField) {
 		return null != fieldMapping.getJiraProductionIncidentIdentification()
@@ -674,16 +627,6 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 				&& fieldsMap.get(jiraProductionIncidentCustomField.trim()) != null
 				&& isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getJiraProdIncidentRaisedByValue(),
 						fieldsMap.get(jiraProductionIncidentCustomField.trim()));
-	}
-
-	private void getJiraBugRaisedByQAForLabels(FieldMapping fieldMapping, JiraIssue azureIssue, Fields fields) {
-		if (StringUtils.isNotEmpty(fields.getSystemTags())) {
-			String[] labelArray = fields.getSystemTags().split(";");
-			Set<String> labels = new HashSet<>(Arrays.asList(labelArray));
-			if (isBugRaisedByValueMatchesRaisedByLabels(fieldMapping.getJiraBugRaisedByQAValue(), labels)) {
-				azureIssue.setDefectRaisedByQA(true);
-			}
-		}
 	}
 
 	private void getJiraProdIncidentForLabels(FieldMapping fieldMapping, JiraIssue azureIssue, Fields fields) {
@@ -893,6 +836,7 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 		azureServer.setUrl(AzureProcessorUtil.encodeSpaceInUrl(projectConfig.getAzure().getConnection().getBaseUrl()));
 		azureServer.setApiVersion(projectConfig.getAzure().getApiVersion());
 		azureServer.setUsername(projectConfig.getAzure().getConnection().getUsername());
+		azureServer.setTeam(projectConfig.getProjectToolConfig().getTeam());
 		return azureServer;
 	}
 
@@ -1204,30 +1148,31 @@ public class ScrumAzureIssueClientImpl extends AzureIssueClient {
 	private void setDueDates(JiraIssue jiraIssue, Fields fields, Map<String, Object> fieldsMap,
 			FieldMapping fieldMapping) {
 		if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateField())) {
-			if (fieldMapping.getJiraDueDateField().equalsIgnoreCase(CommonConstant.DUE_DATE)
-					&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
-				jiraIssue.setDueDate(
-						AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
-								.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-			} else if (StringUtils.isNotEmpty(fieldMapping.getJiraDueDateCustomField())
-					&& fieldsMap.containsKey(fieldMapping.getJiraDueDateCustomField())
-					&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDueDateCustomField()))) {
-				Object issueField = fieldsMap.get(fieldMapping.getJiraDueDateCustomField());
-				if (ObjectUtils.isNotEmpty(issueField)) {
-					jiraIssue.setDueDate(AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
-							.concat(DateUtil.ZERO_TIME_ZONE_FORMAT));
-				}
-			}
+			jiraIssue.setDueDate(getIssueDate(fieldMapping.getJiraDueDateField(),
+					fieldMapping.getJiraDueDateCustomField(), fields, fieldsMap));
 		}
-		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateCustomField())
-				&& fieldsMap.containsKey(fieldMapping.getJiraDevDueDateCustomField())
-				&& ObjectUtils.isNotEmpty(fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField()))) {
-			Object issueField = fieldsMap.get(fieldMapping.getJiraDevDueDateCustomField());
+
+		if (StringUtils.isNotEmpty(fieldMapping.getJiraDevDueDateField())) {
+			jiraIssue.setDevDueDate(getIssueDate(fieldMapping.getJiraDevDueDateField(),
+					fieldMapping.getJiraDevDueDateCustomField(), fields, fieldsMap));
+		}
+	}
+
+	private String getIssueDate(String dateField, String customDateField, Fields fields,
+			Map<String, Object> fieldsMap) {
+		if (dateField.equalsIgnoreCase(CommonConstant.DUE_DATE)
+				&& ObjectUtils.isNotEmpty(fields.getMicrosoftVSTSSchedulingDueDate())) {
+			return AzureProcessorUtil.deodeUTF8String(fields.getMicrosoftVSTSSchedulingDueDate()).split("T")[0]
+					.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
+		} else if (StringUtils.isNotEmpty(customDateField) && fieldsMap.containsKey(customDateField)
+				&& ObjectUtils.isNotEmpty(fieldsMap.get(customDateField))) {
+			Object issueField = fieldsMap.get(customDateField);
 			if (ObjectUtils.isNotEmpty(issueField)) {
-				jiraIssue.setDevDueDate((AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
-						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT)));
+				return AzureProcessorUtil.deodeUTF8String(issueField.toString()).split("T")[0]
+						.concat(DateUtil.ZERO_TIME_ZONE_FORMAT);
 			}
 		}
+		return null;
 	}
 
 	/**

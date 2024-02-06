@@ -457,4 +457,11 @@ public class RefinementRejectionRateServiceImpl extends JiraBacklogKPIService<Do
 		resultListMap.put(UNASSIGNED_JIRA_ISSUE_HISTORY, jiraIssueCustomHistories);
 		return resultListMap;
 	}
+
+	@Override
+	public Double calculateThresholdValue(FieldMapping fieldMapping) {
+		return calculateThresholdValue(fieldMapping.getThresholdValueKPI139(),
+				KPICode.REFINEMENT_REJECTION_RATE.getKpiId());
+	}
+
 }

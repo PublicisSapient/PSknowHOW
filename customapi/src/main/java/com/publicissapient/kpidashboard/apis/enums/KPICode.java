@@ -482,7 +482,27 @@ public enum KPICode {
     /**
      * Flow Efficiency (Backlog)
      */
-    FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name());
+    FLOW_EFFICIENCY("kpi170", KPISource.JIRA.name()),
+    /**
+     * Cycle Time (Backlog)
+     */
+    CYCLE_TIME("kpi171", KPISource.JIRA.name()),
+
+
+
+
+
+
+
+
+
+
+
+
+    //do not remove below codes as they are required for test case
+    TEST_SONAR("TEST_SONAR", KPISource.SONAR.name()),
+    TEST_JIRA("TEST_JIRA", KPISource.JIRA.name()),
+    TEST_ZEPHYR("TEST_ZEPHYR", KPISource.ZEPHYR.name());
 
 
     // @formatter:on

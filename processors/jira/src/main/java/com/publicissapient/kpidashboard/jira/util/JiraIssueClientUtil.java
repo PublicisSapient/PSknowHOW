@@ -18,15 +18,7 @@
 
 package com.publicissapient.kpidashboard.jira.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -39,15 +31,12 @@ import org.json.simple.JSONArray;
 import com.atlassian.jira.rest.client.api.domain.ChangelogGroup;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueField;
-import com.atlassian.jira.rest.client.api.domain.Version;
 import com.google.common.collect.Lists;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.application.AccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
-import com.publicissapient.kpidashboard.jira.config.JiraProcessorConfig;
 import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 
 import lombok.extern.slf4j.Slf4j;
@@ -166,31 +155,4 @@ public final class JiraIssueClientUtil {
 				.collect(Collectors.toMap(p -> Pair.of(p.getNodeId(), p.getPath()), p -> p));
 	}
 
-	public static List<String> getLabelsList(Issue issue) {
-		List<String> labels = new ArrayList<>();
-		if (issue.getLabels() != null) {
-			for (String labelName : issue.getLabels()) {
-				labels.add(JiraProcessorUtil.deodeUTF8String(labelName));
-			}
-		}
-		return labels;
-	}
-
-	public static Set<String> getIssueTypeNames(FieldMapping fieldMapping) {
-		Set<String> issueTypeNames = new HashSet<>();
-		for (String issueTypeName : fieldMapping.getJiraIssueTypeNames()) {
-			issueTypeNames.add(issueTypeName.toLowerCase(Locale.getDefault()));
-		}
-		return issueTypeNames;
-	}
-
-	public static List<String> getAffectedVersions(Issue issue) {
-		List<String> affectedVersions = new ArrayList<>();
-		if (issue.getAffectedVersions() != null) {
-			for (Version affectedVersionName : issue.getAffectedVersions()) {
-				affectedVersions.add(affectedVersionName.getName());
-			}
-		}
-		return affectedVersions;
-	}
 }

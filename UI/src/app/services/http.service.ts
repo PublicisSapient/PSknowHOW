@@ -173,6 +173,8 @@ export class HttpService {
   userEmail: string;
   private activeIterationUrl =  this.baseUrl + '/api/processor/fetchSprint';
   private activeIterationfetchStatusUrl = this.baseUrl + '/api/activeIteration/fetchStatus';
+  private validateTokenUrl = this.baseUrl + '/api/validateToken';
+  private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
   constructor(
     private router: Router,
@@ -871,7 +873,6 @@ export class HttpService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
       if (error.status === 401) {
-        localStorage.removeItem('auth_token');
         this.sharedService.setCurrentUserDetails({});
 
         this.router.navigate(['./authentication/login']);
@@ -1127,8 +1128,18 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
-  getFeatureFlags() {
-    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`);
+  getUserValidation(data){
+    return this.http.post<object>(this.validateTokenUrl, data);
   }
 
+  handleValidateResource(data){
+    return this.http.post<object>(this.validateResourceUrl, data);
+  }
+  getFeatureFlags() {
+    return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
+  }
+
+  getAzureTeams(connectionId) {
+      return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
+    }
 }

@@ -1,14 +1,9 @@
 package com.publicissapient.kpidashboard.notification.service;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import javax.validation.constraints.NotNull;
-
+import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
+import com.publicissapient.kpidashboard.notification.model.EmailEvent;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +17,10 @@ import org.thymeleaf.exceptions.TemplateInputException;
 import org.thymeleaf.exceptions.TemplateProcessingException;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
-import com.publicissapient.kpidashboard.notification.model.EmailEvent;
+import javax.validation.constraints.NotNull;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 @Service

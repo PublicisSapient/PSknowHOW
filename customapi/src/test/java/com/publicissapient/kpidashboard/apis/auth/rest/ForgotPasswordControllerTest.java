@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +100,7 @@ public class ForgotPasswordControllerTest extends Mockito {
 		when(customApiConfig.getUiPort()).thenReturn("9999");
 
 		when(forgotPasswordService.validateEmailToken(any())).thenReturn(ResetPasswordTokenStatusEnum.VALID);
-		mockMvc.perform(MockMvcRequestBuilders.get("/validateToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
+		mockMvc.perform(MockMvcRequestBuilders.get("/validateEmailToken").contentType(TestUtil.APPLICATION_JSON_UTF8)
 				.param("token", UUID.randomUUID().toString()));
 	}
 

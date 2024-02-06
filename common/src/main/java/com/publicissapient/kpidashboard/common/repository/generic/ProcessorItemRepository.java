@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
@@ -33,7 +34,7 @@ import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
  * @param <T>
  *            Class that extends {@link ProcessorItem}
  */
-public interface ProcessorItemRepository<T extends ProcessorItem> extends PagingAndSortingRepository<T, ObjectId> {
+public interface ProcessorItemRepository<T extends ProcessorItem> extends PagingAndSortingRepository<T, ObjectId> , CrudRepository<T,ObjectId> {
 
 	/**
 	 * Finds all {@link ProcessorItem}s that match the provided id's.

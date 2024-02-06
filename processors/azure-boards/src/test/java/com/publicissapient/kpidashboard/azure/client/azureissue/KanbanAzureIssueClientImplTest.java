@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -23,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -220,7 +220,7 @@ public class KanbanAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -250,7 +250,7 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setJiraIssueDeliverdStatusKPI126(jiraType);
 		fieldMapping.setJiraIssueDeliverdStatusKPI82(jiraType);
 
-		fieldMapping.setJiraDorKPI3(Arrays.asList("In Progress"));
+		fieldMapping.setJiraDorKPI171(Arrays.asList("In Progress"));
 		fieldMapping.setJiraLiveStatus("Closed");
 		fieldMapping.setRootCauseValue(Arrays.asList("Coding", "None"));
 
@@ -261,7 +261,7 @@ public class KanbanAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 		fieldMapping.setStoryFirstStatus("In Analysis");
 		jiraType = new ArrayList<>();
 		jiraType.add("In Analysis");
@@ -309,7 +309,7 @@ public class KanbanAzureIssueClientImplTest {
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraType = new ArrayList<>();
 		jiraType.add("Closed");
@@ -351,7 +351,7 @@ public class KanbanAzureIssueClientImplTest {
 		fieldMapping.setEpicName("customfield_14502");
 		jiraType = new ArrayList<>();
 		jiraType.add("Ready for Sign-off");
-		fieldMapping.setJiraDodKPI3(jiraType);
+		fieldMapping.setJiraDodKPI171(jiraType);
 
 		jiraSegData = new ArrayList<>();
 		jiraSegData.add("Tech Story");
@@ -374,14 +374,14 @@ public class KanbanAzureIssueClientImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, kanbanProjectlist.get(0));
+		BeanUtils.copyProperties(kanbanProjectlist.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(kanbanProjectlist.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
 
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");
