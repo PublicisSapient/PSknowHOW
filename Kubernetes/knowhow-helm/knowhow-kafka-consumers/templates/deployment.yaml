@@ -55,9 +55,9 @@ spec:
                   name: knowhow-config-credentials
                   key: {{ .Values.env}}-sendgrid-apikey
             - name: spring.kafka.consumer.bootstrap-servers
-              value: "kafka:9092"
+              value: "kafka.uat-knowhow.svc.cluster.local:9092"
             - name: spring.kafka.producer.bootstrap-servers
-              value: "kafka:9092"
+              value: "kafka.uat-knowhow.svc.cluster.local:9092"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.port}}
