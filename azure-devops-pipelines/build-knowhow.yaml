@@ -54,6 +54,13 @@ stages:
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
     
+    - script: |
+        docker save -o $(Build.ArtifactStagingDirectory)/image/customapi.tar customapi:$VERSION
+      displayName: 'Save Docker image'
+
+    - publish: $(Build.ArtifactStagingDirectory)/image/
+      artifact: customapi-image
+    
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: customapi-artifacts
 
