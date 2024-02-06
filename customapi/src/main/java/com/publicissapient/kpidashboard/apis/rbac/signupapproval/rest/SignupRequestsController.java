@@ -147,7 +147,7 @@ public class SignupRequestsController {
 
 			if (customApiConfig.isCentralAuthSwitch()) {
 
-				boolean rejectedCentral = userInfoService.deleteRejectedUser(username, token);
+				boolean rejectedCentral = userInfoService.deleteFromCentralAuthUser(username, token);
 				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", rejectedCentral);
 
 			} else {

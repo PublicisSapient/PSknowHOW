@@ -173,7 +173,7 @@ public interface UserInfoService {
 
 	boolean updateUserApprovalStatus(String user, String token);
 
-	boolean deleteRejectedUser(String user, String token);
+	boolean deleteFromCentralAuthUser(String user, String token);
 
 	// ----auth-N-auth----------
 
