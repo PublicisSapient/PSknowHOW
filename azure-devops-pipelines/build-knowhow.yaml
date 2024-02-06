@@ -55,10 +55,10 @@ stages:
         publishJUnitResults: true
     
     - script: |
-        docker save -o $(Build.ArtifactStagingDirectory)/image/customapi.tar customapi:$VERSION
+        docker save -o $(Build.ArtifactStagingDirectory)/customapi.tar customapi:$VERSION
       displayName: 'Save Docker image'
 
-    - publish: $(Build.ArtifactStagingDirectory)/image/
+    - publish: $(Build.ArtifactStagingDirectory)/
       artifact: customapi-image
     
     - publish: $(System.DefaultWorkingDirectory)/
