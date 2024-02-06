@@ -11,7 +11,7 @@ configmapname: knowhow-config
 env: uat
 image:
   repository: speedtools.azurecr.io/knowhow-kafka-consumers
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
