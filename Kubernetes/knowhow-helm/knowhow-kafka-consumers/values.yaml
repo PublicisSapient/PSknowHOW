@@ -8,6 +8,7 @@ namespace: uat-knowhow
 
 configmapname: knowhow-config
 
+env: uat
 image:
   repository: psknowhow/kafka-consumers
   pullPolicy: IfNotPresent
