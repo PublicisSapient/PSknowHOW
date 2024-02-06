@@ -54,16 +54,16 @@ spec:
                 secretKeyRef:
                   name: knowhow-config-credentials
                   key: {{ .Values.env}}-sendgrid-apikey
-          livenessProbe:
-            tcpSocket:
-              port: {{.Values.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 5  
-          readinessProbe:
-            tcpSocket:
-              port: {{.Values.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 5
+          # livenessProbe:
+          #   tcpSocket:
+          #     port: {{.Values.port}}
+          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          #   periodSeconds: 5  
+          # readinessProbe:
+          #   tcpSocket:
+          #     port: {{.Values.port}}
+          #   initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
+          #   periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
