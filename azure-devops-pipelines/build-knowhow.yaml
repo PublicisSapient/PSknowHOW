@@ -201,7 +201,7 @@ stages:
           sonar.tests=src
           sonar.test.inclusions=**/*.spec.ts
           sonar.ts.tslintconfigpath=tslint.json
-          #sonar.typescript.lcov.reportPaths=$(Agent.BuildDirectory)/UI-artifacts/coverage/report-lcov/lcov.info
+          sonar.typescript.lcov.reportPaths=$(Agent.BuildDirectory)/UI-artifacts/coverage/report-lcov/lcov.info
           sonar.coverage.exclusions=**/app/config/project-config/project-config.component.ts,**/app/config/project-config/project-config.route.ts,**/main.ts,**/karma.conf.js,**/app/external-url.directive.ts,**/environments/*,**/app/dashboard/maturity/*,**/app/services/*,**/app/component/**/*,**/app/model/*,**/app/config/engg-maturity-config/*.ts,**/app/config/shared/**/*,**/app/module/*,**/app/utils/*
           sonar.cpd.exclusions=**/app/dashboard/quality/*.html,**/app/dashboard/productivity/*.html,**/app/dashboard/executive/*.html
       enabled: true
