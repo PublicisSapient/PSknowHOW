@@ -167,13 +167,14 @@ stages:
         sudo npm test 
         sudo sed -i 's|SF:$(Agent.BuildDirectory)/UI|SF:|g' coverage/report-lcov/lcov.info
     
-    - publish: $(System.DefaultWorkingDirectory)/
+    - publish: $(System.DefaultWorkingDirectory)/UI
       artifact: UI-artifacts
   
     - task: PublishCodeCoverageResults@1
       inputs:
         codeCoverageTool: 'cobertura' # or 'jacoco' depending on the format of your coverage report
-        summaryFileLocation: 'UI/coverage/report-lcov/lcov.info' # adjust this path based on the actual path of your coverage report
+        summaryFileLocation: '$(Agent.BuildDirectory)/UI-artifacts/UI/coverage/report-lcov/lcov.info' # adjust this path based on the actual path of your coverage report
+        reportDirectory: '$(Agent.BuildDirectory)/UI-artifacts/UI/coverage/report-html/'
         failIfCoverageEmpty: false
   
   - job: SONARQUBE_ANALYSIS
@@ -183,7 +184,7 @@ stages:
     steps:
     - download: current
       artifact: UI-artifacts
-      
+
     - task: SonarQubePrepare@5
       displayName: 'Prepare Analysis Configuration'
       inputs:
@@ -200,7 +201,7 @@ stages:
           sonar.tests=src
           sonar.test.inclusions=**/*.spec.ts
           sonar.ts.tslintconfigpath=tslint.json
-          sonar.typescript.lcov.reportPaths=$(Agent.BuildDirectory)/UI-artifacts/UI/coverage/report-lcov/lcov.info
+          sonar.typescript.lcov.reportPaths=$(Agent.BuildDirectory)/UI-artifacts/coverage/report-lcov/lcov.info
           sonar.coverage.exclusions=**/app/config/project-config/project-config.component.ts,**/app/config/project-config/project-config.route.ts,**/main.ts,**/karma.conf.js,**/app/external-url.directive.ts,**/environments/*,**/app/dashboard/maturity/*,**/app/services/*,**/app/component/**/*,**/app/model/*,**/app/config/engg-maturity-config/*.ts,**/app/config/shared/**/*,**/app/module/*,**/app/utils/*
           sonar.cpd.exclusions=**/app/dashboard/quality/*.html,**/app/dashboard/productivity/*.html,**/app/dashboard/executive/*.html
       enabled: true
