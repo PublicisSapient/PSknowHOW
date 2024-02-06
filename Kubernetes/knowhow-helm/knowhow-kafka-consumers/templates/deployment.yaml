@@ -55,9 +55,9 @@ spec:
                   name: knowhow-config-credentials
                   key: {{ .Values.env}}-sendgrid-apikey
             - name: spring.kafka.consumer.bootstrap-servers
-              value: "10.244.4.75:9092"
+              value: "jsdhbshd"
             - name: spring.kafka.producer.bootstrap-servers
-              value: "10.244.4.75:9092"
+              value: "jsdhbshd"
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.port}}
