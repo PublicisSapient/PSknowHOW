@@ -8,9 +8,10 @@ namespace: uat-knowhow
 
 configmapname: knowhow-config
 
+env: uat
 image:
-  repository: psknowhow/kafka-consumers
-  pullPolicy: IfNotPresent
+  repository: speedtools.azurecr.io/knowhow-kafka-consumers
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
