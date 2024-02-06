@@ -20,11 +20,9 @@ package com.publicissapient.kpidashboard.apis.rbac.signupapproval.rest;
 
 import java.util.List;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +36,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -149,8 +147,8 @@ public class SignupRequestsController {
 
 			if (customApiConfig.isCentralAuthSwitch()) {
 
-				userInfoService.deleteRejectedUser(username, token);
-				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
+				boolean rejectedCentral = userInfoService.deleteFromCentralAuthUser(username, token);
+				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", rejectedCentral);
 
 			} else {
 				signupManager.rejectAccessRequest(username, new RejectApprovalListener() {

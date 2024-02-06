@@ -68,6 +68,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String USER_AUTHORITIES = "authorities";
+	private static final String USER_AUTH_TYPE = "authType";
 	public static final String SUCCESS = "SUCCESS";
 
 	@Autowired
@@ -121,6 +122,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userMap.put(USER_EMAIL, email);
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
 			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);

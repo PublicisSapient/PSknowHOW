@@ -6,13 +6,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
+import { GoogleAnalyticsService } from './google-analytics.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppInitializerService {
 
-  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute) { 
+  constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) { 
     this.checkFeatureFlag(); 
     this.validateToken(); 
   }
@@ -35,6 +36,9 @@ export class AppInitializerService {
             localStorage.setItem("user_name", response?.['data']?.user_name);
             localStorage.setItem("user_email", response?.['data']?.user_email);
             const redirect_uri = localStorage.getItem('redirect_uri');
+            if(authToken){
+              this.ga.setLoginMethod(response?.['data'], response?.['data']?.authType);
+            }
             if(redirect_uri){
               if(redirect_uri.startsWith('#')){
                 this.router.navigate([redirect_uri.split('#')[1]])
