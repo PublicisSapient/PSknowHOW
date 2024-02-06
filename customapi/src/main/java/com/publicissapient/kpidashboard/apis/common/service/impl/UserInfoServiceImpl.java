@@ -694,7 +694,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public String deleteRejectedUser(String user, String token) {
+	public boolean deleteRejectedUser(String user, String token) {
 		HttpHeaders headers = cookieUtil.getHeaders(token, true);
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(authProperties.getCentralAuthBaseURL());
 		uriBuilder.path("/api/deleteUser/");
@@ -708,14 +708,14 @@ public class UserInfoServiceImpl implements UserInfoService {
 			response = restTemplate.exchange(fetchUserUrl, HttpMethod.GET, entity, String.class);
 
 			if (response.getStatusCode().is2xxSuccessful()) {
-				return response.getBody();
+				return true;
 			} else {
 				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
-				return "";
+				return false;
 			}
 		} catch (RuntimeException e) {
 			log.error(ERROR_WHILE_CONSUMING_REST_SERVICE_IN_USER_INFO_SERVICE_IMPL, e);
-			return null;
+			return false;
 		}
 	}
 
