@@ -303,7 +303,7 @@ stages:
         chartType: 'FilePath'
         chartPath: './Kubernetes/knowhow-helm/knowhow-kafka'
         releaseName: 'kafka'
-        overrideValues: 'image.tag=$(overrideValues)'
+        # overrideValues: 'image.tag=$(overrideValues)'
         valueFile: './Kubernetes/knowhow-helm/knowhow-kafka-consumers/values.yaml'
       displayName: 'Deploy Kafka_Consumer'
 
