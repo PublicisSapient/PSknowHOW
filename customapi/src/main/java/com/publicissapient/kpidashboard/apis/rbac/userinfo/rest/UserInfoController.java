@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -109,29 +108,6 @@ public class UserInfoController {
 
 	}
 
-	/**
-	 * Delete Users based on the userName.
-	 *
-	 * @return the Service Response
-	 */
-	/*
-	 * @PreAuthorize("hasPermission(null, 'DELETE_USER')")
-	 * 
-	 * @DeleteMapping(value = "/{userName}") public ServiceResponse
-	 * deleteUser(@PathVariable String userName) {
-	 * log.info("Inside deleteUser() method of UserInfoController "); String
-	 * loggedUserName = authenticationService.getLoggedInUser(); UserInfo userInfo =
-	 * userInfoRepository.findByUsername(userName); if
-	 * ((!loggedUserName.equals(userName) &&
-	 * !userInfo.getAuthorities().contains(Constant.ROLE_SUPERADMIN)) ) {
-	 * ServiceResponse response = userInfoService.deleteUser(userName); return new
-	 * ServiceResponse(true, userName + " deleted Successfully", response); } else {
-	 * log.info("Unauthorized to perform deletion of user " + userName); return new
-	 * ServiceResponse(false, "Unauthorized to perform deletion of user",
-	 * "Unauthorized"); }
-	 * 
-	 * }
-	 */
 
 	@PreAuthorize("hasPermission(null, 'DELETE_USER')")
 	@DeleteMapping(value = "/{userName}")
