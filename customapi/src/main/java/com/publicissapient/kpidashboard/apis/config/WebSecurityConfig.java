@@ -192,19 +192,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     }
 
     @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) {
-        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-    }
-
-    // update authenticatoin result handler
-    @Bean
-    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) {
-        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
-    }
-
-    @Bean
     protected ApiTokenRequestFilter apiTokenRequestFilter(AuthenticationManager authenticationManager) {
         return new ApiTokenRequestFilter("/**", authenticationManager, authenticationResultHandler);
     }
