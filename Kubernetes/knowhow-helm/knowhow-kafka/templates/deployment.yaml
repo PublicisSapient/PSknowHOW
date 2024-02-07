@@ -5,7 +5,7 @@ metadata:
   name: crs-kafka
   namespace: {{ .Values.env}}-knowhow
 spec:
-  replicas: 2
+  replicas: 3
   serviceName: kafka-cluster
   selector:
     matchLabels:
@@ -19,6 +19,7 @@ spec:
       containers:
       - name: kafka
         image: bitnami/kafka:2.6.0
+        imagePullPolicy: IfNotPresent
 #        image: bitnami/kafka:latest
         securityContext:
           runAsUser: 0
