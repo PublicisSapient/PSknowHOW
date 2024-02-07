@@ -144,6 +144,8 @@ public class CustomApiConfig {// NOPMD
 	@Value("${kafka.mailtopic}")
 	private String kafkaMailTopic;
 	private Map<String, String> notificationSubject;
+	@Value("${centralAuth.switch}")
+	private boolean centralAuthSwitch;
 	@Value("${notification.switch}")
 	private boolean notificationSwitch;
 	@Value("${analytics.switch}")
@@ -201,6 +203,9 @@ public class CustomApiConfig {// NOPMD
 
 	@Value("${flag.mailWithoutKafka}")
 	private boolean mailWithoutKafka;
+
+	@Value("${sendGridEnabled}")
+	private boolean sendGridEnabled;
 
 	@Value(("${backlog.sprint.count}"))
 	private int sprintCountForBackLogStrength;
@@ -953,6 +958,14 @@ public class CustomApiConfig {// NOPMD
 		this.notificationSwitch = notificationSwitch;
 	}
 
+	public boolean isCentralAuthSwitch() {
+		return centralAuthSwitch;
+	}
+
+	public void setCentralAuthSwitch(boolean centralAuthSwitch) {
+		this.centralAuthSwitch = centralAuthSwitch;
+	}
+
 	public boolean isAnalyticsSwitch() {
 		return analyticsSwitch;
 	}
@@ -1102,6 +1115,14 @@ public class CustomApiConfig {// NOPMD
 
 	public void setMailWithoutKafka(boolean mailWithoutKafka) {
 		this.mailWithoutKafka = mailWithoutKafka;
+	}
+
+	public boolean isSendGridEnabled() {
+		return sendGridEnabled;
+	}
+
+	public void setSendGridEnabled(boolean sendGridEnabled) {
+		this.sendGridEnabled = sendGridEnabled;
 	}
 
 	public String getHostPath() {

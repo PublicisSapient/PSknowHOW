@@ -466,7 +466,8 @@ public class DSRServiceImpl extends JiraKPIService<Double, List<Object>, Map<Str
 								.forEach(label -> uatMap.computeIfAbsent(label, k -> new ArrayList<>()).add(issue)));
 			}
 		}
-
+		// removing for overall filter
+		uatMap.keySet().removeIf(key -> !labels.contains(key));
 		return uatMap;
 	}
 

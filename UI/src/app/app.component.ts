@@ -22,7 +22,7 @@ import { GetAuthService } from './services/getauth.service';
 import { HttpService } from './services/http.service';
 import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
-import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd } from '@angular/router';
+import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
@@ -40,11 +40,25 @@ export class AppComponent implements OnInit {
   authorized = <boolean>true;
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService) {
+    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
     this.authorized = this.getAuth.checkAuth();
   }
 
   ngOnInit() {
+    /** Fetch projectId and sprintId from query param and save it to global object */
+    this.route.queryParams
+    .subscribe(params => {
+        let nodeId = params.projectId;
+        let sprintId = params.sprintId;
+        if(nodeId){
+          this.service.setProjectQueryParamInFilters(nodeId)
+        }
+        if(sprintId){
+          this.service.setSprintQueryParamInFilters(sprintId)
+        }
+      }
+    );
+
     // load google Analytics script on all instances except local and if customAPI property is true
     this.httpService.getAnalyticsFlag()
       .subscribe(flag => {
