@@ -39,8 +39,6 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +89,8 @@ import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoCustomRep
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -570,7 +570,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return response.getBody();
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return new UserInfo();
 			}
 		} catch (RuntimeException e) {
@@ -597,7 +597,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 				JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
 				return modelMapper.map(jsonObject.get("data"), CentralUserInfoDTO.class);
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API
+						+ response.getStatusCode().value());
 				return new CentralUserInfoDTO();
 			}
 		} catch (ParseException e) {
@@ -625,7 +626,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return false;
 			}
 		} catch (RuntimeException e) {
@@ -653,7 +654,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				}.getType());
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return (List<UserInfoDTO>) new UserInfo();
 			}
 		} catch (ParseException e) {
@@ -682,7 +683,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 				return (boolean) jsonObject.get("data");
 
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return false;
 			}
 		} catch (ParseException e) {
@@ -710,7 +711,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 			if (response.getStatusCode().is2xxSuccessful()) {
 				return true;
 			} else {
-				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCodeValue());
+				log.error(ERROR_MESSAGE_CONSUMING_REST_API + response.getStatusCode().value());
 				return false;
 			}
 		} catch (RuntimeException e) {

@@ -1128,6 +1128,13 @@ export class HttpService {
     return this.http.get<any>(`${this.getKPIFieldMappingRelationshipsUrl}/${KPIID}`);
   }
 
+  getUserValidation(data){
+    return this.http.post<object>(this.validateTokenUrl, data);
+  }
+
+  handleValidateResource(data){
+    return this.http.post<object>(this.validateResourceUrl, data);
+  }
   getFeatureFlags() {
     return this.http.get<any>(`${this.baseUrl}/api/actuator/togglz`).toPromise();
   }
@@ -1135,12 +1142,4 @@ export class HttpService {
   getAzureTeams(connectionId) {
       return this.http.get<any>(`${this.baseUrl}/api/azure/teams/${connectionId}`);
     }
-
-   getUserValidation(data){
-       return this.http.post<object>(this.validateTokenUrl, data);
-     }
-
-   handleValidateResource(data){
-      return this.http.post<object>(this.validateResourceUrl, data);
-   }
 }

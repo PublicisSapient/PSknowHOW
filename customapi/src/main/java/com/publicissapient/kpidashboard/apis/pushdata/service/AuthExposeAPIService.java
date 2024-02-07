@@ -18,11 +18,11 @@
 
 package com.publicissapient.kpidashboard.apis.pushdata.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.pushdata.model.ExposeApiToken;
 import com.publicissapient.kpidashboard.apis.pushdata.model.dto.ExposeAPITokenRequestDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface AuthExposeAPIService {
 

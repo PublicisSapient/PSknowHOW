@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +41,6 @@ import com.publicissapient.kpidashboard.apis.appsetting.service.ProcessorService
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
 import com.publicissapient.kpidashboard.apis.util.TestUtil;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
-
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 /**
  * This class contains test cases for ProcessorController.class

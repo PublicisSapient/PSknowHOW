@@ -18,12 +18,14 @@
 
 package com.publicissapient.kpidashboard.apis.jenkins.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -121,6 +123,8 @@ public class CodeBuildTimeServiceImplTest {
 
 		BuildDataFactory buildDataFactory = BuildDataFactory.newInstance("/json/non-JiraProcessors/build_details.json");
 		buildList = buildDataFactory.getbuildDataList();
+		buildList.forEach(
+				build -> build.setStartTime(LocalDateTime.now().minusDays(2).toInstant(ZoneOffset.UTC).toEpochMilli()));
 
 		projectConfigList.forEach(projectConfig -> {
 			projectConfigMap.put(projectConfig.getProjectName(), projectConfig);

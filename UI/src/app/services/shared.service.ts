@@ -98,8 +98,8 @@ export class SharedService {
   sprintQueryParamSubject = new BehaviorSubject<any>('');
   sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
 
-  private currentIssue = new BehaviorSubject({});
-  currentData = this.currentIssue.asObservable();
+  public currentIssue = new BehaviorSubject({});
+  public currentData = this.currentIssue.asObservable();
 
   constructor() {
     this.passDataToDashboard = new EventEmitter();

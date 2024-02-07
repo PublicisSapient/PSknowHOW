@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
-import org.apache.commons.beanutils.BeanUtils;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -25,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.BeanUtils;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.azure.adapter.AzureAdapter;
@@ -41,6 +40,7 @@ import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
+import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.azureboards.AzureBoardsWIModel;
 import com.publicissapient.kpidashboard.common.model.azureboards.Fields;
 import com.publicissapient.kpidashboard.common.model.azureboards.Value;
@@ -405,14 +405,14 @@ public class ScrumAzureIssueClientImplTest {
 
 	private void setProjectConfigFieldMap() throws IllegalAccessException, InvocationTargetException {
 
-		BeanUtils.copyProperties(projectConfFieldMapping, scrumProjectList.get(0));
+		BeanUtils.copyProperties(scrumProjectList.get(0), projectConfFieldMapping);
 		projectConfFieldMapping.setBasicProjectConfigId(scrumProjectList.get(0).getId());
 		projectConfFieldMapping.setFieldMapping(fieldMappingList.get(0));
 		projectConfFieldMappingList.add(projectConfFieldMapping);
 
 	}
 
-	private void createIssue() throws URISyntaxException {
+	private void createIssue() throws URISyntaxException, JSONException {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("customfield_12121", "Client Testing (UAT)");

@@ -96,9 +96,10 @@ import { BacklogComponent } from './dashboard/backlog/backlog.component';
 import { TableComponent } from './component/table/table.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { ExportExcelComponent } from './component/export-excel/export-excel.component';
+import { environment } from 'src/environments/environment';
+import { tap } from 'rxjs/operators';
 import { SsoAuthFailureComponent } from './component/sso-auth-failure/sso-auth-failure.component';
 import { UnauthorisedAccessComponent } from './dashboard/unauthorised-access/unauthorised-access.component';
-
 import { GroupBarChartComponent } from './component/group-bar-chart/group-bar-chart.component';
 import { CommentsComponent } from './component/comments/comments.component';
 import { MilestoneComponent } from './dashboard/milestone/milestone.component';
@@ -113,7 +114,7 @@ import { DailyScrumTabComponent } from './dashboard/daily-scrum-tab/daily-scrum-
 import { AssigneeBoardComponent } from './dashboard/assignee-board/assignee-board.component';
 import { IssueCardComponent } from './dashboard/issue-card/issue-card.component';
 import { IssueBodyComponent } from './dashboard/issue-body/issue-body.component';
-import { DailyScrumGraphComponent } from './dashboard/daily-scrum-graph/daily-scrum-graph.component';
+import { DailyScrumGraphComponent } from './component/daily-scrum-graph/daily-scrum-graph.component';
 import { MultilineStyleComponent } from './component/multiline-style/multiline-style.component';
 import { DoraComponent } from './dashboard/dora/dora.component';
 import { DeveloperComponent } from './dashboard/developer/developer.component';

@@ -1,13 +1,12 @@
 package com.publicissapient.kpidashboard.jira.config;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -102,11 +101,9 @@ public class FetchProjectConfigurationImpl implements FetchProjectConfiguration 
 
 	private JiraToolConfig createJiraToolConfig(ProjectToolConfig projectToolConfig, Optional<Connection> jiraConnOpt) {
 		JiraToolConfig jiraToolConfig = new JiraToolConfig();
-		try {
-			BeanUtils.copyProperties(jiraToolConfig, projectToolConfig);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			log.error("Could not set JiraToolConfig", e);
-		}
+		//Todo: check the beanUtils func changed to import org.springframework.beans.BeanUtils;
+		BeanUtils.copyProperties(projectToolConfig, jiraToolConfig);
+
 		if (jiraConnOpt.isPresent()) {
 
 			jiraToolConfig.setConnection(jiraConnOpt);

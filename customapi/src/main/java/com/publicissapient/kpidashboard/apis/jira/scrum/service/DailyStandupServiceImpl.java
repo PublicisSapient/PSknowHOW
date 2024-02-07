@@ -37,8 +37,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -203,10 +203,10 @@ public class DailyStandupServiceImpl extends JiraKPIService<Map<String, Long>, L
 
 			// Calculate Delay
 			List<IterationPotentialDelay> iterationPotentialDelayList = CalculatePCDHelper.calculatePotentialDelay(
-					sprintDetails, notCompletedJiraIssue, fieldMapping.getJiraStatusForInProgressKPI154());
+					sprintDetails, notCompletedJiraIssue, fieldMapping.getInProgress154());
 
 			Map<String, IterationPotentialDelay> issueWiseDelay = CalculatePCDHelper.checkMaxDelayAssigneeWise(
-					iterationPotentialDelayList, fieldMapping.getJiraStatusForInProgressKPI154());
+					iterationPotentialDelayList, fieldMapping.getInProgress154());
 			calculateAssigneeWiseMaxDelay(issueWiseDelay, assigneeWiseMaxDelay);
 
 			// Calculate Remaining Capacity

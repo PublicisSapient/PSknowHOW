@@ -12,7 +12,9 @@
       [autoLayout]="true">
       <ng-template pTemplate="header">
         <tr>
-          <th *ngFor="let col of modalDetails['tableHeadings']">{{col}}</th>
+          <ng-container *ngFor="let col of modalDetails['tableHeadings']">
+            <th id="{{col}}" scope="col">{{col}}</th>
+          </ng-container>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData>
@@ -20,12 +22,12 @@
           <td class="font-small" *ngFor="let column of modalDetails['tableHeadings']">
             <ng-container *ngIf="!checkIfArray(rowData[column]); else displayArrayData">
               <a *ngIf="rowData[column]?.hasOwnProperty('hyperlink') ; else displayCellData"
-                [href]="rowData[column]['hyperlink']" class="text-blue" target="_blank">{{rowData[column]['text']}}</a>
+                [href]="rowData[column]['hyperlink']" class="text-blue" rel="noopener" target="_blank">{{rowData[column]['text']}}</a>
               <ng-template #displayCellData>
                 <ng-container *ngIf="column.toLowerCase() === 'sprint rating'; else showOtherData">
-                  <img [src]="sprintRatingObj[rowData[column]]" alt="rating"/>
+                  <img [src]="sprintRatingObj[rowData[column]]" alt="rating" />
                 </ng-container>
-                <ng-template #showOtherData> 
+                <ng-template #showOtherData>
                   {{rowData[column]?.length > 60 ? (rowData[column].slice(0,60)+'...') :
                   rowData[column]}}
                 </ng-template>
@@ -35,7 +37,7 @@
             <ng-template #displayArrayData>
               <ng-container *ngFor="let data of rowData[column]">
                 <a *ngIf="data?.hasOwnProperty('hyperlink') ; else displayData" [href]="data['hyperlink']"
-                  class="text-blue column-content-spacing" target="_blank">{{data['text']}}</a>
+                  class="text-blue column-content-spacing" rel="noopener" target="_blank">{{data['text']}}</a>
                 <ng-template #displayData>
                   <p class="column-content-spacing">{{data}}</p>
                 </ng-template>

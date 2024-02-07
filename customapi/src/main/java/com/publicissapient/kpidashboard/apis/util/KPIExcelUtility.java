@@ -35,11 +35,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -318,7 +317,7 @@ public class KPIExcelUtility {
 						&& StringUtils.isNotEmpty(fieldMapping.getEstimationCriteria())
 						&& fieldMapping.getEstimationCriteria().equalsIgnoreCase(CommonConstant.ACTUAL_ESTIMATION)) {
 					excelData.setStoryPoint(
-							(roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
+							(roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs"));
 				}
 				excelData.setRootCause(jiraIssue.getRootCauseList());
 				excelData.setPriority(jiraIssue.getPriority());
@@ -482,7 +481,7 @@ public class KPIExcelUtility {
 		return description;
 	}
 
-	private static String checkEmptyURL(Object object) {
+	protected static String checkEmptyURL(Object object) {
 		String url = "";
 		if (object instanceof JiraIssue) {
 			JiraIssue jiraIssue = (JiraIssue) object;
@@ -761,7 +760,7 @@ public class KPIExcelUtility {
 					excelData.setStoryPoint(roundingOff.toString());
 				} else if (null != jiraIssue.getAggregateTimeOriginalEstimateMinutes()) {
 					excelData.setStoryPoint(
-							roundingOff(jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
+							roundingOff((double) jiraIssue.getAggregateTimeOriginalEstimateMinutes() / 60) + " hrs");
 				}
 
 				kpiExcelData.add(excelData);
@@ -1781,25 +1780,6 @@ public class KPIExcelUtility {
 	}
 
 	public static void populateFlowEfficiency(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
-			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
-		AtomicInteger i = new AtomicInteger();
-		flowEfficiency.forEach((issue, value) -> {
-			KPIExcelData kpiExcelData = new KPIExcelData();
-			Map<String, String> url = new HashMap<>();
-			url.put(issue.getStoryID(), checkEmptyURL(issue));
-			kpiExcelData.setIssueID(url);
-			kpiExcelData.setIssueType(issue.getStoryType());
-			kpiExcelData.setIssueDesc(issue.getDescription());
-			kpiExcelData.setSizeInStoryPoints(issue.getEstimate());
-			kpiExcelData.setWaitTime(waitTimeList.get(i.get()));
-			kpiExcelData.setTotalTime(totalTimeList.get(i.get()));
-			kpiExcelData.setFlowEfficiency(value.longValue());
-			excelDataList.add(kpiExcelData);
-			i.set(i.get() + 1);
-		});
-	}
-
-	public static void populateLeadTime(LinkedHashMap<JiraIssueCustomHistory, Double> flowEfficiency,
 			List<String> waitTimeList, List<String> totalTimeList, List<KPIExcelData> excelDataList) {
 		AtomicInteger i = new AtomicInteger();
 		flowEfficiency.forEach((issue, value) -> {

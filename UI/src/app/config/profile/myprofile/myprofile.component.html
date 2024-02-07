@@ -199,7 +199,7 @@
             sortField="role" sortMode="single">
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Role</th>
+                  <th scope="col">Role</th>
                   <th *ngFor="let col of dynamicCols" id="col.id">
                     {{col?.name}}
                   </th>

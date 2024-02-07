@@ -33,10 +33,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +64,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Implementation of {@link TokenAuthenticationService}
@@ -109,6 +108,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		data.setAuthToken(jwt);
 		response.addHeader(AUTH_RESPONSE_HEADER, jwt);
 		Cookie cookie = cookieUtil.createAccessTokenCookie(jwt);
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 		cookieUtil.addSameSiteCookieAttribute(response);
 		return data;

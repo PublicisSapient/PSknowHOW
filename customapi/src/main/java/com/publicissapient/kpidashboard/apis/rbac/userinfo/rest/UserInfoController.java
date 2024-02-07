@@ -20,8 +20,6 @@ package com.publicissapient.kpidashboard.apis.rbac.userinfo.rest;
 
 import java.util.Objects;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
@@ -50,6 +48,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
 import com.publicissapient.kpidashboard.common.repository.rbac.UserInfoRepository;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -73,7 +73,7 @@ public class UserInfoController {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-	
+
 	@Autowired
 	private AuthProperties authProperties;
 	/**

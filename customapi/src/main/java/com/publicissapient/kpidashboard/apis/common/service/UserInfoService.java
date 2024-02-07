@@ -21,8 +21,6 @@ package com.publicissapient.kpidashboard.apis.common.service;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.GrantedAuthority;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
@@ -31,6 +29,8 @@ import com.publicissapient.kpidashboard.common.model.rbac.CentralUserInfoDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserDetailsResponseDTO;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfoDTO;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * An Interface to gets users and authorities.

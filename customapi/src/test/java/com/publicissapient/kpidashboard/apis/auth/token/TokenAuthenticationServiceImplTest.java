@@ -28,19 +28,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
-import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
+import com.publicissapient.kpidashboard.apis.common.UserTokenAuthenticationDTO;
 import org.json.simple.JSONObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,6 +53,7 @@ import com.publicissapient.kpidashboard.apis.abac.ProjectAccessManager;
 import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.AuthenticationFixture;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
@@ -65,6 +63,11 @@ import com.publicissapient.kpidashboard.common.model.rbac.ProjectsForAccessReque
 import com.publicissapient.kpidashboard.common.model.rbac.RoleWiseProjects;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.model.rbac.UserTokenData;
+import com.publicissapient.kpidashboard.common.repository.rbac.UserTokenReopository;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TokenAuthenticationServiceImplTest {
@@ -103,9 +106,12 @@ public class TokenAuthenticationServiceImplTest {
 	@Mock
 	private CustomApiConfig customApiConfig;
 
+	@Mock
+	UserTokenAuthenticationDTO userTokenAuthenticationDTO;
+
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 		SecurityContextHolder.clearContext();
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
@@ -113,21 +119,53 @@ public class TokenAuthenticationServiceImplTest {
 	}
 
 	@Test
+	public void testValidateAuthentication() {
+		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		service.validateAuthentication(request, response);
+		Assert.assertNotNull(authentication);
+	}
+
+	@Test
 	public void testAddAuthentication() {
 		HttpServletResponse response = mock(HttpServletResponse.class);
 		when(tokenAuthProperties.getExpirationTime()).thenReturn(0l);
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-
+		when(cookieUtil.createAccessTokenCookie(any())).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
 		service.addAuthentication(response, AuthenticationFixture.getAuthentication(USERNAME));
 		verify(response).addHeader(eq(AUTH_RESPONSE_HEADER), anyString());
 	}
 
-	/*@Test
-	public void testGetAuthentication() {
+	@Test
+	public void testGetAuthenticationWhenTokenNotProvided() {
+		when(tokenAuthProperties.getResourceName()).thenReturn("KNOWHOW");
+		when(userTokenAuthenticationDTO.getResource()).thenReturn("KNOWHOW");
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
-		Authentication result = service.getAuthentication(request, request, response);
-		assertNotNull(result);
-	}*/
+		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
+				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
+		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Assert.assertNotNull(authentication);
+		assertTrue(authentication.isAuthenticated());
+		assertNotNull(authentication.getAuthorities());
+		assertEquals(authentication.getName(),USERNAME);
+		assertNotNull(authentication.getDetails());
+	}
+
+	@Test
+	public void testGetAuthenticationWhenValidTokenProvided() {
+		when(tokenAuthProperties.getResourceName()).thenReturn("KNOWHOW");
+		when(userTokenAuthenticationDTO.getResource()).thenReturn("KNOWHOW");
+		when(userTokenAuthenticationDTO.getAuthToken()).thenReturn(AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L));
+		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
+		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
+		Assert.assertNotNull(authentication);
+		assertTrue(authentication.isAuthenticated());
+		assertNotNull(authentication.getAuthorities());
+		assertEquals(authentication.getName(),USERNAME);
+		assertNotNull(authentication.getDetails());
+	}
 
 	@Test
 	public void validateGetUserProjects() {

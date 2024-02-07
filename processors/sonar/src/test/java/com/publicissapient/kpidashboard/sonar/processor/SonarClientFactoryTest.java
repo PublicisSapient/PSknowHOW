@@ -18,21 +18,22 @@
 
 package com.publicissapient.kpidashboard.sonar.processor;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.publicissapient.kpidashboard.sonar.factory.SonarClientFactory;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.SonarClient;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar6And7Client;
 import com.publicissapient.kpidashboard.sonar.processor.adapter.impl.Sonar8Client;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class SonarClientFactoryTest {
 
 	@InjectMocks
@@ -45,15 +46,15 @@ public class SonarClientFactoryTest {
 	@Test
 	public void testGetSonarClient() throws Exception {
 		SonarClient sonarClient = factory.getSonarClient("9.0");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("7.9");
-		Assert.assertThat(sonarClient, instanceOf(Sonar6And7Client.class));
+		assertThat(sonarClient, instanceOf(Sonar6And7Client.class));
 		sonarClient = factory.getSonarClient("8.0");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("8.3");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 		sonarClient = factory.getSonarClient("5.3");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 	}
 
 	@Test
@@ -68,7 +69,7 @@ public class SonarClientFactoryTest {
 	@Test
 	public void getSonarClieent_versionInInt() throws Exception {
 		SonarClient sonarClient = factory.getSonarClient("8");
-		Assert.assertThat(sonarClient, instanceOf(Sonar8Client.class));
+		assertThat(sonarClient, instanceOf(Sonar8Client.class));
 	}
 
 }

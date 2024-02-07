@@ -228,12 +228,12 @@ public class FirstTimePassRateServiceImpl extends JiraKPIService<Double, List<Ob
 	private void setHowerMap(Map<Pair<String, String>, Map<String, Object>> sprintWiseHowerMap,
 			Pair<String, String> sprint, List<String> storyIdList, List<JiraIssue> sprintWiseFtpStories) {
 		Map<String, Object> howerMap = new LinkedHashMap<>();
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(sprintWiseFtpStories)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sprintWiseFtpStories)) {
 			howerMap.put(HOVER_KEY_FTP_STORIES, sprintWiseFtpStories.size());
 		} else {
 			howerMap.put(HOVER_KEY_FTP_STORIES, 0);
 		}
-		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(storyIdList)) {
+		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(storyIdList)) {
 			howerMap.put(HOVER_KEY_CLOSED_STORIES, storyIdList.size());
 		} else {
 			howerMap.put(HOVER_KEY_CLOSED_STORIES, 0);

@@ -27,13 +27,6 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
-import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -44,7 +37,12 @@ import org.springframework.security.core.Authentication;
 
 import com.publicissapient.kpidashboard.apis.auth.model.CustomUserDetails;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
+import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.CustomAnalyticsService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthenticationResultHandlerTest {
@@ -81,7 +79,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("projectsAccess", null);
 		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName" , "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
-		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
+//		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);
@@ -99,7 +97,7 @@ public class AuthenticationResultHandlerTest {
 		map.put("projectsAccess", null);
 		Mockito.when(customAnalyticsService.addAnalyticsData(response, "userName", "token")).thenReturn(map);
 		Mockito.when(response.getWriter()).thenReturn(servletOutputStream);
-		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
+//		Mockito.doNothing().when(servletOutputStream).print(Mockito.anyString());
 		when(authenticationService.getUsername(authentication)).thenReturn("userName");
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		handler.onAuthenticationSuccess(null, response, authentication);

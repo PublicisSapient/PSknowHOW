@@ -53,7 +53,6 @@ import { ToolMenuComponent } from './tool-menu/tool-menu.component';
 import { ProjectListComponent } from './project-list/project-list.component';
 import { FieldMappingComponent } from './field-mapping/field-mapping.component';
 import { ConnectionListComponent } from './connection-list/connection-list.component';
-import { KanbanFieldMappingComponent } from './kanban-field-mapping/kanban-field-mapping.component';
 import { JiraConfigComponent } from './jira-config/jira-config.component';
 import { BlockUIModule } from 'primeng/blockui';
 import { PanelModule } from 'primeng/panel';
@@ -69,7 +68,6 @@ import { PasswordModule } from 'primeng/password';
     FieldMappingComponent,
     ConnectionListComponent,
     FieldMappingComponent,
-    KanbanFieldMappingComponent,
     JiraConfigComponent],
   imports: [
     ProjectConfigRoutingModule,

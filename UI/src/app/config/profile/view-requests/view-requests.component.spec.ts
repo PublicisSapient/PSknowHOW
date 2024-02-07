@@ -31,6 +31,8 @@ import { environment } from 'src/environments/environment';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TableModule } from 'primeng/table';
 import { ViewRequestsComponent } from './view-requests.component';
+import { of } from 'rxjs';
+import { GetAuthorizationService } from '../../../services/get-authorization.service';
 
 describe('ViewRequestsComponent', () => {
   let component: ViewRequestsComponent;
@@ -38,7 +40,9 @@ describe('ViewRequestsComponent', () => {
   let httpService: HttpService;
   let httpMock;
   let messageService;
+  let authService;
   const baseUrl = environment.baseUrl;
+  let sharedService;
 
   const fakeRequestsData = {
     message: 'Found access_requests for status Pending',
@@ -137,33 +141,6 @@ describe('ViewRequestsComponent', () => {
     }]
   };
 
-  // const fakeAcceptRequestData = {
-  //   'id': '5de631c02ab79c000990489e',
-  //   'username': 'testUser',
-  //   'status': 'Approved',
-  //   'reviewComments': '',
-  //   'roles': [{
-  //     'id': '5de628f779f4eaeb6ef34e2e',
-  //     'roleName': 'ROLE_SUPERADMIN',
-  //     'roleDescription': 'access to every resource in the instance',
-  //     'createdDate': 1575364855699,
-  //     'lastModifiedDate': 1575364855699,
-  //     'isDeleted': 'False',
-  //     'permissions': [{
-  //       'id': '5de628f766697355e56b5153',
-  //       'permissionName': 'ViewAll',
-  //       'operationName': 'Read',
-  //       'resourceName': 'resource5',
-  //       'resourceId': '5de628f662f3fd18566f054e',
-  //       'createdDate': 1575364855372,
-  //       'lastModifiedDate': 1575364855372,
-  //       'isDeleted': 'False'
-  //     }]
-  //   }],
-  //   'createdDate': 1575366077402,
-  //   'lastModifiedDate': 1575366077403
-  // };
-
   const fakeAcceptRequestData = {
     id: '61cc34b463780d7cd623cc04',
     username: 'testUserQA',
@@ -186,37 +163,6 @@ describe('ViewRequestsComponent', () => {
     deleted: false
   };
 
-  // const fakeRequestResponse = {
-  //   'message': 'modified access_request@5de631c02ab79c000990489e',
-  //   'success': true,
-  //   'data': [{
-  //     'id': '5de631c02ab79c000990489e',
-  //     'username': 'testUser',
-  //     'status': 'Approved',
-  //     'reviewComments': '',
-  //     'roles': [{
-  //       'id': '5de628f779f4eaeb6ef34e2e',
-  //       'roleName': 'ROLE_SUPERADMIN',
-  //       'roleDescription': 'access to every resource in the instance',
-  //       'createdDate': 1575364855699,
-  //       'lastModifiedDate': 1575364855699,
-  //       'isDeleted': 'False',
-  //       'permissions': [{
-  //         'id': '5de628f766697355e56b5153',
-  //         'permissionName': 'ViewAll',
-  //         'operationName': 'Read',
-  //         'resourceName': 'resource5',
-  //         'resourceId': '5de628f662f3fd18566f054e',
-  //         'createdDate': 1575364855372,
-  //         'lastModifiedDate': 1575364855372,
-  //         'isDeleted': 'False'
-  //       }]
-  //     }],
-  //     'createdDate': 1575366077402,
-  //     'lastModifiedDate': 1575366386367
-  //   }]
-  // };
-
   const fakeRequestResponse = {
     message: 'Granted',
     success: true
@@ -235,7 +181,7 @@ describe('ViewRequestsComponent', () => {
         ToastModule,
         DropdownModule
       ],
-      providers: [HttpService, MessageService, SharedService
+      providers: [HttpService, MessageService, SharedService, GetAuthorizationService
         , { provide: APP_CONFIG, useValue: AppConfig }]
     })
       .compileComponents();
@@ -246,7 +192,9 @@ describe('ViewRequestsComponent', () => {
     component = fixture.componentInstance;
     httpService = TestBed.get(HttpService);
     httpMock = TestBed.get(HttpTestingController);
-    messageService = TestBed.get(MessageService);
+    messageService = TestBed.inject(MessageService);
+    authService = TestBed.inject(GetAuthorizationService);
+    sharedService = TestBed.inject(SharedService);
     fixture.detectChanges();
   });
 
@@ -293,4 +241,60 @@ describe('ViewRequestsComponent', () => {
     }
     done();
   });
+
+  it('should give error when getting requests', () => {
+    spyOn(httpService, 'getAccessRequests').and.returnValue(of('Error'));
+    const spy = spyOn(messageService, 'add');
+    component.dataLoading = [];
+    component.getRequests()
+    expect(spy).toHaveBeenCalled();
+    expect(component.dataLoading).toEqual(['allRequests']);
+  })
+
+  it('should getRolesList when project admin', () => {
+    const response = fakeRolesData;
+    component.rolesData = [];
+    component.roleList = [];
+    spyOn(authService, 'checkIfProjectAdmin').and.returnValue(true)
+    spyOn(httpService, 'getRolesList').and.returnValue(of(response));
+    component.getRolesList();
+    expect(component.roleList.length).toEqual(response.data.length);
+  })
+
+  it('should handle error when getting role list', () => {
+    const errResponse = {
+      error: 'Error in fetching roles',
+      success: false,
+    };
+    component.rolesData = [];
+    spyOn(httpService, 'getRolesList').and.returnValue(of(errResponse));
+    const spy = spyOn(messageService, 'add');
+    component.getRolesList();
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should approve reject request when role is not superadmin', () => {
+    const reqData = {
+      id: '61cc34b463780d7cd623cc04',
+      username: 'testUserQA',
+      status: 'Pending',
+      reviewComments: '',
+      role: 'ROLE_PROJECT_ADMIN',
+      deleted: false
+    };
+    const spy = spyOn(messageService, 'add');
+    component.approveRejectRequest(reqData, true);
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should approve reject request success', () => {
+    spyOn(httpService, 'updateAccessRequest').and.returnValue(of(fakeRequestResponse));
+    component.acceptRequestData = [];
+    const spy = spyOn(messageService, 'add');
+    spyOn(component, 'getRequests').and.callThrough();
+    spyOn(sharedService, 'notificationUpdate');
+    component.approveRejectRequest(fakeAcceptRequestData, true);
+    expect(spy).toHaveBeenCalled();
+  })
+
 });

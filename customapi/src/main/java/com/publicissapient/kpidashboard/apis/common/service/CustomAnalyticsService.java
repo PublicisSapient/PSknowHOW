@@ -18,9 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.common.service;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.json.simple.JSONObject;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 

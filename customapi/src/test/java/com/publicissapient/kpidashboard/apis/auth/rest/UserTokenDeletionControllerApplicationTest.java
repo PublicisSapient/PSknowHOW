@@ -21,10 +21,6 @@ package com.publicissapient.kpidashboard.apis.auth.rest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
-import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.ResponseCookie;
@@ -40,7 +37,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.publicissapient.kpidashboard.apis.auth.service.UserTokenDeletionService;
 import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
+import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 @WebMvcTest(UserTokenDeletionControllerApplication.class)
@@ -64,6 +65,7 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	@Before
 	public void before() {
+		MockitoAnnotations.openMocks(this);
 		mockMvc = MockMvcBuilders.standaloneSetup(userTokenDeletionControllerApplication).build();
 	}
 

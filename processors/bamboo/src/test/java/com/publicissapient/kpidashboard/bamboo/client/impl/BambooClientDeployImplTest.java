@@ -84,7 +84,7 @@ public class BambooClientDeployImplTest {
 	private ProjectToolConfigRepository toolConfigRepository;
 	@InjectMocks
 	private BambooClientDeployImpl bambooClientDeploy;
-
+	
 	@Before
 	public void init() {
 		List<ProjectToolConfig> toolList = new ArrayList<>();
@@ -118,7 +118,7 @@ public class BambooClientDeployImplTest {
 		PROJECT_TOOL_CONNECTION_2.setUsername(DOES);
 		PROJECT_TOOL_CONNECTION_2.setPassword(MATTER);
 
-		MockitoAnnotations.initMocks(this);
+		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test

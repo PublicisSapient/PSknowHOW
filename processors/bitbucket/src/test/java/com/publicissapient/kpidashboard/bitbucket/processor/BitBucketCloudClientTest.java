@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.bitbucket.processor;
 
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -104,6 +105,6 @@ class BitBucketCloudClientTest {
 	}
 
 	private String getServerResponse(String resource) throws Exception {
-		return IOUtils.toString(this.getClass().getResourceAsStream(resource));
+		return IOUtils.toString(this.getClass().getResourceAsStream(resource), StandardCharsets.UTF_8);
 	}
 }

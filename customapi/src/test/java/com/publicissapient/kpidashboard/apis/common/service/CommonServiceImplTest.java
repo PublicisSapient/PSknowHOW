@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 
 import com.publicissapient.kpidashboard.common.kafka.producer.NotificationEventProducer;
+import jakarta.servlet.http.HttpServletRequest;
 import org.bson.types.ObjectId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -139,6 +139,33 @@ public class CommonServiceImplTest {
 		list.add("20-40-20");
 
 		Assert.assertEquals("4", commonService.getMaturityLevel(list, Constant.AUTOMATED_PERCENTAGE, "90"));
+
+	}
+
+	@Test
+	public void testGetMaturityLevel2() {
+		List<String> list = new ArrayList<>();
+
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("60-80");
+		list.add("80-");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi168", "90"));
+		list.clear();
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("60-80");
+		list.add("80-90");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi16", "90"));
+		list.clear();
+		list.add("0-20");
+		list.add("20-40");
+		list.add("40-60");
+		list.add("80-60");
+		list.add("80-");
+		Assert.assertEquals("0", commonService.getMaturityLevel(list, "kpi28", "90"));
 
 	}
 

@@ -23,14 +23,14 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
-import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,11 +57,12 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 @JobScope
-public class JobListenerScrum extends JobExecutionListenerSupport {
+public class JobListenerScrum implements JobExecutionListener {
 
 	@Autowired
 	private NotificationHandler handler;
 
+	@Value("#{jobParameters['projectId']}")
 	private String projectId;
 
 	@Autowired
@@ -84,11 +85,6 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 
 	@Autowired
 	private JiraCommonService jiraCommonService;
-
-	@Autowired
-	public JobListenerScrum(@Value("#{jobParameters['projectId']}") String projectId) {
-		this.projectId = projectId;
-	}
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -134,17 +130,22 @@ public class JobListenerScrum extends JobExecutionListenerSupport {
 	}
 
 	private void sendNotification(Throwable stepFaliureException) throws UnknownHostException {
-		FieldMapping fieldMapping = fieldMappingRepository.findByBasicProjectConfigId(new ObjectId(projectId));
-		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findById(new ObjectId(projectId)).orElse(null);
+		FieldMapping fieldMapping = fieldMappingRepository.findByProjectConfigId(projectId);
+		ProjectBasicConfig projectBasicConfig = projectBasicConfigRepo.findByStringId(projectId).orElse(null);
 		if (fieldMapping == null || (fieldMapping.getNotificationEnabler() && projectBasicConfig != null)) {
 			handler.sendEmailToProjectAdmin(
 					convertDateToCustomFormat(System.currentTimeMillis()) + " on " + jiraCommonService.getApiHost()
-							+ " for \"" + projectBasicConfig.getProjectName() + "\"",
+							+ " for \"" + getProjectName(projectBasicConfig) + "\"",
 					ExceptionUtils.getRootCauseMessage(stepFaliureException), projectId);
 		} else {
 			log.info("Notification Switch is Off for the project : {}. So No mail is sent to project admin", projectId);
 		}
 	}
+
+	private static String getProjectName(ProjectBasicConfig projectBasicConfig) {
+		return projectBasicConfig == null ? "" : projectBasicConfig.getProjectName();
+	}
+
 
 	private void setExecutionInfoInTraceLog(boolean status) {
 		List<ProcessorExecutionTraceLog> procExecTraceLogs = processorExecutionTraceLogRepo

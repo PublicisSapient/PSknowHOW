@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -32,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import com.publicissapient.kpidashboard.notification.config.NotificationConsumerConfig;
 import com.publicissapient.kpidashboard.notification.model.EmailEvent;
@@ -62,19 +61,13 @@ public class NotificationFailedMsgHandlerServiceImpl implements NotificationFail
 		EmailEvent email = consumerRecord.value();
 
 		ProducerRecord<String, Object> producerRecord = buildProducerRecord(key, email, new HashMap<>());
-		ListenableFuture<SendResult<String, Object>> listenableFuture = kafkaTemplate.send(producerRecord);
-		listenableFuture.addCallback(new ListenableFutureCallback<SendResult<String, Object>>() {
-
-			@Override
-			public void onFailure(Throwable ex) {
+		CompletableFuture<SendResult<String, Object>> completableFuture = kafkaTemplate.send(producerRecord);
+		completableFuture.whenComplete((result, ex) -> {
+			if (ex == null) {
+				handleSuccess(key, email, result);
+			} else {
 				handleFailure(key, email, ex);
 			}
-
-			@Override
-			public void onSuccess(SendResult<String, Object> result) {
-				handleSuccess(key, email, result);
-			}
-
 		});
 	}
 

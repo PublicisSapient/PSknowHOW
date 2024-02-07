@@ -4,7 +4,7 @@
         <div *ngIf="!issueData['parentStory'] || !issueData['parentStory'].length">
             <div class="issueTypeIcon {{issueData['Issue Type'].split(' ').join('-')}}"
                 pTooltip="{{ issueData['Issue Type'] }}"></div>
-            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a target="_blank"
+            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a  rel="noopener" target="_blank"
                         [href]="issueData['Issue URL']"><i class="pi pi-window-maximize"
                             [style]="{'font-size': '1rem','font-weight':'bold','color':'black'}"></i></a></span></h1>
         </div>
@@ -13,7 +13,7 @@
             <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['parentStory'][0]}} / </h1>
             <div class="issueTypeIcon {{issueData['Issue Type'].split(' ').join('-')}}"
                 pTooltip="{{ issueData['Issue Type'] }}"></div>
-            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a target="_blank"
+            <h1 class="font-bold p-mb-2 p-d-inline">{{issueData['Issue Id']}} <span><a  rel="noopener" target="_blank"
                         [href]="issueData['Issue URL']"><i class="pi pi-window-maximize"
                             [style]="{'font-size': '1rem','font-weight':'bold','color':'black'}"></i></a></span></h1>
         </div>

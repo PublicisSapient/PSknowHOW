@@ -18,10 +18,12 @@
 
 package com.publicissapient.kpidashboard.apis.projectconfig.basic.rest.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
@@ -67,6 +69,7 @@ import com.publicissapient.kpidashboard.apis.cleanup.AgileDataCleanUpService;
 import com.publicissapient.kpidashboard.apis.cleanup.ToolDataCleanUpServiceFactory;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
+import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.data.ProjectBasicConfigDataFactory;
 import com.publicissapient.kpidashboard.apis.errors.ProjectNotFoundException;
 import com.publicissapient.kpidashboard.apis.filter.service.FilterHelperService;
@@ -78,6 +81,7 @@ import com.publicissapient.kpidashboard.apis.rbac.accessrequests.service.AccessR
 import com.publicissapient.kpidashboard.apis.testexecution.service.TestExecutionService;
 import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.constant.ProcessorConstants;
+import com.publicissapient.kpidashboard.common.model.ProcessorExecutionTraceLog;
 import com.publicissapient.kpidashboard.common.model.application.AccountHierarchy;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyLevelSuggestion;
 import com.publicissapient.kpidashboard.common.model.application.HierarchyValue;
@@ -85,9 +89,11 @@ import com.publicissapient.kpidashboard.common.model.application.KanbanAccountHi
 import com.publicissapient.kpidashboard.common.model.application.ProjectBasicConfig;
 import com.publicissapient.kpidashboard.common.model.application.ProjectToolConfig;
 import com.publicissapient.kpidashboard.common.model.application.dto.ProjectBasicConfigDTO;
+import com.publicissapient.kpidashboard.common.model.jira.AssigneeDetails;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessItem;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessNode;
 import com.publicissapient.kpidashboard.common.model.rbac.AccessRequest;
+import com.publicissapient.kpidashboard.common.model.rbac.ProjectBasicConfigNode;
 import com.publicissapient.kpidashboard.common.model.rbac.ProjectsAccess;
 import com.publicissapient.kpidashboard.common.model.rbac.RoleData;
 import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
@@ -96,8 +102,10 @@ import com.publicissapient.kpidashboard.common.repository.application.HierarchyL
 import com.publicissapient.kpidashboard.common.repository.application.KanbanAccountHierarchyRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectBasicConfigRepository;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
+import com.publicissapient.kpidashboard.common.repository.jira.AssigneeDetailsRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.BoardMetadataRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
+import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
 
 /**
  * @author narsingh9
@@ -148,6 +156,9 @@ public class ProjectBasicConfigServiceImplTest {
 	private AgileDataCleanUpService agileDataCleanUpService;
 
 	@Mock
+	private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
+
+	@Mock
 	private ConfigHelperService configHelperService;
 	@Mock
 	private AccessRequestsHelperService accessRequestsHelperService;
@@ -159,6 +170,8 @@ public class ProjectBasicConfigServiceImplTest {
 	private ProjectBasicConfigDTO basicConfigDTO;
 	@Mock
 	private SprintRepository sprintRepository;
+	@Mock
+	private AssigneeDetailsRepository assigneeDetailsRepository;
 	@Mock
 	private BoardMetadataRepository boardMetadataRepository;
 	@Mock
@@ -381,9 +394,15 @@ public class ProjectBasicConfigServiceImplTest {
 	 */
 	@Test
 	public void updateConfigTest_scrumHierarchy_success() {
+		basicConfig.setSaveAssigneeDetails(true);
+		basicConfig.setIsKanban(false);
 		when(basicConfigRepository.findById(any())).thenReturn(basicConfigOpt);
 		when(basicConfigRepository.findByProjectNameAndIdNot(any(), any())).thenReturn(null);
 		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		List<ProcessorExecutionTraceLog> traceLogs= new ArrayList<>();
+		traceLogs.add(new ProcessorExecutionTraceLog());
+		when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigIdIn(anyString(),anyList())).thenReturn(traceLogs);
+		when(assigneeDetailsRepository.findByBasicProjectConfigId(any())).thenReturn(new AssigneeDetails());
 		ServiceResponse response = projectBasicConfigServiceImpl.updateBasicConfig("5f855dec29cf840345f2deef",
 				basicConfigDTO);
 		assertThat("Status: ", response.getSuccess(), equalTo(true));
@@ -645,6 +664,74 @@ public class ProjectBasicConfigServiceImplTest {
 		Map<String, ProjectBasicConfigDTO> list = projectBasicConfigServiceImpl
 				.getBasicConfigsDTOMapWithoutPermission();
 		assertThat("response list size: ", list.size(), equalTo(2));
+	}
+
+
+	@Test
+	public void testFindLeaf() {
+		// Create a sample tree structure for testing
+		ProjectBasicConfigNode root = new ProjectBasicConfigNode();
+		root.setGroupName("root");
+		root.setValue("root");
+		ProjectBasicConfigNode child1 = new ProjectBasicConfigNode();
+		child1.setGroupName("child1");
+		child1.setValue("child1");
+		child1.setParent(Arrays.asList(root));
+		ProjectBasicConfigNode child2 = new ProjectBasicConfigNode();
+		child2.setGroupName("child2");
+		child2.setValue("child2");
+		child2.setParent(Arrays.asList(root));
+
+		ProjectBasicConfigNode grandchild1 = new ProjectBasicConfigNode();
+		grandchild1.setGroupName("grandchild1");
+		grandchild1.setValue("grandchild1");
+		grandchild1.setParent(Arrays.asList(child1));
+
+		ProjectBasicConfigNode grandchild2 = new ProjectBasicConfigNode();
+		grandchild2.setGroupName("grandchild2");
+		grandchild2.setValue("grandchild2");
+		grandchild2.setParent(Arrays.asList(child2));
+
+		root.setChildren(Arrays.asList(child1));
+		root.setChildren(Arrays.asList(child2));
+		child1.setChildren(Arrays.asList(grandchild1));
+		child2.setChildren(Arrays.asList(grandchild2));
+		grandchild1.setChildren(Arrays.asList());
+		grandchild2.setChildren(Arrays.asList());
+
+		// Initialize the list to store leaf nodes
+		List<ProjectBasicConfigNode> leafNodes = new ArrayList<>();
+		List<ProjectBasicConfigNode> parentNode = new ArrayList<>();
+		List<ProjectBasicConfigNode> childNodes = new ArrayList<>();
+
+		// Call the findLeaf method
+		projectBasicConfigServiceImpl.findLeaf(root, leafNodes);
+		projectBasicConfigServiceImpl.findParents(Arrays.asList(child1,child2), parentNode);
+		projectBasicConfigServiceImpl.findChildren(child1, childNodes);
+		ProjectBasicConfigNode node = projectBasicConfigServiceImpl.findNode(root, "root", "root");
+		ProjectBasicConfigNode childNode = projectBasicConfigServiceImpl.findNode(root, "child2", "child2");
+
+		// Verify the result
+		assertEquals(1, leafNodes.size());
+		assertEquals(2, parentNode.size());
+		assertEquals(1, childNodes.size());
+		assertEquals(node, root);
+	}
+
+	@Test
+	public void creatTree(){
+		Mockito.when(basicConfigRepository.findAll()).thenReturn(Arrays.asList(basicConfig));
+		projectBasicConfigServiceImpl.getBasicConfigTree();
+	}
+
+	@Test
+	public void addConfigTest_superAdminAddProjects() {
+		when(basicConfigRepository.save(any(ProjectBasicConfig.class))).thenReturn(basicConfig);
+		SecurityContextHolder.setContext(securityContext);
+		when(authenticationService.getLoggedInUser()).thenReturn("SUPERADMIN");
+		when(projectAccessManager.getAccessRoleOfNearestParent(any(),any())).thenReturn(Constant.ROLE_SUPERADMIN);
+		ServiceResponse response = projectBasicConfigServiceImpl.addBasicConfig(basicConfigDTO);
+		assertThat("Status: ", response.getSuccess(), equalTo(true));
 	}
 
 }
