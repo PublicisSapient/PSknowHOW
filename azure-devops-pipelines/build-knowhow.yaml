@@ -53,14 +53,14 @@ stages:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pcustomapi'
         publishJUnitResults: true
-    
+
     - script: |
         docker save -o $(Build.ArtifactStagingDirectory)/customapi.tar customapi:$VERSION
       displayName: 'Save Docker image'
 
     - publish: $(Build.ArtifactStagingDirectory)/
       artifact: customapi-image
-    
+
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: customapi-artifacts
 
@@ -106,7 +106,7 @@ stages:
       enabled: true
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/customapi-pipeline-artifacts/repository -f customapi/pom.xml'
       displayName: 'Run SonarQube analysis'
-    
+
     - task: SonarQubePublish@5
       displayName: Publish Quality Gate Result
       inputs:
@@ -139,7 +139,7 @@ stages:
         echo "Version from pom.xml: $VERSION"        
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-  
+
   - job: RUNNING_TEST
     displayName: 'Running Tests'
     dependsOn: Capturing_Version
@@ -173,17 +173,17 @@ stages:
         npm install --save-dev @angular-devkit/build-angular@14.2.10
         sudo npm test 
         sudo sed -i 's|SF:$(Agent.BuildDirectory)/UI|SF:|g' coverage/report-lcov/lcov.info
-    
+
     - publish: $(System.DefaultWorkingDirectory)/UI
       artifact: UI-artifacts
-  
+
     - task: PublishCodeCoverageResults@1
       inputs:
         codeCoverageTool: 'cobertura' # or 'jacoco' depending on the format of your coverage report
         summaryFileLocation: '$(Agent.BuildDirectory)/UI-artifacts/coverage/report-lcov/lcov.info' # adjust this path based on the actual path of your coverage report
         reportDirectory: '$(Agent.BuildDirectory)/UI-artifacts/coverage/report-html/'
         failIfCoverageEmpty: false
-  
+
   - job: SONARQUBE_ANALYSIS
     displayName: 'SonarQube Code Analysis'
     dependsOn: CHECKING_COVERAGE
@@ -234,7 +234,7 @@ stages:
         echo "Version from pom.xml: $VERSION"        
         # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
         echo "##vso[task.setvariable variable=overrideValues]$VERSION"
-  
+
   - job: RUNNING_TEST
     displayName: 'Running Tests'
     dependsOn: Capturing_Version
@@ -248,7 +248,7 @@ stages:
         goals: 'clean install -Pjira-processor'
         publishJUnitResults: true
         # sonarQubeRunAnalysis: true
-    
+
     - task: Maven@3
       displayName: 'Run devops build'
       inputs:
@@ -268,8 +268,8 @@ stages:
       inputs:
         mavenPomFile: 'pom.xml'
         goals: 'clean install -Pazure-pipeline-repo'
-        publishJUnitResults: true    
-    
+        publishJUnitResults: true
+
     - publish: $(System.DefaultWorkingDirectory)/
       artifact: processor-artifacts
 
@@ -322,9 +322,8 @@ stages:
       enabled: true
     - script: 'mvn sonar:sonar -Dmaven.repo.local=$(Agent.BuildDirectory)/processor-pipeline-artifacts/repository -f processors/pom.xml'
       displayName: 'Run SonarQube analysis'
-    
+
     - task: SonarQubePublish@5
       displayName: Publish Quality Gate Result
       inputs:
         pollingTimeoutSec: '300'
-    
