@@ -11,5 +11,7 @@ data:
   spring.data.mongodb.database: "kpidashboard"
   flag.mailWithoutKafka: "false"
   sendGridEnabled: "true"
-  
+  spring.kafka.producer.bootstrap-servers: "crs-kafka-0.kafka-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:9092"
+  spring.kafka.consumer.bootstrap-servers: "crs-kafka-0.kafka-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:9092"
+
   
