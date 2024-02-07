@@ -15,6 +15,7 @@ parameters:
   - 'Kafka_Consumer'
   - 'Kafka'
   - 'Zookeeper'
+  - 'Config_Map'
   - 'ALL'
 - name: Environment
   type: string
@@ -283,18 +284,18 @@ stages:
       overrideValues: ''
 
     steps:
-    - checkout: self
+    - checkout: none
 
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "Deploying on: ${{ parameters.Environment }}"
-        echo "Deploying knowhow-kafka..."
-        # Add Kafka_Consumer deployment steps
-        echo "Deploying Helm charts for Kafka_Consumer..."
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+    # - script: |
+    #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+    #     echo "Deploying on: ${{ parameters.Environment }}"
+    #     echo "Deploying knowhow-kafka..."
+    #     # Add Kafka_Consumer deployment steps
+    #     echo "Deploying Helm charts for Kafka_Consumer..."
+    #     VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    #     echo "Version from pom.xml: $VERSION"
+    #     # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+    #     echo "##vso[task.setvariable variable=overrideValues]$VERSION"
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
@@ -320,18 +321,18 @@ stages:
       overrideValues: ''
 
     steps:
-    - checkout: self
+    - checkout: none
 
-    - script: |
-        echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
-        echo "Deploying on: ${{ parameters.Environment }}"
-        echo "Deploying knowhow-kafka..."
-        # Add Kafka_Consumer deployment steps
-        echo "Deploying Helm charts for Kafka_Consumer..."
-        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-        echo "Version from pom.xml: $VERSION"
-        # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
-        echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+    # - script: |
+    #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+    #     echo "Deploying on: ${{ parameters.Environment }}"
+    #     echo "Deploying knowhow-kafka..."
+    #     # Add Kafka_Consumer deployment steps
+    #     echo "Deploying Helm charts for Kafka_Consumer..."
+    #     VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    #     echo "Version from pom.xml: $VERSION"
+    #     # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+    #     echo "##vso[task.setvariable variable=overrideValues]$VERSION"
     - task: HelmDeploy@0
       inputs:
         connectionType: 'Kubernetes Service Connection'
@@ -345,4 +346,40 @@ stages:
         valueFile: './Kubernetes/knowhow-helm/knowhow-zookeeper/values.yaml'
       displayName: 'Deploy Kafka_Consumer'
 
+- stage: ConfigMap_Deploy
+  condition: or(eq('${{ parameters.deploymentOptions }}', 'Config_Map'), eq('${{ parameters.deploymentOptions }}', 'ALL'))
+
+  jobs:
+  - job: ConfigMap_Deploy
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    variables:
+      overrideValues: ''
+
+    steps:
+    - checkout: none
+
+    # - script: |
+    #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
+    #     echo "Deploying on: ${{ parameters.Environment }}"
+    #     echo "Deploying knowhow-kafka..."
+    #     # Add Kafka_Consumer deployment steps
+    #     echo "Deploying Helm charts for Kafka_Consumer..."
+    #     VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+    #     echo "Version from pom.xml: $VERSION"
+    #     # echo "##vso[task.setvariable variable=overrideValues]image.tag=$VERSION"
+    #     echo "##vso[task.setvariable variable=overrideValues]$VERSION"
+    - task: HelmDeploy@0
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceConnection: '${{ parameters.Environment }}-knowhow-k8s-sc'
+        namespace: '${{ parameters.Environment }}-knowhow'
+        command: 'upgrade'
+        chartType: 'FilePath'
+        chartPath: './Kubernetes/knowhow-helm/knowhow-config'
+        releaseName: 'knowhow-config'
+        # overrideValues: 'image.tag=$(overrideValues)'
+        valueFile: './Kubernetes/knowhow-helm/knowhow-config/values.yaml'
+      displayName: 'Deploy Configmap'
 
