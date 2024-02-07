@@ -284,7 +284,7 @@ public class ReleaseEpicProgressServiceImplTest {
 		when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssueArrayList);
 		when(jiraService.getSubTaskDefects()).thenReturn(jiraIssueArrayList.stream().filter(defect->defect.getTypeName().equalsIgnoreCase("bug")).collect(Collectors.toSet()));
 		KpiElement kpiElement = epicProgressService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

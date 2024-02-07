@@ -46,7 +46,7 @@ import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
-import com.publicissapient.kpidashboard.apis.jira.service.JiraKPIService;
+
 import com.publicissapient.kpidashboard.apis.jira.service.releasedashboard.JiraReleaseKPIService;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
 import com.publicissapient.kpidashboard.apis.model.IterationKpiValue;
@@ -92,6 +92,11 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	private static final String RELEASE_PROGRESS = "Release Progress";
 	private static final String LINE_GRAPH_TYPE = "line";
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public static final String RELEASE_PREDICTION = "Release Prediction";
+	public static final String ISSUE_COUNT_PREDICTION = "issueCountPrediction";
+	public static final String ISSUE_SIZE_PREDICTION = "issueSizePrediction";
+	public static final String SHOW_PREDICTION = "showPrediction";
+	public static final String OVERALL_COMPLETED = "OVERALL COMPLETED";
 	private static final String AVG_ISSUE_COUNT = "avgIssueCount";
 	private static final String AVG_STORY_POINT = "avgStoryPoint";
 	public static final String IS_PREDICTION_BOUNDARY = "isPredictionBoundary";
@@ -1090,14 +1095,6 @@ public class ReleaseBurnUpServiceImpl extends JiraReleaseKPIService {
 	@Override
 	public String getQualifierType() {
 		return KPICode.RELEASE_BURNUP.name();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> stringObjectMap) {
-		return null;
 	}
 
 }

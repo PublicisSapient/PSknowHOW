@@ -200,7 +200,7 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 		uniqueProjectMap.put(basicProjectConfigId.toString(), mapOfProjectFilters);
 
 		mapOfFilters.put(JiraFeature.BASIC_PROJECT_CONFIG_ID.getFieldValueInFeature(),
-				basicProjectConfigIds.stream().distinct().collect(Collectors.toList()));
+				basicProjectConfigIds.stream().distinct().toList());
 
 		resultListMap.put(HISTORY, jiraIssueCustomHistoryRepository
 				.findByFilterAndFromStatusMapWithDateFilter(mapOfFilters, uniqueProjectMap, startDate, endDate));

@@ -156,7 +156,7 @@ public class ReleaseBurnUpServiceImplTest {
 		when(jiraService.getReleaseList()).thenReturn(Collections.singletonList("AP v2.0.0"));
 		when(configHelperService.getFieldMappingMap()).thenReturn(fieldMappingMap2);
 		KpiElement kpiElement = releaseBurnUpService.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-				treeAggregatorDetail);
+				treeAggregatorDetail.getMapOfListOfLeafNodes().get("release").get(0));
 		assertNotNull(kpiElement.getTrendValueList());
 	}
 

@@ -130,7 +130,7 @@ public class IterationReadinessServiceImpl extends JiraBacklogKPIService<Integer
 	 * Populates KPI value to project leaf nodes. It also gives the trend analysis
 	 * project wise.
 	 *
-	 * @param leafNodeList
+	 * @param leafNode
 	 *            leafNodeList
 	 * @param kpiElement
 	 *            kpiElement

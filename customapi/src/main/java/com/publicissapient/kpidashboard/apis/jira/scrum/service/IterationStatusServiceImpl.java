@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationKPIService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -74,7 +75,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Object>, Map<String, Object>> {
+public class IterationStatusServiceImpl extends JiraIterationKPIService {
 
 	private static final String SEARCH_BY_ISSUE_TYPE = "Filter by issue type";
 
@@ -108,19 +109,13 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-			TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+			Node sprintNode) throws ApplicationException {
 		DataCount trendValue = new DataCount();
-		treeAggregatorDetail.getMapOfListOfLeafNodes().forEach((k, v) -> {
-
-			Filters filters = Filters.getFilter(k);
-			if (Filters.SPRINT == filters) {
 				try {
-					projectWiseLeafNodeValue(v, trendValue, kpiElement, kpiRequest);
+					projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 				} catch (ParseException e) {
 					log.error(PARSE_EXCEPTION + e.getMessage());
 				}
-			}
-		});
 		return kpiElement;
 	}
 
@@ -130,15 +125,9 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	}
 
 	@Override
-	public Integer calculateKPIMetrics(Map<String, Object> subCategoryMap) {
-		return null;
-	}
-
-	@Override
-	public Map<String, Object> fetchKPIDataFromDb(List<Node> leafNodeList, String startDate, String endDate,
+	public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate,
 			KpiRequest kpiRequest) {
 		Map<String, Object> resultListMap = new HashMap<>();
-		Node leafNode = leafNodeList.stream().findFirst().orElse(null);
 		if (null != leafNode) {
 			log.info("Iteration Status -> Requested sprint : {}", leafNode.getName());
 			SprintDetails sprintDetails = getSprintDetailsFromBaseClass();
@@ -224,20 +213,14 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 	 * Populates KPI value to sprint leaf nodes and gives the trend analysis at
 	 * sprint level.
 	 *
-	 * @param sprintLeafNodeList
+	 * @param latestSprintNode
 	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(List<Node> sprintLeafNodeList, DataCount trendValue, KpiElement kpiElement,
+	private void projectWiseLeafNodeValue(Node latestSprintNode, DataCount trendValue, KpiElement kpiElement,
 			KpiRequest kpiRequest) throws ParseException {
-		sprintLeafNodeList.sort((node1, node2) -> node1.getSprintFilter().getStartDate()
-				.compareTo(node2.getSprintFilter().getStartDate()));
-		List<Node> latestSprintNode = new ArrayList<>();
-		Node latestSprint = sprintLeafNodeList.get(0);
-		Optional.ofNullable(latestSprint).ifPresent(latestSprintNode::add);
-
 		Map<String, Object> resultMap = fetchKPIDataFromDb(latestSprintNode, null, null, kpiRequest);
 		Set<SprintIssue> completedIssues = (Set<SprintIssue>) resultMap.get(COMPLETED_ISSUES);
 		Set<SprintIssue> openIssues = (Set<SprintIssue>) resultMap.get(NOT_COMPLETED_ISSUES);
@@ -402,7 +385,7 @@ public class IterationStatusServiceImpl extends JiraKPIService<Integer, List<Obj
 			// Modal Heads Options
 			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
-			kpiElement.setSprint(latestSprint.getName());
+			kpiElement.setSprint(latestSprintNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_STATUS.getColumns());
 			kpiElement.setTrendValueList(trendValue);
 

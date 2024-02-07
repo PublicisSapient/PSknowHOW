@@ -153,7 +153,7 @@ public class IterationStatusServiceImplTest {
 		String kpiRequestTrackerId = "Excel-Jira-5be544de025de212549176a9";
 		try {
 			KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {
@@ -174,7 +174,7 @@ public class IterationStatusServiceImplTest {
 
 		try {
 			KpiElement kpiElement = iterationStatusServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
-					treeAggregatorDetail);
+					treeAggregatorDetail.getMapOfListOfLeafNodes().get("sprint").get(0));
 			assertNotNull((DataCount) kpiElement.getTrendValueList());
 
 		} catch (ApplicationException enfe) {

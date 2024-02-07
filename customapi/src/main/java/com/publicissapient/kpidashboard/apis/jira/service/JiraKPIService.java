@@ -73,6 +73,7 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
  */
 public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> implements ApplicationKPIService<R, S, T> {
 
+	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 	public static final String BASIC_PROJECT_CONFIG_ID = "basicProjectConfigId";
 	@Autowired
 	private CacheService cacheService;
@@ -231,6 +232,22 @@ public abstract class JiraKPIService<R, S, T> extends ToolsKPIService<R, S> impl
 					.orElse(devCompleteDate);
 		}
 		return devCompleteDate;
+	}
+
+	// Filtering the history which happened inside the sprint on basis of activity
+	// date
+	public List<JiraHistoryChangeLog> getInSprintStatusLogs(List<JiraHistoryChangeLog> issueHistoryLogs,
+			LocalDate sprintStartDate, LocalDate sprintEndDate) {
+		List<JiraHistoryChangeLog> filterStatusUpdationLogs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(issueHistoryLogs)) {
+			filterStatusUpdationLogs = issueHistoryLogs.stream()
+					.filter(jiraIssueSprint -> DateUtil.isWithinDateRange(
+							LocalDate.parse(jiraIssueSprint.getUpdatedOn().toString().split("T")[0].concat("T00:00:00"),
+									DateTimeFormatter.ofPattern(TIME_FORMAT)),
+							sprintStartDate, sprintEndDate))
+					.collect(Collectors.toList());
+		}
+		return filterStatusUpdationLogs;
 	}
 
 	/**

@@ -35,7 +35,7 @@ import com.publicissapient.kpidashboard.common.model.jira.SprintDetails;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueCustomHistoryRepository;
 import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.bson.types.ObjectId;
@@ -317,7 +317,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraBacklogKPIService
      */
     private Double getAverageSprintCapacity(List<Node> leafNodeList, List<SprintDetails> sprintDetails,
                                             List<JiraIssue> allJiraIssue, FieldMapping fieldMapping) {
-        int sprintCountForBackLogStrength = customApiConfig.getSprintCountForBackLogStrength();
+        int sprintCountForBackLogStrength = leafNodeList.size();
         List<Node> inputNodes = new ArrayList<>(leafNodeList);
         Collections.reverse(inputNodes);
 
