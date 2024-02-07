@@ -38,6 +38,11 @@ spec:
             - name: http
               containerPort: {{.Values.service.port}}
               protocol: TCP
+          env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_SERVERS
+              value: zookeeper.
           # livenessProbe:
           #   tcpSocket:
           #     port: {{.Values.service.port}}
