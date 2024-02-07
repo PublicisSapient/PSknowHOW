@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_830;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,14 +33,14 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
-@ChangeUnit(id = "r_dsr_ehnc", order = "09001", author = "shi6", systemVersion = "9.0.0")
+@ChangeUnit(id = "dsr_ehnc", order = "8321", author = "shi6", systemVersion = "8.3.2")
 public class DSREnchn {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
-	public static final String UAT_IDENTIFICATION = "jiraBugRaisedByIdentification";
 	public static final String FIELD_NAME = "fieldName";
 	public static final String LABEL = "label";
 	public static final String VALUE = "value";
+	public static final String UAT_IDENTIFICATION = "jiraBugRaisedByIdentification";
 	public static final String PROCESSOR_COMMON = "processorCommon";
 	public static final String FIELD_LABEL = "fieldLabel";
 	public static final String FIELD_TYPE = "fieldType";
@@ -56,27 +56,6 @@ public class DSREnchn {
 
 	@Execution
 	public void execution() {
-		MongoCollection<Document> fieldMappingStruture = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
-		Document filter = new Document(FIELD_NAME, UAT_IDENTIFICATION);
-
-		// Specify the rollback operation
-		Document rollback = new Document("$unset", new Document(PROCESSOR_COMMON, ""));
-
-		// Perform the rollback
-		fieldMappingStruture.updateOne(filter, rollback);
-
-		List<String> fieldNamesToDelete = Arrays.asList("includeRCAForKPI35", "defectPriorityKPI135",
-				"useUnLinkedDefect");
-		// Delete documents that match the filter
-		fieldMappingStruture.deleteMany(new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete)));
-
-		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
-				new Document("$set", new Document("kpiFilter", "")));
-
-	}
-
-	@RollbackExecution
-	public void rollback() {
 		MongoCollection<Document> fieldMappingStructure = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
 		Document filter = new Document(FIELD_NAME, UAT_IDENTIFICATION);
 
@@ -101,18 +80,45 @@ public class DSREnchn {
 										new Document(LABEL, "p4").append(VALUE, "p4"),
 										new Document(LABEL, "p5").append(VALUE, "p5"))),
 
-				new Document().append(FIELD_NAME, "excludeUnlinkedDefects")
-						.append(FIELD_LABEL, "Exclude Unlinked Defects").append(FIELD_TYPE, "toggle")
-						.append(SECTION, "WorkFlow Status Mapping").append(PROCESSOR_COMMON, false)
-						.append(TOOL_TIP, new Document(DEFINITION,
-								"Disable Toggle to see calculations on unlinked defects too.")));
+				new Document().append(FIELD_NAME, "excludeUnlinkedDefects").append(FIELD_LABEL, "Exclude Unlinked Defects")
+						.append(FIELD_TYPE, "toggle").append(SECTION, "WorkFlow Status Mapping")
+						.append(PROCESSOR_COMMON, false).append(TOOL_TIP,
+								new Document(DEFINITION, "Disable Toggle to see calculations on unlinked defects too."))
+
+		);
 
 		fieldMappingStructure.insertMany(documents);
+
+		// Update the document in the collection
 		fieldMappingStructure.updateOne(new Document(FIELD_NAME, UAT_IDENTIFICATION),
 				new Document("$set", new Document(FIELD_LABEL, "Escaped defects identification (Processor Run)")));
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
-				new Document("$set", new Document("kpiFilter", "dropDown")));
+				new Document("$set", new Document("kpiFilter" , "dropDown")));
+
+
+	}
+
+	@RollbackExecution
+	public void rollback() {
+		MongoCollection<Document> fieldMappingStruture = mongoTemplate.getCollection(FIELD_MAPPING_STRUCTURE);
+		Document filter = new Document(FIELD_NAME, UAT_IDENTIFICATION);
+
+		// Specify the rollback operation
+		Document rollback = new Document("$unset", new Document(PROCESSOR_COMMON, ""));
+
+		// Perform the rollback
+		fieldMappingStruture.updateOne(filter, rollback);
+
+		List<String> fieldNamesToDelete = Arrays.asList("includeRCAForKPI35", "defectPriorityKPI135",
+				"useUnLinkedDefect");
+		// Delete documents that match the filter
+		fieldMappingStruture.deleteMany(new Document(FIELD_NAME, new Document("$in", fieldNamesToDelete)));
+		fieldMappingStruture.updateOne(new Document(FIELD_NAME, UAT_IDENTIFICATION),
+				new Document("$set", new Document(FIELD_LABEL, "UAT Defect Identification")));
+		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
+				new Document("$set", new Document("kpiFilter" , "")));
+
 
 	}
 
