@@ -284,7 +284,7 @@ stages:
       overrideValues: ''
 
     steps:
-    - checkout: none
+    - checkout: self
 
     # - script: |
     #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
@@ -321,7 +321,7 @@ stages:
       overrideValues: ''
 
     steps:
-    - checkout: none
+    - checkout: self
 
     # - script: |
     #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
@@ -358,7 +358,7 @@ stages:
       overrideValues: ''
 
     steps:
-    - checkout: none
+    - checkout: self
 
     # - script: |
     #     echo "Selected Deployment Options: ${{ parameters.deploymentOptions }}"
