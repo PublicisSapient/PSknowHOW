@@ -1,25 +1,18 @@
 package com.publicissapient.kpidashboard.apis.auth.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import com.publicissapient.kpidashboard.apis.activedirectory.service.ADServerDetailsService;
-import com.publicissapient.kpidashboard.apis.auth.exceptions.InvalidAuthTypeConfigException;
 import com.publicissapient.kpidashboard.apis.auth.token.TokenAuthenticationService;
 import com.publicissapient.kpidashboard.apis.common.service.UserInfoService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
-import com.publicissapient.kpidashboard.common.constant.AuthType;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeConfig;
 import com.publicissapient.kpidashboard.common.model.application.AuthTypeStatus;
 import com.publicissapient.kpidashboard.common.model.application.GlobalConfig;
-import com.publicissapient.kpidashboard.common.model.application.ValidationMessage;
-import com.publicissapient.kpidashboard.common.model.rbac.UserInfo;
 import com.publicissapient.kpidashboard.common.repository.application.GlobalConfigRepository;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 
@@ -39,33 +32,10 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 	private CustomApiConfig customApiConfig;
 
 	@Autowired
-	private AuthTypeConfigValidator authTypeConfigValidator;
-
-	@Autowired
 	private TokenAuthenticationService tokenAuthenticationService;
 
 	@Autowired
 	private UserInfoService userInfoService;
-
-	private void invalidateUsersAuthToken(AuthTypeStatus authTypeStatus) {
-		List<String> usernames = new ArrayList<>();
-		// find users
-		if (!authTypeStatus.isStandardLogin()) {
-			List<UserInfo> standardUsers = userInfoService.getUserInfoByAuthType(AuthType.STANDARD.name());
-			if (standardUsers != null && !standardUsers.isEmpty()) {
-				usernames.addAll(standardUsers.stream().map(UserInfo::getUsername).collect(Collectors.toList()));
-			}
-		}
-
-		if (!authTypeStatus.isAdLogin()) {
-			List<UserInfo> adUsers = userInfoService.getUserInfoByAuthType(AuthType.LDAP.name());
-			if (adUsers != null && !adUsers.isEmpty()) {
-				usernames.addAll(adUsers.stream().map(UserInfo::getUsername).collect(Collectors.toList()));
-			}
-		}
-		tokenAuthenticationService.invalidateAuthToken(usernames);
-
-	}
 
 	@Override
 	public AuthTypeConfig getAuthTypeConfig() {
@@ -90,10 +60,5 @@ public class AuthTypesConfigServiceImpl implements AuthTypesConfigService {
 	private GlobalConfig getGlobalConfig() {
 		List<GlobalConfig> globalConfigs = globalConfigRepository.findAll();
 		return CollectionUtils.isEmpty(globalConfigs) ? null : globalConfigs.get(0);
-	}
-
-	private String encryptStringForDb(String plainText) {
-		String encryptedString = aesEncryptionService.encrypt(plainText, customApiConfig.getAesEncryptionKey());
-		return encryptedString == null ? "" : encryptedString;
 	}
 }
