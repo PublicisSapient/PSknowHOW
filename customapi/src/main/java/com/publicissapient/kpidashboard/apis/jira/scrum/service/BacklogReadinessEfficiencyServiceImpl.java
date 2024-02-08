@@ -1,6 +1,7 @@
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -205,8 +206,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			Set<String> issueTypes = new HashSet<>();
 			Set<String> priorities = new HashSet<>();
 			List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
-			List<Integer> overAllIssueCount = Collections.singletonList(0);
-			List<Double> overAllStoryPoints = Collections.singletonList(0.0);
+			List<Integer> overAllIssueCount = Arrays.asList(0);
+			List<Double> overAllStoryPoints = Arrays.asList(0.0D);
 			AtomicLong overAllCycleTime = new AtomicLong(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
