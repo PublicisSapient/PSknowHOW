@@ -133,7 +133,6 @@ public class SignupRequestsControllerTest {
 	public void testModifyAccessRequest_Approved() throws Exception {
 		String request = "{\n" + "    \"status\": \"Approved\",\n" + "    \"role\": \"ROLE_PROJECT_ADMIN\",\n"
 				+ "    \"message\": \"\"\n" + "}";
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
