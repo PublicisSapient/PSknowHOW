@@ -193,6 +193,7 @@
     "yaxisLabel" : "Percentage" ,
     "isPositiveTrend" : false ,
     "showTrend" : true ,
+    "kpiFilter" : "dropDown" ,
     "aggregationCriteria" : "average" ,
     "isAdditionalFilterSupport" : true ,
     "calculateMaturity" : true ,
