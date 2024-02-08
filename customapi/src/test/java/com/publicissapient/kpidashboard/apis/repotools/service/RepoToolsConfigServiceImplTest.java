@@ -18,7 +18,6 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,9 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
-import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,9 +87,6 @@ public class RepoToolsConfigServiceImplTest {
     private ProcessorExecutionTraceLogRepository processorExecutionTraceLogRepository;
 
     @Mock
-    private ProcessorExecutionTraceLogService processorExecutionTraceLogService;
-
-    @Mock
     private AesEncryptionService aesEncryptionService;
 
     RepoToolsClient repoToolsClient = Mockito.mock(RepoToolsClient.class);
@@ -151,23 +145,13 @@ public class RepoToolsConfigServiceImplTest {
         when(processorRepository.findByProcessorName(CommonConstant.REPO_TOOLS)).thenReturn(new Processor());
         when(projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(CommonConstant.REPO_TOOLS,
                 new ObjectId("5fb364612064a31c9ccd517a"))).thenReturn(Arrays.asList(projectToolConfig));
+        when(processorExecutionTraceLogRepository
+                .findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(Optional.of(new ProcessorExecutionTraceLog()));
         when(customApiConfig.getRepoToolURL()).thenReturn("http://example.com/");
         when(configHelperService.getProjectConfig(projectToolConfig.getBasicProjectConfigId().toString()))
                 .thenReturn(projectBasicConfig);
         repoToolsConfigService.triggerScanRepoToolProject(Arrays.asList("5fb364612064a31c9ccd517a"));
         verify(processorRepository, Mockito.times(1)).findByProcessorName("RepoTool");
-    }
-
-    @Test
-    public void testSaveRepoToolsProjectTraceLogs() {
-        RepoToolsStatusResponse repoToolsStatusResponse = new RepoToolsStatusResponse(
-                "testProject_5fb364612064a31c9ccd517a", "repository", "source", "SUCCESS", "2022-07-31 11:43:42.521");
-        when(processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-                ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a")).thenReturn(
-                Optional.of(new ProcessorExecutionTraceLog()));
-        repoToolsConfigService.saveRepoToolProjectTraceLog(repoToolsStatusResponse);
-        verify(processorExecutionTraceLogRepository, Mockito.times(1)).findByProcessorNameAndBasicProjectConfigId(
-                ProcessorConstants.REPO_TOOLS, "5fb364612064a31c9ccd517a");
     }
 
 }

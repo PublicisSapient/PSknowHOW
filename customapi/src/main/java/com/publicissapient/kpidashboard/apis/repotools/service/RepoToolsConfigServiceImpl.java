@@ -18,16 +18,30 @@
 
 package com.publicissapient.kpidashboard.apis.repotools.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
+import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
-import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.repotools.RepoToolsClient;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolConfig;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiBulkMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiMetricResponse;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolKpiRequestBody;
 import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsProvider;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.apis.repotools.repository.RepoToolsProviderRepository;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
@@ -40,26 +54,11 @@ import com.publicissapient.kpidashboard.common.model.connection.Connection;
 import com.publicissapient.kpidashboard.common.model.generic.Processor;
 import com.publicissapient.kpidashboard.common.model.generic.ProcessorItem;
 import com.publicissapient.kpidashboard.common.repository.application.ProjectToolConfigRepository;
-import com.publicissapient.kpidashboard.common.repository.connection.ConnectionRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorItemRepository;
 import com.publicissapient.kpidashboard.common.repository.generic.ProcessorRepository;
 import com.publicissapient.kpidashboard.common.repository.tracelog.ProcessorExecutionTraceLogRepository;
-import com.publicissapient.kpidashboard.common.service.AesEncryptionService;
 import com.publicissapient.kpidashboard.common.service.ProcessorExecutionTraceLogService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -167,6 +166,8 @@ public class RepoToolsConfigServiceImpl {
 		List<ProjectToolConfig> projectRepos = projectToolConfigRepository.findByToolNameAndBasicProjectConfigId(
 				CommonConstant.REPO_TOOLS, new ObjectId(basicProjectconfigIdList.get(0)));
 
+		List<ProcessorExecutionTraceLog> processorExecutionTraceLogList = new ArrayList<>();
+
 		try {
 
 			List<ProjectToolConfig> projectToolConfigList = projectRepos.stream()
@@ -176,6 +177,10 @@ public class RepoToolsConfigServiceImpl {
 			if (CollectionUtils.isNotEmpty(projectToolConfigList)) {
 				String projectCode = createProjectCode(basicProjectconfigIdList.get(0));
 
+				// create ProcessorExecutionTraceLog
+				ProcessorExecutionTraceLog processorExecutionTraceLog = createTraceLog(
+						new ObjectId(basicProjectconfigIdList.get(0)).toHexString());
+				processorExecutionTraceLog.setExecutionStartedAt(System.currentTimeMillis());
 				repoToolsClient = createRepoToolsClient();
 
 				// api call to start project scanning
@@ -186,6 +191,13 @@ public class RepoToolsConfigServiceImpl {
 				// save ProcessorItemRepository for all the ProjectToolConfig
 				processorItemRepository.saveAll(createProcessorItemList(projectToolConfigList, processor.getId()));
 
+				if (httpStatus == HttpStatus.OK.value()) {
+					// save ProcessorExecutionTraceLog
+					processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
+					processorExecutionTraceLog.setExecutionSuccess(true);
+					processorExecutionTraceLogList.add(processorExecutionTraceLog);
+					processorExecutionTraceLogService.save(processorExecutionTraceLog);
+				}
 			}
 		} catch (Exception ex) {
 			log.error("Exception occcured while scanning project {}", basicProjectconfigIdList, ex);
@@ -327,28 +339,21 @@ public class RepoToolsConfigServiceImpl {
 	}
 
 	/**
-	 * create and save ProcessorExecutionTraceLog to track repo tool project scan
+	 * create ProcessorExecutionTraceLog to track repo tool project scan
 	 * 
-	 * @param repoToolsStatusResponse Object containing repo tool scanning status
+	 * @param basicProjectConfigId
 	 * @return
 	 */
-	public void saveRepoToolProjectTraceLog(RepoToolsStatusResponse repoToolsStatusResponse) {
-
-		String basicProjectConfigId = repoToolsStatusResponse.getProject()
-				.substring(repoToolsStatusResponse.getProject().lastIndexOf('_') + 1);
+	private ProcessorExecutionTraceLog createTraceLog(String basicProjectConfigId) {
 		ProcessorExecutionTraceLog processorExecutionTraceLog = new ProcessorExecutionTraceLog();
 		processorExecutionTraceLog.setProcessorName(ProcessorConstants.REPO_TOOLS);
 		processorExecutionTraceLog.setBasicProjectConfigId(basicProjectConfigId);
-		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository.findByProcessorNameAndBasicProjectConfigId(
-				ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
+		Optional<ProcessorExecutionTraceLog> existingTraceLogOptional = processorExecutionTraceLogRepository
+				.findByProcessorNameAndBasicProjectConfigId(ProcessorConstants.REPO_TOOLS, basicProjectConfigId);
 		existingTraceLogOptional.ifPresent(
 				existingProcessorExecutionTraceLog -> processorExecutionTraceLog.setLastEnableAssigneeToggleState(
 						existingProcessorExecutionTraceLog.isLastEnableAssigneeToggleState()));
-		processorExecutionTraceLog.setExecutionEndedAt(System.currentTimeMillis());
-		processorExecutionTraceLog.setExecutionSuccess(
-				Constant.SUCCESS.equalsIgnoreCase(repoToolsStatusResponse.getStatus()));
-		processorExecutionTraceLogService.save(processorExecutionTraceLog);
-
+		return processorExecutionTraceLog;
 	}
 
 }

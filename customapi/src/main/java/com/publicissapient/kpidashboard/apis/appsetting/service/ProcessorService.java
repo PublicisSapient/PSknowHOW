@@ -19,7 +19,6 @@
 package com.publicissapient.kpidashboard.apis.appsetting.service;
 
 import com.publicissapient.kpidashboard.apis.model.ServiceResponse;
-import com.publicissapient.kpidashboard.apis.repotools.model.RepoToolsStatusResponse;
 import com.publicissapient.kpidashboard.common.model.ProcessorExecutionBasicConfig;
 
 /**
@@ -53,6 +52,4 @@ public interface ProcessorService {
 	 * @return {@code ServiceResponse}
 	 */
 	ServiceResponse fetchActiveSprint(String sprintId);
-
-	void saveRepoToolTraceLogs(RepoToolsStatusResponse repoToolsStatusResponse);
 }
