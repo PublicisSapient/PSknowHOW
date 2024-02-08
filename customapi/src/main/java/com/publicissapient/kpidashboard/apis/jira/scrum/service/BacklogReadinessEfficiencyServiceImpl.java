@@ -207,7 +207,7 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 			AtomicLong overAllCycleTime = new AtomicLong(0);
 			List<IterationKpiModalValue> overAllmodalValues = new ArrayList<>();
 
-			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) -> {
+			typeAndPriorityWiseIssues.forEach((issueType, priorityWiseIssue) ->
 				priorityWiseIssue.forEach((priority, issues) -> {
 					issueTypes.add(issueType);
 					priorities.add(priority);
@@ -241,9 +241,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					data.add(averageCycleTime);
 					IterationKpiValue iterationKpiValue = new IterationKpiValue(issueType, priority, data);
 					iterationKpiValues.add(iterationKpiValue);
-				});
-
-			});
+				})
+			);
 			List<IterationKpiData> data = new ArrayList<>();
 
 			IterationKpiData overAllIssues = new IterationKpiData(READY_BACKLOG,
@@ -323,19 +322,22 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 						&& DateTime.parse(node.getSprintFilter().getEndDate()).isBefore(DateTime.now()))
 				.limit(sprintCountForBackLogStrength).collect(Collectors.toList());
 
-		Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
-		Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
-		getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
-		AtomicDouble storyPoint = new AtomicDouble();
-		sprintForStregthCalculation.forEach(node -> {
-			Pair<String, String> currentNodeIdentifier = Pair
-					.of(node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
-			double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
-					currentNodeIdentifier, sprintWiseIssues, fieldMapping);
-			storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
-		});
-		log.debug("Velocity for {} sprints is {}", sprintCountForBackLogStrength, storyPoint.get());
-		return Double.valueOf(storyPoint.get() / sprintCountForBackLogStrength);
+		if (CollectionUtils.isNotEmpty(sprintForStregthCalculation)) {
+			Map<Pair<String, String>, List<JiraIssue>> sprintWiseIssues = new HashMap<>();
+			Map<Pair<String, String>, Set<IssueDetails>> currentSprintLeafVelocityMap = new HashMap<>();
+			getSprintForProject(allJiraIssue, sprintDetails, currentSprintLeafVelocityMap);
+			AtomicDouble storyPoint = new AtomicDouble();
+			sprintForStregthCalculation.forEach(node -> {
+				Pair<String, String> currentNodeIdentifier = Pair.of(
+						node.getProjectFilter().getBasicProjectConfigId().toString(), node.getSprintFilter().getId());
+				double sprintVelocityForCurrentLeaf = calculateSprintVelocityValue(currentSprintLeafVelocityMap,
+						currentNodeIdentifier, sprintWiseIssues, fieldMapping);
+				storyPoint.set(storyPoint.doubleValue() + sprintVelocityForCurrentLeaf);
+			});
+			log.debug("Velocity for {} sprints is {}", sprintForStregthCalculation.size(), storyPoint.get());
+			return storyPoint.get() / sprintForStregthCalculation.size();
+		}
+		return 0D;
 	}
 
 	public double calculateSprintVelocityValue(
