@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -66,6 +67,9 @@ public class SignupRequestsControllerTest {
 	@InjectMocks
 	private SignupRequestsController signupRequestsController;
 
+	@Mock
+	AuthProperties authProperties;
+
 	@Before
 	public void before() {
 		testId = "5dbfcc60e645ca2ee4075381";
@@ -74,7 +78,7 @@ public class SignupRequestsControllerTest {
 		authentication.setUsername("testUser");
 		authentication.setEmail("testUser@gmail.com");
 		authentication.setApproved(false);
-
+		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 		mockMvc = MockMvcBuilders.standaloneSetup(signupRequestsController).build();
 	}
 
@@ -101,7 +105,6 @@ public class SignupRequestsControllerTest {
 	 */
 	@Test
 	public void testGetAllUnApprovedRequestsCASwitchOn() throws Exception {
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.get("/userapprovals").contentType(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(status().isOk());
@@ -131,7 +134,6 @@ public class SignupRequestsControllerTest {
 		String request = "{\n" + "    \"status\": \"Approved\",\n" + "    \"role\": \"ROLE_PROJECT_ADMIN\",\n"
 				+ "    \"message\": \"\"\n" + "}";
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
-		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
 				.contentType(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk());
 
@@ -141,7 +143,6 @@ public class SignupRequestsControllerTest {
 	public void testModifyAccessRequest_Reject() throws Exception {
 		String request = "{\n" + "    \"status\": \"Rejected\",\n" + "    \"role\": \"ROLE_PROJECT_ADMIN\",\n"
 				+ "    \"message\": \"\"\n" + "}";
-		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("authCookie", "token"));
 		when(customApiConfig.isCentralAuthSwitch()).thenReturn(true);
 		when(userInfoService.deleteFromCentralAuthUser(any(), any())).thenReturn(true);
 		mockMvc.perform(MockMvcRequestBuilders.put("/userapprovals/testUser").content(request)
