@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.publicissapient.kpidashboard.apis.constant.Constant;
-import com.publicissapient.kpidashboard.apis.errors.EntityNotFoundException;
-import com.publicissapient.kpidashboard.apis.kpiintegration.service.KpiIntegrationServiceImpl;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 
  * @author prigupta8
- * @implNote {@link KpiIntegrationServiceImpl }
+ *
  */
 @Service
 @Slf4j
@@ -71,8 +68,6 @@ public class SonarServiceR {
 
 	@Autowired
 	private UserAuthorizedProjectsService authorizedProjectsService;
-
-	private boolean referFromProjectCache = true;
 
 	/**
 	 * Process Sonar KPI request for Kanban projects
@@ -101,7 +96,6 @@ public class SonarServiceR {
 			List<AccountHierarchyData> filteredAccountDataList = filterHelperService.getFilteredBuilds(kpiRequest,
 					groupName);
 			if (!CollectionUtils.isEmpty(filteredAccountDataList)) {
-
 				projectKeyCache = getProjectKeyCache(kpiRequest, filteredAccountDataList);
 				filteredAccountDataList = getAuthorizedFilteredList(kpiRequest, filteredAccountDataList);
 				if (filteredAccountDataList.isEmpty()) {
@@ -214,7 +208,7 @@ public class SonarServiceR {
 	 */
 	private String[] getProjectKeyCache(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
 		String[] projectKeyCache;
-		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
 			projectKeyCache = authorizedProjectsService.getProjectKey(filteredAccountDataList, kpiRequest);
 		} else {
 			projectKeyCache = kpiRequest.getIds();
@@ -230,27 +224,10 @@ public class SonarServiceR {
 	private List<AccountHierarchyData> getAuthorizedFilteredList(KpiRequest kpiRequest,
 			List<AccountHierarchyData> filteredAccountDataList) {
 		kpiHelperService.kpiResolution(kpiRequest.getKpiList());
-		if (Boolean.TRUE.equals(referFromProjectCache) && !authorizedProjectsService.ifSuperAdminUser()) {
+		if (!authorizedProjectsService.ifSuperAdminUser()) {
 			filteredAccountDataList = authorizedProjectsService.filterProjects(filteredAccountDataList);
 		}
+
 		return filteredAccountDataList;
 	}
-
-	/**
-	 * This method is called when the request for kpi is done from exposed API
-	 *
-	 * @param kpiRequest
-	 *            SONAR KPI request true if flow for precalculated, false for direct
-	 *            flow.
-	 * @return List of KPI data
-	 * @throws EntityNotFoundException
-	 *             EntityNotFoundException
-	 */
-	public List<KpiElement> processWithExposedApiToken(KpiRequest kpiRequest) {
-		referFromProjectCache = false;
-		List<KpiElement> kpiElementList = process(kpiRequest);
-		referFromProjectCache = true;
-		return kpiElementList;
-	}
-
 }
