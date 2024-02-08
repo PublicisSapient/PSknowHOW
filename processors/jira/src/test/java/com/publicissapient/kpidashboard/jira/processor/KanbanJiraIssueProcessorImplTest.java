@@ -161,7 +161,12 @@ public class KanbanJiraIssueProcessorImplTest {
 				.convertToKanbanJiraIssue(issues.get(0), projectConfFieldMapping, "111")).getClass());
 
 	}
+	@Test
+	public void convertToJiraIssueWhenException() throws JSONException {
+		Assert.assertEquals(null, (transformFetchedIssueToKanbanJiraIssue
+				.convertToKanbanJiraIssue(null, projectConfFieldMapping, "111")));
 
+	}
 	@Test
 	public void updateAssigneeDetailsToggleWise() {
 		transformFetchedIssueToKanbanJiraIssue.updateAssigneeDetailsToggleWise(new KanbanJiraIssue(),
@@ -399,5 +404,26 @@ public class KanbanJiraIssueProcessorImplTest {
 		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setAssigneeName", String.class, String.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToKanbanJiraIssue, "assigneeId", "basicProjectConfigId");
+	}
+	@Test
+	public void setEpicLinkedTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+		KanbanJiraIssue jiraIssue = new KanbanJiraIssue();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setRootCause("code_issue");
+		fieldMapping.setEpicLink("Epic123");
+		Map<String, String> map = new HashMap<>();
+		map.put("self", "https://jiradomain.com/jira/rest/api/2/customFieldOption/20810");
+		map.put("value", "code");
+		map.put("id", "19121");
+		JSONObject jsonObject = new JSONObject(map);
+		List<Object> rcaList = new ArrayList<>();
+		rcaList.add(jsonObject);
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("code_issue", issueField);
+		fields.put("Epic123",issueField);
+		Method method = KanbanJiraIssueProcessorImpl.class.getDeclaredMethod("setEpicLinked",FieldMapping.class,KanbanJiraIssue.class,Map.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToKanbanJiraIssue,fieldMapping,jiraIssue,fields);
 	}
 }

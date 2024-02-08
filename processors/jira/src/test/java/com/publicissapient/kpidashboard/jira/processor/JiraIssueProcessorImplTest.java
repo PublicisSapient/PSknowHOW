@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.publicissapient.kpidashboard.jira.constant.JiraConstants;
 import org.bson.types.ObjectId;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
@@ -749,5 +750,67 @@ public class JiraIssueProcessorImplTest {
 		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setAssigneeName", String.class, String.class);
 		method.setAccessible(true);
 		method.invoke(transformFetchedIssueToJiraIssue, "assigneeId", "basicProjectConfigId");
+	}
+	@Test
+	public void calculateEstimationForActualEstimates() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation",IssueField.class,String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField, JiraConstants.ACTUAL_ESTIMATION);
+	}
+	@Test
+	public void calculateEstimationForBufferEstimates() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation",IssueField.class,String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField, JiraConstants.BUFFERED_ESTIMATION);
+	}
+	@Test
+	public void calculateEstimationForStoryPoints() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation",IssueField.class,String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField, JiraConstants.STORY_POINT);
+	}
+	@Test
+	public void calculateEstimationForNone() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation",IssueField.class,String.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField, "None");
+	}
+	@Test
+	public void shouldEstimationBeCalculated() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("shouldEstimationBeCalculated",IssueField.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField);
+	}
+	@Test
+	public void calculateEstimation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		IssueField issueField = new IssueField("DTS123","KnowJ","None",5.0);
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("calculateEstimation",IssueField.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,issueField);
+	}
+	@Test
+	public void setSpecificFieldTestPhase() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		JiraIssue jiraIssue = new JiraIssue();
+		List list = new ArrayList();
+		list.add("UAT");
+		list.add("RT");
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSpecificField",JiraIssue.class,String.class,List.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,jiraIssue,"TestPhase",list);
+	}
+	@Test
+	public void setSpecificFieldUAT() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		JiraIssue jiraIssue = new JiraIssue();
+		List list = new ArrayList();
+		list.add("UAT");
+		list.add("RT");
+		Method method = JiraIssueProcessorImpl.class.getDeclaredMethod("setSpecificField",JiraIssue.class,String.class,List.class);
+		method.setAccessible(true);
+		method.invoke(transformFetchedIssueToJiraIssue,jiraIssue,"UAT",list);
 	}
 }

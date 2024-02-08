@@ -333,5 +333,38 @@ public class JiraIssueHistoryProcessorImplTest {
 		fields.put("customfield_20303", new IssueField("", "Due_Date", null, ""));
 
 	}
+	@Test
+	public void parseStringToLocalDateTimeTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("parseStringToLocalDateTime",String.class);
+		method.setAccessible(true);
+		method.invoke(createJiraIssueHistory,new DateTime().toLocalDateTime().toString());
+	}
+	@Test
+	public void getDueDateChangeLogTest() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+		List<ChangelogGroup> changeLogList = new ArrayList<>();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setRootCause("code_issue");
+		List<Object> rcaList = new ArrayList<>();
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("code_issue", issueField);
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog",List.class,FieldMapping.class,Map.class);
+		method.setAccessible(true);
+		method.invoke(createJiraIssueHistory,changeLogList,fieldMapping,fields);
+	}
+	@Test
+	public void getDueDateChangeNoDueDate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, JSONException {
+		List<ChangelogGroup> changeLogList = new ArrayList<>();
+		FieldMapping fieldMapping = new FieldMapping();
+		fieldMapping.setJiraDueDateField("no_duedate");
+		fieldMapping.setJiraDueDateCustomField("custom_date");
+		List<Object> rcaList = new ArrayList<>();
+		IssueField issueField = new IssueField("customfield_19121", "code_issue", null, new JSONArray(rcaList));
+		Map<String, IssueField> fields = new HashMap<>();
+		fields.put("custom_date", issueField);
+		Method method = JiraIssueHistoryProcessorImpl.class.getDeclaredMethod("getDueDateChangeLog",List.class,FieldMapping.class,Map.class);
+		method.setAccessible(true);
+		method.invoke(createJiraIssueHistory,changeLogList,fieldMapping,fields);
+	}
 
 }
