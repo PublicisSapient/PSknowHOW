@@ -114,6 +114,12 @@ public class TestConnectionServiceImplTest {
 	}
 
 	@Test
+	public void validateConnectionArgoCD() {
+		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_ARGOCD);
+		assertThat("status: ", response.getSuccess(), equalTo(false));
+	}
+
+	@Test
 	public void validateConnectionException() {
 		when(customApiConfig.getJiraTestConnection()).thenReturn("rest/api/2/issue/createmeta");
 		ServiceResponse response = testConnectionServiceImpl.validateConnection(conn, Constant.TOOL_JIRA);
