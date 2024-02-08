@@ -249,7 +249,8 @@ public class BacklogReadinessEfficiencyServiceImpl extends JiraKPIService<Intege
 					Double.valueOf(overAllIssueCount.get(0)), overAllStoryPoints.get(0), null, null, SP,
 					overAllmodalValues);
 			log.debug("Overall  the avg velocity of the previous sprint: {}", avgVelocity);
-			double strength = (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
+			double strength = (avgVelocity == 0D) ? DEFAULT_BACKLOG_STRENGTH
+					: (double) Math.round(overAllStoryPoints.get(0) / avgVelocity * 100) / 100;
 			IterationKpiData backLogStrength = new IterationKpiData(BACKLOG_STRENGTH, strength, null, null, SPRINT,
 					null);
 			log.debug("Overall  the cycle time is : {} ", overAllCycleTime.get());
