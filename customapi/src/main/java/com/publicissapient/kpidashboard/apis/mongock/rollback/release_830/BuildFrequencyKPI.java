@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_830;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ import io.mongock.api.annotations.RollbackExecution;
  *
  * @author aksshriv1
  */
-@ChangeUnit(id = "r_build_freq", order = "09002", author = "aksshriv1", systemVersion = "9.0.0")
+@ChangeUnit(id = "r_build_freq", order = "08331", author = "aksshriv1", systemVersion = "8.3.3")
 public class BuildFrequencyKPI {
 	public static final String KPI_ID = "kpiId";
 	public static final String KPI_172 = "kpi172";
@@ -50,6 +50,11 @@ public class BuildFrequencyKPI {
 		deleteKpiMaster();
 		deleteFieldMappingStructure();
 		deleteKPIColumnConfig();
+		deleteKpiCategoryMapping();
+	}
+
+	public void deleteKpiCategoryMapping() {
+		mongoTemplate.getCollection("kpi_category_mapping").deleteOne(new Document(KPI_ID, KPI_172));
 	}
 
 	public void deleteKPIColumnConfig() {

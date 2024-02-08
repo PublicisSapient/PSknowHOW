@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_900;
+package com.publicissapient.kpidashboard.apis.mongock.upgrade.release_830;
 
 import java.util.Arrays;
 
@@ -34,7 +34,7 @@ import io.mongock.api.annotations.RollbackExecution;
  * 
  * @author aksshriv1
  */
-@ChangeUnit(id = "build_freq", order = "9002", author = "aksshriv1", systemVersion = "9.0.0")
+@ChangeUnit(id = "build_freq", order = "8331", author = "aksshriv1", systemVersion = "8.3.3")
 public class BuildFrequencyKPI {
 	public static final String KPI_ID = "kpiId";
 	public static final String KPI_172 = "kpi172";
@@ -55,6 +55,7 @@ public class BuildFrequencyKPI {
 		addToKpiMaster();
 		addFieldToFieldMappingStructure();
 		addToKpiColumnConfig();
+		addToKpiCategoryMapping();
 	}
 
 	public void addToKpiMaster() {
@@ -113,11 +114,22 @@ public class BuildFrequencyKPI {
 		mongoTemplate.getCollection("kpi_column_configs").insertOne(kpiColumnConfigsDocument);
 	}
 
+	public void addToKpiCategoryMapping() {
+		Document kpiCategoryMappingDocument = new Document().append(KPI_ID, KPI_172).append("categoryId", "speed")
+				.append("kpiOrder", 10).append("kanban", false);
+		mongoTemplate.getCollection("kpi_category_mapping").insertOne(kpiCategoryMappingDocument);
+	}
+
 	@RollbackExecution
 	public void rollback() {
 		deleteKpiMaster();
 		deleteFieldMappingStructure();
 		deleteKPIColumnConfig();
+		deleteKpiCategoryMapping();
+	}
+
+	public void deleteKpiCategoryMapping() {
+		mongoTemplate.getCollection("kpi_category_mapping").deleteOne(new Document(KPI_ID, KPI_172));
 	}
 
 	public void deleteKPIColumnConfig() {
