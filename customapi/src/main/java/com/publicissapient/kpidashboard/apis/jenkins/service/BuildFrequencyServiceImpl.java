@@ -1,13 +1,10 @@
 /*******************************************************************************
  * Copyright 2014 CapitalOne, LLC.
  * Further development Copyright 2022 Sapient Corporation.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -156,9 +153,13 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param kpiElement
+	 *            kpiElement
 	 * @param mapTmp
+	 *            mapTmp
 	 * @param projectLeafNodeList
+	 *            projectLeafNodeList
 	 * @param trendValueMap
+	 *            trendValueMap
 	 */
 	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
 			List<Node> projectLeafNodeList, Map<String, List<DataCount>> trendValueMap) {
@@ -227,9 +228,13 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param requestTrackerId
+	 *            requestTrackerId
 	 * @param excelData
+	 *            excelData
 	 * @param projectName
+	 *            projectName
 	 * @param buildFrequencyInfo
+	 *            buildFrequencyInfo
 	 */
 	private void populateValidationDataObject(String requestTrackerId, List<KPIExcelData> excelData, String projectName,
 			BuildFrequencyInfo buildFrequencyInfo) {
@@ -243,12 +248,19 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param buildFrequencyInfo
+	 *            buildFrequencyInfo
 	 * @param endTime
+	 *            endTime
 	 * @param buildList
+	 *            buildList
 	 * @param trendLineName
+	 *            trendLineName
 	 * @param trendValueMap
+	 *            trendValueMap
 	 * @param jobName
+	 *            jobName
 	 * @param aggDataMap
+	 *            aggDataMap
 	 */
 	private void prepareInfoForBuild(BuildFrequencyInfo buildFrequencyInfo, LocalDateTime endTime,
 			List<Build> buildList, String trendLineName, Map<String, List<DataCount>> trendValueMap, String jobName,
@@ -294,9 +306,12 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param trendLineName
+	 *            trendLineName
 	 * @param valueForCurrentLeaf
+	 *            valueForCurrentLeaf
 	 * @param date
-	 * @return
+	 *            date
+	 * @return returning data count
 	 */
 	private DataCount createDataCount(String trendLineName, Integer valueForCurrentLeaf, String date) {
 		DataCount dataCount = new DataCount();
@@ -311,8 +326,11 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param buildFrequencyInfo
+	 *            buildFrequencyInfo
 	 * @param build
+	 *            build
 	 * @param date
+	 *            date
 	 */
 	private void buildFrequencyInfo(BuildFrequencyInfo buildFrequencyInfo, Build build, String date) {
 		if (null != buildFrequencyInfo) {
@@ -331,9 +349,12 @@ public class BuildFrequencyServiceImpl extends JenkinsKPIService<Long, List<Obje
 	/**
 	 * 
 	 * @param monday
+	 *            monday
 	 * @param sunday
+	 *            sunday
 	 * @param build
-	 * @return
+	 *            build
+	 * @return returning boolean value
 	 */
 	private boolean checkDateIsInWeeks(LocalDate monday, LocalDate sunday, Build build) {
 		LocalDate buildTime = Instant.ofEpochMilli(build.getStartTime()).atZone(ZoneId.systemDefault()).toLocalDate();
