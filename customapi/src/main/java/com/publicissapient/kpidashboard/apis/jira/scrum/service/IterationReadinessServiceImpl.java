@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -116,6 +117,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						.collect(Collectors.toList());
 			}
 			List<String> totalSprint = jiraService.getFutureSprintsList();
+			totalSprint.add("");
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
 		}
@@ -173,10 +175,8 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					statusWiseJiraIssue.put(NOT_REFINED, filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
 					DataCount issueCountDc = new DataCount();
 					DataCount storyPointDc = new DataCount();
-					issueCountDc.setSSprintName(sprint);
-					issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
-					storyPointDc.setSSprintName(sprint);
-					storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+					setDataCount(sprint, issueCountDc, storyPointDc);
+
 					HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
 					HashMap<Object, Double> mapOfStoryPoint = new LinkedHashMap<>();
 					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
@@ -221,6 +221,30 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
+	}
+
+	/**
+	 * Sets data count
+	 * 
+	 * @param sprint
+	 *            sprint
+	 * @param issueCountDc
+	 *            issueCountDc
+	 * @param storyPointDc
+	 *            storyPointDc
+	 */
+	private static void setDataCount(String sprint, DataCount issueCountDc, DataCount storyPointDc) {
+		if (StringUtils.isNotEmpty(sprint)) {
+			issueCountDc.setSSprintName(sprint);
+			issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+			storyPointDc.setSSprintName(sprint);
+			storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+		} else {
+			issueCountDc.setSSprintName("Backlog");
+			issueCountDc.setKpiGroup(CommonConstant.BACKLOG);
+			storyPointDc.setSSprintName("Backlog");
+			storyPointDc.setKpiGroup(CommonConstant.BACKLOG);
+		}
 	}
 
 	/**
