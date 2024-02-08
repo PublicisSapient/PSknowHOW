@@ -62,15 +62,16 @@ public class BuildFrequencyKPI {
 		// Insert document into 'kpi_master' collection
 		Document kpiDocument = new Document().append(KPI_ID, KPI_172).append("kpiName", "Build Frequency")
 				.append("maxValue", "").append("kpiUnit", "").append("isDeleted", "False").append("defaultOrder", 24)
-				.append("kpiSource", "Jenkins").append("groupId", 1).append("thresholdValue", "")
+				.append("kpiSource", "Jenkins").append("groupId", 1).append("thresholdValue", "8")
 				.append("kanban", false).append("chartType", "line")
 				.append("kpiInfo", new Document(DEFINITION,
 						"Build frequency refers the number of successful builds done in a specific time frame.")
 						.append("details", Arrays.asList(new Document("type", "link").append("kpiLinkDetail",
 								new Document("text", "Detailed Information at").append("link",
 										"https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/92930049/Build+Frequency")))))
-				.append("xAxisLabel", "Weeks").append("yAxisLabel", "Builds Count").append("isPositiveTrend", false)
-				.append("showTrend", true).append("kpiFilter", "dropDown").append("aggregationCriteria", "sum")
+				.append("upperThresholdBG", "white").append("lowerThresholdBG", "red").append("xAxisLabel", "Weeks")
+				.append("yAxisLabel", "Builds Count").append("isPositiveTrend", false).append("showTrend", true)
+				.append("kpiFilter", "dropDown").append("aggregationCriteria", "sum")
 				.append("isAdditionalFilterSupport", false).append("calculateMaturity", true)
 				.append("hideOverallFilter", true)
 				.append("maturityRange", Arrays.asList("-1", "2-4", "5-8", "8-10", "10-"));

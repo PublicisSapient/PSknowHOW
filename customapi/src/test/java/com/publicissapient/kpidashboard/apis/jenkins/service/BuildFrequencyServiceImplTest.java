@@ -144,7 +144,7 @@ public class BuildFrequencyServiceImplTest {
     }
 
     @Test
-    public void testGetCodeBuildTime() throws Exception {
+    public void testGetBuildFrquency() throws Exception {
 
         TreeAggregatorDetail treeAggregatorDetail = KPIHelperUtil.getTreeLeafNodesGroupedByFilter(kpiRequest,
                 accountHierarchyDataList, new ArrayList<>(), "hierarchyLevelOne", 5);
@@ -157,14 +157,14 @@ public class BuildFrequencyServiceImplTest {
 
             KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
-            assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+            assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
         } catch (Exception enfe) {
         }
 
     }
 
     @Test
-    public void testGetCodeBuildTime2() throws Exception {
+    public void testGetBuildFrquency2() throws Exception {
         Map<String, Node> mapTmp = new HashMap<>();
         List<Node> leafNodeList = new ArrayList<>();
 
@@ -183,7 +183,7 @@ public class BuildFrequencyServiceImplTest {
         try {
             KpiElement kpiElement = buildFrequencyServiceImpl.getKpiData(kpiRequest, kpiRequest.getKpiList().get(0),
                     treeAggregatorDetail);
-            assertThat("Code Build Time :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
+            assertThat("Build Frequency :", ((List<DataCount>) kpiElement.getTrendValueList()).size(), equalTo(3));
         } catch (Exception enfe) {
 
         }

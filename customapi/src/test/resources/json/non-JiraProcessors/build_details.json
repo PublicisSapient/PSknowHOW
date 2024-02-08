@@ -103,9 +103,9 @@
     "buildJob" : "UI_Build",
     "jobFolder" : "UI_Build",
     "number" : "1617",
-    "startTime" : 1664429908603,
-    "endTime" : 1664430669561,
-    "duration" : 760958,
+    "startTime" : 1707383065000,
+    "endTime" : 1707383425000,
+    "duration" : 360000,
     "buildStatus" : "SUCCESS",
     "startedBy" : "shivani chittauri",
     "_class" : "com.publicissapient.kpidashboard.common.model.application.Build"

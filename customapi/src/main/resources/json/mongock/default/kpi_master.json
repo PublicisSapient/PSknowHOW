@@ -4030,7 +4030,7 @@
     "defaultOrder": 24,
     "kpiSource": "Jenkins",
     "groupId": 1,
-    "thresholdValue": "",
+    "thresholdValue": "8",
     "kanban": false,
     "chartType": "line",
     "kpiInfo": {
@@ -4045,9 +4045,11 @@
         }
       ]
     },
+    "upperThresholdBG" : "white",
+    "lowerThresholdBG" : "red",
     "xAxisLabel": "Weeks",
     "yAxisLabel": "Builds Count",
-    "isPositiveTrend": false,
+    "isPositiveTrend": true,
     "showTrend": true,
     "kpiFilter": "dropDown",
     "aggregationCriteria": "sum",
