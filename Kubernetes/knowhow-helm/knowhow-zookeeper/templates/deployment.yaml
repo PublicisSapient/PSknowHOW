@@ -1,64 +1,42 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: {{ include "knowhow-zookeeper.fullname" . }}
+  name: crs-zookeeper
   namespace: {{ .Values.env}}-knowhow
-  labels:
-    {{- include "knowhow-zookeeper.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: 3
+  serviceName: zookeeper-cluster
   selector:
     matchLabels:
-      {{- include "knowhow-zookeeper.selectorLabels" . | nindent 6 }}
+      app: zookeeper-cluster
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "knowhow-zookeeper.selectorLabels" . | nindent 8 }}
+        component: zookeeper-cluster
+        app: zookeeper-cluster
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "knowhow-zookeeper.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{.Values.service.port}}
-              protocol: TCP
-          livenessProbe:
-            tcpSocket:
-              port: {{.Values.service.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 10
-          readinessProbe:
-            tcpSocket:
-              port: {{.Values.service.port}}
-            initialDelaySeconds: 10   # Wait for 10 seconds before starting probes
-            periodSeconds: 10
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      - name: zookeeper
+        image: bitnami/zookeeper:latest
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 0
+        ports:
+        - containerPort: 2181
+        - containerPort: 2888
+        - containerPort: 3888
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "sh"
+                - "-c"
+                - >
+                  echo $(( $(cat /etc/hosts | grep zookeeper | awk '{print($3)}' | awk '{split($0,array,"-")} END{print array[3]}') + 1 )) > /bitnami/zookeeper/data/myid
+        env:
+        - name: ALLOW_ANONYMOUS_LOGIN
+          value: "yes"
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.configmapname }}
+        

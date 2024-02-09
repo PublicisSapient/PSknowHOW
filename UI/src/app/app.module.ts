@@ -21,7 +21,7 @@
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { InterceptorModule } from './module/interceptor.module';
 import { AppRoutingModule } from './module/app-routing.module';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -125,7 +125,10 @@ import { AppInitializerService } from './services/app-initializer.service';
 
 /******************************************************/
 export function initializeApp(initializeService: AppInitializerService) {
-    return () => initializeService.validateToken() && initializeService.checkFeatureFlag();
+    return () => {
+        // initializeService.validateToken();
+        return initializeService.checkFeatureFlag();
+    };
 }
 
 @NgModule({

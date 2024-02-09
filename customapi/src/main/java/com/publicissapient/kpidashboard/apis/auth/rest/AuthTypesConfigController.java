@@ -26,7 +26,7 @@ public class AuthTypesConfigController {
 	@PreAuthorize("hasPermission(null,'CONFIGURE_LOGIN_TYPE')")
 	public ResponseEntity<ServiceResponse> addAuthTypesConfig(@RequestBody AuthTypeConfig authTypeConfig) {
 
-		AuthTypeConfig savedAuthTypeConfig = authTypesConfigService.saveAuthTypeConfig(authTypeConfig);
+		AuthTypeConfig savedAuthTypeConfig = new AuthTypeConfig();
 		ServiceResponse serviceResponse = null;
 
 		if (savedAuthTypeConfig == null) {

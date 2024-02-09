@@ -93,7 +93,10 @@ export class SharedService {
   globalConfigData : any
   visibleSideBarSubject = new BehaviorSubject(false);
   visibleSideBarObs = this.visibleSideBarSubject.asObservable();
-
+  projectQueryParamSubject = new BehaviorSubject<any>('');
+  projectQueryParamObs = this.projectQueryParamSubject.asObservable();
+  sprintQueryParamSubject = new BehaviorSubject<any>('');
+  sprintQueryParamObs = this.sprintQueryParamSubject.asObservable();
 
   public currentIssue = new BehaviorSubject({});
   public currentData = this.currentIssue.asObservable();
@@ -393,6 +396,14 @@ export class SharedService {
 
   getAuthToken(){
     return this.authToken;
+  }
+
+  setProjectQueryParamInFilters(value) {
+    this.projectQueryParamSubject.next({value});
+  }
+
+  setSprintQueryParamInFilters(value) {
+    this.sprintQueryParamSubject.next({value});
   }
 }
 

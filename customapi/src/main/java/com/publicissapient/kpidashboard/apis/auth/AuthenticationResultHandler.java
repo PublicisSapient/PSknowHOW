@@ -49,6 +49,9 @@ public class AuthenticationResultHandler implements AuthenticationSuccessHandler
 	private AuthenticationService authenticationService;
 
 	@Autowired
+	private AuthProperties authProperties;
+
+	@Autowired
 	private CookieUtil cookieUtil;
 
 	@Override

@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mongock.rollback.release_900;
+package com.publicissapient.kpidashboard.apis.mongock.rollback.release_830;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ import io.mongock.api.annotations.RollbackExecution;
 /**
  * @author shi6
  */
-@ChangeUnit(id = "r_dsr_ehnc", order = "09001", author = "shi6", systemVersion = "9.0.0")
+@ChangeUnit(id = "r_dsr_ehnc", order = "08321", author = "shi6", systemVersion = "8.3.2")
 public class DSREnchn {
 
 	public static final String FIELD_MAPPING_STRUCTURE = "field_mapping_structure";
@@ -112,7 +112,7 @@ public class DSREnchn {
 				new Document("$set", new Document(FIELD_LABEL, "Escaped defects identification (Processor Run)")));
 
 		mongoTemplate.getCollection("kpi_master").updateOne(new Document("kpiId", "kpi35"),
-				new Document("$set", new Document("kpiFilter", "multiSelectDropDown")));
+				new Document("$set", new Document("kpiFilter", "dropDown")));
 
 	}
 

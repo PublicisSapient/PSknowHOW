@@ -67,6 +67,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 	private static final String PROJECTS_ACCESS = "projectsAccess";
 	private static final String AUTH_RESPONSE_HEADER = "X-Authentication-Token";
 	private static final String USER_AUTHORITIES = "authorities";
+	private static final String USER_AUTH_TYPE = "authType";
 	public static final String SUCCESS = "SUCCESS";
 
 	@Autowired
@@ -101,7 +102,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 		UserInfo userinfoKnowHow = userInfoRepository.findByUsername(username);
 		httpServletResponse.setCharacterEncoding("UTF-8");
 		if (Objects.isNull(userinfoKnowHow)) {
-			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username, authToken);
+			CentralUserInfoDTO centralUserInfoDTO = userInfoService.getCentralAuthUserInfoDetails(username);
 			UserInfo centralUserInfo = new UserInfo();
 			if (Objects.nonNull(centralUserInfoDTO)) {
 				setUserDetailsFromCentralAuth(username, centralUserInfoDTO, centralUserInfo);
@@ -120,6 +121,7 @@ public class CustomAnalyticsServiceImpl implements CustomAnalyticsService {
 			userMap.put(USER_EMAIL, email);
 			userMap.put(USER_ID, userinfoKnowHow.getId().toString());
 			userMap.put(USER_AUTHORITIES, userinfoKnowHow.getAuthorities());
+			userMap.put(USER_AUTH_TYPE, userinfoKnowHow.getAuthType());
 			List<RoleWiseProjects> projectAccessesWithRole = projectAccessManager.getProjectAccessesWithRole(username);
 			if (CollectionUtils.isNotEmpty(projectAccessesWithRole)) {
 				userMap.put(PROJECTS_ACCESS, projectAccessesWithRole);

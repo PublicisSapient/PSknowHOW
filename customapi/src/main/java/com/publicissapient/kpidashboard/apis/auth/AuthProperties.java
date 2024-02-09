@@ -77,6 +77,9 @@ public class AuthProperties {// NOPMD
 	private String updateUserApprovalStatus;
 	private String resourceName;
 
+	private boolean subDomainCookie;
+	private String domain;
+
 	/**
 	 * Gets expiration time.
 	 *
@@ -500,6 +503,22 @@ public class AuthProperties {// NOPMD
 	 */
 	public void setResourceAPIKey(String resourceAPIKey) {
 		this.resourceAPIKey = resourceAPIKey;
+	}
+
+	public boolean isSubDomainCookie() {
+		return subDomainCookie;
+	}
+
+	public void setSubDomainCookie(boolean subDomainCookie) {
+		this.subDomainCookie = subDomainCookie;
+	}
+
+	public String getDomain() {
+		return domain;
+	}
+
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 
 	/**
