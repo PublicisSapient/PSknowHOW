@@ -15,3 +15,6 @@ data:
   spring.kafka.consumer.bootstrap-servers: "crs-kafka-0.kafka-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:9092"
   KAFKA_CFG_ZOOKEEPER_CONNECT: "crs-zookeeper-0.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2181,crs-zookeeper-1.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2181,crs-zookeeper-2.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2181"
   ZOO_SERVERS: "crs-zookeeper-0.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-1.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2888:3888,crs-zookeeper-2.zookeeper-cluster.{{ .Values.env}}-knowhow.svc.cluster.local:2888:3888"
+  
+  # UI Config
+  analytics.switch: "true"
