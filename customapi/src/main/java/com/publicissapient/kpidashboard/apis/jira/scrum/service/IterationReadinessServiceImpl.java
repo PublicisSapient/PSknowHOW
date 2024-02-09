@@ -104,9 +104,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-			List<JiraIssue> totalJiraIssue = new ArrayList<>();
-
-			totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
+			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
 			final List<String> filterByIssueTypeKPI161 = Optional.ofNullable(fieldMapping.getJiraIssueTypeNamesKPI161())
 					.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
 			// filtering by type only when type is updated in fieldMapping else all types
@@ -117,7 +115,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						.collect(Collectors.toList());
 			}
 			List<String> totalSprint = jiraService.getFutureSprintsList();
-			totalSprint.add("");
+			totalSprint.add(CommonConstant.BLANK);
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
 		}
@@ -240,9 +238,9 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			storyPointDc.setSSprintName(sprint);
 			storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
 		} else {
-			issueCountDc.setSSprintName("Backlog");
+			issueCountDc.setSSprintName(CommonConstant.BACKLOG);
 			issueCountDc.setKpiGroup(CommonConstant.BACKLOG);
-			storyPointDc.setSSprintName("Backlog");
+			storyPointDc.setSSprintName(CommonConstant.BACKLOG);
 			storyPointDc.setKpiGroup(CommonConstant.BACKLOG);
 		}
 	}
