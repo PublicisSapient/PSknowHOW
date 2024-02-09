@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.test.MetaDataInstanceFactory;
 
 import java.util.Collections;
@@ -76,6 +77,8 @@ public class JobListenerKanbanTest {
     private JobListenerKanban jobListenerKanban;
 
     private JobExecution jobExecution;
+    @Mock
+    private JobRepository jobRepository;
 
     @Before
     public void setUp() {

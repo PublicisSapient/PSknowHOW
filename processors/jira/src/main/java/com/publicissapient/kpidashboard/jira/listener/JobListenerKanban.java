@@ -31,6 +31,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobScope;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -84,6 +85,8 @@ public class JobListenerKanban implements JobExecutionListener {
 
 	@Autowired
 	private JiraCommonService jiraCommonService;
+	@Autowired
+	JobRepository jobRepository;
 
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
@@ -126,6 +129,7 @@ public class JobListenerKanban implements JobExecutionListener {
 			log.info("removing project with basicProjectConfigId {}", projectId);
 			// Mark the execution as completed
 			ongoingExecutionsService.markExecutionAsCompleted(projectId);
+			jobRepository.deleteJobExecution(jobExecution);
 		}
 	}
 
