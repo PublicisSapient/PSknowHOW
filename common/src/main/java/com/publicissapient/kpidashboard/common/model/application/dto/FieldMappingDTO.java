@@ -440,6 +440,7 @@ public class FieldMappingDTO extends BasicModel {
     private String thresholdValueKPI39;
     private String thresholdValueKPI46;
     private String thresholdValueKPI8;
+    private String thresholdValueKPI172;
     private String thresholdValueKPI73;
     private String thresholdValueKPI113;
     private String thresholdValueKPI149;

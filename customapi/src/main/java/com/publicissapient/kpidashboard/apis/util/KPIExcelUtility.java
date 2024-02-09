@@ -35,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +46,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.collect.Sets;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
+import com.publicissapient.kpidashboard.apis.model.BuildFrequencyInfo;
 import com.publicissapient.kpidashboard.apis.model.ChangeFailureRateInfo;
 import com.publicissapient.kpidashboard.apis.model.CodeBuildTimeInfo;
 import com.publicissapient.kpidashboard.apis.model.CustomDateRange;
@@ -243,8 +243,9 @@ public class KPIExcelUtility {
 	public static void populateDefectSeepageRateExcelData(String sprint, Map<String, JiraIssue> totalBugList,
 			List<DSRValidationData> dsrValidationDataList, List<KPIExcelData> excelDataList) {
 
-		Map<String, String> labelWiseValidationData =dsrValidationDataList.stream()
-				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel, (x,y)->x+CommonConstant.COMMA+ y));
+		Map<String, String> labelWiseValidationData = dsrValidationDataList.stream()
+				.collect(Collectors.toMap(DSRValidationData::getIssueNumber, DSRValidationData::getLabel,
+						(x, y) -> x + CommonConstant.COMMA + y));
 		totalBugList.forEach((defectId, jiraIssue) -> {
 			String label = Constant.EMPTY_STRING;
 			String present = Constant.EMPTY_STRING;
@@ -954,6 +955,30 @@ public class KPIExcelUtility {
 			excelData.setDuration(codeBuildTimeInfo.getDurationList().get(i));
 			kpiExcelData.add(excelData);
 
+		}
+	}
+
+	/**
+	 * populate excel data function for build frequency kpi
+	 * 
+	 * @param kpiExcelData
+	 * @param projectName
+	 * @param buildFrequencyInfo
+	 */
+
+	public static void populateBuildFrequency(List<KPIExcelData> kpiExcelData, String projectName,
+			BuildFrequencyInfo buildFrequencyInfo) {
+
+		for (int i = 0; i < buildFrequencyInfo.getBuildJobList().size(); i++) {
+			KPIExcelData excelData = new KPIExcelData();
+			excelData.setProjectName(projectName);
+			excelData.setJobName(buildFrequencyInfo.getBuildJobList().get(i));
+			Map<String, String> buildUrl = new HashMap<>();
+			buildUrl.put(buildFrequencyInfo.getBuildUrlList().get(i), buildFrequencyInfo.getBuildUrlList().get(i));
+			excelData.setBuildUrl(buildUrl);
+			excelData.setStartDate(buildFrequencyInfo.getBuildStartTimeList().get(i));
+			excelData.setWeeks(buildFrequencyInfo.getWeeksList().get(i));
+			kpiExcelData.add(excelData);
 		}
 	}
 
