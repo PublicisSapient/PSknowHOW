@@ -30,6 +30,7 @@ import { SharedService } from '../services/shared.service';
 import { GetAuthService } from '../services/getauth.service';
 import { HttpService } from '../services/http.service';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-dashboard',
