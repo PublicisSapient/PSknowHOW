@@ -54,8 +54,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
         const requestId = uuid.v4();
-                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
-
+        req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
         const redirectExceptions = [
             environment.baseUrl + '/api/jenkins/kpi',
@@ -84,10 +83,10 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 tap(event => {
                     if (event instanceof HttpResponse){
                         /**Todo: check this when handling both central and local login */
-                        // if(!event?.url?.includes('api/authdetails') &&
-                        // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
-                        //     this.httpService.getAuthDetails();
-                        // }
+                        if(!event?.url?.includes('api/authdetails') &&
+                        ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
+                            this.httpService.getAuthDetails();
+                        }
                     }
                 }),
                 catchError((err) => {

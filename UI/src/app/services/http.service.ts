@@ -176,6 +176,7 @@ export class HttpService {
   private validateTokenUrl = this.baseUrl + '/api/validateToken';
   private validateResourceUrl = this.baseUrl + '/api/validateResource';
   private getShowHideKpiUrl = this.baseUrl + '/api/user-board-config';
+  private authStatusUrl = this.baseUrl + '/api/auth-status';
   constructor(
     private router: Router,
     private http: HttpClient,
@@ -1142,5 +1143,9 @@ export class HttpService {
 
    handleValidateResource(data){
       return this.http.post<object>(this.validateResourceUrl, data);
+   }
+
+   changeAuthStatus(){
+    return this.http.get(this.authStatusUrl);
    }
 }
