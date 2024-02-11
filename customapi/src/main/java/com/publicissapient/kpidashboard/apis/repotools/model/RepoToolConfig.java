@@ -55,4 +55,6 @@ public class RepoToolConfig {
     private List<String> scanningBranches;
     @SerializedName("is_cloneable")
     private Boolean isCloneable;
+    @SerializedName("api_endpoint")
+    private String apiEndpoint;
 }

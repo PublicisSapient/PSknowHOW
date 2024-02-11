@@ -18,18 +18,16 @@
 
 package com.publicissapient.kpidashboard.common.model.connection;
 
-import java.util.List;
-
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.publicissapient.kpidashboard.common.model.generic.BasicModel;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 /**
  * Represents the Connection role data.
@@ -80,11 +78,9 @@ public class Connection extends BasicModel {
 	private String samlEndPoint;
 	private String repoOwnerName;
 	private String repositoryName;
-	private String sshUrl;
 	private String httpUrl;
 	private String email;
 	private String repoToolProvider;
-	private Boolean isCloneable;
 
 	public boolean getIsOAuth() {
 		return this.isOAuth;

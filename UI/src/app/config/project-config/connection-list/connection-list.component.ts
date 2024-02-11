@@ -131,8 +131,8 @@ export class ConnectionListComponent implements OnInit {
     {
       connectionType: 'RepoTool',
       connectionLabel: 'RepoTool',
-      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloneable', 'SSH Url', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
-      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'isCloneable', 'sshUrl', 'username', 'accessToken', 'email', 'connPrivate']
+      labels: ['Connection Type', 'Select Platform Type', 'Connection Name', 'Http Url', 'Is Cloud Environment', 'Api End Point', 'Username', 'Access Token', 'User Email', 'Is Connection Private'],
+      inputFields: ['type', 'repoToolProvider', 'connectionName', 'httpUrl', 'cloudEnv', 'apiEndPoint', 'username', 'accessToken', 'email', 'connPrivate']
     }
   ];
 
@@ -169,12 +169,12 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: false
         }
       ],
-      isCloneable:[
-        {
-          field: 'sshUrl',
-          isEnabled: false
-        },
-      ],
+      // isCloneable:[
+      //   {
+      //     field: 'sshUrl',
+      //     isEnabled: false
+      //   },
+      // ],
       accessTokenEnabled:[],
       bearerToken: [
         {
@@ -238,7 +238,6 @@ export class ConnectionListComponent implements OnInit {
           isEnabled: false
         }
       ],
-      isCloneable:[],
       accessTokenEnabled:[]
     }
   };
@@ -1042,10 +1041,10 @@ export class ConnectionListComponent implements OnInit {
       this.basicConnectionForm.controls['password'].enable();
       this.basicConnectionForm.controls['accessTokenEnabled'].enable();
       this.basicConnectionForm.controls['accessToken'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === false) {
-      this.basicConnectionForm.controls['sshUrl'].disable();
-    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['isCloneable'] && this.connection['isCloneable'] === true) {
-      this.basicConnectionForm.controls['sshUrl'].enable();
+    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === false) {
+      this.basicConnectionForm.controls['apiEndPoint'].disable();
+    } else if (this.selectedConnectionType.toLowerCase() === 'repotool' && !!this.basicConnectionForm.controls['cloudEnv'] && this.connection['cloudEnv'] === true) {
+      this.basicConnectionForm.controls['apiEndPoint'].enable();
     }
 
     if(this.selectedConnectionType.toLowerCase() === 'sonar' && !!this.basicConnectionForm.controls['vault'] && this.connection['vault'] === true){
@@ -1123,12 +1122,12 @@ export class ConnectionListComponent implements OnInit {
         }
       }
 
-      if (field === 'isCloneable' && type.toLowerCase() === 'repotool') {
+      if (field === 'cloudEnv' && type.toLowerCase() === 'repotool') {
         if (event.checked) {
-          this.basicConnectionForm.controls['sshUrl']?.enable();
+          this.basicConnectionForm.controls['apiEndPoint']?.enable();
         } else {
-          this.basicConnectionForm.controls['sshUrl'].setValue('');
-          this.basicConnectionForm.controls['sshUrl']?.disable();
+          this.basicConnectionForm.controls['apiEndPoint'].setValue('');
+          this.basicConnectionForm.controls['apiEndPoint']?.disable();
         }
       }
     }

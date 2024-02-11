@@ -143,7 +143,6 @@ public class RepoToolsConfigServiceImplTest {
         connection.setAccessToken("testToken");
         connection.setEmail("testEmail");
         connection.setType(toolName);
-        connection.setSshUrl("testSshUrl");
         connection.setHttpUrl("testRepo.git");
         connection.setRepoToolProvider("github");
 

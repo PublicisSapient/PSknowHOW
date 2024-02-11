@@ -603,7 +603,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 		existingConnection.setJaasUser(connection.getJaasUser());
 		existingConnection.setSamlEndPoint(connection.getSamlEndPoint());
 		existingConnection.setKrb5ConfigFilePath(connection.getKrb5ConfigFilePath());
-		existingConnection.setSshUrl(connection.getSshUrl());
 		existingConnection.setHttpUrl(connection.getHttpUrl());
 		existingConnection.setEmail(connection.getEmail());
 	}
