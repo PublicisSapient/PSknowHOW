@@ -337,7 +337,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}
-		return null;
+		return new JSONObject();
 	}
 
 	@Override
