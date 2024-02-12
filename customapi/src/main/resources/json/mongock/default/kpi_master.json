@@ -4052,7 +4052,7 @@
     "isPositiveTrend": true,
     "showTrend": true,
     "kpiFilter": "dropDown",
-    "aggregationCriteria": "sum",
+    "aggregationCriteria": "average",
     "isAdditionalFilterSupport": false,
     "calculateMaturity": true,
     "hideOverallFilter": true,
