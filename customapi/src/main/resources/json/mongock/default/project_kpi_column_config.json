@@ -3076,5 +3076,35 @@
         "isDefault": true
       }
     ]
+  },
+  {
+    "basicProjectConfigId": null,
+    "kpiId": "kpi172",
+    "kpiColumnDetails": [{
+      "columnName": "Project Name",
+      "order": 0,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Job Name",
+      "order": 1,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Weeks",
+      "order": 2,
+      "isShown": true,
+      "isDefault": false
+    }, {
+      "columnName": "Start Date",
+      "order": 3,
+      "isShown": true,
+      "isDefault": false
+    },{
+      "columnName": "Build Url",
+      "order": 4,
+      "isShown": true,
+      "isDefault": false
+    }]
   }
 ]

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -103,9 +104,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 			log.info("Iteration Readiness kpi -> Requested project : {}", leafNode.getProjectFilter().getName());
 			FieldMapping fieldMapping = configHelperService.getFieldMappingMap()
 					.get(leafNode.getProjectFilter().getBasicProjectConfigId());
-			List<JiraIssue> totalJiraIssue = new ArrayList<>();
-
-			totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
+			List<JiraIssue> totalJiraIssue = jiraService.getJiraIssuesForCurrentSprint();
 			final List<String> filterByIssueTypeKPI161 = Optional.ofNullable(fieldMapping.getJiraIssueTypeNamesKPI161())
 					.orElse(Collections.emptyList()).stream().map(String::toLowerCase).collect(Collectors.toList());
 			// filtering by type only when type is updated in fieldMapping else all types
@@ -116,6 +115,7 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 						.collect(Collectors.toList());
 			}
 			List<String> totalSprint = jiraService.getFutureSprintsList();
+			totalSprint.add(CommonConstant.BLANK);
 			resultListMap.put(PROJECT_WISE_JIRA_ISSUE, totalJiraIssue);
 			resultListMap.put(SPRINT_LIST, totalSprint);
 		}
@@ -173,10 +173,8 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 					statusWiseJiraIssue.put(NOT_REFINED, filterByStatus(sprint, jiraIssues, backlogNotRefinedStatus));
 					DataCount issueCountDc = new DataCount();
 					DataCount storyPointDc = new DataCount();
-					issueCountDc.setSSprintName(sprint);
-					issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
-					storyPointDc.setSSprintName(sprint);
-					storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+					setDataCount(sprint, issueCountDc, storyPointDc);
+
 					HashMap<Object, Integer> mapOfIssueCount = new LinkedHashMap<>();
 					HashMap<Object, Double> mapOfStoryPoint = new LinkedHashMap<>();
 					if (MapUtils.isNotEmpty(statusWiseJiraIssue)) {
@@ -221,6 +219,30 @@ public class IterationReadinessServiceImpl extends JiraKPIService<Integer, List<
 
 		}
 		kpiElement.setTrendValueList(overAllIterationKpiValue);
+	}
+
+	/**
+	 * Sets data count
+	 * 
+	 * @param sprint
+	 *            sprint
+	 * @param issueCountDc
+	 *            issueCountDc
+	 * @param storyPointDc
+	 *            storyPointDc
+	 */
+	private static void setDataCount(String sprint, DataCount issueCountDc, DataCount storyPointDc) {
+		if (StringUtils.isNotEmpty(sprint)) {
+			issueCountDc.setSSprintName(sprint);
+			issueCountDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+			storyPointDc.setSSprintName(sprint);
+			storyPointDc.setKpiGroup(CommonConstant.FUTURE_SPRINTS);
+		} else {
+			issueCountDc.setSSprintName(CommonConstant.BACKLOG);
+			issueCountDc.setKpiGroup(CommonConstant.BACKLOG);
+			storyPointDc.setSSprintName(CommonConstant.BACKLOG);
+			storyPointDc.setKpiGroup(CommonConstant.BACKLOG);
+		}
 	}
 
 	/**
