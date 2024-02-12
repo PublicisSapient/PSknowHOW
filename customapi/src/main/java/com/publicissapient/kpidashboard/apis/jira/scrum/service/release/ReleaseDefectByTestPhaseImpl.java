@@ -161,13 +161,13 @@ public class ReleaseDefectByTestPhaseImpl extends JiraKPIService<Integer, List<O
 			List<JiraIssue> releaseIssues) {
 		Map<String, Set<String>> projectWiseRCA = new HashMap<>();
 		KpiHelperService.addRCAProjectWise(projectWiseRCA, leafNode, fieldMapping.getExcludeRCAFromKPI163());
-		List<JiraIssue> notFTPRDefects = new ArrayList<>();
+		List<JiraIssue> rcaFreeIssues = new ArrayList<>();
 		releaseIssues.stream().filter(jiraIssue -> {
 			Set<String> rcas = projectWiseRCA.getOrDefault(jiraIssue.getBasicProjectConfigId(), Collections.emptySet());
 			return rcas.isEmpty()
 					|| jiraIssue.getRootCauseList().stream().noneMatch(rc -> rcas.contains(rc.toLowerCase()));
-		}).forEach(notFTPRDefects::add);
-		return notFTPRDefects;
+		}).forEach(rcaFreeIssues::add);
+		return rcaFreeIssues;
 	}
 
 	private void populateExcelDataObject(String requestTrackerId, List<KPIExcelData> excelData,
