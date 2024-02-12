@@ -24,8 +24,6 @@ import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 @Slf4j
 public class CookieUtil {
 	public static final String AUTH_COOKIE = "authCookie";
-
-	private static final String AUTHORIZATION = "Authorization";
 	@Autowired
 	private CustomApiConfig customApiConfig; // TODO needed to delete
 
