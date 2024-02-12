@@ -44,7 +44,7 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   };
   onTouched = () => { };
   writeValue(val: any): void {
-    this.value = val;
+    this.value = val.trim();
   }
   registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -57,6 +57,10 @@ export class FieldMappingFieldComponent implements ControlValueAccessor {
   }
 
   setValue() {
+    this.onChange(this.value);
+  }
+
+  setValueTextOrChips() {
     this.onChange(this.value.trim());
   }
 

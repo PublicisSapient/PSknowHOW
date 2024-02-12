@@ -53,23 +53,9 @@ export class AdvancedSettingsComponent implements OnInit {
       {
         label: 'Processor State',
         icon: 'pi pi-fw pi-cog',
-        command: (event) => {
-          this.switchView(event);
-        },
         expanded: true
       }
     ];
-
-    if (this.getAuthorizationService.checkIfSuperUser() && !this.ssoLogin) {
-      this.items.push({
-        label: 'Authentication Type',
-        icon: 'pi pi-book',
-        command: (event) => {
-          this.switchView(event);
-        }
-      });
-    }
-
 
     this.selectedView = 'processor_state';
     // this.getServerRole();
@@ -77,23 +63,6 @@ export class AdvancedSettingsComponent implements OnInit {
     this.getProcessorData();
     this.getProjects();
   }
-
-  // called when user selects a tab from the left menu
-  switchView(event) {
-    switch (event.item.label) {
-      case 'Processor State': {
-        this.selectedView = 'processor_state';
-        this.getProcessorData();
-        this.getProjects();
-      }
-        break;
-      case 'Authentication Type': {
-        this.selectedView = 'ad_settings';
-      }
-        break;
-    }
-  }
-
 
   // used to fetch the processors
   getProcessorData() {

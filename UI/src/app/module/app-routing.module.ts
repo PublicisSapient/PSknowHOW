@@ -24,7 +24,6 @@ import { ErrorComponent } from '../dashboard/error/error.component';
 import { IterationComponent } from '../dashboard/iteration/iteration.component';
 import { DeveloperComponent } from '../dashboard/developer/developer.component';
 import { DashboardComponent } from '../dashboard/dashboard.component';
-import { AuthGuard } from '../services/auth.guard';
 import { Logged } from '../services/logged.guard';
 import { AccessGuard } from '../services/access.guard';
 import { GuestGuard } from '../services/guest.guard';
@@ -40,7 +39,7 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
  * Route the path to login/registration when user doesn't have authentication token.
  * Route the path to dashboard and it children(Executive/Quatilty....) when user contain
  * authenticate token.
- * Logged/Authguard is used for authentication guard, check token everytime while routing
+ * Logged is used for authentication guard, check token everytime while routing
  */
 
 
@@ -110,7 +109,7 @@ const routes: Routes = [
       },
       { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
 
-    ], //canActivate: [AuthGuard]
+    ],
   },
   { path: 'authentication-fail', component: SsoAuthFailureComponent },
   { path: 'pageNotFound', component: PageNotFoundComponent },
@@ -123,7 +122,6 @@ const routes: Routes = [
 
   exports: [RouterModule],
   providers: [
-    AuthGuard,
     Logged,
     AccessGuard,
     GuestGuard,

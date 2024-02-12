@@ -24,7 +24,6 @@ import { HelperService } from 'src/app/services/helper.service';
 import { MessageService } from 'primeng/api';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
-import { LoginComponent } from '../../authentication/login/login.component';
 import { APP_CONFIG, AppConfig } from '../../services/app.config';
 import { CommonModule } from '@angular/common';
 import { InputSwitchModule } from 'primeng/inputswitch';
@@ -58,15 +57,12 @@ describe('NavComponent', () => {
     };
     
     TestBed.configureTestingModule({
-      declarations: [NavComponent, LoginComponent],
+      declarations: [NavComponent],
       imports: [FormsModule,
         InputSwitchModule,
         ReactiveFormsModule,
         HttpClientTestingModule,
-        CommonModule, RouterTestingModule.withRoutes([
-          { path: 'authentication/login', component: LoginComponent }
-        ])
-
+        CommonModule, RouterTestingModule
       ],
       providers: [HttpService, SharedService, MessageService, HelperService, DatePipe,
         { provide: APP_CONFIG, useValue: AppConfig }

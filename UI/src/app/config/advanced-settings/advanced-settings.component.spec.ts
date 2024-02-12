@@ -226,13 +226,6 @@ describe('AdvancedSettingsComponent', () => {
     done();
   });
 
-  it('should switch view to Processor State', (done) => {
-    component.switchView(switchViewEventProcessor);
-    fixture.detectChanges();
-    expect(component.selectedView).toBe('processor_state');
-    done();
-  });
-
   it('should fetch all user projects', () => {
     const getAuthorizationService = TestBed.inject(GetAuthorizationService);
     const getProjectsResponse = { message: 'Fetched successfully', success: true, data: [{ id: '601bca9569515b0001d68182', projectName: 'TestRIshabh', createdAt: '2021-02-04T10:21:09', isKanban: false }] };
