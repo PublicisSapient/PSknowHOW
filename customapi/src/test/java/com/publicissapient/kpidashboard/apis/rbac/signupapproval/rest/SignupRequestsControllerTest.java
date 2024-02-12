@@ -75,7 +75,6 @@ public class SignupRequestsControllerTest {
 		authentication.setUsername("testUser");
 		authentication.setEmail("testUser@gmail.com");
 		authentication.setApproved(false);
-		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 		mockMvc = MockMvcBuilders.standaloneSetup(signupRequestsController).build();
 	}
 
