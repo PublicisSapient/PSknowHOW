@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import org.junit.After;
 import org.junit.Before;
@@ -56,6 +57,9 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 
 	@Mock
 	private CookieUtil cookieUtil;
+
+	@Mock
+	private AuthProperties authProperties;
 	@Mock
 	UserInfoServiceImpl userInfoService;
 
@@ -76,6 +80,7 @@ public class UserTokenDeletionControllerApplicationTest extends Mockito {
 	public void testDeleteUserToken() throws Exception {
 		HttpServletRequest request = mock(HttpServletRequest.class);
 		when(cookieUtil.getAuthCookie(any())).thenReturn(new Cookie("foo1", "bar1"));
+		when(authProperties.getResourceAPIKey()).thenReturn("testResourceKey");
 		ResponseCookie foo11 = ResponseCookie.from("foo1", "bar1").build();
 		when(cookieUtil.deleteAccessTokenCookie()).thenReturn(foo11);
 		request.setAttribute("Authorization", "Bearer abcde");

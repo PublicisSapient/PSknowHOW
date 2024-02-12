@@ -37,7 +37,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
@@ -68,6 +67,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of {@link TokenAuthenticationService}
@@ -139,20 +139,16 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return createAuthentication(token, response);
-			} else {
-				return null;
 			}
+			return createAuthentication(token, response);
 		}
 
 	}
@@ -164,22 +160,17 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 		if (customApiConfig.isSsoLogin()) {
 			throw new NoSSOImplementationFoundException("No implementation is found for SSO");
 		} else {
-			if (userTokenAuthenticationDTO.getResource().equalsIgnoreCase(tokenAuthProperties.getResourceName())) {
-				String token = userTokenAuthenticationDTO.getAuthToken();
-				if (StringUtils.isBlank(token)) {
-					Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
-					if (Objects.nonNull(authCookieToken)) {
-						token = authCookieToken.getValue();
-					} else {
-						return null;
-					}
+			String token = userTokenAuthenticationDTO.getAuthToken();
+			if (StringUtils.isBlank(token)) {
+				Cookie authCookieToken = cookieUtil.getAuthCookie(httpServletRequest);
+				if (Objects.nonNull(authCookieToken)) {
+					token = authCookieToken.getValue();
+				} else {
+					return null;
 				}
-				return token;
-			} else {
-				return null;
 			}
+			return token;
 		}
-
 	}
 
 	@Override
@@ -346,7 +337,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
 			json.put(PROJECTS_ACCESS, projectAccessesWithRole);
 			return json;
 		}
-		return null;
+		return new JSONObject();
 	}
 
 	@Override

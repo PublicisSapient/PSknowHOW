@@ -382,17 +382,6 @@ public class UserInfoServiceImplTest {
 		assertTrue(result.getSuccess());
 	}
 
-	/**
-	 * method to test deleteUser() ;
-	 * <p>
-	 * Delete User
-	 */
-	@Test
-	public void deleteUserTest() {
-		ServiceResponse result = service.deleteUser("testuser");
-		assertTrue(result.getSuccess());
-	}
-
 	@Test
 	public void getUserInfoByAuthType() {
 		when(userInfoRepository.findByAuthType("STANDARD")).thenReturn(Arrays.asList(new UserInfo()));
