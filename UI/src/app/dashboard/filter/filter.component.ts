@@ -1461,7 +1461,6 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-         console.log('Success clear local storage :', responseData);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
         } else{
@@ -1470,10 +1469,7 @@ export class FilterComponent implements OnInit, OnDestroy {
           };
           this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
-            if (response && response['success']) {
-              console.log("cookie not clear due to some reason");
-            } else {
-              console.log("cookie clear");
+            if (response && !response['success']) {
               let redirect_uri = window.location.href;
               window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
             }
