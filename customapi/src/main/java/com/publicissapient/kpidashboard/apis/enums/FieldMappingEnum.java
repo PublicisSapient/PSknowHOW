@@ -195,7 +195,7 @@ public enum FieldMappingEnum {
 	KPI156("Lead Time For Change", KPISource.JIRA.name(),
 			Arrays.asList("leadTimeConfigRepoTool", "toBranchForMRKPI156" , "jiraDodKPI156" , "jiraIssueTypeKPI156","thresholdValueKPI156")),
 
-	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Collections.singletonList("jiraDodKPI163")),
+	KPI163("Defect by Testing Phase", KPISource.JIRA.name(), Arrays.asList("jiraDodKPI163", "excludeRCAFromKPI163")),
 
 	KPI150("Release BurnUp", KPISource.JIRA.name(), Arrays.asList("startDateCountKPI150","populateByDevDoneKPI150","jiraDevDoneStatusKPI150")),
 

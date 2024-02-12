@@ -199,6 +199,7 @@ public class FieldMapping extends BasicModel {
 
 	private List<String> rootCauseValue;
 	private List<String> excludeRCAFromFTPR;
+	private List<String> excludeRCAFromKPI163;
 	private List<String> includeRCAForKPI82;
 	private List<String> includeRCAForKPI135;
 	private List<String> includeRCAForKPI14;
