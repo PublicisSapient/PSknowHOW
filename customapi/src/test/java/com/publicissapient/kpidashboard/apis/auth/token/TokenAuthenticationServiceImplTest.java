@@ -115,7 +115,6 @@ public class TokenAuthenticationServiceImplTest {
 		SecurityContextHolder.clearContext();
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-		when(tokenAuthProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 	}
 
 	@Test
@@ -140,8 +139,6 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Test
 	public void testGetAuthenticationWhenTokenNotProvided() {
-		when(tokenAuthProperties.getResourceName()).thenReturn("KNOWHOW");
-		when(userTokenAuthenticationDTO.getResource()).thenReturn("KNOWHOW");
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
@@ -155,8 +152,6 @@ public class TokenAuthenticationServiceImplTest {
 
 	@Test
 	public void testGetAuthenticationWhenValidTokenProvided() {
-		when(tokenAuthProperties.getResourceName()).thenReturn("KNOWHOW");
-		when(userTokenAuthenticationDTO.getResource()).thenReturn("KNOWHOW");
 		when(userTokenAuthenticationDTO.getAuthToken()).thenReturn(AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L));
 		when(tokenAuthProperties.getSecret()).thenReturn("userTokenData");
 		Authentication authentication = service.getAuthentication(userTokenAuthenticationDTO,request,response);
