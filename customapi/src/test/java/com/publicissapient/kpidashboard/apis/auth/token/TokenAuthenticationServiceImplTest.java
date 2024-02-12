@@ -115,7 +115,7 @@ public class TokenAuthenticationServiceImplTest {
 		SecurityContextHolder.clearContext();
 		when(cookieUtil.getAuthCookie(any(HttpServletRequest.class))).thenReturn(
 				new Cookie("authCookie", AuthenticationFixture.getJwtToken(USERNAME, "userTokenData", 100000L)));
-
+		when(tokenAuthProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 	}
 
 	@Test
