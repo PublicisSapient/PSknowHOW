@@ -128,7 +128,6 @@ export class FilterComponent implements OnInit, OnDestroy {
   noProjects = false;
   selectedRelease = {};
   ssoLogin = environment.SSO_LOGIN;
-  auth_service = environment.AUTHENTICATION_SERVICE;
   lastSyncData: object = {};
   commentList: Array<object> = [];
   showCommentPopup: boolean = false;
@@ -139,7 +138,7 @@ export class FilterComponent implements OnInit, OnDestroy {
   displayModal: boolean = false;
   showSwitchDropdown: boolean = false;
   showHideLoader: boolean = false;
-  kpiListDataProjectLevel : any = {};
+  kpiListDataProjectLevel: any = {};
   nodeIdQParam: string = '';
   sprintIdQParam: string = '';
   displayMessage: boolean = false;
@@ -166,30 +165,30 @@ export class FilterComponent implements OnInit, OnDestroy {
       });
 
       this.appList = [
-          {
-              label: 'KnowHOW',
-              icon: ''
-          },
-          {
-              label: 'Assessments',
-              icon: '',
-              command: () => {
-                 window.open(
-                  environment['MAP_URL'],
-                  '_blank'
-                );
-              }
-          },
-          {
-            label: 'Retros',
-            icon: '',
-            command: () => {
-               window.open(
-                  environment['RETROS_URL'],
-                  '_blank'
-                );
-            }
+        {
+          label: 'KnowHOW',
+          icon: ''
+        },
+        {
+          label: 'Assessments',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['MAP_URL'],
+              '_blank'
+            );
           }
+        },
+        {
+          label: 'Retros',
+          icon: '',
+          command: () => {
+            window.open(
+              environment['RETROS_URL'],
+              '_blank'
+            );
+          }
+        }
       ];
     }
 
@@ -457,7 +456,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.navigateToSelectedTab();
   }
 
-  /** moved to service layer */ 
+  /** moved to service layer */
   // makeUniqueArrayList(arr) {
   //   let uniqueArray = [];
   //   for (let i = 0; i < arr?.length; i++) {
@@ -504,12 +503,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         /** subscribe to query params */
         this.service.projectQueryParamObs.subscribe((val) => {
           this.nodeIdQParam = val.value;
-          if(this.nodeIdQParam){
+          if (this.nodeIdQParam) {
             const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
-            if(ifProjectExist === -1){
-              this.noAccessMsg = true; 
+            if (ifProjectExist === -1) {
+              this.noAccessMsg = true;
               this.displayMessage = true
-              return; 
+              return;
             }
           }
         })
@@ -640,7 +639,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   onSelectedTrendValueChange(isChangedFromUI?) {
     /** adding the below check to determine dropdown option change event from */
-    if(isChangedFromUI){
+    if (isChangedFromUI) {
       this.emptyIdsFromQueryParam();
     }
     this.additionalFiltersArr.forEach((additionalFilter) => {
@@ -792,7 +791,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
+      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], { queryParamsHandling: 'merge' });
     }
   }
 
@@ -1115,7 +1114,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
           let selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          if(this.nodeIdQParam){
+          if (this.nodeIdQParam) {
             selectedTrendValue = this.allowMultipleSelection ? [this.nodeIdQParam] : this.nodeIdQParam
           }
           this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
@@ -1223,9 +1222,9 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
     activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
     closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-    if(this.sprintIdQParam){
+    if (this.sprintIdQParam) {
       this.selectedSprint = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == this.sprintIdQParam)[0];
-    }else if (activeSprints?.length > 0) {
+    } else if (activeSprints?.length > 0) {
       this.selectedSprint = { ...activeSprints[0] };
     } else if (closedSprints?.length > 0) {
       this.selectedSprint = closedSprints[0];
@@ -1243,7 +1242,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  emptyIdsFromQueryParam(){
+  emptyIdsFromQueryParam() {
     // Get the current URL tree
     const currentUrlTree = this.router.createUrlTree([], { relativeTo: this.route });
     // Navigate to the updated URL without query parameters
@@ -1257,7 +1256,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     2: onchange */
   handleIterationFilters(level, isChangedFromUI?) {
     /** adding the below check to determine dropdown option change event from */
-    if(isChangedFromUI){
+    if (isChangedFromUI) {
       this.emptyIdsFromQueryParam();
     }
     this.lastSyncData = {};
@@ -1454,7 +1453,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-      this.httpService.logout().subscribe((responseData) => {
+    this.httpService.logout().subscribe((responseData) => {
       if (responseData && responseData['success']) {
         this.helperService.isKanban = false;
         localStorage.clear();
@@ -1462,14 +1461,12 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
-         console.log('Success clear local storage :', responseData);
-        if(!environment['AUTHENTICATION_SERVICE']){
-          this.router.navigate(['./authentication/login']);
-        } else{
-          let obj = {
-            'resource': environment.RESOURCE
-          };
-          this.httpService.getUserValidation(obj).toPromise()
+        console.log('Success clear local storage :', responseData);
+
+        let obj = {
+          'resource': environment.RESOURCE
+        };
+        this.httpService.getUserValidation(obj).toPromise()
           .then((response) => {
             if (response && response['success']) {
               console.log("cookie not clear due to some reason");
@@ -1482,7 +1479,6 @@ export class FilterComponent implements OnInit, OnDestroy {
           .catch((error) => {
             console.log("cookie not clear on error");
           });
-        }
       }
     })
   }
@@ -1564,7 +1560,7 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   handleMilestoneFilter(level, isChangedFromUI?) {
     /** adding the below check to determine dropdown option change event from */
-    if(isChangedFromUI){
+    if (isChangedFromUI) {
       this.emptyIdsFromQueryParam();
     }
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;

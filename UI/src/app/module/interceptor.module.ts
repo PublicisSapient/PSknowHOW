@@ -42,7 +42,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.delete('httpErrorHandler') });
         }
 
-		req = req.clone({withCredentials: true});
+        req = req.clone({ withCredentials: true });
 
         if (req.headers.get('requestArea')) {
             req = req.clone({ headers: req.headers.delete('requestArea') });
@@ -54,7 +54,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
         const requestId = uuid.v4();
-                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
+        req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
 
         const redirectExceptions = [
@@ -82,7 +82,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
         return next.handle(req)
             .pipe(
                 tap(event => {
-                    if (event instanceof HttpResponse){
+                    if (event instanceof HttpResponse) {
                         /**Todo: check this when handling both central and local login */
                         // if(!event?.url?.includes('api/authdetails') &&
                         // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
@@ -91,20 +91,15 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                     }
                 }),
                 catchError((err) => {
-                if (err instanceof HttpErrorResponse) {
-                    if (err.status === 401) {
-                        if (requestArea === 'internal') {
-                            this.service.setCurrentUserDetails({});
-                            if(!environment.SSO_LOGIN){
-                                if(environment.AUTHENTICATION_SERVICE){
-                                    /** redirect to central login url*/
-                                    let redirect_uri = window.location.href;
-                                    localStorage.setItem('redirect_uri', window.location.hash);
-                                    window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
-                                }else{
-                                    this.router.navigate(['./authentication/login'], { queryParams: { sessionExpire: true } });
-                                }
-                            }
+                    if (err instanceof HttpErrorResponse) {
+                        if (err.status === 401) {
+                            if (requestArea === 'internal') {
+                                this.service.setCurrentUserDetails({});
+
+                                /** redirect to central login url*/
+                                let redirect_uri = window.location.href;
+                                localStorage.setItem('redirect_uri', window.location.hash);
+                                window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
                         }
 
                         if (environment.SSO_LOGIN) {
@@ -112,21 +107,21 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                                 window.location.reload();
                             });
                         }
-                    } else if(err.status === 403 && environment.SSO_LOGIN){
-                        this.httpService.unauthorisedAccess =true;
+                    } else if (err.status === 403 && environment.SSO_LOGIN) {
+                        this.httpService.unauthorisedAccess = true;
                         this.router.navigate(['/dashboard/unauthorized-access']);
                     } else {
-                        if(err?.status === 0 && err?.statusText === 'Unknown Error'&& environment.SSO_LOGIN){
+                        if (err?.status === 0 && err?.statusText === 'Unknown Error' && environment.SSO_LOGIN) {
                             this.service.clearAllCookies();
                             this.router.navigate(['./dashboard/mydashboard']).then(success => {
                                 window.location.reload();
                             });
-                        }else{
+                        } else {
                             if (httpErrorHandler !== 'local') {
                                 if (requestArea === 'internal') {
                                     if (!redirectExceptions.includes(req.url) && !this.checkForPartialRedirectExceptions(req.url, partialRedirectExceptions)) {
-                                        if(!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))){
-                                        this.router.navigate(['./dashboard/Error']);
+                                        if (!environment.SSO_LOGIN || (environment.SSO_LOGIN && !req.url.includes('api/sso/'))) {
+                                            this.router.navigate(['./dashboard/Error']);
                                         }
                                         setTimeout(() => {
                                             this.service.raiseError(err);
@@ -139,18 +134,18 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
                 }
                 // error thrown here needs to catch in  error block of subscribe
                 return throwError(err);
-            }));
-    }
+    }));
+}
 
-    checkForPartialRedirectExceptions(url, exceptionsArr) {
-        let result = false;
-        exceptionsArr.forEach(element => {
-            if(url.indexOf(element) !== -1) {
-                result = true;
-            }
-        });
-        return result;
-    }
+checkForPartialRedirectExceptions(url, exceptionsArr) {
+    let result = false;
+    exceptionsArr.forEach(element => {
+        if (url.indexOf(element) !== -1) {
+            result = true;
+        }
+    });
+    return result;
+}
 }
 
 @NgModule({
