@@ -22,7 +22,6 @@ export const environment = {
   SSO_LOGIN: false,
   CENTRAL_LOGIN_URL: '',
   RESOURCE: 'PSKnowHOW',
-  AUTHENTICATION_SERVICE: true,
   MAP_URL:'',
   RETROS_URL: ''
 };
