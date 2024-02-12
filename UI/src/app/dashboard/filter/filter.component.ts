@@ -16,13 +16,13 @@
  *
  ******************************************************************************/
 
-import { Component, OnInit, ElementRef, ViewChild, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { SharedService } from '../../services/shared.service';
 import { HelperService } from '../../services/helper.service';
 import { GoogleAnalyticsService } from '../../services/google-analytics.service';
 import { GetAuthorizationService } from 'src/app/services/get-authorization.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
 import { faRotateRight } from '@fortawesome/fontawesome-free';
@@ -138,9 +138,11 @@ export class FilterComponent implements OnInit, OnDestroy {
   selectedLevelValue: string = 'project';
   displayModal: boolean = false;
   showSwitchDropdown: boolean = false;
-
   showHideLoader: boolean = false;
   kpiListDataProjectLevel : any = {};
+  nodeIdQParam: string = '';
+  sprintIdQParam: string = '';
+  displayMessage: boolean = false;
 
   constructor(
     public service: SharedService,
@@ -149,7 +151,8 @@ export class FilterComponent implements OnInit, OnDestroy {
     public router: Router,
     private ga: GoogleAnalyticsService,
     private messageService: MessageService,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -317,6 +320,10 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.getLogoImage().subscribe((logoImage) => {
       this.getLogoImage();
     });
+
+    this.service.sprintQueryParamObs.subscribe((val) => {
+      this.sprintIdQParam = val.value;
+    })
   }
 
   initializeFilterForm() {
@@ -494,6 +501,19 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.initializeFilterForm();
         this.noProjects = true;
       } else {
+        /** subscribe to query params */
+        this.service.projectQueryParamObs.subscribe((val) => {
+          this.nodeIdQParam = val.value;
+          if(this.nodeIdQParam){
+            const ifProjectExist = this.filterData?.findIndex((x) => x.nodeId === this.nodeIdQParam);
+            if(ifProjectExist === -1){
+              this.noAccessMsg = true; 
+              this.displayMessage = true
+              return; 
+            }
+          }
+        })
+
         this.service.setNoProjects(false);
         this.noProjects = false;
       }
@@ -618,7 +638,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
-  onSelectedTrendValueChange($event) {
+  onSelectedTrendValueChange(isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     this.additionalFiltersArr.forEach((additionalFilter) => {
       this.filterForm.get(additionalFilter['hierarchyLevelId'])?.reset();
     });
@@ -768,7 +792,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         boardDetails = this.kpiListData['scrum'].find(boardDetail => boardDetail.boardName.toLowerCase() === 'iteration');
       }
       this.selectedTab = boardDetails?.boardName;
-      this.router.navigateByUrl(`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`);
+      this.router.navigate([`/dashboard/${boardDetails?.boardName.split(' ').join('-').toLowerCase()}`], {queryParamsHandling: 'merge'});
     }
   }
 
@@ -1012,7 +1036,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     this.service.setDashConfigData(null);
     this.service.selectedtype = '';
     this.initializeFilterForm();
-
+    this.displayMessage = false;
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
@@ -1077,20 +1101,23 @@ export class FilterComponent implements OnInit, OnDestroy {
     const selectedLevel = this.service.getSelectedLevel();
     const selectedTrends = this.service.getSelectedTrends();
 
-    if (Object.keys(selectedLevel).length > 0 && selectedTrends.length > 0) {
+    if (Object.keys(selectedLevel).length > 0 && selectedTrends?.length > 0) {
       if (this.selectedTab.toLowerCase() === 'iteration' || this.selectedTab.toLowerCase() === 'backlog' || this.selectedTab.toLowerCase() === 'release') {
         if (this.previousType || selectedLevel['hierarchyLevelId'] !== 'project') {
           this.findProjectWhichHasData();
         } else {
           this.defaultFilterSelection = false;
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
-          this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
+          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend?.['nodeId']) : selectedTrends?.[0]?.['nodeId'];
+          this.filterForm.get('selectedTrendValue').setValue(this.nodeIdQParam ? this.nodeIdQParam : selectedTrendValue);
         }
       } else {
         if (this.previousType === this.kanban) {
           this.filterForm?.get('selectedLevel').setValue(selectedLevel['hierarchyLevelId']);
-          const selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          let selectedTrendValue = this.allowMultipleSelection ? selectedTrends.map(selectedtrend => selectedtrend['nodeId']) : selectedTrends[0]['nodeId'];
+          if(this.nodeIdQParam){
+            selectedTrendValue = this.allowMultipleSelection ? [this.nodeIdQParam] : this.nodeIdQParam
+          }
           this.filterForm.get('selectedTrendValue').setValue(selectedTrendValue);
         } else {
           this.checkDefaultFilterSelection();
@@ -1168,17 +1195,17 @@ export class FilterComponent implements OnInit, OnDestroy {
           }
         } else {
           this.checkIfProjectHasData();
-          if (Object.keys(this.selectedSprint).length > 0) {
+          if (this.selectedSprint && Object.keys(this.selectedSprint)?.length > 0) {
             break;
           }
         }
       }
       if (projectIndex < this.trendLineValueList?.length) {
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[projectIndex]?.nodeId);
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.nodeIdQParam ? this.nodeIdQParam : this.trendLineValueList[projectIndex]?.nodeId);
+        this.filterForm.get('selectedSprintValue').setValue(this.sprintIdQParam ? this.sprintIdQParam : this.selectedSprint['nodeId']);
       } else {
         this.projectIndex = 0;
-        this.filterForm?.get('selectedTrendValue')?.setValue(this.trendLineValueList[this.projectIndex]?.nodeId);
+        this.filterForm?.get('selectedTrendValue')?.setValue(this.sprintIdQParam ? this.sprintIdQParam : this.trendLineValueList[this.projectIndex]?.nodeId);
       }
       this.service.setSelectedLevel(this.hierarchyLevels.find(hierarchy => hierarchy.hierarchyLevelId === 'project'));
       this.service.setSelectedTrends([this.trendLineValueList.find(trend => trend.nodeId === this.filterForm?.get('selectedTrendValue')?.value)]);
@@ -1189,14 +1216,16 @@ export class FilterComponent implements OnInit, OnDestroy {
     let activeSprints = [];
     let closedSprints = [];
     this.selectedSprint = {};
-    const selectedProject = this.selectedProjectData['nodeId'];
+    const selectedProject = this.selectedProjectData?.['nodeId'];
     this.filteredAddFilters['sprint'] = [];
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['sprint']) {
       this.filteredAddFilters['sprint'] = [...this.additionalFiltersDdn['sprint']?.filter((x) => x['parentId']?.includes(selectedProject))];
     }
     activeSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'active')];
     closedSprints = [...this.filteredAddFilters['sprint']?.filter((x) => x['sprintState']?.toLowerCase() == 'closed')];
-    if (activeSprints?.length > 0) {
+    if(this.sprintIdQParam){
+      this.selectedSprint = this.filteredAddFilters['sprint']?.filter((x) => x['nodeId'] == this.sprintIdQParam)[0];
+    }else if (activeSprints?.length > 0) {
       this.selectedSprint = { ...activeSprints[0] };
     } else if (closedSprints?.length > 0) {
       this.selectedSprint = closedSprints[0];
@@ -1214,10 +1243,23 @@ export class FilterComponent implements OnInit, OnDestroy {
     }
   }
 
+  emptyIdsFromQueryParam(){
+    // Get the current URL tree
+    const currentUrlTree = this.router.createUrlTree([], { relativeTo: this.route });
+    // Navigate to the updated URL without query parameters
+    this.router.navigateByUrl(currentUrlTree);
+    this.service.setProjectQueryParamInFilters('');
+    this.service.setSprintQueryParamInFilters('');
+  }
+
   /*'type' argument: to understand onload or onchange
     1: onload
     2: onchange */
-  handleIterationFilters(level) {
+  handleIterationFilters(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     this.lastSyncData = {};
     this.subject.next(true);
     if (this.filterForm?.get('selectedTrendValue')?.value != '') {
@@ -1227,7 +1269,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         this.filterForm?.get('selectedSprintValue')?.setValue('');
         this.selectedProjectData = this.trendLineValueList.find(x => x.nodeId === selectedProject);
         this.checkIfProjectHasData();
-        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint['nodeId']);
+        this.filterForm.get('selectedSprintValue').setValue(this.selectedSprint?.['nodeId']);
       }
 
       if (level?.toLowerCase() == 'sprint') {
@@ -1266,7 +1308,7 @@ export class FilterComponent implements OnInit, OnDestroy {
     if (selectedField) {
       const obj = this.filteredAddFilters[filteredAddFiltersKey]?.filter((x) => x['nodeId'] == selectedField)[0];
 
-      if (obj && (obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end')) {
+      if (obj && ((obj[startDateField] === '' && type === 'start') || (obj[endDateField] === '' && type === 'end'))) {
         return dateString;
       }
 
@@ -1412,22 +1454,37 @@ export class FilterComponent implements OnInit, OnDestroy {
 
   // logout is clicked  and removing auth token , username
   logout() {
-    this.httpService.logout().subscribe((getData) => {
-      if (!(getData !== null && getData[0] === 'error')) {
+      this.httpService.logout().subscribe((responseData) => {
+      if (responseData && responseData['success']) {
         this.helperService.isKanban = false;
         localStorage.clear();
         // Set blank selectedProject after logged out state
         this.service.setSelectedProject(null);
         this.service.setCurrentUserDetails({});
         this.service.setVisibleSideBar(false);
+         console.log('Success clear local storage :', responseData);
         if(!environment['AUTHENTICATION_SERVICE']){
           this.router.navigate(['./authentication/login']);
-        }else{
-          let redirect_uri = window.location.href;
-          window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+        } else{
+          let obj = {
+            'resource': environment.RESOURCE
+          };
+          this.httpService.getUserValidation(obj).toPromise()
+          .then((response) => {
+            if (response && response['success']) {
+              console.log("cookie not clear due to some reason");
+            } else {
+              console.log("cookie clear");
+              let redirect_uri = window.location.href;
+              window.location.href = environment.CENTRAL_LOGIN_URL + '?redirect_uri=' + redirect_uri;
+            }
+          })
+          .catch((error) => {
+            console.log("cookie not clear on error");
+          });
         }
       }
-    });
+    })
   }
 
   // when user would want to give access on project from notification list
@@ -1505,7 +1562,11 @@ export class FilterComponent implements OnInit, OnDestroy {
     });
   }
 
-  handleMilestoneFilter(level) {
+  handleMilestoneFilter(level, isChangedFromUI?) {
+    /** adding the below check to determine dropdown option change event from */
+    if(isChangedFromUI){
+      this.emptyIdsFromQueryParam();
+    }
     const selectedProject = this.filterForm?.get('selectedTrendValue')?.value;
     this.filteredAddFilters['release'] = []
     if (this.additionalFiltersDdn && this.additionalFiltersDdn['release']) {

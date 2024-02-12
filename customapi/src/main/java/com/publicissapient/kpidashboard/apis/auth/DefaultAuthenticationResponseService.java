@@ -20,6 +20,7 @@ package com.publicissapient.kpidashboard.apis.auth;
 
 import java.util.Collection;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -43,6 +44,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  */
 @Component
+@Slf4j
 public class DefaultAuthenticationResponseService implements AuthenticationResponseService {
 
 	@Autowired
@@ -58,7 +60,6 @@ public class DefaultAuthenticationResponseService implements AuthenticationRespo
 	public void handle(HttpServletResponse response, Authentication authentication) {
 		String emailAddress = StringUtils.EMPTY;
 		String username;
-
 		if (authentication.getPrincipal() instanceof CustomUserDetails) {
 			emailAddress = ((CustomUserDetails) authentication.getPrincipal()).getEmailAddress().toLowerCase();
 			username = ((CustomUserDetails) authentication.getPrincipal()).getUsername();

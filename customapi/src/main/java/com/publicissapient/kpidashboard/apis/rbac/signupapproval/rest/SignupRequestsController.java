@@ -35,9 +35,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import com.publicissapient.kpidashboard.apis.auth.model.Authentication;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthenticationService;
-import com.publicissapient.kpidashboard.apis.auth.token.CookieUtil;
 import com.publicissapient.kpidashboard.apis.common.service.impl.UserInfoServiceImpl;
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -69,10 +69,11 @@ public class SignupRequestsController {
 	private SignupManager signupManager;
 	@Autowired
 	private CustomApiConfig customApiConfig;
+
+	@Autowired
+	private AuthProperties authProperties;
 	@Autowired
 	UserInfoServiceImpl userInfoService;
-	@Autowired
-	CookieUtil cookieUtil;
 
 	/**
 	 * Gets all unapproved requests data.
@@ -84,10 +85,9 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> getAllUnapprovedRequests(HttpServletRequest request) {
 		log.info("Getting all unapproved requests");
 		if (customApiConfig.isCentralAuthSwitch()) {
-			Cookie authCookie = cookieUtil.getAuthCookie(request);
-			String token = authCookie.getValue();
+			String centralAuthToken = authProperties.getResourceAPIKey();
 			return ResponseEntity.status(HttpStatus.OK).body(new ServiceResponse(true, "success_pending_approval",
-					userInfoService.findAllUnapprovedUsers(token)));
+					userInfoService.findAllUnapprovedUsers(centralAuthToken)));
 		} else {
 			return ResponseEntity.status(HttpStatus.OK)
 					.body(new ServiceResponse(true, "Unapproved User details",
@@ -121,8 +121,7 @@ public class SignupRequestsController {
 	public ResponseEntity<ServiceResponse> modifyAccessRequestById(@PathVariable("username") String username,
 			@Valid @RequestBody AccessRequestDecision accessRequestDecision, HttpServletRequest request) {
 		ServiceResponse[] serviceResponse = new ServiceResponse[1];
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String token = authCookie.getValue();
+		String token = authProperties.getResourceAPIKey();
 		if (Constant.ACCESS_REQUEST_STATUS_APPROVED.equalsIgnoreCase(accessRequestDecision.getStatus())) {
 			log.info("Approve access {}", username);
 			if (customApiConfig.isCentralAuthSwitch()) {
@@ -149,8 +148,8 @@ public class SignupRequestsController {
 
 			if (customApiConfig.isCentralAuthSwitch()) {
 
-				userInfoService.deleteRejectedUser(username, token);
-				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", null);
+				boolean rejectedCentral = userInfoService.deleteFromCentralAuthUser(username, token);
+				serviceResponse[0] = new ServiceResponse(true, "Rejected Successfully", rejectedCentral);
 
 			} else {
 				signupManager.rejectAccessRequest(username, new RejectApprovalListener() {

@@ -45,13 +45,13 @@ import { PageNotFoundComponent } from '../page-not-found/page-not-found.componen
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'authentication', pathMatch: 'full' },
-  {
-    path: 'authentication',
-    loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
-    resolve: [Logged],
-    canActivate: [SSOGuard]
-  },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  // {
+  //   path: 'authentication',
+  //   loadChildren: () => import('../authentication/authentication.module').then(m => m.AuthenticationModule),
+  //   resolve: [Logged],
+  //   // canActivate: [SSOGuard]
+  // },
   {
     path: 'dashboard', component: DashboardComponent,
     canActivateChild : [FeatureGuard],
@@ -64,7 +64,7 @@ const routes: Routes = [
         }
       },
       {
-        path: 'iteration', component: IterationComponent, pathMatch: 'full', canActivate: [AccessGuard],
+        path: 'iteration', component: IterationComponent, pathMatch: 'full',// canActivate: [AccessGuard],
         data: {
           feature: "Iteration"
         }
@@ -110,7 +110,7 @@ const routes: Routes = [
       },
       { path: ':boardName', component: ExecutiveComponent, pathMatch: 'full' },
 
-    ], canActivate: [AuthGuard]
+    ], //canActivate: [AuthGuard]
   },
   { path: 'authentication-fail', component: SsoAuthFailureComponent },
   { path: 'pageNotFound', component: PageNotFoundComponent },

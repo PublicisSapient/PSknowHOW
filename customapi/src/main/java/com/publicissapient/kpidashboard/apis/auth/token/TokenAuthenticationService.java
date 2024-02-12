@@ -42,8 +42,10 @@ public interface TokenAuthenticationService {
 	/**
 	 * Add authentication.
 	 *
-	 * @param response       the response
-	 * @param authentication the authentication
+	 * @param response
+	 *            the response
+	 * @param authentication
+	 *            the authentication
 	 */
 	UserTokenAuthenticationDTO addAuthentication(HttpServletResponse response, Authentication authentication);
 
@@ -58,7 +60,30 @@ public interface TokenAuthenticationService {
 			HttpServletResponse response);
 
 	/**
-	 *  validate token
+	 *
+	 * @param jwtToken
+	 * @return
+	 */
+	boolean isJWTTokenExpired(String jwtToken);
+
+	/**
+	 *
+	 * @param jwtToken
+	 * @return
+	 */
+	String getUserNameFromToken(String jwtToken);
+
+	/**
+	 *
+	 * @param userTokenAuthenticationDTO
+	 * @param httpServletRequest
+	 * @return
+	 */
+	String getAuthToken(UserTokenAuthenticationDTO userTokenAuthenticationDTO, HttpServletRequest httpServletRequest);
+
+	/**
+	 * validate token
+	 * 
 	 * @param httpServletRequest
 	 * @param response
 	 * @return

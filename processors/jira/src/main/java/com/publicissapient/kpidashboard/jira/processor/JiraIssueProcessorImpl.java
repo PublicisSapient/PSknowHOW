@@ -752,7 +752,7 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 				isRaisedByThirdParty = true;
 				String testPhase = ((org.codehaus.jettison.json.JSONObject) issueFieldValue).get(JiraConstants.VALUE)
 						.toString();
-				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue) && feature.equalsIgnoreCase(TEST_PHASE)) {
+				if (lowerCaseBugRaisedValue.contains(testPhase.toLowerCase()) && Objects.nonNull(jiraIssue)) {
 					setSpecificField(jiraIssue,feature, Collections.singletonList(testPhase));
 				}
 			}

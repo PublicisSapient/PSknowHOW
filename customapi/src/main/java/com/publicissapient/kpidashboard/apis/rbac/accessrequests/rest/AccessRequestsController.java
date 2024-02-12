@@ -21,6 +21,7 @@ package com.publicissapient.kpidashboard.apis.rbac.accessrequests.rest;
 
 import javax.validation.Valid;
 
+import com.publicissapient.kpidashboard.apis.auth.AuthProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -75,7 +76,7 @@ public class AccessRequestsController {
 	private ProjectAccessManager projectAccessManager;
 	
 	@Autowired
-	private CookieUtil cookieUtil;
+	private AuthProperties authProperties;
 
 	/**
 	 * Gets all access requests data.
@@ -255,8 +256,7 @@ public class AccessRequestsController {
 	public ResponseEntity<ServiceResponse> getNotificationByStatus(@PathVariable("status") String status,
 			HttpServletRequest request) {
 		log.info("Getting requests count with current status {}", status);
-		Cookie authCookie = cookieUtil.getAuthCookie(request);
-		String token = authCookie.getValue();
+		String token = authProperties.getResourceAPIKey();
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(accessRequestsHelperService.getNotificationByStatus(status, token));
 	}

@@ -34,6 +34,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -57,9 +58,7 @@ import com.publicissapient.kpidashboard.apis.auth.CustomAuthenticationFailureHan
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenAuthenticationProvider;
 import com.publicissapient.kpidashboard.apis.auth.apitoken.ApiTokenRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.ldap.CustomUserDetailsContextMapper;
-import com.publicissapient.kpidashboard.apis.auth.ldap.LdapLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.service.AuthTypesConfigService;
-import com.publicissapient.kpidashboard.apis.auth.standard.StandardLoginRequestFilter;
 import com.publicissapient.kpidashboard.apis.auth.token.JwtAuthenticationFilter;
 import com.publicissapient.kpidashboard.apis.errors.CustomAuthenticationEntryPoint;
 import com.publicissapient.kpidashboard.common.activedirectory.modal.ADServerDetail;
@@ -77,7 +76,7 @@ import com.publicissapient.kpidashboard.common.constant.AuthType;
 @Configuration
 @EnableWebSecurity
 @EnableConfigurationProperties
-@EnableMethodSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig implements WebMvcConfigurer {
 
     @Autowired
@@ -191,19 +190,6 @@ public class WebSecurityConfig implements WebMvcConfigurer {
             auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider());
         }
         auth.authenticationProvider(apiTokenAuthenticationProvider);
-    }
-
-    @Bean
-    protected StandardLoginRequestFilter standardLoginRequestFilter(AuthenticationManager authenticationManager) {
-        return new StandardLoginRequestFilter("/login", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, authTypesConfigService);
-    }
-
-    // update authenticatoin result handler
-    @Bean
-    protected LdapLoginRequestFilter ldapLoginRequestFilter(AuthenticationManager authenticationManager) {
-        return new LdapLoginRequestFilter("/ldap", authenticationManager, authenticationResultHandler,
-                customAuthenticationFailureHandler, customApiConfig, adServerDetailsService, authTypesConfigService);
     }
 
     @Bean

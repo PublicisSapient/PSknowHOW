@@ -116,6 +116,8 @@ public class UserInfoServiceImplTest {
 
 	@Before
 	public void setUp() {
+		when(authProperties.getCentralAuthBaseURL()).thenReturn("https://www.example.com");
+		when(authProperties.getResourceAPIKey()).thenReturn("ResourceAPIKey");
 	}
 
 	@Test
