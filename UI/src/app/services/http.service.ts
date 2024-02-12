@@ -64,9 +64,7 @@ export class HttpService {
   private uploadedImageUrl = this.baseUrl + '/api/file/logo';
   private deleteImageUrl = this.baseUrl + '/api/file/delete';
   private registrationUrl = this.baseUrl + '/api/registerUser';
-  private standardloginUrl = this.baseUrl + '/api/login';
-  private ldapLoginUrl = this.baseUrl + '/api/ldap';
-  private crowdSsoLoginLoginUrl = this.baseUrl + '/api/login/crowdsso';
+
   private getMatchVersionsUrl = this.baseUrl + '/api/getversionmetadata';
   private enggMaturityChildByParentUrl =
     this.baseUrl + '/api/account/project/all';
@@ -117,7 +115,7 @@ export class HttpService {
   private getEmmStatsUrl = this.baseUrl + '/api/emm-upload/monthly-stats';
   private getPreCalculatedConfigUrl =
     this.baseUrl + '/api/pre-calculated-config';
-  private getADConfigUrl = this.baseUrl + '/api/activedirectory';
+  
   private getAuthConfigUrl = this.baseUrl + '/api/auth-types';
   private getLoginConfigUrl = this.baseUrl + '/api/auth-types-status';
   private getSuggestionsUrl = this.baseUrl + '/api/suggestions/project';
@@ -283,72 +281,6 @@ export class HttpService {
   /**  logout from the server */
   logout(): Observable<any> {
     return this.http.get(this.logoutUrl);
-  }
-
-  // choose method while submitting form from login screen
-  getRouteUrl(provider) {
-    if (provider === 'STANDARD' || provider === '') {
-      return this.standardloginUrl;
-    }
-    if (provider === 'LDAP') {
-      return this.ldapLoginUrl;
-    }
-    // if (provider === 'CROWDSSO' || provider === '') {
-    //     return this.crowdSsoLoginLoginUrl;
-    // }
-  }
-
-  /** POST: login user */
-  login(provider = '', username, password): Observable<object> {
-    let headers: HttpHeaders = new HttpHeaders();
-    headers = headers.append(
-      'Content-Type',
-      'application/x-www-form-urlencoded',
-    );
-    const loginUrl = this.getRouteUrl(provider);
-    // set resquest header
-    const httpOptions = {
-      headers,
-      observe: 'response' as 'response',
-    };
-    // encode the username and password
-    const data = { username, password };
-    const str = [];
-    for (const p in data) {
-      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(data[p]));
-    }
-    const postData = str.join('&');
-    /* Send request to server and store token and username in localstore for authentication */
-    return this.http.post<any>(loginUrl, postData, httpOptions).pipe(
-      tap((res) => {
-        this.sharedService.setCurrentUserDetails(res.body);
-      }),
-      catchError(this.handleError<object>('errorData', ['error'])),
-    );
-  }
-
-  /** POST: Register the user with username,password and email */
-  register(username, password, email): Observable<object> {
-    const postData = { username, password, email };
-    /* Send request to server and store token and username in localstore for authentication */
-    return this.http.post<any>(this.registrationUrl, postData).pipe(
-      tap((res) => {
-        if (res !== 'email' && res !== 'username' && res !== 'password') {
-          this.sharedService.setCurrentUserDetails({ user_name: username });
-          this.sharedService.setCurrentUserDetails({ user_email: email });
-          if (res['authorities']?.length > 0) {
-            this.sharedService.setCurrentUserDetails({
-              authorities: res['authorities'],
-            });
-          }
-          if (res['projectsAccess']) {
-            this.sharedService.setCurrentUserDetails({
-              projectsAccess: res['projectsAccess'],
-            });
-          }
-        }
-      }),
-    );
   }
 
   /**POST forgot password  request */
@@ -774,11 +706,6 @@ export class HttpService {
     return this.http.get<any>(this.getKPIFieldMappingRelationshipsUrl);
   }
 
-  /** get Active Directory Config */
-  getADConfig() {
-    return this.http.get<any>(this.getADConfigUrl);
-  }
-
   getAuthConfig() {
     return this.http.get<any>(this.getAuthConfigUrl);
   }
@@ -789,10 +716,6 @@ export class HttpService {
 
   setAuthConfig(data) {
     return this.http.post(this.getAuthConfigUrl, data);
-  }
-
-  setADConfig(postData) {
-    return this.http.post(this.getADConfigUrl, postData);
   }
 
   /** get emm upload history */
