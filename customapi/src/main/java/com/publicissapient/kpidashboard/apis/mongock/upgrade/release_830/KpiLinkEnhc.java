@@ -120,7 +120,7 @@ public class KpiLinkEnhc {
         updateOrInsertLinkDetail("kpi171", "NAME : Cycle Time", "cat : Backlog", "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418714/Cycle+time");
     }
 
-
+    @SuppressWarnings("unused")
     public void updateOrInsertLinkDetail(String kpiId, String kpiName, String category, String newLink) {
         Query kpiQuery = new Query(Criteria.where("kpiId").is(kpiId));
         Update kpiUpdate = new Update();
