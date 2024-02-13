@@ -27,6 +27,7 @@ import javax.validation.constraints.NotNull;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.util.RestAPIUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,9 +75,9 @@ public class KPIExcelDataController {
 	// NOSONAR
 	public ResponseEntity<KPIExcelValidationDataResponse> getValidationKPIData(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest, @NotNull @PathVariable("kpiID") String kpiID) {
-
-		Boolean isApiAuth = restAPIUtils.decryptPassword(customApiConfig.getxApiKey())
-				.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
+		String decryptedApiKey = restAPIUtils.decryptPassword(customApiConfig.getxApiKey());
+		Boolean isApiAuth = StringUtils.isNotEmpty(
+				decryptedApiKey) && decryptedApiKey.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
 		String kpiRequestStr = kpiRequest.toString();
 		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
 		kpiRequestStr = CommonUtils.handleCrossScriptingTaintedValue(kpiRequestStr);
