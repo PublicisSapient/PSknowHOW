@@ -28,7 +28,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Injection-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83853321/Defect+Injection+Rate"
           }
         }
       ]
@@ -79,7 +79,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#First-time-pass-rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049922/First+time+pass+rate+FTPR"
           }
         }
       ]
@@ -131,7 +131,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Density"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886083/Defect+Density"
           }
         }
       ]
@@ -182,7 +182,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Seepage-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049938/Defect+Seepage+Rate"
           }
         }
       ]
@@ -234,7 +234,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Removal-Efficiency"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886099/Defect+Removal+Efficiency"
           }
         }
       ]
@@ -285,7 +285,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Rejection-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886115/Defect+Rejection+Rate"
           }
         }
       ]
@@ -331,7 +331,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-by-Priority"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820546/Defect+Count+by+Priority+Quality"
           }
         }
       ]
@@ -371,7 +371,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Defect-Count-By-RCA"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820562/Defect+Count+By+RCA+Quality"
           }
         }
       ]
@@ -405,7 +405,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Created-vs-Resolved"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886196/Created+vs+Resolved"
           }
         }
       ]
@@ -474,7 +474,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Regression-Automation-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049954/Regression+Automation+Coverage"
           }
         }
       ]
@@ -525,7 +525,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#In-Sprint-Automation-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886131/In-Sprint+Automation+Coverage"
           }
         }
       ]
@@ -571,7 +571,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Unit-Test-Coverage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886147/Unit+Test+Coverage"
           }
         }
       ]
@@ -619,7 +619,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Violations"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049987/Sonar+Violations"
           }
         }
       ]
@@ -659,7 +659,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Tech-Debt"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886163/Sonar+Tech+Debt"
           }
         }
       ]
@@ -713,7 +713,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Change-Failure-Rate"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71958608/DORA+Change+Failure+Rate"
           }
         }
       ]
@@ -784,7 +784,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Test-Execution-and-pass-percentage"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84049970/Test+Execution+and+pass+percentage"
           }
         }
       ]
@@ -827,7 +827,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Issue-Count"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050003/Issue+Count"
           }
         }
       ]
@@ -872,7 +872,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Commitment-Reliability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050019/Commitment+Reliability"
           }
         }
       ]
@@ -928,7 +928,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Predictability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886228/Sprint+Predictability"
           }
         }
       ]
@@ -961,7 +961,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Velocity"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886212/Sprint+Velocity"
           }
         }
       ]
@@ -1027,7 +1027,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Sprint-Capacity-Utilization"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820594/Sprint+Capacity+Utilization"
           }
         }
       ]
@@ -1063,7 +1063,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Mean-time-to-merge"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
           }
         }
       ]
@@ -1108,7 +1108,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Number-of-Check-ins-&-Merge-requests"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
           }
         }
       ]
@@ -1155,7 +1155,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Code-Build-Time"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886260/Code+Build+Time"
           }
         }
       ]
@@ -1199,7 +1199,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Deployment-Frequency"
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827544/DORA+Deployment+Frequency"
           }
         }
       ]
@@ -1279,7 +1279,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Release-Frequency"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050035/Release+Frequency"
           }
         }
       ]
@@ -1318,7 +1318,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#Value-delivered-(Cost-of-Delay)"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050051/Value+delivered+Cost+of+Delay"
           }
         }
       ]
@@ -2193,7 +2193,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Work-Remaining"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680609/Work+Remaining"
           }
         }
       ]
@@ -2228,7 +2228,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Planned-Work-Status"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713345/Planned+Work+Status"
           }
         }
       ]
@@ -2263,7 +2263,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Estimate-vs-Actual"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680658/Estimate+vs+Actual"
           }
         }
       ]
@@ -2298,7 +2298,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Issues-likely-to-spill"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713361/Issues+likely+to+spill"
           }
         }
       ]
@@ -2333,7 +2333,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2883631/Iteration+Dashboard#Closures-possible-today"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713377/Closures+possible+today"
           }
         }
       ]
@@ -2367,6 +2367,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Overall commitment= Initial Commitment + Scope added - Scope removed"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70418594/Iteration+Commitment"
+          }
         }
       ]
     } ,
@@ -2395,7 +2402,16 @@
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It shows the count of issues which do not have estimates and count of In progress issues without any work logs."
+      "definition" : "It shows the count of issues which do not have estimates and count of In progress issues without any work logs.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680674/Estimate+Hygiene"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2421,7 +2437,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by root cause identified."
+      "definition" : "It shows the breakup of all defects within an iteration by root cause identified.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713409/Defect+count+by+RCA"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2454,6 +2479,13 @@
         {
           "type" : "paragraph" ,
           "value" : "*Any defect created during the iteration duration but is not added to the iteration is not considered"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680625/Quality+Status"
+          }
         }
       ]
     } ,
@@ -2479,7 +2511,16 @@
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues."
+      "definition" : "It shows count of the issues which do not have a due date. It also shows the completed count amongst the unplanned issues.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680593/Unplanned+Work+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2505,7 +2546,16 @@
     "kanban" : false ,
     "chartType" : "CumulativeMultilineChart" ,
     "kpiInfo" : {
-      "definition" : "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration."
+      "definition" : "Iteration Burnup KPI shows the cumulative actual progress against the overall scope of the iteration on a daily basis. For teams putting due dates at the beginning of iteration, the graph additionally shows the actual progress in comparison to the planning done and also predicts the probable progress for the remaining days of the iteration.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680577/Iteration+Burnup"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Days" ,
     "yaxisLabel" : "Count" ,
@@ -2544,6 +2594,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Wait time : Total time when any issue is in status similar to Ready for testing, ready for deployment as defined in the configuration etc."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713393/Wastage"
+          }
         }
       ]
     } ,
@@ -2571,7 +2628,16 @@
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect."
+      "definition" : "Percentage of tickets that passed QA with no return transition or any tagging to a specific configured status and no linkage of a defect.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680642/First+time+pass+rate"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2603,6 +2669,15 @@
         {
           "lhs" : "Defect Count Without Story Link= Total defects without Story link"
         }
+      ] ,
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050083/Issues+without+story+link"
+          }
+        }
       ]
     } ,
     "xaxisLabel" : "" ,
@@ -2629,7 +2704,16 @@
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "It groups all the open production defects based on their ageing in the backlog."
+      "definition" : "It groups all the open production defects based on their ageing in the backlog.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886319/Production+defects+Ageing"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Months" ,
     "yaxisLabel" : "Count" ,
@@ -2656,7 +2740,16 @@
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "It measures the percentage of stories rejected during refinement as compared to the overall stories discussed in a week."
+      "definition" : "It measures the percentage of stories rejected during refinement as compared to the overall stories discussed in a week.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886335/Refinement+Rejection+Rate"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count" ,
@@ -2685,7 +2778,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by status. User can view the total defects in the iteration as well as the defects created after iteration start."
+      "definition" : "It shows the breakup of all defects within an iteration by status. User can view the total defects in the iteration as well as the defects created after iteration start.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713425/Defect+count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2708,7 +2810,16 @@
     "thresholdValue" : "" ,
     "kanban" : false ,
     "kpiInfo" : {
-      "definition" : "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available."
+      "definition" : "It shows number of defects reopened in a given span of time in comparison to the total closed defects. For all the reopened defects, the average time to reopen is also available.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820630/Defects+Reopen+rate"
+          }
+        }
+      ]
     } ,
     "isPositiveTrend" : false ,
     "kpiFilter" : "dropdown" ,
@@ -2734,7 +2845,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Status. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986689/Release+Defect+count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2760,7 +2880,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on RCA. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953937/Release+Defect+count+by+RCA"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2786,7 +2915,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Assignee. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79691782/Release+Defect+count+by+Assignee"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2812,7 +2950,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects tagged to a release based on Priority. The breakup is shown in terms of count & percentage."
+      "definition" : "It shows the breakup of all defects tagged to a release based on Priority. The breakup is shown in terms of count & percentage.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79953921/Release+Defect+count+by+Priority"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2848,7 +2995,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start."
+      "definition" : "It shows the breakup of all defects within an iteration by priority. User can view the total defects in the iteration as well as the defects created after iteration start.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713441/Defect+count+by+Priority"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2874,7 +3030,16 @@
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points"
+      "definition" : "It shows the breakup by status of issues tagged to a release. The breakup is based on both issue count and story points" ,
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79757314/Release+Release+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2901,7 +3066,16 @@
     "kanban" : false ,
     "chartType" : null ,
     "kpiInfo" : {
-      "definition" : "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues"
+      "definition" : "It gives a comparative view between the planned completion and actual completion from a development point of view. In addition, user can see the delay (in days) in dev completed issues",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/99483649/Dev+Completion+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -2938,6 +3112,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Readiness cycle time: Average time taken for Product Backlog items (PBIs) to be refined."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886286/Backlog+Readiness"
+          }
         }
       ]
     } ,
@@ -3004,7 +3185,16 @@
     "kanban" : false ,
     "chartType" : "stacked-area" ,
     "kpiInfo" : {
-      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues"
+      "definition" : " Flow load indicates how many items are currently in the backlog. This KPI emphasizes on limiting work in progress to enabling a fast flow of issues",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820646/Flow+Load"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Time" ,
     "yaxisLabel" : "Count" ,
@@ -3029,7 +3219,16 @@
     "kanban" : false ,
     "chartType" : "stacked-area" ,
     "kpiInfo" : {
-      "definition" : "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time."
+      "definition" : "Flow Distribution evaluates the amount of each kind of work (issue types) which are open in the backlog over a period of time.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050099/Flow+Distribution"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Time" ,
     "yaxisLabel" : "Count" ,
@@ -3064,13 +3263,19 @@
         {
           "type" : "paragraph" ,
           "value" : "KPI for tracking moral of team members"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582623/People"
+          }
         }
       ]
     } ,
     "kpiUnit" : "" ,
     "maxValue" : "5" ,
     "showTrend" : false ,
-    "thresholdValue" : "" ,
     "xaxisLabel" : "Sprints" ,
     "yaxisLabel" : "Rating"
   } ,
@@ -3095,7 +3300,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/41582601/RELEASE+Health#Release-Burnup"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70484023/Release+Release+Burnup"
           }
         }
       ]
@@ -3123,7 +3328,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the Backlog with a breakup by Status."
+      "definition" : "Total count of issues in the Backlog with a breakup by Status.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820678/Backlog+Count+by+Status"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3147,7 +3361,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the backlog with a breakup by issue type."
+      "definition" : "Total count of issues in the backlog with a breakup by issue type.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050115/Backlog+Count+by+Issue+type"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3177,7 +3400,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27131959/Scrum+VALUE+KPIs#PI-Predictability"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/84050067/PI+Predictability"
           }
         }
       ]
@@ -3224,7 +3447,16 @@
     "kanban" : false ,
     "chartType" : "pieChart" ,
     "kpiInfo" : {
-      "definition" : "Total count of issues in the backlog with a breakup by defect type."
+      "definition" : "Total count of issues in the backlog with a breakup by defect type.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140489/Defect+count+by+Type"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3254,6 +3486,13 @@
         {
           "type": "paragraph",
           "value": "LEAD TIME FOR CHANGE Captures the time between a code change to commit and deployed to production."
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663772/DORA+Lead+time+for+changes"
+          }
         }
       ]
     },
@@ -3330,6 +3569,13 @@
         {
           "type" : "paragraph" ,
           "value" : "A progress indicator shows trend of Number of Check-ins & Merge requests between last 2 days. An upward trend is considered positive"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70451310/Developer+No.+of+Check-ins+and+Merge+Requests"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3407,6 +3653,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713477/Developer+Mean+time+to+Merge"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3559,6 +3812,13 @@
         {
           "type" : "paragraph" ,
           "value" : "Maturity of the KPI is calculated based on the average of the last 5 weeks"
+        } ,
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70680716/Developer+Pickup+time"
+          }
         }
       ] ,
       "maturityLevels" : [
@@ -3623,7 +3883,16 @@
     "kanban" : false ,
     "chartType" : "line" ,
     "kpiInfo" : {
-      "definition" : "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time."
+      "definition" : "Pull request size measures the number of code lines modified in a pull request. Smaller pull requests are easier to review, safer to merge, and correlate to a lower cycle time.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/70713493/Developer+PR+Size"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "Weeks" ,
     "yaxisLabel" : "Count (No. of Lines)" ,
@@ -3675,7 +3944,7 @@
           "type" : "link" ,
           "kpiLinkDetail" : {
             "text" : "Detailed Information at" ,
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/26935328/Scrum+SPEED+KPIs#Scope-Churn"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886244/Scope+Churn"
           }
         }
       ]
@@ -3712,7 +3981,16 @@
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : " It gives a breakup of escaped defects by testing phase"
+      "definition" : " It gives a breakup of escaped defects by testing phase",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/98140473/Release+Defect+count+by+Testing+phase"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3746,7 +4024,16 @@
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It depicts the progress of each epic in a release in terms of total count and %age completion."
+      "definition" : "It depicts the progress of each epic in a release in terms of total count and %age completion.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/79986705/Release+Epic+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3772,7 +4059,16 @@
     "kanban" : false ,
     "chartType" : "horizontalPercentBarChart" ,
     "kpiInfo" : {
-      "definition" : "It depicts the progress of each epic in terms of total count and %age completion."
+      "definition" : "It depicts the progress of each epic in terms of total count and %age completion.",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83820662/Epic+Progress"
+          }
+        }
+      ]
     } ,
     "xaxisLabel" : "" ,
     "yaxisLabel" : "" ,
@@ -3805,7 +4101,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/2916400/BACKLOG+Governance#Iteration-Readiness"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886303/Iteration+Readiness"
           }
         }
       ]
@@ -3848,7 +4144,7 @@
           "type" : "link",
           "kpiLinkDetail" : {
             "text" : "Detailed Information at",
-            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/59080705/DORA+KPIs#Mean-time-to-Recover-(MTTR)"
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71663785/DORA+Mean+time+to+Restore"
           }
         }
       ],
@@ -3931,7 +4227,7 @@
           "type": "link",
           "kpiLinkDetail": {
             "text": "Detailed Information at",
-            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/27197457/Scrum+QUALITY+KPIs#Sonar-Code-Quality"
+            "link": "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/83886180/Sonar+Code+Quality"
           }
         }
       ]
@@ -3969,7 +4265,16 @@
     "kanban" : false,
     "chartType" : "line",
     "kpiInfo" : {
-      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue"
+      "definition" : "The percentage of time spent in work states vs wait states across the lifecycle of an issue",
+      "details" : [
+        {
+          "type" : "link" ,
+          "kpiLinkDetail" : {
+            "text" : "Detailed Information at" ,
+            "link" : "https://psknowhow.atlassian.net/wiki/spaces/PSKNOWHOW/pages/71827496/Flow+Efficiency"
+          }
+        }
+      ]
     },
     "xAxisLabel" : "Duration",
     "yAxisLabel" : "Percentage",
