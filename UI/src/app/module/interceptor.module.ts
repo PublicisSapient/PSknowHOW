@@ -54,8 +54,7 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             req = req.clone({ headers: req.headers.set('Content-Type', ['text/csv']) });
         }
         const requestId = uuid.v4();
-                req = req.clone({ headers: req.headers.set('request-Id', requestId) });
-
+        req = req.clone({ headers: req.headers.set('request-Id', requestId) });
 
         const redirectExceptions = [
             environment.baseUrl + '/api/jenkins/kpi',
@@ -83,7 +82,8 @@ export class HttpsRequestInterceptor implements HttpInterceptor {
             .pipe(
                 tap(event => {
                     if (event instanceof HttpResponse){
-                        /**Todo: check this when handling both central and local login */
+                        /**Todo: Not autochanging the user role on role change. User will have to manually logout when his/her role is changed. 
+                         * Currently commiting this code as per comment on ticket DTS-30823 */
                         // if(!event?.url?.includes('api/authdetails') &&
                         // ((event.headers.has('auth-details-updated') &&  event.headers.get('auth-details-updated') === 'true')  || (event.headers.has('Auth-Details-Updated') &&  event.headers.get('Auth-Details-Updated') === 'true')) && this.service.getCurrentUserDetails('authorities')){
                         //     this.httpService.getAuthDetails();
