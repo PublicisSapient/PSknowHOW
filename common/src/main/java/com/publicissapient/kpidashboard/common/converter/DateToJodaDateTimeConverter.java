@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.converter;
+package com.publicissapient.kpidashboard.common.converter;
 
 import java.util.Date;
 

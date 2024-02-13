@@ -76,7 +76,7 @@ public class JiraProcessorUtil {
 		byte[] responseBytes;
 		try {
 			CharsetDecoder charsetDecoder = StandardCharsets.UTF_8.newDecoder();
-			if (responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
+			if (responseStr == null || responseStr.isEmpty() || NULL_STR.equalsIgnoreCase(responseStr)) {
 				return StringUtils.EMPTY;
 			}
 			responseBytes = responseStr.getBytes(StandardCharsets.UTF_8);

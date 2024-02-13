@@ -414,19 +414,19 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 	private void setAggregateTimeEstimates(JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		Integer timeSpent = 0;
 		if (fields.get(JiraConstants.AGGREGATED_TIME_SPENT) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue().toString())) {
 			timeSpent = ((Integer) fields.get(JiraConstants.AGGREGATED_TIME_SPENT).getValue()) / 60;
 		}
 		jiraIssue.setTimeSpentInMinutes(timeSpent);
 
 		if (fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue().toString())) {
 			jiraIssue.setAggregateTimeOriginalEstimateMinutes(
 					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_ORIGINAL).getValue()) / 60);
 
 		}
 		if (fields.get(JiraConstants.AGGREGATED_TIME_REMAIN) != null
-				&& fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue() != null) {
+				&& StringUtils.isNotEmpty((fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue().toString()))) {
 			jiraIssue.setAggregateTimeRemainingEstimateMinutes(
 					((Integer) fields.get(JiraConstants.AGGREGATED_TIME_REMAIN).getValue()) / 60);
 
@@ -835,31 +835,31 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 
 	private void setEpicIssueData(FieldMapping fieldMapping, JiraIssue jiraIssue, Map<String, IssueField> fields) {
 		if (fields.get(fieldMapping.getEpicJobSize()) != null
-				&& fields.get(fieldMapping.getEpicJobSize()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicJobSize()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicJobSize(), fields);
 			jiraIssue.setJobSize(Double.parseDouble(fieldValue));
 
 		}
 		if (fields.get(fieldMapping.getEpicRiskReduction()) != null
-				&& fields.get(fieldMapping.getEpicRiskReduction()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicRiskReduction()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicRiskReduction(), fields);
 			jiraIssue.setRiskReduction(Double.parseDouble(fieldValue));
 
 		}
 		if (fields.get(fieldMapping.getEpicTimeCriticality()) != null
-				&& fields.get(fieldMapping.getEpicTimeCriticality()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicTimeCriticality()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicTimeCriticality(), fields);
 			jiraIssue.setTimeCriticality(Double.parseDouble(fieldValue));
 
 		}
 		if (fields.get(fieldMapping.getEpicUserBusinessValue()) != null
-				&& fields.get(fieldMapping.getEpicUserBusinessValue()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicUserBusinessValue()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicUserBusinessValue(), fields);
 			jiraIssue.setBusinessValue(Double.parseDouble(fieldValue));
 
 		}
 		if (fields.get(fieldMapping.getEpicWsjf()) != null
-				&& fields.get(fieldMapping.getEpicWsjf()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicWsjf()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicWsjf(), fields);
 			jiraIssue.setWsjf(Double.parseDouble(fieldValue));
 
@@ -869,13 +869,13 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 		jiraIssue.setCostOfDelay(costOfDelay);
 
 		if (fields.get(fieldMapping.getEpicPlannedValue()) != null
-				&& fields.get(fieldMapping.getEpicPlannedValue()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicPlannedValue()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicPlannedValue(), fields);
 			jiraIssue.setEpicPlannedValue(Double.parseDouble(fieldValue));
 		}
 
 		if (fields.get(fieldMapping.getEpicAchievedValue()) != null
-				&& fields.get(fieldMapping.getEpicAchievedValue()).getValue() != null) {
+				&& StringUtils.isNotEmpty(fields.get(fieldMapping.getEpicAchievedValue()).getValue().toString())) {
 			String fieldValue = getFieldValue(fieldMapping.getEpicAchievedValue(), fields);
 			jiraIssue.setEpicAchievedValue(Double.parseDouble(fieldValue));
 		}
@@ -953,7 +953,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 					&& fieldMapping.getTestingPhaseDefectsIdentifier().trim()
 							.equalsIgnoreCase(JiraConstants.CUSTOM_FIELD)
 					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()) != null
-					&& fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue() != null) {
+					&& StringUtils.isNotEmpty(
+							fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue().toString())) {
 				isBugRaisedByValueMatchesRaisedByCustomField(fieldMapping.getTestingPhaseDefectValue(),
 						fields.get(fieldMapping.getTestingPhaseDefectCustomField().trim()).getValue(), jiraIssue, TEST_PHASE);
 			} else if (null != fieldMapping.getTestingPhaseDefectsIdentifier() && fieldMapping
@@ -981,8 +982,8 @@ public class JiraIssueProcessorImpl implements JiraIssueProcessor {
 							&& featureConfig.getJiraProductionIncidentIdentification().trim()
 									.equalsIgnoreCase(CommonConstant.CUSTOM_FIELD)
 							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim()) != null
-							&& fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
-									.getValue() != null
+							&& StringUtils.isNotEmpty(fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())
+									.getValue().toString())
 							&& isBugRaisedByValueMatchesRaisedByCustomField(
 									featureConfig.getJiraProdIncidentRaisedByValue(),
 									fields.get(featureConfig.getJiraProdIncidentRaisedByCustomField().trim())

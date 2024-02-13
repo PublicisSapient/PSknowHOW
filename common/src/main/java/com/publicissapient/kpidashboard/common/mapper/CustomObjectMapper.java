@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mapper;
+package com.publicissapient.kpidashboard.common.mapper;
 
 import org.bson.types.ObjectId;
 
