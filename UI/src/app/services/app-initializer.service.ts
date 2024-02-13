@@ -7,7 +7,6 @@ import { FeatureFlagsService } from './feature-toggle.service';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs/operators';
 import { GoogleAnalyticsService } from './google-analytics.service';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -57,10 +56,10 @@ export class AppInitializerService {
       }
   }
 
-  checkFeatureFlag() {
+  async checkFeatureFlag() {
     // return new Promise((resolve, reject) => {
       if (!environment.production) {
-        this.featureToggleService.config = this.featureToggleService.loadConfig();
+        this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);;
       } else {
         const env$ = this.http.get('assets/env.json').pipe(
           tap(env => {
@@ -72,9 +71,17 @@ export class AppInitializerService {
             environment['RETROS_URL'] = env['RETROS_URL'] || '';
           }));
 
-        env$.toPromise().then(res => {
-          this.featureToggleService.config = this.featureToggleService.loadConfig();
+        env$.toPromise().then(async res => {
+          this.featureToggleService.config =  this.featureToggleService.loadConfig().then((res) => res);
         });
+      }
+       // load google Analytics script on all instances except local and if customAPI property is true
+      if(this.featureToggleService.isFeatureEnabled('GOOGLE_ANALYTICS')){
+        if (window.location.origin.indexOf('localhost') === -1) {
+          this.ga.load('gaTagManager').then(data => {
+            console.log('script loaded ', data);
+          })
+        }
       }
       // resolve(true);
     // })

@@ -59,14 +59,6 @@ export class AppComponent implements OnInit {
       }
     );
 
-    // load google Analytics script on all instances except local and if customAPI property is true
-    if(this.featureService.isFeatureEnabled('GOOGLE_ANALYTICS')){
-      if (window.location.origin.indexOf('localhost') === -1) {
-        this.ga.load('gaTagManager').then(data => {
-          console.log('script loaded ', data);
-        })
-      }
-    }
     this.primengConfig.ripple = true;
     this.authorized = this.getAuth.checkAuth();
     this.router.events.subscribe(event => {
