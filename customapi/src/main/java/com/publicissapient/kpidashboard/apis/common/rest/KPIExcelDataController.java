@@ -76,7 +76,7 @@ public class KPIExcelDataController {
 	public ResponseEntity<KPIExcelValidationDataResponse> getValidationKPIData(HttpServletRequest request,
 			@NotNull @RequestBody KpiRequest kpiRequest, @NotNull @PathVariable("kpiID") String kpiID) {
 		String decryptedApiKey = restAPIUtils.decryptPassword(customApiConfig.getxApiKey());
-		Boolean isApiAuth = StringUtils.isNotEmpty(customApiConfig.getxApiKey()) && StringUtils.isNotEmpty(
+		Boolean isApiAuth = StringUtils.isNotEmpty(
 				decryptedApiKey) && decryptedApiKey.equalsIgnoreCase(request.getHeader(TOKEN_KEY));
 		String kpiRequestStr = kpiRequest.toString();
 		kpiID = CommonUtils.handleCrossScriptingTaintedValue(kpiID);
