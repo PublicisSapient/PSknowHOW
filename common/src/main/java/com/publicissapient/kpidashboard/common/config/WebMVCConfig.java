@@ -54,7 +54,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 		configurer.enable("api");
 	}
 
-	// TODO
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		MappingJackson2HttpMessageConverter jackson = new MappingJackson2HttpMessageConverter();
@@ -84,7 +83,6 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
 		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
-	//TODO:: check date working in overall app
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
 		registry.addConverter(new DateToJodaDateTimeConverter());
