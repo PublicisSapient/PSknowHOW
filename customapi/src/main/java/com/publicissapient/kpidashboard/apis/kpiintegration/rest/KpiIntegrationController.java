@@ -63,9 +63,8 @@ public class KpiIntegrationController {
     /**
      * This method handles Scrum KPIs request.
      *
-     * @param kpiRequest
+     * @param kpiRequest kpi request object
      * @return List of KPIs with trend and aggregated data.
-     * @throws Exception
      */
 	@PostMapping(value = "/kpiIntegrationValues", produces = APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<KpiElement>> getMaturityValues(HttpServletRequest request,

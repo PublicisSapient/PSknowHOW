@@ -77,7 +77,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient Object testCaseExecution;
 	private transient Object testExecutionPass;
 	private transient List<DataCountGroup> trendValueKpiFilterList;
-
+//  maturity value for overall filter
 	private String overAllMaturityValue;
 	private List<String> maturityRange;
 
@@ -129,6 +129,7 @@ public class KpiElement implements Serializable { // NOPMD
 	private transient List<Filter> standUpStatusFilter;
 	// used by CycleTime
 	private Boolean isAggregationStacks;
+//	maturity key for overall filter
 	private String overallMaturity;
 
 	/**

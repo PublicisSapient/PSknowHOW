@@ -148,7 +148,7 @@ public class KpiIntegrationServiceImpl {
 
 	/**
 	 * set kpi request parameters as per the request
-	 * @param kpiRequest recieved kpi request
+	 * @param kpiRequest received kpi request
 	 */
 	public void setKpiRequest(KpiRequest kpiRequest) {
 		String[] hierarchyIdList = kpiRequest.getIds();
