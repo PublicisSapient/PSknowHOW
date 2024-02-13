@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.config;
+package com.publicissapient.kpidashboard.common.config;
 
 import java.util.List;
 
+import com.publicissapient.kpidashboard.common.converter.DateToJodaDateTimeConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeReadConverter;
+import com.publicissapient.kpidashboard.common.converter.ZonedDateTimeWriteConverter;
+import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -34,8 +38,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.publicissapient.kpidashboard.apis.converter.DateToJodaDateTimeConverter;
-import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
 
 /**
  * An extension of {@link WebMvcConfigurer} to provide project specific
@@ -45,14 +47,13 @@ import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "com.publicissapient.kpidashboard.apis")
+@ComponentScan(basePackages = "com.publicissapient.kpidashboard")
 public class WebMVCConfig implements WebMvcConfigurer {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable("api");
 	}
 
-	// TODO
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 		MappingJackson2HttpMessageConverter jackson = new MappingJackson2HttpMessageConverter();
@@ -82,10 +83,11 @@ public class WebMVCConfig implements WebMvcConfigurer {
 
 		registry.addResourceHandler("/**").addResourceLocations(staticResourceMappingPath);
 	}
-	//TODO:: check date working in overall app
 	@Override
 	public void addFormatters(FormatterRegistry registry) {
 		registry.addConverter(new DateToJodaDateTimeConverter());
+		registry.addConverter(new ZonedDateTimeWriteConverter());
+		registry.addConverter(new ZonedDateTimeReadConverter());
 	}
 
 

@@ -33,7 +33,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.publicissapient.kpidashboard.apis.mapper.CustomObjectMapper;
+import com.publicissapient.kpidashboard.common.mapper.CustomObjectMapper;
 
 @Configuration
 @EnableWebMvc

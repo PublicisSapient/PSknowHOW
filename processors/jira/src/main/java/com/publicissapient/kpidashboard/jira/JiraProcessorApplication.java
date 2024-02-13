@@ -19,6 +19,7 @@
 package com.publicissapient.kpidashboard.jira;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -30,6 +31,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
@@ -57,8 +60,17 @@ public class JiraProcessorApplication {
 	}
 
 	@Bean
+	public DataSource dataSource() {
+		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+				.addScript("classpath:org/springframework/batch/core/schema-drop-h2.sql")
+				.addScript("classpath:org/springframework/batch/core/schema-h2.sql")
+				.build();
+	}
+
+	@Bean
 	@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
+
 }

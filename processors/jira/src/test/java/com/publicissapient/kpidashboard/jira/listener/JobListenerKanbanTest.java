@@ -76,7 +76,6 @@ public class JobListenerKanbanTest {
     private JobListenerKanban jobListenerKanban;
 
     private JobExecution jobExecution;
-
     @Before
     public void setUp() {
         jobExecution = MetaDataInstanceFactory.createJobExecution();

@@ -15,7 +15,7 @@
  *    limitations under the License.
  */
 
-package com.publicissapient.kpidashboard.apis.converter;
+package com.publicissapient.kpidashboard.common.converter;
 
 import java.util.Date;
 
@@ -25,7 +25,6 @@ import org.springframework.core.convert.converter.Converter;
 /**
  * Custom converter for converting java.util.Date to jodaDateTime
  */
-//TODO::Check the functionality around dates overall application
 public class DateToJodaDateTimeConverter implements Converter<Date, DateTime>{
     @Override
     public DateTime convert(Date source) {
