@@ -69,7 +69,7 @@ public interface KpiMasterRepository extends CrudRepository<KpiMaster, ObjectId>
 
 	/**
 	 * get kpi master data by kpiId list
-	 * @param kpiIds
+	 * @param kpiIds list of kpi ids
 	 * @return list of KpiMaster
 	 */
 	List<KpiMaster> findByKpiIdIn(List<String> kpiIds);
