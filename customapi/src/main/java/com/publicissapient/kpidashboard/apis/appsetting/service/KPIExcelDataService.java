@@ -145,6 +145,8 @@ public class KPIExcelDataService {
 	 *            the kpi request
 	 * @param isKanban
 	 *            the is kanban
+	 * @param isApiAuth
+	 *            check if api auth
 	 * @return object
 	 */
 
@@ -183,6 +185,8 @@ public class KPIExcelDataService {
 	 * @param kpiID
 	 * @param kpiRequestSourceWiseMap
 	 * @param acceptedFilter
+	 * @param apiAuth
+	 * 			check if api auth
 	 * @return Excel data Object
 	 */
 	@SuppressWarnings("PMD.AvoidCatchingGenericException")
@@ -479,6 +483,8 @@ public class KPIExcelDataService {
 	 *
 	 * @param executor
 	 * @param pair
+	 * @param apiAuth
+	 *            check if api auth
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelZephyrKpiDataFuture(ExecutorService executor,
@@ -504,6 +510,8 @@ public class KPIExcelDataService {
 	 *
 	 * @param executor
 	 * @param pair
+	 * @param apiAuth
+	 *            check if api auth
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelSonarKpiDataFuture(ExecutorService executor,
@@ -529,6 +537,8 @@ public class KPIExcelDataService {
 	 *
 	 * @param executor
 	 * @param pair
+	 * @param apiAuth
+	 *            check if api auth
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJenkinsKpiDataFuture(ExecutorService executor,
@@ -554,6 +564,8 @@ public class KPIExcelDataService {
 	 *
 	 * @param executor
 	 * @param pair
+	 * @param apiAuth
+	 *            check if api auth
 	 * @return
 	 */
 	private Future<List<KpiElement>> excelJiraKpiDataFuture(ExecutorService executor,

@@ -67,6 +67,11 @@ public interface KpiMasterRepository extends CrudRepository<KpiMaster, ObjectId>
 	 */
 	List<KpiMaster> findByKanbanAndKpiCategoryNotIn(boolean kanban, List<String> kpiCategory);
 
+	/**
+	 * get kpi master data by kpiId list
+	 * @param kpiIds
+	 * @return list of KpiMaster
+	 */
 	List<KpiMaster> findByKpiIdIn(List<String> kpiIds);
 
 }
