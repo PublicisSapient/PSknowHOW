@@ -15,7 +15,7 @@ export class AppInitializerService {
 
   constructor(private sharedService: SharedService, private httpService: HttpService, private router: Router, private featureToggleService: FeatureFlagsService, private http: HttpClient, private route: ActivatedRoute, private ga: GoogleAnalyticsService) {
     this.checkFeatureFlag();
-    // this.validateToken();
+    this.validateToken();
   }
 
   async validateToken() {
