@@ -509,11 +509,11 @@ export class BacklogComponent implements OnInit, OnDestroy {
     }
 
     this.getChartDataForCard(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 
   createAllKpiArray(data) {
-    this.kpiSelectedFilterObj['action'] = 'new'
     for (const key in data) {
       const idx = this.ifKpiExist(data[key]?.kpiId);
       if (idx !== -1) {
@@ -527,34 +527,21 @@ export class BacklogComponent implements OnInit, OnDestroy {
       /** if: for graphs, else: for other than graphs */
       if (this.updatedConfigGlobalData.find(kpi => kpi?.kpiId === key)?.kpiDetail?.chartType) {
         if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter')) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = [];
-          this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-          this.getDropdownArray(data[key]?.kpiId);
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,[],'Overall')
         } else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
           this.getDropdownArray(data[key]?.kpiId);
           const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
           if (formType?.toLowerCase() == 'radiobutton') {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
           }
           else if (formType?.toLowerCase() == 'dropdown' && (!filters)) {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
           }
           else if (filters && Object.keys(filters)?.length > 0) {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-            const tempObj = {};
-            for (const key in filters) {
-              tempObj[key] = ['Overall'];
-            }
-
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
           } else {
-            this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+            this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
           }
-          this.getDropdownArray(data[key]?.kpiId);
-          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
         }
 
         const agType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.aggregationCriteria;
@@ -562,22 +549,51 @@ export class BacklogComponent implements OnInit, OnDestroy {
 
       } else {
         if (trendValueList && Object.keys(trendValueList)?.length > 0 && filters && Object.keys(filters)?.length > 0) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          const tempObj = {};
-          for (const prop in filters) {
-            tempObj[prop] = ['Overall'];
-            if (data[key]?.kpiId === 'kpi171' && filters[prop]?.filterType === 'Duration') {
-              tempObj[prop] = "Past 6 Months";
-            }
-          }
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
-          this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-          this.getDropdownArrayForCard(data[key]?.kpiId);
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
         }
         this.getChartDataForCard(data[key]?.kpiId, this.ifKpiExist(data[key]?.kpiId));
       }
 
     }
+  }
+
+  setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
+    let haveBackup = {}
+    if (this.service.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.service.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(kpiId)) {
+      haveBackup = this.service.getAddtionalFilterBackup()['kpiFilters'][kpiId];
+    }
+    this.kpiSelectedFilterObj[kpiId] = refreshValue;
+    if (haveBackup && Object.keys(haveBackup).length) {
+      if (filters) {
+        const tempObj = {};
+        for (const key in haveBackup) {
+          tempObj[key] = haveBackup[key];
+        }
+        this.kpiSelectedFilterObj[kpiId] = { ...tempObj };
+      }
+      else if (Array.isArray(refreshValue)) {
+        this.kpiSelectedFilterObj[kpiId] = haveBackup;
+      } else {
+        this.kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+      }
+
+    } else {
+      if (filters) {
+        const tempObj = {};
+        for (const key in filters) {
+          tempObj[key] = initialValue;
+        }
+        this.kpiSelectedFilterObj[kpiId] = { ...tempObj };
+      }
+      else if (Array.isArray(refreshValue)) {
+        this.kpiSelectedFilterObj[kpiId]?.push(initialValue);
+      } else {
+        this.kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+      }
+    }
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+    this.getDropdownArray(kpiId);
   }
 
 
@@ -836,6 +852,7 @@ export class BacklogComponent implements OnInit, OnDestroy {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId), kpi?.kpiDetail?.aggregationCriteria);
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
   }
 

@@ -667,42 +667,59 @@ export class IterationComponent implements OnInit, OnDestroy {
       const trendValueList = this.allKpiArray[this.allKpiArray?.length - 1]?.trendValueList;
       const filters = this.allKpiArray[this.allKpiArray?.length - 1]?.filters;
       if (trendValueList && Object.keys(trendValueList)?.length > 0 && !Array.isArray(trendValueList) && filters && Object.keys(filters)?.length > 0) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-        const tempObj = {};
-        for (const key in filters) {
-          tempObj[key] = ['Overall'];
-        }
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
-        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
-        this.getDropdownArray(data[key]?.kpiId);
+        this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
       }
       else if (trendValueList?.length > 0 && trendValueList[0]?.hasOwnProperty('filter1')) {
-        this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
         this.getDropdownArray(data[key]?.kpiId);
         const formType = this.updatedConfigGlobalData?.filter(x => x.kpiId == data[key]?.kpiId)[0]?.kpiDetail?.kpiFilter;
         if (formType?.toLowerCase() == 'radiobutton') {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push(this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]);
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': [this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},[this.kpiDropdowns[data[key]?.kpiId][0]?.options[0]] )
         }
         else if (formType?.toLowerCase() == 'dropdown') {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
         }
         else if (filters && Object.keys(filters)?.length > 0) {
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = {};
-          const tempObj = {};
-          for (const key in filters) {
-            tempObj[key] = ['Overall'];
-          }
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { ...tempObj };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'],filters)
         } else {
-          // this.kpiSelectedFilterObj[data[key]?.kpiId]?.push('Overall');
-          this.kpiSelectedFilterObj[data[key]?.kpiId] = { 'filter1': ['Overall'] };
+          this.setFilterValueIfAlreadyHaveBackup(data[key]?.kpiId,{},['Overall'] )
         }
-        this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+        
       }
       this.getChartData(data[key]?.kpiId, (this.allKpiArray?.length - 1));
     }
+  }
+
+  setFilterValueIfAlreadyHaveBackup(kpiId, refreshValue, initialValue, filters?) {
+    let haveBackup = {}
+    if (this.service.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.service.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(kpiId)) {
+      haveBackup = this.service.getAddtionalFilterBackup()['kpiFilters'][kpiId];
+    }
+    this.kpiSelectedFilterObj[kpiId] = refreshValue;
+    if (haveBackup && Object.keys(haveBackup).length) {
+      if (filters) {
+        const tempObj = {};
+        for (const key in haveBackup) {
+          tempObj[key] = haveBackup[key];
+        }
+        this.kpiSelectedFilterObj[kpiId] = { ...tempObj };
+      } else {
+        this.kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+      }
+
+    } else {
+      if (filters) {
+        const tempObj = {};
+        for (const key in filters) {
+          tempObj[key] = initialValue;
+        }
+        this.kpiSelectedFilterObj[kpiId] = { ...tempObj };
+      } else {
+        this.kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+      }
+    }
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
+    this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
+    this.getDropdownArray(kpiId);
   }
 
   getDropdownArray(kpiId) {
@@ -757,7 +774,7 @@ export class IterationComponent implements OnInit, OnDestroy {
       this.kpiSelectedFilterObj[kpi?.kpiId] = { "filter1": [event] };
     }
     this.getChartData(kpi?.kpiId, this.ifKpiExist(kpi?.kpiId));
-
+    this.helperService.createBackupOfFiltersSelection(this.kpiSelectedFilterObj);
     this.service.setKpiSubFilterObj(this.kpiSelectedFilterObj);
 
   }

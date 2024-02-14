@@ -564,4 +564,10 @@ export class HelperService {
           }
         })
       }
+
+      createBackupOfFiltersSelection(filterbackup){
+        let savedDetails = this.sharedService.getAddtionalFilterBackup();
+        savedDetails =  {...savedDetails, kpiFilters : {...savedDetails['kpiFilters'], ...filterbackup}};
+        this.sharedService.setAddtionalFilterBackup(savedDetails);
+      }
 }

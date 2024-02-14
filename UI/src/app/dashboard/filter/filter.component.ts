@@ -1728,7 +1728,7 @@ export class FilterComponent implements OnInit, OnDestroy {
         selectedSprint = { ...selectedSprint, [element['nodeId']]: element['additionalFilters'] }
       }
     });
-    this.service.setAddtionalFilterBackup({ sprint: selectedSprint });
+    this.service.setAddtionalFilterBackup({ ...this.service.getAddtionalFilterBackup(), sprint: selectedSprint });
   }
 
   /**

@@ -1226,12 +1226,10 @@ export class ExecutiveComponent implements OnInit, OnDestroy {
               this.kpiSelectedFilterObj[kpi?.kpiId] = event;
             } else if(Array.isArray(event[key])){
               for (let i = 0; i < event[key]?.length; i++) {
-                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key][i]];
+                this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], Array.isArray(event[key]) ? event[key][i] : event[key]];
               }
             }else{
-                for (let i = 0; i < event[key]?.length; i++) {
-                    this.kpiSelectedFilterObj[kpi?.kpiId] = [...this.kpiSelectedFilterObj[kpi?.kpiId], event[key]];
-                  }
+             this.kpiSelectedFilterObj[kpi?.kpiId] = event[key];   
             }
           }
         } else {
