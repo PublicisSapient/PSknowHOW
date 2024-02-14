@@ -105,8 +105,9 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
     @Override
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  Node projectNode) throws ApplicationException {
-
-        dateWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
+        Map<String, Node> mapTmp = new HashMap<>();
+        mapTmp.put(projectNode.getId(),projectNode);
+        dateWiseLeafNodeValue(projectNode, mapTmp, kpiElement, kpiRequest);
         Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
         calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.NUMBER_OF_CHECK_INS);
         Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
@@ -127,7 +128,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
         return kpiElement;
     }
 
-    private void dateWiseLeafNodeValue(Node projectNode, KpiElement kpiElement,
+    private void dateWiseLeafNodeValue(Node projectNode, Map<String, Node> mapTmp, KpiElement kpiElement,
                                        KpiRequest kpiRequest) {
 
         CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
@@ -136,11 +137,11 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
         String endDate = dateRange.getEndDate().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         Map<String, Object> resultMap = fetchKPIDataFromDb(Arrays.asList(projectNode), startDate, endDate, null);
-        kpiWithFilter(resultMap, projectNode, kpiElement, kpiRequest);
+        kpiWithFilter(resultMap, mapTmp, projectNode, kpiElement, kpiRequest);
 
     }
 
-    private void kpiWithFilter(Map<String, Object> resultMap, Node node,
+    private void kpiWithFilter(Map<String, Object> resultMap, Map<String, Node> mapTmp, Node node,
                                KpiElement kpiElement, KpiRequest kpiRequest) {
         Map<String, ValidationData> validationMap = new HashMap<>();
         List<KPIExcelData> excelData = new ArrayList<>();
@@ -182,7 +183,7 @@ public class CodeCommitKanbanServiceImpl extends BitBucketKPIService<Long, List<
             }
 
         }
-        node.setValue(projectWiseDataMap);
+        mapTmp.get(node.getId()).setValue(projectWiseDataMap);
         kpiElement.setExcelData(excelData);
         kpiElement.setExcelColumns(KPIExcelColumn.CODE_COMMIT_MERGE_KANBAN.getColumns());
         kpiElement.setMapOfSprintAndData(validationMap);

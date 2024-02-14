@@ -105,7 +105,9 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  Node projectNode) throws ApplicationException {
 
-        projectWiseLeafNodeValue(kpiElement, projectNode, kpiRequest);
+        Map<String, Node> mapTmp = new HashMap<>();
+        mapTmp.put(projectNode.getId(),projectNode);
+        projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
         log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
                 projectNode);
 
@@ -140,7 +142,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
      * @param kpiElement
      * @param projectLeafNode
      */
-    private void projectWiseLeafNodeValue(KpiElement kpiElement,
+    private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
                                           Node projectLeafNode, KpiRequest kpiRequest) {
 
         String requestTrackerId = getRequestTrackerId();
@@ -208,7 +210,7 @@ public class CodeCommitServiceImpl extends BitBucketKPIService<Long, List<Object
                 new HashMap<>(), projectName, new HashMap<>(), duration, dataPoints);
         aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
 
-        projectLeafNode.setValue(aggDataMap);
+        mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
         populateExcelData(requestTrackerId, repoWiseCommitList, repoList, branchList, excelData, projectLeafNode,
                 repoWiseMergeRequestList);
 

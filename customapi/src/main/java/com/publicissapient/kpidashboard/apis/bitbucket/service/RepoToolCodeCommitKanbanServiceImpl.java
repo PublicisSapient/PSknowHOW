@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.publicissapient.kpidashboard.apis.appsetting.service.ConfigHelperService;
-import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.enums.KPICode;
 import com.publicissapient.kpidashboard.apis.enums.KPIExcelColumn;
@@ -56,7 +55,6 @@ import com.publicissapient.kpidashboard.apis.util.KpiDataHelper;
 import com.publicissapient.kpidashboard.common.constant.CommonConstant;
 import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import com.publicissapient.kpidashboard.common.model.application.DataCountGroup;
-import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.application.Tool;
 import com.publicissapient.kpidashboard.common.model.application.ValidationData;
 import com.publicissapient.kpidashboard.common.util.DateUtil;
@@ -99,8 +97,9 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
     @Override
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  Node projectNode) throws ApplicationException {
-        dateWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
-
+        Map<String, Node> mapTmp = new HashMap<>();
+        mapTmp.put(projectNode.getId(),projectNode);
+        dateWiseLeafNodeValue(projectNode, mapTmp, kpiElement, kpiRequest);
         Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
         calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.NUMBER_OF_CHECK_INS);
         Map<String, List<DataCount>> trendValuesMap = getTrendValuesMap(kpiRequest, kpiElement, nodeWiseKPIValue,
@@ -121,7 +120,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
         return kpiElement;
     }
 
-    private void dateWiseLeafNodeValue(Node projectNode, KpiElement kpiElement,
+    private void dateWiseLeafNodeValue(Node projectNode, Map<String, Node> mapTmp, KpiElement kpiElement,
                                        KpiRequest kpiRequest) {
 
         CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
@@ -129,11 +128,11 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
         List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList = getRepoToolsKpiMetricResponse(
                 dateRange.getEndDate(), toolMap, projectNode, kpiRequest);
         if (CollectionUtils.isNotEmpty(repoToolKpiMetricResponseCommitList))
-            kpiWithFilter(repoToolKpiMetricResponseCommitList, projectNode, kpiElement, kpiRequest);
+            kpiWithFilter(repoToolKpiMetricResponseCommitList, mapTmp, projectNode, kpiElement, kpiRequest);
 
     }
 
-    private void kpiWithFilter(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList, Node node, KpiElement kpiElement, KpiRequest kpiRequest) {
+    private void kpiWithFilter(List<RepoToolKpiMetricResponse> repoToolKpiMetricResponseCommitList, Map<String, Node> mapTmp, Node node, KpiElement kpiElement, KpiRequest kpiRequest) {
         Map<String, ValidationData> validationMap = new HashMap<>();
         List<KPIExcelData> excelData = new ArrayList<>();
         Map<ObjectId, Map<String, List<Tool>>> toolMap = configHelperService.getToolItemMap();
@@ -177,7 +176,7 @@ public class RepoToolCodeCommitKanbanServiceImpl extends BitBucketKPIService<Lon
         List<DataCount> dayWiseCount = setDayWiseCountForProject(aggCommitCountForRepo, new HashMap<>(),
                 projectName, kpiRequest);
         aggDataMap.put(Constant.AGGREGATED_VALUE, dayWiseCount);
-        node.setValue(aggDataMap);
+        mapTmp.get(node.getId()).setValue(aggDataMap);
 
         if (getRequestTrackerIdKanban().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())) {
             KPIExcelUtility.populateCodeCommitKanbanExcelData(node.getProjectFilter().getName(), repoWiseCommitList,

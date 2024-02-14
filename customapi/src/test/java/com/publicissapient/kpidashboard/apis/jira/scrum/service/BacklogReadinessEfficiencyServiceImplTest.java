@@ -133,6 +133,10 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 		KpiRequestFactory kpiRequestFactory = KpiRequestFactory.newInstance();
 		kpiRequest = kpiRequestFactory.findKpiRequest("kpi138");
 		kpiRequest.setLabel("PROJECT");
+		List<String> sprintList = List.of("38296_Scrum Project_6335363749794a18e8a4479b");
+		Map<String,List<String>> stringListMap=new HashMap<>();
+		stringListMap.put("sprint",sprintList);
+		kpiRequest.setSelectedMap(stringListMap);
 
 		AccountHierarchyFilterDataFactory accountHierarchyFilterDataFactory = AccountHierarchyFilterDataFactory
 				.newInstance();
@@ -157,6 +161,7 @@ public class BacklogReadinessEfficiencyServiceImplTest {
 
 		Map<String, Object> sprintVelocityStoryMap = new HashMap<>();
 		sprintVelocityStoryMap.put("sprintVelocityKey", storyList);
+		sprintVelocityStoryMap.put("sprintWiseSprintDetailMap", List.of(sprintDetails));
 
 		when(kpiHelperService.fetchBackLogReadinessFromdb(any(), any())).thenReturn(sprintVelocityStoryMap);
 

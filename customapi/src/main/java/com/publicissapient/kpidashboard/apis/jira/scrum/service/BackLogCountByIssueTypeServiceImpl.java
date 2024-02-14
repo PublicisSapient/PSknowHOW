@@ -97,9 +97,7 @@ public class BackLogCountByIssueTypeServiceImpl extends JiraBacklogKPIService<In
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 
-		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
 			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
-		}
 		log.info("BackLogCountByIssueTypeServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

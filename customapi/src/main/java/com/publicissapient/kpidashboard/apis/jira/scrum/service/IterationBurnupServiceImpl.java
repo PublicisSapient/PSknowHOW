@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -138,7 +139,7 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI125(),
 						fieldMapping.getJiraIterationCompletionStatusKPI125(),
 						leafNode.getAccountHierarchy().getBasicProjectConfigId());
@@ -163,8 +164,8 @@ public class IterationBurnupServiceImpl extends JiraIterationKPIService {
 					sprintIssues.addAll(checkNullList(sprintDetails.getTotalIssues()));
 					sprintIssues.addAll(checkNullList(sprintDetails.getPuntedIssues()));
 					Set<JiraIssue> totalIssueList = KpiDataHelper.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(
-							sprintDetails, sprintIssues, getFilteredJiraIssue(allIssues, totalJiraIssueList));
-					List<JiraIssueCustomHistory> allIssuesHistory = getFilteredJiraIssueHistory(allIssues,
+							sprintDetails, sprintIssues, IterationKpiHelper.getFilteredJiraIssue(allIssues, totalJiraIssueList));
+					List<JiraIssueCustomHistory> allIssuesHistory = IterationKpiHelper.getFilteredJiraIssueHistory(allIssues,
 							totalHistoryList);
 					Map<LocalDate, List<JiraIssue>> fullSprintIssues = new HashMap<>();
 					Map<LocalDate, List<JiraIssue>> addedIssues = new HashMap<>();

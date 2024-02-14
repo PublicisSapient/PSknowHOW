@@ -102,9 +102,10 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 			throws ApplicationException {
 
 		log.info("FLOW-EFFICIENCY {}", kpiRequest.getRequestTrackerId());
-		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValue(kpiElement, projectNode, kpiRequest);
-		}
+		Map<String, Node> mapTmp = new HashMap<>();
+		mapTmp.put(projectNode.getId(),projectNode);
+			projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
+
 
 		Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
 
@@ -143,7 +144,7 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 	 * @param kpiRequest
 	 *            kpiRequest
 	 */
-	private void projectWiseLeafNodeValue(KpiElement kpiElement, Node leafNode, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp, Node leafNode, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		List<KPIExcelData> excelData = new ArrayList<>();
 		List<String> rangeList = customApiConfig.getFlowEfficiencyXAxisRange();
@@ -167,7 +168,7 @@ public class FlowEfficiencyServiceImpl extends JiraBacklogKPIService<Integer, Li
 				flowEfficiencyMap, leafNode);
 		populateExcelDataObject(requestTrackerId, excelData, flowEfficiencyMap, waitTimeList, totalTimeList);
 		if (leafNode != null)
-			leafNode.setValue(dataCountMap);
+			mapTmp.get(leafNode.getId()).setValue(dataCountMap);
 
 		List<String> xAxisRange = new ArrayList<>(rangeList);
 		Collections.reverse(xAxisRange);

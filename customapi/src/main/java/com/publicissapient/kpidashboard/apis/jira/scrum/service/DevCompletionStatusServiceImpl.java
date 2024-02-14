@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +103,7 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI145(),
 						fieldMapping.getJiraIterationCompletionStatusKPI145(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -112,8 +113,8 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> filteredJiraIssue = getFilteredJiraIssue(totalIssues, totalJiraIssueList);
-					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(totalIssues,
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(totalIssues,
 							totalHistoryList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -351,7 +352,7 @@ public class DevCompletionStatusServiceImpl extends JiraIterationKPIService {
 				JiraIssueCustomHistory issueCustomHistory = allIssueHistories.stream().filter(
 						jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 						.findFirst().orElse(new JiraIssueCustomHistory());
-				String devCompletionDate = getDevCompletionDate(issueCustomHistory,
+				String devCompletionDate = IterationKpiHelper.getDevCompletionDate(issueCustomHistory,
 						fieldMapping.getJiraDevDoneStatusKPI145());
 				compltedIssues.putIfAbsent(jiraIssue, devCompletionDate);
 			});

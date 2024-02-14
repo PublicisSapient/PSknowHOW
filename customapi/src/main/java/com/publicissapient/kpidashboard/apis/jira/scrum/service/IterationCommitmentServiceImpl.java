@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,8 +82,9 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -108,7 +111,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI120(),
 						fieldMapping.getJiraIterationCompletionStatusKPI120(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -126,14 +129,14 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 				// sprint or dropped.
 				completeAndIncompleteIssues.addAll(puntedIssues);
 				if (CollectionUtils.isNotEmpty(puntedIssues)) {
-					List<JiraIssue> filteredPuntedIssueList = getFilteredJiraIssue(puntedIssues, totalJiraIssueList);
+					List<JiraIssue> filteredPuntedIssueList = IterationKpiHelper.getFilteredJiraIssue(puntedIssues, totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getPuntedIssues(), filteredPuntedIssueList);
 					resultListMap.put(PUNTED_ISSUES, new ArrayList<>(filtersIssuesList));
 				}
 				if (CollectionUtils.isNotEmpty(addedIssues)) {
-					List<JiraIssue> filterAddedIssueList = getFilteredJiraIssue(new ArrayList<>(addedIssues),
+					List<JiraIssue> filterAddedIssueList = IterationKpiHelper.getFilteredJiraIssue(new ArrayList<>(addedIssues),
 							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
@@ -142,7 +145,7 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 					completeAndIncompleteIssues.removeAll(new ArrayList<>(addedIssues));
 				}
 				if (CollectionUtils.isNotEmpty(completeAndIncompleteIssues)) {
-					List<JiraIssue> filteredJiraIssue = getFilteredJiraIssue(
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(
 							new ArrayList<>(completeAndIncompleteIssues), totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails, new HashSet<>(),
@@ -159,11 +162,12 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 * 
 	 * @param sprintLeafNode
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Object basicProjectConfigId = sprintLeafNode.getProjectFilter().getBasicProjectConfigId();
@@ -253,11 +257,12 @@ public class IterationCommitmentServiceImpl extends JiraIterationKPIService {
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.ITERATION_COMMITMENT.getColumns());
 		}
-		kpiElement.setTrendValueList(iterationKpiValues);
+		kpiElement.setTrendValueList(trendValue);
 	}
 
 	private void setScopeChange(Set<String> issueTypes, Set<String> statuses, List<JiraIssue> allIssues,

@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -99,8 +101,9 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -127,7 +130,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationIssuetypeKPI128(),
 						fieldMapping.getJiraIterationCompletionStatusKPI128(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -137,8 +140,8 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 				List<String> completedIssues = KpiDataHelper.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetails,
 						CommonConstant.COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> jiraIssueList = getFilteredJiraIssue(totalIssues, totalJiraIssueList);
-					List<JiraIssueCustomHistory> issueHistoryList = getFilteredJiraIssueHistory(totalIssues,
+					List<JiraIssue> jiraIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					List<JiraIssueCustomHistory> issueHistoryList = IterationKpiHelper.getFilteredJiraIssueHistory(totalIssues,
 							totalHistoryList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
@@ -158,11 +161,12 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param sprintLeafNode
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
 				.getBasicProjectConfigId();
@@ -352,10 +356,11 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, priorities);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setExcelColumnInfo(KPIExcelColumn.PLANNED_WORK_STATUS.getKpiExcelColumnInfo());
-			kpiElement.setTrendValueList(iterationKpiValues);
+			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 
@@ -456,7 +461,7 @@ public class PlannedWorkStatusServiceImpl extends JiraIterationKPIService {
 				.filter(jiraIssueCustomHistory -> jiraIssueCustomHistory.getStoryID().equals(jiraIssue.getNumber()))
 				.findFirst().orElse(new JiraIssueCustomHistory());
 
-		String devCompletionDate = getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI128());
+		String devCompletionDate = IterationKpiHelper.getDevCompletionDate(issueCustomHistory, fieldMapping.getJiraDevDoneStatusKPI128());
 		// calling function for cal actual completion days
 		Map<String, Object> actualCompletionData = calStartAndEndDate(issueCustomHistory, allCompletedIssuesList,
 				sprintDetails, fieldMapping);

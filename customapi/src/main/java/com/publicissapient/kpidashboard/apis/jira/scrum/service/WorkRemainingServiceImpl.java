@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,11 @@ import com.publicissapient.kpidashboard.common.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getDevCompletionDate;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssue;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssueHistory;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
+
 @Slf4j
 @Component
 public class WorkRemainingServiceImpl extends JiraIterationKPIService {
@@ -87,8 +93,9 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue , kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -149,7 +156,7 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Object basicProjectConfigId = Objects.requireNonNull(sprintLeafNode).getProjectFilter()
@@ -268,10 +275,11 @@ public class WorkRemainingServiceImpl extends JiraIterationKPIService {
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_ISSUE_TYPE, issueTypes);
 			IterationKpiFiltersOptions filter2 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, statuses);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.WORK_REMAINING.getColumns());
-			kpiElement.setTrendValueList(iterationKpiValues);
+			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 

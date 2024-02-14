@@ -31,6 +31,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * All Jira NonTrend KPIs service have to implement this class {@link NonTrendKPIService}
+ *
+ * @author purgupta2
+ */
 public abstract class JiraReleaseKPIService implements NonTrendKPIService {
 
     @Autowired

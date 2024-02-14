@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -181,8 +183,9 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -209,7 +212,7 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI135(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -266,7 +269,7 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 		return KPICode.FIRST_TIME_PASS_RATE_ITERATION.name();
 	}
 
-	private void projectWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		ObjectId basicProjectConfigId = latestSprint.getProjectFilter().getBasicProjectConfigId();
@@ -359,9 +362,10 @@ public class FTPRServiceImpl extends JiraIterationKPIService {
 			IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, null, data);
 			iterationKpiValues.add(overAllIterationKpiValue);
 
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setSprint(latestSprint.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.FIRST_TIME_PASS_RATE_ITERATION.getColumns());
-			kpiElement.setTrendValueList(iterationKpiValues);
+			kpiElement.setTrendValueList(trendValue);
 		}
 
 	}

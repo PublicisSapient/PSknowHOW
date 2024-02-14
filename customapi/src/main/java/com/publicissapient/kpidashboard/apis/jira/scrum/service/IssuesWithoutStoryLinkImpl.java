@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +101,8 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
-		projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
+		DataCount trendValue = new DataCount();
+		projectWiseLeafNodeValue(trendValue, projectNode, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -299,7 +301,7 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 		return KPICode.ISSUES_WITHOUT_STORY_LINK.name();
 	}
 
-	private void projectWiseLeafNodeValue(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(DataCount trendValue, Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String requestTrackerId = getRequestTrackerId();
 		List<IterationKpiValue> iterationKpiValues = new ArrayList<>();
@@ -362,8 +364,9 @@ public class IssuesWithoutStoryLinkImpl extends JiraBacklogKPIService<Integer, L
 		data.add(defectWithoutStoryLink);
 		IterationKpiValue overAllIterationKpiValue = new IterationKpiValue(OVERALL, OVERALL, data);
 		iterationKpiValues.add(overAllIterationKpiValue);
+		trendValue.setValue(iterationKpiValues);
 		kpiElement.setModalHeads(KPIExcelColumn.ISSUES_WITHOUT_STORY_LINK.getColumns());
-		kpiElement.setTrendValueList(iterationKpiValues);
+		kpiElement.setTrendValueList(trendValue);
 
 	}
 

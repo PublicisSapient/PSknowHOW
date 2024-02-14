@@ -163,7 +163,7 @@ public class JiraIterationServiceR implements JiraNonTrendKPIServiceR {
                         try {
                             calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
                         } catch (Exception e) {
-                            log.error("Exception occurred", e);
+                            log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
                         }
                     }, executorService);
                     futures.add(future);

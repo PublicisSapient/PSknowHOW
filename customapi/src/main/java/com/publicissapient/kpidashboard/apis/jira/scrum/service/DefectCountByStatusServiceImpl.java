@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class DefectCountByStatusServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						new ArrayList<>(), fieldMapping.getJiraIterationCompletionStatusKPI136(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
 
@@ -157,7 +158,7 @@ public class DefectCountByStatusServiceImpl extends JiraIterationKPIService {
 						Collections.singletonList(basicProjectConfigId));
 
 				if (CollectionUtils.isNotEmpty(totalIssues)) {
-					List<JiraIssue> totalIssueList = getFilteredJiraIssue(totalIssues, totalJiraIssueList);
+					List<JiraIssue> totalIssueList = IterationKpiHelper.getFilteredJiraIssue(totalIssues, totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), totalIssueList);

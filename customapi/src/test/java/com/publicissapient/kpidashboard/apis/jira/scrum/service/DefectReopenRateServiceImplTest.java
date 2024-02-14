@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,7 +128,8 @@ public class DefectReopenRateServiceImplTest {
 					treeAggregatorDetail.getMapOfListOfProjectNodes().get("project").get(0));
 			assertNotNull(kpiElement);
 			assertNotNull(kpiElement.getTrendValueList());
-			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) kpiElement.getTrendValueList();
+			Object value = ((DataCount) kpiElement.getTrendValueList()).getValue();
+			List<IterationKpiValue> iterationKpiValues = (List<IterationKpiValue>) value;
 			IterationKpiValue iterationKpiValue = iterationKpiValues.stream()
 					.filter(kpiValue -> "Overall".equals(kpiValue.getFilter1())).findFirst().get();
 			assertNotNull(iterationKpiValue);

@@ -19,6 +19,7 @@ package com.publicissapient.kpidashboard.apis.jira.factory;
 
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.jira.service.NonTrendKPIService;
+import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import java.util.Map;
  * @author purgupta2
  */
 @Service
+@Builder
 public class JiraNonTrendKPIServiceFactory {
     private static final Map<String, NonTrendKPIService> JIRA_NONTREND_SERVICE_CACHE = new HashMap<>();
     @Autowired
@@ -47,7 +49,7 @@ public class JiraNonTrendKPIServiceFactory {
     public static NonTrendKPIService getJiraKPIService(String type) throws ApplicationException {
         NonTrendKPIService service = JIRA_NONTREND_SERVICE_CACHE.get(type);
         if (service == null) {
-            throw new ApplicationException(NonTrendKPIService.class, "Jira KPI Service Factory not initalized");
+            throw new ApplicationException(NonTrendKPIService.class, "Jira Non Trend KPI Service Factory not initalized");
         }
         return service;
     }

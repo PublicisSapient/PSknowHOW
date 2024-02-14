@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.jira.service.iterationdashboard.JiraIterationServiceR;
 import org.bson.types.ObjectId;
 import org.junit.After;
 import org.junit.Before;
@@ -89,7 +90,7 @@ public class IterationStatusServiceImplTest {
 	@InjectMocks
 	private IterationStatusServiceImpl iterationStatusServiceImpl;
 	@Mock
-	private JiraServiceR jiraService;
+	private JiraIterationServiceR jiraService;
 	private List<JiraIssue> storyList = new ArrayList<>();
 	private List<JiraIssueCustomHistory> historyList = new ArrayList<>();
 	private Map<String, ProjectBasicConfig> projectConfigMap = new HashMap<>();

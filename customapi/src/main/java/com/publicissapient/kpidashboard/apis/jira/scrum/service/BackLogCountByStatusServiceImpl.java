@@ -95,9 +95,7 @@ public class BackLogCountByStatusServiceImpl extends JiraBacklogKPIService<Integ
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 
-		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
 			projectWiseLeafNodeValue(projectNode, kpiElement, kpiRequest);
-		}
 		log.info("BackLogCountByStatusServiceImpl -> getKpiData ->  : {}", kpiElement);
 		return kpiElement;
 	}

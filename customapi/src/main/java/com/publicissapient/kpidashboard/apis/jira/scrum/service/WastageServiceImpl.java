@@ -18,6 +18,9 @@
 
 package com.publicissapient.kpidashboard.apis.jira.scrum.service;
 
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssue;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssueHistory;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
 import static com.publicissapient.kpidashboard.common.constant.CommonConstant.OVERALL;
 
 import java.time.LocalDateTime;
@@ -32,6 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +108,9 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -156,11 +161,12 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 	 * sprint level.
 	 *
 	 * @param sprintLeafNode
+	 * @param trendValue
 	 * @param kpiElement
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node sprintLeafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node sprintLeafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		String requestTrackerId = getRequestTrackerId();
 
 		Map<String, Object> resultMap = fetchKPIDataFromDb(sprintLeafNode, null, null, kpiRequest);
@@ -262,10 +268,11 @@ public class WastageServiceImpl extends JiraIterationKPIService {
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, filter2);
 
 			// Modal Heads Options
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setFilters(iterationKpiFilters);
 			kpiElement.setSprint(sprintLeafNode.getName());
 			kpiElement.setModalHeads(KPIExcelColumn.WASTAGE.getColumns());
-			kpiElement.setTrendValueList(iterationKpiValues);
+			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 

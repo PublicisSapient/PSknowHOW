@@ -87,7 +87,9 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
     @Override
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  Node projectNode) throws ApplicationException {
-        projectWiseLeafNodeValue(kpiElement, projectNode, kpiRequest);
+        Map<String, Node> mapTmp = new HashMap<>();
+        mapTmp.put(projectNode.getId(),projectNode);
+        projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
         Map<Pair<String, String>, Node> nodeWiseKPIValue = new HashMap<>();
         calculateAggregatedValueMap(projectNode, nodeWiseKPIValue, KPICode.REPO_TOOL_MEAN_TIME_TO_MERGE);
 
@@ -126,7 +128,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
         }
     }
 
-    private void projectWiseLeafNodeValue(KpiElement kpiElement,
+    private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
                                           Node projectLeafNode, KpiRequest kpiRequest) {
 
         String requestTrackerId = getRequestTrackerId();
@@ -184,7 +186,7 @@ public class RepoToolMeanTimeToMergeServiceImpl extends BitBucketKPIService<Doub
         setWeekWiseMeanTimeToMergeForRepoTools(aggMeanTimeToMerge, excelDataLoader, Constant.AGGREGATED_VALUE,
                 projectName, aggDataMap, duration, dataPoints);
 
-        projectLeafNode.setValue(aggDataMap);
+        mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
         populateExcelDataObject(requestTrackerId, repoWiseMRList, repoList, branchList, excelData, projectLeafNode);
         kpiElement.setExcelData(excelData);
         kpiElement.setExcelColumns(KPIExcelColumn.MEAN_TIME_TO_MERGE.getColumns());

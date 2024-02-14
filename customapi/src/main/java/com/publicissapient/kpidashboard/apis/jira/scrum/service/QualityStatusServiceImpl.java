@@ -34,6 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +70,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.JiraIssueReposito
 
 import lombok.extern.slf4j.Slf4j;
 
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.transformIterSprintdetail;
+
 @Component
 @Slf4j
 public class QualityStatusServiceImpl extends JiraIterationKPIService {
@@ -95,8 +99,9 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
+		DataCount trendValue = new DataCount();
 		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
-			projectWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
+			projectWiseLeafNodeValue(sprintNode, trendValue, kpiElement, kpiRequest);
 		}
 		return kpiElement;
 	}
@@ -160,7 +165,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 				List<String> typeNameList = fieldMapping.getJiraItrQSIssueTypeKPI133();
 
 				if (CollectionUtils.isNotEmpty(totalIssue)) {
-					List<JiraIssue> filteredJiraIssue = getFilteredJiraIssue(totalIssue, totalJiraIssueList);
+					List<JiraIssue> filteredJiraIssue = IterationKpiHelper.getFilteredJiraIssue(totalIssue, totalJiraIssueList);
 					Set<JiraIssue> sprintReportIssueList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getTotalIssues(), filteredJiraIssue);
@@ -198,7 +203,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 					resultListMap.put(LINKED_ISSUES, new ArrayList<>(jiraIssueLinkedStories));
 				}
 				if (CollectionUtils.isNotEmpty(completedIssue)) {
-					List<JiraIssue> completedIssueList = getFilteredJiraIssue(completedIssue, totalJiraIssueList);
+					List<JiraIssue> completedIssueList = IterationKpiHelper.getFilteredJiraIssue(completedIssue, totalJiraIssueList);
 					Set<JiraIssue> completedJiraIssue = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetails,
 									sprintDetails.getCompletedIssues(), completedIssueList);
@@ -241,7 +246,7 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 	 * @param kpiRequest
 	 */
 	@SuppressWarnings("unchecked")
-	private void projectWiseLeafNodeValue(Node latestSprint, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValue(Node latestSprint, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 
 		String startDate = latestSprint.getSprintFilter().getStartDate();
 
@@ -335,9 +340,10 @@ public class QualityStatusServiceImpl extends JiraIterationKPIService {
 						Arrays.asList("marker"), markerInfo);
 				iterationKpiValues.add(overAllIterationKpiValue);
 
+				trendValue.setValue(iterationKpiValues);
 				kpiElement.setSprint(latestSprint.getName());
 				kpiElement.setModalHeads(KPIExcelColumn.QUALITY_STATUS.getColumns());
-				kpiElement.setTrendValueList(iterationKpiValues);
+				kpiElement.setTrendValueList(trendValue);
 			}
 		}
 	}

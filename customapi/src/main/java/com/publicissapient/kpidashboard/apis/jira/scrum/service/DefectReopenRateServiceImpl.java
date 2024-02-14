@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.common.model.application.DataCount;
 import org.apache.commons.collections4.CollectionUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
@@ -101,9 +102,8 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node projectNode)
 			throws ApplicationException {
 		log.info("DEFECT-REOPEN-RATE Kpi {}", kpiRequest.getRequestTrackerId());
-		if (Filters.getFilter(projectNode.getGroupName()) == Filters.PROJECT) {
-			projectWiseLeafNodeValues(projectNode, kpiElement, kpiRequest);
-		}
+		DataCount trendValue = new DataCount();
+		projectWiseLeafNodeValues(projectNode, trendValue, kpiElement, kpiRequest);
 		return kpiElement;
 	}
 
@@ -116,7 +116,7 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 	 */
 
 	@SuppressWarnings("java:S3776")
-	private void projectWiseLeafNodeValues(Node leafNode, KpiElement kpiElement, KpiRequest kpiRequest) {
+	private void projectWiseLeafNodeValues(Node leafNode, DataCount trendValue, KpiElement kpiElement, KpiRequest kpiRequest) {
 		if (leafNode != null) {
 			Map<String, Object> kpiResultDbMap = fetchKPIDataFromDb(leafNode, null, null, kpiRequest);
 			List<JiraIssue> totalDefects = (List<JiraIssue>) kpiResultDbMap.get(TOTAL_JIRA_DEFECTS);
@@ -183,8 +183,9 @@ public class DefectReopenRateServiceImpl extends JiraBacklogKPIService<Double, L
 			IterationKpiFiltersOptions filter1 = new IterationKpiFiltersOptions(SEARCH_BY_PRIORITY, filters);
 			IterationKpiFilters iterationKpiFilters = new IterationKpiFilters(filter1, null);
 			kpiElement.setFilters(iterationKpiFilters);
+			trendValue.setValue(iterationKpiValues);
 			kpiElement.setModalHeads(KPIExcelColumn.DEFECT_REOPEN_RATE.getColumns());
-			kpiElement.setTrendValueList(iterationKpiValues);
+			kpiElement.setTrendValueList(trendValue);
 		}
 	}
 

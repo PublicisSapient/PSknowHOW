@@ -1,31 +1,15 @@
-/*******************************************************************************
- * Copyright 2014 CapitalOne, LLC.
- * Further development Copyright 2022 Sapient Corporation.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
-
-package com.publicissapient.kpidashboard.apis.jira.service;
+package com.publicissapient.kpidashboard.apis.jira.service.releasedashboard;
 
 import com.publicissapient.kpidashboard.apis.config.CustomApiConfig;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
 import com.publicissapient.kpidashboard.apis.errors.ApplicationException;
 import com.publicissapient.kpidashboard.apis.model.KpiElement;
 import com.publicissapient.kpidashboard.apis.model.KpiRequest;
-import com.publicissapient.kpidashboard.apis.model.TreeAggregatorDetail;
+import com.publicissapient.kpidashboard.apis.model.Node;
+import com.publicissapient.kpidashboard.common.model.application.FieldMapping;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
+import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,27 +20,27 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertNotNull;
 
-/**
- * @author anisingh4
- */
 @ExtendWith(SpringExtension.class)
-public class JiraKPIServiceTest {
+public class JiraReleaseKPIServiceTest {
 
     @InjectMocks
-    JiraKpiServiceTestImpl jiraKPIService;
+    JiraReleaseKPIServiceTestImpl jiraKPIService;
 
     @Mock
     private CustomApiConfig customApiConfig;
 
     private Map<String, String> aggregationCriteriaMap;
     @Mock
-    private JiraServiceR jiraService;
+    private JiraReleaseServiceR jiraService;
 
     private static List<JiraIssueCustomHistory> getJiraIssueCustomHistories() {
         JiraIssueCustomHistory issueCustomHistory = new JiraIssueCustomHistory();
@@ -110,20 +94,6 @@ public class JiraKPIServiceTest {
     }
 
     @Test
-    public void testGetJiraIssuesFromBaseClass() {
-        List<JiraIssue> jiraIssues = getJiraIssues();
-        when(jiraService.getJiraIssuesForCurrentSprint()).thenReturn(jiraIssues);
-        assertNotNull(jiraKPIService.getJiraIssuesFromBaseClass(List.of("123")));
-    }
-
-    @Test
-    public void testGetJiraIssuesCustomHistoryFromBaseClass() {
-        List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
-        when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
-        assertNotNull(jiraKPIService.getJiraIssuesCustomHistoryFromBaseClass(List.of("DTS-123")));
-    }
-
-    @Test
     public void testGetJiraIssuesCustomHistoryFromBaseClass_WithNoParam() {
         List<JiraIssueCustomHistory> jiraIssueCustomHistories = getJiraIssueCustomHistories();
         when(jiraService.getJiraIssuesCustomHistoryForCurrentSprint()).thenReturn(jiraIssueCustomHistories);
@@ -131,11 +101,60 @@ public class JiraKPIServiceTest {
     }
 
     @Test
-    public void testCalcWeekDays() {
-        assertNotNull(jiraKPIService.getLastNMonth(10));
+    public void testGetBaseReleaseJiraIssues() {
+        List<JiraIssue> jiraIssues = getJiraIssues();
+        when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+        assertNotNull(jiraKPIService.getBaseReleaseJiraIssues());
     }
 
-    public static class JiraKpiServiceTestImpl extends JiraKPIService {
+    @Test
+    public void testGetBaseReleaseSubTask() {
+        JiraIssue jiraIssue = new JiraIssue();
+        jiraIssue.setNumber("123");
+        Set<JiraIssue> jiraIssues = new HashSet<>();
+        jiraIssues.add(jiraIssue);
+        when(jiraService.getSubTaskDefects()).thenReturn(jiraIssues);
+        assertNotNull(jiraKPIService.getBaseReleaseSubTask());
+    }
+
+    @Test
+    public void testGetFilteredReleaseJiraIssuesFromBaseClass_EmptyDefectList() {
+        FieldMapping fieldMapping = mock(FieldMapping.class);
+        when(fieldMapping.getJiradefecttype()).thenReturn(List.of("BUG"));
+        List<JiraIssue> jiraIssues = getJiraIssues();
+        when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+        assertNotNull(jiraKPIService.getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping));
+    }
+
+    @Test
+    public void testGetFilteredReleaseJiraIssuesFromBaseClass_WithDefectList() {
+        FieldMapping fieldMapping = mock(FieldMapping.class);
+        when(fieldMapping.getJiradefecttype()).thenReturn(List.of("BUG"));
+        List<JiraIssue> jiraIssues = getJiraIssues();
+        JiraIssue defectIssue = new JiraIssue();
+        defectIssue.setNumber("123");
+        Set<JiraIssue> defectIssues = new HashSet<>();
+        defectIssues.add(defectIssue);
+        when(jiraService.getJiraIssuesForSelectedRelease()).thenReturn(jiraIssues);
+        when(jiraService.getSubTaskDefects()).thenReturn(defectIssues);
+        assertNotNull(jiraKPIService.getFilteredReleaseJiraIssuesFromBaseClass(fieldMapping));
+    }
+
+    @Test
+    public void testGetJiraIssueReleaseStatus() {
+        JiraIssueReleaseStatus jiraIssueReleaseStatus = new JiraIssueReleaseStatus();
+        when(jiraService.getJiraIssueReleaseForProject()).thenReturn(jiraIssueReleaseStatus);
+        assertNotNull(jiraKPIService.getJiraIssueReleaseStatus());
+    }
+
+    @Test
+    public void testGetReleaseList() {
+        List<String> releaseList = List.of("release8.1");
+        when(jiraService.getReleaseList()).thenReturn(releaseList);
+        assertNotNull(jiraKPIService.getReleaseList());
+    }
+
+    public static class JiraReleaseKPIServiceTestImpl extends JiraReleaseKPIService {
 
         @Override
         public String getQualifierType() {
@@ -143,21 +162,17 @@ public class JiraKPIServiceTest {
         }
 
         @Override
-        public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
-                                     TreeAggregatorDetail treeAggregatorDetail) throws ApplicationException {
+        public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node filteredNode) throws ApplicationException {
             return null;
         }
 
         @Override
-        public Object calculateKPIMetrics(Object o) {
+        public Map<String, Object> fetchKPIDataFromDb(Node leafNode, String startDate, String endDate, KpiRequest kpiRequest) {
             return null;
         }
 
-        @Override
-        public Object fetchKPIDataFromDb(List leafNodeList, String startDate, String endDate, KpiRequest kpiRequest) {
-            return null;
-        }
 
     }
+
 
 }

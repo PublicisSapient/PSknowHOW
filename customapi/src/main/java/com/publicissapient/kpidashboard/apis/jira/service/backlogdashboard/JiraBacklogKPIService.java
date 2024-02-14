@@ -14,11 +14,6 @@
  ******************************************************************************/
 package com.publicissapient.kpidashboard.apis.jira.service.backlogdashboard;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.common.service.ToolsKPIService;
 import com.publicissapient.kpidashboard.apis.constant.Constant;
@@ -29,66 +24,75 @@ import com.publicissapient.kpidashboard.common.model.jira.JiraIssue;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueCustomHistory;
 import com.publicissapient.kpidashboard.common.model.jira.JiraIssueReleaseStatus;
 import com.publicissapient.kpidashboard.common.model.zephyr.TestCaseDetails;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * All Jira NonTrend KPIs service have to implement this class {@link NonTrendKPIService}
+ *
+ * @author purgupta2
+ */
 public abstract class JiraBacklogKPIService<R, S> extends ToolsKPIService<R, S> implements NonTrendKPIService {
 
-	@Autowired
-	private CacheService cacheService;
+    @Autowired
+    private CacheService cacheService;
 
-	@Autowired
-	private JiraBacklogServiceR jiraService;
+    @Autowired
+    private JiraBacklogServiceR jiraService;
 
-	/**
-	 * Returns API Request tracker Id to be used for logging/debugging and using it
-	 * for maintaining any sort of cache.
-	 *
-	 * @return Scrum Request Tracker Id
-	 */
-	public String getRequestTrackerId() {
-		return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
-	}
+    /**
+     * Returns API Request tracker Id to be used for logging/debugging and using it
+     * for maintaining any sort of cache.
+     *
+     * @return Scrum Request Tracker Id
+     */
+    public String getRequestTrackerId() {
+        return cacheService.getFromApplicationCache(Constant.KPI_REQUEST_TRACKER_ID_KEY + KPISource.JIRA.name());
+    }
 
-	public List<JiraIssue> getBackLogJiraIssuesFromBaseClass() {
-		return jiraService.getJiraIssuesForCurrentSprint();
-	}
+    public List<JiraIssue> getBackLogJiraIssuesFromBaseClass() {
+        return jiraService.getJiraIssuesForCurrentSprint();
+    }
 
-	public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
-		return jiraService.getJiraIssueReleaseForProject();
-	}
+    public JiraIssueReleaseStatus getJiraIssueReleaseStatus() {
+        return jiraService.getJiraIssueReleaseForProject();
+    }
 
-	public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
-			List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		iterationKpiModalValue.setPriority(jiraIssue.getPriority());
-		iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
-		overAllmodalValues.add(iterationKpiModalValue);
-		modalValues.add(iterationKpiModalValue);
-	}
+    public void populateBackLogData(List<IterationKpiModalValue> overAllmodalValues,
+                                    List<IterationKpiModalValue> modalValues, JiraIssue jiraIssue) {
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueType(jiraIssue.getTypeName());
+        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+        iterationKpiModalValue.setDescription(jiraIssue.getName());
+        iterationKpiModalValue.setPriority(jiraIssue.getPriority());
+        iterationKpiModalValue.setIssueSize(Optional.ofNullable(jiraIssue.getStoryPoints()).orElse(0.0).toString());
+        overAllmodalValues.add(iterationKpiModalValue);
+        modalValues.add(iterationKpiModalValue);
+    }
 
-	public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
-		return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
-	}
+    public List<JiraIssueCustomHistory> getJiraIssuesCustomHistoryFromBaseClass() {
+        return jiraService.getJiraIssuesCustomHistoryForCurrentSprint();
+    }
 
-	public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			TestCaseDetails testCaseDetails) {
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
-		iterationKpiModalValue.setDescription(testCaseDetails.getName());
-		overAllModalValues.add(iterationKpiModalValue);
-	}
+    public void populateIterationDataForTestWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+                                                         TestCaseDetails testCaseDetails) {
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueId(testCaseDetails.getNumber());
+        iterationKpiModalValue.setDescription(testCaseDetails.getName());
+        overAllModalValues.add(iterationKpiModalValue);
+    }
 
-	public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
-			JiraIssue jiraIssue) {
+    public void populateIterationDataForDefectWithoutStory(List<IterationKpiModalValue> overAllModalValues,
+                                                           JiraIssue jiraIssue) {
 
-		IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
-		iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
-		iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
-		iterationKpiModalValue.setDescription(jiraIssue.getName());
-		overAllModalValues.add(iterationKpiModalValue);
-	}
+        IterationKpiModalValue iterationKpiModalValue = new IterationKpiModalValue();
+        iterationKpiModalValue.setIssueId(jiraIssue.getNumber());
+        iterationKpiModalValue.setIssueURL(jiraIssue.getUrl());
+        iterationKpiModalValue.setDescription(jiraIssue.getName());
+        overAllModalValues.add(iterationKpiModalValue);
+    }
 
 }

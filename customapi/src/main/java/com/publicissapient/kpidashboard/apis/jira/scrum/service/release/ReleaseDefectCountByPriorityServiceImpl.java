@@ -62,6 +62,39 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 	@Autowired
 	private ConfigHelperService configHelperService;
 
+	/**
+	 * create priority wise count map of total and open defects
+	 *
+	 * @param overallPriorityCountMap
+	 * @param priorityData
+	 * @param priorityCountMap
+	 * @return
+	 */
+	private static void getPriorityCount(Map<String, Integer> overallPriorityCountMap,
+			Map<String, List<JiraIssue>> priorityData, Map<String, Integer> priorityCountMap) {
+		for (Map.Entry<String, List<JiraIssue>> rcaEntry : priorityData.entrySet()) {
+			String priority = rcaEntry.getKey();
+			List<JiraIssue> issues = rcaEntry.getValue();
+			priorityCountMap.put(priority, issues.size());
+			overallPriorityCountMap.merge(priority, issues.size(), Integer::sum);
+		}
+	}
+
+	/**
+	 * create map of data count by filter
+	 *
+	 * @param dataCountListForAllPriorities
+	 * @param overallPriorityCountMapAggregate
+	 */
+	private static void overallPriorityCountMap(List<DataCount> dataCountListForAllPriorities,
+			Map<String, Integer> overallPriorityCountMapAggregate) {
+		for (DataCount dataCount : dataCountListForAllPriorities) {
+			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
+			statusCountMap.forEach((priority, priorityCountValue) -> overallPriorityCountMapAggregate.merge(priority,
+					priorityCountValue, Integer::sum));
+		}
+	}
+
 	@Override
 	public String getQualifierType() {
 		return KPICode.DEFECT_COUNT_BY_PRIORITY_RELEASE.name();
@@ -170,7 +203,7 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 
 	/**
 	 * create priority wise map of total and open defects
-	 * 
+	 *
 	 * @param defectJiraIssueList
 	 * @param openIssues
 	 * @return
@@ -191,39 +224,6 @@ public class ReleaseDefectCountByPriorityServiceImpl extends JiraReleaseKPIServi
 		scopeWiseDefectsMap.put(OPEN_DEFECT,
 				openIssues.stream().filter(hasNonEmptyRootCauseList).collect(groupingByPriority));
 		return scopeWiseDefectsMap;
-	}
-
-	/**
-	 * create priority wise count map of total and open defects
-	 * 
-	 * @param overallPriorityCountMap
-	 * @param priorityData
-	 * @param priorityCountMap
-	 * @return
-	 */
-	private static void getPriorityCount(Map<String, Integer> overallPriorityCountMap,
-			Map<String, List<JiraIssue>> priorityData, Map<String, Integer> priorityCountMap) {
-		for (Map.Entry<String, List<JiraIssue>> rcaEntry : priorityData.entrySet()) {
-			String priority = rcaEntry.getKey();
-			List<JiraIssue> issues = rcaEntry.getValue();
-			priorityCountMap.put(priority, issues.size());
-			overallPriorityCountMap.merge(priority, issues.size(), Integer::sum);
-		}
-	}
-
-	/**
-	 * create map of data count by filter
-	 * 
-	 * @param dataCountListForAllPriorities
-	 * @param overallPriorityCountMapAggregate
-	 */
-	private static void overallPriorityCountMap(List<DataCount> dataCountListForAllPriorities,
-			Map<String, Integer> overallPriorityCountMapAggregate) {
-		for (DataCount dataCount : dataCountListForAllPriorities) {
-			Map<String, Integer> statusCountMap = (Map<String, Integer>) dataCount.getValue();
-			statusCountMap.forEach((priority, priorityCountValue) -> overallPriorityCountMapAggregate.merge(priority,
-					priorityCountValue, Integer::sum));
-		}
 	}
 
 	/**

@@ -92,7 +92,9 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
     public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement,
                                  Node projectNode) throws ApplicationException {
 
-        projectWiseLeafNodeValue(kpiElement, kpiRequest, projectNode);
+        Map<String, Node> mapTmp = new HashMap<>();
+        mapTmp.put(projectNode.getId(),projectNode);
+        projectWiseLeafNodeValue(kpiElement, mapTmp, projectNode, kpiRequest);
         log.debug("[PROJECT-WISE][{}]. Values of leaf node after KPI calculation {}", kpiRequest.getRequestTrackerId(),
                 projectNode);
 
@@ -122,8 +124,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
     }
 
 
-    private void projectWiseLeafNodeValue(KpiElement kpiElement, KpiRequest kpiRequest,
-                                          Node projectLeafNode) {
+    private void projectWiseLeafNodeValue(KpiElement kpiElement, Map<String, Node> mapTmp,
+                                          Node projectLeafNode, KpiRequest kpiRequest) {
 
         CustomDateRange dateRange = KpiDataHelper.getStartAndEndDate(kpiRequest);
         String requestTrackerId = getRequestTrackerId();
@@ -179,9 +181,8 @@ public class PickupTimeServiceImpl extends BitBucketKPIService<Double, List<Obje
         });
         setWeekWisePickupTime(aggPickupTimeForRepo, aggMRCount, new HashMap<>(), Constant.AGGREGATED_VALUE,
                 projectName, aggDataMap, kpiRequest);
-        projectLeafNode.setValue(aggDataMap);
+        mapTmp.get(projectLeafNode.getId()).setValue(aggDataMap);
         populateExcelDataObject(requestTrackerId, repoWisePickupTimeList, repoList, branchList, excelData, projectLeafNode);
-
         kpiElement.setExcelData(excelData);
         kpiElement.setExcelColumns(KPIExcelColumn.PICKUP_TIME.getColumns());
     }

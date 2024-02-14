@@ -42,6 +42,8 @@ import com.publicissapient.kpidashboard.apis.abac.UserAuthorizedProjectsService;
 import com.publicissapient.kpidashboard.apis.common.service.CacheService;
 import com.publicissapient.kpidashboard.apis.enums.KPISource;
 import com.publicissapient.kpidashboard.apis.model.AccountHierarchyData;
+import com.publicissapient.kpidashboard.apis.model.ProjectFilter;
+import com.publicissapient.kpidashboard.apis.model.SprintFilter;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -95,6 +97,8 @@ import com.publicissapient.kpidashboard.common.repository.jira.SprintRepository;
 import com.publicissapient.kpidashboard.common.repository.kpivideolink.KPIVideoLinkRepository;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.swing.*;
 
 /**
  * Helper class for kpi requests . Utility to process for kpi requests.
@@ -635,7 +639,7 @@ public class KpiHelperService { // NOPMD
 		return resultListMap;
 	}
 
-	public Map<String, Object> fetchBackLogReadinessFromdb(List<Node> leafNodeList, KpiRequest kpiRequest) {
+	public Map<String, Object> fetchBackLogReadinessFromdb(KpiRequest kpiRequest, Node projectNode) {
 
 		Map<String, List<String>> mapOfFilters = new LinkedHashMap<>();
 		Map<String, Object> resultListMap = new HashMap<>();
@@ -644,10 +648,8 @@ public class KpiHelperService { // NOPMD
 
 		Map<String, Map<String, Object>> uniqueProjectMap = new HashMap<>();
 
-		Map<ObjectId, List<String>> projectWiseSprintsForFilter = leafNodeList.stream().collect(Collectors.groupingBy(
-				node -> node.getProjectFilter().getBasicProjectConfigId(),
-				Collectors.collectingAndThen(Collectors.toList(),
-						s -> s.stream().map(node -> node.getSprintFilter().getId()).collect(Collectors.toList()))));
+		Map<ObjectId, List<String>> projectWiseSprintsForFilter = new LinkedHashMap<>();
+		projectWiseSprintsForFilter.put(projectNode.getProjectFilter().getBasicProjectConfigId(), kpiRequest.getSelectedMap().get(CommonConstant.SPRINT));
 		projectWiseSprintsForFilter.entrySet().forEach(entry -> {
 			ObjectId basicProjectConfigId = entry.getKey();
 			Map<String, Object> mapOfProjectFilters = new LinkedHashMap<>();
@@ -666,7 +668,10 @@ public class KpiHelperService { // NOPMD
 
 		});
 
-		List<SprintDetails> sprintDetails = sprintRepository.findBySprintIDIn(sprintList);
+		List<SprintDetails> sprintDetailList = sprintRepository.findBySprintIDIn(sprintList);
+		sprintDetailList.sort((sprintDetail1, sprintDetail2) -> sprintDetail1.getStartDate()
+				.compareTo(sprintDetail2.getStartDate()));
+		List<SprintDetails> sprintDetails=sprintDetailList.stream().limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
 		List<String> totalIssueIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(sprintDetails)) {
 			sprintDetails.stream().forEach(dbSprintDetail -> {

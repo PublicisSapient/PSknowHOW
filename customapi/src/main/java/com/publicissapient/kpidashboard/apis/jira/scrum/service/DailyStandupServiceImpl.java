@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -85,6 +86,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssue;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getFilteredJiraIssueHistory;
+import static com.publicissapient.kpidashboard.apis.util.IterationKpiHelper.getInSprintStatusLogs;
 
 /**
  * kpi of iteration dashboard, Daily Standup View which runs for the active
@@ -142,9 +147,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 	@Override
 	public KpiElement getKpiData(KpiRequest kpiRequest, KpiElement kpiElement, Node sprintNode)
 			throws ApplicationException {
-		if (Filters.getFilter(sprintNode.getGroupName()) == Filters.SPRINT) {
 			sprintWiseLeafNodeValue(sprintNode, kpiElement, kpiRequest);
-		}
 		return kpiElement;
 	}
 
@@ -269,7 +272,7 @@ public class DailyStandupServiceImpl extends JiraIterationKPIService {
 				List<JiraIssue> totalJiraIssueList = getJiraIssuesFromBaseClass();
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
-				sprintDetails = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetails = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						fieldMapping.getJiraIterationCompletionStatusKPI119(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());

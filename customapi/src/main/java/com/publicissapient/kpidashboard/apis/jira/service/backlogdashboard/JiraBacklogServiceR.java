@@ -151,7 +151,7 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
                         try {
                             calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
                         } catch (Exception e) {
-                            log.error("Exception occurred", e);
+                            log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
                         }
                     }, executorService);
                     futures.add(future);
@@ -185,14 +185,8 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
     private Node getFilteredNodes(KpiRequest kpiRequest, List<AccountHierarchyData> filteredAccountDataList) {
         Node filteredNode = filteredAccountDataList.get(0).getNode().get(kpiRequest.getLevel() - 1);
 
-        if (null != filteredNode.getAccountHierarchy()) {
-            filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-                    filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
-        } else {
-            filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
-                    filteredNode.getAccountHierarchyKanban().getBasicProjectConfigId()));
-        }
-
+        filteredNode.setProjectFilter(new ProjectFilter(filteredNode.getId(), filteredNode.getName(),
+                filteredNode.getAccountHierarchy().getBasicProjectConfigId()));
         return filteredNode;
     }
 
@@ -200,12 +194,21 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
         List<AccountHierarchyData> accountDataListAll = (List<AccountHierarchyData>) cacheService
                 .cacheAccountHierarchyData();
 
-        return accountDataListAll.stream()
+        List<AccountHierarchyData> projectAccountHierarchyData = accountDataListAll.stream()
                 .filter(accountHierarchyData ->
                         accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.PROJECT.toLowerCase()).get(0))
                 )
                 .collect(Collectors.toList());
+        if (projectAccountHierarchyData.isEmpty()){
+            return accountDataListAll.stream()
+                    .filter(accountHierarchyData ->
+                            accountHierarchyData.getLeafNodeId().equalsIgnoreCase(kpiRequest.getSelectedMap().get(CommonConstant.SPRINT).get(0))
+                    )
+                    .collect(Collectors.toList());
+        }
+        return projectAccountHierarchyData;
     }
+
     private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList) {
         futureProjectWiseSprintDetails(filteredAccountDataList.get(0).getBasicProjectConfigId(), SprintDetails.SPRINT_STATE_FUTURE);
         fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), CommonConstant.BACKLOG);
@@ -257,9 +260,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
         JiraBacklogKPIService jiraKPIService = null;
         KPICode kpi = KPICode.getKPI(kpiElement.getKpiId());
         jiraKPIService = (JiraBacklogKPIService) JiraNonTrendKPIServiceFactory.getJiraKPIService(kpi.name());
-        if (jiraKPIService == null) {
-            throw new ApplicationException(JiraNonTrendKPIServiceFactory.class, "Jira KPI Service Factory not initalized");
-        }
         long startTime = System.currentTimeMillis();
         if (KPICode.THROUGHPUT.equals(kpi)) {
             log.info("No need to fetch Throughput KPI data");
@@ -267,7 +267,6 @@ public class JiraBacklogServiceR implements JiraNonTrendKPIServiceR {
             Node nodeDataClone = (Node) SerializationUtils
                     .clone(filteredAccountNode);
             responseList.add(jiraKPIService.getKpiData(kpiRequest, kpiElement, nodeDataClone));
-
             long processTime = System.currentTimeMillis() - startTime;
             log.info("[JIRA-{}-TIME][{}]. KPI took {} ms", kpi.name(), kpiRequest.getRequestTrackerId(), processTime);
         }

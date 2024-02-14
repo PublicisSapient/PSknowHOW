@@ -136,7 +136,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
                 Object cachedData = cacheService.getFromApplicationCache(projectKeyCache, KPISource.JIRA.name(),
                         groupId, kpiRequest.getSprintIncluded());
                 if (!kpiRequest.getRequestTrackerId().toLowerCase().contains(KPISource.EXCEL.name().toLowerCase())
-                        && null != cachedData && isLeadTimeDuration(kpiRequest.getKpiList())) {
+                        && null != cachedData) {
                     log.info("Fetching value from cache for {}", Arrays.toString(kpiRequest.getIds()));
                     return (List<KpiElement>) cachedData;
                 }
@@ -167,7 +167,7 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
                         try {
                             calculateAllKPIAggregatedMetrics(kpiRequest, responseList, kpiEle, filteredNode);
                         } catch (Exception e) {
-                            log.error("Exception occurred", e);
+                            log.error("Error while KPI calculation for data {}", kpiRequest.getKpiList(), e);
                         }
                     }, executorService);
                     futures.add(future);
@@ -229,12 +229,9 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
 
     private void updateJiraIssueList(List<AccountHierarchyData> filteredAccountDataList, Node filteredNode) {
         releaseList = getReleaseList(filteredNode);
-        fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList,
-                CommonConstant.RELEASE);
-        fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
-                CommonConstant.RELEASE);
-        fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(),
-                CommonConstant.RELEASE);
+        fetchJiraIssues(filteredAccountDataList.get(0).getBasicProjectConfigId().toString(), releaseList);
+        fetchJiraIssuesCustomHistory(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
+        fetchJiraIssueReleaseForProject(filteredAccountDataList.get(0).getBasicProjectConfigId().toString());
     }
 
     /**
@@ -250,19 +247,13 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
         return processedList;
     }
 
-    private boolean isLeadTimeDuration(List<KpiElement> kpiList) {
-        return kpiList.size() != 1 || !kpiList.get(0).getKpiId().equalsIgnoreCase("kpi3");
-    }
-
-    public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList, String board) {
-        if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
-            jiraIssueReleaseList = jiraIssueRepository
-                    .findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
-            Set<String> storyIDs = jiraIssueReleaseList.stream().filter(
-                            jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
-                    .map(JiraIssue::getNumber).collect(Collectors.toSet());
-            subtaskDefectReleaseList = fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
-        }
+    public void fetchJiraIssues(String basicProjectConfigId, List<String> sprintIssuesList) {
+        jiraIssueReleaseList = jiraIssueRepository
+                .findByBasicProjectConfigIdAndReleaseVersionsReleaseNameIn(basicProjectConfigId, sprintIssuesList);
+        Set<String> storyIDs = jiraIssueReleaseList.stream().filter(
+                        jiraIssue -> !jiraIssue.getTypeName().equalsIgnoreCase(NormalizedJira.DEFECT_TYPE.getValue()))
+                .map(JiraIssue::getNumber).collect(Collectors.toSet());
+        subtaskDefectReleaseList = fetchSubTaskDefectsRelease(basicProjectConfigId, storyIDs);
     }
 
     public List<JiraIssue> getJiraIssuesForSelectedRelease() {
@@ -270,19 +261,14 @@ public class JiraReleaseServiceR implements JiraNonTrendKPIServiceR {
     }
 
 
-    public void fetchJiraIssuesCustomHistory(String basicProjectConfigId, String board) {
-        if (board.equalsIgnoreCase(CommonConstant.RELEASE)) {
-            jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
-                    Collections.singletonList(basicProjectConfigId),
-                    CommonUtils.convertToPatternListForSubString(releaseList));
-        }
+    public void fetchJiraIssuesCustomHistory(String basicProjectConfigId) {
+        jiraIssueCustomHistoryList = jiraIssueCustomHistoryRepository.findByFilterAndFromReleaseMap(
+                Collections.singletonList(basicProjectConfigId),
+                CommonUtils.convertToPatternListForSubString(releaseList));
     }
 
-    public void fetchJiraIssueReleaseForProject(String basicProjectConfigId, String board) {
-
-        if (board.equalsIgnoreCase(CommonConstant.BACKLOG) || board.equalsIgnoreCase(CommonConstant.RELEASE)) {
-            jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
-        }
+    public void fetchJiraIssueReleaseForProject(String basicProjectConfigId) {
+        jiraIssueReleaseStatus = jiraIssueReleaseStatusRepository.findByBasicProjectConfigId(basicProjectConfigId);
     }
 
     /**

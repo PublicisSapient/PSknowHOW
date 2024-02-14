@@ -440,28 +440,6 @@ public class JiraServiceR {
 		return jiraIssueReleaseStatus;
 	}
 
-	public List<String> getReleaseList() {
-		return releaseList;
-	}
-
-	/**
-	 * This method return list of 5 distinct future sprint names
-	 *
-	 * @return return list of sprintNames
-	 */
-	public List<String> getFutureSprintsList() {
-		List<String> sprintNames = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(futureSprintDetails)) {
-			sprintNames = futureSprintDetails.stream()
-					.sorted(Comparator.comparing(SprintDetails::getStartDate,
-							Comparator.nullsLast(Comparator.naturalOrder())))
-					.map(SprintDetails::getSprintName).distinct()
-					.limit(customApiConfig.getSprintCountForBackLogStrength()).collect(Collectors.toList());
-
-		}
-		return sprintNames;
-	}
-
 	/**
 	 * This class is used to call JIRA based KPIs service in parallel.
 	 *

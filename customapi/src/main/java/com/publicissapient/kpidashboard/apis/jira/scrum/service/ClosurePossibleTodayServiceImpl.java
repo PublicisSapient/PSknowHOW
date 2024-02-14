@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.publicissapient.kpidashboard.apis.util.IterationKpiHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -110,7 +111,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 				Set<String> issueList = totalJiraIssueList.stream().map(JiraIssue::getNumber)
 						.collect(Collectors.toSet());
 
-				sprintDetail = transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
+				sprintDetail = IterationKpiHelper.transformIterSprintdetail(totalHistoryList, issueList, dbSprintDetail,
 						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						fieldMapping.getJiraIterationCompletionStatusKPI122(),
 						leafNode.getProjectFilter().getBasicProjectConfigId());
@@ -118,7 +119,7 @@ public class ClosurePossibleTodayServiceImpl extends JiraIterationKPIService {
 				List<String> notCompletedIssues = KpiDataHelper
 						.getIssuesIdListBasedOnTypeFromSprintDetails(sprintDetail, CommonConstant.NOT_COMPLETED_ISSUES);
 				if (CollectionUtils.isNotEmpty(notCompletedIssues)) {
-					List<JiraIssue> notCompltedJiraIssueList = getFilteredJiraIssue(notCompletedIssues,
+					List<JiraIssue> notCompltedJiraIssueList = IterationKpiHelper.getFilteredJiraIssue(notCompletedIssues,
 							totalJiraIssueList);
 					Set<JiraIssue> filtersIssuesList = KpiDataHelper
 							.getFilteredJiraIssuesListBasedOnTypeFromSprintDetails(sprintDetail,
