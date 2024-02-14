@@ -16,7 +16,7 @@
  *
  ******************************************************************************/
 
-package com.publicissapient.kpidashboard.apis.mapper;
+package com.publicissapient.kpidashboard.common.mapper;
 
 import java.io.IOException;
 

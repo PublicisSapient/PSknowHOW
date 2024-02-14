@@ -353,7 +353,7 @@ public class CustomIssueJsonParser implements JsonObjectParser<Issue> {
 			} catch (final Exception e) {
 				throw new JSONException("Error while parsing [" + key + "] field: " + e.getMessage()) {
 					@Override
-					public Throwable getCause() {
+					public synchronized Throwable getCause() {
 						return e;
 					}
 				};
