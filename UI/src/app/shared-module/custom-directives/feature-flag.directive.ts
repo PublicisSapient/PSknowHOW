@@ -17,13 +17,16 @@ export class FeatureFlagDirective {
   ) { }
 
 
-  @Input() set featureFlag(featureName: string) {
-    const isEnabled = this.featureFlagService.isFeatureEnabled(featureName);
-    if (isEnabled) {
-      this.vcr.createEmbeddedView(this.tpl);
-    } else {
-      this.vcr.clear();
-    }
+  @Input() 
+  set featureFlag(featureName: string) {
+    const isEnabled = this.featureFlagService.isFeatureEnabled(featureName).then(isEnabled => {
+      if (isEnabled) {
+        this.vcr.createEmbeddedView(this.tpl);
+      } else {
+        this.vcr.clear();
+      }
+    });
+    
   }
 }
 
