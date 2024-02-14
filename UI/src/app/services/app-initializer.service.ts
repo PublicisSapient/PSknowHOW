@@ -59,7 +59,7 @@ export class AppInitializerService {
   async checkFeatureFlag() {
     // return new Promise((resolve, reject) => {
     if (!environment.production) {
-      this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);;
+      this.featureToggleService.config = this.featureToggleService.loadConfig().then((res) => res);
     } else {
       const env$ = this.http.get('assets/env.json').pipe(
         tap(env => {

@@ -24,7 +24,6 @@ import { GoogleAnalyticsService } from './services/google-analytics.service';
 import { GetAuthorizationService } from './services/get-authorization.service';
 import { Router, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { PrimeNGConfig } from 'primeng/api';
-import { FeatureFlagsService } from './services/feature-toggle.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -40,7 +39,7 @@ export class AppComponent implements OnInit {
   authorized = <boolean>true;
 
   constructor(private router: Router, private service: SharedService, private getAuth: GetAuthService, private httpService: HttpService, private primengConfig: PrimeNGConfig,
-    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute, private featureService: FeatureFlagsService) {
+    private ga: GoogleAnalyticsService, private authorisation: GetAuthorizationService, private route: ActivatedRoute) {
     this.authorized = this.getAuth.checkAuth();
   }
 
