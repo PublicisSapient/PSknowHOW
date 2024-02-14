@@ -570,4 +570,43 @@ export class HelperService {
         savedDetails =  {...savedDetails, kpiFilters : {...savedDetails['kpiFilters'], ...filterbackup}};
         this.sharedService.setAddtionalFilterBackup(savedDetails);
       }
+
+      setFilterValueIfAlreadyHaveBackup(kpiId,kpiSelectedFilterObj, refreshValue, initialValue, filters?) {
+        let haveBackup = {}
+        if (this.sharedService.getAddtionalFilterBackup().hasOwnProperty('kpiFilters') && this.sharedService.getAddtionalFilterBackup()['kpiFilters'].hasOwnProperty(kpiId)) {
+          haveBackup = this.sharedService.getAddtionalFilterBackup()['kpiFilters'][kpiId];
+        }
+        kpiSelectedFilterObj[kpiId] = refreshValue;
+        if (haveBackup && Object.keys(haveBackup).length) {
+          if (filters) {
+            const tempObj = {};
+            for (const key in haveBackup) {
+              tempObj[key] = haveBackup[key];
+            }
+            kpiSelectedFilterObj[kpiId] = { ...tempObj };
+          }
+          else if (Array.isArray(refreshValue)) {
+            kpiSelectedFilterObj[kpiId] = haveBackup;
+          } else {
+            kpiSelectedFilterObj[kpiId] = { 'filter1': haveBackup['filter1'] };;
+          }
+    
+        } else {
+          if (filters) {
+            const tempObj = {};
+            for (const key in filters) {
+              tempObj[key] = initialValue;
+            }
+            kpiSelectedFilterObj[kpiId] = { ...tempObj };
+          }
+          else if (Array.isArray(refreshValue)) {
+            kpiSelectedFilterObj[kpiId]?.push(initialValue);
+          } else {
+            kpiSelectedFilterObj[kpiId] = { 'filter1': initialValue }
+          }
+        }
+        this.createBackupOfFiltersSelection(kpiSelectedFilterObj);
+        this.sharedService.setKpiSubFilterObj(kpiSelectedFilterObj);
+        return kpiSelectedFilterObj;
+      }
 }
