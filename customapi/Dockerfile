@@ -1,5 +1,5 @@
 # Use a base image
-FROM amazoncorretto:17-al2023-jdk
+FROM amazoncorretto:17
 
 # Set a non-root user
 ARG USER=knowhowuser
